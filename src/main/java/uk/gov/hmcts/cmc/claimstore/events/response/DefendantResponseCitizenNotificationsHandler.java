@@ -41,9 +41,7 @@ public class DefendantResponseCitizenNotificationsHandler {
     @EventListener
     public void notifyClaimantResponse(DefendantResponseEvent event) {
         Claim claim = event.getClaim();
-        if (isAdmissionResponse(claim)) {
-            return;
-        }
+        claim.getResponse().orElseThrow(IllegalStateException::new);
         defendantResponseNotificationService.notifyClaimant(
             claim,
             referenceForClaimant(claim.getReferenceNumber())

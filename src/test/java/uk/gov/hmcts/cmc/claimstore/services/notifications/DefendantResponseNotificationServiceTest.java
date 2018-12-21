@@ -7,7 +7,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.services.FreeMediationDecisionDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.service.notify.NotificationClientException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,6 +18,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -88,4 +91,33 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
         assertThat(templateParameters.getValue())
             .containsEntry(NotificationTemplateParameters.FRONTEND_BASE_URL, FRONTEND_BASE_URL);
     }
+
+    @Test
+    public void notifyClaimantWhenDefendantRespondsWithAdmissions() throws Exception {
+        Claim claim = SampleClaim
+            .getWithResponse(SampleResponse
+                .PartAdmission.builder()
+                .buildWithPaymentOptionBySpecifiedDate());
+        String reference = claim.getReferenceNumber();
+
+        when(emailTemplates.getClaimantDefendantResponseWithAdmissions())
+            .thenReturn(DEFENDANTS_RESPONSE_BY_ADMISSION);
+
+        service.notifyClaimant(claim, reference);
+
+        verify(notificationClient)
+            .sendEmail(eq(DEFENDANTS_RESPONSE_BY_ADMISSION), eq(claim.getSubmitterEmail()), anyMap(), eq(reference));
+    }
+
+    @Test (expected = IllegalStateException.class)
+    public void throwExceptionWhenResponseNotPresent() {
+        Claim claimWithNoResponse = SampleClaim.builder().build();
+
+        String reference = claimWithNoResponse.getReferenceNumber();
+
+        service.notifyClaimant(claimWithNoResponse, reference);
+
+        verifyZeroInteractions(emailTemplates, notificationClient);
+    }
+
 }

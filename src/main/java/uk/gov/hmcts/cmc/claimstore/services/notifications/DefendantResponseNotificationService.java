@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplate
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.services.FreeMediationDecisionDateCalculator;
+import uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.party.Company;
@@ -99,13 +100,16 @@ public class DefendantResponseNotificationService {
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
         Map<String, String> parameters = aggregateParams(claim, response);
 
-        String emailTemplate = getClaimantEmailTemplate(response);
+        String emailTemplate = getClaimantEmailTemplate(response, ResponseHelper.admissionResponse(claim));
 
         notify(claim.getSubmitterEmail(), emailTemplate, parameters, reference);
     }
 
-    private String getClaimantEmailTemplate(Response response) {
+    private String getClaimantEmailTemplate(Response response, boolean isAdmissionResponse) {
         YesNoOption mediation = response.getFreeMediation().orElse(YesNoOption.YES);
+        if(isAdmissionResponse){
+            return getEmailTemplates().getClaimantDefendantResponseWithAdmissions();
+        }
         if (mediation == YesNoOption.YES) {
             return getEmailTemplates().getClaimantResponseWithMediationIssued();
         } else {
