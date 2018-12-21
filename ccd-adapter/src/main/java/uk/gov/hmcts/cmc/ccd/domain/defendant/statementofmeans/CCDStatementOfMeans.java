@@ -40,6 +40,5 @@ public class CCDStatementOfMeans {
     private CCDYesNoOption carer;
     private DisabilityStatus disabilityStatus;
     private CCDLivingPartner livingPartner;
-
-    private CCDEmploymentStatus employmentStatus; //TODO: Not Needed
+    private CCDYesNoOption retired;
 }

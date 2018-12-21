@@ -15,6 +15,8 @@ import uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans.StatementOfMeansMa
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
+import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
+import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
@@ -22,12 +24,15 @@ import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
+import java.time.LocalDate;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.apache.commons.lang3.StringUtils.isAllBlank;
+import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
 
 @Component
 public class ResponseMapper {
@@ -159,6 +164,9 @@ public class ResponseMapper {
     public void from(Claim.ClaimBuilder claimBuilder, CCDDefendant defendant) {
         requireNonNull(claimBuilder, "claimBuilder must not be null");
         requireNonNull(defendant, "defendant must not be null");
+        if (defendant.getResponseType() == null) {
+            return;
+        }
 
         switch (defendant.getResponseType()) {
             case FULL_DEFENCE:
@@ -171,20 +179,88 @@ public class ResponseMapper {
                 claimBuilder.response(extractPartAdmission(defendant));
                 break;
             default:
-                throw new MappingException();
+                throw new MappingException("Invalid responseType");
         }
     }
 
     private FullDefenceResponse extractFullDefence(CCDDefendant defendant) {
-        return null;
+        return FullDefenceResponse.builder()
+            .defendant(defendantPartyMapper.from(defendant))
+            .statementOfTruth(extractStatementOfTruth(defendant))
+            .moreTimeNeeded(YesNoOption.valueOf(defendant.getResponseMoreTimeNeededOption().name()))
+            .freeMediation(YesNoOption.valueOf(defendant.getResponseMoreTimeNeededOption().name()))
+            .defenceType(DefenceType.valueOf(defendant.getResponseDefenceType().name()))
+            .defence(defendant.getResponseDefence())
+            .evidence(extractDefendantEvidence(defendant))
+            .timeline(extractDefendantTimeline(defendant))
+            .paymentDeclaration(extractPaymentDeclaration(defendant))
+            .build();
+    }
+
+    private StatementOfTruth extractStatementOfTruth(CCDDefendant defendant) {
+        String signerName = defendant.getResponseDefendantSOTSignerName();
+        String signerRole = defendant.getResponseDefendantSOTSignerRole();
+        if (isAllBlank(signerName, signerRole)) {
+            return null;
+        } else {
+            return new StatementOfTruth(signerName, signerRole);
+        }
+    }
+
+    private PaymentDeclaration extractPaymentDeclaration(CCDDefendant defendant) {
+        LocalDate paidDate = defendant.getPaymentDeclarationPaidDate();
+        String explanation = defendant.getPaymentDeclarationExplanation();
+        if (paidDate == null && explanation == null) {
+            return null;
+        } else {
+            return new PaymentDeclaration(paidDate, explanation);
+        }
+    }
+
+    private DefendantTimeline extractDefendantTimeline(CCDDefendant defendant) {
+        return new DefendantTimeline(
+            asStream(defendant.getDefendantTimeLineEvents())
+                .map(CCDCollectionElement::getValue)
+                .map(timelineEventMapper::from)
+                .collect(Collectors.toList()),
+            defendant.getDefendantTimeLineComment()
+        );
+    }
+
+    private DefendantEvidence extractDefendantEvidence(CCDDefendant defendant) {
+        return new DefendantEvidence(
+            asStream(defendant.getResponseEvidenceRows())
+                .map(CCDCollectionElement::getValue)
+                .map(evidenceRowMapper::from)
+                .collect(Collectors.toList()),
+            defendant.getResponseEvidenceComment()
+        );
     }
 
     private PartAdmissionResponse extractPartAdmission(CCDDefendant defendant) {
-        return null;
+        return PartAdmissionResponse.builder()
+            .defendant(defendantPartyMapper.from(defendant))
+            .statementOfTruth(extractStatementOfTruth(defendant))
+            .moreTimeNeeded(YesNoOption.valueOf(defendant.getResponseMoreTimeNeededOption().name()))
+            .freeMediation(YesNoOption.valueOf(defendant.getResponseMoreTimeNeededOption().name()))
+            .amount(defendant.getResponseAmount())
+            .paymentDeclaration(extractPaymentDeclaration(defendant))
+            .paymentIntention(paymentIntentionMapper.from(defendant.getDefendantPaymentIntention()))
+            .defence(defendant.getResponseDefence())
+            .evidence(extractDefendantEvidence(defendant))
+            .timeline(extractDefendantTimeline(defendant))
+            .statementOfMeans(statementOfMeansMapper.from(defendant.getStatementOfMeans()))
+            .build();
     }
 
     private FullAdmissionResponse extractFullAdmission(CCDDefendant defendant) {
-        return null;
+        return FullAdmissionResponse.builder()
+            .defendant(defendantPartyMapper.from(defendant))
+            .statementOfTruth(extractStatementOfTruth(defendant))
+            .moreTimeNeeded(YesNoOption.valueOf(defendant.getResponseMoreTimeNeededOption().name()))
+            .freeMediation(YesNoOption.valueOf(defendant.getResponseMoreTimeNeededOption().name()))
+            .paymentIntention(paymentIntentionMapper.from(defendant.getDefendantPaymentIntention()))
+            .statementOfMeans(statementOfMeansMapper.from(defendant.getStatementOfMeans()))
+            .build();
     }
-
 }
