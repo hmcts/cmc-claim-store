@@ -16,7 +16,7 @@ public class CCDDefendant {
     private String claimantProvidedEmail;
     private CCDAddress claimantProvidedServiceAddress;
     private String claimantProvidedName;
-    private String claimantProvidedPhoneNumber;
+    private String claimantProvidedPhone;
     private CCDAddress claimantProvidedAddress;
     private CCDAddress claimantProvidedCorrespondenceAddress;
     private LocalDate claimantProvidedDateOfBirth;
