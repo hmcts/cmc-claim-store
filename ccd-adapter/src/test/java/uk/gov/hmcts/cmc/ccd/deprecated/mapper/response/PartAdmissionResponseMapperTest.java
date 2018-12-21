@@ -19,9 +19,9 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.statementofmeans.SampleStatemen
 
 import java.time.LocalDate;
 
-import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDDefendantIndividual;
 import static uk.gov.hmcts.cmc.ccd.deprecated.SampleData.getCCDStatementOfTruth;
 import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDPaymentOption.BY_SPECIFIED_DATE;
+import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDDefendantIndividual;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 
 @SpringBootTest
