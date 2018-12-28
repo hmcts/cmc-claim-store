@@ -118,12 +118,4 @@ public class ClaimDataContentProvider {
             .map(AmountRowContent::new)
             .collect(Collectors.toList());
     }
-
-    public static void main(String[] args) {
-//        split("Mrs Richards had 7 physiotherapy appointments. The first appointment was on 16th November 2015 and the last was on 7th December 2016. She gave us details of his private medical insurance provider, Aviva, so that we could claim the fees from them. We have been unable to get payment from them and they have told us that. Mrs Richards's policy with them was terminated on 14th November 2015. We have contacted Mrs Richards on many occasions requesting payment culminating in an email on 23rd January 2017 warning that we would seek legal advice if we had no payment by 31st January 2017. We have have no response to this email and have had no payment.")
-        split("Mrs. Richards had 7 physiotherapy appointments at £78.40 each. The first appointment was on 16th November 2015 and the last was on 7th December 2016. She gave us details of his private medical insurance provider, Aviva, so that we could claim the fees from them. We have been unable to get payment from them and they have told us that. Mrs. Richards's policy with them was terminated on 14th November 2015! We have contacted Mrs Richards on many occasions requesting payment culminating in an email on 23rd January 2017 warning that we would seek legal advice if we had no payment by 31st January 2017. We have have no response to this email and have had no payment.")
-
-
-            .forEach(System.out::println);
-    }
 }
