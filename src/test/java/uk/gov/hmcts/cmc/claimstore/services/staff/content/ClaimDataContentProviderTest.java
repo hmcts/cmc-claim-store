@@ -9,7 +9,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
 import java.time.Clock;
-import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,7 +63,7 @@ public class ClaimDataContentProviderTest {
     @Test
     public void shouldProvideReasonHonouringInputParagraphs() {
         testReason("'Twas brillig and the slithy toves did gyre and gimble in the wabe\n" +
-            "All mimsy were the borogoves and the mome raths outgrabe",
+                "All mimsy were the borogoves and the mome raths outgrabe",
 
             "'Twas brillig and the slithy toves did gyre and gimble in the wabe",
             "All mimsy were the borogoves and the mome raths outgrabe");
