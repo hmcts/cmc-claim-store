@@ -62,8 +62,8 @@ public class ClaimDataContentProviderTest {
 
     @Test
     public void shouldProvideReasonHonouringInputParagraphs() {
-        testReason("'Twas brillig and the slithy toves did gyre and gimble in the wabe\n" +
-                "All mimsy were the borogoves and the mome raths outgrabe",
+        testReason("'Twas brillig and the slithy toves did gyre and gimble in the wabe\n"
+                + "All mimsy were the borogoves and the mome raths outgrabe",
 
             "'Twas brillig and the slithy toves did gyre and gimble in the wabe",
             "All mimsy were the borogoves and the mome raths outgrabe");
