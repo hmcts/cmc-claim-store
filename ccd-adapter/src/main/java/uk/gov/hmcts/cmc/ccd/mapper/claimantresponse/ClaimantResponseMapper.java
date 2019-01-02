@@ -49,10 +49,10 @@ public class ClaimantResponseMapper {
         } else if (ClaimantResponseType.REJECTION == claimantResponse.getType()) {
             ResponseRejection responseRejection = (ResponseRejection) claimantResponse;
             CCDResponseRejection.CCDResponseRejectionBuilder rejection = CCDResponseRejection.builder();
-            if (responseRejection.getFreeMediation().isPresent()) {
-                rejection.freeMediationOption(
-                    CCDYesNoOption.valueOf(responseRejection.getFreeMediation().get().name()));
-            }
+            responseRejection.getFreeMediation()
+                .map(YesNoOption::name)
+                .map(CCDYesNoOption::valueOf)
+                .ifPresent(rejection::freeMediationOption);
             responseRejection.getAmountPaid().ifPresent(rejection::amountPaid);
             responseRejection.getReason().ifPresent(rejection::reason);
             return rejection.build();
