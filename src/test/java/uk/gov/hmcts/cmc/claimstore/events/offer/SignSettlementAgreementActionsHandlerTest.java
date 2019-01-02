@@ -43,7 +43,7 @@ public class SignSettlementAgreementActionsHandlerTest {
     private EmailTemplates emailTemplates;
 
     @Before
-    public void setup() {
+    public void setUp() {
         when(notificationsProperties.getTemplates()).thenReturn(templates);
         when(notificationsProperties.getFrontendBaseUrl()).thenReturn(FRONTEND_URL);
         when(templates.getEmail()).thenReturn(emailTemplates);
