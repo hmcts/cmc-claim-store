@@ -7,17 +7,9 @@ import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.ChildAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.CourtOrderAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.EmployerAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.LivingPartnerAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse.ClaimantResponseAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse.CourtDeterminationAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse.ResponseAcceptationAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse.ResponseRejectionAssert;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
@@ -60,22 +52,6 @@ public class Assertions {
 
     public static EvidenceRowAssert assertThat(EvidenceRow evidenceRow) {
         return new EvidenceRowAssert(evidenceRow);
-    }
-
-    public static ClaimantResponseAssert assertThat(ClaimantResponse response) {
-        return new ClaimantResponseAssert(response);
-    }
-
-    public static ResponseRejectionAssert assertThat(ResponseRejection responseRejection) {
-        return new ResponseRejectionAssert(responseRejection);
-    }
-
-    public static CourtDeterminationAssert assertThat(CourtDetermination courtDetermination) {
-        return new CourtDeterminationAssert(courtDetermination);
-    }
-
-    public static ResponseAcceptationAssert assertThat(ResponseAcceptation responseAcceptation) {
-        return new ResponseAcceptationAssert(responseAcceptation);
     }
 
     public static BankAccountAssert assertThat(BankAccount bankAccount) {

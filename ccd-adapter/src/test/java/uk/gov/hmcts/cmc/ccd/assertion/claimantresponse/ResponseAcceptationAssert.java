@@ -1,12 +1,10 @@
-package uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse;
+package uk.gov.hmcts.cmc.ccd.assertion.claimantresponse;
 
 import org.assertj.core.api.AbstractAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDResponseAcceptation;
+import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 
 import java.util.Objects;
-
-import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;
 
 public class ResponseAcceptationAssert extends AbstractAssert<ResponseAcceptationAssert, ResponseAcceptation> {
     public ResponseAcceptationAssert(ResponseAcceptation responseAcceptation) {
@@ -30,9 +28,6 @@ public class ResponseAcceptationAssert extends AbstractAssert<ResponseAcceptatio
                     ccdResponseAcceptation.getAmountPaid(), amountPaid);
             }
         });
-
-        actual.getCourtDetermination().ifPresent(courtDetermination ->
-            assertThat(courtDetermination).isEqualTo(ccdResponseAcceptation.getCourtDetermination()));
 
         return this;
     }

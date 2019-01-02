@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse;
+package uk.gov.hmcts.cmc.ccd.domain.claimantresponse;
 
 public enum CCDFormaliseOption {
     CCJ,
