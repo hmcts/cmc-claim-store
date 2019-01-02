@@ -156,7 +156,7 @@ dependencies {
 
   compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
 
-  compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.12.0-RELEASE'
+  compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.13.0-RELEASE'
 
   compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformJavaLogging
   compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: versions.reformJavaLogging
@@ -188,7 +188,7 @@ dependencies {
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
   testCompile group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock'
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.11.1'
-  testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.10.3'
+  testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.10.4'
   testCompile group: 'org.mockito', name: 'mockito-core', version: '2.23.4'
   testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
   testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.4.0'
