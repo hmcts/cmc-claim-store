@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncome;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.ccd.mapper.Mapper;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Debt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Dependant;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.OnTaxPayments;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.OtherDependants;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.SelfEmployment;
@@ -323,7 +325,30 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
 
     private Dependant extractDependant(CCDStatementOfMeans ccdStatementOfMeans) {
         return Dependant.builder()
+            .numberOfMaintainedChildren(ccdStatementOfMeans.getNoOfMaintainedChildren())
+            .otherDependants(extractOtherDependants(ccdStatementOfMeans))
+            .anyDisabledChildren(ccdStatementOfMeans.getAnyDisabledChildren().toBoolean())
+            .children(extractChildren(ccdStatementOfMeans.getDependantChildren()))
+            .build();
+    }
 
+    private List<Child> extractChildren(List<CCDCollectionElement<CCDChildCategory>> dependantChildren) {
+        return asStream(dependantChildren)
+            .map(CCDCollectionElement::getValue)
+            .filter(Objects::nonNull)
+            .map(childCategoryMapper::from)
+            .collect(Collectors.toList());
+    }
+
+    private OtherDependants extractOtherDependants(CCDStatementOfMeans ccdStatementOfMeans) {
+        String details = ccdStatementOfMeans.getOtherDependantDetails();
+        Integer numberOfPeople = ccdStatementOfMeans.getNumberOfOtherDependants();
+        if (numberOfPeople == null && isBlank(details)) {
+            return null;
+        }
+        return OtherDependants.builder()
+            .details(details)
+            .numberOfPeople(numberOfPeople)
             .build();
     }
 
