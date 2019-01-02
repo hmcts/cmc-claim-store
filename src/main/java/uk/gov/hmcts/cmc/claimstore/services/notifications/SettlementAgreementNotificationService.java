@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.notifications;
 
+import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,10 +58,11 @@ public class SettlementAgreementNotificationService {
     }
 
     public void notifyClaimant(Claim claim) {
-        HashMap<String, String> parameters = new HashMap<>();
-        parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
-        parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
-        parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
+        Map<String, String> parameters = ImmutableMap.of(
+            CLAIMANT_NAME, claim.getClaimData().getClaimant().getName(),
+            FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl(),
+            CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
+        
         sendNotificationEmail(
             claim.getSubmitterEmail(),
             notificationsProperties.getTemplates().getEmail().getClaimantSignedSettlementAgreementToClaimant(),
@@ -96,7 +98,7 @@ public class SettlementAgreementNotificationService {
             reference, targetEmail, exception.getMessage()
         );
 
-        logger.info(errorMessage, exception);
+        logger.warn(errorMessage, exception);
     }
 
 }

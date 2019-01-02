@@ -23,6 +23,11 @@ public class ClaimantResponseActionsHandler {
     }
 
     @EventListener
+    public void sendNotificationToDefendant(ClaimantResponseEvent event) {
+        this.notificationService.notifyDefendant(event.getClaim());
+    }
+
+    @EventListener
     public void sendNotificationToDefendantWhenInterlocutoryJudgmentRequested(InterlocutoryJudgmentEvent event) {
         this.notificationService.notifyDefendantWhenInterlocutoryJudgementRequested(event.getClaim());
     }
