@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.ccd.domain.claimantresponse;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.math.BigDecimal;
@@ -13,7 +12,6 @@ import java.time.LocalDateTime;
     @JsonSubTypes.Type(value = CCDResponseAcceptation.class, name = "ACCEPTATION"),
     @JsonSubTypes.Type(value = CCDResponseRejection.class, name = "REJECTION")
 })
-@EqualsAndHashCode
 @Getter
 public abstract class CCDClaimantResponse {
     private BigDecimal amountPaid;

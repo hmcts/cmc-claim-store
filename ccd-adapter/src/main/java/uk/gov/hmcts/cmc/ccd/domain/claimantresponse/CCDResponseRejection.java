@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+
 @Value
 public class CCDResponseRejection extends CCDClaimantResponse {
 

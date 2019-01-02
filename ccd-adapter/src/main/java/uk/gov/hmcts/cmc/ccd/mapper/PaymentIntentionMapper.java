@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.domain.mapper;
+package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;
@@ -17,6 +17,9 @@ public class PaymentIntentionMapper implements Mapper<CCDPaymentIntention, Payme
 
     @Override
     public CCDPaymentIntention to(PaymentIntention paymentIntention) {
+        if (null == paymentIntention) {
+            return null;
+        }
         CCDPaymentIntention.CCDPaymentIntentionBuilder builder = CCDPaymentIntention.builder();
         builder.paymentOption(CCDPaymentOption.valueOf(paymentIntention.getPaymentOption().name()));
         builder.paymentDate(paymentIntention.getPaymentDate().orElse(null));
@@ -32,6 +35,9 @@ public class PaymentIntentionMapper implements Mapper<CCDPaymentIntention, Payme
 
     @Override
     public PaymentIntention from(CCDPaymentIntention ccdPaymentIntention) {
+        if (null == ccdPaymentIntention) {
+            return null;
+        }
         PaymentIntention.PaymentIntentionBuilder builder = PaymentIntention.builder();
         if (ccdPaymentIntention.hasRepaymentPlanInfo()) {
             builder.repaymentPlan(RepaymentPlan.builder()

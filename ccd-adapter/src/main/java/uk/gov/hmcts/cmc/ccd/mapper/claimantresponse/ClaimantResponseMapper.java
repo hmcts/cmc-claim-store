@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.domain.mapper.claimantresponse;
+package uk.gov.hmcts.cmc.ccd.mapper.claimantresponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -8,8 +8,8 @@ import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDClaimantResponseType;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseAcceptation;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
-import uk.gov.hmcts.cmc.ccd.domain.mapper.PaymentIntentionMapper;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
+import uk.gov.hmcts.cmc.ccd.mapper.PaymentIntentionMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
@@ -48,8 +48,11 @@ public class ClaimantResponseMapper {
             return builder.build();
         } else if (ClaimantResponseType.REJECTION == claimantResponse.getType()) {
             ResponseRejection responseRejection = (ResponseRejection) claimantResponse;
-            CCDResponseRejection.CCDResponseRejectionBuilder rejection = CCDResponseRejection.builder()
-                .freeMediationOption(CCDYesNoOption.valueOf(YesNoOption.NO.name()));
+            CCDResponseRejection.CCDResponseRejectionBuilder rejection = CCDResponseRejection.builder();
+            if (responseRejection.getFreeMediation().isPresent()) {
+                rejection.freeMediationOption(
+                    CCDYesNoOption.valueOf(responseRejection.getFreeMediation().get().name()));
+            }
             responseRejection.getAmountPaid().ifPresent(rejection::amountPaid);
             responseRejection.getReason().ifPresent(rejection::reason);
             return rejection.build();
