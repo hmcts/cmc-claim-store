@@ -65,7 +65,9 @@ public class ResponseMapper {
             CCDYesNoOption.valueOf(response.getFreeMediation().orElse(NO).name())
         );
 
-        builder.responseMoreTimeNeededOption(CCDYesNoOption.valueOf(response.getMoreTimeNeeded().orElse(NO).name()));
+        if (response.getMoreTimeNeeded() != null) {
+            builder.responseMoreTimeNeededOption(CCDYesNoOption.valueOf(response.getMoreTimeNeeded().name()));
+        }
 
         response.getStatementOfTruth().ifPresent(
             statementOfTruth -> {
