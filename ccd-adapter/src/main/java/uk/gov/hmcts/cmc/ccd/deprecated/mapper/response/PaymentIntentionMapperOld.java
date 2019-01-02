@@ -10,12 +10,12 @@ import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
 @Component
-public class PaymentIntentionMapper implements Mapper<CCDPaymentIntention, PaymentIntention> {
+public class PaymentIntentionMapperOld implements Mapper<CCDPaymentIntention, PaymentIntention> {
 
     private final RepaymentPlanMapper repaymentPlanMapper;
 
     @Autowired
-    public PaymentIntentionMapper(RepaymentPlanMapper repaymentPlanMapper) {
+    public PaymentIntentionMapperOld(RepaymentPlanMapper repaymentPlanMapper) {
         this.repaymentPlanMapper = repaymentPlanMapper;
     }
 

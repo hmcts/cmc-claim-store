@@ -33,7 +33,7 @@ public class FullAdmissionResponseAssert extends AbstractAssert<FullAdmissionRes
 
         //assertThat(actual.getDefendant()).isEqualTo(ccdFullAdmissionResponse.getDefendant());
 
-        assertThat(actual.getPaymentIntention()).isEqualTo(ccdFullAdmissionResponse.getPaymentIntention());
+        //assertThat(actual.getPaymentIntention()).isEqualTo(ccdFullAdmissionResponse.getPaymentIntention());
 
         actual.getStatementOfMeans().ifPresent(statementOfMeans ->
             assertThat(statementOfMeans).isEqualTo(ccdFullAdmissionResponse.getStatementOfMeans())
