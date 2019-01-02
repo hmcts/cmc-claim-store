@@ -39,6 +39,8 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
 
 @Component
@@ -191,6 +193,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
             dependant.getOtherDependants().ifPresent(otherDependants -> {
                 builder.numberOfOtherDependants(otherDependants.getNumberOfPeople());
                 builder.otherDependantDetails(otherDependants.getDetails());
+                builder.otherDependantAnyDisabled(otherDependants.isAnyDisabled() ? YES : NO);
             });
 
             builder.dependantChildren(
@@ -350,6 +353,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
         return OtherDependants.builder()
             .details(details)
             .numberOfPeople(numberOfPeople)
+            .anyDisabled(ccdStatementOfMeans.getOtherDependantAnyDisabled().toBoolean())
             .build();
     }
 

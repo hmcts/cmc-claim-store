@@ -73,7 +73,6 @@ public class DefendantPartyMapper {
         builder.partyType(SOLE_TRADER);
         soleTrader.getTitle().ifPresent(builder::partyTitle);
         soleTrader.getBusinessName().ifPresent(builder::partyBusinessName);
-
     }
 
     private void toOrganisation(CCDDefendant.CCDDefendantBuilder builder, Organisation organisation) {

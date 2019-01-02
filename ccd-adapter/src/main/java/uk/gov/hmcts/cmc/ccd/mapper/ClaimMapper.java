@@ -1,20 +1,16 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.AmountType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
-import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.ccd.mapper.defendant.DefendantMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -22,7 +18,6 @@ import java.util.stream.Collectors;
 
 @Component
 public class ClaimMapper {
-
     private final PersonalInjuryMapper personalInjuryMapper;
     private final HousingDisrepairMapper housingDisrepairMapper;
     private final StatementOfTruthCaseMapper statementOfTruthCaseMapper;
@@ -66,40 +61,24 @@ public class ClaimMapper {
         claimData.getFeeAccountNumber().ifPresent(builder::feeAccountNumber);
         claimData.getExternalReferenceNumber().ifPresent(builder::externalReferenceNumber);
         claimData.getPreferredCourt().ifPresent(builder::preferredCourt);
-
         claimData.getStatementOfTruth()
             .ifPresent(statementOfTruth -> statementOfTruthCaseMapper.to(statementOfTruth, builder));
-
         claimData.getPersonalInjury().ifPresent(personalInjury -> personalInjuryMapper.to(personalInjury, builder));
-
         claimData.getHousingDisrepair()
             .ifPresent(housingDisrepair -> housingDisrepairMapper.to(housingDisrepair, builder));
-
-        builder.claimants(claimData.getClaimants().stream().map(claimantMapper::to)
+        builder.claimants(claimData.getClaimants().stream()
+            .map(claimantMapper::to)
             .map(this::mapClaimantToValue)
             .collect(Collectors.toList()));
-
-        // For legal, we expect more than one claimants
-        if (claimData.getAmount() instanceof AmountBreakDown) {
-            builder.defendants(claimData.getDefendants().stream()
-                .map(ccdDefendant -> defendantMapper.toCitizen(ccdDefendant, claim))
-                .map(this::mapDefendantToValue)
-                .collect(Collectors.toList()));
-        } else {
-            builder.defendants(claimData.getDefendants().stream()
-                .map(defendantMapper::toLegal)
-                .map(this::mapDefendantToValue)
-                .collect(Collectors.toList()));
-        }
-
+        builder.defendants(claimData.getDefendants().stream()
+            .map(ccdDefendant -> defendantMapper.to(ccdDefendant, claim))
+            .map(this::mapDefendantToValue)
+            .collect(Collectors.toList()));
         claimData.getTimeline().ifPresent(timeline -> timelineMapper.to(timeline, builder));
-
         claimData.getEvidence().ifPresent(evidence -> evidenceMapper.to(evidence, builder));
-
         paymentMapper.to(claimData.getPayment(), builder);
         interestMapper.to(claimData.getInterest(), builder);
         amountMapper.to(claimData.getAmount(), builder);
-
         builder
             .reason(claimData.getReason())
             .feeAmountInPennies(claimData.getFeeAmountInPennies());
@@ -115,13 +94,11 @@ public class ClaimMapper {
 
     public void from(CCDCase ccdCase, Claim.ClaimBuilder claimBuilder) {
         Objects.requireNonNull(ccdCase, "ccdClaim must not be null");
-
         List<Party> claimants = ccdCase.getClaimants()
             .stream()
             .map(CCDCollectionElement::getValue)
             .map(claimantMapper::from)
             .collect(Collectors.toList());
-
         claimBuilder.claimData(
             new ClaimData(
                 UUID.fromString(ccdCase.getExternalId()),
@@ -146,19 +123,9 @@ public class ClaimMapper {
     }
 
     private List<TheirDetails> getDefendants(CCDCase ccdCase, Claim.ClaimBuilder claimBuilder) {
-
-        if (ccdCase.getAmountType() == AmountType.BREAK_DOWN) {
-            CCDDefendant ccdDefendant = ccdCase.getDefendants().stream()
-                .map(CCDCollectionElement::getValue)
-                .findFirst()
-                .orElseThrow(() -> new MappingException("No defendant mapped from case"));
-
-            return Collections.singletonList(defendantMapper.from(claimBuilder, ccdDefendant));
-        } else {
-            return ccdCase.getDefendants().stream()
-                .map(CCDCollectionElement::getValue)
-                .map(defendantMapper::from)
-                .collect(Collectors.toList());
-        }
+        return ccdCase.getDefendants().stream()
+            .map(CCDCollectionElement::getValue)
+            .map(defendant -> defendantMapper.from(claimBuilder, defendant))
+            .collect(Collectors.toList());
     }
 }

@@ -8,7 +8,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentIntention;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
-import uk.gov.hmcts.cmc.ccd.domain.CCJRequest;
+import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 
@@ -78,6 +78,6 @@ public class CCDDefendant {
     private List<CCDCollectionElement<CCDPartyStatement>> settlementPartyStatements;
     private LocalDate settlementReachedAt;
 
-    private CCJRequest countyCourtJudgement;
+    private CCDCountyCourtJudgment countyCourtJudgement;
     private LocalDate ccjRequestedDate;
 }

@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.ccd.mapper.EvidenceRowMapper;
@@ -60,6 +61,10 @@ public class ResponseMapper {
     public void to(CCDDefendant.CCDDefendantBuilder builder, Response response) {
         requireNonNull(builder, "builder must not be null");
         requireNonNull(response, "response must not be null");
+
+        builder.responseType(
+            CCDResponseType.valueOf(response.getResponseType().name())
+        );
 
         builder.responseFreeMediationOption(
             CCDYesNoOption.valueOf(response.getFreeMediation().orElse(NO).name())
@@ -136,7 +141,7 @@ public class ResponseMapper {
     private Consumer<DefendantTimeline> mapDefendantTimeline(CCDDefendant.CCDDefendantBuilder builder) {
         return timeline -> {
             builder.defendantTimeLineComment(timeline.getComment().orElse(EMPTY));
-            builder.defendantTimeLineEvents(timeline.getEvents().stream()
+            builder.defendantTimeLineEvents(asStream(timeline.getEvents())
                 .map(timelineEventMapper::to)
                 .filter(Objects::nonNull)
                 .map(event -> CCDCollectionElement.<CCDTimelineEvent>builder().value(event).build())
@@ -148,7 +153,7 @@ public class ResponseMapper {
     private Consumer<DefendantEvidence> mapDefendantEvidence(CCDDefendant.CCDDefendantBuilder builder) {
         return evidence -> {
             builder.responseEvidenceComment(evidence.getComment().orElse(EMPTY));
-            builder.responseEvidenceRows(evidence.getRows().stream()
+            builder.responseEvidenceRows(asStream(evidence.getRows())
                 .map(evidenceRowMapper::to)
                 .filter(Objects::nonNull)
                 .map(row -> CCDCollectionElement.<CCDEvidenceRow>builder().value(row).build())
