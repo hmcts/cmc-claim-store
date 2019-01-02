@@ -434,7 +434,7 @@ public class CoreCaseDataServiceTest {
         Response providedResponse = SampleResponse.validDefaults();
         Claim providedClaim = SampleClaim.getWithResponse(providedResponse);
 
-        service.saveDirectionsQuestionnaireDeadline(providedClaim.getId(), FUTURE_DATE, AUTHORISATION);
+        service.saveDirectionsQuestionnaireDeadline(providedClaim, FUTURE_DATE, AUTHORISATION);
 
         verify(coreCaseDataApi, atLeastOnce()).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
             anyString(), anyString(), eq(DIRECTIONS_QUESTIONNAIRE_DEADLINE.getValue()));
