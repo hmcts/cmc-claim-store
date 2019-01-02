@@ -98,5 +98,5 @@ public class EmailTemplates {
     private String settlementRejectedEmailToDefendant;
 
     @NotEmpty
-    private String claimantDefendantResponseWithAdmissions;
+    private String defendantAdmissionResponseToClaimant;
 }

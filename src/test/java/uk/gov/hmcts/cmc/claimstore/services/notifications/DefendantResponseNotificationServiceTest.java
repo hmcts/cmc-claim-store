@@ -100,16 +100,16 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
                 .buildWithPaymentOptionBySpecifiedDate());
         String reference = claim.getReferenceNumber();
 
-        when(emailTemplates.getClaimantDefendantResponseWithAdmissions())
-            .thenReturn(DEFENDANTS_RESPONSE_BY_ADMISSION);
+        when(emailTemplates.getDefendantAdmissionResponseToClaimant())
+            .thenReturn(DEFENDANT_RESPOND_BY_ADMISSION);
 
         service.notifyClaimant(claim, reference);
 
         verify(notificationClient)
-            .sendEmail(eq(DEFENDANTS_RESPONSE_BY_ADMISSION), eq(claim.getSubmitterEmail()), anyMap(), eq(reference));
+            .sendEmail(eq(DEFENDANT_RESPOND_BY_ADMISSION), eq(claim.getSubmitterEmail()), anyMap(), eq(reference));
     }
 
-    @Test (expected = IllegalStateException.class)
+    @Test (expected = IllegalArgumentException.class)
     public void throwExceptionWhenResponseNotPresent() {
         Claim claimWithNoResponse = SampleClaim.builder().build();
 

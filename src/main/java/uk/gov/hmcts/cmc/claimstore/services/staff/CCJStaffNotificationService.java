@@ -72,7 +72,8 @@ public class CCJStaffNotificationService {
         map.put("claimantType", PartyUtils.getType(claim.getClaimData().getClaimant()));
         map.put("defendantName", claim.getClaimData().getDefendant().getName());
         map.put("paymentType", claim.getCountyCourtJudgment().getPaymentOption().getDescription());
-        map.put("admissionResponse", ResponseHelper.admissionResponse(claim));
+        map.put("admissionResponse", ResponseHelper
+            .admissionResponse(claim.getResponse().orElseThrow(IllegalArgumentException::new)));
         Optional.ofNullable(submitterName).ifPresent(name -> map.put("partyName", name));
         claim.getReDetermination()
             .ifPresent(reDetermination -> map.put("reasonForReDetermination", reDetermination.getExplanation()));

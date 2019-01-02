@@ -10,7 +10,6 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.DefendantResponseNotif
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -57,12 +56,18 @@ public class DefendantResponseCitizenNotificationsHandlerTest {
         );
     }
 
-    @Test (expected = IllegalStateException.class)
-    public void throwExceptionWhenResponseNotPresent() throws IllegalStateException {
+    @Test(expected = IllegalArgumentException.class)
+    public void throwExceptionWhenResponseNotPresent() throws IllegalArgumentException {
 
         defendantResponseCitizenNotificationsHandler.notifyClaimantResponse(RESPONSE_EVENT_WITHOUT_RESPONSE);
 
-        verifyZeroInteractions(defendantResponseNotificationService);
+    }
 
+    @Test(expected = NullPointerException.class)
+    public void throwExceptionResponseEventIsGeneratedWithNullClaim() throws NullPointerException {
+
+        DefendantResponseEvent responseEventWithNullClaim = new DefendantResponseEvent(null);
+
+        defendantResponseCitizenNotificationsHandler.notifyClaimantResponse(responseEventWithNullClaim);
     }
 }

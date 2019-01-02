@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplate
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.services.FreeMediationDecisionDateCalculator;
-import uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.party.Company;
@@ -33,6 +32,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper.admissionResponse;
 
 @Service
 public class DefendantResponseNotificationService {
@@ -96,18 +96,18 @@ public class DefendantResponseNotificationService {
         Claim claim,
         String reference
     ) {
-        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+        Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
         Map<String, String> parameters = aggregateParams(claim, response);
 
-        String emailTemplate = getClaimantEmailTemplate(response, ResponseHelper.admissionResponse(claim));
+        String emailTemplate = getClaimantEmailTemplate(response);
 
         notify(claim.getSubmitterEmail(), emailTemplate, parameters, reference);
     }
 
-    private String getClaimantEmailTemplate(Response response, boolean isAdmissionResponse) {
+    private String getClaimantEmailTemplate(Response response) {
         YesNoOption mediation = response.getFreeMediation().orElse(YesNoOption.YES);
-        if (isAdmissionResponse) {
-            return getEmailTemplates().getClaimantDefendantResponseWithAdmissions();
+        if (admissionResponse(response)) {
+            return getEmailTemplates().getDefendantAdmissionResponseToClaimant();
         }
         if (mediation == YesNoOption.YES) {
             return getEmailTemplates().getClaimantResponseWithMediationIssued();
