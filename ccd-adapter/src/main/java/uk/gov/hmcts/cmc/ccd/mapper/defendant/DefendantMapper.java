@@ -41,6 +41,8 @@ public class DefendantMapper {
         CCDDefendant.CCDDefendantBuilder builder = CCDDefendant.builder();
         builder.responseDeadline(claim.getResponseDeadline());
         builder.letterHolderId(claim.getLetterHolderId());
+        builder.linkID(claim.getDefendantId());
+        builder.partyEmail(claim.getDefendantEmail());
         claim.getResponse().ifPresent(toResponse(claim, builder));
         theirDetailsMapper.to(builder, theirDetails);
         return builder.build();

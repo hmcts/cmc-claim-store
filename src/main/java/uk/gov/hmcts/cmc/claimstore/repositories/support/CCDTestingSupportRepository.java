@@ -33,7 +33,7 @@ public class CCDTestingSupportRepository implements SupportRepository {
 
     @Override
     public void updateResponseDeadline(String authorisation, Claim claim, LocalDate responseDeadline) {
-        this.coreCaseDataService.updateResponseDeadline(authorisation, claim.getId(), responseDeadline);
+        this.coreCaseDataService.updateResponseDeadline(authorisation, claim, responseDeadline);
     }
 
     @Override

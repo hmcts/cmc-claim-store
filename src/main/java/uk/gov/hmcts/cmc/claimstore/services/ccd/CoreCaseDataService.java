@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
@@ -38,6 +37,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_BY_ADMISSION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
@@ -49,6 +49,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_PRE_PAYMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
@@ -91,13 +92,7 @@ public class CoreCaseDataService {
         try {
             Map<String, Object> data = new HashMap<>();
             data.put("externalId", externalId);
-            EventRequestData eventRequestData = EventRequestData.builder()
-                .userId(user.getId())
-                .jurisdictionId(JURISDICTION_ID)
-                .caseTypeId(CASE_TYPE_ID)
-                .eventId(SUBMIT_PRE_PAYMENT.getValue())
-                .ignoreWarning(true)
-                .build();
+            EventRequestData eventRequestData = eventRequest(SUBMIT_PRE_PAYMENT, user.getId());
 
             StartEventResponse startEventResponse = startCreate(authorisation, eventRequestData,
                 user.isSolicitor() || user.isCaseworker());
@@ -133,13 +128,57 @@ public class CoreCaseDataService {
             ccdCase.setReferenceNumber(referenceNumberService.getReferenceNumber(isRepresented));
         }
 
-        CaseDetails caseDetails = update(authorisation, ccdCase, SUBMIT_POST_PAYMENT);
+        try {
+            Long caseId = ccdCase.getId();
+            EventRequestData eventRequestData = EventRequestData.builder()
+                .userId(userDetails.getId())
+                .jurisdictionId(JURISDICTION_ID)
+                .caseTypeId(CASE_TYPE_ID)
+                .eventId(SUBMIT_POST_PAYMENT.getValue())
+                .ignoreWarning(true)
+                .build();
 
-        if (!isRepresented) {
-            grantAccessToCase(caseDetails, claim.getLetterHolderId());
+            StartEventResponse startEventResponse = startUpdate(
+                authorisation,
+                eventRequestData,
+                caseId,
+                isRepresented
+            );
+
+            CaseDataContent caseDataContent = CaseDataContent.builder()
+                .eventToken(startEventResponse.getToken())
+                .event(Event.builder()
+                    .id(startEventResponse.getEventId())
+                    .summary("CMC case update")
+                    .description("Submitting CMC case update")
+                    .build())
+                .data(ccdCase)
+                .build();
+
+            CaseDetails caseDetails = submitUpdate(
+                authorisation,
+                eventRequestData,
+                caseDataContent,
+                caseId,
+                isRepresented
+            );
+
+            if (!isRepresented) {
+                grantAccessToCase(caseDetails, claim.getLetterHolderId());
+            }
+
+            return extractClaim(caseDetails);
+
+        } catch (Exception exception) {
+            throw new CoreCaseDataStoreException(
+                String.format(
+                    "Failed updating claim in CCD store for claim %s on event %s",
+                    ccdCase.getReferenceNumber(),
+                    SUBMIT_POST_PAYMENT
+                ), exception
+            );
         }
 
-        return extractClaim(caseDetails);
     }
 
     public Claim requestMoreTimeForResponse(
@@ -147,34 +186,44 @@ public class CoreCaseDataService {
         Claim claim,
         LocalDate newResponseDeadline
     ) {
-        CCDCase ccdCase = CCDCase.builder()
-            .id(claim.getId())
-            //.responseDeadline(newResponseDeadline)
-            //.moreTimeRequested(YES)
-            .build();
-
-        CaseDetails updates = update(authorisation, ccdCase, MORE_TIME_REQUESTED_ONLINE);
         jobSchedulerService.rescheduleEmailNotificationsForDefendantResponse(claim, newResponseDeadline);
-        return extractClaim(updates);
+
+        Claim.ClaimBuilder claimBuilder = Claim.builder();
+
+        addCaseDetails(claimBuilder, claim);
+
+        claimBuilder
+            .responseDeadline(newResponseDeadline)
+            .moreTimeRequested(true);
+
+        return extractClaim(updateCaseDetails(authorisation, claim.getId(), MORE_TIME_REQUESTED_ONLINE, claimBuilder));
+
     }
 
-    @SuppressWarnings(value = "squid:S1172")
     public CaseDetails saveCountyCourtJudgment(
         String authorisation,
-        Long caseId,
+        Claim claim,
         CountyCourtJudgment countyCourtJudgment
     ) {
-        CCDCase.CCDCaseBuilder ccdCase = CCDCase.builder()
-            .id(caseId)
-            //.countyCourtJudgment(countyCourtJudgmentMapper.to(countyCourtJudgment))
-            //.countyCourtJudgmentRequestedAt(nowInUTC())
-            ;
+        CaseEvent caseEvent = getCCJEvent(countyCourtJudgment.getCcjType());
 
-        CountyCourtJudgmentType countyCourtJudgmentType = countyCourtJudgment.getCcjType();
+        Claim.ClaimBuilder claimBuilder = Claim.builder();
+
+        addCaseDetails(claimBuilder, claim);
+
+        claimBuilder
+            .countyCourtJudgment(countyCourtJudgment)
+            .countyCourtJudgmentRequestedAt(nowInUTC());
+
+        return updateCaseDetails(authorisation, claim.getId(), caseEvent, claimBuilder);
+
+    }
+
+    private CaseEvent getCCJEvent(CountyCourtJudgmentType countyCourtJudgmentType) {
         if (countyCourtJudgmentType.equals(CountyCourtJudgmentType.ADMISSIONS)) {
-            return update(authorisation, ccdCase.build(), CCJ_BY_ADMISSION);
+            return CCJ_BY_ADMISSION;
         } else {
-            return update(authorisation, ccdCase.build(), DEFAULT_CCJ_REQUESTED);
+            return DEFAULT_CCJ_REQUESTED;
         }
     }
 
@@ -183,29 +232,30 @@ public class CoreCaseDataService {
         Long caseId,
         URI sealedClaimDocument
     ) {
-        CCDCase ccdCase = CCDCase.builder()
-            .id(caseId)
-            .sealedClaimDocument(CCDDocument.builder().documentUrl(sealedClaimDocument.toString()).build())
-            .build();
-        return update(authorisation, ccdCase, LINK_SEALED_CLAIM);
+        Claim.ClaimBuilder claimBuilder = Claim.builder()
+            .sealedClaimDocument(sealedClaimDocument);
+
+        return updateCaseDetails(authorisation, caseId, LINK_SEALED_CLAIM, claimBuilder);
     }
 
-    @SuppressWarnings(value = "squid:S1172")
     public CaseDetails saveDefendantResponse(
-        Long caseId,
+        Claim claim,
         String defendantEmail,
         Response response,
         String authorisation
     ) {
+        CaseEvent caseEvent = CaseEvent.valueOf(getResponseTypeName(response));
 
-        CCDCase ccdCase = CCDCase.builder()
-            .id(caseId)
-            //.response(responseMapper.to(response))
-            //.defendantEmail(defendantEmail)
-            //.respondedAt(nowInUTC())
-            .build();
+        Claim.ClaimBuilder claimBuilder = Claim.builder();
 
-        return update(authorisation, ccdCase, CaseEvent.valueOf(getResponseTypeName(response)));
+        addCaseDetails(claimBuilder, claim);
+
+        claimBuilder
+            .response(response)
+            .defendantEmail(defendantEmail)
+            .respondedAt(nowInUTC());
+
+        return updateCaseDetails(authorisation, claim.getId(), caseEvent, claimBuilder);
     }
 
     private String getResponseTypeName(Response response) {
@@ -221,69 +271,244 @@ public class CoreCaseDataService {
         }
     }
 
-    @SuppressWarnings(value = "squid:S1172")
     public Claim saveClaimantResponse(
-        Long caseId,
+        Claim claim,
         ClaimantResponse response,
         String authorisation
     ) {
+        CaseEvent caseEvent = CaseEvent.valueOf("CLAIMANT_RESPONSE_" + response.getType().name());
 
-        CCDCase ccdCase = CCDCase.builder()
-            .id(caseId)
-            //.claimantResponse(claimantResponseMapper.to(response))
-            //.claimantRespondedAt(nowInUTC())
-            .build();
+        Claim.ClaimBuilder claimBuilder = Claim.builder();
 
-        CaseDetails caseDetails = update(authorisation, ccdCase,
-            CaseEvent.valueOf("CLAIMANT_RESPONSE_" + response.getType().name())
-        );
-        return extractClaim(caseDetails);
+        addCaseDetails(claimBuilder, claim);
+
+        claimBuilder
+            .claimantResponse(response)
+            .claimantRespondedAt(nowInUTC());
+
+        return extractClaim(updateCaseDetails(authorisation, claim.getId(), caseEvent, claimBuilder));
     }
 
-    @SuppressWarnings(value = "squid:S1172")
     public CaseDetails saveSettlement(
-        Long caseId,
+        Claim claim,
         Settlement settlement,
         String authorisation,
-        CaseEvent event
+        CaseEvent caseEvent
     ) {
-        CCDCase ccdCase = CCDCase.builder()
-            .id(caseId)
-            //.settlement(settlementMapper.to(settlement))
-            .build();
+        Claim.ClaimBuilder claimBuilder = Claim.builder();
 
-        return update(authorisation, ccdCase, event);
+        addCaseDetails(claimBuilder, claim);
+
+        claimBuilder.settlement(settlement);
+
+        return updateCaseDetails(authorisation, claim.getId(), caseEvent, claimBuilder);
     }
 
-    @SuppressWarnings(value = "squid:S1172")
     public CaseDetails reachSettlementAgreement(
-        Long caseId,
+        Claim claim,
         Settlement settlement,
         LocalDateTime settlementReachedAt,
         String authorisation,
-        CaseEvent event
+        CaseEvent caseEvent
     ) {
-        CCDCase ccdCase = CCDCase.builder()
-            .id(caseId)
-            //.settlement(settlementMapper.to(settlement))
-            //.settlementReachedAt(settlementReachedAt)
-            .build();
+        Claim.ClaimBuilder claimBuilder = Claim.builder();
 
-        return update(authorisation, ccdCase, event);
+        addCaseDetails(claimBuilder, claim);
+
+        claimBuilder
+            .settlement(settlement)
+            .settlementReachedAt(settlementReachedAt);
+
+        return updateCaseDetails(authorisation, claim.getId(), caseEvent, claimBuilder);
     }
 
-    @SuppressWarnings(value = "squid:S1172")
     public CaseDetails updateResponseDeadline(
         String authorisation,
-        Long caseId,
+        Claim claim,
         LocalDate newResponseDeadline
     ) {
-        CCDCase ccdCase = CCDCase.builder()
-            .id(caseId)
-            //.responseDeadline(newResponseDeadline)
-            .build();
+        Claim.ClaimBuilder claimBuilder = Claim.builder();
 
-        return update(authorisation, ccdCase, TEST_SUPPORT_UPDATE);
+        addCaseDetails(claimBuilder, claim);
+
+        claimBuilder
+            .responseDeadline(newResponseDeadline);
+        return updateCaseDetails(authorisation, claim.getId(), TEST_SUPPORT_UPDATE, claimBuilder);
+    }
+
+    public CaseDetails linkDefendant(
+        String authorisation,
+        Long caseId,
+        String defendantId,
+        String defendantEmail,
+        CaseEvent caseEvent
+    ) {
+        Claim.ClaimBuilder claimBuilder = Claim.builder()
+            .defendantEmail(defendantEmail)
+            .defendantId(defendantId);
+
+        try {
+            UserDetails userDetails = userService.getUserDetails(authorisation);
+            String userId = userDetails.getId();
+            boolean isRepresented = userDetails.isSolicitor() || userDetails.isCaseworker();
+
+            EventRequestData eventRequestData = eventRequest(caseEvent, userId);
+
+            StartEventResponse startEventResponse = startUpdate(
+                authorisation,
+                eventRequestData,
+                caseId,
+                isRepresented
+            );
+
+            CaseDataContent caseDataContent = CaseDataContent.builder()
+                .eventToken(startEventResponse.getToken())
+                .event(Event.builder()
+                    .id(startEventResponse.getEventId())
+                    .summary("CMC case update")
+                    .description("Submitting CMC case update")
+                    .build())
+                .data(caseMapper.to(updatedCase(startEventResponse.getCaseDetails().getData(), claimBuilder).build()))
+                .build();
+
+            return submitUpdate(authorisation, eventRequestData, caseDataContent, caseId, isRepresented);
+        } catch (Exception exception) {
+            throw new CoreCaseDataStoreException(
+                String.format(
+                    "Failed linking claim in CCD store for case id %s on event %s",
+                    caseId,
+                    caseEvent
+                ), exception
+            );
+        }
+    }
+
+    private CaseDetails updateCaseDetails(
+        String authorisation,
+        Long caseId,
+        CaseEvent caseEvent,
+        Claim.ClaimBuilder claimBuilder
+    ) {
+        try {
+            UserDetails userDetails = userService.getUserDetails(authorisation);
+            String userId = userDetails.getId();
+            boolean isRepresented = userDetails.isSolicitor() || userDetails.isCaseworker();
+
+            EventRequestData eventRequestData = eventRequest(caseEvent, userId);
+
+            StartEventResponse startEventResponse = startUpdate(
+                authorisation,
+                eventRequestData,
+                caseId,
+                isRepresented
+            );
+
+            CaseDataContent caseDataContent = CaseDataContent.builder()
+                .eventToken(startEventResponse.getToken())
+                .event(Event.builder()
+                    .id(startEventResponse.getEventId())
+                    .summary("CMC case update")
+                    .description("Submitting CMC case update")
+                    .build())
+                .data(caseMapper.to(claimBuilder.build()))
+                .build();
+
+            return submitUpdate(authorisation, eventRequestData, caseDataContent, caseId, isRepresented);
+        } catch (Exception exception) {
+            throw new CoreCaseDataStoreException(
+                String.format(
+                    "Failed linking claim in CCD store for case id %s on event %s",
+                    caseId,
+                    caseEvent
+                ), exception
+            );
+        }
+    }
+
+    private EventRequestData eventRequest(CaseEvent caseEvent, String userId) {
+        return EventRequestData.builder()
+            .userId(userId)
+            .jurisdictionId(JURISDICTION_ID)
+            .caseTypeId(CASE_TYPE_ID)
+            .eventId(caseEvent.getValue())
+            .ignoreWarning(true)
+            .build();
+    }
+
+    private Claim.ClaimBuilder updatedCase(Map<String, Object> data, Claim.ClaimBuilder claimBuilder) {
+        CCDCase aCase = jsonMapper.fromMap(data, CCDCase.class);
+        Claim claim = caseMapper.from(aCase);
+
+        addCaseDetails(claimBuilder, claim);
+        return claimBuilder;
+    }
+
+    private void addCaseDetails(Claim.ClaimBuilder claimBuilder, Claim claim) {
+        addClaimDetails(claimBuilder, claim);
+        addClaimLinkDetails(claimBuilder, claim);
+        addCCJDetails(claimBuilder, claim);
+        addResponseDeadlineDetails(claimBuilder, claim);
+        addClaimantResponseDetails(claimBuilder, claim);
+        addReDeterminationDetails(claimBuilder, claim);
+        addDefendantResponseDetails(claimBuilder, claim);
+        addSettlementDetails(claimBuilder, claim);
+        addStatesPaidDetails(claimBuilder, claim);
+    }
+
+    private void addStatesPaidDetails(Claim.ClaimBuilder claimBuilder, Claim claim) {
+        claim.getMoneyReceivedOn().ifPresent(claimBuilder::moneyReceivedOn);
+    }
+
+    private void addSettlementDetails(Claim.ClaimBuilder claimBuilder, Claim claim) {
+        claim.getSettlement().ifPresent(claimBuilder::settlement);
+        Optional.ofNullable(claim.getSettlementReachedAt()).ifPresent(claimBuilder::settlementReachedAt);
+    }
+
+    private void addDefendantResponseDetails(Claim.ClaimBuilder claimBuilder, Claim claim) {
+        claim.getResponse().ifPresent(claimBuilder::response);
+        claimBuilder.respondedAt(claim.getRespondedAt());
+    }
+
+    private void addReDeterminationDetails(Claim.ClaimBuilder claimBuilder, Claim claim) {
+        claim.getReDetermination().ifPresent(claimBuilder::reDetermination);
+        claim.getReDeterminationRequestedAt().ifPresent(claimBuilder::reDeterminationRequestedAt);
+    }
+
+    private void addClaimantResponseDetails(Claim.ClaimBuilder claimBuilder, Claim claim) {
+        claim.getClaimantResponse().ifPresent(claimBuilder::claimantResponse);
+        claim.getClaimantRespondedAt().ifPresent(claimBuilder::claimantRespondedAt);
+    }
+
+    private void addResponseDeadlineDetails(Claim.ClaimBuilder claimBuilder, Claim claim) {
+        Optional.ofNullable(claim.getResponseDeadline()).ifPresent(claimBuilder::responseDeadline);
+        if (claim.isMoreTimeRequested()) {
+            claimBuilder.moreTimeRequested(true);
+        }
+    }
+
+    private void addCCJDetails(Claim.ClaimBuilder claimBuilder, Claim claim) {
+        Optional.ofNullable(claim.getCountyCourtJudgment()).ifPresent(claimBuilder::countyCourtJudgment);
+        Optional.ofNullable(claim.getCountyCourtJudgmentRequestedAt())
+            .ifPresent(claimBuilder::countyCourtJudgmentRequestedAt);
+    }
+
+    private void addClaimLinkDetails(Claim.ClaimBuilder claimBuilder, Claim claim) {
+        Optional.ofNullable(claim.getDefendantEmail()).ifPresent(claimBuilder::defendantEmail);
+        Optional.ofNullable(claim.getDefendantId()).ifPresent(claimBuilder::defendantId);
+    }
+
+    private void addClaimDetails(Claim.ClaimBuilder claimBuilder, Claim claim) {
+        claimBuilder
+            .id(claim.getId())
+            .claimData(claim.getClaimData())
+            .submitterId(claim.getSubmitterId())
+            .issuedOn(claim.getIssuedOn())
+            .externalId(claim.getExternalId())
+            .submitterEmail(claim.getSubmitterEmail())
+            .createdAt(claim.getCreatedAt())
+            .letterHolderId(claim.getLetterHolderId())
+            .features(claim.getFeatures())
+            .referenceNumber(claim.getReferenceNumber());
     }
 
     public CaseDetails update(String authorisation, CCDCase ccdCase, CaseEvent caseEvent) {
@@ -463,13 +688,10 @@ public class CoreCaseDataService {
         return caseMapper.from(ccdCase);
     }
 
-    @SuppressWarnings(value = "squid:S1172")
     public void saveDirectionsQuestionnaireDeadline(Long caseId, LocalDate dqDeadline, String authorisation) {
-        CCDCase ccdCase = CCDCase.builder()
-            .id(caseId)
-            //.directionsQuestionnaireDeadline(dqDeadline)
-            .build();
+        Claim.ClaimBuilder claimBuilder = Claim.builder()
+            .directionsQuestionnaireDeadline(dqDeadline);
 
-        update(authorisation, ccdCase, DIRECTIONS_QUESTIONNAIRE_DEADLINE);
+        updateCaseDetails(authorisation, caseId, DIRECTIONS_QUESTIONNAIRE_DEADLINE, claimBuilder);
     }
 }

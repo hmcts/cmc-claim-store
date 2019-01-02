@@ -94,7 +94,7 @@ public class CCDCaseRepository implements CaseRepository {
         Claim claim,
         CountyCourtJudgment countyCourtJudgment
     ) {
-        coreCaseDataService.saveCountyCourtJudgment(authorisation, claim.getId(), countyCourtJudgment);
+        coreCaseDataService.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
 
     }
 
@@ -104,12 +104,12 @@ public class CCDCaseRepository implements CaseRepository {
         String defendantEmail,
         Response response,
         String authorization) {
-        coreCaseDataService.saveDefendantResponse(claim.getId(), defendantEmail, response, authorization);
+        coreCaseDataService.saveDefendantResponse(claim, defendantEmail, response, authorization);
     }
 
     @Override
     public Claim saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization) {
-        return coreCaseDataService.saveClaimantResponse(claim.getId(), response, authorization);
+        return coreCaseDataService.saveClaimantResponse(claim, response, authorization);
     }
 
     @Override
@@ -133,12 +133,12 @@ public class CCDCaseRepository implements CaseRepository {
         Settlement settlement,
         String authorisation,
         String userAction) {
-        coreCaseDataService.saveSettlement(claim.getId(), settlement, authorisation, CaseEvent.valueOf(userAction));
+        coreCaseDataService.saveSettlement(claim, settlement, authorisation, CaseEvent.valueOf(userAction));
     }
 
     @Override
     public void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, String userAction) {
-        coreCaseDataService.reachSettlementAgreement(claim.getId(), settlement, nowInUTC(), authorisation,
+        coreCaseDataService.reachSettlementAgreement(claim, settlement, nowInUTC(), authorisation,
             CaseEvent.valueOf(userAction));
     }
 

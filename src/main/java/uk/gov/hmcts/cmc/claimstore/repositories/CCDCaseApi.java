@@ -105,7 +105,7 @@ public class CCDCaseApi {
 
     public List<Claim> getByDefendantId(String id, String authorisation) {
         User user = userService.getUser(authorisation);
-        return getAllCasesBy(user, ImmutableMap.of("case.defendantId", id));
+        return getAllCasesBy(user, ImmutableMap.of("case.linkID", id));
     }
 
     public List<Claim> getBySubmitterEmail(String submitterEmail, String authorisation) {
@@ -260,12 +260,11 @@ public class CCDCaseApi {
         String defendantId,
         String defendantEmail
     ) {
-        return coreCaseDataService.update(
+        return coreCaseDataService.linkDefendant(
             defendantUser.getAuthorisation(),
-            CCDCase.builder().id(Long.valueOf(caseId))
-                //.defendantId(defendantId)
-                //.defendantEmail(defendantEmail)
-                .build(),
+            Long.valueOf(caseId),
+            defendantId,
+            defendantEmail,
             CaseEvent.LINK_DEFENDANT
         );
     }

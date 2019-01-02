@@ -83,7 +83,7 @@ public class CCDCaseHandler {
         }
     }
 
-    //    @EventListener
+    @EventListener
     @LogExecutionTime
     public void saveDefendantResponse(CCDDefendantResponseEvent event) {
         Claim claim = event.getClaim();
@@ -95,6 +95,7 @@ public class CCDCaseHandler {
                 .orElseThrow(IllegalStateException::new);
 
             ccdCaseRepository.saveDefendantResponse(ccdClaim, claim.getDefendantEmail(), response, authorization);
+
             if (isFullDefenceWithNoMediation(response)) {
                 LocalDate deadline = directionsQuestionnaireDeadlineCalculator
                     .calculateDirectionsQuestionnaireDeadlineCalculator(LocalDateTime.now());
@@ -153,7 +154,7 @@ public class CCDCaseHandler {
         }
     }
 
-    //    @EventListener
+    @EventListener
     @LogExecutionTime
     public void linkDefendantToClaim(CCDLinkDefendantEvent event) {
         String authorisation = event.getAuthorisation();
