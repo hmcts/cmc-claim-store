@@ -4,14 +4,7 @@ import uk.gov.hmcts.cmc.ccd.assertion.StatementOfTruthAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.TimelineEventAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.response.DefendantEvidenceAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.response.DefendantTimelineAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse.ClaimantResponseAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse.CourtDeterminationAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse.ResponseAcceptationAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse.ResponseRejectionAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.response.FullAdmissionResponseAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.response.FullDefenceResponseAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.response.PartAdmissionResponseAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.assertion.response.PaymentIntentionAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.response.ResponseAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans.BankAccountAssert;
 import uk.gov.hmcts.cmc.ccd.deprecated.assertion.statementofmeans.ChildAssert;
@@ -28,10 +21,6 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
@@ -39,10 +28,7 @@ import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
-import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
-import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
-import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
@@ -115,30 +101,6 @@ public class Assertions {
         return new ResponseAssert(response);
     }
 
-    public static ClaimantResponseAssert assertThat(ClaimantResponse response) {
-        return new ClaimantResponseAssert(response);
-    }
-
-    public static ResponseRejectionAssert assertThat(ResponseRejection responseRejection) {
-        return new ResponseRejectionAssert(responseRejection);
-    }
-
-    public static CourtDeterminationAssert assertThat(CourtDetermination courtDetermination) {
-        return new CourtDeterminationAssert(courtDetermination);
-    }
-
-    public static ResponseAcceptationAssert assertThat(ResponseAcceptation responseAcceptation) {
-        return new ResponseAcceptationAssert(responseAcceptation);
-    }
-
-    public static FullAdmissionResponseAssert assertThat(FullAdmissionResponse fullAdmissionResponse) {
-        return new FullAdmissionResponseAssert(fullAdmissionResponse);
-    }
-
-    public static PartAdmissionResponseAssert assertThat(PartAdmissionResponse partAdmissionResponse) {
-        return new PartAdmissionResponseAssert(partAdmissionResponse);
-    }
-
     public static BankAccountAssert assertThat(BankAccount bankAccount) {
         return new BankAccountAssert(bankAccount);
     }
@@ -187,7 +149,4 @@ public class Assertions {
         return new StatementOfMeansAssert(statementOfMeans);
     }
 
-    public static PaymentIntentionAssert assertThat(PaymentIntention paymentIntention) {
-        return new PaymentIntentionAssert(paymentIntention);
-    }
 }

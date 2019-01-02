@@ -1,8 +1,8 @@
-package uk.gov.hmcts.cmc.ccd.deprecated.assertion.claimantresponse;
+package uk.gov.hmcts.cmc.ccd.assertion.claimantresponse;
 
 import org.assertj.core.api.AbstractAssert;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
+import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
@@ -17,7 +17,8 @@ public class ResponseRejectionAssert extends AbstractAssert<ResponseRejectionAss
     public ResponseRejectionAssert isEqualTo(CCDResponseRejection ccdResponseRejection) {
         isNotNull();
 
-        CCDYesNoOption freeMediation = CCDYesNoOption.valueOf(actual.getFreeMediation().orElse(YesNoOption.NO).name());
+        CCDYesNoOption freeMediation = CCDYesNoOption.valueOf((actual.getFreeMediation()
+            .orElse(YesNoOption.NO)).name());
         if (!Objects.equals(freeMediation, ccdResponseRejection.getFreeMediationOption())) {
             failWithMessage("Expected ResponseRejection.freeMediation to be <%s> but was <%s>",
                 ccdResponseRejection.getFreeMediationOption(), freeMediation);
