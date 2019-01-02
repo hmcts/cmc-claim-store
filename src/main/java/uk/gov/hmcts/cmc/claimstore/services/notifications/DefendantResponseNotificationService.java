@@ -47,7 +47,7 @@ public class DefendantResponseNotificationService {
     private static final String CLAIMANT_TYPE = "claimantType";
     private static final String ISSUED_ON = "issuedOn";
     private static final String RESPONSE_DEADLINE = "responseDeadline";
-    private final Logger logger = LoggerFactory.getLogger(DefendantResponseNotificationService.class);
+    private static final Logger logger = LoggerFactory.getLogger(DefendantResponseNotificationService.class);
     private final NotificationClient notificationClient;
     private final FreeMediationDecisionDateCalculator freeMediationDecisionDateCalculator;
     private final NotificationsProperties notificationsProperties;
