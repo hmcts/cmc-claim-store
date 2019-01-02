@@ -2,13 +2,20 @@ package uk.gov.hmcts.cmc.ccd.mapper.ccj;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
 import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
+import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.ccd.mapper.Mapper;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
+import uk.gov.hmcts.cmc.domain.models.ccj.PaymentSchedule;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
-import static java.util.Optional.ofNullable;
+import java.util.Optional;
+
+import static uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption.valueOf;
 
 @Component
 public class CountyCourtJudgmentMapper implements Mapper<CCDCountyCourtJudgment, CountyCourtJudgment> {
@@ -20,23 +27,23 @@ public class CountyCourtJudgmentMapper implements Mapper<CCDCountyCourtJudgment,
 
         countyCourtJudgment.getDefendantDateOfBirth().ifPresent(builder::defendantDateOfBirth);
         countyCourtJudgment.getPaidAmount().ifPresent(builder::paidAmount);
-        builder.paymentOption(countyCourtJudgment.getPaymentOption());
-        countyCourtJudgment.getPayBySetDate().ifPresent(builder::payBySetDate);
-
+        builder.paymentOption(valueOf(countyCourtJudgment.getPaymentOption().name()));
         countyCourtJudgment.getRepaymentPlan().ifPresent(repaymentPlan -> {
             builder.repaymentPlanFirstPaymentDate(repaymentPlan.getFirstPaymentDate());
             builder.repaymentPlanInstalmentAmount(repaymentPlan.getInstalmentAmount());
             builder.repaymentPlanPaymentLength(repaymentPlan.getPaymentLength());
+            builder.repaymentPlanPaymentSchedule(CCDPaymentSchedule.valueOf(repaymentPlan.getPaymentSchedule().name()));
             builder.repaymentPlanCompletionDate(repaymentPlan.getCompletionDate());
-            builder.repaymentPlanPaymentSchedule(repaymentPlan.getPaymentSchedule());
         });
-
-        countyCourtJudgment.getStatementOfTruth().ifPresent(sot -> {
-            builder.statementOfTruthSignerName(sot.getSignerName());
-            builder.statementOfTruthSignerRole(sot.getSignerRole());
-        });
-
-        ofNullable(countyCourtJudgment.getCcjType()).ifPresent(builder::ccjType);
+        countyCourtJudgment.getPayBySetDate().ifPresent(builder::payBySetDate);
+        countyCourtJudgment.getStatementOfTruth()
+            .ifPresent(sot -> {
+                builder.statementOfTruthSignerName(sot.getSignerName());
+                builder.statementOfTruthSignerRole(sot.getSignerRole());
+            });
+        Optional.ofNullable(countyCourtJudgment.getCcjType()).ifPresent(ccjType ->
+            builder.ccjType(CCDCountyCourtJudgmentType.valueOf(ccjType.name()))
+        );
 
         return builder.build();
     }
@@ -44,35 +51,42 @@ public class CountyCourtJudgmentMapper implements Mapper<CCDCountyCourtJudgment,
     @Override
     public CountyCourtJudgment from(CCDCountyCourtJudgment ccdCountyCourtJudgment) {
 
-        CountyCourtJudgment.CountyCourtJudgmentBuilder ccjBuilder = CountyCourtJudgment.builder();
+        CountyCourtJudgment.CountyCourtJudgmentBuilder builder = CountyCourtJudgment.builder()
+            .defendantDateOfBirth(ccdCountyCourtJudgment.getDefendantDateOfBirth())
+            .paidAmount(ccdCountyCourtJudgment.getPaidAmount())
+            .payBySetDate(ccdCountyCourtJudgment.getPayBySetDate());
 
-        ofNullable(ccdCountyCourtJudgment.getDefendantDateOfBirth()).ifPresent(ccjBuilder::defendantDateOfBirth);
-        ofNullable(ccdCountyCourtJudgment.getPaidAmount()).ifPresent(ccjBuilder::paidAmount);
-        ofNullable(ccdCountyCourtJudgment.getPayBySetDate()).ifPresent(ccjBuilder::payBySetDate);
-        ccjBuilder.paymentOption(ccdCountyCourtJudgment.getPaymentOption());
-        ofNullable(ccdCountyCourtJudgment.getCcjType()).ifPresent(ccjBuilder::ccjType);
+        if (ccdCountyCourtJudgment.getPaymentOption() != null) {
+            builder.paymentOption(PaymentOption.valueOf(ccdCountyCourtJudgment.getPaymentOption().name()));
+        }
+
+        if (ccdCountyCourtJudgment.getCcjType() != null) {
+            builder.ccjType(CountyCourtJudgmentType.valueOf(ccdCountyCourtJudgment.getCcjType().name()));
+        }
 
         if (ccdCountyCourtJudgment.getRepaymentPlanFirstPaymentDate() != null
             && ccdCountyCourtJudgment.getRepaymentPlanPaymentSchedule() != null) {
 
-            ccjBuilder.repaymentPlan(RepaymentPlan.builder()
-                .firstPaymentDate(ccdCountyCourtJudgment.getRepaymentPlanFirstPaymentDate())
-                .instalmentAmount(ccdCountyCourtJudgment.getRepaymentPlanInstalmentAmount())
-                .paymentSchedule(ccdCountyCourtJudgment.getRepaymentPlanPaymentSchedule())
-                .completionDate(ccdCountyCourtJudgment.getRepaymentPlanCompletionDate())
-                .paymentLength(ccdCountyCourtJudgment.getRepaymentPlanPaymentLength())
-                .build());
+            builder.repaymentPlan(
+                RepaymentPlan.builder()
+                    .paymentLength(ccdCountyCourtJudgment.getRepaymentPlanPaymentLength())
+                    .instalmentAmount(ccdCountyCourtJudgment.getRepaymentPlanInstalmentAmount())
+                    .firstPaymentDate(ccdCountyCourtJudgment.getRepaymentPlanFirstPaymentDate())
+                    .completionDate(ccdCountyCourtJudgment.getRepaymentPlanCompletionDate())
+                    .paymentSchedule(
+                        PaymentSchedule.valueOf(ccdCountyCourtJudgment.getRepaymentPlanPaymentSchedule().name()))
+                    .build());
         }
 
         if (!StringUtils.isBlank(ccdCountyCourtJudgment.getStatementOfTruthSignerName())
             && !StringUtils.isBlank(ccdCountyCourtJudgment.getStatementOfTruthSignerRole())) {
 
-            ccjBuilder.statementOfTruth(StatementOfTruth.builder()
+            builder.statementOfTruth(StatementOfTruth.builder()
                 .signerName(ccdCountyCourtJudgment.getStatementOfTruthSignerName())
                 .signerRole(ccdCountyCourtJudgment.getStatementOfTruthSignerRole())
                 .build());
         }
 
-        return ccjBuilder.build();
+        return builder.build();
     }
 }

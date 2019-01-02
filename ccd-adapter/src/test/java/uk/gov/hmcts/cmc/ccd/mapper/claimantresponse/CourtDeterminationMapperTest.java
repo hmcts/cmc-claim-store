@@ -24,7 +24,7 @@ import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 public class CourtDeterminationMapperTest {
 
     @Autowired
-    private CourtDeterminationMapper courtDeterminationMapper;
+    private CourtDeterminationMapper mapper;
 
     @Test
     public void shouldMapToCCDCourtDeterminationFromCourtDetermination() {
@@ -37,7 +37,7 @@ public class CourtDeterminationMapperTest {
             .build();
 
         //when
-        CCDCourtDetermination ccdCourtDetermination = courtDeterminationMapper.to(courtDetermination);
+        CCDCourtDetermination ccdCourtDetermination = mapper.to(courtDetermination);
 
         //then
         assertThat(courtDetermination).isEqualTo(ccdCourtDetermination);
@@ -49,7 +49,7 @@ public class CourtDeterminationMapperTest {
         CCDCourtDetermination ccdCourtDetermination = SampleData.getCCDCourtDetermination();
 
         //when
-        CourtDetermination courtDetermination = courtDeterminationMapper.from(ccdCourtDetermination);
+        CourtDetermination courtDetermination = mapper.from(ccdCourtDetermination);
 
         //then
         assertThat(courtDetermination).isEqualTo(ccdCourtDetermination);
