@@ -9,15 +9,15 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestDateType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestEndDateType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDCourtDetermination;
+import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseAcceptation;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDPaymentIntention;
-import uk.gov.hmcts.cmc.domain.models.PaymentOption;
-import uk.gov.hmcts.cmc.domain.models.ccj.PaymentSchedule;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
@@ -276,7 +276,7 @@ public class SampleData {
     }
 
 
-    public static CCDResponseAcceptation getResponseAcceptation(FormaliseOption formaliseOption) {
+    public static CCDResponseAcceptation getResponseAcceptation(CCDFormaliseOption formaliseOption) {
         return CCDResponseAcceptation.builder()
             .amountPaid(BigDecimal.valueOf(123.98))
             .claimantPaymentIntention(getCCDPaymentIntention())
@@ -289,7 +289,7 @@ public class SampleData {
         return CCDResponseRejection.builder()
             .amountPaid(BigDecimal.valueOf(123.98))
             .submittedOn(LocalDateTimeFactory.nowInLocalZone())
-            .freeMediationOption(YesNoOption.YES)
+            .freeMediationOption(CCDYesNoOption.YES)
             .reason("Rejection Reason")
             .build();
     }
@@ -307,10 +307,10 @@ public class SampleData {
     private static CCDPaymentIntention getCCDPaymentIntention() {
         return CCDPaymentIntention.builder()
             .paymentDate(LocalDate.of(2017, 10, 12))
-            .paymentOption(PaymentOption.INSTALMENTS)
+            .paymentOption(CCDPaymentOption.INSTALMENTS)
             .firstPaymentDate(LocalDate.of(2017, 10, 12))
             .instalmentAmount(BigDecimal.valueOf(123.98))
-            .paymentSchedule(PaymentSchedule.EACH_WEEK)
+            .paymentSchedule(CCDPaymentSchedule.EACH_WEEK)
             .completionDate(LocalDate.of(2018, 10, 12))
             .build();
     }

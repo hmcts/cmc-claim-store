@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -27,5 +26,5 @@ public abstract class CCDClaimantResponse {
         this.submittedOn = submittedOn;
     }
 
-    public abstract ClaimantResponseType getClaimantResponseType();
+    public abstract CCDClaimantResponseType getClaimantResponseType();
 }

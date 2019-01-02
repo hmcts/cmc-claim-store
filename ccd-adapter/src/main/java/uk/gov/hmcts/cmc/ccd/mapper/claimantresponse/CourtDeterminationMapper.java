@@ -6,7 +6,6 @@ import uk.gov.hmcts.cmc.ccd.mapper.Mapper;
 import uk.gov.hmcts.cmc.ccd.mapper.PaymentIntentionMapper;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 
-import java.util.Optional;
 
 @Component
 public class CourtDeterminationMapper implements Mapper<CCDCourtDetermination, CourtDetermination> {
@@ -18,6 +17,9 @@ public class CourtDeterminationMapper implements Mapper<CCDCourtDetermination, C
 
     @Override
     public CCDCourtDetermination to(CourtDetermination courtDetermination) {
+        if (null == courtDetermination) {
+            return null;
+        }
         CCDCourtDetermination.CCDCourtDeterminationBuilder builder = CCDCourtDetermination.builder()
             .courtDecision(paymentIntentionMapper.to(courtDetermination.getCourtDecision()))
             .disposableIncome(courtDetermination.getDisposableIncome())
@@ -30,14 +32,18 @@ public class CourtDeterminationMapper implements Mapper<CCDCourtDetermination, C
 
     @Override
     public CourtDetermination from(CCDCourtDetermination ccdCourtDetermination) {
+        if (null == ccdCourtDetermination) {
+            return null;
+        }
         CourtDetermination.CourtDeterminationBuilder builder = CourtDetermination.builder()
             .courtDecision(paymentIntentionMapper.from(ccdCourtDetermination.getCourtDecision()))
             .disposableIncome(ccdCourtDetermination.getDisposableIncome())
             .courtPaymentIntention(paymentIntentionMapper.from(ccdCourtDetermination.getCourtIntention()))
             .decisionType(ccdCourtDetermination.getDecisionType());
 
-        Optional.ofNullable(ccdCourtDetermination.getRejectionReason()).ifPresent(builder::rejectionReason);
-
+        if (ccdCourtDetermination.getRejectionReason() != null) {
+            builder.rejectionReason(ccdCourtDetermination.getRejectionReason());
+        }
         return builder.build();
     }
 }
