@@ -65,7 +65,9 @@ public class ResponseMapper {
             CCDYesNoOption.valueOf(response.getFreeMediation().orElse(NO).name())
         );
 
-        builder.responseMoreTimeNeededOption(CCDYesNoOption.valueOf(response.getMoreTimeNeeded().orElse(NO).name()));
+        if (response.getMoreTimeNeeded() != null) {
+            builder.responseMoreTimeNeededOption(CCDYesNoOption.valueOf(response.getMoreTimeNeeded().name()));
+        }
 
         response.getStatementOfTruth().ifPresent(
             statementOfTruth -> {
@@ -134,7 +136,7 @@ public class ResponseMapper {
     private Consumer<DefendantTimeline> mapDefendantTimeline(CCDDefendant.CCDDefendantBuilder builder) {
         return timeline -> {
             builder.defendantTimeLineComment(timeline.getComment().orElse(EMPTY));
-            builder.defendantTimeLineEvents(timeline.getEvents().stream()
+            builder.defendantTimeLineEvents(asStream(timeline.getEvents())
                 .map(timelineEventMapper::to)
                 .filter(Objects::nonNull)
                 .map(event -> CCDCollectionElement.<CCDTimelineEvent>builder().value(event).build())
@@ -146,7 +148,7 @@ public class ResponseMapper {
     private Consumer<DefendantEvidence> mapDefendantEvidence(CCDDefendant.CCDDefendantBuilder builder) {
         return evidence -> {
             builder.responseEvidenceComment(evidence.getComment().orElse(EMPTY));
-            builder.responseEvidenceRows(evidence.getRows().stream()
+            builder.responseEvidenceRows(asStream(evidence.getRows())
                 .map(evidenceRowMapper::to)
                 .filter(Objects::nonNull)
                 .map(row -> CCDCollectionElement.<CCDEvidenceRow>builder().value(row).build())

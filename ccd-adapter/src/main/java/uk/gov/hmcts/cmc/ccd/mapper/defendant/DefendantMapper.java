@@ -53,8 +53,11 @@ public class DefendantMapper {
     }
 
     public TheirDetails from(Claim.ClaimBuilder builder, CCDDefendant defendant) {
-        builder.letterHolderId(defendant.getLetterHolderId());
-        builder.responseDeadline(defendant.getResponseDeadline());
+        builder
+            .letterHolderId(defendant.getLetterHolderId())
+            .responseDeadline(defendant.getResponseDeadline())
+            .defendantEmail(defendant.getPartyEmail())
+            .defendantId(defendant.getDefendantId());
         responseMapper.from(builder, defendant);
 
         return this.from(defendant);
