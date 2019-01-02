@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.ccd.deprecated.mapper.StatementOfTruthMapper;
 import uk.gov.hmcts.cmc.ccd.deprecated.mapper.statementofmeans.StatementOfMeansMapper;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.mapper.DefendantMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.PaymentIntentionMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.response.DefendantEvidenceMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.response.DefendantTimelineMapper;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
@@ -58,8 +59,8 @@ public class PartAdmissionResponseMapper implements Mapper<CCDPartAdmissionRespo
             .defence(partAdmissionResponse.getDefence())
             .amount(partAdmissionResponse.getAmount());
 
-        partAdmissionResponse.getPaymentIntention()
-            .ifPresent(paymentIntention -> builder.paymentIntention(paymentIntentionMapper.to(paymentIntention)));
+        //partAdmissionResponse.getPaymentIntention()
+        //.ifPresent(paymentIntention -> builder.paymentIntention(paymentIntentionMapper.to(paymentIntention)));
 
         if (partAdmissionResponse.getMoreTimeNeeded() != null) {
             builder.moreTimeNeededOption(CCDYesNoOption.valueOf(partAdmissionResponse.getMoreTimeNeeded().name()));
@@ -103,9 +104,9 @@ public class PartAdmissionResponseMapper implements Mapper<CCDPartAdmissionRespo
             builder.paymentDeclaration(paymentDeclarationMapper.from(paymentDeclaration));
         }
 
-        if (paymentIntention != null) {
+        /*if (paymentIntention != null) {
             builder.paymentIntention(paymentIntentionMapper.from(paymentIntention));
-        }
+        }*/
 
         return builder.build();
     }
