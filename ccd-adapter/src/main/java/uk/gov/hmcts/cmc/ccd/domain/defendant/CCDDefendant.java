@@ -54,7 +54,7 @@ public class CCDDefendant {
     private String partyContactPerson;
     private String partyCompaniesHouseNumber;
 
-    private LocalDateTime responseSubmittedDateTime;
+    private LocalDateTime responseSubmittedOn;
     private CCDResponseType responseType;
     private BigDecimal responseAmount;
     private LocalDate paymentDeclarationPaidDate;
