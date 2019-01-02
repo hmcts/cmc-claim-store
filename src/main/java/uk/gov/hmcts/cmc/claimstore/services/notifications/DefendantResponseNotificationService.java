@@ -37,8 +37,6 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 @Service
 public class DefendantResponseNotificationService {
     public static final String DQS_DEADLINE = "DQsdeadline";
-    private final Logger logger = LoggerFactory.getLogger(DefendantResponseNotificationService.class);
-
     private static final String CLAIM_REFERENCE_NUMBER = "claimReferenceNumber";
     private static final String MEDIATION_DECISION_DEADLINE = "mediationDecisionDeadline";
     private static final String FREE_MEDIATION_REQUESTED = "freeMediationRequested";
@@ -49,6 +47,7 @@ public class DefendantResponseNotificationService {
     private static final String CLAIMANT_TYPE = "claimantType";
     private static final String ISSUED_ON = "issuedOn";
     private static final String RESPONSE_DEADLINE = "responseDeadline";
+    private final Logger logger = LoggerFactory.getLogger(DefendantResponseNotificationService.class);
     private final NotificationClient notificationClient;
     private final FreeMediationDecisionDateCalculator freeMediationDecisionDateCalculator;
     private final NotificationsProperties notificationsProperties;
@@ -107,7 +106,7 @@ public class DefendantResponseNotificationService {
 
     private String getClaimantEmailTemplate(Response response, boolean isAdmissionResponse) {
         YesNoOption mediation = response.getFreeMediation().orElse(YesNoOption.YES);
-        if(isAdmissionResponse){
+        if (isAdmissionResponse) {
             return getEmailTemplates().getClaimantDefendantResponseWithAdmissions();
         }
         if (mediation == YesNoOption.YES) {
