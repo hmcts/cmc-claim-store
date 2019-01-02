@@ -436,68 +436,14 @@ public class CoreCaseDataService {
     }
 
     private Claim.ClaimBuilder updatedCase(Map<String, Object> data, Claim.ClaimBuilder claimBuilder) {
-        CCDCase aCase = jsonMapper.fromMap(data, CCDCase.class);
-        Claim claim = caseMapper.from(aCase);
+        CCDCase ccdCase = jsonMapper.fromMap(data, CCDCase.class);
+        Claim claim = caseMapper.from(ccdCase);
 
         addCaseDetails(claimBuilder, claim);
         return claimBuilder;
     }
 
     private void addCaseDetails(Claim.ClaimBuilder claimBuilder, Claim claim) {
-        addClaimDetails(claimBuilder, claim);
-        addClaimLinkDetails(claimBuilder, claim);
-        addCCJDetails(claimBuilder, claim);
-        addResponseDeadlineDetails(claimBuilder, claim);
-        addClaimantResponseDetails(claimBuilder, claim);
-        addReDeterminationDetails(claimBuilder, claim);
-        addDefendantResponseDetails(claimBuilder, claim);
-        addSettlementDetails(claimBuilder, claim);
-        addStatesPaidDetails(claimBuilder, claim);
-    }
-
-    private void addStatesPaidDetails(Claim.ClaimBuilder claimBuilder, Claim claim) {
-        claim.getMoneyReceivedOn().ifPresent(claimBuilder::moneyReceivedOn);
-    }
-
-    private void addSettlementDetails(Claim.ClaimBuilder claimBuilder, Claim claim) {
-        claim.getSettlement().ifPresent(claimBuilder::settlement);
-        Optional.ofNullable(claim.getSettlementReachedAt()).ifPresent(claimBuilder::settlementReachedAt);
-    }
-
-    private void addDefendantResponseDetails(Claim.ClaimBuilder claimBuilder, Claim claim) {
-        claim.getResponse().ifPresent(claimBuilder::response);
-        claimBuilder.respondedAt(claim.getRespondedAt());
-    }
-
-    private void addReDeterminationDetails(Claim.ClaimBuilder claimBuilder, Claim claim) {
-        claim.getReDetermination().ifPresent(claimBuilder::reDetermination);
-        claim.getReDeterminationRequestedAt().ifPresent(claimBuilder::reDeterminationRequestedAt);
-    }
-
-    private void addClaimantResponseDetails(Claim.ClaimBuilder claimBuilder, Claim claim) {
-        claim.getClaimantResponse().ifPresent(claimBuilder::claimantResponse);
-        claim.getClaimantRespondedAt().ifPresent(claimBuilder::claimantRespondedAt);
-    }
-
-    private void addResponseDeadlineDetails(Claim.ClaimBuilder claimBuilder, Claim claim) {
-        Optional.ofNullable(claim.getResponseDeadline()).ifPresent(claimBuilder::responseDeadline);
-        if (claim.isMoreTimeRequested()) {
-            claimBuilder.moreTimeRequested(true);
-        }
-    }
-
-    private void addCCJDetails(Claim.ClaimBuilder claimBuilder, Claim claim) {
-        Optional.ofNullable(claim.getCountyCourtJudgment()).ifPresent(claimBuilder::countyCourtJudgment);
-        Optional.ofNullable(claim.getCountyCourtJudgmentRequestedAt())
-            .ifPresent(claimBuilder::countyCourtJudgmentRequestedAt);
-    }
-
-    private void addClaimLinkDetails(Claim.ClaimBuilder claimBuilder, Claim claim) {
-        Optional.ofNullable(claim.getDefendantEmail()).ifPresent(claimBuilder::defendantEmail);
-        Optional.ofNullable(claim.getDefendantId()).ifPresent(claimBuilder::defendantId);
-    }
-
-    private void addClaimDetails(Claim.ClaimBuilder claimBuilder, Claim claim) {
         claimBuilder
             .id(claim.getId())
             .claimData(claim.getClaimData())
@@ -509,6 +455,32 @@ public class CoreCaseDataService {
             .letterHolderId(claim.getLetterHolderId())
             .features(claim.getFeatures())
             .referenceNumber(claim.getReferenceNumber());
+
+        Optional.ofNullable(claim.getDefendantEmail()).ifPresent(claimBuilder::defendantEmail);
+        Optional.ofNullable(claim.getDefendantId()).ifPresent(claimBuilder::defendantId);
+
+        Optional.ofNullable(claim.getCountyCourtJudgment()).ifPresent(claimBuilder::countyCourtJudgment);
+        Optional.ofNullable(claim.getCountyCourtJudgmentRequestedAt())
+            .ifPresent(claimBuilder::countyCourtJudgmentRequestedAt);
+
+        Optional.ofNullable(claim.getResponseDeadline()).ifPresent(claimBuilder::responseDeadline);
+        if (claim.isMoreTimeRequested()) {
+            claimBuilder.moreTimeRequested(true);
+        }
+
+        claim.getClaimantResponse().ifPresent(claimBuilder::claimantResponse);
+        claim.getClaimantRespondedAt().ifPresent(claimBuilder::claimantRespondedAt);
+
+        claim.getReDetermination().ifPresent(claimBuilder::reDetermination);
+        claim.getReDeterminationRequestedAt().ifPresent(claimBuilder::reDeterminationRequestedAt);
+
+        claim.getResponse().ifPresent(claimBuilder::response);
+        claimBuilder.respondedAt(claim.getRespondedAt());
+
+        claim.getSettlement().ifPresent(claimBuilder::settlement);
+        Optional.ofNullable(claim.getSettlementReachedAt()).ifPresent(claimBuilder::settlementReachedAt);
+
+        claim.getMoneyReceivedOn().ifPresent(claimBuilder::moneyReceivedOn);
     }
 
     public CaseDetails update(String authorisation, CCDCase ccdCase, CaseEvent caseEvent) {

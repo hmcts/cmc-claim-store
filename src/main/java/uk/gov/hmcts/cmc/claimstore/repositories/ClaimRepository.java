@@ -38,8 +38,8 @@ public interface ClaimRepository {
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.external_id = :externalId")
     Optional<Claim> getClaimByExternalId(@Bind("externalId") String externalId);
 
-    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.defendant_id = :linkID" + ORDER_BY_ID_DESCENDING)
-    List<Claim> getByDefendantId(@Bind("linkID") String defendantId);
+    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.defendant_id = :defendantId" + ORDER_BY_ID_DESCENDING)
+    List<Claim> getByDefendantId(@Bind("defendantId") String defendantId);
 
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.submitter_email = :submitterEmail")
     List<Claim> getBySubmitterEmail(@Bind("submitterEmail") String submitterEmail);
@@ -224,13 +224,13 @@ public interface ClaimRepository {
 
     @SqlUpdate(
         "UPDATE claim SET "
-            + "defendant_id = :linkID,"
+            + "defendant_id = :defendantId,"
             + "defendant_email = :defendantEmail "
             + "WHERE letter_holder_id = :letterHolderId AND defendant_id is null"
     )
     Integer linkDefendant(
         @Bind("letterHolderId") String letterHolderId,
-        @Bind("linkID") String defendantId,
+        @Bind("defendantId") String defendantId,
         @Bind("defendantEmail") String defendantEmail
     );
 }

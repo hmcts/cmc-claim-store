@@ -30,11 +30,11 @@ public interface TestingSupportRepository {
     Optional<Claim> getByClaimReferenceNumber(@Bind("claimReferenceNumber") String claimReferenceNumber);
 
     @SqlUpdate(
-        "UPDATE claim SET defendant_id = :linkID "
+        "UPDATE claim SET defendant_id = :defendantId "
             + "WHERE external_id = :externalId"
     )
     void updateDefendantId(
         @Bind("externalId") String externalId,
-        @Bind("linkID") String defendantId
+        @Bind("defendantId") String defendantId
     );
 }

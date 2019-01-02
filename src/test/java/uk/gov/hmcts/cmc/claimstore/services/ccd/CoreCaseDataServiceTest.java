@@ -245,7 +245,7 @@ public class CoreCaseDataServiceTest {
         //when(countyCourtJudgmentMapper.to(providedCCJ)).thenReturn(CCDCountyCourtJudgment.builder().build());
 
         CaseDetails caseDetails = service.saveCountyCourtJudgment(AUTHORISATION,
-            providedClaim.getId(),
+            providedClaim,
             providedCCJ);
 
         assertNotNull(caseDetails);
@@ -266,7 +266,7 @@ public class CoreCaseDataServiceTest {
 
         //when(responseMapper.to(providedResponse)).thenReturn(CCDResponse.builder().build());
 
-        CaseDetails caseDetails = service.saveDefendantResponse(providedClaim.getId(),
+        CaseDetails caseDetails = service.saveDefendantResponse(providedClaim,
             "defendant@email.com",
             providedResponse,
             AUTHORISATION
@@ -282,7 +282,7 @@ public class CoreCaseDataServiceTest {
 
         //when(responseMapper.to(providedResponse)).thenReturn(CCDResponse.builder().build());
 
-        CaseDetails caseDetails = service.saveDefendantResponse(providedClaim.getId(),
+        CaseDetails caseDetails = service.saveDefendantResponse(providedClaim,
             "defendant@email.com",
             providedResponse,
             AUTHORISATION
@@ -298,7 +298,7 @@ public class CoreCaseDataServiceTest {
 
         //when(responseMapper.to(providedResponse)).thenReturn(CCDResponse.builder().build());
 
-        CaseDetails caseDetails = service.saveDefendantResponse(providedClaim.getId(),
+        CaseDetails caseDetails = service.saveDefendantResponse(providedClaim,
             "defendant@email.com",
             providedResponse,
             AUTHORISATION
@@ -317,7 +317,7 @@ public class CoreCaseDataServiceTest {
         when(jsonMapper.convertValue(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
         when(caseMapper.from(any(CCDCase.class))).thenReturn(SampleClaim.getWithClaimantResponse());
 
-        Claim claim = service.saveClaimantResponse(providedClaim.getId(),
+        Claim claim = service.saveClaimantResponse(providedClaim,
             claimantResponse,
             AUTHORISATION
         );
@@ -339,7 +339,7 @@ public class CoreCaseDataServiceTest {
         when(jsonMapper.convertValue(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
         when(caseMapper.from(any(CCDCase.class))).thenReturn(SampleClaim.getWithClaimantResponse());
 
-        Claim claim = service.saveClaimantResponse(providedClaim.getId(),
+        Claim claim = service.saveClaimantResponse(providedClaim,
             claimantResponse,
             AUTHORISATION
         );
@@ -361,7 +361,7 @@ public class CoreCaseDataServiceTest {
         when(jsonMapper.convertValue(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
         when(caseMapper.from(any(CCDCase.class))).thenReturn(SampleClaim.getWithClaimantResponse());
 
-        Claim claim = service.saveClaimantResponse(providedClaim.getId(), claimantResponse, AUTHORISATION);
+        Claim claim = service.saveClaimantResponse(providedClaim, claimantResponse, AUTHORISATION);
 
         assertThat(claim).isNotNull();
         assertThat(claim.getClaimantResponse()).isPresent();
@@ -379,7 +379,7 @@ public class CoreCaseDataServiceTest {
         when(jsonMapper.convertValue(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
         when(caseMapper.from(any(CCDCase.class))).thenReturn(SampleClaim.getWithClaimantResponse());
 
-        Claim claim = service.saveClaimantResponse(providedClaim.getId(),
+        Claim claim = service.saveClaimantResponse(providedClaim,
             claimantResponse,
             AUTHORISATION
         );
@@ -395,7 +395,7 @@ public class CoreCaseDataServiceTest {
         Settlement providedSettlement = SampleSettlement.validDefaults();
 
         CaseDetails caseDetails = service.saveSettlement(
-            SampleClaim.CLAIM_ID,
+            SampleClaim.getDefault(),
             providedSettlement,
             AUTHORISATION,
             CaseEvent.SETTLED_PRE_JUDGMENT
@@ -409,7 +409,7 @@ public class CoreCaseDataServiceTest {
         Settlement providedSettlement = SampleSettlement.validDefaults();
 
         CaseDetails caseDetails = service.reachSettlementAgreement(
-            SampleClaim.CLAIM_ID,
+            SampleClaim.getDefault(),
             providedSettlement,
             nowInUTC(),
             AUTHORISATION,
@@ -422,7 +422,7 @@ public class CoreCaseDataServiceTest {
     public void updateResponseDeadlineShouldReturnCaseDetails() {
         Claim providedClaim = SampleClaim.getDefault();
 
-        CaseDetails caseDetails = service.updateResponseDeadline(AUTHORISATION, providedClaim.getId(), FUTURE_DATE);
+        CaseDetails caseDetails = service.updateResponseDeadline(AUTHORISATION, providedClaim, FUTURE_DATE);
 
         assertNotNull(caseDetails);
         verify(coreCaseDataApi, atLeastOnce()).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),

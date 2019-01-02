@@ -21,7 +21,7 @@ import java.util.List;
 @Builder
 public class CCDDefendant {
     private String letterHolderId;
-    private String linkID;
+    private String defendantId;
     private LocalDate responseDeadline;
 
     private CCDPartyType claimantProvidedType;
