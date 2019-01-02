@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.ccd.mapper.EvidenceRowMapper;
@@ -60,6 +61,10 @@ public class ResponseMapper {
     public void to(CCDDefendant.CCDDefendantBuilder builder, Response response) {
         requireNonNull(builder, "builder must not be null");
         requireNonNull(response, "response must not be null");
+
+        builder.responseType(
+            CCDResponseType.valueOf(response.getResponseType().name())
+        );
 
         builder.responseFreeMediationOption(
             CCDYesNoOption.valueOf(response.getFreeMediation().orElse(NO).name())
