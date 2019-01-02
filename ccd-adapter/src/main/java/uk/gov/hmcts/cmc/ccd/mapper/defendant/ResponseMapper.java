@@ -33,6 +33,7 @@ import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isAllBlank;
 import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 
 @Component
 public class ResponseMapper {
@@ -61,10 +62,10 @@ public class ResponseMapper {
         requireNonNull(response, "response must not be null");
 
         builder.responseFreeMediationOption(
-            CCDYesNoOption.valueOf(response.getFreeMediation().orElse(YesNoOption.NO).name())
+            CCDYesNoOption.valueOf(response.getFreeMediation().orElse(NO).name())
         );
 
-        builder.responseMoreTimeNeededOption(CCDYesNoOption.valueOf(response.getMoreTimeNeeded().name()));
+        builder.responseMoreTimeNeededOption(CCDYesNoOption.valueOf(response.getMoreTimeNeeded().orElse(NO).name()));
 
         response.getStatementOfTruth().ifPresent(
             statementOfTruth -> {

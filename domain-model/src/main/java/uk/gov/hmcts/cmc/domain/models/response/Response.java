@@ -65,8 +65,8 @@ public abstract class Response {
         return Optional.ofNullable(freeMediation);
     }
 
-    public YesNoOption getMoreTimeNeeded() {
-        return moreTimeNeeded;
+    public Optional<YesNoOption> getMoreTimeNeeded() {
+        return Optional.ofNullable(moreTimeNeeded);
     }
 
     public Party getDefendant() {
