@@ -119,7 +119,7 @@ public class CCDCaseRepository implements CaseRepository {
 
     @Override
     public void updateDirectionsQuestionnaireDeadline(Claim claim, LocalDate dqDeadline, String authorization) {
-        coreCaseDataService.saveDirectionsQuestionnaireDeadline(claim.getId(), dqDeadline, authorization);
+        coreCaseDataService.saveDirectionsQuestionnaireDeadline(claim, dqDeadline, authorization);
     }
 
     @Override

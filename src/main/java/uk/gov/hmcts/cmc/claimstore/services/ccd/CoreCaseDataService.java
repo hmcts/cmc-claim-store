@@ -55,6 +55,8 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 @ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
 public class CoreCaseDataService {
 
+    public static final String CMC_CASE_UPDATE_SUMMARY = "CMC case update";
+    public static final String SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION = "Submitting CMC case update";
     private final CaseMapper caseMapper;
     private final UserService userService;
     private final JsonMapper jsonMapper;
@@ -149,8 +151,8 @@ public class CoreCaseDataService {
                 .eventToken(startEventResponse.getToken())
                 .event(Event.builder()
                     .id(startEventResponse.getEventId())
-                    .summary("CMC case update")
-                    .description("Submitting CMC case update")
+                    .summary(CMC_CASE_UPDATE_SUMMARY)
+                    .description(SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION)
                     .build())
                 .data(ccdCase)
                 .build();
@@ -365,8 +367,8 @@ public class CoreCaseDataService {
                 .eventToken(startEventResponse.getToken())
                 .event(Event.builder()
                     .id(startEventResponse.getEventId())
-                    .summary("CMC case update")
-                    .description("Submitting CMC case update")
+                    .summary(CMC_CASE_UPDATE_SUMMARY)
+                    .description(SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION)
                     .build())
                 .data(caseMapper.to(updatedCase(startEventResponse.getCaseDetails().getData(), claimBuilder).build()))
                 .build();
@@ -407,8 +409,8 @@ public class CoreCaseDataService {
                 .eventToken(startEventResponse.getToken())
                 .event(Event.builder()
                     .id(startEventResponse.getEventId())
-                    .summary("CMC case update")
-                    .description("Submitting CMC case update")
+                    .summary(CMC_CASE_UPDATE_SUMMARY)
+                    .description(SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION)
                     .build())
                 .data(caseMapper.to(claimBuilder.build()))
                 .build();
@@ -506,8 +508,8 @@ public class CoreCaseDataService {
                 .eventToken(startEventResponse.getToken())
                 .event(Event.builder()
                     .id(startEventResponse.getEventId())
-                    .summary("CMC case update")
-                    .description("Submitting CMC case update")
+                    .summary(CMC_CASE_UPDATE_SUMMARY)
+                    .description(SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION)
                     .build())
                 .data(ccdCase)
                 .build();
@@ -660,10 +662,13 @@ public class CoreCaseDataService {
         return caseMapper.from(ccdCase);
     }
 
-    public void saveDirectionsQuestionnaireDeadline(Long caseId, LocalDate dqDeadline, String authorisation) {
-        Claim.ClaimBuilder claimBuilder = Claim.builder()
-            .directionsQuestionnaireDeadline(dqDeadline);
+    public void saveDirectionsQuestionnaireDeadline(Claim claim, LocalDate dqDeadline, String authorisation) {
+        Claim.ClaimBuilder claimBuilder = Claim.builder();
 
-        updateCaseDetails(authorisation, caseId, DIRECTIONS_QUESTIONNAIRE_DEADLINE, claimBuilder);
+        addCaseDetails(claimBuilder, claim);
+
+        claimBuilder.directionsQuestionnaireDeadline(dqDeadline);
+
+        updateCaseDetails(authorisation, claim.getId(), DIRECTIONS_QUESTIONNAIRE_DEADLINE, claimBuilder);
     }
 }
