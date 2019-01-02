@@ -28,7 +28,6 @@ public class CCDDefendant {
     private String claimantProvidedEmail;
     private CCDAddress claimantProvidedServiceAddress;
     private String claimantProvidedName;
-    private String claimantProvidedPhoneNumber;
     private CCDAddress claimantProvidedAddress;
     private CCDAddress claimantProvidedCorrespondenceAddress;
     private LocalDate claimantProvidedDateOfBirth;
@@ -54,7 +53,6 @@ public class CCDDefendant {
     private String partyBusinessName;
     private String partyContactPerson;
     private String partyCompaniesHouseNumber;
-    private CCDAddress partyServiceAddress;
 
     private LocalDateTime responseSubmittedDateTime;
     private CCDResponseType responseType;

@@ -54,6 +54,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
     private final LivingPartnerMapper livingPartnerMapper;
 
     @Autowired
+    @SuppressWarnings("squid:S00107")
     public StatementOfMeansMapper(
         BankAccountMapper bankAccountMapper,
         DebtMapper debtMapper,
