@@ -41,7 +41,9 @@ public class DefendantResponseCitizenNotificationsHandler {
     @EventListener
     public void notifyClaimantResponse(DefendantResponseEvent event) {
         Claim claim = event.getClaim();
-        claim.getResponse().orElseThrow(IllegalStateException::new);
+        if (!claim.getResponse().isPresent()) {
+            throw new IllegalStateException("Response must be present");
+        }
         defendantResponseNotificationService.notifyClaimant(
             claim,
             referenceForClaimant(claim.getReferenceNumber())
