@@ -61,7 +61,7 @@ public class DefendantMapper {
     private Consumer<Response> toResponse(Claim claim, CCDDefendant.CCDDefendantBuilder builder) {
         return response -> {
             responseMapper.to(builder, response);
-            builder.responseSubmittedDateTime(claim.getRespondedAt());
+            builder.responseSubmittedOn(claim.getRespondedAt());
         };
     }
 }
