@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isAllBlank;
 import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
-import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 
 @Component
 public class ResponseMapper {
@@ -65,9 +64,8 @@ public class ResponseMapper {
             CCDResponseType.valueOf(response.getResponseType().name())
         );
 
-        builder.responseFreeMediationOption(
-            CCDYesNoOption.valueOf(response.getFreeMediation().orElse(NO).name())
-        );
+        response.getFreeMediation().ifPresent(freeMediation ->
+            builder.responseFreeMediationOption(CCDYesNoOption.valueOf(freeMediation.name())));
 
         if (response.getMoreTimeNeeded() != null) {
             builder.responseMoreTimeNeededOption(CCDYesNoOption.valueOf(response.getMoreTimeNeeded().name()));
@@ -191,11 +189,18 @@ public class ResponseMapper {
     }
 
     private FullDefenceResponse extractFullDefence(CCDDefendant defendant) {
+        YesNoOption moreTimeNeeded = defendant.getResponseMoreTimeNeededOption() != null
+            ? YesNoOption.valueOf(defendant.getResponseMoreTimeNeededOption().name())
+            : null;
+        YesNoOption freeMediation = defendant.getResponseFreeMediationOption() != null
+            ? YesNoOption.valueOf(defendant.getResponseFreeMediationOption().name())
+            : null;
+
         return FullDefenceResponse.builder()
             .defendant(defendantPartyMapper.from(defendant))
             .statementOfTruth(extractStatementOfTruth(defendant))
-            .moreTimeNeeded(YesNoOption.valueOf(defendant.getResponseMoreTimeNeededOption().name()))
-            .freeMediation(YesNoOption.valueOf(defendant.getResponseMoreTimeNeededOption().name()))
+            .moreTimeNeeded(moreTimeNeeded)
+            .freeMediation(freeMediation)
             .defenceType(DefenceType.valueOf(defendant.getResponseDefenceType().name()))
             .defence(defendant.getResponseDefence())
             .evidence(extractDefendantEvidence(defendant))
