@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.IncomeAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.LivingPartnerAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.StatementOfMeansAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
@@ -34,6 +35,10 @@ public class Assertions {
 
     public static PartyStatementAssert assertThat(PartyStatement partyStatement) {
         return new PartyStatementAssert(partyStatement);
+    }
+
+    public static CCDPartyStatementAssert assertThat(CCDPartyStatement ccdPartyStatement) {
+        return new CCDPartyStatementAssert(ccdPartyStatement);
     }
 
     public static PaymentIntentionAssert assertThat(PaymentIntention paymentIntention) {

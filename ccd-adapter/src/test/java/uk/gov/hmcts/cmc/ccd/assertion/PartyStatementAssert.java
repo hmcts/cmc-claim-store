@@ -19,13 +19,13 @@ public class PartyStatementAssert extends AbstractAssert<PartyStatementAssert, P
     public PartyStatementAssert isEqualTo(CCDPartyStatement ccdPartyStatement) {
         isNotNull();
 
-        if (!Objects.equals(actual.getMadeBy().name(), ccdPartyStatement.getMadeBy().name())) {
+        if (null != actual.getMadeBy() && !Objects.equals(actual.getMadeBy().name(), ccdPartyStatement.getMadeBy().name())) {
             failWithMessage("Expected Party Statement.made by to be <%s> but was <%s>",
                 ccdPartyStatement.getMadeBy(), actual.getMadeBy().name());
         }
 
 
-        if (!Objects.equals(actual.getType().name(), ccdPartyStatement.getType().name())) {
+        if (null != actual.getType() && !Objects.equals(actual.getType().name(), ccdPartyStatement.getType().name())) {
             failWithMessage("Expected Party Statement.type to be <%s> but was <%s>",
                 ccdPartyStatement.getType().name(), actual.getType().name());
         }

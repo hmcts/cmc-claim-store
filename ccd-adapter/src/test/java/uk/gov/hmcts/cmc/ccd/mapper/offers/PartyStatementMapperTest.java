@@ -1,21 +1,18 @@
 package uk.gov.hmcts.cmc.ccd.mapper.offers;
 
-import com.sun.javafx.UnmodifiableArrayList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.codec.multipart.Part;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
+import uk.gov.hmcts.cmc.ccd.util.SampleCCDPartyStatement;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SamplePartyStatement;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.stream.Collectors;
@@ -33,7 +30,7 @@ public class PartyStatementMapperTest {
     private PartyStatementMapper partyStatementMapper;
 
     @Test
-    public void shouldMapPartyStatementWithoutPaymentIntentionToCCD() {
+    public void mapPartyStatementWithoutPaymentIntentionToCCD() {
         //given
         final PartyStatement partyStatement = SamplePartyStatement.builder().build();
 
@@ -45,7 +42,7 @@ public class PartyStatementMapperTest {
     }
 
     @Test
-    public void shouldMapWithoutOfferToCCD() {
+    public void mapPartyStatementWithoutOfferToCCD() {
         //given
         final List<PartyStatement> partyStatements = Arrays.asList(
             SamplePartyStatement.acceptPartyStatement,
@@ -59,28 +56,27 @@ public class PartyStatementMapperTest {
             .map(partyStatementMapper::to)
             .collect(Collectors.toList());
 
-
         //then
         ListIterator<PartyStatement> partyStatementIterator = partyStatements.listIterator();
         ListIterator<CCDPartyStatement> ccdPartyStatementIterator = ccdPartyStatements.listIterator();
 
-        while(partyStatementIterator.hasNext()){
+        while (partyStatementIterator.hasNext()) {
             assertThat(partyStatementIterator.next()).isEqualTo(ccdPartyStatementIterator.next());
         }
 
     }
 
     @Test
-    public void shouldMapCCDPartyStatementToDomain() {
+    public void mapCCDPartyStatementToDomain() {
         //given
         List<CCDPartyStatement> ccdPartyStatements = Stream.of(
-                    SamplePartyStatement.acceptPartyStatement,
-                    SamplePartyStatement.rejectPartyStatement,
-                    SamplePartyStatement.counterSignPartyStatement,
-                    SamplePartyStatement.offerPartyStatement,
-                    SamplePartyStatement.builder().build())
-                .map(partyStatementMapper::to)
-                .collect(Collectors.toList());
+            SamplePartyStatement.acceptPartyStatement,
+            SamplePartyStatement.rejectPartyStatement,
+            SamplePartyStatement.counterSignPartyStatement,
+            SamplePartyStatement.offerPartyStatement,
+            SamplePartyStatement.builder().build())
+            .map(partyStatementMapper::to)
+            .collect(Collectors.toList());
 
         //when
         List<PartyStatement> partyStatements = ccdPartyStatements.stream()
@@ -91,13 +87,13 @@ public class PartyStatementMapperTest {
         ListIterator<PartyStatement> partyStatementIterator = partyStatements.listIterator();
         ListIterator<CCDPartyStatement> ccdPartyStatementIterator = ccdPartyStatements.listIterator();
 
-        while(partyStatementIterator.hasNext()){
-            assertThat(partyStatementIterator.next()).isEqualTo(ccdPartyStatementIterator.next());
+        while (partyStatementIterator.hasNext()) {
+            assertThat(ccdPartyStatementIterator.next()).isEqualTo(partyStatementIterator.next());
         }
     }
 
     @Test
-    public void shouldMapEmptyCCDPartyStatementToDomain() {
+    public void mapEmptyCCDPartyStatementToDomain() {
         //given
         final CCDPartyStatement ccdPartyStatement = CCDPartyStatement.builder().build();
 
@@ -105,8 +101,31 @@ public class PartyStatementMapperTest {
         PartyStatement partyStatement = partyStatementMapper.from(ccdPartyStatement);
 
         //then
-        assertThat(partyStatement).isEqualTo(ccdPartyStatement);
+        assertThat(ccdPartyStatement).isEqualTo(partyStatement);
     }
 
+    @Test
+    public void mapCCDPartyStatementWithOfferToDomain() {
+        //given
+        final CCDPartyStatement ccdPartyStatement = SampleCCDPartyStatement.withOffer();
+
+        //when
+        PartyStatement partyStatement = partyStatementMapper.from(ccdPartyStatement);
+
+        //then
+        assertThat(ccdPartyStatement).isEqualTo(partyStatement);
+    }
+
+    @Test
+    public void mapCCDPartyStatementWithOfferPaymentIntentionToDomain() {
+        //given
+        final CCDPartyStatement ccdPartyStatement = SampleCCDPartyStatement.withPaymentIntention();
+
+        //when
+        PartyStatement partyStatement = partyStatementMapper.from(ccdPartyStatement);
+
+        //then
+        assertThat(ccdPartyStatement).isEqualTo(partyStatement);
+    }
 
 }

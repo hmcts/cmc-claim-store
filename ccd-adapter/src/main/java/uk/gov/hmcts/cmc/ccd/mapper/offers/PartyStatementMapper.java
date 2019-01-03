@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @Component
@@ -44,11 +45,16 @@ public class PartyStatementMapper implements Mapper<CCDPartyStatement, PartyStat
     @Override
     public PartyStatement from(CCDPartyStatement ccdPartyStatement) {
 
-        return PartyStatement.builder()
-            .madeBy(MadeBy.valueOf(ccdPartyStatement.getMadeBy().name()))
-            .type(StatementType.valueOf(ccdPartyStatement.getType().name()))
-            .offer(buildOfferFromCCDPartyStatement(ccdPartyStatement))
-            .build();
+        PartyStatement.PartyStatementBuilder partyStatementBuilder = PartyStatement.builder();
+        Optional.ofNullable(ccdPartyStatement.getMadeBy()).ifPresent(ccdMadeBy ->
+            partyStatementBuilder.madeBy(MadeBy.valueOf(ccdMadeBy.name()))
+        );
+        Optional.ofNullable(ccdPartyStatement.getType()).ifPresent(ccdStatementType ->
+            partyStatementBuilder.type(StatementType.valueOf(ccdStatementType.name()))
+        );
+        partyStatementBuilder.offer(buildOfferFromCCDPartyStatement(ccdPartyStatement));
+
+        return partyStatementBuilder.build();
 
     }
 
