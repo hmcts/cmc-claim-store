@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.DefendantResponseNotificationService;
-import uk.gov.service.notify.NotificationClientException;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -17,6 +16,10 @@ import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 public class DefendantResponseCitizenNotificationsHandlerTest {
     private static final DefendantResponseEvent RESPONSE_EVENT = new DefendantResponseEvent(
         SampleClaimIssuedEvent.CLAIM_WITH_RESPONSE
+    );
+
+    private static final DefendantResponseEvent RESPONSE_EVENT_WITHOUT_RESPONSE = new DefendantResponseEvent(
+        SampleClaimIssuedEvent.CLAIM_NO_RESPONSE
     );
 
     private DefendantResponseCitizenNotificationsHandler defendantResponseCitizenNotificationsHandler;
@@ -31,7 +34,7 @@ public class DefendantResponseCitizenNotificationsHandlerTest {
     }
 
     @Test
-    public void notifyDefendantResponseSendsNotificationsToDefendant() throws NotificationClientException {
+    public void notifyDefendantResponseSendsNotificationsToDefendant() {
 
         defendantResponseCitizenNotificationsHandler.notifyDefendantResponse(RESPONSE_EVENT);
 
@@ -43,7 +46,7 @@ public class DefendantResponseCitizenNotificationsHandlerTest {
     }
 
     @Test
-    public void notifyDefendantResponseSendsNotificationsToClaimant() throws NotificationClientException {
+    public void notifyDefendantResponseSendsNotificationsToClaimant() {
 
         defendantResponseCitizenNotificationsHandler.notifyClaimantResponse(RESPONSE_EVENT);
 
@@ -51,5 +54,20 @@ public class DefendantResponseCitizenNotificationsHandlerTest {
             eq(SampleClaimIssuedEvent.CLAIM_WITH_RESPONSE),
             eq("claimant-response-notification-" + RESPONSE_EVENT.getClaim().getReferenceNumber())
         );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void throwExceptionWhenResponseNotPresent() {
+
+        defendantResponseCitizenNotificationsHandler.notifyClaimantResponse(RESPONSE_EVENT_WITHOUT_RESPONSE);
+
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void throwExceptionResponseEventIsGeneratedWithNullClaim() {
+
+        DefendantResponseEvent responseEventWithNullClaim = new DefendantResponseEvent(null);
+
+        defendantResponseCitizenNotificationsHandler.notifyClaimantResponse(responseEventWithNullClaim);
     }
 }

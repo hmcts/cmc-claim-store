@@ -115,6 +115,7 @@ notifications:
       redeterminationEmailToClaimant: "6236ce5c-fc18-4a67-b495-57159f3936b4"
       settlementRejectedEmailToClaimant: "44e8ed3e-b60c-4e5d-a5e5-1e2f4bf7637c"
       settlementRejectedEmailToDefendant: "237c8d29-531e-4c23-8a13-1d5f2b2b55b7"
+      defendantAdmissionResponseToClaimant: "fce1eaa7-baa9-4b82-b1bb-119f9a2ffae3"
 
 staff-notifications:
   sender:
