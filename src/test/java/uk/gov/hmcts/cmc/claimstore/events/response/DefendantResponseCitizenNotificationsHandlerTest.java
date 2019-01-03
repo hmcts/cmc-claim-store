@@ -57,14 +57,14 @@ public class DefendantResponseCitizenNotificationsHandlerTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void throwExceptionWhenResponseNotPresent() throws IllegalArgumentException {
+    public void throwExceptionWhenResponseNotPresent() {
 
         defendantResponseCitizenNotificationsHandler.notifyClaimantResponse(RESPONSE_EVENT_WITHOUT_RESPONSE);
 
     }
 
     @Test(expected = NullPointerException.class)
-    public void throwExceptionResponseEventIsGeneratedWithNullClaim() throws NullPointerException {
+    public void throwExceptionResponseEventIsGeneratedWithNullClaim() {
 
         DefendantResponseEvent responseEventWithNullClaim = new DefendantResponseEvent(null);
 
