@@ -116,6 +116,7 @@ notifications:
       settlementRejectedEmailToClaimant: "44e8ed3e-b60c-4e5d-a5e5-1e2f4bf7637c"
       settlementRejectedEmailToDefendant: "237c8d29-531e-4c23-8a13-1d5f2b2b55b7"
       defendantAdmissionResponseToClaimant: "fce1eaa7-baa9-4b82-b1bb-119f9a2ffae3"
+      claimantRejectionResponseToCompanyOrOrganisation: "7997b719-cfc3-44ac-8fb6-b70ec409c68f"
 
 staff-notifications:
   sender:

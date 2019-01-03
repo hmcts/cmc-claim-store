@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.notifications;
 
+import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,11 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
+import uk.gov.hmcts.cmc.domain.models.party.Party;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -40,9 +46,10 @@ public class NotificationToDefendantService {
 
     public void notifyDefendant(Claim claim) {
         Map<String, String> parameters = aggregateParams(claim);
+        String emailTemplate = getNotificationEmailTemplate(claim);
         sendNotificationEmail(
             claim.getDefendantEmail(),
-            notificationsProperties.getTemplates().getEmail().getResponseByClaimantEmailToDefendant(),
+            emailTemplate,
             parameters,
             referenceForDefendant(claim.getReferenceNumber())
         );
@@ -91,12 +98,24 @@ public class NotificationToDefendantService {
     }
 
     private Map<String, String> aggregateParams(Claim claim) {
-
-        HashMap<String, String> parameters = new HashMap<>();
-        parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
-        parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
-        parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
-
-        return parameters;
+        return ImmutableMap.of(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName(),
+            FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl(),
+            CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber()
+        );
     }
+
+    private String getNotificationEmailTemplate(Claim claim) {
+        Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
+        Party party = response.getDefendant();
+        ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalArgumentException::new);
+        if(PartyUtils.isCompanyOrOrganisation(party)
+            && ClaimantResponseType.REJECTION.equals(claimantResponse.getType())) {
+            return notificationsProperties
+                .getTemplates().getEmail()
+                .getClaimantRejectionResponseToCompanyOrOrganisation();
+        } else {
+           return notificationsProperties.getTemplates().getEmail().getResponseByClaimantEmailToDefendant();
+        }
+    }
+
 }

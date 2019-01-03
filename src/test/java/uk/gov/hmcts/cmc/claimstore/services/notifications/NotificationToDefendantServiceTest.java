@@ -7,6 +7,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.service.notify.NotificationClientException;
 
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -23,6 +25,7 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
     private static final String CLAIMANT_RESPONSE_TEMPLATE = "templateId";
     private static final String DEFENDANT_EMAIL = "defendant@email.com";
     private static final String INTERLOCUTORY_JUDGEMENT_TEMPLATE = "interlocutoryJudgementTemplateId";
+    private static final String CLAIMANT_REJECT_COMPANY_OR_ORG_RESPONSE_TEMPLATE = "claimantRejectsPlanTemplateId";
 
     private NotificationToDefendantService service;
     private Claim claim;
@@ -50,6 +53,21 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
     @Test
     public void shouldSendEmailUsingPredefinedTemplate() throws Exception {
         when(emailTemplates.getResponseByClaimantEmailToDefendant()).thenReturn(CLAIMANT_RESPONSE_TEMPLATE);
+        service.notifyDefendant(claim);
+
+        verify(notificationClient).sendEmail(
+            eq(CLAIMANT_RESPONSE_TEMPLATE),
+            eq(DEFENDANT_EMAIL),
+            anyMap(),
+            eq(REFERENCE)
+        );
+    }
+
+    //WIP
+    @Test
+    public void shouldSendEmailWhenClaimantRejectCompanyOrOrgRepaymentPlan() throws Exception {
+        when(emailTemplates.getClaimantRejectionResponseToCompanyOrOrganisation())
+            .thenReturn(CLAIMANT_REJECT_COMPANY_OR_ORG_RESPONSE_TEMPLATE);
         service.notifyDefendant(claim);
 
         verify(notificationClient).sendEmail(
