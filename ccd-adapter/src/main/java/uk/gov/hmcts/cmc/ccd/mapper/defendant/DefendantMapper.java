@@ -55,6 +55,7 @@ public class DefendantMapper {
             moreTimeNeeded -> builder.moreTimeRequested(moreTimeNeeded.toBoolean())
         );
 
+        builder.respondedAt(defendant.getResponseSubmittedOn());
         responseMapper.from(builder, defendant);
 
         return theirDetailsMapper.from(defendant);
