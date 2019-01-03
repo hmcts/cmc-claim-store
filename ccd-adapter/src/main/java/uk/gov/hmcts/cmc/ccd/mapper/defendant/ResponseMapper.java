@@ -31,7 +31,6 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isAllBlank;
 import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
@@ -132,7 +131,7 @@ public class ResponseMapper {
         builder.responseDefenceType(
             CCDDefenceType.valueOf(fullDefenceResponse.getDefenceType().name())
         );
-        builder.responseDefence(fullDefenceResponse.getDefence().orElse(EMPTY));
+        fullDefenceResponse.getDefence().ifPresent(builder::responseDefence);
         fullDefenceResponse.getPaymentDeclaration().ifPresent(mapPaymentDeclaration(builder));
         fullDefenceResponse.getEvidence().ifPresent(mapDefendantEvidence(builder));
         fullDefenceResponse.getTimeline().ifPresent(mapDefendantTimeline(builder));
@@ -140,7 +139,7 @@ public class ResponseMapper {
 
     private Consumer<DefendantTimeline> mapDefendantTimeline(CCDDefendant.CCDDefendantBuilder builder) {
         return timeline -> {
-            builder.defendantTimeLineComment(timeline.getComment().orElse(EMPTY));
+            timeline.getComment().ifPresent(builder::defendantTimeLineComment);
             builder.defendantTimeLineEvents(asStream(timeline.getEvents())
                 .map(timelineEventMapper::to)
                 .filter(Objects::nonNull)
@@ -152,7 +151,7 @@ public class ResponseMapper {
 
     private Consumer<DefendantEvidence> mapDefendantEvidence(CCDDefendant.CCDDefendantBuilder builder) {
         return evidence -> {
-            builder.responseEvidenceComment(evidence.getComment().orElse(EMPTY));
+            evidence.getComment().ifPresent(builder::responseEvidenceComment);
             builder.responseEvidenceRows(asStream(evidence.getRows())
                 .map(evidenceRowMapper::to)
                 .filter(Objects::nonNull)

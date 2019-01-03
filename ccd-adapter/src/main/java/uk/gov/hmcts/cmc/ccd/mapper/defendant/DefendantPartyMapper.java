@@ -15,7 +15,6 @@ import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 
 import static java.util.Objects.requireNonNull;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.COMPANY;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
@@ -63,9 +62,9 @@ public class DefendantPartyMapper {
         builder.representativeOrganisationAddress(addressMapper.to(representative.getOrganisationAddress()));
         representative.getOrganisationContactDetails().ifPresent(
             contactDetails -> {
-                builder.representativeOrganisationPhone(contactDetails.getPhone().orElse(EMPTY));
-                builder.representativeOrganisationEmail(contactDetails.getEmail().orElse(EMPTY));
-                builder.representativeOrganisationDxAddress(contactDetails.getDxAddress().orElse(EMPTY));
+                contactDetails.getEmail().ifPresent(builder::representativeOrganisationEmail);
+                contactDetails.getPhone().ifPresent(builder::representativeOrganisationPhone);
+                contactDetails.getDxAddress().ifPresent(builder::representativeOrganisationDxAddress);
             });
     }
 
@@ -161,11 +160,15 @@ public class DefendantPartyMapper {
         return Representative.builder()
             .organisationName(organisationName)
             .organisationAddress(addressMapper.from(organisationAddress))
-            .organisationContactDetails(ContactDetails.builder()
-                .phone(defendant.getRepresentativeOrganisationPhone())
-                .email(defendant.getRepresentativeOrganisationEmail())
-                .dxAddress(defendant.getRepresentativeOrganisationDxAddress())
-                .build())
+            .organisationContactDetails(extractContactDetails(defendant))
+            .build();
+    }
+
+    private ContactDetails extractContactDetails(CCDDefendant defendant) {
+        return ContactDetails.builder()
+            .phone(defendant.getRepresentativeOrganisationPhone())
+            .email(defendant.getRepresentativeOrganisationEmail())
+            .dxAddress(defendant.getRepresentativeOrganisationDxAddress())
             .build();
     }
 }
