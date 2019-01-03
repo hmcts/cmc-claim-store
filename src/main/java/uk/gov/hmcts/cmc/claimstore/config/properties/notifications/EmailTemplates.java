@@ -96,4 +96,7 @@ public class EmailTemplates {
 
     @NotEmpty
     private String settlementRejectedEmailToDefendant;
+
+    @NotEmpty
+    private String defendantAdmissionResponseToClaimant;
 }

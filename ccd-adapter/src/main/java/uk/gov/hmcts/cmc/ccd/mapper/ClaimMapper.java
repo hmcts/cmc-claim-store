@@ -82,7 +82,6 @@ public class ClaimMapper {
             .collect(Collectors.toList()));
 
         claimData.getTimeline().ifPresent(timeline -> timelineMapper.to(timeline, builder));
-
         claimData.getEvidence().ifPresent(evidence -> evidenceMapper.to(evidence, builder));
 
         paymentMapper.to(claimData.getPayment(), builder);
