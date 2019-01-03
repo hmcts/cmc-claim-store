@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.domain.claimantresponse;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.response.CCDPaymentIntention;
 
@@ -8,6 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Value
+@EqualsAndHashCode(callSuper = false)
 public class CCDResponseAcceptation extends CCDClaimantResponse {
 
     private CCDPaymentIntention claimantPaymentIntention;

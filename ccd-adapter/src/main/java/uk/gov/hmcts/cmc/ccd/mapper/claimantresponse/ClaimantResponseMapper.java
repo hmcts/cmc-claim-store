@@ -18,6 +18,8 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
+import static java.util.Objects.requireNonNull;
+
 @Component
 public class ClaimantResponseMapper {
 
@@ -29,11 +31,11 @@ public class ClaimantResponseMapper {
     }
 
     public CCDClaimantResponse to(Claim claim) {
+        requireNonNull(claim,"claim must not be null");
         final ClaimantResponse claimantResponse = claim.getClaimantResponse().orElse(null);
         if (null == claimantResponse) {
             return null;
         }
-
         if (ClaimantResponseType.ACCEPTATION == claimantResponse.getType()) {
             ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponse;
             CCDResponseAcceptation.CCDResponseAcceptationBuilder builder = CCDResponseAcceptation.builder();
@@ -45,6 +47,7 @@ public class ClaimantResponseMapper {
             responseAcceptation.getClaimantPaymentIntention().ifPresent(
                 paymentIntention -> builder.claimantPaymentIntention(paymentIntentionMapper.to(paymentIntention))
             );
+            claim.getClaimantRespondedAt().ifPresent(builder::submittedOn);
             return builder.build();
         } else if (ClaimantResponseType.REJECTION == claimantResponse.getType()) {
             ResponseRejection responseRejection = (ResponseRejection) claimantResponse;
@@ -55,16 +58,16 @@ public class ClaimantResponseMapper {
                 .ifPresent(rejection::freeMediationOption);
             responseRejection.getAmountPaid().ifPresent(rejection::amountPaid);
             responseRejection.getReason().ifPresent(rejection::reason);
+            claim.getClaimantRespondedAt().ifPresent(rejection::submittedOn);
             return rejection.build();
         }
         throw new MappingException("unsupported claimant response type " + claimantResponse.getType());
     }
 
-    public Claim from(CCDClaimantResponse ccdClaimantResponse) {
+    public void from(CCDClaimantResponse ccdClaimantResponse,Claim.ClaimBuilder claimBuilder) {
         if (null == ccdClaimantResponse) {
-            return null;
+            return;
         }
-        Claim.ClaimBuilder claimBuilder = Claim.builder();
         if (ccdClaimantResponse.getClaimantResponseType() == CCDClaimantResponseType.ACCEPTATION) {
             CCDResponseAcceptation ccdResponseAcceptation = (CCDResponseAcceptation) ccdClaimantResponse;
             claimBuilder.claimantResponse(ResponseAcceptation.builder()
@@ -74,7 +77,6 @@ public class ClaimantResponseMapper {
                     .getClaimantPaymentIntention()))
                 .build())
                 .claimantRespondedAt(ccdClaimantResponse.getSubmittedOn());
-            return claimBuilder.build();
 
         } else if (ccdClaimantResponse.getClaimantResponseType() == CCDClaimantResponseType.REJECTION) {
             CCDResponseRejection ccdResponseRejection = (CCDResponseRejection) ccdClaimantResponse;
@@ -86,7 +88,6 @@ public class ClaimantResponseMapper {
             }
             claimBuilder.claimantResponse(builder.build())
                 .claimantRespondedAt(ccdClaimantResponse.getSubmittedOn());
-            return claimBuilder.build();
         }
         throw new MappingException("Invalid claimant response type " + ccdClaimantResponse.getClaimantResponseType());
     }

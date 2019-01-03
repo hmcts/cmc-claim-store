@@ -33,7 +33,7 @@ import java.time.LocalDate;
 import static java.math.BigDecimal.ONE;
 import static java.math.BigDecimal.TEN;
 import static java.util.Arrays.asList;
-import static uk.gov.hmcts.cmc.ccd.SampleData.getCCDDefendantIndividual;
+import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDDefendantIndividual;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount.BankAccountType.SAVINGS_ACCOUNT;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense.ExpenseType.COUNCIL_TAX;

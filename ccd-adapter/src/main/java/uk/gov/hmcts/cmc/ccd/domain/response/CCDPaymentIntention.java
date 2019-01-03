@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.ccd.domain.response;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Value;
+import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
 
@@ -26,6 +27,6 @@ public class CCDPaymentIntention {
             && null == firstPaymentDate
             && null == paymentSchedule
             && null == completionDate
-            && null == paymentLength;
+            && StringUtils.isBlank(paymentLength);
     }
 }
