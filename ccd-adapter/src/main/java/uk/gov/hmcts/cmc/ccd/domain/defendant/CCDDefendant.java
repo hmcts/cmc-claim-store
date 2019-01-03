@@ -36,6 +36,12 @@ public class CCDDefendant {
     private String claimantProvidedTitle;
     private String claimantProvidedBusinessName;
 
+    private String claimantProvidedRepresentativeOrganisationName;
+    private CCDAddress claimantProvidedRepresentativeOrganisationAddress;
+    private String claimantProvidedRepresentativeOrganisationPhone;
+    private String claimantProvidedRepresentativeOrganisationEmail;
+    private String claimantProvidedRepresentativeOrganisationDxAddress;
+
     private String representativeOrganisationName;
     private CCDAddress representativeOrganisationAddress;
     private String representativeOrganisationPhone;

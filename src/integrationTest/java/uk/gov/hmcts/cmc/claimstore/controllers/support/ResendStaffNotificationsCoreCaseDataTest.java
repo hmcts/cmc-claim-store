@@ -49,7 +49,6 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetails
         "feature_toggles.ccd_enabled=true"
     }
 )
-@Ignore
 public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTest {
 
     private static final String CASE_REFERENCE = "000MC023";
@@ -60,7 +59,6 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
 
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
-
 
     @Before
     public void setUp() {
@@ -170,6 +168,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
     }
 
     @Test
+    @Ignore
     public void shouldRespond200AndSendNotificationsForCCJRequestedEvent() throws Exception {
         givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetailsWithCCJ());
 
@@ -179,6 +178,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
     }
 
     @Test
+    @Ignore
     public void shouldRespond200AndSendNotificationsForOfferAcceptedEvent() throws Exception {
         givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetailsWithOfferCounterSigned());
 

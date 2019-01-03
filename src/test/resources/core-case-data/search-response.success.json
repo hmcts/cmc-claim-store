@@ -7,366 +7,107 @@
   "last_modified": "2018-01-17T11:45:55.989",
   "security_classification": "PUBLIC",
   "case_data": {
-    "referenceNumber": "000MC023",
-    "submitterId": "20",
-    "submittedOn": "2018-01-17T11:45:46.872525",
-    "claimData": {
-      "amount": {
-        "type": "BREAK_DOWN",
-        "amountBreakDown": {
-          "rows": [
-            {
-              "value": {
-                "amount": 40,
-                "reason": "reason"
-              }
-            }
-          ]
+    "id": 1546441994877723,
+    "reason": "A strong sense of entitlement that would explain my reasons of the claim, that the Roof work and leaks that followed were done below standards set by the council inspector",
+    "features": "admissions",
+    "issuedOn": "2019-01-02",
+    "timeline": [
+      {
+        "id": "764a0b46-7fef-4f21-b6d4-939477517b00",
+        "value": {
+          "date": "01 October 2017",
+          "description": "The day the first bill was issued"
         }
       },
-      "reason": "reason",
-      "feeCode": "X0012",
-      "payment": {
-        "id": "123",
-        "amount": 4000,
-        "reference": "reference",
-        "dateCreated": "2010-10-12"
-      },
-      "interest": {
-        "rate": 8,
-        "type": "STANDARD",
-        "reason": "reason",
-        "interestDate": {
-          "date": "2015-02-02",
-          "type": "CUSTOM",
-          "reason": "I want to claim from this date because that's when that happened",
-          "endDateType": "SUBMISSION"
+      {
+        "id": "18f596e7-479a-49ae-94d2-3b2e5515bfa8",
+        "value": {
+          "date": "26 March 2018",
+          "description": "A historic day with enormous importance"
         }
       },
-      "claimants": [
-        {
-          "id": "6d763dee-c018-41d7-944f-c4b0ac175320",
-          "value": {
-            "type": "INDIVIDUAL",
-            "individual": {
-              "name": "John Rambo",
-              "address": {
-                "city": "Manchester",
-                "line1": "52",
-                "line2": "Down Street",
-                "postcode": "DF1 3LJ"
-              },
-              "dateOfBirth": "1968-01-02",
-              "phoneNumber": "07873727165",
-              "correspondenceAddress": {
-                "city": "Manchester",
-                "line1": "52",
-                "line2": "Down Street",
-                "postcode": "DF1 3LJ"
-              }
-            }
-          }
+      {
+        "id": "e70b6f55-089f-4fb6-a10d-560115bf6feb",
+        "value": {
+          "date": "14 June 2018",
+          "description": "line to explain what happened and when"
         }
-      ],
-      "defendants": [
-        {
-          "id": "7ebb4899-6889-4d42-9706-7ba640d4e61e",
-          "value": {
-            "type": "INDIVIDUAL",
-            "individual": {
-              "name": "John Smith",
-              "email": "john.smith@server.net",
-              "address": {
-                "city": "Manchester",
-                "line1": "52",
-                "line2": "Down Street",
-                "postcode": "DF1 3LJ"
-              }
-            }
-          }
+      }
+    ],
+    "claimants": [
+      {
+        "id": "0da037e8-701c-405d-8d92-222b233d6026",
+        "value": {
+          "partyName": "Jan Clark",
+          "partyType": "INDIVIDUAL",
+          "partyPhone": "(0)207 127 0000",
+          "partyAddress": {
+            "PostCode": "SW1A 9AA",
+            "PostTown": "London",
+            "AddressLine1": "Street 1",
+            "AddressLine2": "Street 2",
+            "AddressLine3": "Street 3"
+          },
+          "partyDateOfBirth": "2000-01-01"
         }
-      ],
-      "externalId": "9c9a87c3-1ec1-4d9d-aa7c-a500558b667b",
-      "feeAmountInPennies": 4000
-    },
-    "externalId": "9c9a87c3-1ec1-4d9d-aa7c-a500558b667b",
-    "id": 26,
-    "issuedOn": "2020-01-17",
-    "responseDeadline": "2020-02-06",
-    "submitterEmail": "me@server.net",
-    "features": "admissions"
-  },
-  "data_classification": {
-    "referenceNumber": "PUBLIC",
-    "submitterId": "PUBLIC",
-    "submittedOn": "PUBLIC",
-    "claimData": {
-      "value": {
-        "amount": {
-          "value": {
-            "type": "PUBLIC",
-            "amountBreakDown": {
-              "value": {
-                "rows": {
-                  "value": [
-                    {
-                      "value": {
-                        "amount": "PUBLIC",
-                        "reason": "PUBLIC"
-                      }
-                    }
-                  ],
-                  "classification": "PUBLIC"
-                }
-              },
-              "classification": "PUBLIC"
-            }
+      }
+    ],
+    "amountType": "BREAK_DOWN",
+    "defendants": [
+      {
+        "id": "440ebab7-f812-4f89-9be1-9f67b80f8179",
+        "value": {
+          "partyName": "Mary Richards",
+          "partyType": "INDIVIDUAL",
+          "partyEmail": "dharmendra.kumar@hmcts.net",
+          "partyPhone": "07123456789",
+          "defendantId": "62",
+          "partyAddress": {
+            "PostCode": "SW1A 9AA",
+            "PostTown": "London",
+            "AddressLine1": "Flat 3A",
+            "AddressLine2": "Street 1",
+            "AddressLine3": "Middle Road"
           },
-          "classification": "PUBLIC"
-        },
-        "reason": "PUBLIC",
-        "feeCode": "PUBLIC",
-        "payment": {
-          "value": {
-            "id": "PUBLIC",
-            "amount": "PUBLIC",
-            "reference": "PUBLIC",
-            "dateCreated": "PUBLIC",
-            "description": "PUBLIC",
-            "paymentState": {
-              "value": {
-                "status": "PUBLIC",
-                "finished": "PUBLIC"
-              },
-              "classification": "PUBLIC"
-            }
+          "letterHolderId": "75",
+          "partyDateOfBirth": "1970-01-01",
+          "responseDeadline": "2019-01-21",
+          "responseDefenceType": "ALREADY_PAID",
+          "responseSubmittedOn": "2019-01-02T16:02:30.834",
+          "claimantProvidedName": "Mary Richards",
+          "claimantProvidedType": "INDIVIDUAL",
+          "claimantProvidedEmail": "dharmendra.kumar@hmcts.net",
+          "claimantProvidedAddress": {
+            "PostCode": "SW1A 9AA",
+            "PostTown": "London",
+            "AddressLine1": "Flat 3A",
+            "AddressLine2": "Street 1",
+            "AddressLine3": "Middle Road"
           },
-          "classification": "PUBLIC"
-        },
-        "interest": {
-          "value": {
-            "rate": "PUBLIC",
-            "type": "PUBLIC",
-            "reason": "PUBLIC"
-          },
-          "classification": "PUBLIC"
-        },
-        "claimants": {
-          "value": [
-            {
-              "value": {
-                "type": "PUBLIC",
-                "individual": {
-                  "value": {
-                    "name": "PUBLIC",
-                    "address": {
-                      "value": {
-                        "city": "PUBLIC",
-                        "line1": "PUBLIC",
-                        "line2": "PUBLIC",
-                        "postcode": "PUBLIC"
-                      },
-                      "classification": "PUBLIC"
-                    },
-                    "dateOfBirth": "PUBLIC",
-                    "mobilePhone": "PUBLIC",
-                    "correspondenceAddress": {
-                      "value": {
-                        "city": "PUBLIC",
-                        "line1": "PUBLIC",
-                        "line2": "PUBLIC",
-                        "postcode": "PUBLIC"
-                      },
-                      "classification": "PUBLIC"
-                    }
-                  },
-                  "classification": "PUBLIC"
-                }
-              }
-            }
-          ],
-          "classification": "PUBLIC"
-        },
-        "defendants": {
-          "value": [
-            {
-              "value": {
-                "type": "PUBLIC",
-                "individual": {
-                  "value": {
-                    "name": "PUBLIC",
-                    "email": "PUBLIC",
-                    "address": {
-                      "value": {
-                        "city": "PUBLIC",
-                        "line1": "PUBLIC",
-                        "line2": "PUBLIC",
-                        "postcode": "PUBLIC"
-                      },
-                      "classification": "PUBLIC"
-                    }
-                  },
-                  "classification": "PUBLIC"
-                }
-              }
-            }
-          ],
-          "classification": "PUBLIC"
-        },
-        "externalId": "PUBLIC",
-        "interestDate": {
-          "value": {
-            "date": "PUBLIC",
-            "type": "PUBLIC",
-            "reason": "PUBLIC"
-          },
-          "classification": "PUBLIC"
-        },
-        "feeAmountInPennies": "PUBLIC"
-      },
-      "classification": "PUBLIC"
-    },
-    "externalId": "PUBLIC",
-    "id": "PUBLIC",
-    "issuedOn": "PUBLIC",
-    "submitterEmail": "PUBLIC"
-  },
-  "after_submit_callback_response": null,
-  "callback_response_status_code": null,
-  "callback_response_status": null,
-  "security_classifications": {
-    "referenceNumber": "PUBLIC",
-    "submitterId": "PUBLIC",
-    "submittedOn": "PUBLIC",
-    "claimData": {
-      "value": {
-        "amount": {
-          "value": {
-            "type": "PUBLIC",
-            "amountBreakDown": {
-              "value": {
-                "rows": {
-                  "value": [
-                    {
-                      "value": {
-                        "amount": "PUBLIC",
-                        "reason": "PUBLIC"
-                      }
-                    }
-                  ],
-                  "classification": "PUBLIC"
-                }
-              },
-              "classification": "PUBLIC"
-            }
-          },
-          "classification": "PUBLIC"
-        },
-        "reason": "PUBLIC",
-        "feeCode": "PUBLIC",
-        "payment": {
-          "value": {
-            "id": "PUBLIC",
-            "amount": "PUBLIC",
-            "reference": "PUBLIC",
-            "dateCreated": "PUBLIC",
-            "description": "PUBLIC",
-            "paymentState": {
-              "value": {
-                "status": "PUBLIC",
-                "finished": "PUBLIC"
-              },
-              "classification": "PUBLIC"
-            }
-          },
-          "classification": "PUBLIC"
-        },
-        "interest": {
-          "value": {
-            "rate": "PUBLIC",
-            "type": "PUBLIC",
-            "reason": "PUBLIC"
-          },
-          "classification": "PUBLIC"
-        },
-        "claimants": {
-          "value": [
-            {
-              "value": {
-                "type": "PUBLIC",
-                "individual": {
-                  "value": {
-                    "name": "PUBLIC",
-                    "address": {
-                      "value": {
-                        "city": "PUBLIC",
-                        "line1": "PUBLIC",
-                        "line2": "PUBLIC",
-                        "postcode": "PUBLIC"
-                      },
-                      "classification": "PUBLIC"
-                    },
-                    "dateOfBirth": "PUBLIC",
-                    "mobilePhone": "PUBLIC",
-                    "correspondenceAddress": {
-                      "value": {
-                        "city": "PUBLIC",
-                        "line1": "PUBLIC",
-                        "line2": "PUBLIC",
-                        "postcode": "PUBLIC"
-                      },
-                      "classification": "PUBLIC"
-                    }
-                  },
-                  "classification": "PUBLIC"
-                }
-              }
-            }
-          ],
-          "classification": "PUBLIC"
-        },
-        "defendants": {
-          "value": [
-            {
-              "value": {
-                "type": "PUBLIC",
-                "individual": {
-                  "value": {
-                    "name": "PUBLIC",
-                    "email": "PUBLIC",
-                    "address": {
-                      "value": {
-                        "city": "PUBLIC",
-                        "line1": "PUBLIC",
-                        "line2": "PUBLIC",
-                        "postcode": "PUBLIC"
-                      },
-                      "classification": "PUBLIC"
-                    }
-                  },
-                  "classification": "PUBLIC"
-                }
-              }
-            }
-          ],
-          "classification": "PUBLIC"
-        },
-        "externalId": "PUBLIC",
-        "interestDate": {
-          "value": {
-            "date": "PUBLIC",
-            "type": "PUBLIC",
-            "reason": "PUBLIC"
-          },
-          "classification": "PUBLIC"
-        },
-        "feeAmountInPennies": "PUBLIC"
-      },
-      "classification": "PUBLIC"
-    },
-    "externalId": "PUBLIC",
-    "id": "PUBLIC",
-    "issuedOn": "PUBLIC",
-    "submitterEmail": "PUBLIC"
+          "paymentDeclarationPaidDate": "2018-01-01",
+          "responseFreeMediationOption": "NO",
+          "paymentDeclarationExplanation": "sdfdsf"
+        }
+      }
+    ],
+    "externalId": "b60baf23-e1f4-4c63-84fd-4d48d8a8f5ce",
+    "submittedOn": "2019-01-02T15:13:32.683686",
+    "submitterId": "62",
+    "interestType": "NO_INTEREST",
+    "paymentAmount": 25,
+    "paymentStatus": "Success",
+    "submitterEmail": "dharmendra.kumar@hmcts.net",
+    "amountBreakDown": [
+      {
+        "id": "ca15b20f-d38e-41bc-baa2-4549522790bd",
+        "value": {
+          "amount": 75,
+          "reason": "Roof Fix & repairs to leak"
+        }
+      }
+    ],
+    "referenceNumber": "000MC013",
+    "paymentReference": "RC-1546-4419-9390-7385",
+    "feeAmountInPennies": 2500
   }
 }

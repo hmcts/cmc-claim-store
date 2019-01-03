@@ -107,7 +107,7 @@ public class CCDCaseHandler {
         }
     }
 
-    //    @EventListener
+    @EventListener
     @LogExecutionTime
     public void requestMoreTimeForResponse(CCDMoreTimeRequestedEvent event) {
         try {
@@ -184,7 +184,6 @@ public class CCDCaseHandler {
     }
 
     //    @EventListener
-    @Async("threadPoolTaskExecutor")
     @LogExecutionTime
     public void updateSettlement(CCDSettlementEvent event) {
         String authorization = event.getAuthorization();

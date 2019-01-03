@@ -2,12 +2,14 @@ package uk.gov.hmcts.cmc.ccd.mapper.defendant;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.mapper.TheirDetailsMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import static java.util.Objects.requireNonNull;
@@ -27,14 +29,7 @@ public class DefendantMapper {
         this.responseMapper = responseMapper;
     }
 
-    public CCDDefendant toLegal(TheirDetails theirDetails) {
-        requireNonNull(theirDetails, "theirDetails must not be null");
-        CCDDefendant.CCDDefendantBuilder builder = CCDDefendant.builder();
-        theirDetailsMapper.to(builder, theirDetails);
-        return builder.build();
-    }
-
-    public CCDDefendant toCitizen(TheirDetails theirDetails, Claim claim) {
+    public CCDDefendant to(TheirDetails theirDetails, Claim claim) {
         requireNonNull(theirDetails, "theirDetails must not be null");
         requireNonNull(claim, "claim must not be null");
 
@@ -43,13 +38,10 @@ public class DefendantMapper {
         builder.letterHolderId(claim.getLetterHolderId());
         builder.defendantId(claim.getDefendantId());
         builder.partyEmail(claim.getDefendantEmail());
+        builder.responseMoreTimeNeededOption(CCDYesNoOption.valueOf(claim.isMoreTimeRequested()));
         claim.getResponse().ifPresent(toResponse(claim, builder));
         theirDetailsMapper.to(builder, theirDetails);
         return builder.build();
-    }
-
-    public TheirDetails from(CCDDefendant defendant) {
-        return theirDetailsMapper.from(defendant);
     }
 
     public TheirDetails from(Claim.ClaimBuilder builder, CCDDefendant defendant) {
@@ -58,9 +50,14 @@ public class DefendantMapper {
             .responseDeadline(defendant.getResponseDeadline())
             .defendantEmail(defendant.getPartyEmail())
             .defendantId(defendant.getDefendantId());
+
+        Optional.ofNullable(defendant.getResponseMoreTimeNeededOption()).ifPresent(
+            moreTimeNeeded -> builder.moreTimeRequested(moreTimeNeeded.toBoolean())
+        );
+
         responseMapper.from(builder, defendant);
 
-        return this.from(defendant);
+        return theirDetailsMapper.from(defendant);
     }
 
     private Consumer<Response> toResponse(Claim claim, CCDDefendant.CCDDefendantBuilder builder) {
