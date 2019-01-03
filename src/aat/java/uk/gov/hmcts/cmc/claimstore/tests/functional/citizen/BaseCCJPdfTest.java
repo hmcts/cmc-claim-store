@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
@@ -85,7 +86,8 @@ public abstract class BaseCCJPdfTest extends BasePdfTest {
 
     protected void assertTotalAmount(Claim caseGiven, String pdfAsText, AmountContent amountContent) {
         ClaimData claimData = caseGiven.getClaimData();
-        if (ResponseHelper.admissionResponse(caseGiven)) {
+        Response response = caseGiven.getResponse().orElse(null);
+        if (ResponseHelper.admissionResponse(response)) {
             assertThat(pdfAsText).contains("Judgment amount");
         } else {
             assertThat(pdfAsText).contains("Total amount");
