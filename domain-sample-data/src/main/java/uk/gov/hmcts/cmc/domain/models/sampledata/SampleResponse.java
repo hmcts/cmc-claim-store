@@ -107,6 +107,19 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
                 .build();
         }
+
+        public PartAdmissionResponse buildWithPaymentOptionBySpecifiedDateWithDefendant(Party party) {
+            return PartAdmissionResponse.builder()
+                .defendant(party)
+                .moreTimeNeeded(YesNoOption.NO)
+                .amount(BigDecimal.valueOf(120))
+                .paymentIntention(SamplePaymentIntention.bySetDate())
+                .defence(USER_DEFENCE)
+                .timeline(SampleDefendantTimeline.validDefaults())
+                .evidence(SampleDefendantEvidence.validDefaults())
+                .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .build();
+        }
     }
 
     public static class FullDefence extends SampleResponse<FullDefence> {

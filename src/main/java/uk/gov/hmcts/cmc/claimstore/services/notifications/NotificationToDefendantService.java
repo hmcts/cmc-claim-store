@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.notifications;
 
-import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,17 +10,14 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
-import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.ClaimantResponseSubmitted.referenceForDefendant;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
@@ -114,10 +110,9 @@ public class NotificationToDefendantService {
             .getResponseByClaimantEmailToDefendant();
         if (claim.getResponse().isPresent()) {
             Party party = claim.getResponse().get().getDefendant();
-            ClaimantResponse claimantResponse = claim.getClaimantResponse().orElse(null);
             if (PartyUtils.isCompanyOrOrganisation(party)
-                && (claimantResponse != null)
-                && claimantResponse.getType().equals(ClaimantResponseType.REJECTION)) {
+                && claim.getClaimantResponse()
+                .filter(value -> value.getType().equals(ClaimantResponseType.REJECTION)).isPresent()) {
                 return notificationsProperties
                     .getTemplates()
                     .getEmail()
