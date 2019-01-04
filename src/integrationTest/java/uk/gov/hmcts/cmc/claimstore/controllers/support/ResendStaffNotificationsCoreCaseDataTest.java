@@ -159,9 +159,11 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
 
         assertThat(emailDataArgument.getValue().getTo()).isEqualTo("recipient@example.com");
         assertThat(emailDataArgument.getValue().getSubject())
-            .isEqualTo("Civil Money Claim defence submitted: John Rambo v John Smith " + CASE_REFERENCE);
+            .isEqualTo("Civil Money Claim full admission submitted: Pay by instalments "
+                + CASE_REFERENCE
+                + " - Jan Clark v Mary Richards");
         assertThat(emailDataArgument.getValue().getMessage()).contains(
-            "The defendant has submitted a full defence which is attached as a PDF",
+            "Defendant's details can be found on the attached defence copy. Additional contact details are:",
             "Email: j.smith@example.com",
             "Mobile number: 07873727165"
         );

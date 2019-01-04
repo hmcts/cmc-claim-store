@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.assertj.core.util.Maps;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
@@ -47,7 +46,6 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
         "feature_toggles.reminderEmails=true"
     }
 )
-@Ignore
 public class RequestMoreTimeForResponseWithCoreCaseDataTest extends BaseIntegrationTest {
 
     private static final String DEFENDANT_ID = "100";
@@ -105,6 +103,7 @@ public class RequestMoreTimeForResponseWithCoreCaseDataTest extends BaseIntegrat
         MvcResult result = makeRequest(claimData.getExternalId().toString())
             .andExpect(status().isOk())
             .andReturn();
+
         Claim claim = deserializeObjectFrom(result, Claim.class);
 
         verify(notificationClient, times(3))

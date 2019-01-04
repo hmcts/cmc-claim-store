@@ -134,6 +134,11 @@ public final class SampleClaim {
         return builder().build();
     }
 
+    public static Claim getClaimWithSealedClaimLink(URI sealedClaimUri) {
+        return builder().withSealedClaimDocument(sealedClaimUri).build();
+    }
+
+
     public static Claim claim(ClaimData claimData, String referenceNumber) {
         return Claim.builder()
             .id(CLAIM_ID)
@@ -166,6 +171,10 @@ public final class SampleClaim {
 
     public static Claim getWithResponseDeadline(LocalDate responseDeadline) {
         return builder().withResponseDeadline(responseDeadline).build();
+    }
+
+    public static Claim getWithSettlement(Settlement settlement) {
+        return builder().withSettlement(settlement).build();
     }
 
     public static Claim getClaimWithNoDefendantEmail() {
@@ -204,6 +213,20 @@ public final class SampleClaim {
         settlement.makeOffer(SampleOffer.builder().build(), CLAIMANT);
         settlement.acceptCourtDetermination(CLAIMANT);
         settlement.reject(MadeBy.DEFENDANT);
+
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withResponse(SampleResponse.FullAdmission.validDefaults())
+            .withSettlement(settlement)
+            .build();
+    }
+
+    public static Claim getClaimWithSettlementReached() {
+
+        Settlement settlement = new Settlement();
+        settlement.makeOffer(SampleOffer.builder().build(), CLAIMANT);
+        settlement.acceptCourtDetermination(CLAIMANT);
+        settlement.countersign(MadeBy.DEFENDANT);
 
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())

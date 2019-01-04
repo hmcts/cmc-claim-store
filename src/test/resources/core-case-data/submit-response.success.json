@@ -1,5 +1,5 @@
 {
-  "id": 1513250998636210,
+  "id": 1516189555935242,
   "jurisdiction": "CMC",
   "case_type_id": "MoneyClaimCase",
   "created_date": "2017-12-14T11:29:58.625",
@@ -8,10 +8,10 @@
   "locked_by_user_id": null,
   "security_level": null,
   "case_data": {
-    "id": 1546441994877723,
+    "id": 1516189555935242,
     "reason": "A strong sense of entitlement that would explain my reasons of the claim, that the Roof work and leaks that followed were done below standards set by the council inspector",
     "features": "admissions",
-    "issuedOn": "2019-01-02",
+    "issuedOn": "2020-01-16",
     "timeline": [
       {
         "id": "764a0b46-7fef-4f21-b6d4-939477517b00",
@@ -41,7 +41,7 @@
         "value": {
           "partyName": "Jan Clark",
           "partyType": "INDIVIDUAL",
-          "partyPhone": "(0)207 127 0000",
+          "partyPhone": "07873727165",
           "partyAddress": {
             "PostCode": "SW1A 9AA",
             "PostTown": "London",
@@ -60,8 +60,8 @@
         "value": {
           "partyName": "Mary Richards",
           "partyType": "INDIVIDUAL",
-          "partyEmail": "dharmendra.kumar@hmcts.net",
-          "partyPhone": "07123456789",
+          "partyEmail": "j.smith@example.com",
+          "partyPhone": "07873727165",
           "defendantId": "62",
           "partyAddress": {
             "PostCode": "SW1A 9AA",
@@ -72,12 +72,12 @@
           },
           "letterHolderId": "75",
           "partyDateOfBirth": "1970-01-01",
-          "responseDeadline": "2019-01-21",
+          "responseDeadline": "2020-02-06",
           "responseDefenceType": "ALREADY_PAID",
           "responseSubmittedOn": "2019-01-02T16:02:30.834",
           "claimantProvidedName": "Mary Richards",
           "claimantProvidedType": "INDIVIDUAL",
-          "claimantProvidedEmail": "dharmendra.kumar@hmcts.net",
+          "claimantProvidedEmail": "j.smith@example.com",
           "claimantProvidedAddress": {
             "PostCode": "SW1A 9AA",
             "PostTown": "London",
@@ -97,7 +97,7 @@
     "interestType": "NO_INTEREST",
     "paymentAmount": 25,
     "paymentStatus": "Success",
-    "submitterEmail": "dharmendra.kumar@hmcts.net",
+    "submitterEmail": "j.smith@example.com",
     "amountBreakDown": [
       {
         "id": "ca15b20f-d38e-41bc-baa2-4549522790bd",
@@ -107,7 +107,7 @@
         }
       }
     ],
-    "referenceNumber": "000MC013",
+    "referenceNumber": "000MC023",
     "paymentReference": "RC-1546-4419-9390-7385",
     "feeAmountInPennies": 2500
   },

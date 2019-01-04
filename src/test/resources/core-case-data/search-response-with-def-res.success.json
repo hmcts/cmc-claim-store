@@ -40,7 +40,7 @@
         "value": {
           "partyName": "Jan Clark",
           "partyType": "INDIVIDUAL",
-          "partyPhone": "(0)207 127 0000",
+          "partyPhone": "07873727165",
           "partyAddress": {
             "PostCode": "SW1A 9AA",
             "PostTown": "London",
@@ -59,8 +59,8 @@
         "value": {
           "partyName": "Mary Richards",
           "partyType": "INDIVIDUAL",
-          "partyEmail": "dharmendra.kumar@hmcts.net",
-          "partyPhone": "07123456789",
+          "partyEmail": "j.smith@example.com",
+          "partyPhone": "07873727165",
           "defendantId": "62",
           "partyAddress": {
             "PostCode": "SW1A 9AA",
@@ -137,7 +137,7 @@
           "responseSubmittedOn": "2019-01-03T10:07:07.888",
           "claimantProvidedName": "Mary Richards",
           "claimantProvidedType": "INDIVIDUAL",
-          "claimantProvidedEmail": "dharmendra.kumar@hmcts.net",
+          "claimantProvidedEmail": "j.smith@example.com",
           "claimantProvidedAddress": {
             "PostCode": "SW1A 9AA",
             "PostTown": "London",
@@ -164,7 +164,7 @@
     "interestType": "NO_INTEREST",
     "paymentAmount": 25,
     "paymentStatus": "Success",
-    "submitterEmail": "dharmendra.kumar@hmcts.net",
+    "submitterEmail": "j.smith@example.com",
     "amountBreakDown": [
       {
         "id": "5a44b87f-32d8-4b32-9d11-06fe0623c040",
@@ -174,7 +174,7 @@
         }
       }
     ],
-    "referenceNumber": "000MC021",
+    "referenceNumber": "000MC023",
     "paymentReference": "RC-1546-5072-4323-8255",
     "feeAmountInPennies": 2500
   }
