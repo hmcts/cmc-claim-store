@@ -15,7 +15,6 @@ import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
-import uk.gov.hmcts.cmc.claimstore.events.claim.SupportClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
@@ -101,21 +100,18 @@ public class SupportController {
         }
     }
 
-    @PutMapping("/claim/event/{event}/resend-multiple-notifications")
+    @PutMapping("/claim/resend-multiple-notifications")
     @ApiOperation("Resend notifications for multiple claims associated with the event provided")
     public void resendMultipleNotifications(
-        @PathVariable("event") String event,
         @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation,
         @RequestHeader(value = "ReferenceNumbers") List<String> referenceNumbers
     ) throws ServletRequestBindingException {
-        List<Claim> existingClaims = checkClaimsExist(referenceNumbers);
-        switch (event) {
-            case "resend-to-rpa":
-                resendClaimsToRPA(existingClaims, authorisation);
-                break;
-            default:
-                throw new NotFoundException("Event " + event + " is not supported");
+        if (referenceNumbers.isEmpty())
+        {
+            throw new IllegalArgumentException("Reference Numbers not supplied");
         }
+        List<Claim> existingClaims = checkClaimsExist(referenceNumbers);
+        resendClaimsToRPA(existingClaims, authorisation);
     }
 
     private void resendStaffNotificationCCJRequestSubmitted(Claim claim, String authorisation) {
@@ -184,18 +180,18 @@ public class SupportController {
         }
 
         for (Claim claim: claims) {
+            GeneratePinResponse pinResponse = userService
+                .generatePin(claim.getClaimData().getDefendant().getName(), authorisation);
+
+            String fullName = userService.getUserDetails(authorisation).getFullName();
+
             documentGenerator.generateForNonRepresentedRPA(
-                new SupportClaimIssuedEvent(claim, authorisation)
+                new CitizenClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation)
             );
         }
     }
 
     private List<Claim> checkClaimsExist(List<String> referenceNumbers) {
-        if (referenceNumbers.isEmpty())
-        {
-            throw new NullPointerException("Reference Numbers not supplied");
-        }
-
         List<Claim> claims  = new ArrayList<>();
         for (String referenceNumber: referenceNumbers) {
             Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)

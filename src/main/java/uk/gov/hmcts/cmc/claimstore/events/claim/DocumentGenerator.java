@@ -65,7 +65,13 @@ public class DocumentGenerator {
     }
 
     @EventListener
-    public void generateForNonRepresentedRPA(SupportClaimIssuedEvent event) {
-        publisher.publishEvent(new DocumentGeneratedEvent(event.getClaim(), event.getAuthorisation()));
+    public void generateForNonRepresentedRPA(CitizenClaimIssuedEvent event) {
+        Document sealedClaimDoc = citizenServiceDocumentsService.sealedClaimDocument(event.getClaim());
+
+        PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(event.getClaim().getReferenceNumber()),
+            sealedClaimPdfService.createPdf(event.getClaim()));
+
+        publisher.publishEvent(new DocumentGeneratedEvent(event.getClaim(), event.getAuthorisation(),
+            sealedClaim));
     }
 }
