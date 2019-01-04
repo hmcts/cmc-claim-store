@@ -100,9 +100,9 @@ public class SupportController {
         }
     }
 
-    @PutMapping("/claim/resend-multiple-notifications")
-    @ApiOperation("Resend notifications for multiple claims associated with the event provided")
-    public void resendMultipleNotifications(
+    @PutMapping("/claim/resend-rpa-notifications")
+    @ApiOperation("Resend notifications for multiple claims")
+    public void resendRPANotifications(
         @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation,
         @RequestHeader(value = "ReferenceNumbers") List<String> referenceNumbers
     ) throws ServletRequestBindingException {
