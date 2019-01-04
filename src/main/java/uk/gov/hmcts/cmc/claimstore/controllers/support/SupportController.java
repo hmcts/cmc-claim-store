@@ -108,7 +108,7 @@ public class SupportController {
     ) throws ServletRequestBindingException {
         if (referenceNumbers.isEmpty())
         {
-            throw new IllegalArgumentException("Reference Numbers not supplied");
+            throw new IllegalArgumentException("Reference numbers not supplied");
         }
         List<Claim> existingClaims = checkClaimsExist(referenceNumbers);
         resendClaimsToRPA(existingClaims, authorisation);
