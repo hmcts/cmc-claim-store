@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -108,8 +109,9 @@ public class NotificationToDefendantService {
             .getTemplates()
             .getEmail()
             .getResponseByClaimantEmailToDefendant();
-        if (claim.getResponse().isPresent()) {
-            Party party = claim.getResponse().get().getDefendant();
+        Response response = claim.getResponse().orElse(null);
+        if (response != null) {
+            Party party = response.getDefendant();
             if (PartyUtils.isCompanyOrOrganisation(party)
                 && claim.getClaimantResponse()
                 .filter(value -> value.getType().equals(ClaimantResponseType.REJECTION)).isPresent()) {
