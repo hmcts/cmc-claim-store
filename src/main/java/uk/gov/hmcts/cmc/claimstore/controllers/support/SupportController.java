@@ -106,8 +106,7 @@ public class SupportController {
         @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation,
         @RequestHeader(value = "ReferenceNumbers") List<String> referenceNumbers
     ) throws ServletRequestBindingException {
-        if (referenceNumbers.isEmpty())
-        {
+        if (referenceNumbers.isEmpty()) {
             throw new IllegalArgumentException("Reference numbers not supplied");
         }
         List<Claim> existingClaims = checkClaimsExist(referenceNumbers);
