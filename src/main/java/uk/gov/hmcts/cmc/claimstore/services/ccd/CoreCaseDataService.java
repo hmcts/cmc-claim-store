@@ -229,11 +229,10 @@ public class CoreCaseDataService {
 
     public CaseDetails saveCountyCourtJudgment(
         String authorisation,
-        Claim claim,
+        Long caseId,
         CountyCourtJudgment countyCourtJudgment
     ) {
         CaseEvent caseEvent = getCCJEvent(countyCourtJudgment.getCcjType());
-        Long caseId = claim.getId();
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
 
@@ -321,13 +320,12 @@ public class CoreCaseDataService {
     }
 
     public CaseDetails saveDefendantResponse(
-        Claim claim,
+        Long caseId,
         String defendantEmail,
         Response response,
         String authorisation
     ) {
         CaseEvent caseEvent = CaseEvent.valueOf(getResponseTypeName(response));
-        Long caseId = claim.getId();
 
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
@@ -380,12 +378,11 @@ public class CoreCaseDataService {
     }
 
     public Claim saveClaimantResponse(
-        Claim claim,
+        Long caseId,
         ClaimantResponse response,
         String authorisation
     ) {
         CaseEvent caseEvent = CaseEvent.valueOf("CLAIMANT_RESPONSE_" + response.getType().name());
-        Long caseId = claim.getId();
 
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
@@ -425,13 +422,11 @@ public class CoreCaseDataService {
     }
 
     public CaseDetails saveSettlement(
-        Claim claim,
+        Long caseId,
         Settlement settlement,
         String authorisation,
         CaseEvent caseEvent
     ) {
-        Long caseId = claim.getId();
-
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
 
@@ -468,14 +463,12 @@ public class CoreCaseDataService {
     }
 
     public CaseDetails reachSettlementAgreement(
-        Claim claim,
+        Long caseId,
         Settlement settlement,
         LocalDateTime settlementReachedAt,
         String authorisation,
         CaseEvent caseEvent
     ) {
-        Long caseId = claim.getId();
-
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
 
@@ -514,11 +507,9 @@ public class CoreCaseDataService {
 
     public CaseDetails updateResponseDeadline(
         String authorisation,
-        Claim claim,
+        Long caseId,
         LocalDate newResponseDeadline
     ) {
-        Long caseId = claim.getId();
-
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
 
@@ -804,9 +795,7 @@ public class CoreCaseDataService {
         return jsonMapper.fromMap(caseData, CCDCase.class);
     }
 
-    public void saveDirectionsQuestionnaireDeadline(Claim claim, LocalDate dqDeadline, String authorisation) {
-        Long caseId = claim.getId();
-
+    public void saveDirectionsQuestionnaireDeadline(Long caseId, LocalDate dqDeadline, String authorisation) {
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
 
