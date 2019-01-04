@@ -63,4 +63,9 @@ public class DocumentGenerator {
 
         publisher.publishEvent(new DocumentGeneratedEvent(event.getClaim(), event.getAuthorisation(), sealedClaim));
     }
+
+    @EventListener
+    public void generateForNonRepresentedRPA(SupportClaimIssuedEvent event) {
+        publisher.publishEvent(new DocumentGeneratedEvent(event.getClaim(), event.getAuthorisation()));
+    }
 }

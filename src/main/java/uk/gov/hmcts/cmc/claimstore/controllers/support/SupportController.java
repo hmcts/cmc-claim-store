@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
+import uk.gov.hmcts.cmc.claimstore.events.claim.SupportClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
@@ -30,6 +31,9 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/support")
@@ -69,7 +73,8 @@ public class SupportController {
     public void resendStaffNotifications(
         @PathVariable("referenceNumber") String referenceNumber,
         @PathVariable("event") String event,
-        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation,
+        @RequestHeader(value = "ReferenceNumbers", required = false) List<String> referenceNumbers
     ) throws ServletRequestBindingException {
 
         Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
@@ -90,6 +95,23 @@ public class SupportController {
                 break;
             case "offer-accepted":
                 resendStaffNotificationOnAgreementCountersigned(claim);
+                break;
+            default:
+                throw new NotFoundException("Event " + event + " is not supported");
+        }
+    }
+
+    @PutMapping("/claim/event/{event}/resend-multiple-notifications")
+    @ApiOperation("Resend notifications for multiple claims associated with the event provided")
+    public void resendMultipleNotifications(
+        @PathVariable("event") String event,
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation,
+        @RequestHeader(value = "ReferenceNumbers") List<String> referenceNumbers
+    ) throws ServletRequestBindingException {
+        List<Claim> existingClaims = checkClaimsExist(referenceNumbers);
+        switch (event) {
+            case "resend-to-rpa":
+                resendClaimsToRPA(existingClaims, authorisation);
                 break;
             default:
                 throw new NotFoundException("Event " + event + " is not supported");
@@ -154,6 +176,34 @@ public class SupportController {
         }
         AgreementCountersignedEvent event = new AgreementCountersignedEvent(claim, null);
         agreementCountersignedStaffNotificationHandler.onAgreementCountersigned(event);
+    }
+
+    private void resendClaimsToRPA(List<Claim> claims, String authorisation) {
+        if (StringUtils.isBlank(authorisation)) {
+            throw new BadRequestException("Authorisation is required");
+        }
+
+        for (Claim claim: claims) {
+            documentGenerator.generateForNonRepresentedRPA(
+                new SupportClaimIssuedEvent(claim, authorisation)
+            );
+        }
+    }
+
+    private List<Claim> checkClaimsExist(List<String> referenceNumbers) {
+        if (referenceNumbers.isEmpty())
+        {
+            throw new NullPointerException("Reference Numbers not supplied");
+        }
+
+        List<Claim> claims  = new ArrayList<>();
+        for (String referenceNumber: referenceNumbers) {
+            Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
+                .orElseThrow(() -> new NotFoundException(CLAIM + referenceNumber + " does not exist"));
+
+            claims.add(claim);
+        }
+        return claims;
     }
 
 }
