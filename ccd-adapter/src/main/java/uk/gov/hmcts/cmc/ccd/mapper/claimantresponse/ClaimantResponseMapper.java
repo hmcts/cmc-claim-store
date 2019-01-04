@@ -70,12 +70,15 @@ public class ClaimantResponseMapper {
         }
         if (ccdClaimantResponse.getClaimantResponseType() == CCDClaimantResponseType.ACCEPTATION) {
             CCDResponseAcceptation ccdResponseAcceptation = (CCDResponseAcceptation) ccdClaimantResponse;
-            claimBuilder.claimantResponse(ResponseAcceptation.builder()
-                .amountPaid(ccdResponseAcceptation.getAmountPaid())
-                .formaliseOption(FormaliseOption.valueOf(ccdResponseAcceptation.getFormaliseOption().name()))
+            ResponseAcceptation.ResponseAcceptationBuilder responseAcceptationBuilder = ResponseAcceptation.builder();
+            responseAcceptationBuilder.amountPaid(ccdResponseAcceptation.getAmountPaid())
                 .claimantPaymentIntention(paymentIntentionMapper.from(ccdResponseAcceptation
-                    .getClaimantPaymentIntention()))
-                .build())
+                    .getClaimantPaymentIntention()));
+            if (ccdResponseAcceptation.getFormaliseOption() != null) {
+                responseAcceptationBuilder.formaliseOption(FormaliseOption.valueOf(ccdResponseAcceptation
+                                                .getFormaliseOption().name()));
+            }
+            claimBuilder.claimantResponse(responseAcceptationBuilder.build())
                 .claimantRespondedAt(ccdClaimantResponse.getSubmittedOn());
         } else if (ccdClaimantResponse.getClaimantResponseType() == CCDClaimantResponseType.REJECTION) {
             CCDResponseRejection ccdResponseRejection = (CCDResponseRejection) ccdClaimantResponse;

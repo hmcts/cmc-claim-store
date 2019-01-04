@@ -1,8 +1,9 @@
 package uk.gov.hmcts.cmc.ccd.assertion.mapper;
 
-import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,6 +35,9 @@ public class ClaimantResponseMapperTest {
     private ClaimantResponseMapper mapper;
 
     private Claim.ClaimBuilder claimBuilder;
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Before
     public void setUp() {
@@ -95,7 +99,7 @@ public class ClaimantResponseMapperTest {
         if (claim.getClaimantResponse().isPresent()) {
             assertThat((ResponseAcceptation) claim.getClaimantResponse().get()).isEqualTo(ccdResponse);
         }
-        claim.getClaimantRespondedAt().ifPresent(Assert::assertNotNull);
+        assertNotNull(claim.getClaimantRespondedAt().orElse(null));
     }
 
     @Test
@@ -107,7 +111,7 @@ public class ClaimantResponseMapperTest {
         if (claim.getClaimantResponse().isPresent()) {
             assertThat((ResponseAcceptation) claim.getClaimantResponse().get()).isEqualTo(ccdResponse);
         }
-        claim.getClaimantRespondedAt().ifPresent(Assert::assertNotNull);
+        assertNotNull(claim.getClaimantRespondedAt().orElse(null));
     }
 
     @Test
@@ -119,7 +123,14 @@ public class ClaimantResponseMapperTest {
         if (claim.getClaimantResponse().isPresent()) {
             assertThat((ResponseAcceptation) claim.getClaimantResponse().get()).isEqualTo(ccdResponse);
         }
-        claim.getClaimantRespondedAt().ifPresent(Assert::assertNotNull);
+        assertNotNull(claim.getClaimantRespondedAt().orElse(null));
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenAttemptingToMapNullClaimantResponse() {
+        expectedException.expect(NullPointerException.class);
+        expectedException.expectMessage("claim must not be null");
+        mapper.to(null);
     }
 
     @Test
@@ -130,7 +141,7 @@ public class ClaimantResponseMapperTest {
         if (claim.getClaimantResponse().isPresent()) {
             assertThat((ResponseRejection) claim.getClaimantResponse().get()).isEqualTo(ccdResponse);
         }
-        claim.getClaimantRespondedAt().ifPresent(Assert::assertNotNull);
+        assertNotNull(claim.getClaimantRespondedAt().orElse(null));
     }
 
     @Test

@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Value
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 public class CCDResponseAcceptation extends CCDClaimantResponse {
 
     private CCDPaymentIntention claimantPaymentIntention;

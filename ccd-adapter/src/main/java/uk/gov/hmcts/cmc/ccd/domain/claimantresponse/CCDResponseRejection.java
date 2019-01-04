@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Value
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 public class CCDResponseRejection extends CCDClaimantResponse {
 
     private CCDYesNoOption freeMediationOption;
