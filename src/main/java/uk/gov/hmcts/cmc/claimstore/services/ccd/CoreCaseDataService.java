@@ -56,6 +56,13 @@ public class CoreCaseDataService {
 
     public static final String CMC_CASE_UPDATE_SUMMARY = "CMC case update";
     public static final String SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION = "Submitting CMC case update";
+
+    public static final String CCD_UPDATE_FAILURE_MESSAGE
+        = "Failed updating claim in CCD store for case id %s on event %s";
+
+    public static final String CCD_STORING_FAILURE_MESSAGE
+        = "Failed storing claim in CCD store for case id %s on event %s";
+
     private final CaseMapper caseMapper;
     private final UserService userService;
     private final JsonMapper jsonMapper;
@@ -115,7 +122,10 @@ public class CoreCaseDataService {
             );
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
-                String.format("Failed storing claim in CCD store for claim %s", externalId), exception
+                String.format(CCD_STORING_FAILURE_MESSAGE,
+                    externalId,
+                    SUBMIT_PRE_PAYMENT
+                ), exception
             );
         }
     }
@@ -173,7 +183,7 @@ public class CoreCaseDataService {
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(
-                    "Failed updating claim in CCD store for claim %s on event %s",
+                    CCD_UPDATE_FAILURE_MESSAGE,
                     ccdCase.getReferenceNumber(),
                     SUBMIT_POST_PAYMENT
                 ), exception
@@ -219,7 +229,7 @@ public class CoreCaseDataService {
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(
-                    "Failed linking claim in CCD store for case id %s on event %s",
+                    CCD_UPDATE_FAILURE_MESSAGE,
                     caseId,
                     MORE_TIME_REQUESTED_ONLINE
                 ), exception
@@ -262,7 +272,7 @@ public class CoreCaseDataService {
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(
-                    "Failed linking claim in CCD store for case id %s on event %s",
+                    CCD_UPDATE_FAILURE_MESSAGE,
                     caseId,
                     caseEvent
                 ), exception
@@ -311,7 +321,7 @@ public class CoreCaseDataService {
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(
-                    "Failed linking claim in CCD store for case id %s on event %s",
+                    CCD_UPDATE_FAILURE_MESSAGE,
                     caseId,
                     LINK_SEALED_CLAIM
                 ), exception
@@ -356,7 +366,7 @@ public class CoreCaseDataService {
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(
-                    "Failed linking claim in CCD store for case id %s on event %s",
+                    CCD_UPDATE_FAILURE_MESSAGE,
                     caseId,
                     caseEvent
                 ), exception
@@ -413,7 +423,7 @@ public class CoreCaseDataService {
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(
-                    "Failed linking claim in CCD store for case id %s on event %s",
+                    CCD_UPDATE_FAILURE_MESSAGE,
                     caseId,
                     caseEvent
                 ), exception
@@ -454,7 +464,7 @@ public class CoreCaseDataService {
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(
-                    "Failed linking claim in CCD store for case id %s on event %s",
+                    CCD_UPDATE_FAILURE_MESSAGE,
                     caseId,
                     caseEvent
                 ), exception
@@ -497,7 +507,7 @@ public class CoreCaseDataService {
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(
-                    "Failed linking claim in CCD store for case id %s on event %s",
+                    CCD_UPDATE_FAILURE_MESSAGE,
                     caseId,
                     caseEvent
                 ), exception
@@ -537,7 +547,7 @@ public class CoreCaseDataService {
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(
-                    "Failed linking claim in CCD store for case id %s on event %s",
+                    CCD_UPDATE_FAILURE_MESSAGE,
                     caseId,
                     TEST_SUPPORT_UPDATE
                 ), exception
@@ -580,7 +590,7 @@ public class CoreCaseDataService {
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(
-                    "Failed linking claim in CCD store for case id %s on event %s",
+                    CCD_UPDATE_FAILURE_MESSAGE,
                     caseId,
                     caseEvent
                 ), exception
@@ -823,7 +833,7 @@ public class CoreCaseDataService {
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(
-                    "Failed linking claim in CCD store for case id %s on event %s",
+                    CCD_UPDATE_FAILURE_MESSAGE,
                     caseId,
                     DIRECTIONS_QUESTIONNAIRE_DEADLINE
                 ), exception
