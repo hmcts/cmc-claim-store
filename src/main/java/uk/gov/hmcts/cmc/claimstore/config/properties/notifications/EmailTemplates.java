@@ -102,4 +102,7 @@ public class EmailTemplates {
 
     @NotEmpty
     private String claimantSignedSettlementAgreementToClaimant;
+
+    @NotEmpty
+    private String defendantAdmissionResponseToClaimant;
 }
