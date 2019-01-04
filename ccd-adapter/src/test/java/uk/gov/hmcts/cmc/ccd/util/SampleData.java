@@ -1,6 +1,17 @@
 package uk.gov.hmcts.cmc.ccd.util;
 
-import uk.gov.hmcts.cmc.ccd.domain.*;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRow;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDefendant;
+import uk.gov.hmcts.cmc.ccd.domain.CCDInterestDateType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDInterestEndDateType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDCourtDetermination;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseAcceptation;
@@ -18,14 +29,16 @@ import java.util.UUID;
 import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.BREAK_DOWN;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.RANGE;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.*;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.COMPANY;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.ORGANISATION;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.SOLE_TRADER;
+import static uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption.SETTLEMENT;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
 
 public class SampleData {
 
-    //Utility class
     private SampleData() {
     }
 
@@ -35,6 +48,24 @@ public class SampleData {
             .claimantPaymentIntention(getCCDPaymentIntention())
             .submittedOn(LocalDateTimeFactory.nowInLocalZone())
             .formaliseOption(formaliseOption)
+            .build();
+    }
+
+    public static CCDResponseAcceptation getResponseAcceptationWithClaimantPaymentIntentionImmediately() {
+        return CCDResponseAcceptation.builder()
+            .amountPaid(BigDecimal.valueOf(123.98))
+            .claimantPaymentIntention(getCCDPaymentIntentionImmediately())
+            .submittedOn(LocalDateTimeFactory.nowInLocalZone())
+            .formaliseOption(SETTLEMENT)
+            .build();
+    }
+
+    public static CCDResponseAcceptation getResponseAcceptationWithClaimantPaymentIntentionPayBySetDate() {
+        return CCDResponseAcceptation.builder()
+            .amountPaid(BigDecimal.valueOf(123.98))
+            .claimantPaymentIntention(getCCDPaymentIntentionPayBySetDate())
+            .submittedOn(LocalDateTimeFactory.nowInLocalZone())
+            .formaliseOption(SETTLEMENT)
             .build();
     }
 
@@ -57,6 +88,26 @@ public class SampleData {
             .build();
     }
 
+    public static CCDCourtDetermination getCCDCourtDeterminationImmediately() {
+        return CCDCourtDetermination.builder()
+            .rejectionReason("Rejection reason")
+            .courtIntention(getCCDPaymentIntentionImmediately())
+            .courtDecision(getCCDPaymentIntention())
+            .disposableIncome(BigDecimal.valueOf(300))
+            .decisionType(DecisionType.COURT)
+            .build();
+    }
+
+    public static CCDCourtDetermination getCCDCourtDeterminationPayBySetDate() {
+        return CCDCourtDetermination.builder()
+            .rejectionReason("Rejection reason")
+            .courtIntention(getCCDPaymentIntentionPayBySetDate())
+            .courtDecision(getCCDPaymentIntentionPayBySetDate())
+            .disposableIncome(BigDecimal.valueOf(300))
+            .decisionType(DecisionType.COURT)
+            .build();
+    }
+
     private static CCDPaymentIntention getCCDPaymentIntention() {
         return CCDPaymentIntention.builder()
             .paymentDate(LocalDate.of(2017, 10, 12))
@@ -68,7 +119,21 @@ public class SampleData {
             .build();
     }
 
-    public static CCDAddress getCCDAddress() {
+    private static CCDPaymentIntention getCCDPaymentIntentionImmediately() {
+        return CCDPaymentIntention.builder()
+            .paymentDate(LocalDate.now())
+            .paymentOption(CCDPaymentOption.INSTALMENTS)
+            .build();
+    }
+
+    private static CCDPaymentIntention getCCDPaymentIntentionPayBySetDate() {
+        return CCDPaymentIntention.builder()
+            .paymentDate(LocalDate.now().plusDays(10))
+            .paymentOption(CCDPaymentOption.INSTALMENTS)
+            .build();
+    }
+
+    private static CCDAddress getCCDAddress() {
         return CCDAddress.builder()
             .addressLine1("line1")
             .addressLine2("line2")
@@ -84,7 +149,7 @@ public class SampleData {
             .claimantProvidedType(INDIVIDUAL)
             .claimantProvidedAddress(ccdAddress)
             .claimantProvidedName("Individual")
-            .claimantProvidedDateOfBirth(LocalDate.of(1950, 01, 01))
+            .claimantProvidedDateOfBirth(LocalDate.of(1950, 1, 1))
             .claimantProvidedServiceAddress(ccdAddress)
             .representativeOrganisationAddress(ccdAddress)
             .representativeOrganisationName("My Org")
@@ -152,7 +217,7 @@ public class SampleData {
             .partyAddress(ccdAddress)
             .partyName("Individual")
             .partyPhone("07987654321")
-            .partyDateOfBirth(LocalDate.of(1950, 01, 01))
+            .partyDateOfBirth(LocalDate.of(1950, 1, 1))
             .partyCorrespondenceAddress(ccdAddress)
             .representativeOrganisationAddress(ccdAddress)
             .representativeOrganisationName("My Org")
@@ -226,7 +291,7 @@ public class SampleData {
             = singletonList(CCDCollectionElement.<CCDDefendant>builder().value(getCCDDefendantIndividual()).build());
         return CCDCase.builder()
             .id(1L)
-            .submittedOn(LocalDateTime.of(2017, 11, 01, 10, 15, 30))
+            .submittedOn(LocalDateTime.of(2017, 11, 1, 10, 15, 30))
             .issuedOn(LocalDate.of(2017, 11, 15))
             .submitterEmail("my@email.com")
             .submitterId("123")
@@ -260,7 +325,7 @@ public class SampleData {
 
         return CCDCase.builder()
             .id(1L)
-            .submittedOn(LocalDateTime.of(2017, 11, 01, 10, 15, 30))
+            .submittedOn(LocalDateTime.of(2017, 11, 1, 10, 15, 30))
             .issuedOn(LocalDate.of(2017, 11, 15))
             .submitterEmail("my@email.com")
             .submitterId("123")

@@ -23,10 +23,10 @@ public class CCDPaymentIntention {
 
     @JsonIgnore
     public boolean hasRepaymentPlanInfo() {
-        return null == instalmentAmount
-            && null == firstPaymentDate
-            && null == paymentSchedule
-            && null == completionDate
-            && StringUtils.isBlank(paymentLength);
+        return !(null == instalmentAmount
+            || null == firstPaymentDate
+            || null == paymentSchedule
+            || null == completionDate
+            || StringUtils.isBlank(paymentLength));
     }
 }

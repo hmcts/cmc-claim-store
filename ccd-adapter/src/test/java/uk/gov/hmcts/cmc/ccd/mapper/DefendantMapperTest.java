@@ -11,11 +11,12 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDefendant;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
+
 import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDDefendantCompany;
 import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDDefendantIndividual;
 import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDDefendantOrganisation;
 import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDDefendantSoleTrader;
-import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)

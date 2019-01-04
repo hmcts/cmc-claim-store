@@ -24,7 +24,6 @@ import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import static org.junit.Assert.assertNotNull;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption.SETTLEMENT;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -42,7 +41,7 @@ public class ClaimantResponseMapperTest {
     }
 
     @Test
-    public void shouldMapCCDClaimantAcceptanceWithCCJFormalisationToClaimantAcceptance() {
+    public void shouldMapClaimantAcceptanceWithCCJFormalisationToCCDClaimantAcceptance() {
         ClaimantResponse response = SampleClaimantResponse.ClaimantResponseAcceptation.builder().build();
         Claim claim =  claimBuilder.claimantResponse(response)
             .claimantRespondedAt(LocalDateTimeFactory.nowInLocalZone())
@@ -53,7 +52,7 @@ public class ClaimantResponseMapperTest {
     }
 
     @Test
-    public void shouldMapCCDClaimantAcceptanceWithIssueCCJWithClaimantPaymentIntentionBySetDateToClaimantAcceptance() {
+    public void shouldMapClaimantAcceptanceWithClaimantPaymentIntentionBySetDateToCCDClaimantAcceptance() {
         ClaimantResponse response = SampleClaimantResponse.ClaimantResponseAcceptation.builder()
             .buildAcceptationIssueCCJWithClaimantPaymentIntentionBySetDate();
         Claim claim =  claimBuilder.claimantResponse(response)
@@ -65,37 +64,70 @@ public class ClaimantResponseMapperTest {
     }
 
     @Test
-    public void shouldMapClaimantAcceptanceWithCCJFormalisationFromCCD() {
+    public void shouldMapClaimantAcceptanceWithCourtDeterminationPayByInstalmentsToCCDClaimantAcceptance() {
+        ClaimantResponse response = SampleClaimantResponse.ClaimantResponseAcceptation.builder()
+            .buildAcceptanceIssueSettlementWithCourtDeterminationPayByInstalments();
+        Claim claim =  claimBuilder.claimantResponse(response)
+            .claimantRespondedAt(LocalDateTimeFactory.nowInLocalZone())
+            .build();
+        CCDClaimantResponse ccdResponse = mapper.to(claim);
+        assertThat((ResponseAcceptation) response).isEqualTo((CCDResponseAcceptation)ccdResponse);
+        assertNotNull(ccdResponse.getSubmittedOn());
+    }
+
+    @Test
+    public void shouldMapClaimantAcceptanceWithClaimantPaymentIntentionPayImmediatelyToCCDClaimantAcceptance() {
+        ClaimantResponse response = SampleClaimantResponse.ClaimantResponseAcceptation.builder()
+            .buildAcceptanceIssueSettlementWithClaimantPaymentIntentionPayImmediately();
+        Claim claim =  claimBuilder.claimantResponse(response)
+            .claimantRespondedAt(LocalDateTimeFactory.nowInLocalZone())
+            .build();
+        CCDClaimantResponse ccdResponse = mapper.to(claim);
+        assertThat((ResponseAcceptation) response).isEqualTo((CCDResponseAcceptation)ccdResponse);
+        assertNotNull(ccdResponse.getSubmittedOn());
+    }
+
+    @Test
+    public void shouldMapCCDResponseAcceptationWithCCJFormalisationToResponseAcceptation() {
         CCDResponseAcceptation ccdResponse = SampleData.getResponseAcceptation(CCDFormaliseOption.CCJ);
         mapper.from(ccdResponse,claimBuilder);
         Claim claim = claimBuilder.build();
-        if(claim.getClaimantResponse().isPresent()) {
+        if (claim.getClaimantResponse().isPresent()) {
             assertThat((ResponseAcceptation) claim.getClaimantResponse().get()).isEqualTo(ccdResponse);
         }
         claim.getClaimantRespondedAt().ifPresent(Assert::assertNotNull);
     }
 
-
     @Test
-    public void shouldMapClaimantAcceptanceWithSettlementFormalisationFromCCD() {
-        CCDResponseAcceptation ccdResponse = SampleData.getResponseAcceptation(SETTLEMENT);
+    public void shouldMapCCDResponseAcceptationWithClaimantPaymentIntentionImmediatelyToResponseAcceptation() {
+        CCDResponseAcceptation ccdResponse = SampleData
+            .getResponseAcceptationWithClaimantPaymentIntentionImmediately();
         mapper.from(ccdResponse,claimBuilder);
         Claim claim = claimBuilder.build();
-        if(claim.getClaimantResponse().isPresent()) {
+        if (claim.getClaimantResponse().isPresent()) {
             assertThat((ResponseAcceptation) claim.getClaimantResponse().get()).isEqualTo(ccdResponse);
         }
         claim.getClaimantRespondedAt().ifPresent(Assert::assertNotNull);
     }
 
-
-    /********************** Rejection *********************************/
+    @Test
+    public void shouldMapCCDResponseAcceptationWithClaimantPaymentIntentionPayBySetDateToResponseAcceptation() {
+        CCDResponseAcceptation ccdResponse = SampleData
+            .getResponseAcceptationWithClaimantPaymentIntentionPayBySetDate();
+        mapper.from(ccdResponse,claimBuilder);
+        Claim claim = claimBuilder.build();
+        if (claim.getClaimantResponse().isPresent()) {
+            assertThat((ResponseAcceptation) claim.getClaimantResponse().get()).isEqualTo(ccdResponse);
+        }
+        claim.getClaimantRespondedAt().ifPresent(Assert::assertNotNull);
+    }
 
     @Test
-    public void shouldMapClaimantRejectionFromCCD() {
+    public void shouldMapCCDResponseRejectionToResponseRejection() {
         CCDResponseRejection ccdResponse = SampleData.getResponseRejection();
         mapper.from(ccdResponse,claimBuilder);
         Claim claim = claimBuilder.build();
-        if(claim.getClaimantResponse().isPresent()) {
+        if (claim.getClaimantResponse().isPresent()) {
             assertThat((ResponseRejection) claim.getClaimantResponse().get()).isEqualTo(ccdResponse);
         }
         claim.getClaimantRespondedAt().ifPresent(Assert::assertNotNull);

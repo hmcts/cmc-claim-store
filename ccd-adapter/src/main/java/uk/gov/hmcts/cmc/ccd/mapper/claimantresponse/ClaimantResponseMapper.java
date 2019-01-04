@@ -77,7 +77,6 @@ public class ClaimantResponseMapper {
                     .getClaimantPaymentIntention()))
                 .build())
                 .claimantRespondedAt(ccdClaimantResponse.getSubmittedOn());
-
         } else if (ccdClaimantResponse.getClaimantResponseType() == CCDClaimantResponseType.REJECTION) {
             CCDResponseRejection ccdResponseRejection = (CCDResponseRejection) ccdClaimantResponse;
             ResponseRejection.ResponseRejectionBuilder builder = ResponseRejection.builder()
@@ -88,7 +87,9 @@ public class ClaimantResponseMapper {
             }
             claimBuilder.claimantResponse(builder.build())
                 .claimantRespondedAt(ccdClaimantResponse.getSubmittedOn());
+        } else {
+            throw new MappingException("Invalid claimant response type "
+                            + ccdClaimantResponse.getClaimantResponseType());
         }
-        throw new MappingException("Invalid claimant response type " + ccdClaimantResponse.getClaimantResponseType());
     }
 }

@@ -29,30 +29,58 @@ public class CourtDeterminationMapperTest {
 
     @Test
     public void shouldMapToCCDCourtDeterminationFromCourtDetermination() {
-        //given
         CourtDetermination courtDetermination = SampleCourtDetermination.builder()
             .disposableIncome(BigDecimal.valueOf(300))
             .courtPaymentIntention(SamplePaymentIntention.instalments())
             .courtDecision(SamplePaymentIntention.instalments())
             .decisionType(DecisionType.COURT)
             .build();
-
-        //when
         CCDCourtDetermination ccdCourtDetermination = mapper.to(courtDetermination);
-
-        //then
         assertThat(courtDetermination).isEqualTo(ccdCourtDetermination);
     }
 
     @Test
-    public void shouldMapToCourtDeterminationFromCCD() {
-        //given
+    public void shouldMapToCCDCourtDeterminationFromCourtDeterminationWithCourtPaymentIntentionPayBySetDate() {
+        CourtDetermination courtDetermination = SampleCourtDetermination.builder()
+            .disposableIncome(BigDecimal.valueOf(300))
+            .courtPaymentIntention(SamplePaymentIntention.bySetDate())
+            .courtDecision(SamplePaymentIntention.instalments())
+            .decisionType(DecisionType.COURT)
+            .build();
+        CCDCourtDetermination ccdCourtDetermination = mapper.to(courtDetermination);
+        assertThat(courtDetermination).isEqualTo(ccdCourtDetermination);
+    }
+
+    @Test
+    public void shouldMapToCCDCourtDeterminationFromCourtDeterminationWithCourtPaymentIntentionPayImmediately() {
+        CourtDetermination courtDetermination = SampleCourtDetermination.builder()
+            .disposableIncome(BigDecimal.valueOf(300))
+            .courtPaymentIntention(SamplePaymentIntention.immediately())
+            .courtDecision(SamplePaymentIntention.instalments())
+            .decisionType(DecisionType.COURT)
+            .build();
+        CCDCourtDetermination ccdCourtDetermination = mapper.to(courtDetermination);
+        assertThat(courtDetermination).isEqualTo(ccdCourtDetermination);
+    }
+
+    @Test
+    public void shouldMapToCCDCourtDeterminationWithPayByInstalmentsToCourtDetermination() {
         CCDCourtDetermination ccdCourtDetermination = SampleData.getCCDCourtDetermination();
-
-        //when
         CourtDetermination courtDetermination = mapper.from(ccdCourtDetermination);
+        assertThat(courtDetermination).isEqualTo(ccdCourtDetermination);
+    }
 
-        //then
+    @Test
+    public void shouldMapToCCDCourtDeterminationWithPayImmediatelyToCourtDetermination() {
+        CCDCourtDetermination ccdCourtDetermination = SampleData.getCCDCourtDeterminationImmediately();
+        CourtDetermination courtDetermination = mapper.from(ccdCourtDetermination);
+        assertThat(courtDetermination).isEqualTo(ccdCourtDetermination);
+    }
+
+    @Test
+    public void shouldMapToCCDCourtDeterminationWithPayBySetDateToCourtDetermination() {
+        CCDCourtDetermination ccdCourtDetermination = SampleData.getCCDCourtDeterminationPayBySetDate();
+        CourtDetermination courtDetermination = mapper.from(ccdCourtDetermination);
         assertThat(courtDetermination).isEqualTo(ccdCourtDetermination);
     }
 }
