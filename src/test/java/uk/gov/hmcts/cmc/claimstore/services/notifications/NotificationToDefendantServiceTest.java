@@ -1,14 +1,21 @@
 package uk.gov.hmcts.cmc.claimstore.services.notifications;
 
+import io.micrometer.core.instrument.Timer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 import uk.gov.service.notify.NotificationClientException;
 
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -63,15 +70,29 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
         );
     }
 
-    //WIP
     @Test
-    public void shouldSendEmailWhenClaimantRejectCompanyOrOrgRepaymentPlan() throws Exception {
+    public void shouldSendEmailWhenClaimantRejectsCompanyOrOrgRepaymentPlan() throws Exception {
+
+        Response response = SampleResponse.PartAdmission
+            .builder()
+            .withDefendantDetails(SampleParty.builder().organisation())
+            .build();
+
+        ClaimantResponse claimantResponse = SampleClaimantResponse.ClaimantResponseRejection.builder().build();
+
+        Claim claimWithCompanyOrOrgAsDef = SampleClaim.builder()
+            .withResponse(response)
+            .withClaimantResponse(claimantResponse)
+            .withDefendantEmail(DEFENDANT_EMAIL)
+            .build();
+        when(emailTemplates.getResponseByClaimantEmailToDefendant()).thenReturn(CLAIMANT_RESPONSE_TEMPLATE);
         when(emailTemplates.getClaimantRejectionResponseToCompanyOrOrganisation())
             .thenReturn(CLAIMANT_REJECT_COMPANY_OR_ORG_RESPONSE_TEMPLATE);
-        service.notifyDefendant(claim);
+
+        service.notifyDefendant(claimWithCompanyOrOrgAsDef);
 
         verify(notificationClient).sendEmail(
-            eq(CLAIMANT_RESPONSE_TEMPLATE),
+            eq(CLAIMANT_REJECT_COMPANY_OR_ORG_RESPONSE_TEMPLATE),
             eq(DEFENDANT_EMAIL),
             anyMap(),
             eq(REFERENCE)

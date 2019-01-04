@@ -21,6 +21,7 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.ClaimantResponseSubmitted.referenceForDefendant;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
@@ -98,23 +99,34 @@ public class NotificationToDefendantService {
     }
 
     private Map<String, String> aggregateParams(Claim claim) {
-        return ImmutableMap.of(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName(),
-            FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl(),
-            CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber()
-        );
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
+        parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
+        parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
+
+        return parameters;
     }
 
     private String getNotificationEmailTemplate(Claim claim) {
-        Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
-        Party party = response.getDefendant();
-        ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalArgumentException::new);
-        if(PartyUtils.isCompanyOrOrganisation(party)
-            && ClaimantResponseType.REJECTION.equals(claimantResponse.getType())) {
-            return notificationsProperties
-                .getTemplates().getEmail()
-                .getClaimantRejectionResponseToCompanyOrOrganisation();
+        String claimantResponseToDefendantTemplate = notificationsProperties
+            .getTemplates()
+            .getEmail()
+            .getResponseByClaimantEmailToDefendant();
+        if (claim.getResponse().isPresent()) {
+            Party party = claim.getResponse().get().getDefendant();
+            ClaimantResponse claimantResponse = claim.getClaimantResponse().orElse(null);
+            if (PartyUtils.isCompanyOrOrganisation(party)
+                && (claimantResponse != null)
+                && claimantResponse.getType().equals(ClaimantResponseType.REJECTION)) {
+                return notificationsProperties
+                    .getTemplates()
+                    .getEmail()
+                    .getClaimantRejectionResponseToCompanyOrOrganisation();
+            } else {
+                return claimantResponseToDefendantTemplate;
+            }
         } else {
-           return notificationsProperties.getTemplates().getEmail().getResponseByClaimantEmailToDefendant();
+            return claimantResponseToDefendantTemplate;
         }
     }
 
