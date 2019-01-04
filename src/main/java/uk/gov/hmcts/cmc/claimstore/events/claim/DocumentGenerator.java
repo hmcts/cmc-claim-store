@@ -64,7 +64,6 @@ public class DocumentGenerator {
         publisher.publishEvent(new DocumentGeneratedEvent(event.getClaim(), event.getAuthorisation(), sealedClaim));
     }
 
-    @EventListener
     public void generateForCitizenRPA(CitizenClaimIssuedEvent event) {
         PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(event.getClaim().getReferenceNumber()),
             sealedClaimPdfService.createPdf(event.getClaim()));
