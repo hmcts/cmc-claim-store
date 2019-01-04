@@ -65,7 +65,7 @@ public class DocumentGenerator {
     }
 
     @EventListener
-    public void generateForNonRepresentedRPA(CitizenClaimIssuedEvent event) {
+    public void generateForCitizenRPA(CitizenClaimIssuedEvent event) {
         Document sealedClaimDoc = citizenServiceDocumentsService.sealedClaimDocument(event.getClaim());
 
         PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(event.getClaim().getReferenceNumber()),

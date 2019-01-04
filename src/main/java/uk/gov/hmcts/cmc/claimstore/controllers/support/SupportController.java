@@ -101,7 +101,7 @@ public class SupportController {
     }
 
     @PutMapping("/claim/resend-rpa-notifications")
-    @ApiOperation("Resend notifications for multiple claims")
+    @ApiOperation("Resend notifications for multiple citizen claims")
     public void resendRPANotifications(
         @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation,
         @RequestHeader(value = "ReferenceNumbers") List<String> referenceNumbers
@@ -185,7 +185,7 @@ public class SupportController {
 
             String fullName = userService.getUserDetails(authorisation).getFullName();
 
-            documentGenerator.generateForNonRepresentedRPA(
+            documentGenerator.generateForCitizenRPA(
                 new CitizenClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation)
             );
         }
