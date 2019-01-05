@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.tests.smoke;
 
 import io.restassured.RestAssured;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ public class RetrieveCaseTest extends BaseTest {
 
     private static final Pattern jsonListPattern = Pattern.compile("^\\[.*\\]$");
 
+    @Ignore
     @Test
     public void shouldBeAbleToRetrieveCasesBySubmitterId() {
         User citizen = bootstrap.getSmokeTestCitizen();
@@ -22,6 +24,7 @@ public class RetrieveCaseTest extends BaseTest {
             citizen.getAuthorisation());
     }
 
+    @Ignore
     @Test
     public void shouldBeAbleToRetrieveCasesByDefendantId() {
         User citizen = bootstrap.getSmokeTestCitizen();
