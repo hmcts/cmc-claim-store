@@ -287,7 +287,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
             return null;
         }
         return Unemployment.builder()
-            .retired(retired != null ? retired.toBoolean() : false)
+            .retired(retired != null && retired.toBoolean())
             .other(employmentDetails)
             .unemployed(unemployed)
             .build();
