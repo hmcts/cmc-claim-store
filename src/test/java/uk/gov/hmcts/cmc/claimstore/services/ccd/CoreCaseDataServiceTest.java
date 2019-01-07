@@ -221,7 +221,7 @@ public class CoreCaseDataServiceTest {
 
     @Test
     public void requestMoreTimeForResponseShouldReturnClaim() {
-        Claim providedClaim = SampleClaim.getWithResponse(null);
+        Claim providedClaim = SampleClaim.withNoResponse();
         Claim expectedClaim = SampleClaim.claim(providedClaim.getClaimData(), "000MC001");
 
         when(jsonMapper.fromMap(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());

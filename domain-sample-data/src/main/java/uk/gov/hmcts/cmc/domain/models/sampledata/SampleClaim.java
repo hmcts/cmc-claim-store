@@ -119,6 +119,12 @@ public final class SampleClaim {
             .build();
     }
 
+    public static Claim withNoResponse() {
+        return builder()
+            .withClaimData(SampleClaimData.validDefaults())
+            .build();
+    }
+
     public static Claim getWithClaimantResponse() {
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
