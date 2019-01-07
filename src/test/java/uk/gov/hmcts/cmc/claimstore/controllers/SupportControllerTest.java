@@ -12,8 +12,11 @@ import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedStaffNotif
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
+import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
@@ -21,15 +24,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Collections.singletonList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SupportControllerTest {
 
     private static final String AUTHORISATION = "Bearer: aaa";
+    private static final UserDetails USER_DETAILS = SampleUserDetails.builder().build();
 
     @Mock
     private ClaimService claimService;
@@ -68,25 +72,16 @@ public class SupportControllerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldNotResendRPANotificationsWhenRequestBodyIsEmpty() {
-        controller.resendRPANotifications(AUTHORISATION, eq(singletonList("")));
+        List<String> sendList = new ArrayList<>();
+        controller.resendRPANotifications(AUTHORISATION, sendList);
     }
 
     @Test(expected = NotFoundException.class)
-    public void shouldNotResendRPANotificationsWhenRequestBodyClaimsDoNotExist() {
-        // given
-        when(claimService.getClaimByReferenceAnonymous(eq("000CM001"))).thenReturn(Optional.of(sampleClaim));
-
-        // when
-        controller.resendRPANotifications(AUTHORISATION, eq(singletonList("000CM003")));
-    }
-
-    @Test(expected = NotFoundException.class)
-    public void shouldNotResendRPANotificationsWhenRequestBodyClaimsDoesNotExistForMutlipleClaims() {
+    public void shouldNotResendRPANotificationsWhenRequestBodyClaimsDoesNotExistForMultipleClaims() {
         // given
         List<String> sendList = new ArrayList<>();
         sendList.add("000CM001");
         sendList.add("000CM003");
-
         when(claimService.getClaimByReferenceAnonymous(eq("000CM001"))).thenReturn(Optional.of(sampleClaim));
 
         // when
@@ -98,13 +93,17 @@ public class SupportControllerTest {
     @Test
     public void shouldResendRPANotifications() {
         // given
+        List<String> sendList = new ArrayList<>();
+        sendList.add("000CM001");
+        GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", "333");
+        given(userService.generatePin(anyString(), eq(AUTHORISATION))).willReturn(pinResponse);
         when(claimService.getClaimByReferenceAnonymous(eq("000CM001"))).thenReturn(Optional.of(sampleClaim));
+        when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(USER_DETAILS);
 
         // when
-        controller.resendRPANotifications(eq(AUTHORISATION), eq(singletonList("000CM001")));
+        controller.resendRPANotifications(AUTHORISATION, sendList);
 
         // then
-        verify(userService).authenticateUser(any(), any());
         verify(documentGenerator).generateForCitizenRPA(any());
 
     }
