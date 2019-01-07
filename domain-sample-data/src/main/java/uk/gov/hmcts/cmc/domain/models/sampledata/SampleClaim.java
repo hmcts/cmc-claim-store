@@ -147,6 +147,7 @@ public final class SampleClaim {
             .issuedOn(ISSUE_DATE)
             .responseDeadline(RESPONSE_DEADLINE)
             .moreTimeRequested(NOT_REQUESTED_FOR_MORE_TIME)
+            .respondedAt(LocalDateTime.now())
             .submitterEmail(SUBMITTER_EMAIL)
             .build();
     }
