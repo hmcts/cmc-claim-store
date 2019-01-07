@@ -20,15 +20,14 @@ public class DefendantMapperTest {
     private DefendantMapper mapper;
 
     @Test(expected = NullPointerException.class)
-    public void mapToThrowsNullpointerWhenTheirDetailsArgIsNull() {
+    public void mapToShouldThrowExceptionWhenTheirDetailsIsNull() {
         mapper.to(null, SampleClaim.getDefault());
     }
 
     @Test(expected = NullPointerException.class)
-    public void mapToThrowsNullpointerWhenClaimArgIsNull() {
+    public void mapToShouldThrowExceptionWhenClaimIsNull() {
         TheirDetails theirDetails = SampleTheirDetails.builder().organisationDetails();
         mapper.to(theirDetails, null);
     }
 
-    //TODO More Tests being added as part of next PR.
 }
