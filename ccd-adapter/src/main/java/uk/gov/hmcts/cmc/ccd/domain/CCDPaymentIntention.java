@@ -1,11 +1,9 @@
-package uk.gov.hmcts.cmc.ccd.domain.response;
+package uk.gov.hmcts.cmc.ccd.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Value;
 import org.apache.commons.lang3.StringUtils;
-import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;
-import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

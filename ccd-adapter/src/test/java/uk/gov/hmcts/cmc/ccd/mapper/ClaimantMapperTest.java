@@ -17,11 +17,6 @@ import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDClaimantIndividual;
 import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDClaimantOrganisation;
 import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDClaimantSoleTrader;
 
-import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDClaimantCompany;
-import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDClaimantIndividual;
-import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDClaimantOrganisation;
-import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDClaimantSoleTrader;
-
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
 @RunWith(SpringJUnit4ClassRunner.class)

@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -18,9 +19,9 @@ public class CCDResponseRejection extends CCDClaimantResponse {
     @Builder
     public CCDResponseRejection(BigDecimal amountPaid,
                                 LocalDateTime submittedOn,
-                                 CCDYesNoOption freeMediationOption,
-                                 String reason) {
-        super(amountPaid,submittedOn);
+                                CCDYesNoOption freeMediationOption,
+                                String reason) {
+        super(amountPaid, submittedOn);
         this.freeMediationOption = freeMediationOption;
         this.reason = reason;
     }
