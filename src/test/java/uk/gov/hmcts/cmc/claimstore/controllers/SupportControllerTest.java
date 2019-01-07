@@ -87,6 +87,7 @@ public class SupportControllerTest {
         // when
         controller.resendRPANotifications(AUTHORISATION, sendList);
 
+        // then
         verify(documentGenerator, never()).generateForCitizenRPA(any());
     }
 
@@ -97,10 +98,10 @@ public class SupportControllerTest {
         sendList.add("000CM001");
         GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", "333");
         given(userService.generatePin(anyString(), eq(AUTHORISATION))).willReturn(pinResponse);
-        when(claimService.getClaimByReferenceAnonymous(eq("000CM001"))).thenReturn(Optional.of(sampleClaim));
-        when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(USER_DETAILS);
 
         // when
+        when(claimService.getClaimByReferenceAnonymous(eq("000CM001"))).thenReturn(Optional.of(sampleClaim));
+        when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(USER_DETAILS);
         controller.resendRPANotifications(AUTHORISATION, sendList);
 
         // then
