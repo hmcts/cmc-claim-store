@@ -80,6 +80,7 @@ public class CCDDefendant {
     private CCDStatementOfMeans statementOfMeans;
 
     private LocalDate paidInFullDate;
+    private LocalDate directionsQuestionnaireDeadline;
 
     private List<CCDCollectionElement<CCDPartyStatement>> settlementPartyStatements;
     private LocalDate settlementReachedAt;

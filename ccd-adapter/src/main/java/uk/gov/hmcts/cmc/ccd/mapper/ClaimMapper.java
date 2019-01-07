@@ -72,7 +72,7 @@ public class ClaimMapper {
             .ifPresent(housingDisrepair -> housingDisrepairMapper.to(housingDisrepair, builder));
 
         builder.claimants(claimData.getClaimants().stream()
-            .map(claimantMapper::to)
+            .map(ccdClaimant -> claimantMapper.to(ccdClaimant, claim))
             .map(this::mapClaimantToValue)
             .collect(Collectors.toList()));
 
