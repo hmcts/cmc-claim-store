@@ -53,8 +53,8 @@ public class CountersignSettlementAgreementActionsHandler {
             claim.getDefendantEmail(),
             notificationsProperties.getTemplates().getEmail().getDefendantSignedSettlementAgreementToDefendant(),
             parameters,
-        NotificationReferenceBuilder.AgreementCounterSigned.referenceForDefendant(referenceNumber,
-            NotificationReferenceBuilder.DEFENDANT)
+            NotificationReferenceBuilder.AgreementCounterSigned.referenceForDefendant(referenceNumber,
+                NotificationReferenceBuilder.DEFENDANT)
         );
     }
 
