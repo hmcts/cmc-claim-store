@@ -1,13 +1,15 @@
 package uk.gov.hmcts.cmc.ccd.domain.claimantresponse;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Value;
-import uk.gov.hmcts.cmc.ccd.domain.response.CCDPaymentIntention;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentIntention;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Value
+@EqualsAndHashCode(callSuper = true)
 public class CCDResponseAcceptation extends CCDClaimantResponse {
 
     private CCDPaymentIntention claimantPaymentIntention;
@@ -22,7 +24,7 @@ public class CCDResponseAcceptation extends CCDClaimantResponse {
                                   LocalDateTime submittedOn,
                                   CCDPaymentIntention claimantPaymentIntention,
                                   CCDFormaliseOption formaliseOption) {
-        super(amountPaid,submittedOn);
+        super(amountPaid, submittedOn);
         this.claimantPaymentIntention = claimantPaymentIntention;
         this.formaliseOption = formaliseOption;
     }

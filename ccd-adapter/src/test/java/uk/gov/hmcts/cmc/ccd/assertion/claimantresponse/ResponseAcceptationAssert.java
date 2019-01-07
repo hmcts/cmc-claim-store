@@ -6,9 +6,6 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 
 import java.util.Objects;
 
-import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
-
-
 public class ResponseAcceptationAssert extends AbstractAssert<ResponseAcceptationAssert, ResponseAcceptation> {
     public ResponseAcceptationAssert(ResponseAcceptation responseAcceptation) {
         super(responseAcceptation, ResponseAcceptationAssert.class);
@@ -31,9 +28,6 @@ public class ResponseAcceptationAssert extends AbstractAssert<ResponseAcceptatio
                     ccdResponseAcceptation.getAmountPaid(), amountPaid);
             }
         });
-
-        actual.getClaimantPaymentIntention().ifPresent(paymentIntention ->
-            assertThat(paymentIntention).isEqualTo(ccdResponseAcceptation.getClaimantPaymentIntention()));
 
         return this;
     }
