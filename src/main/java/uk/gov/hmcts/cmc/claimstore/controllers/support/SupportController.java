@@ -5,9 +5,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpHeaders;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,6 +30,9 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/support")
@@ -69,8 +72,7 @@ public class SupportController {
     public void resendStaffNotifications(
         @PathVariable("referenceNumber") String referenceNumber,
         @PathVariable("event") String event,
-        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation
-    ) throws ServletRequestBindingException {
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation) {
 
         Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
             .orElseThrow(() -> new NotFoundException(CLAIM + referenceNumber + " does not exist"));
@@ -94,6 +96,18 @@ public class SupportController {
             default:
                 throw new NotFoundException("Event " + event + " is not supported");
         }
+    }
+
+    @PutMapping("/claim/resend-rpa-notifications")
+    @ApiOperation("Resend notifications for multiple citizen claims")
+    public void resendRPANotifications(
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation,
+        @RequestBody List<String> referenceNumbers) {
+        if (referenceNumbers.isEmpty()) {
+            throw new IllegalArgumentException("Reference numbers not supplied");
+        }
+        List<Claim> existingClaims = checkClaimsExist(referenceNumbers);
+        resendClaimsToRPA(existingClaims, authorisation);
     }
 
     private void resendStaffNotificationCCJRequestSubmitted(Claim claim, String authorisation) {
@@ -154,6 +168,34 @@ public class SupportController {
         }
         AgreementCountersignedEvent event = new AgreementCountersignedEvent(claim, null);
         agreementCountersignedStaffNotificationHandler.onAgreementCountersigned(event);
+    }
+
+    private void resendClaimsToRPA(List<Claim> claims, String authorisation) {
+        if (StringUtils.isBlank(authorisation)) {
+            throw new BadRequestException("Authorisation is required");
+        }
+
+        for (Claim claim: claims) {
+            GeneratePinResponse pinResponse = userService
+                .generatePin(claim.getClaimData().getDefendant().getName(), authorisation);
+
+            String fullName = userService.getUserDetails(authorisation).getFullName();
+
+            documentGenerator.generateForCitizenRPA(
+                new CitizenClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation)
+            );
+        }
+    }
+
+    private List<Claim> checkClaimsExist(List<String> referenceNumbers) {
+        List<Claim> claims  = new ArrayList<>();
+        for (String referenceNumber: referenceNumbers) {
+            Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
+                .orElseThrow(() -> new NotFoundException(CLAIM + referenceNumber + " does not exist"));
+
+            claims.add(claim);
+        }
+        return claims;
     }
 
 }
