@@ -78,8 +78,8 @@ public class Assertions {
         return new ClaimantAssert(party);
     }
 
-    public static DefendantAssert assertThat(TheirDetails theirDetails) {
-        return new DefendantAssert(theirDetails);
+    public static TheirDetailsAssert assertThat(TheirDetails theirDetails) {
+        return new TheirDetailsAssert(theirDetails);
     }
 
     public static ChildAssert assertThat(Child child) {
