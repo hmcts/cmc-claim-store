@@ -104,5 +104,11 @@ public class EmailTemplates {
     private String claimantSignedSettlementAgreementToClaimant;
 
     @NotEmpty
+    private String defendantSignedSettlementAgreementToDefendant;
+
+    @NotEmpty
+    private String defendantSignedSettlementAgreementToClaimant;
+
+    @NotEmpty
     private String defendantAdmissionResponseToClaimant;
 }
