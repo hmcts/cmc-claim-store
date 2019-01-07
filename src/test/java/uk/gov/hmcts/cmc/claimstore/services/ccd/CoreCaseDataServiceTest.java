@@ -7,13 +7,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.offers.SettlementMapper;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.response.ResponseMapper;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
-import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
-import uk.gov.hmcts.cmc.ccd.mapper.claimantresponse.ClaimantResponseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -78,12 +74,6 @@ public class CoreCaseDataServiceTest {
     @Mock
     private CaseMapper caseMapper;
     @Mock
-    private CountyCourtJudgmentMapper countyCourtJudgmentMapper;
-    @Mock
-    private ResponseMapper responseMapper;
-    @Mock
-    private SettlementMapper settlementMapper;
-    @Mock
     private UserService userService;
     @Mock
     private JsonMapper jsonMapper;
@@ -91,8 +81,6 @@ public class CoreCaseDataServiceTest {
     private ReferenceNumberService referenceNumberService;
     @Mock
     private CoreCaseDataApi coreCaseDataApi;
-    @Mock
-    private ClaimantResponseMapper claimantResponseMapper;
     @Mock
     private AuthTokenGenerator authTokenGenerator;
     @Mock

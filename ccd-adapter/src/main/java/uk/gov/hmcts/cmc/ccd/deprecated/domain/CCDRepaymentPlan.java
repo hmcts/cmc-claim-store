@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.ccd.deprecated.domain;
 
 import lombok.Builder;
 import lombok.Value;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
