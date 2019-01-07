@@ -36,10 +36,11 @@ public class CountersignSettlementAgreementActionsHandler {
         final Map<String, String> parameters = aggregateParams(claim);
         final String referenceNumber = claim.getReferenceNumber();
         this.notificationService.sendMail(
-            claim.getDefendantEmail(),
+            claim.getSubmitterEmail(),
             notificationsProperties.getTemplates().getEmail().getDefendantSignedSettlementAgreementToClaimant(),
             parameters,
-            NotificationReferenceBuilder.SettlementRejected.referenceForDefendant(referenceNumber)
+            NotificationReferenceBuilder.AgreementCounterSigned.referenceForClaimant(referenceNumber,
+                NotificationReferenceBuilder.DEFENDANT)
         );
     }
 
@@ -49,10 +50,11 @@ public class CountersignSettlementAgreementActionsHandler {
         final Map<String, String> parameters = aggregateParams(claim);
         final String referenceNumber = claim.getReferenceNumber();
         this.notificationService.sendMail(
-            claim.getSubmitterEmail(),
+            claim.getDefendantEmail(),
             notificationsProperties.getTemplates().getEmail().getDefendantSignedSettlementAgreementToDefendant(),
             parameters,
-            NotificationReferenceBuilder.SettlementRejected.referenceForClaimant(referenceNumber)
+        NotificationReferenceBuilder.AgreementCounterSigned.referenceForDefendant(referenceNumber,
+            NotificationReferenceBuilder.DEFENDANT)
         );
     }
 
