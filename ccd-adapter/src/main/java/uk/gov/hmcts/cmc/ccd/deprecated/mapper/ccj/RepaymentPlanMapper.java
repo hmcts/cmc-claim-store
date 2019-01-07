@@ -6,7 +6,7 @@ import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.ccj.PaymentSchedule;
 
-import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CCDPaymentSchedule.valueOf;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule.valueOf;
 
 @Component
 public class RepaymentPlanMapper implements Mapper<CCDRepaymentPlan, RepaymentPlan> {
