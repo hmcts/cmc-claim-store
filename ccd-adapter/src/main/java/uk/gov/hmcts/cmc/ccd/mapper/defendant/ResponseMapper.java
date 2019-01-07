@@ -125,10 +125,7 @@ public class ResponseMapper {
         CCDDefendant.CCDDefendantBuilder builder,
         FullDefenceResponse fullDefenceResponse
     ) {
-
-        builder.responseDefenceType(
-            CCDDefenceType.valueOf(fullDefenceResponse.getDefenceType().name())
-        );
+        builder.responseDefenceType(CCDDefenceType.valueOf(fullDefenceResponse.getDefenceType().name()));
         fullDefenceResponse.getDefence().ifPresent(builder::responseDefence);
         fullDefenceResponse.getPaymentDeclaration().ifPresent(mapPaymentDeclaration(builder));
         fullDefenceResponse.getEvidence().ifPresent(mapDefendantEvidence(builder));
@@ -189,18 +186,12 @@ public class ResponseMapper {
     }
 
     private FullDefenceResponse extractFullDefence(CCDDefendant defendant) {
-        YesNoOption moreTimeNeeded = defendant.getResponseMoreTimeNeededOption() != null
-            ? YesNoOption.valueOf(defendant.getResponseMoreTimeNeededOption().name())
-            : null;
-        YesNoOption freeMediation = defendant.getResponseFreeMediationOption() != null
-            ? YesNoOption.valueOf(defendant.getResponseFreeMediationOption().name())
-            : null;
 
         return FullDefenceResponse.builder()
             .defendant(defendantPartyMapper.from(defendant))
             .statementOfTruth(extractStatementOfTruth(defendant))
-            .moreTimeNeeded(moreTimeNeeded)
-            .freeMediation(freeMediation)
+            .moreTimeNeeded(getMoreTimeNeeded(defendant))
+            .freeMediation(getFreeMediation(defendant))
             .defenceType(DefenceType.valueOf(defendant.getResponseDefenceType().name()))
             .defence(defendant.getResponseDefence())
             .evidence(extractDefendantEvidence(defendant))
@@ -253,8 +244,8 @@ public class ResponseMapper {
         return PartAdmissionResponse.builder()
             .defendant(defendantPartyMapper.from(defendant))
             .statementOfTruth(extractStatementOfTruth(defendant))
-            .moreTimeNeeded(YesNoOption.valueOf(defendant.getResponseMoreTimeNeededOption().name()))
-            .freeMediation(YesNoOption.valueOf(defendant.getResponseMoreTimeNeededOption().name()))
+            .moreTimeNeeded(getMoreTimeNeeded(defendant))
+            .freeMediation(getFreeMediation(defendant))
             .amount(defendant.getResponseAmount())
             .paymentDeclaration(extractPaymentDeclaration(defendant))
             .paymentIntention(paymentIntentionMapper.from(defendant.getDefendantPaymentIntention()))
@@ -265,14 +256,26 @@ public class ResponseMapper {
             .build();
     }
 
+    private YesNoOption getMoreTimeNeeded(CCDDefendant defendant) {
+        return defendant.getResponseMoreTimeNeededOption() != null
+            ? YesNoOption.valueOf(defendant.getResponseMoreTimeNeededOption().name())
+            : null;
+    }
+
     private FullAdmissionResponse extractFullAdmission(CCDDefendant defendant) {
         return FullAdmissionResponse.builder()
             .defendant(defendantPartyMapper.from(defendant))
             .statementOfTruth(extractStatementOfTruth(defendant))
-            .moreTimeNeeded(YesNoOption.valueOf(defendant.getResponseMoreTimeNeededOption().name()))
-            .freeMediation(YesNoOption.valueOf(defendant.getResponseMoreTimeNeededOption().name()))
+            .moreTimeNeeded(getMoreTimeNeeded(defendant))
+            .freeMediation(getFreeMediation(defendant))
             .paymentIntention(paymentIntentionMapper.from(defendant.getDefendantPaymentIntention()))
             .statementOfMeans(statementOfMeansMapper.from(defendant.getStatementOfMeans()))
             .build();
+    }
+
+    private YesNoOption getFreeMediation(CCDDefendant defendant) {
+        return defendant.getResponseFreeMediationOption() != null
+            ? YesNoOption.valueOf(defendant.getResponseFreeMediationOption().name())
+            : null;
     }
 }

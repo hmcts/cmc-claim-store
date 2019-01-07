@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class ClaimMapper {
+
     private final PersonalInjuryMapper personalInjuryMapper;
     private final HousingDisrepairMapper housingDisrepairMapper;
     private final StatementOfTruthCaseMapper statementOfTruthCaseMapper;
@@ -61,24 +62,32 @@ public class ClaimMapper {
         claimData.getFeeAccountNumber().ifPresent(builder::feeAccountNumber);
         claimData.getExternalReferenceNumber().ifPresent(builder::externalReferenceNumber);
         claimData.getPreferredCourt().ifPresent(builder::preferredCourt);
+
         claimData.getStatementOfTruth()
             .ifPresent(statementOfTruth -> statementOfTruthCaseMapper.to(statementOfTruth, builder));
+
         claimData.getPersonalInjury().ifPresent(personalInjury -> personalInjuryMapper.to(personalInjury, builder));
+
         claimData.getHousingDisrepair()
             .ifPresent(housingDisrepair -> housingDisrepairMapper.to(housingDisrepair, builder));
+
         builder.claimants(claimData.getClaimants().stream()
-            .map(claimantMapper::to)
+            .map(ccdClaimant -> claimantMapper.to(ccdClaimant, claim))
             .map(this::mapClaimantToValue)
             .collect(Collectors.toList()));
+
         builder.defendants(claimData.getDefendants().stream()
             .map(ccdDefendant -> defendantMapper.to(ccdDefendant, claim))
             .map(this::mapDefendantToValue)
             .collect(Collectors.toList()));
+
         claimData.getTimeline().ifPresent(timeline -> timelineMapper.to(timeline, builder));
         claimData.getEvidence().ifPresent(evidence -> evidenceMapper.to(evidence, builder));
+
         paymentMapper.to(claimData.getPayment(), builder);
         interestMapper.to(claimData.getInterest(), builder);
         amountMapper.to(claimData.getAmount(), builder);
+
         builder
             .reason(claimData.getReason())
             .feeAmountInPennies(claimData.getFeeAmountInPennies());
@@ -94,11 +103,13 @@ public class ClaimMapper {
 
     public void from(CCDCase ccdCase, Claim.ClaimBuilder claimBuilder) {
         Objects.requireNonNull(ccdCase, "ccdClaim must not be null");
+
         List<Party> claimants = ccdCase.getClaimants()
             .stream()
             .map(CCDCollectionElement::getValue)
             .map(claimantMapper::from)
             .collect(Collectors.toList());
+
         claimBuilder.claimData(
             new ClaimData(
                 UUID.fromString(ccdCase.getExternalId()),
@@ -123,6 +134,7 @@ public class ClaimMapper {
     }
 
     private List<TheirDetails> getDefendants(CCDCase ccdCase, Claim.ClaimBuilder claimBuilder) {
+
         return ccdCase.getDefendants().stream()
             .map(CCDCollectionElement::getValue)
             .map(defendant -> defendantMapper.from(claimBuilder, defendant))

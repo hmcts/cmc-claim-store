@@ -1,5 +1,5 @@
 {
-  "id": 1513250998636210,
+  "id": 1516189555935242,
   "jurisdiction": "CMC",
   "case_type_id": "MoneyClaimCase",
   "created_date": "2017-12-14T11:29:58.625",
@@ -8,100 +8,108 @@
   "locked_by_user_id": null,
   "security_level": null,
   "case_data": {
-    "moreTimeRequested": "NO",
-    "referenceNumber": "004MC931",
-    "submitterId": "23",
-    "letterHolderId": "1581",
-    "submittedOn": "2018-05-13T14:13:59.562",
-    "claimData": {
-      "amount": {
-        "type": "BREAK_DOWN",
-        "amountBreakDown": {
-          "rows": [
-            {
-              "id": "1efa0512-d010-4499-ba62-c63b6c4ac8b4",
-              "value": {
-                "amount": 3141.59,
-                "reason": "Bakery Cost"
-              }
-            }
-          ]
+    "id": 1516189555935242,
+    "reason": "A strong sense of entitlement that would explain my reasons of the claim, that the Roof work and leaks that followed were done below standards set by the council inspector",
+    "features": "admissions",
+    "issuedOn": "2020-01-16",
+    "timeline": [
+      {
+        "id": "764a0b46-7fef-4f21-b6d4-939477517b00",
+        "value": {
+          "date": "01 October 2017",
+          "description": "The day the first bill was issued"
         }
       },
-      "reason": "A strong sense of entitlement.",
-      "payment": {
-        "amount": 185,
-        "status": "Success",
-        "reference": "RC-1526-2207-1964-8145"
+      {
+        "id": "18f596e7-479a-49ae-94d2-3b2e5515bfa8",
+        "value": {
+          "date": "26 March 2018",
+          "description": "A historic day with enormous importance"
+        }
       },
-      "evidence": {},
-      "interest": {
-        "type": "NO_INTEREST"
-      },
-      "timeline": {
-        "events": [
-          {
-            "id": "502677e7-b66a-42b3-8d32-a4ad3cd279e3",
-            "value": {
-              "date": "27 May 1997",
-              "description": "The day the first bill was issued"
-            }
+      {
+        "id": "e70b6f55-089f-4fb6-a10d-560115bf6feb",
+        "value": {
+          "date": "14 June 2018",
+          "description": "line to explain what happened and when"
+        }
+      }
+    ],
+    "claimants": [
+      {
+        "id": "0da037e8-701c-405d-8d92-222b233d6026",
+        "value": {
+          "partyName": "Jan Clark",
+          "partyType": "INDIVIDUAL",
+          "partyPhone": "07873727165",
+          "partyAddress": {
+            "PostCode": "SW1A 9AA",
+            "PostTown": "London",
+            "AddressLine1": "Street 1",
+            "AddressLine2": "Street 2",
+            "AddressLine3": "Street 3"
           },
-          {
-            "id": "917d12f3-8904-42d2-a8dc-16a60ca3b28a",
-            "value": {
-              "date": "23 March 2018",
-              "description": "A historic day with enormous importance"
-            }
-          }
-        ]
-      },
-      "claimants": [
-        {
-          "id": "7a631109-a761-4e07-a16e-42fd00165136",
-          "value": {
-            "type": "INDIVIDUAL",
-            "individual": {
-              "name": "Jack Davids",
-              "address": {
-                "city": "London",
-                "line1": "Flat 1",
-                "line2": "Street 1",
-                "line3": "Cool house name",
-                "postcode": "SW1A 2AA"
-              },
-              "dateOfBirth": "1997-05-27",
-              "phoneNumber": "07112358132"
-            }
-          }
+          "partyDateOfBirth": "2000-01-01"
         }
-      ],
-      "defendants": [
-        {
-          "id": "1f3a4788-9ea6-4695-8a50-73b10f1ee9b6",
-          "value": {
-            "type": "INDIVIDUAL",
-            "individual": {
-              "name": "Daniel Murphy",
-              "address": {
-                "city": "London",
-                "line1": "Flat 3",
-                "line2": "Street 1",
-                "line3": "Cooler house name",
-                "postcode": "SW1A 2AA"
-              }
-            }
-          }
+      }
+    ],
+    "amountType": "BREAK_DOWN",
+    "defendants": [
+      {
+        "id": "440ebab7-f812-4f89-9be1-9f67b80f8179",
+        "value": {
+          "partyName": "Mary Richards",
+          "partyType": "INDIVIDUAL",
+          "partyEmail": "j.smith@example.com",
+          "partyPhone": "07873727165",
+          "defendantId": "62",
+          "partyAddress": {
+            "PostCode": "SW1A 9AA",
+            "PostTown": "London",
+            "AddressLine1": "Flat 3A",
+            "AddressLine2": "Street 1",
+            "AddressLine3": "Middle Road"
+          },
+          "letterHolderId": "75",
+          "partyDateOfBirth": "1970-01-01",
+          "responseDeadline": "2020-02-06",
+          "responseDefenceType": "ALREADY_PAID",
+          "responseSubmittedOn": "2019-01-02T16:02:30.834",
+          "claimantProvidedName": "Mary Richards",
+          "claimantProvidedType": "INDIVIDUAL",
+          "claimantProvidedEmail": "j.smith@example.com",
+          "claimantProvidedAddress": {
+            "PostCode": "SW1A 9AA",
+            "PostTown": "London",
+            "AddressLine1": "Flat 3A",
+            "AddressLine2": "Street 1",
+            "AddressLine3": "Middle Road"
+          },
+          "paymentDeclarationPaidDate": "2018-01-01",
+          "responseFreeMediationOption": "NO",
+          "paymentDeclarationExplanation": "sdfdsf"
         }
-      ],
-      "externalId": "bde7fc34-65fd-4ae0-8ed7-ea492207a6c4",
-      "feeAmountInPennies": 18500
-    },
-    "externalId": "bde7fc34-65fd-4ae0-8ed7-ea492207a6c4",
-    "responseDeadline": "2020-02-06",
-    "issuedOn": "2020-01-17",
-    "submitterEmail": "claimant@mail.com",
-    "features":"admissions"
+      }
+    ],
+    "externalId": "b60baf23-e1f4-4c63-84fd-4d48d8a8f5ce",
+    "submittedOn": "2019-01-02T15:13:32.683686",
+    "submitterId": "62",
+    "interestType": "NO_INTEREST",
+    "paymentAmount": 25,
+    "paymentStatus": "Success",
+    "submitterEmail": "j.smith@example.com",
+    "amountBreakDown": [
+      {
+        "id": "ca15b20f-d38e-41bc-baa2-4549522790bd",
+        "value": {
+          "amount": 75,
+          "reason": "Roof Fix & repairs to leak"
+        }
+      }
+    ],
+    "referenceNumber": "000MC023",
+    "paymentReference": "RC-1546-4419-9390-7385",
+    "feeAmountInPennies": 2500
   },
   "security_classification": "PUBLIC"
 }

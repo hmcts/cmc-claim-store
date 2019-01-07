@@ -8,7 +8,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
@@ -21,8 +23,11 @@ import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDClaimantSoleTrader;
 @ContextConfiguration(classes = CCDAdapterConfig.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 public class ClaimantMapperTest {
+    private Claim claim = SampleClaim.getDefault();
+
     @Autowired
     private ClaimantMapper claimantMapper;
+
 
     @Test
     public void shouldMapIndividualToCCD() {
@@ -30,7 +35,7 @@ public class ClaimantMapperTest {
         Party party = SampleParty.builder().individual();
 
         //when
-        CCDClaimant ccdParty = claimantMapper.to(party);
+        CCDClaimant ccdParty = claimantMapper.to(party, claim);
 
         //then
         assertThat(party).isEqualTo(ccdParty);
@@ -42,7 +47,7 @@ public class ClaimantMapperTest {
         Party party = SampleParty.builder().company();
 
         //when
-        CCDClaimant ccdParty = claimantMapper.to(party);
+        CCDClaimant ccdParty = claimantMapper.to(party, claim);
 
         //then
         assertThat(party).isEqualTo(ccdParty);
@@ -54,7 +59,7 @@ public class ClaimantMapperTest {
         Party party = SampleParty.builder().organisation();
 
         //when
-        CCDClaimant ccdParty = claimantMapper.to(party);
+        CCDClaimant ccdParty = claimantMapper.to(party, claim);
 
         //then
         assertThat(party).isEqualTo(ccdParty);
@@ -66,7 +71,7 @@ public class ClaimantMapperTest {
         Party party = SampleParty.builder().soleTrader();
 
         //when
-        CCDClaimant ccdParty = claimantMapper.to(party);
+        CCDClaimant ccdParty = claimantMapper.to(party, claim);
 
         //then
         assertThat(party).isEqualTo(ccdParty);
