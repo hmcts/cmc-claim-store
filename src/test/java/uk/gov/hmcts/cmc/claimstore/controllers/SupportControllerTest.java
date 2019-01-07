@@ -49,16 +49,16 @@ public class SupportControllerTest {
     private DocumentGenerator documentGenerator;
 
     @Mock
-    MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler;
+    private MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler;
 
     @Mock
-    DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler;
+    private DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler;
 
     @Mock
-    CCJStaffNotificationHandler ccjStaffNotificationHandler;
+    private CCJStaffNotificationHandler ccjStaffNotificationHandler;
 
     @Mock
-    AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler;
+    private AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler;
 
     private SupportController controller;
 
@@ -66,7 +66,7 @@ public class SupportControllerTest {
 
 
     @Before
-    public void setup() {
+    public void setUp() {
         controller = new SupportController(claimService, userService, documentGenerator,
             moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
             ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler
