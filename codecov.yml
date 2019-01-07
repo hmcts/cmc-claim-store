@@ -13,3 +13,4 @@ ignore:
   - "**/ccd/jackson/mixin/**"
   - "**/ccd/migration/**"
   - "**/EmailData.java"
+  - "**/cmc/ccd/mapper/**"
