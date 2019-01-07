@@ -420,7 +420,7 @@ public class CoreCaseDataServiceTest {
         Claim providedClaim = SampleClaim.getDefault();
 
         when(jsonMapper.fromMap(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
-        when(caseMapper.from(any(CCDCase.class))).thenReturn(SampleClaim.getClaimWithSettlementReached());
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(SampleClaim.withSettlementReached());
 
         CaseDetails caseDetails = service.reachSettlementAgreement(
             SampleClaim.CLAIM_ID,

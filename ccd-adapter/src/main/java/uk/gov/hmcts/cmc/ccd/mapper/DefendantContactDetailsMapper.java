@@ -27,10 +27,10 @@ public class DefendantContactDetailsMapper
             return null;
         }
 
-        return new ContactDetails(
-            ccdDefendant.getClaimantProvidedRepresentativeOrganisationPhone(),
-            ccdDefendant.getClaimantProvidedRepresentativeOrganisationEmail(),
-            ccdDefendant.getClaimantProvidedRepresentativeOrganisationDxAddress()
-        );
+        return ContactDetails.builder()
+            .phone(ccdDefendant.getClaimantProvidedRepresentativeOrganisationPhone())
+            .email(ccdDefendant.getClaimantProvidedRepresentativeOrganisationEmail())
+            .dxAddress(ccdDefendant.getClaimantProvidedRepresentativeOrganisationDxAddress())
+            .build();
     }
 }

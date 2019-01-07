@@ -137,7 +137,7 @@ public final class SampleClaim {
     public static Claim getClaimWithSealedClaimLink(URI sealedClaimUri) {
         return builder().withSealedClaimDocument(sealedClaimUri).build();
     }
-    
+
     public static Claim claim(ClaimData claimData, String referenceNumber) {
         return Claim.builder()
             .id(CLAIM_ID)
@@ -220,7 +220,7 @@ public final class SampleClaim {
             .build();
     }
 
-    public static Claim getClaimWithSettlementReached() {
+    public static Claim withSettlementReached() {
 
         Settlement settlement = new Settlement();
         settlement.makeOffer(SampleOffer.builder().build(), CLAIMANT);
