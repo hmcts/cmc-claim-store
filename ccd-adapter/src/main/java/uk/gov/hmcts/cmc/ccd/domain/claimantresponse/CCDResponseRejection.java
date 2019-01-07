@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.ccd.domain.claimantresponse;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 
 
 @Value
+@EqualsAndHashCode(callSuper = true)
 public class CCDResponseRejection extends CCDClaimantResponse {
 
     private CCDYesNoOption freeMediationOption;
