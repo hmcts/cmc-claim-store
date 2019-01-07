@@ -214,7 +214,6 @@ public class CoreCaseDataService {
                 .moreTimeRequested(true)
                 .build();
 
-
             CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);
 
             CaseDetails caseDetails = submitUpdate(authorisation,
