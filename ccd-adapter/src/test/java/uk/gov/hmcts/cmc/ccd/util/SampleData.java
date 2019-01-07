@@ -11,13 +11,23 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentIntention;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
-import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDCourtDetermination;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseAcceptation;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDBankAccount;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDChildCategory;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDCourtOrder;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDebt;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpense;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncome;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDLivingPartner;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.DisabilityStatus;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
@@ -26,6 +36,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import static java.math.BigDecimal.ONE;
+import static java.math.BigDecimal.TEN;
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.BREAK_DOWN;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.RANGE;
@@ -33,8 +46,16 @@ import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.COMPANY;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.ORGANISATION;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.SOLE_TRADER;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
+import static uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount.BankAccountType.SAVINGS_ACCOUNT;
+import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense.ExpenseType.COUNCIL_TAX;
+import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Income.IncomeType.JOB;
+import static uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency.MONTH;
+import static uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt.PriorityDebtType.ELECTRICITY;
+import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence.ResidenceType.JOINT_OWN_HOME;
 
 public class SampleData {
 
@@ -55,7 +76,7 @@ public class SampleData {
         return CCDResponseRejection.builder()
             .amountPaid(BigDecimal.valueOf(123.98))
             .submittedOn(LocalDateTimeFactory.nowInLocalZone())
-            .freeMediationOption(CCDYesNoOption.YES)
+            .freeMediationOption(YES)
             .reason("Rejection Reason")
             .build();
     }
@@ -313,5 +334,89 @@ public class SampleData {
             .amount(BigDecimal.valueOf(50))
             .reason("payment")
             .build()).build());
+    }
+
+    public static CCDStatementOfMeans getCCDStatementOfMeans() {
+        return CCDStatementOfMeans.builder()
+            .residenceType(JOINT_OWN_HOME)
+            .residenceOtherDetail("other details")
+            .noOfMaintainedChildren(1)
+            .anyDisabledChildren(NO)
+            .numberOfOtherDependants(1)
+            .otherDependantDetails("other details")
+            .otherDependantAnyDisabled(NO)
+            .taxPaymentsReason("reason")
+            .taxYouOwe(TEN)
+            .selfEmploymentJobTitle("Job title")
+            .selfEmploymentAnnualTurnover(TEN)
+            .unEmployedNoOfMonths(2)
+            .employmentDetails("Details")
+            .unEmployedNoOfYears(0)
+            .dependantChildren(asList(
+                CCDCollectionElement.<CCDChildCategory>builder().value(CCDChildCategory.builder()
+                    .ageGroupType(Child.AgeGroupType.UNDER_11)
+                    .numberOfChildren(2)
+                    .numberOfResidentChildren(2)
+                    .build()
+                ).build()
+            ))
+            .incomes(asList(
+                CCDCollectionElement.<CCDIncome>builder().value(CCDIncome.builder()
+                    .type(JOB)
+                    .frequency(MONTH)
+                    .amountReceived(TEN)
+                    .build()
+                ).build()
+            ))
+            .expenses(asList(
+                CCDCollectionElement.<CCDExpense>builder().value(CCDExpense.builder()
+                    .type(COUNCIL_TAX)
+                    .frequency(MONTH)
+                    .amountPaid(TEN)
+                    .build()
+                ).build()
+            ))
+            .debts(asList(
+                CCDCollectionElement.<CCDDebt>builder().value(CCDDebt.builder()
+                    .totalOwed(TEN)
+                    .description("Reference")
+                    .monthlyPayments(ONE)
+                    .build()
+                ).build()
+            ))
+            .bankAccounts(asList(
+                CCDCollectionElement.<CCDBankAccount>builder().value(CCDBankAccount.builder()
+                    .balance(BigDecimal.valueOf(100))
+                    .joint(NO)
+                    .type(SAVINGS_ACCOUNT)
+                    .build()
+                ).build()
+            ))
+            .courtOrders(asList(
+                CCDCollectionElement.<CCDCourtOrder>builder().value(CCDCourtOrder.builder()
+                    .amountOwed(TEN)
+                    .claimNumber("Reference")
+                    .monthlyInstalmentAmount(ONE)
+                    .build()
+                ).build()
+            ))
+            .priorityDebts(asList(
+                CCDCollectionElement.<PriorityDebt>builder().value(PriorityDebt.builder()
+                    .frequency(MONTH)
+                    .amount(BigDecimal.valueOf(132.89))
+                    .type(ELECTRICITY)
+                    .build()
+                ).build()
+            ))
+            .carer(YES)
+            .livingPartner(CCDLivingPartner.builder()
+                .disability(DisabilityStatus.SEVERE)
+                .over18(YES)
+                .pensioner(YES)
+                .build()
+            )
+            .disabilityStatus(DisabilityStatus.YES)
+            .retired(NO)
+            .build();
     }
 }

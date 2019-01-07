@@ -62,6 +62,10 @@ public class StatementOfMeansAssert extends AbstractAssert<StatementOfMeansAsser
         actual.getDisability()
             .ifPresent(disability -> assertThat(disability).isEqualTo(ccdStatementOfMeans.getDisabilityStatus()));
 
+        actual.getPartner().ifPresent(
+            livingPartner -> assertThat(livingPartner).isEqualTo(ccdStatementOfMeans.getLivingPartner())
+        );
+
         return this;
     }
 

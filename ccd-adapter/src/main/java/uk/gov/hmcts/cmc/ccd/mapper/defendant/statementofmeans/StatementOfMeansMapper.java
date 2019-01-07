@@ -280,13 +280,16 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
     }
 
     private Unemployment extractUnemployment(CCDStatementOfMeans ccdStatementOfMeans) {
-        boolean isRetired = ccdStatementOfMeans.getRetired() != null
-            ? ccdStatementOfMeans.getRetired().toBoolean()
-            : false;
+        CCDYesNoOption retired = ccdStatementOfMeans.getRetired();
+        String employmentDetails = ccdStatementOfMeans.getEmploymentDetails();
+        Unemployed unemployed = extractUnemployed(ccdStatementOfMeans);
+        if (retired == null && employmentDetails == null && unemployed == null) {
+            return null;
+        }
         return Unemployment.builder()
-            .retired(isRetired)
-            .other(ccdStatementOfMeans.getEmploymentDetails())
-            .unemployed(extractUnemployed(ccdStatementOfMeans))
+            .retired(retired != null && retired.toBoolean())
+            .other(employmentDetails)
+            .unemployed(unemployed)
             .build();
     }
 

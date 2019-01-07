@@ -31,10 +31,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.isAllBlank;
 import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
-import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 
 @Component
 public class ResponseMapper {
@@ -66,9 +64,8 @@ public class ResponseMapper {
             CCDResponseType.valueOf(response.getResponseType().name())
         );
 
-        builder.responseFreeMediationOption(
-            CCDYesNoOption.valueOf(response.getFreeMediation().orElse(NO).name())
-        );
+        response.getFreeMediation().ifPresent(freeMediation ->
+            builder.responseFreeMediationOption(CCDYesNoOption.valueOf(freeMediation.name())));
 
         if (response.getMoreTimeNeeded() != null) {
             builder.responseMoreTimeNeededOption(CCDYesNoOption.valueOf(response.getMoreTimeNeeded().name()));
@@ -132,7 +129,7 @@ public class ResponseMapper {
         builder.responseDefenceType(
             CCDDefenceType.valueOf(fullDefenceResponse.getDefenceType().name())
         );
-        builder.responseDefence(fullDefenceResponse.getDefence().orElse(EMPTY));
+        fullDefenceResponse.getDefence().ifPresent(builder::responseDefence);
         fullDefenceResponse.getPaymentDeclaration().ifPresent(mapPaymentDeclaration(builder));
         fullDefenceResponse.getEvidence().ifPresent(mapDefendantEvidence(builder));
         fullDefenceResponse.getTimeline().ifPresent(mapDefendantTimeline(builder));
@@ -140,7 +137,7 @@ public class ResponseMapper {
 
     private Consumer<DefendantTimeline> mapDefendantTimeline(CCDDefendant.CCDDefendantBuilder builder) {
         return timeline -> {
-            builder.defendantTimeLineComment(timeline.getComment().orElse(EMPTY));
+            timeline.getComment().ifPresent(builder::defendantTimeLineComment);
             builder.defendantTimeLineEvents(asStream(timeline.getEvents())
                 .map(timelineEventMapper::to)
                 .filter(Objects::nonNull)
@@ -152,7 +149,7 @@ public class ResponseMapper {
 
     private Consumer<DefendantEvidence> mapDefendantEvidence(CCDDefendant.CCDDefendantBuilder builder) {
         return evidence -> {
-            builder.responseEvidenceComment(evidence.getComment().orElse(EMPTY));
+            evidence.getComment().ifPresent(builder::responseEvidenceComment);
             builder.responseEvidenceRows(asStream(evidence.getRows())
                 .map(evidenceRowMapper::to)
                 .filter(Objects::nonNull)
@@ -192,11 +189,18 @@ public class ResponseMapper {
     }
 
     private FullDefenceResponse extractFullDefence(CCDDefendant defendant) {
+        YesNoOption moreTimeNeeded = defendant.getResponseMoreTimeNeededOption() != null
+            ? YesNoOption.valueOf(defendant.getResponseMoreTimeNeededOption().name())
+            : null;
+        YesNoOption freeMediation = defendant.getResponseFreeMediationOption() != null
+            ? YesNoOption.valueOf(defendant.getResponseFreeMediationOption().name())
+            : null;
+
         return FullDefenceResponse.builder()
             .defendant(defendantPartyMapper.from(defendant))
             .statementOfTruth(extractStatementOfTruth(defendant))
-            .moreTimeNeeded(YesNoOption.valueOf(defendant.getResponseMoreTimeNeededOption().name()))
-            .freeMediation(YesNoOption.valueOf(defendant.getResponseMoreTimeNeededOption().name()))
+            .moreTimeNeeded(moreTimeNeeded)
+            .freeMediation(freeMediation)
             .defenceType(DefenceType.valueOf(defendant.getResponseDefenceType().name()))
             .defence(defendant.getResponseDefence())
             .evidence(extractDefendantEvidence(defendant))

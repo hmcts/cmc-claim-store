@@ -1,6 +1,5 @@
-package uk.gov.hmcts.cmc.ccd.deprecated.mapper.statementofmeans;
+package uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,16 +8,16 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
-import uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans.StatementOfMeansMapper;
 import uk.gov.hmcts.cmc.domain.models.sampledata.statementofmeans.SampleStatementOfMeans;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDStatementOfMeans;
+
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-@Ignore
 public class StatementOfMeansMapperTest {
 
     @Autowired
@@ -38,7 +37,7 @@ public class StatementOfMeansMapperTest {
     @Test
     public void shouldMapStatementOfMeansFromCCD() {
         //given
-        CCDStatementOfMeans ccdStatementOfMeans = null; //getCCDStatementOfMeans();
+        CCDStatementOfMeans ccdStatementOfMeans = getCCDStatementOfMeans();
 
         //when
         StatementOfMeans statementOfMeans = mapper.from(ccdStatementOfMeans);
