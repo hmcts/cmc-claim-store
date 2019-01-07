@@ -28,7 +28,6 @@ public class ClaimantMapperTest {
     @Autowired
     private ClaimantMapper claimantMapper;
 
-
     @Test
     public void shouldMapIndividualToCCD() {
         //given
