@@ -99,7 +99,7 @@ public class CCDCaseHandler {
             if (isFullDefenceWithNoMediation(response)) {
                 LocalDate deadline = directionsQuestionnaireDeadlineCalculator
                     .calculateDirectionsQuestionnaireDeadlineCalculator(LocalDateTime.now());
-                ccdCaseRepository.updateDirectionsQuestionnaireDeadline(claim, deadline, authorization);
+                ccdCaseRepository.updateDirectionsQuestionnaireDeadline(ccdClaim, deadline, authorization);
             }
         } catch (FeignException e) {
             appInsights.trackEvent(CCD_ASYNC_FAILURE, REFERENCE_NUMBER, claim.getReferenceNumber());
