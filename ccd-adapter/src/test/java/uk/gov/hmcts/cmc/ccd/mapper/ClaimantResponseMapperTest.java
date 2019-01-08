@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.assertion.mapper;
+package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,7 +42,6 @@ public class ClaimantResponseMapperTest {
         //then
         assertThat(response).isEqualTo(ccdResponse);
     }
-
 
     @Test
     public void shouldMapCCDClaimantAcceptanceWithCCJFormalisationToClaimantAcceptance() {
@@ -108,5 +107,31 @@ public class ClaimantResponseMapperTest {
 
         //then
         assertThat(response).isEqualTo(ccdResponseRejection);
+    }
+
+    @Test
+    public void shouldMapResponseAcceptanceWithCCJFormalisationFromCCD() {
+        //given
+        CCDResponseAcceptation ccdResponseAcceptation = SampleData.getResponseAcceptation(CCDFormaliseOption.CCJ);
+
+        //when
+        ResponseAcceptation response = (ResponseAcceptation) mapper.from(ccdResponseAcceptation)
+            .getClaimantResponse().orElse(null);
+
+        //then
+        assertThat(response).isEqualTo(ccdResponseAcceptation);
+    }
+
+    @Test
+    public void shouldMapResponseAcceptanceWithSettlementFormalisationFromCCD() {
+        //given
+        CCDResponseAcceptation ccdResponseAcceptation = SampleData.getResponseAcceptation(SETTLEMENT);
+
+        //when
+        ResponseAcceptation response = (ResponseAcceptation) mapper.from(ccdResponseAcceptation)
+            .getClaimantResponse().orElse(null);
+
+        //then
+        assertThat(response).isEqualTo(ccdResponseAcceptation);
     }
 }

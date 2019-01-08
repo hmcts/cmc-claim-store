@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.CLAIMANT;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.standardInterestBuilder;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
@@ -99,9 +100,11 @@ public final class SampleClaim {
             ).withResponse(SampleResponse.FullDefence
                 .builder()
                 .withDefenceType(DefenceType.DISPUTE)
-                .withMediation(YesNoOption.NO)
+                .withMediation(NO)
+                .withMoreTimeNeededOption(NO)
                 .build()
             )
+            .withRespondedAt(LocalDateTime.now())
             .withDirectionsQuestionnaireDeadline(LocalDate.now())
             .build();
     }
@@ -187,7 +190,7 @@ public final class SampleClaim {
                 SampleResponse.FullDefence
                     .builder()
                     .withDefenceType(DefenceType.ALREADY_PAID)
-                    .withMediation(YesNoOption.NO)
+                    .withMediation(NO)
                     .build())
             .withRespondedAt(LocalDateTime.now())
             .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())

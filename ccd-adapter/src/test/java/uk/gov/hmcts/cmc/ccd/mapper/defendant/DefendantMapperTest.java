@@ -54,7 +54,7 @@ public class DefendantMapperTest {
         CCDDefendant defendant = mapper.to(theirDetails, claim);
 
         //Then
-        assertEquals("Claim response deadline is not proerly mapped properly",
+        assertEquals("Claim response deadline is not mapped properly",
             defendant.getResponseDeadline(), claim.getResponseDeadline());
 
         assertEquals("Claim response letter holder id is not mapped properly",
@@ -69,7 +69,7 @@ public class DefendantMapperTest {
         assertEquals("Claim response more time requested is not mapped properly",
             defendant.getResponseMoreTimeNeededOption().toBoolean(), claim.isMoreTimeRequested());
 
-        assertEquals("The claimantprovidedtype should be of organization",
+        assertEquals("The claimantProvidedType should be of organization",
             defendant.getClaimantProvidedType(), CCDPartyType.ORGANISATION);
 
     }
@@ -84,7 +84,7 @@ public class DefendantMapperTest {
         CCDDefendant defendant = mapper.to(theirDetails, claim);
 
         //Then
-        assertEquals("Claim response deadline is not proerly mapped properly",
+        assertEquals("Claim response deadline is not mapped properly",
             defendant.getResponseDeadline(), claim.getResponseDeadline());
 
         assertEquals("Claim response letter holder id is not mapped properly",
@@ -99,7 +99,7 @@ public class DefendantMapperTest {
         assertEquals("Claim response more time requested is not mapped properly",
             defendant.getResponseMoreTimeNeededOption().toBoolean(), claim.isMoreTimeRequested());
 
-        //Verify if the theirdetails mapper and response mapper are called by assert not null
+        //Verify if the TheirDetails mapper and response mapper are called by assert not null
         assertThat(defendant.getResponseSubmittedOn(), is(notNullValue()));
         assertThat(defendant.getResponseType(), is(notNullValue()));
         assertThat(defendant.getClaimantProvidedType(), is(notNullValue()));
@@ -117,7 +117,7 @@ public class DefendantMapperTest {
     @Test
     public void mapTheirDetailsFromCCDClaimWithNoResponse() {
         //Given
-        CCDDefendant ccdDefendant = SampleCCDDefendant.withResponseMoreTimeNeededOption();
+        CCDDefendant ccdDefendant = SampleCCDDefendant.withResponseMoreTimeNeededOption().build();
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         //when
@@ -125,7 +125,7 @@ public class DefendantMapperTest {
         Claim finalClaim = claimBuilder.build();
 
         // Then
-        assertEquals("response deadline is not proerly mapped properly",
+        assertEquals("response deadline is not mapped properly",
             finalClaim.getResponseDeadline(), ccdDefendant.getResponseDeadline());
 
         assertEquals("Claim response letter holder id is not mapped properly",
@@ -161,7 +161,7 @@ public class DefendantMapperTest {
     @Test
     public void mapTheirDetailsFromCCDClaimWithResponse() {
         //Given
-        CCDDefendant ccdDefendant = SampleCCDDefendant.withResponse();
+        CCDDefendant ccdDefendant = SampleCCDDefendant.withResponse().build();
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         //when
@@ -169,7 +169,9 @@ public class DefendantMapperTest {
         Claim finalClaim = claimBuilder.build();
 
         // Then
-        assertEquals("response deadline is not proerly mapped properly",
+        assertThat(party, instanceOf(IndividualDetails.class));
+
+        assertEquals("Response deadline is not mapped properly",
             finalClaim.getResponseDeadline(), ccdDefendant.getResponseDeadline());
 
         assertEquals("Claim response letter holder id is not mapped properly",
@@ -184,9 +186,6 @@ public class DefendantMapperTest {
         assertEquals("Claim response more time requested is not mapped properly",
             finalClaim.isMoreTimeRequested(), ccdDefendant.getResponseMoreTimeNeededOption().toBoolean());
 
-        assertThat(party, instanceOf(IndividualDetails.class));
-
     }
-
 
 }
