@@ -13,26 +13,24 @@ public class DefendantContactDetailsMapper
     @Override
     public void to(ContactDetails contactDetails, CCDDefendant.CCDDefendantBuilder builder) {
 
-        contactDetails.getEmail().ifPresent(builder::representativeOrganisationEmail);
-        contactDetails.getPhone().ifPresent(builder::representativeOrganisationPhone);
-        contactDetails.getDxAddress().ifPresent(builder::representativeOrganisationDxAddress);
+        contactDetails.getEmail().ifPresent(builder::claimantProvidedRepresentativeOrganisationEmail);
+        contactDetails.getPhone().ifPresent(builder::claimantProvidedRepresentativeOrganisationPhone);
+        contactDetails.getDxAddress().ifPresent(builder::claimantProvidedRepresentativeOrganisationDxAddress);
     }
 
     @Override
     public ContactDetails from(CCDDefendant ccdDefendant) {
-        if (isBlank(ccdDefendant.getRepresentativeOrganisationPhone())
-            && isBlank(ccdDefendant.getRepresentativeOrganisationEmail())
-            && ccdDefendant.getRepresentativeOrganisationDxAddress() == null
+        if (isBlank(ccdDefendant.getClaimantProvidedRepresentativeOrganisationPhone())
+            && isBlank(ccdDefendant.getClaimantProvidedRepresentativeOrganisationEmail())
+            && ccdDefendant.getClaimantProvidedRepresentativeOrganisationDxAddress() == null
         ) {
             return null;
         }
 
-        return new ContactDetails(
-            ccdDefendant.getRepresentativeOrganisationPhone(),
-            ccdDefendant.getRepresentativeOrganisationEmail(),
-            ccdDefendant.getRepresentativeOrganisationDxAddress()
-        );
-
-
+        return ContactDetails.builder()
+            .phone(ccdDefendant.getClaimantProvidedRepresentativeOrganisationPhone())
+            .email(ccdDefendant.getClaimantProvidedRepresentativeOrganisationEmail())
+            .dxAddress(ccdDefendant.getClaimantProvidedRepresentativeOrganisationDxAddress())
+            .build();
     }
 }
