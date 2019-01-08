@@ -143,6 +143,20 @@ public final class SampleClaim {
         return builder().build();
     }
 
+    public static Claim getLegalDataWithReps() {
+        return builder()
+            .withClaimData(SampleClaimData.builder()
+                .withExternalId(RAND_UUID)
+                .withAmount(SampleAmountRange.builder().build())
+                .clearDefendants()
+                .withDefendant(SampleTheirDetails.builder()
+                    .withRepresentative(SampleRepresentative.builder().build())
+                    .individualDetails())
+                .build()
+            )
+            .build();
+    }
+
     public static Claim getClaimWithSealedClaimLink(URI sealedClaimUri) {
         return builder().withSealedClaimDocument(sealedClaimUri).build();
     }
