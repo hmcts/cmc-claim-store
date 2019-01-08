@@ -27,7 +27,7 @@ public class CaseMapperTest {
     @Test
     public void shouldMapLegalClaimToCCD() {
         //given
-        Claim claim = SampleClaim.getDefaultForLegal();
+        Claim claim = SampleClaim.getLegalDataWithReps();
 
         //when
         CCDCase ccdCase = ccdCaseMapper.to(claim);
