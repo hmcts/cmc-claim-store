@@ -36,6 +36,22 @@ public class StatementOfTruthCaseMapperTest {
     }
 
     @Test
+    public void mapStatementOfTruthToCCDWithNullValues() {
+        //given
+        StatementOfTruth statementOfTruth = StatementOfTruth.builder().signerRole(null)
+            .signerName(null).build();
+        CCDCase.CCDCaseBuilder caseBuilder = CCDCase.builder();
+
+        //when
+        mapper.to(statementOfTruth, caseBuilder);
+        CCDCase ccdCase = caseBuilder.build();
+
+        //then
+        Assert.assertEquals(ccdCase.getSotSignerName(), statementOfTruth.getSignerName());
+        Assert.assertEquals(ccdCase.getSotSignerRole(), statementOfTruth.getSignerRole());
+    }
+
+    @Test
     public void mapCCDStatementOfTruthToDomain() {
         //given
         CCDCase ccdCase = CCDCase.builder().sotSignerName("signerName")
@@ -49,4 +65,15 @@ public class StatementOfTruthCaseMapperTest {
         Assert.assertEquals(statementOfTruth.getSignerRole(), ccdCase.getSotSignerRole());
     }
 
+    @Test
+    public void mapEmptyCCDStatementOfTruthToDomainReturnNull() {
+        //given
+        CCDCase ccdCase = CCDCase.builder().build();
+
+        //when
+        StatementOfTruth statementOfTruth = mapper.from(ccdCase);
+
+        //then
+        Assert.assertNull(statementOfTruth);
+    }
 }
