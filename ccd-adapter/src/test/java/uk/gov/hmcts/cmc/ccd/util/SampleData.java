@@ -311,7 +311,6 @@ public class SampleData {
             .build();
     }
 
-
     public static CCDCase getCCDLegalCase() {
         List<CCDCollectionElement<CCDClaimant>> claimants
             = singletonList(CCDCollectionElement.<CCDClaimant>builder().value(getCCDClaimantIndividual()).build());
