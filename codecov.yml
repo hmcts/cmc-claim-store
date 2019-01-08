@@ -11,6 +11,5 @@ ignore:
   - "**/ccd/domain/**"
   - "**/ccd/deprecated/**"
   - "**/ccd/jackson/mixin/**"
-  - "**/ccd/mapper/**"
   - "**/ccd/migration/**"
   - "**/EmailData.java"
