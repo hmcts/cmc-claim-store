@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ public class ClaimantMapperTest {
 
         //then
         assertThat(party).isEqualTo(ccdParty);
+        Assertions.assertThat(ccdParty.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
     }
 
     @Test
@@ -50,6 +52,7 @@ public class ClaimantMapperTest {
 
         //then
         assertThat(party).isEqualTo(ccdParty);
+        Assertions.assertThat(ccdParty.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
     }
 
     @Test
@@ -62,6 +65,7 @@ public class ClaimantMapperTest {
 
         //then
         assertThat(party).isEqualTo(ccdParty);
+        Assertions.assertThat(ccdParty.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
     }
 
     @Test
@@ -74,6 +78,7 @@ public class ClaimantMapperTest {
 
         //then
         assertThat(party).isEqualTo(ccdParty);
+        Assertions.assertThat(ccdParty.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
     }
 
     @Test

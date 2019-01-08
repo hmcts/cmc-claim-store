@@ -58,6 +58,7 @@ public class ClaimMapper {
     public void to(Claim claim, CCDCase.CCDCaseBuilder builder) {
         ClaimData claimData = claim.getClaimData();
         Objects.requireNonNull(claimData, "claimData must not be null");
+
         claimData.getFeeCode().ifPresent(builder::feeCode);
         claimData.getFeeAccountNumber().ifPresent(builder::feeAccountNumber);
         claimData.getExternalReferenceNumber().ifPresent(builder::externalReferenceNumber);
@@ -102,7 +103,7 @@ public class ClaimMapper {
     }
 
     public void from(CCDCase ccdCase, Claim.ClaimBuilder claimBuilder) {
-        Objects.requireNonNull(ccdCase, "ccdClaim must not be null");
+        Objects.requireNonNull(ccdCase, "ccdCase must not be null");
 
         List<Party> claimants = ccdCase.getClaimants()
             .stream()

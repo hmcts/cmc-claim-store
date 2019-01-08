@@ -47,11 +47,13 @@ public class DefendantRepresentativeMapper
             return null;
         }
 
-        return new Representative(
-            ccdDefendant.getClaimantProvidedRepresentativeOrganisationName(),
-            addressMapper.from(ccdDefendant.getClaimantProvidedRepresentativeOrganisationAddress()),
-            defendantContactDetailsMapper.from(ccdDefendant)
-        );
+        return Representative.builder()
+            .organisationName(ccdDefendant.getClaimantProvidedRepresentativeOrganisationName())
+            .organisationAddress(
+                addressMapper.from(ccdDefendant.getClaimantProvidedRepresentativeOrganisationAddress())
+            )
+            .organisationContactDetails(defendantContactDetailsMapper.from(ccdDefendant))
+            .build();
 
     }
 }
