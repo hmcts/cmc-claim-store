@@ -50,7 +50,6 @@ public class DefendantPartyMapperTest {
 
         //then
         assertThat(party).isEqualTo(builder.build());
-
     }
 
     @Test

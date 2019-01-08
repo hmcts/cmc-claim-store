@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.assertion.response;
+package uk.gov.hmcts.cmc.ccd.assertion;
 
 import org.assertj.core.api.AbstractAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentIntention;
