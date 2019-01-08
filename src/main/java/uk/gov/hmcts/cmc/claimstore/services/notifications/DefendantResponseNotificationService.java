@@ -32,12 +32,11 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper.admissionResponse;
 
 @Service
 public class DefendantResponseNotificationService {
     public static final String DQS_DEADLINE = "DQsdeadline";
-    private final Logger logger = LoggerFactory.getLogger(DefendantResponseNotificationService.class);
-
     private static final String CLAIM_REFERENCE_NUMBER = "claimReferenceNumber";
     private static final String MEDIATION_DECISION_DEADLINE = "mediationDecisionDeadline";
     private static final String FREE_MEDIATION_REQUESTED = "freeMediationRequested";
@@ -48,6 +47,7 @@ public class DefendantResponseNotificationService {
     private static final String CLAIMANT_TYPE = "claimantType";
     private static final String ISSUED_ON = "issuedOn";
     private static final String RESPONSE_DEADLINE = "responseDeadline";
+    private static final Logger logger = LoggerFactory.getLogger(DefendantResponseNotificationService.class);
     private final NotificationClient notificationClient;
     private final FreeMediationDecisionDateCalculator freeMediationDecisionDateCalculator;
     private final NotificationsProperties notificationsProperties;
@@ -96,7 +96,7 @@ public class DefendantResponseNotificationService {
         Claim claim,
         String reference
     ) {
-        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+        Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
         Map<String, String> parameters = aggregateParams(claim, response);
 
         String emailTemplate = getClaimantEmailTemplate(response);
@@ -106,6 +106,9 @@ public class DefendantResponseNotificationService {
 
     private String getClaimantEmailTemplate(Response response) {
         YesNoOption mediation = response.getFreeMediation().orElse(YesNoOption.YES);
+        if (admissionResponse(response)) {
+            return getEmailTemplates().getDefendantAdmissionResponseToClaimant();
+        }
         if (mediation == YesNoOption.YES) {
             return getEmailTemplates().getClaimantResponseWithMediationIssued();
         } else {

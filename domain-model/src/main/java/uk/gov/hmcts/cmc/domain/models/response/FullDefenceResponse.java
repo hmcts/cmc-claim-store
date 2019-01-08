@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
@@ -33,6 +34,7 @@ public class FullDefenceResponse extends Response {
     @Valid
     private final DefendantEvidence evidence;
 
+    @Builder
     public FullDefenceResponse(
         YesNoOption freeMediation,
         YesNoOption moreTimeNeeded,

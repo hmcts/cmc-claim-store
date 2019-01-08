@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers.support;
 
 import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -48,6 +49,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetails
         "feature_toggles.ccd_enabled=true"
     }
 )
+@Ignore
 public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTest {
 
     private static final String CASE_REFERENCE = "000MC023";
