@@ -122,6 +122,12 @@ public final class SampleClaim {
             .build();
     }
 
+    public static Claim withNoResponse() {
+        return builder()
+            .withClaimData(SampleClaimData.validDefaults())
+            .build();
+    }
+
     public static Claim getWithClaimantResponse() {
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
@@ -135,6 +141,24 @@ public final class SampleClaim {
 
     public static Claim getDefaultForLegal() {
         return builder().build();
+    }
+
+    public static Claim getLegalDataWithReps() {
+        return builder()
+            .withClaimData(SampleClaimData.builder()
+                .withExternalId(RAND_UUID)
+                .withAmount(SampleAmountRange.builder().build())
+                .clearDefendants()
+                .withDefendant(SampleTheirDetails.builder()
+                    .withRepresentative(SampleRepresentative.builder().build())
+                    .individualDetails())
+                .build()
+            )
+            .build();
+    }
+
+    public static Claim getClaimWithSealedClaimLink(URI sealedClaimUri) {
+        return builder().withSealedClaimDocument(sealedClaimUri).build();
     }
 
     public static Claim claim(ClaimData claimData, String referenceNumber) {
@@ -170,6 +194,10 @@ public final class SampleClaim {
 
     public static Claim getWithResponseDeadline(LocalDate responseDeadline) {
         return builder().withResponseDeadline(responseDeadline).build();
+    }
+
+    public static Claim getWithSettlement(Settlement settlement) {
+        return builder().withSettlement(settlement).build();
     }
 
     public static Claim getClaimWithNoDefendantEmail() {
@@ -208,6 +236,20 @@ public final class SampleClaim {
         settlement.makeOffer(SampleOffer.builder().build(), CLAIMANT);
         settlement.acceptCourtDetermination(CLAIMANT);
         settlement.reject(MadeBy.DEFENDANT);
+
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withResponse(SampleResponse.FullAdmission.validDefaults())
+            .withSettlement(settlement)
+            .build();
+    }
+
+    public static Claim withSettlementReached() {
+
+        Settlement settlement = new Settlement();
+        settlement.makeOffer(SampleOffer.builder().build(), CLAIMANT);
+        settlement.acceptCourtDetermination(CLAIMANT);
+        settlement.countersign(MadeBy.DEFENDANT);
 
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
