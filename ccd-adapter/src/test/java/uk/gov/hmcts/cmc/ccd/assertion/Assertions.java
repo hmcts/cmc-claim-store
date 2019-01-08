@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.ccd.assertion;
 import uk.gov.hmcts.cmc.ccd.assertion.claimantresponse.CourtDeterminationAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.claimantresponse.ResponseAcceptationAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.claimantresponse.ResponseRejectionAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.defendant.PaymentIntentionAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.BankAccountAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.ChildAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.CourtOrderAssert;

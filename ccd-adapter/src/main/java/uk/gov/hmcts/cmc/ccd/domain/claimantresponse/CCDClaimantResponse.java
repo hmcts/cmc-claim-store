@@ -7,7 +7,11 @@ import lombok.Getter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME,include = JsonTypeInfo.As.EXISTING_PROPERTY,property = "claimantResponseType")
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "claimantResponseType"
+)
 @JsonSubTypes({
     @JsonSubTypes.Type(value = CCDResponseAcceptation.class, name = "ACCEPTATION"),
     @JsonSubTypes.Type(value = CCDResponseRejection.class, name = "REJECTION")
@@ -17,13 +21,11 @@ public abstract class CCDClaimantResponse {
     private BigDecimal amountPaid;
     private final LocalDateTime submittedOn;
 
-
     public CCDClaimantResponse(BigDecimal amountPaid, LocalDateTime submittedOn) {
         this.amountPaid = amountPaid;
         this.submittedOn = submittedOn;
     }
 
     public abstract CCDClaimantResponseType getClaimantResponseType();
-
 
 }

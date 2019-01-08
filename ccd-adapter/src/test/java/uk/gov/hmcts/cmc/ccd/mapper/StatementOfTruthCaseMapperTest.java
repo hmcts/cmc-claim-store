@@ -52,7 +52,7 @@ public class StatementOfTruthCaseMapperTest {
     }
 
     @Test
-    public void shouldMapCCDStatementOfTruthFromCCD() {
+    public void shouldMapStatementOfTruthFromCCD() {
         //given
         CCDCase ccdCase = CCDCase.builder().sotSignerName("signerName")
             .sotSignerRole("signerRole").build();

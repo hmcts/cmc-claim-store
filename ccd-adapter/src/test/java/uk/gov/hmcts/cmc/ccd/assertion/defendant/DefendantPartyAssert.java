@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.assertion;
+package uk.gov.hmcts.cmc.ccd.assertion.defendant;
 
 import org.assertj.core.api.AbstractAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
@@ -56,7 +56,7 @@ public class DefendantPartyAssert extends AbstractAssert<DefendantPartyAssert, P
 
         if (actual instanceof SoleTrader) {
             if (!Objects.equals(CCDPartyType.SOLE_TRADER, ccdDefendant.getPartyType())) {
-                failWithMessage("Expected CCDDefendant.type to be <%s> but was <%s>",
+                failWithMessage("Expected CCDDefendant.partyType to be <%s> but was <%s>",
                     ccdDefendant.getPartyType(), CCDPartyType.SOLE_TRADER);
             }
             assertSoleTrader(ccdDefendant);
@@ -114,13 +114,13 @@ public class DefendantPartyAssert extends AbstractAssert<DefendantPartyAssert, P
 
         String contactPerson = actual.getContactPerson().orElse(null);
         if (!Objects.equals(contactPerson, ccdDefendant.getPartyContactPerson())) {
-            failWithMessage("Expected CCDOrganisation.contactPerson to be <%s> but was <%s>",
+            failWithMessage("Expected CCDDefendant.partyContactPerson to be <%s> but was <%s>",
                 ccdDefendant.getPartyContactPerson(), contactPerson);
         }
 
         String companyHouseNumber = actual.getCompaniesHouseNumber().orElse(null);
         if (!Objects.equals(companyHouseNumber, ccdDefendant.getPartyCompaniesHouseNumber())) {
-            failWithMessage("Expected CCDOrganisation.companyHouseNumber to be <%s> but was <%s>",
+            failWithMessage("Expected CCDDefendant.partyCompaniesHouseNumber to be <%s> but was <%s>",
                 ccdDefendant.getPartyCompaniesHouseNumber(), companyHouseNumber);
         }
     }
@@ -131,7 +131,7 @@ public class DefendantPartyAssert extends AbstractAssert<DefendantPartyAssert, P
 
         if (actual.getDateOfBirth() != null
             && !Objects.equals(actual.getDateOfBirth(), ccdDefendant.getPartyDateOfBirth())) {
-            failWithMessage("Expected CCDIndividual.partyDateOfBirth to be <%s> but was <%s>",
+            failWithMessage("Expected CCDDefendant.partyDateOfBirth to be <%s> but was <%s>",
                 ccdDefendant.getPartyDateOfBirth(), actual.getDateOfBirth());
         }
     }
