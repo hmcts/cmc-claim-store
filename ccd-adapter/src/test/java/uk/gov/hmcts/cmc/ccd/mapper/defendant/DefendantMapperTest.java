@@ -7,7 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
-import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.util.SampleCCDDefendant;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -22,6 +21,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.ORGANISATION;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -70,8 +71,7 @@ public class DefendantMapperTest {
             defendant.getResponseMoreTimeNeededOption().toBoolean(), claim.isMoreTimeRequested());
 
         assertEquals("The claimantProvidedType should be of organization",
-            defendant.getClaimantProvidedType(), CCDPartyType.ORGANISATION);
-
+            ORGANISATION, defendant.getClaimantProvidedType());
     }
 
     @Test
@@ -105,7 +105,7 @@ public class DefendantMapperTest {
         assertThat(defendant.getClaimantProvidedType(), is(notNullValue()));
 
         assertEquals("The mapping for theirDetailsMapper is not done properly",
-            defendant.getClaimantProvidedType(), CCDPartyType.INDIVIDUAL);
+            INDIVIDUAL, defendant.getClaimantProvidedType());
 
         assertEquals("The claim response submitted is not mapped properly when response is present",
             defendant.getResponseSubmittedOn(), claim.getRespondedAt());
@@ -139,7 +139,6 @@ public class DefendantMapperTest {
 
         assertEquals("Claim response more time requested is not mapped properly",
             finalClaim.isMoreTimeRequested(), ccdDefendant.getResponseMoreTimeNeededOption().toBoolean());
-
     }
 
     @Test
@@ -155,7 +154,6 @@ public class DefendantMapperTest {
         // Then
         assertThat("Claim response more time requested is not mapped properly",
             finalClaim.isMoreTimeRequested(), is(false));
-
     }
 
     @Test
@@ -185,7 +183,6 @@ public class DefendantMapperTest {
 
         assertEquals("Claim response more time requested is not mapped properly",
             finalClaim.isMoreTimeRequested(), ccdDefendant.getResponseMoreTimeNeededOption().toBoolean());
-
     }
 
 }
