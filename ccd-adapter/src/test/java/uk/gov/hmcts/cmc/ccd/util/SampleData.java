@@ -123,7 +123,7 @@ public class SampleData {
             .representativeOrganisationAddress(ccdAddress)
             .representativeOrganisationName("My Org")
             .representativeOrganisationPhone("07987654321")
-            .representativeOrganisationEmail(",my@email.com")
+            .representativeOrganisationEmail("my@email.com")
             .representativeOrganisationDxAddress("dx123")
             .build();
     }
@@ -138,7 +138,7 @@ public class SampleData {
             .representativeOrganisationAddress(ccdAddress)
             .representativeOrganisationName("My Org")
             .representativeOrganisationPhone("07987654321")
-            .representativeOrganisationEmail(",my@email.com")
+            .representativeOrganisationEmail("my@email.com")
             .representativeOrganisationDxAddress("dx123")
             .claimantProvidedContactPerson("MR. Hyde")
             .claimantProvidedCompaniesHouseNumber("12345678")
@@ -156,7 +156,7 @@ public class SampleData {
             .representativeOrganisationAddress(ccdAddress)
             .representativeOrganisationName("My Org")
             .representativeOrganisationPhone("07987654321")
-            .representativeOrganisationEmail(",my@email.com")
+            .representativeOrganisationEmail("my@email.com")
             .representativeOrganisationDxAddress("dx123")
             .claimantProvidedContactPerson("MR. Hyde")
             .build();
@@ -174,7 +174,7 @@ public class SampleData {
             .representativeOrganisationAddress(ccdAddress)
             .representativeOrganisationName("My Org")
             .representativeOrganisationPhone("07987654321")
-            .representativeOrganisationEmail(",my@email.com")
+            .representativeOrganisationEmail("my@email.com")
             .representativeOrganisationDxAddress("dx123")
             .build();
     }
@@ -191,7 +191,7 @@ public class SampleData {
             .representativeOrganisationAddress(ccdAddress)
             .representativeOrganisationName("My Org")
             .representativeOrganisationPhone("07987654321")
-            .representativeOrganisationEmail(",my@email.com")
+            .representativeOrganisationEmail("my@email.com")
             .representativeOrganisationDxAddress("dx123")
             .build();
     }
@@ -208,7 +208,7 @@ public class SampleData {
             .representativeOrganisationAddress(ccdAddress)
             .representativeOrganisationName("My Org")
             .representativeOrganisationPhone("07987654321")
-            .representativeOrganisationEmail(",my@email.com")
+            .representativeOrganisationEmail("my@email.com")
             .representativeOrganisationDxAddress("dx123")
             .partyContactPerson("MR. Hyde")
             .build();
@@ -226,7 +226,7 @@ public class SampleData {
             .representativeOrganisationAddress(ccdAddress)
             .representativeOrganisationName("My Org")
             .representativeOrganisationPhone("07987654321")
-            .representativeOrganisationEmail(",my@email.com")
+            .representativeOrganisationEmail("my@email.com")
             .representativeOrganisationDxAddress("dx123")
             .partyContactPerson("MR. Hyde")
             .partyCompaniesHouseNumber("12345678")
@@ -247,11 +247,10 @@ public class SampleData {
             .representativeOrganisationAddress(ccdAddress)
             .representativeOrganisationName("My Org")
             .representativeOrganisationPhone("07987654321")
-            .representativeOrganisationEmail(",my@email.com")
+            .representativeOrganisationEmail("my@email.com")
             .representativeOrganisationDxAddress("dx123")
             .build();
     }
-
 
     public static CCDCase getCCDLegalCase() {
         List<CCDCollectionElement<CCDClaimant>> claimants
