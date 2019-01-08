@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import com.google.common.collect.ImmutableList;
 import feign.FeignException;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
@@ -30,7 +29,6 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulPrePaym
         "feature_toggles.ccd_enabled=true"
     }
 )
-@Ignore
 public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
 
     @Test
@@ -205,7 +203,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             .andReturn();
 
         assertThat(result.getResolvedException().getMessage())
-            .contains("Failed updating claim in CCD store for claim 000LR001 on event SUBMIT_POST_PAYMENT");
+            .isEqualTo("Failed updating claim in CCD store for case id 000LR001 on event SUBMIT_POST_PAYMENT");
     }
 
     @Test
@@ -253,7 +251,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             .andReturn();
 
         assertThat(result.getResolvedException().getMessage())
-            .isEqualTo("Failed updating claim in CCD store for claim 000LR001 on event SUBMIT_POST_PAYMENT");
+            .isEqualTo("Failed updating claim in CCD store for case id 000LR001 on event SUBMIT_POST_PAYMENT");
     }
 
     @Test

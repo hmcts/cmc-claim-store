@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.CLAIMANT;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.standardInterestBuilder;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
@@ -99,9 +100,11 @@ public final class SampleClaim {
             ).withResponse(SampleResponse.FullDefence
                 .builder()
                 .withDefenceType(DefenceType.DISPUTE)
-                .withMediation(YesNoOption.NO)
+                .withMediation(NO)
+                .withMoreTimeNeededOption(NO)
                 .build()
             )
+            .withRespondedAt(LocalDateTime.now())
             .withDirectionsQuestionnaireDeadline(LocalDate.now())
             .build();
     }
@@ -116,6 +119,12 @@ public final class SampleClaim {
             .withResponse(response)
             .withRespondedAt(LocalDateTime.now())
             .withDefendantEmail(DEFENDANT_EMAIL)
+            .build();
+    }
+
+    public static Claim withNoResponse() {
+        return builder()
+            .withClaimData(SampleClaimData.validDefaults())
             .build();
     }
 
@@ -134,6 +143,24 @@ public final class SampleClaim {
         return builder().build();
     }
 
+    public static Claim getLegalDataWithReps() {
+        return builder()
+            .withClaimData(SampleClaimData.builder()
+                .withExternalId(RAND_UUID)
+                .withAmount(SampleAmountRange.builder().build())
+                .clearDefendants()
+                .withDefendant(SampleTheirDetails.builder()
+                    .withRepresentative(SampleRepresentative.builder().build())
+                    .individualDetails())
+                .build()
+            )
+            .build();
+    }
+
+    public static Claim getClaimWithSealedClaimLink(URI sealedClaimUri) {
+        return builder().withSealedClaimDocument(sealedClaimUri).build();
+    }
+
     public static Claim claim(ClaimData claimData, String referenceNumber) {
         return Claim.builder()
             .id(CLAIM_ID)
@@ -147,6 +174,7 @@ public final class SampleClaim {
             .issuedOn(ISSUE_DATE)
             .responseDeadline(RESPONSE_DEADLINE)
             .moreTimeRequested(NOT_REQUESTED_FOR_MORE_TIME)
+            .respondedAt(LocalDateTime.now())
             .submitterEmail(SUBMITTER_EMAIL)
             .build();
     }
@@ -168,6 +196,10 @@ public final class SampleClaim {
         return builder().withResponseDeadline(responseDeadline).build();
     }
 
+    public static Claim getWithSettlement(Settlement settlement) {
+        return builder().withSettlement(settlement).build();
+    }
+
     public static Claim getClaimWithNoDefendantEmail() {
 
         return SampleClaim.builder()
@@ -186,7 +218,7 @@ public final class SampleClaim {
                 SampleResponse.FullDefence
                     .builder()
                     .withDefenceType(DefenceType.ALREADY_PAID)
-                    .withMediation(YesNoOption.NO)
+                    .withMediation(NO)
                     .build())
             .withRespondedAt(LocalDateTime.now())
             .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
@@ -204,6 +236,20 @@ public final class SampleClaim {
         settlement.makeOffer(SampleOffer.builder().build(), CLAIMANT);
         settlement.acceptCourtDetermination(CLAIMANT);
         settlement.reject(MadeBy.DEFENDANT);
+
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withResponse(SampleResponse.FullAdmission.validDefaults())
+            .withSettlement(settlement)
+            .build();
+    }
+
+    public static Claim withSettlementReached() {
+
+        Settlement settlement = new Settlement();
+        settlement.makeOffer(SampleOffer.builder().build(), CLAIMANT);
+        settlement.acceptCourtDetermination(CLAIMANT);
+        settlement.countersign(MadeBy.DEFENDANT);
 
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())

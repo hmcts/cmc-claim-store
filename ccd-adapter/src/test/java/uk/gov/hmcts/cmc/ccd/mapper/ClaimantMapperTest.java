@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,19 +9,23 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 
-import static uk.gov.hmcts.cmc.ccd.SampleData.getCCDClaimantCompany;
-import static uk.gov.hmcts.cmc.ccd.SampleData.getCCDClaimantIndividual;
-import static uk.gov.hmcts.cmc.ccd.SampleData.getCCDClaimantOrganisation;
-import static uk.gov.hmcts.cmc.ccd.SampleData.getCCDClaimantSoleTrader;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDClaimantCompany;
+import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDClaimantIndividual;
+import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDClaimantOrganisation;
+import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDClaimantSoleTrader;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 public class ClaimantMapperTest {
+    private Claim claim = SampleClaim.getDefault();
+
     @Autowired
     private ClaimantMapper claimantMapper;
 
@@ -30,10 +35,11 @@ public class ClaimantMapperTest {
         Party party = SampleParty.builder().individual();
 
         //when
-        CCDClaimant ccdParty = claimantMapper.to(party);
+        CCDClaimant ccdParty = claimantMapper.to(party, claim);
 
         //then
         assertThat(party).isEqualTo(ccdParty);
+        Assertions.assertThat(ccdParty.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
     }
 
     @Test
@@ -42,10 +48,11 @@ public class ClaimantMapperTest {
         Party party = SampleParty.builder().company();
 
         //when
-        CCDClaimant ccdParty = claimantMapper.to(party);
+        CCDClaimant ccdParty = claimantMapper.to(party, claim);
 
         //then
         assertThat(party).isEqualTo(ccdParty);
+        Assertions.assertThat(ccdParty.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
     }
 
     @Test
@@ -54,10 +61,11 @@ public class ClaimantMapperTest {
         Party party = SampleParty.builder().organisation();
 
         //when
-        CCDClaimant ccdParty = claimantMapper.to(party);
+        CCDClaimant ccdParty = claimantMapper.to(party, claim);
 
         //then
         assertThat(party).isEqualTo(ccdParty);
+        Assertions.assertThat(ccdParty.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
     }
 
     @Test
@@ -66,10 +74,11 @@ public class ClaimantMapperTest {
         Party party = SampleParty.builder().soleTrader();
 
         //when
-        CCDClaimant ccdParty = claimantMapper.to(party);
+        CCDClaimant ccdParty = claimantMapper.to(party, claim);
 
         //then
         assertThat(party).isEqualTo(ccdParty);
+        Assertions.assertThat(ccdParty.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
     }
 
     @Test

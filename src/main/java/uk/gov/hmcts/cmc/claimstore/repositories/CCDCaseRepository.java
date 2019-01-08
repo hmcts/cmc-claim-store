@@ -95,7 +95,6 @@ public class CCDCaseRepository implements CaseRepository {
         CountyCourtJudgment countyCourtJudgment
     ) {
         coreCaseDataService.saveCountyCourtJudgment(authorisation, claim.getId(), countyCourtJudgment);
-
     }
 
     @Override
