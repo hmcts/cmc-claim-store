@@ -26,5 +26,4 @@ public abstract class CCDClaimantResponse {
     public abstract CCDClaimantResponseType getClaimantResponseType();
 
 
-
 }

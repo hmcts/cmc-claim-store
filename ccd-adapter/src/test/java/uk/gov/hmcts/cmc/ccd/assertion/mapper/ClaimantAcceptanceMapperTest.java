@@ -30,8 +30,8 @@ public class ClaimantAcceptanceMapperTest {
         CCDResponseAcceptation ccdResponseAcceptation = SampleData.getResponseAcceptation(CCDFormaliseOption.CCJ);
 
         //when
-        ResponseAcceptation response = (ResponseAcceptation)mapper.from(ccdResponseAcceptation)
-                                                                            .getClaimantResponse().orElse(null);
+        ResponseAcceptation response = (ResponseAcceptation) mapper.from(ccdResponseAcceptation)
+            .getClaimantResponse().orElse(null);
 
         //then
         assertThat(response).isEqualTo(ccdResponseAcceptation);
@@ -43,8 +43,8 @@ public class ClaimantAcceptanceMapperTest {
         CCDResponseAcceptation ccdResponseAcceptation = SampleData.getResponseAcceptation(SETTLEMENT);
 
         //when
-        ResponseAcceptation response = (ResponseAcceptation)mapper.from(ccdResponseAcceptation)
-                                                                            .getClaimantResponse().orElse(null);
+        ResponseAcceptation response = (ResponseAcceptation) mapper.from(ccdResponseAcceptation)
+            .getClaimantResponse().orElse(null);
 
         //then
         assertThat(response).isEqualTo(ccdResponseAcceptation);

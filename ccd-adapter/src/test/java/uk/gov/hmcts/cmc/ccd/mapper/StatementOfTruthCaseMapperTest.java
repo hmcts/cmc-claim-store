@@ -26,7 +26,6 @@ public class StatementOfTruthCaseMapperTest {
             .signerName("Name").build();
         CCDCase.CCDCaseBuilder caseBuilder = CCDCase.builder();
 
-
         //when
         mapper.to(statementOfTruth, caseBuilder);
         CCDCase ccdCase = caseBuilder.build();
@@ -34,7 +33,6 @@ public class StatementOfTruthCaseMapperTest {
         //then
         Assert.assertEquals(ccdCase.getSotSignerName(), statementOfTruth.getSignerName());
         Assert.assertEquals(ccdCase.getSotSignerRole(), statementOfTruth.getSignerRole());
-
     }
 
     @Test
@@ -43,15 +41,12 @@ public class StatementOfTruthCaseMapperTest {
         CCDCase ccdCase = CCDCase.builder().sotSignerName("signerName")
             .sotSignerRole("signerRole").build();
 
-
         //when
         StatementOfTruth statementOfTruth = mapper.from(ccdCase);
 
         //then
         Assert.assertEquals(statementOfTruth.getSignerName(), ccdCase.getSotSignerName());
         Assert.assertEquals(statementOfTruth.getSignerRole(), ccdCase.getSotSignerRole());
-
     }
-
 
 }

@@ -22,9 +22,9 @@ public class CCDResponseRejection extends CCDClaimantResponse {
     @JsonCreator
     public CCDResponseRejection(BigDecimal amountPaid,
                                 LocalDateTime submittedOn,
-                                 CCDYesNoOption freeMediationOption,
-                                 String reason) {
-        super(amountPaid,submittedOn);
+                                CCDYesNoOption freeMediationOption,
+                                String reason) {
+        super(amountPaid, submittedOn);
         this.freeMediationOption = freeMediationOption;
         this.reason = reason;
     }
