@@ -4,6 +4,7 @@ import uk.gov.hmcts.cmc.ccd.assertion.claimantresponse.CourtDeterminationAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.claimantresponse.ResponseAcceptationAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.claimantresponse.ResponseRejectionAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.PaymentIntentionAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.defendant.ResponseAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.BankAccountAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.ChildAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.CourtOrderAssert;
@@ -23,6 +24,7 @@ import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
@@ -111,5 +113,9 @@ public class Assertions {
 
     public static LivingPartnerAssert assertThat(LivingPartner livingPartner) {
         return new LivingPartnerAssert(livingPartner);
+    }
+
+    public static ResponseAssert assertThat(Response response) {
+        return new ResponseAssert(response);
     }
 }

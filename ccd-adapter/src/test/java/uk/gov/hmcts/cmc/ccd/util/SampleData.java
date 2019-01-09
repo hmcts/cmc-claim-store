@@ -63,6 +63,7 @@ import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence.Residenc
 
 public class SampleData {
 
+    //Utility class
     private SampleData() {
     }
 
