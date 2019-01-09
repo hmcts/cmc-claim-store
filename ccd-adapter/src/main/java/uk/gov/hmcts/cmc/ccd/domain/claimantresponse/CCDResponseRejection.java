@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.domain.claimantresponse;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
@@ -18,13 +17,10 @@ public class CCDResponseRejection extends CCDClaimantResponse {
     private String reason;
 
     @Builder
-    @JsonCreator
-    public CCDResponseRejection(
-        BigDecimal amountPaid,
-        LocalDateTime submittedOn,
-        CCDYesNoOption freeMediationOption,
-        String reason
-    ) {
+    public CCDResponseRejection(BigDecimal amountPaid,
+                                LocalDateTime submittedOn,
+                                CCDYesNoOption freeMediationOption,
+                                String reason) {
         super(amountPaid, submittedOn);
         this.freeMediationOption = freeMediationOption;
         this.reason = reason;
