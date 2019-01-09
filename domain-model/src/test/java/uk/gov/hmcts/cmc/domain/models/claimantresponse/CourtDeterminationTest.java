@@ -40,7 +40,7 @@ public class CourtDeterminationTest {
     }
 
     @Test
-    public void shouldBeValidCourtDeterminationByInstallment() {
+    public void shouldBeValidCourtDeterminationByInstalment() {
         CourtDetermination courtDetermination = CourtDetermination.builder()
             .courtDecision(PaymentIntention.builder()
                 .paymentOption(INSTALMENTS)
