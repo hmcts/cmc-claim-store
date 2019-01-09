@@ -25,7 +25,6 @@ public class DefenceResponseJsonMapper {
         this.defendantMapper = defendantMapper;
     }
 
-
     public JsonObject map(Claim claim) {
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
         String defendantsEmail = claim.getDefendantEmail();
