@@ -39,7 +39,6 @@ import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType.DEFEN
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.CCJ;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.SETTLEMENT;
 
-
 @RunWith(MockitoJUnitRunner.class)
 public class FormaliseResponseAcceptanceServiceTest {
 
@@ -270,7 +269,6 @@ public class FormaliseResponseAcceptanceServiceTest {
             countyCourtJudgmentArgumentCaptor.capture(),
             eq(claim.getExternalId()),
             eq(AUTH));
-
 
         assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()

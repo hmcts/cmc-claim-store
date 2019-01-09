@@ -36,7 +36,6 @@ public class RespondToClaimTest extends BaseTest {
         shouldBeAbleToSuccessfullySubmit(fullDefenceDisputeResponse);
     }
 
-
     @Test
     public void shouldBeAbleToSuccessfullySubmitFreeMediationRequestOnDefence() {
         Response fullDefenceDisputeResponse = SampleResponse.FullDefence

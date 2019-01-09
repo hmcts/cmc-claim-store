@@ -32,7 +32,6 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.LivingPartner;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
-
 public class Assertions {
 
     private Assertions() {
