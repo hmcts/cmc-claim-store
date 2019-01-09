@@ -37,10 +37,8 @@ public class CourtDeterminationMapper implements Mapper<CCDCourtDetermination, C
             .courtDecision(paymentIntentionMapper.from(ccdCourtDetermination.getCourtDecision()))
             .disposableIncome(ccdCourtDetermination.getDisposableIncome())
             .courtPaymentIntention(paymentIntentionMapper.from(ccdCourtDetermination.getCourtIntention()))
-            .decisionType(ccdCourtDetermination.getDecisionType());
-        if (ccdCourtDetermination.getRejectionReason() != null) {
-            builder.rejectionReason(ccdCourtDetermination.getRejectionReason());
-        }
+            .decisionType(ccdCourtDetermination.getDecisionType())
+            .rejectionReason(ccdCourtDetermination.getRejectionReason());
         return builder.build();
     }
 }
