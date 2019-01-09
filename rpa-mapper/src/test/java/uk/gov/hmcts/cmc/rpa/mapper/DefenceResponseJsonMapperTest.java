@@ -72,7 +72,6 @@ public class DefenceResponseJsonMapperTest {
         assertEquals(expected, mapper.map(claim).toString(), STRICT);
     }
 
-
     @Test
     public void shouldMapIndividualAddressModifiedDefenceResponseToRPA() throws JSONException {
         Claim claim = withCommonDefEmailAndRespondedAt()
@@ -153,6 +152,5 @@ public class DefenceResponseJsonMapperTest {
             .withDefendantEmail(DEFENDANT_EMAIL)
             .withRespondedAt(LocalDateTime.of(2018, 4, 26, 1, 1));
     }
-
-
+    
 }

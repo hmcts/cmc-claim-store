@@ -9,7 +9,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-
 @Value
 @EqualsAndHashCode(callSuper = true)
 public class CCDResponseRejection extends CCDClaimantResponse {
@@ -20,10 +19,12 @@ public class CCDResponseRejection extends CCDClaimantResponse {
 
     @Builder
     @JsonCreator
-    public CCDResponseRejection(BigDecimal amountPaid,
-                                LocalDateTime submittedOn,
-                                CCDYesNoOption freeMediationOption,
-                                String reason) {
+    public CCDResponseRejection(
+        BigDecimal amountPaid,
+        LocalDateTime submittedOn,
+        CCDYesNoOption freeMediationOption,
+        String reason
+    ) {
         super(amountPaid, submittedOn);
         this.freeMediationOption = freeMediationOption;
         this.reason = reason;
