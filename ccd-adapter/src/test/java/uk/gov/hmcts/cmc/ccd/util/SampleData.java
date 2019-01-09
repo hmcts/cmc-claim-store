@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentIntention;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
+import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDCourtDetermination;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseAcceptation;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpense;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncome;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDLivingPartner;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
+import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.DisabilityStatus;
@@ -49,6 +51,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.SOLE_TRADER;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption.SETTLEMENT;
+import static uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceType.EXPERT_WITNESS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount.BankAccountType.SAVINGS_ACCOUNT;
@@ -177,7 +180,7 @@ public class SampleData {
             .claimantProvidedType(INDIVIDUAL)
             .claimantProvidedAddress(ccdAddress)
             .claimantProvidedName("Individual")
-            .claimantProvidedDateOfBirth(LocalDate.of(1950, 1, 1))
+            .claimantProvidedDateOfBirth(LocalDate.of(1950, 01, 01))
             .claimantProvidedServiceAddress(ccdAddress)
             .claimantProvidedRepresentativeOrganisationAddress(ccdAddress)
             .claimantProvidedRepresentativeOrganisationName("My Org")
@@ -245,7 +248,7 @@ public class SampleData {
             .partyAddress(ccdAddress)
             .partyName("Individual")
             .partyPhone("07987654321")
-            .partyDateOfBirth(LocalDate.of(1950, 1, 1))
+            .partyDateOfBirth(LocalDate.of(1950, 01, 01))
             .partyCorrespondenceAddress(ccdAddress)
             .representativeOrganisationAddress(ccdAddress)
             .representativeOrganisationName("My Org")
@@ -318,7 +321,7 @@ public class SampleData {
             = singletonList(CCDCollectionElement.<CCDDefendant>builder().value(getCCDDefendantIndividual()).build());
         return CCDCase.builder()
             .id(1L)
-            .submittedOn(LocalDateTime.of(2017, 11, 1, 10, 15, 30))
+            .submittedOn(LocalDateTime.of(2017, 11, 01, 10, 15, 30))
             .issuedOn(LocalDate.of(2017, 11, 15))
             .submitterEmail("my@email.com")
             .submitterId("123")
@@ -352,7 +355,7 @@ public class SampleData {
 
         return CCDCase.builder()
             .id(1L)
-            .submittedOn(LocalDateTime.of(2017, 11, 1, 10, 15, 30))
+            .submittedOn(LocalDateTime.of(2017, 11, 01, 10, 15, 30))
             .issuedOn(LocalDate.of(2017, 11, 15))
             .submitterEmail("my@email.com")
             .submitterId("123")
@@ -382,8 +385,19 @@ public class SampleData {
             .interestClaimStartDate(LocalDate.now())
             .interestSpecificDailyAmount(BigDecimal.valueOf(10))
             .interestEndDateType(CCDInterestEndDateType.SUBMISSION)
+            .paymentStatus("success")
+            .paymentDateCreated("2019-01-01")
+            .paymentId("PaymentId")
+            .paymentAmount(BigDecimal.valueOf(4000))
+            .paymentReference("RC-1524-6488-1670-7520")
             .claimants(claimants)
             .defendants(defendants)
+            .timeline(singletonList(CCDCollectionElement.<CCDTimelineEvent>builder()
+                .value(CCDTimelineEvent.builder().date("some Date").description("description of event").build())
+                .build()))
+            .evidence(singletonList(CCDCollectionElement.<CCDEvidenceRow>builder()
+                .value(CCDEvidenceRow.builder().type(EXPERT_WITNESS).description("description of evidence").build())
+                .build()))
             .build();
     }
 

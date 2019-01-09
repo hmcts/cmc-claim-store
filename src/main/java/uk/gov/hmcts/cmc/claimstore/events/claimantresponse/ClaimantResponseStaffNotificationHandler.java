@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseFullDefenceStatesPaid;
 
-
 @Component
 public class ClaimantResponseStaffNotificationHandler {
 
