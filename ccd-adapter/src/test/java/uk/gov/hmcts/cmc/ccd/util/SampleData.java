@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentIntention;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
+import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDCourtDetermination;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseAcceptation;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpense;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncome;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDLivingPartner;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
+import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.DisabilityStatus;
@@ -48,6 +50,8 @@ import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.ORGANISATION;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.SOLE_TRADER;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
+import static uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption.SETTLEMENT;
+import static uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceType.EXPERT_WITNESS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount.BankAccountType.SAVINGS_ACCOUNT;
@@ -72,6 +76,24 @@ public class SampleData {
             .build();
     }
 
+    public static CCDResponseAcceptation getResponseAcceptationWithClaimantPaymentIntentionImmediately() {
+        return CCDResponseAcceptation.builder()
+            .amountPaid(BigDecimal.valueOf(123.98))
+            .claimantPaymentIntention(getCCDPaymentIntentionImmediately())
+            .submittedOn(LocalDateTimeFactory.nowInLocalZone())
+            .formaliseOption(SETTLEMENT)
+            .build();
+    }
+
+    public static CCDResponseAcceptation getResponseAcceptationWithClaimantPaymentIntentionPayBySetDate() {
+        return CCDResponseAcceptation.builder()
+            .amountPaid(BigDecimal.valueOf(123.98))
+            .claimantPaymentIntention(getCCDPaymentIntentionPayBySetDate())
+            .submittedOn(LocalDateTimeFactory.nowInLocalZone())
+            .formaliseOption(SETTLEMENT)
+            .build();
+    }
+
     public static CCDResponseRejection getResponseRejection() {
         return CCDResponseRejection.builder()
             .amountPaid(BigDecimal.valueOf(123.98))
@@ -91,7 +113,27 @@ public class SampleData {
             .build();
     }
 
-    private static CCDPaymentIntention getCCDPaymentIntention() {
+    public static CCDCourtDetermination getCCDCourtDeterminationImmediately() {
+        return CCDCourtDetermination.builder()
+            .rejectionReason("Rejection reason")
+            .courtIntention(getCCDPaymentIntentionImmediately())
+            .courtDecision(getCCDPaymentIntention())
+            .disposableIncome(BigDecimal.valueOf(300))
+            .decisionType(DecisionType.COURT)
+            .build();
+    }
+
+    public static CCDCourtDetermination getCCDCourtDeterminationPayBySetDate() {
+        return CCDCourtDetermination.builder()
+            .rejectionReason("Rejection reason")
+            .courtIntention(getCCDPaymentIntentionPayBySetDate())
+            .courtDecision(getCCDPaymentIntentionPayBySetDate())
+            .disposableIncome(BigDecimal.valueOf(300))
+            .decisionType(DecisionType.COURT)
+            .build();
+    }
+
+    public static CCDPaymentIntention getCCDPaymentIntention() {
         return CCDPaymentIntention.builder()
             .paymentDate(LocalDate.of(2017, 10, 12))
             .paymentOption(CCDPaymentOption.INSTALMENTS)
@@ -100,6 +142,27 @@ public class SampleData {
             .paymentSchedule(CCDPaymentSchedule.EACH_WEEK)
             .completionDate(LocalDate.of(2018, 10, 12))
             .build();
+    }
+
+    private static CCDPaymentIntention getCCDPaymentIntentionImmediately() {
+        return CCDPaymentIntention.builder()
+            .paymentDate(LocalDate.now())
+            .paymentOption(CCDPaymentOption.INSTALMENTS)
+            .build();
+    }
+
+    private static CCDPaymentIntention getCCDPaymentIntentionPayBySetDate() {
+        return CCDPaymentIntention.builder()
+            .paymentDate(LocalDate.now().plusDays(10))
+            .paymentOption(CCDPaymentOption.INSTALMENTS)
+            .build();
+    }
+
+    public static List<CCDCollectionElement<CCDAmountRow>> getAmountBreakDown() {
+        return singletonList(CCDCollectionElement.<CCDAmountRow>builder().value(CCDAmountRow.builder()
+            .amount(BigDecimal.valueOf(50))
+            .reason("payment")
+            .build()).build());
     }
 
     public static CCDAddress getCCDAddress() {
@@ -120,11 +183,11 @@ public class SampleData {
             .claimantProvidedName("Individual")
             .claimantProvidedDateOfBirth(LocalDate.of(1950, 01, 01))
             .claimantProvidedServiceAddress(ccdAddress)
-            .representativeOrganisationAddress(ccdAddress)
-            .representativeOrganisationName("My Org")
-            .representativeOrganisationPhone("07987654321")
-            .representativeOrganisationEmail(",my@email.com")
-            .representativeOrganisationDxAddress("dx123")
+            .claimantProvidedRepresentativeOrganisationAddress(ccdAddress)
+            .claimantProvidedRepresentativeOrganisationName("My Org")
+            .claimantProvidedRepresentativeOrganisationPhone("07987654321")
+            .claimantProvidedRepresentativeOrganisationEmail("my@email.com")
+            .claimantProvidedRepresentativeOrganisationDxAddress("dx123")
             .build();
     }
 
@@ -135,11 +198,11 @@ public class SampleData {
             .claimantProvidedAddress(ccdAddress)
             .claimantProvidedName("Organisation")
             .claimantProvidedServiceAddress(ccdAddress)
-            .representativeOrganisationAddress(ccdAddress)
-            .representativeOrganisationName("My Org")
-            .representativeOrganisationPhone("07987654321")
-            .representativeOrganisationEmail(",my@email.com")
-            .representativeOrganisationDxAddress("dx123")
+            .claimantProvidedRepresentativeOrganisationAddress(ccdAddress)
+            .claimantProvidedRepresentativeOrganisationName("My Org")
+            .claimantProvidedRepresentativeOrganisationPhone("07987654321")
+            .claimantProvidedRepresentativeOrganisationEmail("my@email.com")
+            .claimantProvidedRepresentativeOrganisationDxAddress("dx123")
             .claimantProvidedContactPerson("MR. Hyde")
             .claimantProvidedCompaniesHouseNumber("12345678")
             .build();
@@ -153,11 +216,11 @@ public class SampleData {
             .claimantProvidedName("Abc Ltd")
             .claimantProvidedAddress(ccdAddress)
             .claimantProvidedServiceAddress(ccdAddress)
-            .representativeOrganisationAddress(ccdAddress)
-            .representativeOrganisationName("My Org")
-            .representativeOrganisationPhone("07987654321")
-            .representativeOrganisationEmail(",my@email.com")
-            .representativeOrganisationDxAddress("dx123")
+            .claimantProvidedRepresentativeOrganisationAddress(ccdAddress)
+            .claimantProvidedRepresentativeOrganisationName("My Org")
+            .claimantProvidedRepresentativeOrganisationPhone("07987654321")
+            .claimantProvidedRepresentativeOrganisationEmail("my@email.com")
+            .claimantProvidedRepresentativeOrganisationDxAddress("dx123")
             .claimantProvidedContactPerson("MR. Hyde")
             .build();
     }
@@ -171,11 +234,11 @@ public class SampleData {
             .claimantProvidedName("SoleTrader")
             .claimantProvidedBusinessName("My Trade")
             .claimantProvidedServiceAddress(ccdAddress)
-            .representativeOrganisationAddress(ccdAddress)
-            .representativeOrganisationName("My Org")
-            .representativeOrganisationPhone("07987654321")
-            .representativeOrganisationEmail(",my@email.com")
-            .representativeOrganisationDxAddress("dx123")
+            .claimantProvidedRepresentativeOrganisationAddress(ccdAddress)
+            .claimantProvidedRepresentativeOrganisationName("My Org")
+            .claimantProvidedRepresentativeOrganisationPhone("07987654321")
+            .claimantProvidedRepresentativeOrganisationEmail("my@email.com")
+            .claimantProvidedRepresentativeOrganisationDxAddress("dx123")
             .build();
     }
 
@@ -191,7 +254,7 @@ public class SampleData {
             .representativeOrganisationAddress(ccdAddress)
             .representativeOrganisationName("My Org")
             .representativeOrganisationPhone("07987654321")
-            .representativeOrganisationEmail(",my@email.com")
+            .representativeOrganisationEmail("my@email.com")
             .representativeOrganisationDxAddress("dx123")
             .build();
     }
@@ -208,7 +271,7 @@ public class SampleData {
             .representativeOrganisationAddress(ccdAddress)
             .representativeOrganisationName("My Org")
             .representativeOrganisationPhone("07987654321")
-            .representativeOrganisationEmail(",my@email.com")
+            .representativeOrganisationEmail("my@email.com")
             .representativeOrganisationDxAddress("dx123")
             .partyContactPerson("MR. Hyde")
             .build();
@@ -226,7 +289,7 @@ public class SampleData {
             .representativeOrganisationAddress(ccdAddress)
             .representativeOrganisationName("My Org")
             .representativeOrganisationPhone("07987654321")
-            .representativeOrganisationEmail(",my@email.com")
+            .representativeOrganisationEmail("my@email.com")
             .representativeOrganisationDxAddress("dx123")
             .partyContactPerson("MR. Hyde")
             .partyCompaniesHouseNumber("12345678")
@@ -247,11 +310,10 @@ public class SampleData {
             .representativeOrganisationAddress(ccdAddress)
             .representativeOrganisationName("My Org")
             .representativeOrganisationPhone("07987654321")
-            .representativeOrganisationEmail(",my@email.com")
+            .representativeOrganisationEmail("my@email.com")
             .representativeOrganisationDxAddress("dx123")
             .build();
     }
-
 
     public static CCDCase getCCDLegalCase() {
         List<CCDCollectionElement<CCDClaimant>> claimants
@@ -324,16 +386,20 @@ public class SampleData {
             .interestClaimStartDate(LocalDate.now())
             .interestSpecificDailyAmount(BigDecimal.valueOf(10))
             .interestEndDateType(CCDInterestEndDateType.SUBMISSION)
+            .paymentStatus("success")
+            .paymentDateCreated("2019-01-01")
+            .paymentId("PaymentId")
+            .paymentAmount(BigDecimal.valueOf(4000))
+            .paymentReference("RC-1524-6488-1670-7520")
             .claimants(claimants)
             .defendants(defendants)
+            .timeline(singletonList(CCDCollectionElement.<CCDTimelineEvent>builder()
+                .value(CCDTimelineEvent.builder().date("some Date").description("description of event").build())
+                .build()))
+            .evidence(singletonList(CCDCollectionElement.<CCDEvidenceRow>builder()
+                .value(CCDEvidenceRow.builder().type(EXPERT_WITNESS).description("description of evidence").build())
+                .build()))
             .build();
-    }
-
-    public static List<CCDCollectionElement<CCDAmountRow>> getAmountBreakDown() {
-        return singletonList(CCDCollectionElement.<CCDAmountRow>builder().value(CCDAmountRow.builder()
-            .amount(BigDecimal.valueOf(50))
-            .reason("payment")
-            .build()).build());
     }
 
     public static CCDStatementOfMeans getCCDStatementOfMeans() {

@@ -45,6 +45,7 @@ public class DefendantMapper {
         builder.defendantId(claim.getDefendantId());
         builder.partyEmail(claim.getDefendantEmail());
         builder.responseMoreTimeNeededOption(CCDYesNoOption.valueOf(claim.isMoreTimeRequested()));
+        builder.directionsQuestionnaireDeadline(claim.getDirectionsQuestionnaireDeadline());
         Optional.ofNullable(claim.getCountyCourtJudgment()).ifPresent(countyCourtJudgment ->
             builder.countyCourtJudgement(mapCCJFromClaim.apply(claim))
         );
@@ -59,6 +60,7 @@ public class DefendantMapper {
             .letterHolderId(defendant.getLetterHolderId())
             .responseDeadline(defendant.getResponseDeadline())
             .defendantEmail(defendant.getPartyEmail())
+            .directionsQuestionnaireDeadline(defendant.getDirectionsQuestionnaireDeadline())
             .defendantId(defendant.getDefendantId());
 
         Optional.ofNullable(defendant.getCountyCourtJudgement()).ifPresent(ccj ->

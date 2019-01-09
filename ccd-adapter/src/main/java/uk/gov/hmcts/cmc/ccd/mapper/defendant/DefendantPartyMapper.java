@@ -32,6 +32,8 @@ public class DefendantPartyMapper {
     }
 
     public void to(CCDDefendant.CCDDefendantBuilder builder, Party party) {
+        requireNonNull(builder, "builder must not be null");
+        requireNonNull(party, "party must not be null");
 
         builder.partyName(party.getName());
         builder.partyAddress(addressMapper.to(party.getAddress()));
