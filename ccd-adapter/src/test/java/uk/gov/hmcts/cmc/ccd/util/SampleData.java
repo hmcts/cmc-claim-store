@@ -133,7 +133,7 @@ public class SampleData {
             .build();
     }
 
-    private static CCDPaymentIntention getCCDPaymentIntention() {
+    public static CCDPaymentIntention getCCDPaymentIntention() {
         return CCDPaymentIntention.builder()
             .paymentDate(LocalDate.of(2017, 10, 12))
             .paymentOption(CCDPaymentOption.INSTALMENTS)
