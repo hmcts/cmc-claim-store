@@ -103,7 +103,7 @@ public class DefendantAdmissionStaffEmailContentProviderTest {
     @Test
     public void shouldUsePaymentOptionByInstalmentsForPartAdmission() {
         Claim claimWithPartAdmission = SampleClaim.builder()
-            .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionInstallments())
+            .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionInstalments())
             .withRespondedAt(LocalDateTime.now())
             .build();
         EmailContent content = service.createContent(wrapInMap(claimWithPartAdmission, DEFENDANT_EMAIL));

@@ -115,7 +115,7 @@ public class CountyCourtJudgmentByAdmissionPdfTest extends BaseCCJPdfTest {
 
     @Test
     public void shouldBeAbleToFindDataInPartAdmitAndRepaymentByInstalmentsPdf() throws IOException {
-        Response partAdmissionResponse = SampleResponse.PartAdmission.builder().buildWithPaymentOptionInstallments();
+        Response partAdmissionResponse = SampleResponse.PartAdmission.builder().buildWithPaymentOptionInstalments();
         submitDefendantResponse(partAdmissionResponse, claim.getExternalId());
 
         ClaimantResponse claimantResponse = SampleClaimantResponse
