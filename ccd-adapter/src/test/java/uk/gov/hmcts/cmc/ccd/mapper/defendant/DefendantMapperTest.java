@@ -159,7 +159,7 @@ public class DefendantMapperTest {
     @Test
     public void mapTheirDetailsFromCCDClaimWithResponse() {
         //Given
-        CCDDefendant ccdDefendant = SampleCCDDefendant.withResponse().build();
+        CCDDefendant ccdDefendant = SampleCCDDefendant.withResponseMoreTimeNeededOption().build();
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         //when
