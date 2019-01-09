@@ -4,7 +4,7 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CaseEvent;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -20,6 +20,8 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service("caseRepository")
 @ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
@@ -93,7 +95,6 @@ public class CCDCaseRepository implements CaseRepository {
         CountyCourtJudgment countyCourtJudgment
     ) {
         coreCaseDataService.saveCountyCourtJudgment(authorisation, claim.getId(), countyCourtJudgment);
-
     }
 
     @Override
@@ -136,7 +137,7 @@ public class CCDCaseRepository implements CaseRepository {
 
     @Override
     public void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, String userAction) {
-        coreCaseDataService.reachSettlementAgreement(claim.getId(), settlement, authorisation,
+        coreCaseDataService.reachSettlementAgreement(claim.getId(), settlement, nowInUTC(), authorisation,
             CaseEvent.valueOf(userAction));
     }
 

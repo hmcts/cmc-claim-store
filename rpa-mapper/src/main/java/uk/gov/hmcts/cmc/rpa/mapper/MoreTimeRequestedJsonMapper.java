@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.rpa.mapper.json.NullAwareJsonObjectBuilder;
 import java.time.LocalDateTime;
 import javax.json.JsonObject;
 
-
 @Component
 public class MoreTimeRequestedJsonMapper {
 

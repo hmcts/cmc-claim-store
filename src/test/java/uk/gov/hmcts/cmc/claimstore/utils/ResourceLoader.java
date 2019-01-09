@@ -51,7 +51,6 @@ public class ResourceLoader {
         return new ResourceReader().read(resourceName);
     }
 
-
     public static CaseDetails successfulCoreCaseDataStoreSubmitResponseWithMoreTimeExtension() {
         String response = getResource("/core-case-data/submit-response.success.json")
             .replace("2020-02-06", "2020-02-19");
@@ -73,7 +72,7 @@ public class ResourceLoader {
 
     public static List<CaseDetails> listOfCaseDetailsWithMoreTimeExtension() {
         String response = new ResourceReader().read("/core-case-data/search-response.success.json")
-            .replace("2020-02-06", "2020-02-19");
+            .replace("2020-02-06", "2020-02-18");
 
         return ImmutableList.of(jsonMapper.fromJson(response, CaseDetails.class));
     }

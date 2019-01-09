@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.CaseEvent;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
@@ -27,9 +27,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CaseEvent.OFFER_ACCEPTED_BY_CLAIMANT;
-import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CaseEvent.OFFER_MADE_BY_DEFENDANT;
-import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CaseEvent.OFFER_REJECTED_BY_CLAIMANT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_ACCEPTED_BY_CLAIMANT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_MADE_BY_DEFENDANT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_REJECTED_BY_CLAIMANT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OfferServiceTest {
@@ -202,7 +202,6 @@ public class OfferServiceTest {
         Settlement settlement = new Settlement();
         settlement.makeOffer(SampleOffer.builder().build(), madeBy);
         settlement.accept(MadeBy.CLAIMANT);
-
 
         return SampleClaim.builder()
             .withSettlement(settlement).build();
