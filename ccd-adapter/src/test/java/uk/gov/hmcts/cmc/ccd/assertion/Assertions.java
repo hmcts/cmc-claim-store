@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.ccd.assertion;
 import uk.gov.hmcts.cmc.ccd.assertion.claimantresponse.CourtDeterminationAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.claimantresponse.ResponseAcceptationAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.claimantresponse.ResponseRejectionAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.defendant.PaymentIntentionAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.BankAccountAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.ChildAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.CourtOrderAssert;
@@ -11,7 +12,6 @@ import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.ExpenseAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.IncomeAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.LivingPartnerAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.StatementOfMeansAssert;
-import uk.gov.hmcts.cmc.ccd.assertion.response.PaymentIntentionAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -78,8 +78,8 @@ public class Assertions {
         return new ClaimantAssert(party);
     }
 
-    public static DefendantAssert assertThat(TheirDetails theirDetails) {
-        return new DefendantAssert(theirDetails);
+    public static TheirDetailsAssert assertThat(TheirDetails theirDetails) {
+        return new TheirDetailsAssert(theirDetails);
     }
 
     public static ChildAssert assertThat(Child child) {

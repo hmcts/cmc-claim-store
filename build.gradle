@@ -306,6 +306,7 @@ sonarqube {
     property "sonar.exclusions", "**/ccd/domain/**," +
       "**/cmc/domain/models/**," +
       "**/cmc/ccd/deprecated/**," +
+      "**/cmc/ccd/mapper/**," +
       "**/cmc/claimstore/idam/models/**," +
       "**/ExceptionForClient.java," +
       "**/config/**," +
@@ -313,6 +314,7 @@ sonarqube {
       "**/*Event.java," +
       "**/PathPatterns.java," +
       "**/ClaimRepository.java," +
+      "**/CCDCaseRepository.java," +
       "**/cmc/claimstore/appinsights/**," +
       "**/ccd/migration/**," +
       "**/EmailData.java," +

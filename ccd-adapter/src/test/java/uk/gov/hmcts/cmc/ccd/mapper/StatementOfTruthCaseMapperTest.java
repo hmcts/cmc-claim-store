@@ -20,12 +20,11 @@ public class StatementOfTruthCaseMapperTest {
     private StatementOfTruthCaseMapper mapper;
 
     @Test
-    public void mapStatementOfTruthToCCD() {
+    public void shouldMapStatementOfTruthToCCD() {
         //given
         StatementOfTruth statementOfTruth = StatementOfTruth.builder().signerRole("Role")
             .signerName("Name").build();
         CCDCase.CCDCaseBuilder caseBuilder = CCDCase.builder();
-
 
         //when
         mapper.to(statementOfTruth, caseBuilder);
@@ -34,15 +33,29 @@ public class StatementOfTruthCaseMapperTest {
         //then
         Assert.assertEquals(ccdCase.getSotSignerName(), statementOfTruth.getSignerName());
         Assert.assertEquals(ccdCase.getSotSignerRole(), statementOfTruth.getSignerRole());
-
     }
 
     @Test
-    public void mapCCDStatementOfTruthToDomain() {
+    public void shouldMapStatementOfTruthToCCDWithNullValues() {
+        //given
+        StatementOfTruth statementOfTruth = StatementOfTruth.builder().signerRole(null)
+            .signerName(null).build();
+        CCDCase.CCDCaseBuilder caseBuilder = CCDCase.builder();
+
+        //when
+        mapper.to(statementOfTruth, caseBuilder);
+        CCDCase ccdCase = caseBuilder.build();
+
+        //then
+        Assert.assertEquals(ccdCase.getSotSignerName(), statementOfTruth.getSignerName());
+        Assert.assertEquals(ccdCase.getSotSignerRole(), statementOfTruth.getSignerRole());
+    }
+
+    @Test
+    public void shouldMapStatementOfTruthFromCCD() {
         //given
         CCDCase ccdCase = CCDCase.builder().sotSignerName("signerName")
             .sotSignerRole("signerRole").build();
-
 
         //when
         StatementOfTruth statementOfTruth = mapper.from(ccdCase);
@@ -50,8 +63,17 @@ public class StatementOfTruthCaseMapperTest {
         //then
         Assert.assertEquals(statementOfTruth.getSignerName(), ccdCase.getSotSignerName());
         Assert.assertEquals(statementOfTruth.getSignerRole(), ccdCase.getSotSignerRole());
-
     }
 
+    @Test
+    public void shouldMapEmptyCCDStatementOfTruthToNull() {
+        //given
+        CCDCase ccdCase = CCDCase.builder().build();
 
+        //when
+        StatementOfTruth statementOfTruth = mapper.from(ccdCase);
+
+        //then
+        Assert.assertNull(statementOfTruth);
+    }
 }
