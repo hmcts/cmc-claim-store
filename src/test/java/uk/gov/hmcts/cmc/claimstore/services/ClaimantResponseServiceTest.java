@@ -156,7 +156,6 @@ public class ClaimantResponseServiceTest {
             .withClaimantResponse(claimantResponse)
             .build();
 
-
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
         when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION)))
             .thenReturn(claim);

@@ -67,12 +67,12 @@ public class CCJNotificationServiceTest extends BaseNotificationServiceTest {
             .build();
 
         when(notificationClient
-            .sendEmail(anyString(),anyString(), anyMap(), anyString()))
+            .sendEmail(anyString(), anyString(), anyMap(), anyString()))
             .thenThrow(new NotificationClientException("Some problem"));
 
         ccjNotificationService.notifyClaimantForCCJRequest(claim);
 
-        verify(notificationClient).sendEmail(anyString(),anyString(), anyMap(), anyString());
+        verify(notificationClient).sendEmail(anyString(), anyString(), anyMap(), anyString());
     }
 
     @Test
@@ -111,11 +111,11 @@ public class CCJNotificationServiceTest extends BaseNotificationServiceTest {
             .build();
 
         when(notificationClient
-            .sendEmail(anyString(),anyString(), anyMap(), anyString()))
+            .sendEmail(anyString(), anyString(), anyMap(), anyString()))
             .thenThrow(new NotificationClientException("Some problem"));
 
         ccjNotificationService.notifyDefendantForCCJRequested(claim);
 
-        verify(notificationClient).sendEmail(anyString(),anyString(), anyMap(), anyString());
+        verify(notificationClient).sendEmail(anyString(), anyString(), anyMap(), anyString());
     }
 }

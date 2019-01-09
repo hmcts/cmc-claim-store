@@ -84,7 +84,6 @@ public class CountyCourtJudgmentMapper implements Mapper<CCDCountyCourtJudgment,
                     .signerRole(ccdCountyCourtJudgment.getStatementOfTruthSignerRole()).build())
         );
 
-
         return builder.build();
     }
 }

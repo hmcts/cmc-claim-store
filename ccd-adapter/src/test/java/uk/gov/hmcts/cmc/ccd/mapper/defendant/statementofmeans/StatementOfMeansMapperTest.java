@@ -14,7 +14,6 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDStatementOfMeans;
 
-
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
 @RunWith(SpringJUnit4ClassRunner.class)

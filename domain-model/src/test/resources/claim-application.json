@@ -60,7 +60,9 @@
   "payment": {
     "amount": 4000,
     "reference": "RC-1524-6488-1670-7520",
-    "status": "success"
+    "status": "success",
+    "id": "PaymentId",
+    "date_created": "2019-01-01"
   },
   "feeAmountInPennies": 4000,
   "reason": "reason",
