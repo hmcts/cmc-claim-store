@@ -84,7 +84,6 @@ public class ClaimantResponseService {
         appInsights.trackEvent(getAppInsightsEvent(claimantResponse), "referenceNumber", claim.getReferenceNumber());
     }
 
-
     private boolean isReferredToJudge(ClaimantResponse response) {
         if (response.getType().equals(ACCEPTATION)) {
             ResponseAcceptation responseAcceptation = (ResponseAcceptation) response;
