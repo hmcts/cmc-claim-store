@@ -122,7 +122,6 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
             .sendEmail(anyString(), anyString(), anyMap(), anyString());
     }
 
-
     @Test
     public void shouldReturn404HttpStatusWhenClaimDoesNotExist() throws Exception {
         String nonExistingClaim = "84f1dda3-e205-4277-96a6-1f23b6f1766d";

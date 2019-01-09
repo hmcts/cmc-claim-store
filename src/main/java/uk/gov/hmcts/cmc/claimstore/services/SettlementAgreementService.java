@@ -48,7 +48,6 @@ public class SettlementAgreementService {
         Settlement settlement = assertSettlementCanBeResponded(claim);
         settlement.reject(MadeBy.DEFENDANT);
 
-
         String userAction = format("SETTLEMENT_AGREEMENT_REJECTED_BY_%s", MadeBy.DEFENDANT.name());
         caseRepository.updateSettlement(claim, settlement, authorisation, userAction);
 

@@ -22,7 +22,6 @@ public class ReDetermination {
     @NotNull
     private final MadeBy partyType;
 
-
     @Builder
     public ReDetermination(String explanation, MadeBy partyType) {
         this.explanation = explanation;

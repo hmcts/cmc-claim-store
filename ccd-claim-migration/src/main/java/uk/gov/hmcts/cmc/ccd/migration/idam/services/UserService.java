@@ -94,5 +94,4 @@ public class UserService {
         return BEARER + tokenExchangeResponse.getAccessToken();
     }
 
-
 }

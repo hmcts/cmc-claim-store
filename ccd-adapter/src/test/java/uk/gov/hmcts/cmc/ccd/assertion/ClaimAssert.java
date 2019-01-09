@@ -16,7 +16,6 @@ import java.util.Objects;
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
 
     public ClaimAssert(Claim actual) {
@@ -205,7 +204,6 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
                     ccdCase.getPersonalInjuryGeneralDamages(), personalInjury.getGeneralDamages());
             }
         });
-
 
         claimData.getHousingDisrepair().ifPresent(housingDisrepair -> {
             if (!Objects.equals(housingDisrepair.getCostOfRepairsDamages().name(),
