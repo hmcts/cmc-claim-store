@@ -6,7 +6,6 @@ import uk.gov.hmcts.cmc.ccd.mapper.Mapper;
 import uk.gov.hmcts.cmc.ccd.mapper.PaymentIntentionMapper;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 
-
 @Component
 public class CourtDeterminationMapper implements Mapper<CCDCourtDetermination, CourtDetermination> {
     private final PaymentIntentionMapper paymentIntentionMapper;
