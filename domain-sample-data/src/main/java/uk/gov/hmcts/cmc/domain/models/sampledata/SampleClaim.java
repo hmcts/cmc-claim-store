@@ -4,6 +4,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
+import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,6 +25,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.CLAIMANT;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.standardInterestBuilder;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
@@ -89,6 +92,20 @@ public final class SampleClaim {
             ).build();
     }
 
+    public static Claim withFullClaimData() {
+        return builder()
+            .withClaimData(SampleClaimData.builder()
+                .withExternalId(RAND_UUID)
+                .withInterest(new SampleInterest()
+                    .withType(Interest.InterestType.BREAKDOWN)
+                    .withInterestBreakdown(SampleInterestBreakdown.validDefaults())
+                    .withRate(BigDecimal.valueOf(8))
+                    .withReason("Need flat rate").build())
+                .withPayment(SamplePayment.builder().build())
+                .build())
+            .build();
+    }
+
     public static Claim getClaimWithFullDefenceNoMediation() {
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
@@ -99,9 +116,11 @@ public final class SampleClaim {
             ).withResponse(SampleResponse.FullDefence
                 .builder()
                 .withDefenceType(DefenceType.DISPUTE)
-                .withMediation(YesNoOption.NO)
+                .withMediation(NO)
+                .withMoreTimeNeededOption(NO)
                 .build()
             )
+            .withRespondedAt(LocalDateTime.now())
             .withDirectionsQuestionnaireDeadline(LocalDate.now())
             .build();
     }
@@ -116,6 +135,12 @@ public final class SampleClaim {
             .withResponse(response)
             .withRespondedAt(LocalDateTime.now())
             .withDefendantEmail(DEFENDANT_EMAIL)
+            .build();
+    }
+
+    public static Claim withNoResponse() {
+        return builder()
+            .withClaimData(SampleClaimData.validDefaults())
             .build();
     }
 
@@ -134,6 +159,24 @@ public final class SampleClaim {
         return builder().build();
     }
 
+    public static Claim getLegalDataWithReps() {
+        return builder()
+            .withClaimData(SampleClaimData.builder()
+                .withExternalId(RAND_UUID)
+                .withAmount(SampleAmountRange.builder().build())
+                .clearDefendants()
+                .withDefendant(SampleTheirDetails.builder()
+                    .withRepresentative(SampleRepresentative.builder().build())
+                    .individualDetails())
+                .build()
+            )
+            .build();
+    }
+
+    public static Claim getClaimWithSealedClaimLink(URI sealedClaimUri) {
+        return builder().withSealedClaimDocument(sealedClaimUri).build();
+    }
+
     public static Claim claim(ClaimData claimData, String referenceNumber) {
         return Claim.builder()
             .id(CLAIM_ID)
@@ -147,6 +190,7 @@ public final class SampleClaim {
             .issuedOn(ISSUE_DATE)
             .responseDeadline(RESPONSE_DEADLINE)
             .moreTimeRequested(NOT_REQUESTED_FOR_MORE_TIME)
+            .respondedAt(LocalDateTime.now())
             .submitterEmail(SUBMITTER_EMAIL)
             .build();
     }
@@ -168,6 +212,10 @@ public final class SampleClaim {
         return builder().withResponseDeadline(responseDeadline).build();
     }
 
+    public static Claim getWithSettlement(Settlement settlement) {
+        return builder().withSettlement(settlement).build();
+    }
+
     public static Claim getClaimWithNoDefendantEmail() {
 
         return SampleClaim.builder()
@@ -186,7 +234,7 @@ public final class SampleClaim {
                 SampleResponse.FullDefence
                     .builder()
                     .withDefenceType(DefenceType.ALREADY_PAID)
-                    .withMediation(YesNoOption.NO)
+                    .withMediation(NO)
                     .build())
             .withRespondedAt(LocalDateTime.now())
             .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
@@ -204,6 +252,20 @@ public final class SampleClaim {
         settlement.makeOffer(SampleOffer.builder().build(), CLAIMANT);
         settlement.acceptCourtDetermination(CLAIMANT);
         settlement.reject(MadeBy.DEFENDANT);
+
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withResponse(SampleResponse.FullAdmission.validDefaults())
+            .withSettlement(settlement)
+            .build();
+    }
+
+    public static Claim withSettlementReached() {
+
+        Settlement settlement = new Settlement();
+        settlement.makeOffer(SampleOffer.builder().build(), CLAIMANT);
+        settlement.acceptCourtDetermination(CLAIMANT);
+        settlement.countersign(MadeBy.DEFENDANT);
 
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
@@ -342,7 +404,6 @@ public final class SampleClaim {
         this.settlementReachedAt = settlementReachedAt;
         return this;
     }
-
 
     public SampleClaim withReDetermination(ReDetermination reDetermination) {
         this.reDetermination = reDetermination;

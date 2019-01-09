@@ -30,7 +30,6 @@ public class DebtAssert extends AbstractAssert<DebtAssert, Debt> {
                 ccdDebt.getMonthlyPayments(), actual.getMonthlyPayments());
         }
 
-
         return this;
     }
 }

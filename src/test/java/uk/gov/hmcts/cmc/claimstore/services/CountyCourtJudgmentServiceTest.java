@@ -199,7 +199,6 @@ public class CountyCourtJudgmentServiceTest {
         countyCourtJudgmentService.save(ccjByDefault, EXTERNAL_ID, AUTHORISATION);
     }
 
-
     @Test(expected = ForbiddenActionException.class)
     public void reDeterminationThrowsForbiddenActionExceptionWhenCountyCourtJudgmentIsNotRequestedYet() {
         Claim respondedClaim = SampleClaim.getWithDefaultResponse();
@@ -219,7 +218,6 @@ public class CountyCourtJudgmentServiceTest {
         CountyCourtJudgment ccjByDefault = SampleCountyCourtJudgment.builder().ccjType(DEFAULT).build();
         countyCourtJudgmentService.save(ccjByDefault, EXTERNAL_ID, AUTHORISATION);
     }
-
 
     @Test(expected = ForbiddenActionException.class)
     public void saveThrowsForbiddenActionExceptionWhenRedeterminationWasAlreadySubmitted() {

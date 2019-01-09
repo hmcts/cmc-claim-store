@@ -31,7 +31,6 @@ public class CountyCourtJudgmentAssert extends AbstractAssert<CountyCourtJudgmen
             }
         });
 
-
         if (!Objects.equals(actual.getPaidAmount().orElse(null),
             ccdCountyCourtJudgment.getPaidAmount())) {
             failWithMessage("Expected CountyCourtJudgment.paidAmount to be <%s> but was <%s>",
