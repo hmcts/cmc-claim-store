@@ -36,7 +36,6 @@ public class AmountMapper implements BuilderMapper<CCDCase, Amount, CCDCase.CCDC
         } else if (amount instanceof NotKnown) {
             builder.amountType(NOT_KNOWN);
         }
-
     }
 
     @Override

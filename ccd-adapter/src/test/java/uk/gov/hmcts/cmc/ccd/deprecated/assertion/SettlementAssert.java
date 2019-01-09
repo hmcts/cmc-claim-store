@@ -12,7 +12,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;
 
-
 public class SettlementAssert extends AbstractAssert<SettlementAssert, Settlement> {
 
     public SettlementAssert(Settlement actual) {

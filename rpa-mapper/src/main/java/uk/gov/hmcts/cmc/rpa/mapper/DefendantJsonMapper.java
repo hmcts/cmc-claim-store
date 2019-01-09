@@ -22,7 +22,6 @@ import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractFromSubclass;
 import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractOptionalFromSubclass;
 import static uk.gov.hmcts.cmc.rpa.mapper.helper.RPAMapperHelper.isAddressAmended;
 
-
 @Component
 @SuppressWarnings({"LineLength"})
 public class DefendantJsonMapper {

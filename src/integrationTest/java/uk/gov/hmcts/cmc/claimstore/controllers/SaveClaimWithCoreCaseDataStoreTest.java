@@ -169,7 +169,6 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             );
     }
 
-
     @Test
     public void shouldFailIssuingClaimEvenWhenCCDStoreFailsToStartEvent() throws Exception {
         ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
