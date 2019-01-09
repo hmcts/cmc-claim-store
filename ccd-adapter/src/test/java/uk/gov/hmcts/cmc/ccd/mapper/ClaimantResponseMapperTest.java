@@ -1,9 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,6 +21,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
@@ -35,9 +34,6 @@ public class ClaimantResponseMapperTest {
     private ClaimantResponseMapper mapper;
 
     private Claim.ClaimBuilder claimBuilder;
-
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
 
     @Before
     public void setUp() {
@@ -94,54 +90,60 @@ public class ClaimantResponseMapperTest {
     @Test
     public void shouldMapCCDResponseAcceptationWithCCJFormalisationToResponseAcceptation() {
         CCDResponseAcceptation ccdResponse = SampleData.getResponseAcceptation(CCDFormaliseOption.CCJ);
+
         mapper.from(ccdResponse, claimBuilder);
         Claim claim = claimBuilder.build();
-        if (claim.getClaimantResponse().isPresent()) {
-            assertThat((ResponseAcceptation) claim.getClaimantResponse().get()).isEqualTo(ccdResponse);
-        }
-        assertNotNull(claim.getClaimantRespondedAt().orElse(null));
+
+        assertThat(claim.getClaimantResponse()).isPresent();
+        assertThat((ResponseAcceptation) claim.getClaimantResponse().orElseThrow(AssertionError::new))
+            .isEqualTo(ccdResponse);
+        assertThat(claim.getClaimantRespondedAt()).isPresent();
     }
 
     @Test
     public void shouldMapCCDResponseAcceptationWithClaimantPaymentIntentionImmediatelyToResponseAcceptation() {
         CCDResponseAcceptation ccdResponse = SampleData
             .getResponseAcceptationWithClaimantPaymentIntentionImmediately();
+
         mapper.from(ccdResponse, claimBuilder);
         Claim claim = claimBuilder.build();
-        if (claim.getClaimantResponse().isPresent()) {
-            assertThat((ResponseAcceptation) claim.getClaimantResponse().get()).isEqualTo(ccdResponse);
-        }
-        assertNotNull(claim.getClaimantRespondedAt().orElse(null));
+
+        assertThat(claim.getClaimantResponse()).isPresent();
+        assertThat((ResponseAcceptation) claim.getClaimantResponse().orElseThrow(AssertionError::new))
+            .isEqualTo(ccdResponse);
+        assertThat(claim.getClaimantRespondedAt()).isPresent();
     }
 
     @Test
     public void shouldMapCCDResponseAcceptationWithClaimantPaymentIntentionPayBySetDateToResponseAcceptation() {
         CCDResponseAcceptation ccdResponse = SampleData
             .getResponseAcceptationWithClaimantPaymentIntentionPayBySetDate();
+
         mapper.from(ccdResponse, claimBuilder);
         Claim claim = claimBuilder.build();
-        if (claim.getClaimantResponse().isPresent()) {
-            assertThat((ResponseAcceptation) claim.getClaimantResponse().get()).isEqualTo(ccdResponse);
-        }
-        assertNotNull(claim.getClaimantRespondedAt().orElse(null));
+
+        assertThat(claim.getClaimantResponse()).isPresent();
+        assertThat((ResponseAcceptation) claim.getClaimantResponse().orElseThrow(AssertionError::new))
+            .isEqualTo(ccdResponse);
+        assertThat(claim.getClaimantRespondedAt()).isPresent();
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void shouldThrowExceptionWhenAttemptingToMapNullClaimantResponse() {
-        expectedException.expect(NullPointerException.class);
-        expectedException.expectMessage("claim must not be null");
         mapper.to(null);
     }
 
     @Test
     public void shouldMapCCDResponseRejectionToResponseRejection() {
         CCDResponseRejection ccdResponse = SampleData.getResponseRejection();
+
         mapper.from(ccdResponse, claimBuilder);
         Claim claim = claimBuilder.build();
-        if (claim.getClaimantResponse().isPresent()) {
-            assertThat((ResponseRejection) claim.getClaimantResponse().get()).isEqualTo(ccdResponse);
-        }
-        assertNotNull(claim.getClaimantRespondedAt().orElse(null));
+
+        assertThat(claim.getClaimantResponse()).isPresent();
+        assertThat((ResponseRejection) claim.getClaimantResponse().orElseThrow(AssertionError::new))
+            .isEqualTo(ccdResponse);
+        assertThat(claim.getClaimantRespondedAt()).isPresent();
     }
 
     @Test
@@ -151,7 +153,9 @@ public class ClaimantResponseMapperTest {
             .claimantResponse(response)
             .claimantRespondedAt(LocalDateTimeFactory.nowInLocalZone())
             .build();
+
         CCDClaimantResponse ccdResponse = mapper.to(claim);
+
         assertThat((ResponseRejection) response).isEqualTo((CCDResponseRejection) ccdResponse);
         assertNotNull(ccdResponse.getSubmittedOn());
     }
