@@ -22,6 +22,10 @@ public class CountyCourtJudgmentMapper implements Mapper<CCDCountyCourtJudgment,
     @Override
     public CCDCountyCourtJudgment to(CountyCourtJudgment countyCourtJudgment) {
 
+        if (countyCourtJudgment == null) {
+            return null;
+        }
+
         CCDCountyCourtJudgment.CCDCountyCourtJudgmentBuilder builder = CCDCountyCourtJudgment.builder();
 
         countyCourtJudgment.getDefendantDateOfBirth().ifPresent(builder::defendantDateOfBirth);

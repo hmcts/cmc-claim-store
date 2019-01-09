@@ -3,14 +3,17 @@ package uk.gov.hmcts.cmc.ccd.mapper.defendant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
+import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.mapper.TheirDetailsMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static java.util.Objects.requireNonNull;
 
@@ -19,14 +22,17 @@ public class DefendantMapper {
 
     private TheirDetailsMapper theirDetailsMapper;
     private ResponseMapper responseMapper;
+    private CountyCourtJudgmentMapper ccjMapper;
 
     @Autowired
     public DefendantMapper(
         TheirDetailsMapper theirDetailsMapper,
-        ResponseMapper responseMapper
+        ResponseMapper responseMapper,
+        CountyCourtJudgmentMapper countyCourtJudgmentMapper
     ) {
         this.theirDetailsMapper = theirDetailsMapper;
         this.responseMapper = responseMapper;
+        this.ccjMapper = countyCourtJudgmentMapper;
     }
 
     public CCDDefendant to(TheirDetails theirDetails, Claim claim) {
@@ -39,6 +45,10 @@ public class DefendantMapper {
         builder.defendantId(claim.getDefendantId());
         builder.partyEmail(claim.getDefendantEmail());
         builder.responseMoreTimeNeededOption(CCDYesNoOption.valueOf(claim.isMoreTimeRequested()));
+        Optional.ofNullable(claim.getCountyCourtJudgment()).ifPresent(countyCourtJudgment ->
+            builder.countyCourtJudgement(mapCCJFromClaim.apply(claim))
+        );
+
         claim.getResponse().ifPresent(toResponse(claim, builder));
         theirDetailsMapper.to(builder, theirDetails);
         return builder.build();
@@ -50,6 +60,10 @@ public class DefendantMapper {
             .responseDeadline(defendant.getResponseDeadline())
             .defendantEmail(defendant.getPartyEmail())
             .defendantId(defendant.getDefendantId());
+
+        Optional.ofNullable(defendant.getCountyCourtJudgement()).ifPresent(ccj ->
+            builder.countyCourtJudgment(ccjMapper.from(ccj))
+        );
 
         Optional.ofNullable(defendant.getResponseMoreTimeNeededOption()).ifPresent(
             moreTimeNeeded -> builder.moreTimeRequested(moreTimeNeeded.toBoolean())
@@ -67,4 +81,8 @@ public class DefendantMapper {
             builder.responseSubmittedOn(claim.getRespondedAt());
         };
     }
+
+    private Function<Claim, CCDCountyCourtJudgment> mapCCJFromClaim = claim ->
+        ccjMapper.to(claim.getCountyCourtJudgment()).toBuilder()
+            .requestedDate(claim.getCountyCourtJudgmentRequestedAt()).build();
 }

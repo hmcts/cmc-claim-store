@@ -194,7 +194,7 @@ public final class SampleClaim {
                 SampleCountyCourtJudgment.builder()
                     .paymentOption(PaymentOption.IMMEDIATELY)
                     .build()
-            )
+            ).withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
             .build();
     }
 
