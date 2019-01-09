@@ -314,6 +314,7 @@ sonarqube {
       "**/*Event.java," +
       "**/PathPatterns.java," +
       "**/ClaimRepository.java," +
+      "**/CCDCaseRepository.java," +
       "**/cmc/claimstore/appinsights/**," +
       "**/ccd/migration/**," +
       "**/EmailData.java," +

@@ -8,108 +8,131 @@
   "locked_by_user_id": null,
   "security_level": null,
   "case_data": {
-    "moreTimeRequested": "NO",
-    "referenceNumber": "004MC931",
-    "submitterId": "23",
-    "letterHolderId": "1581",
-    "submittedOn": "2018-05-13T14:13:59.562",
-    "claimData": {
-      "amount": {
-        "type": "RANGE",
-        "amountRange": {
-          "lowerValue": 5000,
-          "higherValue" : 7000
-        }
-      },
-      "reason": "A strong sense of entitlement.",
-      "payment": {
-        "amount": 185,
-        "status": "Success",
-        "reference": "RC-1526-2207-1964-8145"
-      },
-      "evidence": {},
-      "interest": {
-        "type": "NO_INTEREST"
-      },
-      "timeline": {
-        "events": [
-          {
-            "id": "502677e7-b66a-42b3-8d32-a4ad3cd279e3",
-            "value": {
-              "date": "27 May 1997",
-              "description": "The day the first bill was issued"
-            }
+    "id": 1546455160649708,
+    "reason": "sfdfg dssdgdsfgd",
+    "feeCode": "X0008-1",
+    "issuedOn": "2019-01-03",
+    "claimants": [
+      {
+        "id": "7081d646-d07d-4d37-9bb4-571e8a28d769",
+        "value": {
+          "partyName": "Aamir Khan",
+          "partyType": "INDIVIDUAL",
+          "partyAddress": {
+            "PostCode": "SE28 0JE",
+            "PostTown": "LONDON",
+            "AddressLine1": "38 DELISLE ROAD"
           },
-          {
-            "id": "917d12f3-8904-42d2-a8dc-16a60ca3b28a",
-            "value": {
-              "date": "23 March 2018",
-              "description": "A historic day with enormous importance"
-            }
-          }
-        ]
+          "representativeOrganisationName": "Jan Clark",
+          "representativeOrganisationEmail": "adsda@asds.com",
+          "representativeOrganisationPhone": "07873727165",
+          "representativeOrganisationAddress": {
+            "PostCode": "SE28 0JE",
+            "PostTown": "LONDON",
+            "AddressLine1": "38 DELISLE ROAD"
+          },
+          "representativeOrganisationDxAddress": "London"
+        }
       },
-      "claimants": [
-        {
-          "id": "7a631109-a761-4e07-a16e-42fd00165136",
-          "value": {
-            "type": "ORGANISATION",
-            "organisation": {
-              "name": "Davids and Sons Limited",
-              "contactPerson": "Jack Davids",
-              "email": "jack.davids@dslimited.com",
-              "address": {
-                "city": "London",
-                "line1": "Flat 1",
-                "line2": "Street 1",
-                "line3": "Cool house name",
-                "postcode": "SW1A 2AA"
-              },
-              "phoneNumber": "07112358132",
-              "representative": {
-                "organisationName": "David and Sons Limited",
-                "organisationAddress": {
-                  "city": "London",
-                  "line1": "Flat 1",
-                  "line2": "Street 1",
-                  "line3": "Cool house name",
-                  "postcode": "SW1A 2AA"
-                }
-              }
-            }
+      {
+        "id": "4a7be47f-cba4-4696-96b2-9f15e149d1b5",
+        "value": {
+          "partyName": "ABC Solutions",
+          "partyType": "ORGANISATION",
+          "partyAddress": {
+            "PostCode": "SE28 0JE",
+            "PostTown": "LONDON",
+            "AddressLine1": "38 DELISLE ROAD"
+          },
+          "partyCompaniesHouseNumber": "567",
+          "representativeOrganisationName": "Jan Clark",
+          "representativeOrganisationEmail": "adsda@asds.com",
+          "representativeOrganisationPhone": "07873727165",
+          "representativeOrganisationAddress": {
+            "PostCode": "SE28 0JE",
+            "PostTown": "LONDON",
+            "AddressLine1": "38 DELISLE ROAD"
+          },
+          "representativeOrganisationDxAddress": "London"
+        }
+      }
+    ],
+    "amountType": "RANGE",
+    "defendants": [
+      {
+        "id": "ed8fc64d-6daf-4318-9491-e1fbf0c33245",
+        "value": {
+          "claimantProvidedName": "zczcasdfs",
+          "claimantProvidedType": "ORGANISATION",
+          "claimantProvidedAddress": {
+            "PostCode": "SE28 0JE",
+            "PostTown": "LONDON",
+            "AddressLine1": "38 DELISLE ROAD"
+          },
+          "representativeOrganisationName": "ewr wrwerwr",
+          "representativeOrganisationAddress": {
+            "PostCode": "SE28 0JE",
+            "PostTown": "LONDON",
+            "AddressLine1": "38 DELISLE ROAD"
+          },
+          "claimantProvidedCompaniesHouseNumber": "1213"
+        }
+      },
+      {
+        "id": "1163e93c-f871-4a52-a7f1-02ed2da4fdd4",
+        "value": {
+          "claimantProvidedName": "erwer wer ewr",
+          "claimantProvidedType": "SOLE_TRADER",
+          "claimantProvidedAddress": {
+            "PostCode": "SE28 0JE",
+            "PostTown": "LONDON",
+            "AddressLine1": "38 DELISLE ROAD"
+          },
+          "claimantProvidedBusinessName": "sadsafd asda",
+          "representativeOrganisationName": "solicitor org",
+          "representativeOrganisationAddress": {
+            "PostCode": "SE28 0JE",
+            "PostTown": "LONDON",
+            "AddressLine1": "38 DELISLE ROAD"
           }
         }
-      ],
-      "defendants": [
-        {
-          "id": "1f3a4788-9ea6-4695-8a50-73b10f1ee9b6",
-          "value": {
-            "type": "INDIVIDUAL",
-            "individual": {
-              "name": "Daniel Murphy",
-              "address": {
-                "city": "London",
-                "line1": "Flat 3",
-                "line2": "Street 1",
-                "line3": "Cooler house name",
-                "postcode": "SW1A 2AA"
-              }
-            }
+      },
+      {
+        "id": "b9ce761d-5612-4b9c-8482-ce1c53f8b278",
+        "value": {
+          "responseDeadline": "2019-01-21",
+          "claimantProvidedName": "sdfsfddf sdf ",
+          "claimantProvidedType": "INDIVIDUAL",
+          "claimantProvidedAddress": {
+            "PostCode": "SE28 0JE",
+            "PostTown": "LONDON",
+            "AddressLine1": "38 DELISLE ROAD"
+          },
+          "representativeOrganisationName": "ewr wrwerwr",
+          "representativeOrganisationAddress": {
+            "PostCode": "SE28 0JE",
+            "PostTown": "LONDON",
+            "AddressLine1": "38 DELISLE ROAD"
           }
         }
-      ],
-      "statementOfTruth": {
-        "signerName": "Daniel Murphy",
-        "signerRole": "Director"
-      },
-      "externalId": "bde7fc34-65fd-4ae0-8ed7-ea492207a6c4",
-      "feeAmountInPennies": 18500
-    },
-    "externalId": "bde7fc34-65fd-4ae0-8ed7-ea492207a6c4",
-    "responseDeadline": "2020-02-06",
-    "issuedOn": "2020-01-17",
-    "submitterEmail": "claimant@mail.com",
-    "features": "admissions"
+      }
+    ],
+    "externalId": "918dea15-cf9d-43a4-b5b8-c40751e5de23",
+    "submittedOn": "2019-01-02T18:52:39.913603",
+    "submitterId": "61",
+    "sotSignerName": "sdf sdf sfsf",
+    "sotSignerRole": "sdfsdf sd ",
+    "preferredCourt": "Bromley County Court and Family Court",
+    "submitterEmail": "dharmendrak02@gmail.com",
+    "referenceNumber": "000LR003",
+    "amountLowerValue": 6800,
+    "feeAccountNumber": "PBA1234567",
+    "amountHigherValue": 15000,
+    "feeAmountInPennies": 75000,
+    "externalReferenceNumber": "PBA1234567",
+    "housingDisrepairOtherDamages": "MORE_THAN_THOUSAND_POUNDS",
+    "personalInjuryGeneralDamages": "MORE_THAN_THOUSAND_POUNDS",
+    "housingDisrepairCostOfRepairDamages": "MORE_THAN_THOUSAND_POUNDS"
   },
   "security_classification": "PUBLIC"
 }
