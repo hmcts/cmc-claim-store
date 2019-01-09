@@ -151,7 +151,7 @@ public class ClaimantResponseServiceTest {
 
         Claim claim = SampleClaim.builder()
             .withResponseDeadline(LocalDate.now().minusMonths(2))
-            .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionInstallments())
+            .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionInstalments())
             .withRespondedAt(LocalDateTime.now().minusDays(32))
             .withClaimantResponse(claimantResponse)
             .build();
@@ -188,7 +188,7 @@ public class ClaimantResponseServiceTest {
 
         Claim claim = SampleClaim.builder()
             .withResponseDeadline(LocalDate.now().minusMonths(2))
-            .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionInstallmentsAndParty(company))
+            .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionInstalmentsAndParty(company))
             .withRespondedAt(LocalDateTime.now().minusDays(32))
             .withClaimantResponse(claimantResponse)
             .build();
@@ -232,7 +232,7 @@ public class ClaimantResponseServiceTest {
             .withResponse(SampleResponse
                 .PartAdmission
                 .builder()
-                .buildWithPaymentOptionInstallmentsAndParty(organisation))
+                .buildWithPaymentOptionInstalmentsAndParty(organisation))
             .withRespondedAt(LocalDateTime.now().minusDays(32))
             .withClaimantResponse(claimantResponse)
             .build();

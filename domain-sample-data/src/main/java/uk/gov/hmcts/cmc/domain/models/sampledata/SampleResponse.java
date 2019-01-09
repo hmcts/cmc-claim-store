@@ -95,7 +95,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .build();
         }
 
-        public PartAdmissionResponse buildWithPaymentOptionInstallments() {
+        public PartAdmissionResponse buildWithPaymentOptionInstalments() {
             return PartAdmissionResponse.builder()
                 .defendant(SampleParty.builder().individual())
                 .moreTimeNeeded(YesNoOption.NO)
@@ -108,7 +108,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .build();
         }
 
-        public PartAdmissionResponse buildWithPaymentOptionInstallmentsAndParty(Party party) {
+        public PartAdmissionResponse buildWithPaymentOptionInstalmentsAndParty(Party party) {
             return PartAdmissionResponse.builder()
                 .defendant(party)
                 .moreTimeNeeded(YesNoOption.NO)
