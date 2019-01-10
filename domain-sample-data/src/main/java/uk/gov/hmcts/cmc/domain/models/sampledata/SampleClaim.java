@@ -4,6 +4,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
+import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -88,6 +90,20 @@ public final class SampleClaim {
                 .withMediation(YesNoOption.YES)
                 .build()
             ).build();
+    }
+
+    public static Claim withFullClaimData() {
+        return builder()
+            .withClaimData(SampleClaimData.builder()
+                .withExternalId(RAND_UUID)
+                .withInterest(new SampleInterest()
+                    .withType(Interest.InterestType.BREAKDOWN)
+                    .withInterestBreakdown(SampleInterestBreakdown.validDefaults())
+                    .withRate(BigDecimal.valueOf(8))
+                    .withReason("Need flat rate").build())
+                .withPayment(SamplePayment.builder().build())
+                .build())
+            .build();
     }
 
     public static Claim getClaimWithFullDefenceNoMediation() {
@@ -388,7 +404,6 @@ public final class SampleClaim {
         this.settlementReachedAt = settlementReachedAt;
         return this;
     }
-
 
     public SampleClaim withReDetermination(ReDetermination reDetermination) {
         this.reDetermination = reDetermination;
