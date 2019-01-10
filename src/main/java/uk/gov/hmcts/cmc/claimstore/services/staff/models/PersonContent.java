@@ -14,7 +14,6 @@ public class PersonContent {
     private final String mobileNumber;
     private final String dateOfBirth;
 
-
     public PersonContent(
         String partyType,
         String fullName,

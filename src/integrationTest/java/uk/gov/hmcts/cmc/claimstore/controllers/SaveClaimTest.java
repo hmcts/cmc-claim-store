@@ -78,7 +78,6 @@ public class SaveClaimTest extends BaseSaveTest {
             .isEqualTo(claimData);
     }
 
-
     @Test
     public void shouldReturnFeaturesStored() throws Exception {
         ClaimData claimData = SampleClaimData.submittedByClaimant();

@@ -203,7 +203,6 @@ public class OfferServiceTest {
         settlement.makeOffer(SampleOffer.builder().build(), madeBy);
         settlement.accept(MadeBy.CLAIMANT);
 
-
         return SampleClaim.builder()
             .withSettlement(settlement).build();
     }

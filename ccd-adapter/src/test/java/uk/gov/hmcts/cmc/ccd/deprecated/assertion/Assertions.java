@@ -20,7 +20,6 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employer;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.LivingPartner;
 
-
 public class Assertions {
 
     private Assertions() {

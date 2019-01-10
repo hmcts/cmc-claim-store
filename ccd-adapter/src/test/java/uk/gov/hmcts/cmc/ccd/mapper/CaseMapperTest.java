@@ -15,7 +15,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.util.SampleData.getAmountBreakDown;
 
-
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -27,7 +26,7 @@ public class CaseMapperTest {
     @Test
     public void shouldMapLegalClaimToCCD() {
         //given
-        Claim claim = SampleClaim.getDefaultForLegal();
+        Claim claim = SampleClaim.getLegalDataWithReps();
 
         //when
         CCDCase ccdCase = ccdCaseMapper.to(claim);
@@ -39,7 +38,7 @@ public class CaseMapperTest {
     @Test
     public void shouldMapCitizenClaimToCCD() {
         //given
-        Claim claim = SampleClaim.getDefault();
+        Claim claim = SampleClaim.withFullClaimData();
 
         //when
         CCDCase ccdCase = ccdCaseMapper.to(claim);

@@ -14,7 +14,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class TemplateServiceTest {
 
-
     private PebbleEngine pebble = new PebbleConfiguration().pebbleEngine();
 
     private TemplateService service;
@@ -55,7 +54,7 @@ public class TemplateServiceTest {
     public void shouldThrowNullPointerWhenGivenNullValuesToMapEvaluate() {
         service = new TemplateService(pebble);
 
-        service.evaluate("content doesn't matter",null);
+        service.evaluate("content doesn't matter", null);
     }
 
 }
