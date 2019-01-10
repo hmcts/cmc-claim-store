@@ -47,8 +47,7 @@ public class DefendantMapper {
         claim.getResponse().ifPresent(toResponse(claim, builder));
         theirDetailsMapper.to(builder, theirDetails);
 
-        claim.getClaimantResponse()
-            .ifPresent(claimantResponse -> builder.claimantResponse(claimantResponseMapper.to(claim)));
+        builder.claimantResponse(claimantResponseMapper.to(claim));
 
         return builder.build();
     }
