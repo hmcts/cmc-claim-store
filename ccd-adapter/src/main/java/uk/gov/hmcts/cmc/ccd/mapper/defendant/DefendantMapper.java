@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.mapper.TheirDetailsMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.claimantresponse.ClaimantResponseMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -18,19 +19,22 @@ import static java.util.Objects.requireNonNull;
 @Component
 public class DefendantMapper {
 
-    private TheirDetailsMapper theirDetailsMapper;
-    private ResponseMapper responseMapper;
-    private CountyCourtJudgmentMapper ccjMapper;
+    private final TheirDetailsMapper theirDetailsMapper;
+    private final ResponseMapper responseMapper;
+    private final ClaimantResponseMapper claimantResponseMapper;
+    private final CountyCourtJudgmentMapper ccjMapper;
 
     @Autowired
     public DefendantMapper(
         TheirDetailsMapper theirDetailsMapper,
         ResponseMapper responseMapper,
-        CountyCourtJudgmentMapper countyCourtJudgmentMapper
+        CountyCourtJudgmentMapper countyCourtJudgmentMapper,
+        ClaimantResponseMapper claimantResponseMapper
     ) {
         this.theirDetailsMapper = theirDetailsMapper;
         this.responseMapper = responseMapper;
         this.ccjMapper = countyCourtJudgmentMapper;
+        this.claimantResponseMapper = claimantResponseMapper;
     }
 
     public CCDDefendant to(TheirDetails theirDetails, Claim claim) {
@@ -48,6 +52,9 @@ public class DefendantMapper {
 
         claim.getResponse().ifPresent(toResponse(claim, builder));
         theirDetailsMapper.to(builder, theirDetails);
+
+        builder.claimantResponse(claimantResponseMapper.to(claim));
+
         return builder.build();
     }
 
@@ -67,6 +74,8 @@ public class DefendantMapper {
 
         builder.respondedAt(defendant.getResponseSubmittedOn());
         responseMapper.from(builder, defendant);
+
+        claimantResponseMapper.from(defendant.getClaimantResponse(), builder);
 
         return theirDetailsMapper.from(defendant);
     }
