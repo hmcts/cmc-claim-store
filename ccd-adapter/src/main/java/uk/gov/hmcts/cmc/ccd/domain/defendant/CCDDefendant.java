@@ -85,6 +85,6 @@ public class CCDDefendant {
     private List<CCDCollectionElement<CCDPartyStatement>> settlementPartyStatements;
     private LocalDate settlementReachedAt;
 
-    private CCDCountyCourtJudgment countyCourtJudgement;
+    private CCDCountyCourtJudgment countyCourtJudgementRequest;
     private LocalDate ccjRequestedDate;
 }

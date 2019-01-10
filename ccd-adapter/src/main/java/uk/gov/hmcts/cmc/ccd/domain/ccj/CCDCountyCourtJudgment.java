@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Value
-@Builder(toBuilder = true)
+@Builder
 public class CCDCountyCourtJudgment {
 
     private LocalDateTime requestedDate;

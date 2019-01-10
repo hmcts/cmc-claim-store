@@ -199,8 +199,8 @@ public class DefendantMapperTest {
         CCDDefendant ccdDefendant = mapper.to(theirDetails, claimWithCCJ);
 
         //Then
-        CCDCountyCourtJudgment ccdCountyCourtJudgment = ccdDefendant.getCountyCourtJudgement();
-        assertNotNull(ccdDefendant.getCountyCourtJudgement());
+        CCDCountyCourtJudgment ccdCountyCourtJudgment = ccdDefendant.getCountyCourtJudgementRequest();
+        assertNotNull(ccdCountyCourtJudgment);
         assertEquals(ccdCountyCourtJudgment.getCcjType().name(), countyCourtJudgment.getCcjType().name());
         assertEquals(ccdCountyCourtJudgment.getRequestedDate(), claimWithCCJ.getCountyCourtJudgmentRequestedAt());
     }
