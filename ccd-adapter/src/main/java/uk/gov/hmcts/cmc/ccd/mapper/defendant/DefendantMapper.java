@@ -24,6 +24,10 @@ public class DefendantMapper {
     private ResponseMapper responseMapper;
     private CountyCourtJudgmentMapper ccjMapper;
 
+    private Function<Claim, CCDCountyCourtJudgment> mapCCJFromClaim = claim ->
+        ccjMapper.to(claim.getCountyCourtJudgment()).toBuilder()
+            .requestedDate(claim.getCountyCourtJudgmentRequestedAt()).build();
+
     @Autowired
     public DefendantMapper(
         TheirDetailsMapper theirDetailsMapper,
@@ -83,8 +87,4 @@ public class DefendantMapper {
             builder.responseSubmittedOn(claim.getRespondedAt());
         };
     }
-
-    private Function<Claim, CCDCountyCourtJudgment> mapCCJFromClaim = claim ->
-        ccjMapper.to(claim.getCountyCourtJudgment()).toBuilder()
-            .requestedDate(claim.getCountyCourtJudgmentRequestedAt()).build();
 }
