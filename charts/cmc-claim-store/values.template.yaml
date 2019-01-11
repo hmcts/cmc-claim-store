@@ -1,0 +1,81 @@
+java:
+  applicationPort: 4400
+  environment:
+    REFORM_TEAM: probate
+    REFORM_SERVICE_NAME: claim-store
+    REFORM_ENVIRONMENT: preview
+    LOG_LEVEL: DEBUG
+    ROOT_APPENDER: CMC
+    CLAIM_STORE_DB_HOST: shared-database
+    CLAIM_STORE_DB_PORT: 5432
+    CLAIM_STORE_DB_USERNAME: claimstore
+    CLAIM_STORE_DB_PASSWORD: claimstore
+    CLAIM_STORE_DB_NAME: claimstore
+    CMC_DB_HOST: shared-database
+    CMC_DB_PORT: 5432
+    CMC_DB_USERNAME: cmc
+    CMC_DB_PASSWORD: cmc
+    CMC_DB_NAME: cmc
+    IDAM_S2S_AUTH_TOTP_SECRET: ${CLAIM_STORE_S2S_SECRET}
+    IDAM_CASEWORKER_ANONYMOUS_USERNAME: ${ANONYMOUS_CASEWORKER_USERNAME}
+    IDAM_CASEWORKER_ANONYMOUS_PASSWORD: ${ANONYMOUS_CASEWORKER_PASSWORD}
+    IDAM_CASEWORKER_SYSTEM_USERNAME: ${SYSTEM_UPDATE_USERNAME}
+    IDAM_CASEWORKER_SYSTEM_PASSWORD: ${SYSTEM_UPDATE_PASSWORD}
+    OAUTH2_CLIENT_SECRET: ${OAUTH2_CLIENT_SECRET}
+    GOV_NOTIFY_API_KEY: ${NOTIFY_API_KEY}
+    SPRING_MAIL_HOST: mta.reform.hmcts.net
+    SPRING_MAIL_PORT: 25
+    SPRING_MAIL_TEST_CONNECTION: false
+    SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: true
+    SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: mta.reform.hmcts.net
+    STAFF_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
+    STAFF_NOTIFICATIONS_RECIPIENT: ${STAFF_EMAIL}
+    RPA_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
+    RPA_NOTIFICATIONS_SEALEDCLAIMRECIPIENT: ${STAFF_EMAIL}
+    RPA_NOTIFICATIONS_MORETIMEREQUESTEDRECIPIENT: ${STAFF_EMAIL}
+    RPA_NOTIFICATIONS_RESPONSERECIPIENT: ${STAFF_EMAIL}
+    RPA_NOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT: ${STAFF_EMAIL}
+    CLAIM_STORE_TEST_SUPPORT_ENABLED: true
+    FEATURE_TOGGLES_EMAILTOSTAFF: true
+    FEATURE_TOGGLES_CCD_ENABLED: false
+    FEATURE_TOGGLES_CCD_ASYNC_ENABLED: false
+    APPINSIGHTS_INSTRUMENTATIONKEY: ${APPINSIGHTS_INSTRUMENTATIONKEY}
+    DOCUMENT_MANAGEMENT_URL: false
+    CORE_CASE_DATA_API_URL: false
+    SMOKE_TEST_CITIZEN_USERNAME: ${SMOKE_TEST_CITIZEN_USERNAME}
+    SMOKE_TEST_SOLICITOR_USERNAME: ${SMOKE_TEST_SOLICITOR_USERNAME}
+    SMOKE_TEST_USER_PASSWORD: ${SMOKE_TEST_USER_PASSWORD}
+    GENERATED_USER_EMAIL_PATTERN: ${GENERATED_USER_EMAIL_PATTERN}
+  # Don't modify below here.
+  image: ${IMAGE_NAME}
+  ingressHost: ${SERVICE_FQDN}
+
+#ccd:
+#  ingressHost: ${SERVICE_FQDN}
+#  ingressIP: ${INGRESS_IP}
+#  consulIP: ${CONSUL_LB_IP}
+#
+#  apiGateway:
+#    s2sKey: ${API_GATEWAY_S2S_KEY}
+#    idamClientSecret: ${API_GATEWAY_IDAM_SECRET}
+#
+#  dataStoreApi:
+#    s2sKey: ${DATA_STORE_S2S_KEY}
+#
+#  definitionStoreApi:
+#    s2sKey: ${DEFINITION_STORE_S2S_KEY}
+#
+#  caseManagementWeb:
+#    enabled: true
+#
+#  importer:
+#    definitions:
+#      - https://github.com/hmcts/Probate-CCD-Import-Spreadsheets/raw/master/spreadsheet/back-office/CCD_Probate_V04.32.01-Hlm.xlsx
+#      - https://github.com/hmcts/Probate-CCD-Import-Spreadsheets/raw/master/spreadsheet/legacy-cases/CCD_Probate_Legacy_V00.01-Dev.xlsx
+#    #      - https://github.com/hmcts/Probate-CCD-Import-Spreadsheets/raw/master/spreadsheet/CCD_Probate_V21.02-Dev.xlsx
+#    userRoles:
+#      - caseworker-probate
+#      - caseworker-probate-issuer
+#      - caseworker-probate-solicitor
+#      - citizen
+#      - caseworker-probate-examiner
