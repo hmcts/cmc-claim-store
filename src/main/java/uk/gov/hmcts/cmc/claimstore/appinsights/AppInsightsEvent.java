@@ -19,7 +19,8 @@ public enum AppInsightsEvent {
     SCHEDULER_JOB_FAILED("Scheduler job failed"),
     CLAIMANT_RESPONSE_REJECTED("Claimant response - rejected"),
     CLAIMANT_RESPONSE_ACCEPTED("Claimant response - accepted"),
-    CCD_ASYNC_FAILURE("CCD Async handling - failure");
+    CCD_ASYNC_FAILURE("CCD Async handling - failure"),
+    REDETERMINATION_REQUESTED("CCJ - Re-determination requested");
 
     private String displayName;
 
