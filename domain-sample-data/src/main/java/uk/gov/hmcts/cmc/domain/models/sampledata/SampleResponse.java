@@ -95,9 +95,22 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .build();
         }
 
-        public PartAdmissionResponse buildWithPaymentOptionInstallments() {
+        public PartAdmissionResponse buildWithPaymentOptionInstalments() {
             return PartAdmissionResponse.builder()
                 .defendant(SampleParty.builder().individual())
+                .moreTimeNeeded(YesNoOption.NO)
+                .amount(BigDecimal.valueOf(120))
+                .paymentIntention(SamplePaymentIntention.instalments())
+                .defence(USER_DEFENCE)
+                .timeline(SampleDefendantTimeline.validDefaults())
+                .evidence(SampleDefendantEvidence.validDefaults())
+                .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .build();
+        }
+
+        public PartAdmissionResponse buildWithPaymentOptionInstalmentsAndParty(Party party) {
+            return PartAdmissionResponse.builder()
+                .defendant(party)
                 .moreTimeNeeded(YesNoOption.NO)
                 .amount(BigDecimal.valueOf(120))
                 .paymentIntention(SamplePaymentIntention.instalments())

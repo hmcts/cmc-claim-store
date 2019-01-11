@@ -50,6 +50,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.ORGANISATION;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.SOLE_TRADER;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
+import static uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption.SETTLEMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceType.EXPERT_WITNESS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
@@ -75,6 +76,24 @@ public class SampleData {
             .build();
     }
 
+    public static CCDResponseAcceptation getResponseAcceptationWithClaimantPaymentIntentionImmediately() {
+        return CCDResponseAcceptation.builder()
+            .amountPaid(BigDecimal.valueOf(123.98))
+            .claimantPaymentIntention(getCCDPaymentIntentionImmediately())
+            .submittedOn(LocalDateTimeFactory.nowInLocalZone())
+            .formaliseOption(SETTLEMENT)
+            .build();
+    }
+
+    public static CCDResponseAcceptation getResponseAcceptationWithClaimantPaymentIntentionPayBySetDate() {
+        return CCDResponseAcceptation.builder()
+            .amountPaid(BigDecimal.valueOf(123.98))
+            .claimantPaymentIntention(getCCDPaymentIntentionPayBySetDate())
+            .submittedOn(LocalDateTimeFactory.nowInLocalZone())
+            .formaliseOption(SETTLEMENT)
+            .build();
+    }
+
     public static CCDResponseRejection getResponseRejection() {
         return CCDResponseRejection.builder()
             .amountPaid(BigDecimal.valueOf(123.98))
@@ -94,6 +113,26 @@ public class SampleData {
             .build();
     }
 
+    public static CCDCourtDetermination getCCDCourtDeterminationImmediately() {
+        return CCDCourtDetermination.builder()
+            .rejectionReason("Rejection reason")
+            .courtIntention(getCCDPaymentIntentionImmediately())
+            .courtDecision(getCCDPaymentIntention())
+            .disposableIncome(BigDecimal.valueOf(300))
+            .decisionType(DecisionType.COURT)
+            .build();
+    }
+
+    public static CCDCourtDetermination getCCDCourtDeterminationPayBySetDate() {
+        return CCDCourtDetermination.builder()
+            .rejectionReason("Rejection reason")
+            .courtIntention(getCCDPaymentIntentionPayBySetDate())
+            .courtDecision(getCCDPaymentIntentionPayBySetDate())
+            .disposableIncome(BigDecimal.valueOf(300))
+            .decisionType(DecisionType.COURT)
+            .build();
+    }
+
     public static CCDPaymentIntention getCCDPaymentIntention() {
         return CCDPaymentIntention.builder()
             .paymentDate(LocalDate.of(2017, 10, 12))
@@ -103,6 +142,27 @@ public class SampleData {
             .paymentSchedule(CCDPaymentSchedule.EACH_WEEK)
             .completionDate(LocalDate.of(2018, 10, 12))
             .build();
+    }
+
+    private static CCDPaymentIntention getCCDPaymentIntentionImmediately() {
+        return CCDPaymentIntention.builder()
+            .paymentDate(LocalDate.now())
+            .paymentOption(CCDPaymentOption.INSTALMENTS)
+            .build();
+    }
+
+    private static CCDPaymentIntention getCCDPaymentIntentionPayBySetDate() {
+        return CCDPaymentIntention.builder()
+            .paymentDate(LocalDate.now().plusDays(10))
+            .paymentOption(CCDPaymentOption.INSTALMENTS)
+            .build();
+    }
+
+    public static List<CCDCollectionElement<CCDAmountRow>> getAmountBreakDown() {
+        return singletonList(CCDCollectionElement.<CCDAmountRow>builder().value(CCDAmountRow.builder()
+            .amount(BigDecimal.valueOf(50))
+            .reason("payment")
+            .build()).build());
     }
 
     public static CCDAddress getCCDAddress() {
@@ -340,13 +400,6 @@ public class SampleData {
                 .value(CCDEvidenceRow.builder().type(EXPERT_WITNESS).description("description of evidence").build())
                 .build()))
             .build();
-    }
-
-    public static List<CCDCollectionElement<CCDAmountRow>> getAmountBreakDown() {
-        return singletonList(CCDCollectionElement.<CCDAmountRow>builder().value(CCDAmountRow.builder()
-            .amount(BigDecimal.valueOf(50))
-            .reason("payment")
-            .build()).build());
     }
 
     public static CCDStatementOfMeans getCCDStatementOfMeans() {
