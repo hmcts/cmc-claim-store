@@ -76,14 +76,27 @@ public class ClaimantResponseService {
             updateDirectionsQuestionnaireDeadline(updatedClaim, authorization);
         }
         Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
-        if (!isReferredToJudge(claimantResponse)
-            || (isReferredToJudge(claimantResponse) && PartyUtils.isCompanyOrOrganisation(response.getDefendant()))) {
+        if (!isSettlementAgreement(claim, claimantResponse)
+            && (!isReferredToJudge(claimantResponse)
+            || (isReferredToJudge(claimantResponse) && PartyUtils.isCompanyOrOrganisation(response.getDefendant())))) {
             eventProducer.createClaimantResponseEvent(updatedClaim);
         }
         ccdEventProducer.createCCDClaimantResponseEvent(claim, claimantResponse, authorization);
         appInsights.trackEvent(getAppInsightsEvent(claimantResponse), "referenceNumber", claim.getReferenceNumber());
     }
 
+    private boolean isSettlementAgreement(Claim claim, ClaimantResponse claimantResponse) {
+        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+
+        if (shouldFormaliseResponseAcceptance(response, claimantResponse)) {
+            ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponse;
+            if (responseAcceptation.getFormaliseOption().isPresent()) {
+                return responseAcceptation.getFormaliseOption().get() == FormaliseOption.SETTLEMENT;
+            }
+        }
+        return false;
+    }
+    
     private boolean isReferredToJudge(ClaimantResponse response) {
         if (response.getType().equals(ACCEPTATION)) {
             ResponseAcceptation responseAcceptation = (ResponseAcceptation) response;
