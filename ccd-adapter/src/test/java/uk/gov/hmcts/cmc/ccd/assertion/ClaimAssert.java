@@ -16,7 +16,6 @@ import java.util.Objects;
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
 
     public ClaimAssert(Claim actual) {
@@ -93,31 +92,42 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
                 ccdCase.getPreferredCourt(), claimData.getPreferredCourt().orElse(null));
         }
 
-        assertAmount(ccdCase, claimData);
-        assertInterest(ccdCase, claimData);
-        assertPayment(ccdCase, claimData);
-        assertPersonalInjury(ccdCase, claimData);
-        assertHousingDisrepair(ccdCase, claimData);
-        assertStatementOfTruth(ccdCase, claimData);
-
-        assertThat(claimData.getClaimants().size()).isEqualTo(ccdCase.getClaimants().size());
-        assertThat(claimData.getDefendants().size()).isEqualTo(ccdCase.getDefendants().size());
-
-        return this;
-    }
-
-    private void assertAmount(CCDCase ccdCase, ClaimData claimData) {
         Amount amount = claimData.getAmount();
         if (amount instanceof AmountBreakDown) {
-            assertAmountBreakDown(ccdCase, (AmountBreakDown) amount);
+            AmountBreakDown amountBreakDown = (AmountBreakDown) amount;
+
+            AmountRow amountRow = amountBreakDown.getRows().get(0);
+            CCDAmountRow ccdAmountRow = ccdCase.getAmountBreakDown().get(0).getValue();
+
+            if (!Objects.equals(amountRow.getReason(), ccdAmountRow.getReason())) {
+                failWithMessage("Expected CCDCase.amountRowReason to be <%s> but was <%s>",
+                    ccdAmountRow.getReason(), amountRow.getReason());
+            }
+
+            if (!Objects.equals(amountRow.getAmount(), ccdAmountRow.getAmount())) {
+                failWithMessage("Expected CCDCase.amount to be <%s> but was <%s>",
+                    ccdAmountRow.getAmount(), amountRow.getAmount());
+            }
+
         } else if (amount instanceof AmountRange) {
-            assertAmountRange(ccdCase, (AmountRange) amount);
+
+            AmountRange amountRange = (AmountRange) amount;
+
+            if (!Objects.equals(amountRange.getHigherValue(), ccdCase.getAmountHigherValue())) {
+                failWithMessage("Expected CCDCase.amountHigherValue to be <%s> but was <%s>",
+                    ccdCase.getAmountHigherValue(), amountRange.getHigherValue());
+            }
+
+            amountRange.getLowerValue().ifPresent(lowerAmount -> {
+                if (!Objects.equals(lowerAmount, ccdCase.getAmountLowerValue())) {
+                    failWithMessage("Expected CCDCase.amountLowerValue to be <%s> but was <%s>",
+                        ccdCase.getAmountLowerValue(), lowerAmount);
+                }
+            });
         } else {
             assertThat(amount).isInstanceOf(NotKnown.class);
         }
-    }
 
-    private void assertInterest(CCDCase ccdCase, ClaimData claimData) {
         ofNullable(claimData.getInterest()).ifPresent(interest -> {
                 if (!Objects.equals(interest.getRate(), ccdCase.getInterestRate())) {
                     failWithMessage("Expected CCDCase.interestRate to be <%s> but was <%s>",
@@ -162,51 +172,7 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
                 });
             }
         );
-    }
 
-    private void assertStatementOfTruth(CCDCase ccdCase, ClaimData claimData) {
-        claimData.getStatementOfTruth().ifPresent(statementOfTruth -> {
-            if (!Objects.equals(statementOfTruth.getSignerName(), ccdCase.getSotSignerName())) {
-                failWithMessage("Expected CCDCase.amountLowerValue to be <%s> but was <%s>",
-                    ccdCase.getSotSignerName(), statementOfTruth.getSignerName());
-            }
-
-            if (!Objects.equals(statementOfTruth.getSignerRole(), ccdCase.getSotSignerRole())) {
-                failWithMessage("Expected CCDCase.sotSignerRole to be <%s> but was <%s>",
-                    ccdCase.getSotSignerRole(), statementOfTruth.getSignerRole());
-            }
-        });
-    }
-
-    private void assertHousingDisrepair(CCDCase ccdCase, ClaimData claimData) {
-        claimData.getHousingDisrepair().ifPresent(housingDisrepair -> {
-            if (!Objects.equals(housingDisrepair.getCostOfRepairsDamages().name(),
-                ccdCase.getHousingDisrepairCostOfRepairDamages())
-            ) {
-                failWithMessage("Expected CCDCase.housingDisrepairCostOfRepairDamages to be <%s> but was <%s>",
-                    ccdCase.getHousingDisrepairCostOfRepairDamages(), housingDisrepair.getCostOfRepairsDamages());
-            }
-            housingDisrepair.getOtherDamages().ifPresent(damagesExpectation -> {
-                if (!Objects.equals(damagesExpectation.name(), ccdCase.getHousingDisrepairOtherDamages())) {
-                    failWithMessage("Expected CCDCase.housingDisrepairOtherDamages to be <%s> but was <%s>",
-                        ccdCase.getHousingDisrepairOtherDamages(), damagesExpectation.name());
-                }
-            });
-
-        });
-    }
-
-    private void assertPersonalInjury(CCDCase ccdCase, ClaimData claimData) {
-        claimData.getPersonalInjury().ifPresent(personalInjury -> {
-            if (!Objects.equals(personalInjury.getGeneralDamages().name(),
-                ccdCase.getPersonalInjuryGeneralDamages())) {
-                failWithMessage("Expected CCDCase.personalInjuryGeneralDamages to be <%s> but was <%s>",
-                    ccdCase.getPersonalInjuryGeneralDamages(), personalInjury.getGeneralDamages());
-            }
-        });
-    }
-
-    private void assertPayment(CCDCase ccdCase, ClaimData claimData) {
         ofNullable(claimData.getPayment()).ifPresent(payment -> {
                 if (!Objects.equals(payment.getId(), ccdCase.getPaymentId())) {
                     failWithMessage("Expected CCDCase.paymentId to be <%s> but was <%s>",
@@ -230,39 +196,47 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
                 }
             }
         );
-    }
 
-    private void assertAmountRange(CCDCase ccdCase, AmountRange amount) {
-        AmountRange amountRange = amount;
-
-        if (!Objects.equals(amountRange.getHigherValue(), ccdCase.getAmountHigherValue())) {
-            failWithMessage("Expected CCDCase.amountHigherValue to be <%s> but was <%s>",
-                ccdCase.getAmountHigherValue(), amountRange.getHigherValue());
-        }
-
-        amountRange.getLowerValue().ifPresent(lowerAmount -> {
-            if (!Objects.equals(lowerAmount, ccdCase.getAmountLowerValue())) {
-                failWithMessage("Expected CCDCase.amountLowerValue to be <%s> but was <%s>",
-                    ccdCase.getAmountLowerValue(), lowerAmount);
+        claimData.getPersonalInjury().ifPresent(personalInjury -> {
+            if (!Objects.equals(personalInjury.getGeneralDamages().name(),
+                ccdCase.getPersonalInjuryGeneralDamages())) {
+                failWithMessage("Expected CCDCase.personalInjuryGeneralDamages to be <%s> but was <%s>",
+                    ccdCase.getPersonalInjuryGeneralDamages(), personalInjury.getGeneralDamages());
             }
         });
-    }
 
-    private void assertAmountBreakDown(CCDCase ccdCase, AmountBreakDown amount) {
-        AmountBreakDown amountBreakDown = amount;
+        claimData.getHousingDisrepair().ifPresent(housingDisrepair -> {
+            if (!Objects.equals(housingDisrepair.getCostOfRepairsDamages().name(),
+                ccdCase.getHousingDisrepairCostOfRepairDamages())
+            ) {
+                failWithMessage("Expected CCDCase.housingDisrepairCostOfRepairDamages to be <%s> but was <%s>",
+                    ccdCase.getHousingDisrepairCostOfRepairDamages(), housingDisrepair.getCostOfRepairsDamages());
+            }
+            housingDisrepair.getOtherDamages().ifPresent(damagesExpectation -> {
+                if (!Objects.equals(damagesExpectation.name(), ccdCase.getHousingDisrepairOtherDamages())) {
+                    failWithMessage("Expected CCDCase.housingDisrepairOtherDamages to be <%s> but was <%s>",
+                        ccdCase.getHousingDisrepairOtherDamages(), damagesExpectation.name());
+                }
+            });
 
-        AmountRow amountRow = amountBreakDown.getRows().get(0);
-        CCDAmountRow ccdAmountRow = ccdCase.getAmountBreakDown().get(0).getValue();
+        });
 
-        if (!Objects.equals(amountRow.getReason(), ccdAmountRow.getReason())) {
-            failWithMessage("Expected CCDCase.amountRowReason to be <%s> but was <%s>",
-                ccdAmountRow.getReason(), amountRow.getReason());
-        }
+        claimData.getStatementOfTruth().ifPresent(statementOfTruth -> {
+            if (!Objects.equals(statementOfTruth.getSignerName(), ccdCase.getSotSignerName())) {
+                failWithMessage("Expected CCDCase.amountLowerValue to be <%s> but was <%s>",
+                    ccdCase.getSotSignerName(), statementOfTruth.getSignerName());
+            }
 
-        if (!Objects.equals(amountRow.getAmount(), ccdAmountRow.getAmount())) {
-            failWithMessage("Expected CCDCase.amount to be <%s> but was <%s>",
-                ccdAmountRow.getAmount(), amountRow.getAmount());
-        }
+            if (!Objects.equals(statementOfTruth.getSignerRole(), ccdCase.getSotSignerRole())) {
+                failWithMessage("Expected CCDCase.sotSignerRole to be <%s> but was <%s>",
+                    ccdCase.getSotSignerRole(), statementOfTruth.getSignerRole());
+            }
+        });
+
+        assertThat(claimData.getClaimants().size()).isEqualTo(ccdCase.getClaimants().size());
+        assertThat(claimData.getDefendants().size()).isEqualTo(ccdCase.getDefendants().size());
+
+        return this;
     }
 
 }

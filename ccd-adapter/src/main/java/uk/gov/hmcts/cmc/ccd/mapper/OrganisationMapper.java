@@ -24,7 +24,7 @@ public class OrganisationMapper implements BuilderMapper<CCDClaimant, Organisati
             .ifPresent(address -> builder.partyCorrespondenceAddress(addressMapper.to(address)));
         organisation.getRepresentative()
             .ifPresent(representative -> representativeMapper.to(representative, builder));
-        organisation.getMobilePhone().ifPresent(builder::partyPhoneNumber);
+        organisation.getMobilePhone().ifPresent(builder::partyPhone);
         organisation.getContactPerson().ifPresent(builder::partyContactPerson);
         organisation.getCompaniesHouseNumber().ifPresent(builder::partyCompaniesHouseNumber);
         builder
@@ -39,7 +39,7 @@ public class OrganisationMapper implements BuilderMapper<CCDClaimant, Organisati
             ccdOrganisation.getPartyName(),
             addressMapper.from(ccdOrganisation.getPartyAddress()),
             addressMapper.from(ccdOrganisation.getPartyCorrespondenceAddress()),
-            ccdOrganisation.getPartyPhoneNumber(),
+            ccdOrganisation.getPartyPhone(),
             representativeMapper.from(ccdOrganisation),
             ccdOrganisation.getPartyContactPerson(),
             ccdOrganisation.getPartyCompaniesHouseNumber()

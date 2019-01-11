@@ -60,7 +60,6 @@ public class PriorityDebt {
         return type;
     }
 
-
     public PaymentFrequency getFrequency() {
         return frequency;
     }

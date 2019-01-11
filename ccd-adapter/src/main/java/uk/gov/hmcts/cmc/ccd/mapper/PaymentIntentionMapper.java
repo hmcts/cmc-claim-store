@@ -9,7 +9,6 @@ import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.ccj.PaymentSchedule;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
-
 @Component
 public class PaymentIntentionMapper implements Mapper<CCDPaymentIntention, PaymentIntention> {
 
@@ -33,11 +32,9 @@ public class PaymentIntentionMapper implements Mapper<CCDPaymentIntention, Payme
 
     @Override
     public PaymentIntention from(CCDPaymentIntention ccdPaymentIntention) {
-
         if (null == ccdPaymentIntention) {
             return null;
         }
-
         PaymentIntention.PaymentIntentionBuilder builder = PaymentIntention.builder();
         if (ccdPaymentIntention.hasRepaymentPlanInfo()) {
             builder.repaymentPlan(RepaymentPlan.builder()

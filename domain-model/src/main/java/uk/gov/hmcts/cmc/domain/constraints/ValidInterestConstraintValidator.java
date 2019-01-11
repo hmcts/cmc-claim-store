@@ -77,7 +77,7 @@ public class ValidInterestConstraintValidator implements ConstraintValidator<Val
             valid = valid && validateField(validatorContext, interestDate, "interestDate");
         }
         if (interest.getInterestBreakdown() != null) {
-            setValidationErrors(validatorContext, "interestBreakdown",mayNotBeProvidedErrorForType("standard"));
+            setValidationErrors(validatorContext, "interestBreakdown", mayNotBeProvidedErrorForType("standard"));
             valid = false;
         }
         if (interest.getSpecificDailyAmount().isPresent()) {
@@ -139,22 +139,22 @@ public class ValidInterestConstraintValidator implements ConstraintValidator<Val
                 case SETTLED_OR_JUDGMENT:
                     if ((interest.getRate() == null) && !interest.getSpecificDailyAmount().isPresent()) {
                         setValidationErrors(validatorContext,
-                                "rate",
-                                mayNotBeNullErrorForType("breakdown"));
+                            "rate",
+                            mayNotBeNullErrorForType("breakdown"));
                         setValidationErrors(validatorContext,
-                                "specificDailyAmount",
-                                mayNotBeNullErrorForType("breakdown"));
+                            "specificDailyAmount",
+                            mayNotBeNullErrorForType("breakdown"));
                         valid = false;
                     }
                     break;
                 case SUBMISSION:
                     if ((interest.getRate() != null) || interest.getSpecificDailyAmount().isPresent()) {
                         setValidationErrors(validatorContext,
-                                "rate",
-                                mayNotBeProvidedErrorForType("breakdown"));
+                            "rate",
+                            mayNotBeProvidedErrorForType("breakdown"));
                         setValidationErrors(validatorContext,
-                                "specificDailyAmount",
-                                mayNotBeProvidedErrorForType("breakdown"));
+                            "specificDailyAmount",
+                            mayNotBeProvidedErrorForType("breakdown"));
                         valid = false;
                     }
                     break;
@@ -188,7 +188,6 @@ public class ValidInterestConstraintValidator implements ConstraintValidator<Val
     private String[] toArray(Set<String> set) {
         return set.toArray(new String[]{});
     }
-
 
     private String mayNotBeNullErrorForType(String type) {
         return String.format("may not be null when interest type is '%s'", type);

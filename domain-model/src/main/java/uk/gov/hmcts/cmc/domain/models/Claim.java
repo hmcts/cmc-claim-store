@@ -29,7 +29,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
     allowGetters = true
 )
 @Getter
-@Builder
+@Builder(toBuilder = true)
 @EqualsAndHashCode
 public class Claim {
 

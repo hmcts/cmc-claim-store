@@ -105,6 +105,7 @@ public class RequestMoreTimeForResponseWithCoreCaseDataTest extends BaseIntegrat
         MvcResult result = makeRequest(claimData.getExternalId().toString())
             .andExpect(status().isOk())
             .andReturn();
+
         Claim claim = deserializeObjectFrom(result, Claim.class);
 
         verify(notificationClient, times(3))

@@ -8,7 +8,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentIntention;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
-import uk.gov.hmcts.cmc.ccd.domain.CCJRequest;
+import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
+import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDClaimantResponse;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 
@@ -28,7 +29,6 @@ public class CCDDefendant {
     private String claimantProvidedEmail;
     private CCDAddress claimantProvidedServiceAddress;
     private String claimantProvidedName;
-    private String claimantProvidedPhoneNumber;
     private CCDAddress claimantProvidedAddress;
     private CCDAddress claimantProvidedCorrespondenceAddress;
     private LocalDate claimantProvidedDateOfBirth;
@@ -36,6 +36,12 @@ public class CCDDefendant {
     private String claimantProvidedCompaniesHouseNumber;
     private String claimantProvidedTitle;
     private String claimantProvidedBusinessName;
+
+    private String claimantProvidedRepresentativeOrganisationName;
+    private CCDAddress claimantProvidedRepresentativeOrganisationAddress;
+    private String claimantProvidedRepresentativeOrganisationPhone;
+    private String claimantProvidedRepresentativeOrganisationEmail;
+    private String claimantProvidedRepresentativeOrganisationDxAddress;
 
     private String representativeOrganisationName;
     private CCDAddress representativeOrganisationAddress;
@@ -54,9 +60,8 @@ public class CCDDefendant {
     private String partyBusinessName;
     private String partyContactPerson;
     private String partyCompaniesHouseNumber;
-    private CCDAddress partyServiceAddress;
 
-    private LocalDateTime responseSubmittedDateTime;
+    private LocalDateTime responseSubmittedOn;
     private CCDResponseType responseType;
     private BigDecimal responseAmount;
     private LocalDate paymentDeclarationPaidDate;
@@ -76,10 +81,13 @@ public class CCDDefendant {
     private CCDStatementOfMeans statementOfMeans;
 
     private LocalDate paidInFullDate;
+    private LocalDate directionsQuestionnaireDeadline;
 
     private List<CCDCollectionElement<CCDPartyStatement>> settlementPartyStatements;
     private LocalDate settlementReachedAt;
 
-    private CCJRequest countyCourtJudgement;
+    private CCDCountyCourtJudgment countyCourtJudgement;
     private LocalDate ccjRequestedDate;
+
+    private CCDClaimantResponse claimantResponse;
 }

@@ -11,8 +11,8 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence;
 import java.math.BigDecimal;
 import java.util.List;
 
-@Builder
 @Value
+@Builder
 public class CCDStatementOfMeans {
     private String reason;
     private Residence.ResidenceType residenceType;
@@ -22,6 +22,7 @@ public class CCDStatementOfMeans {
     private CCDYesNoOption anyDisabledChildren;
     private Integer numberOfOtherDependants;
     private String otherDependantDetails;
+    private CCDYesNoOption otherDependantAnyDisabled;
     private List<CCDCollectionElement<CCDEmployer>> employers;
     private String taxPaymentsReason;
     private BigDecimal taxYouOwe;
@@ -35,11 +36,9 @@ public class CCDStatementOfMeans {
     private List<CCDCollectionElement<CCDIncome>> incomes;
     private List<CCDCollectionElement<CCDExpense>> expenses;
     private List<CCDCollectionElement<CCDCourtOrder>> courtOrders;
-
     private List<CCDCollectionElement<PriorityDebt>> priorityDebts;
     private CCDYesNoOption carer;
     private DisabilityStatus disabilityStatus;
     private CCDLivingPartner livingPartner;
-
-    private CCDEmploymentStatus employmentStatus; //TODO: Not Needed
+    private CCDYesNoOption retired;
 }

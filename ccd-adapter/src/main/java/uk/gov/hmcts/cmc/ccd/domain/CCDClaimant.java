@@ -10,9 +10,8 @@ import java.time.LocalDate;
 public class CCDClaimant {
     private CCDPartyType partyType;
     private String partyEmail;
-    private CCDAddress partyServiceAddress;
     private String partyName;
-    private String partyPhoneNumber;
+    private String partyPhone;
     private CCDAddress partyAddress;
     private CCDAddress partyCorrespondenceAddress;
     private LocalDate partyDateOfBirth;
