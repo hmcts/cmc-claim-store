@@ -7,11 +7,13 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Value
 @Builder
 public class CCDCountyCourtJudgment {
 
+    private LocalDateTime requestedDate;
     private LocalDate defendantDateOfBirth;
     private BigDecimal paidAmount;
     private CCDPaymentOption paymentOption;
@@ -23,5 +25,5 @@ public class CCDCountyCourtJudgment {
     private LocalDate payBySetDate;
     private String statementOfTruthSignerName;
     private String statementOfTruthSignerRole;
-    private CCDCountyCourtJudgmentType ccjType;
+    private CCDCountyCourtJudgmentType type;
 }
