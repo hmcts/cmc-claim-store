@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.StatementOfMean
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
@@ -37,6 +38,10 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 public class Assertions {
 
     private Assertions() {
+    }
+
+    public static CountyCourtJudgmentAssert assertThat(CountyCourtJudgment countyCourtJudgment) {
+        return new CountyCourtJudgmentAssert(countyCourtJudgment);
     }
 
     public static PaymentIntentionAssert assertThat(PaymentIntention paymentIntention) {

@@ -7,9 +7,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
+import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.util.SampleCCDDefendant;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -20,6 +22,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.ORGANISATION;
@@ -183,6 +186,23 @@ public class DefendantMapperTest {
 
         assertEquals("Claim response more time requested is not mapped properly",
             finalClaim.isMoreTimeRequested(), ccdDefendant.getResponseMoreTimeNeededOption().toBoolean());
+    }
+
+    @Test
+    public void mapCountyCourtJudgmentToCCDDefendant() {
+        //Given
+        TheirDetails theirDetails = SampleTheirDetails.builder().organisationDetails();
+        Claim claimWithCCJ = SampleClaim.withDefaultCountyCourtJudgment();
+        CountyCourtJudgment countyCourtJudgment = claimWithCCJ.getCountyCourtJudgment();
+
+        //When
+        CCDDefendant ccdDefendant = mapper.to(theirDetails, claimWithCCJ);
+
+        //Then
+        CCDCountyCourtJudgment ccdCountyCourtJudgment = ccdDefendant.getCountyCourtJudgementRequest();
+        assertNotNull(ccdCountyCourtJudgment);
+        assertEquals(ccdCountyCourtJudgment.getType().name(), countyCourtJudgment.getCcjType().name());
+        assertEquals(ccdCountyCourtJudgment.getRequestedDate(), claimWithCCJ.getCountyCourtJudgmentRequestedAt());
     }
 
 }

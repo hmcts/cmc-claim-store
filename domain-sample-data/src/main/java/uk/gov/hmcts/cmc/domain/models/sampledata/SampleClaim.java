@@ -144,6 +144,18 @@ public final class SampleClaim {
             .build();
     }
 
+    public static Claim withDefaultCountyCourtJudgment() {
+        return builder().withDefendantEmail(DEFENDANT_EMAIL)
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withCountyCourtJudgment(
+            SampleCountyCourtJudgment.builder()
+                .paymentOption(PaymentOption.IMMEDIATELY)
+                .ccjType(CountyCourtJudgmentType.DEFAULT)
+                .build()
+        ).withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
+            .build();
+    }
+
     public static Claim getWithClaimantResponse() {
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
@@ -241,8 +253,9 @@ public final class SampleClaim {
             .withCountyCourtJudgment(
                 SampleCountyCourtJudgment.builder()
                     .paymentOption(PaymentOption.IMMEDIATELY)
+                    .ccjType(CountyCourtJudgmentType.DEFAULT)
                     .build()
-            )
+            ).withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
             .build();
     }
 
