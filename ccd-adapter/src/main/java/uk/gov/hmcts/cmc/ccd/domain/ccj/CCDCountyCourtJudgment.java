@@ -25,5 +25,5 @@ public class CCDCountyCourtJudgment {
     private LocalDate payBySetDate;
     private String statementOfTruthSignerName;
     private String statementOfTruthSignerRole;
-    private CCDCountyCourtJudgmentType ccjType;
+    private CCDCountyCourtJudgmentType type;
 }

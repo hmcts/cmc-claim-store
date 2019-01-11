@@ -140,7 +140,7 @@ public class CountyCourtJudgmentMapperTest {
             .statementOfTruthSignerRole("PM")
             .statementOfTruthSignerName("Mrs May")
             .repaymentPlanPaymentSchedule(CCDPaymentSchedule.EVERY_MONTH)
-            .ccjType(CCDCountyCourtJudgmentType.ADMISSIONS)
+            .type(CCDCountyCourtJudgmentType.ADMISSIONS)
             .build();
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
@@ -168,7 +168,7 @@ public class CountyCourtJudgmentMapperTest {
             .paidAmount(BigDecimal.TEN)
             .statementOfTruthSignerName("Mrs May")
             .statementOfTruthSignerRole("PM")
-            .ccjType(CCDCountyCourtJudgmentType.ADMISSIONS)
+            .type(CCDCountyCourtJudgmentType.ADMISSIONS)
             .build();
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
@@ -192,7 +192,7 @@ public class CountyCourtJudgmentMapperTest {
             .paidAmount(BigDecimal.TEN)
             .statementOfTruthSignerRole("PM")
             .statementOfTruthSignerName("Mrs May")
-            .ccjType(CCDCountyCourtJudgmentType.DETERMINATION)
+            .type(CCDCountyCourtJudgmentType.DETERMINATION)
             .build();
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 

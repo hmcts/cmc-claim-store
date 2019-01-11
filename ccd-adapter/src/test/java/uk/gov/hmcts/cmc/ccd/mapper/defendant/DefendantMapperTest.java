@@ -189,10 +189,10 @@ public class DefendantMapperTest {
     }
 
     @Test
-    public void mapCCJFromToCCDDefendant() {
+    public void mapCountyCourtJudgmentToCCDDefendant() {
         //Given
         TheirDetails theirDetails = SampleTheirDetails.builder().organisationDetails();
-        Claim claimWithCCJ = SampleClaim.getClaimFullDefenceStatesPaidWithAcceptation();
+        Claim claimWithCCJ = SampleClaim.withDefaultCountyCourtJudgment();
         CountyCourtJudgment countyCourtJudgment = claimWithCCJ.getCountyCourtJudgment();
 
         //When
@@ -201,7 +201,7 @@ public class DefendantMapperTest {
         //Then
         CCDCountyCourtJudgment ccdCountyCourtJudgment = ccdDefendant.getCountyCourtJudgementRequest();
         assertNotNull(ccdCountyCourtJudgment);
-        assertEquals(ccdCountyCourtJudgment.getCcjType().name(), countyCourtJudgment.getCcjType().name());
+        assertEquals(ccdCountyCourtJudgment.getType().name(), countyCourtJudgment.getCcjType().name());
         assertEquals(ccdCountyCourtJudgment.getRequestedDate(), claimWithCCJ.getCountyCourtJudgmentRequestedAt());
     }
 

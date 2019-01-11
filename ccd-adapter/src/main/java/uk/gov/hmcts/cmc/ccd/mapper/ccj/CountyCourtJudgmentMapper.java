@@ -45,10 +45,10 @@ public class CountyCourtJudgmentMapper {
                 builder.statementOfTruthSignerRole(sot.getSignerRole());
             });
         Optional.ofNullable(countyCourtJudgment.getCcjType()).ifPresent(ccjType ->
-            builder.ccjType(CCDCountyCourtJudgmentType.valueOf(ccjType.name()))
+            builder.type(CCDCountyCourtJudgmentType.valueOf(ccjType.name()))
         );
 
-        Optional.ofNullable(claim.getCountyCourtJudgmentRequestedAt()).ifPresent(builder::requestedDate);
+        builder.requestedDate(claim.getCountyCourtJudgmentRequestedAt());
 
         return builder.build();
     }
@@ -68,8 +68,8 @@ public class CountyCourtJudgmentMapper {
             ccjBuilder.paymentOption(PaymentOption.valueOf(ccdCountyCourtJudgment.getPaymentOption().name()));
         }
 
-        if (ccdCountyCourtJudgment.getCcjType() != null) {
-            ccjBuilder.ccjType(CountyCourtJudgmentType.valueOf(ccdCountyCourtJudgment.getCcjType().name()));
+        if (ccdCountyCourtJudgment.getType() != null) {
+            ccjBuilder.ccjType(CountyCourtJudgmentType.valueOf(ccdCountyCourtJudgment.getType().name()));
         }
 
         if (ccdCountyCourtJudgment.getRepaymentPlanFirstPaymentDate() != null

@@ -22,7 +22,7 @@ public class DefendantMapper {
     private final TheirDetailsMapper theirDetailsMapper;
     private final ResponseMapper responseMapper;
     private final ClaimantResponseMapper claimantResponseMapper;
-    private final CountyCourtJudgmentMapper ccjMapper;
+    private final CountyCourtJudgmentMapper countyCourtJudgmentMapper;
 
     @Autowired
     public DefendantMapper(
@@ -33,7 +33,7 @@ public class DefendantMapper {
     ) {
         this.theirDetailsMapper = theirDetailsMapper;
         this.responseMapper = responseMapper;
-        this.ccjMapper = countyCourtJudgmentMapper;
+        this.countyCourtJudgmentMapper = countyCourtJudgmentMapper;
         this.claimantResponseMapper = claimantResponseMapper;
     }
 
@@ -48,7 +48,7 @@ public class DefendantMapper {
         builder.partyEmail(claim.getDefendantEmail());
         builder.responseMoreTimeNeededOption(CCDYesNoOption.valueOf(claim.isMoreTimeRequested()));
         builder.directionsQuestionnaireDeadline(claim.getDirectionsQuestionnaireDeadline());
-        builder.countyCourtJudgementRequest(ccjMapper.to(claim));
+        builder.countyCourtJudgementRequest(countyCourtJudgmentMapper.to(claim));
 
         claim.getResponse().ifPresent(toResponse(claim, builder));
         theirDetailsMapper.to(builder, theirDetails);
@@ -66,7 +66,7 @@ public class DefendantMapper {
             .directionsQuestionnaireDeadline(defendant.getDirectionsQuestionnaireDeadline())
             .defendantId(defendant.getDefendantId());
 
-        ccjMapper.from(defendant.getCountyCourtJudgementRequest(), builder);
+        countyCourtJudgmentMapper.from(defendant.getCountyCourtJudgementRequest(), builder);
 
         Optional.ofNullable(defendant.getResponseMoreTimeNeededOption()).ifPresent(
             moreTimeNeeded -> builder.moreTimeRequested(moreTimeNeeded.toBoolean())
