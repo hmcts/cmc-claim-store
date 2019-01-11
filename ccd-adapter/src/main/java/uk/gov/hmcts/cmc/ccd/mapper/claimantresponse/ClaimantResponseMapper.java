@@ -16,6 +16,8 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
+import java.util.Optional;
+
 import static java.util.Objects.requireNonNull;
 
 @Component
@@ -30,17 +32,20 @@ public class ClaimantResponseMapper {
 
     public CCDClaimantResponse to(Claim claim) {
         requireNonNull(claim, "claim must not be null");
-        final ClaimantResponse claimantResponse = claim.getClaimantResponse().orElse(null);
-        if (null == claimantResponse) {
+
+        Optional<ClaimantResponse> claimantResponseOptional = claim.getClaimantResponse();
+        if (claimantResponseOptional.isPresent()) {
+            final ClaimantResponse claimantResponse = claimantResponseOptional.get();
+            switch (claimantResponse.getType()) {
+                case ACCEPTATION:
+                    return toAcceptation(claim, (ResponseAcceptation) claimantResponse);
+                case REJECTION:
+                    return toRejection(claim, (ResponseRejection) claimantResponse);
+                default:
+                    throw new MappingException("unsupported claimant response type " + claimantResponse.getType());
+            }
+        } else {
             return null;
-        }
-        switch (claimantResponse.getType()) {
-            case ACCEPTATION:
-                return toAcceptation(claim, (ResponseAcceptation) claimantResponse);
-            case REJECTION:
-                return toRejection(claim, (ResponseRejection) claimantResponse);
-            default:
-                throw new MappingException("unsupported claimant response type " + claimantResponse.getType());
         }
     }
 
