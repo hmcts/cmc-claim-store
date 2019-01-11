@@ -10,14 +10,17 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.CountyCourtJudgmentAlreadyRequeste
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ResponseAlreadySubmittedException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.response.Response;
-import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
+import uk.gov.hmcts.cmc.domain.models.response.*;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+
+import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_DEFENCE_SUBMITTED;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.*;
+import static uk.gov.hmcts.cmc.domain.models.PaymentOption.BY_SPECIFIED_DATE;
+import static uk.gov.hmcts.cmc.domain.models.PaymentOption.INSTALMENTS;
 
 @Service
 public class DefendantResponseService {
@@ -73,19 +76,44 @@ public class DefendantResponseService {
         eventProducer.createDefendantResponseEvent(claimAfterSavingResponse);
         ccdEventProducer.createCCDDefendantResponseEvent(claimAfterSavingResponse, authorization);
 
-        appInsights.trackEvent(getAppInsightsEventName(response.getResponseType()),
+        appInsights.trackEvent(getAppInsightsEventName(response),
             REFERENCE_NUMBER, claim.getReferenceNumber());
 
         return claimAfterSavingResponse;
     }
 
-    public AppInsightsEvent getAppInsightsEventName(ResponseType responseType) {
-        requireNonNull(responseType, "responseType must not be null");
+    public AppInsightsEvent getAppInsightsEventName(Response response) {
+        requireNonNull(response, "response must not be null");
+        PaymentOption paymentOption;
+        ResponseType responseType = response.getResponseType();
+
         switch (responseType) {
             case FULL_ADMISSION:
-                return RESPONSE_FULL_ADMISSION_SUBMITTED;
+                paymentOption = ((FullAdmissionResponse) response).getPaymentIntention().getPaymentOption();
+                switch (paymentOption) {
+                    case IMMEDIATELY:
+                        return RESPONSE_FULL_ADMISSION_SUBMITTED_IMMEDIATELY;
+                    case BY_SPECIFIED_DATE:
+                        return RESPONSE_FULL_ADMISSION_SUBMITTED_SET_DATE;
+                    case INSTALMENTS:
+                        return RESPONSE_FULL_ADMISSION_SUBMITTED_INSTALMENTS;
+                    default:
+                        throw new IllegalArgumentException("Invalid full admission payment option");
+                }
             case PART_ADMISSION:
-                return RESPONSE_PART_ADMISSION_SUBMITTED;
+                paymentOption = ((PartAdmissionResponse) response).getPaymentIntention()
+                    .orElseThrow(IllegalStateException::new)
+                    .getPaymentOption();
+                switch (paymentOption) {
+                    case IMMEDIATELY:
+                        return RESPONSE_PART_ADMISSION_SUBMITTED_IMMEDIATELY;
+                    case BY_SPECIFIED_DATE:
+                        return RESPONSE_PART_ADMISSION_SUBMITTED_SET_DATE;
+                    case INSTALMENTS:
+                        return RESPONSE_PART_ADMISSION_SUBMITTED_INSTALMENTS;
+                    default:
+                        throw new IllegalArgumentException("Invalid part admission payment option");
+                }
             case FULL_DEFENCE:
                 return RESPONSE_FULL_DEFENCE_SUBMITTED;
             default:
