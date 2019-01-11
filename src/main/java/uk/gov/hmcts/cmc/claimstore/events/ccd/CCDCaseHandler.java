@@ -121,7 +121,7 @@ public class CCDCaseHandler {
         }
     }
 
-    //    @EventListener
+    @TransactionalEventListener
     @LogExecutionTime
     public void saveCountyCourtJudgment(CCDCountyCourtJudgmentEvent event) {
         Claim claim = event.getClaim();

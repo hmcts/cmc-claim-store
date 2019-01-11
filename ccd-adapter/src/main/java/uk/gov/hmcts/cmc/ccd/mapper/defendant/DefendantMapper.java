@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.mapper.TheirDetailsMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.claimantresponse.ClaimantResponseMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
@@ -21,15 +22,18 @@ public class DefendantMapper {
     private final TheirDetailsMapper theirDetailsMapper;
     private final ResponseMapper responseMapper;
     private final ClaimantResponseMapper claimantResponseMapper;
+    private final CountyCourtJudgmentMapper countyCourtJudgmentMapper;
 
     @Autowired
     public DefendantMapper(
         TheirDetailsMapper theirDetailsMapper,
         ResponseMapper responseMapper,
+        CountyCourtJudgmentMapper countyCourtJudgmentMapper,
         ClaimantResponseMapper claimantResponseMapper
     ) {
         this.theirDetailsMapper = theirDetailsMapper;
         this.responseMapper = responseMapper;
+        this.countyCourtJudgmentMapper = countyCourtJudgmentMapper;
         this.claimantResponseMapper = claimantResponseMapper;
     }
 
@@ -44,6 +48,8 @@ public class DefendantMapper {
         builder.partyEmail(claim.getDefendantEmail());
         builder.responseMoreTimeNeededOption(CCDYesNoOption.valueOf(claim.isMoreTimeRequested()));
         builder.directionsQuestionnaireDeadline(claim.getDirectionsQuestionnaireDeadline());
+        builder.countyCourtJudgementRequest(countyCourtJudgmentMapper.to(claim));
+
         claim.getResponse().ifPresent(toResponse(claim, builder));
         theirDetailsMapper.to(builder, theirDetails);
 
@@ -59,6 +65,8 @@ public class DefendantMapper {
             .defendantEmail(defendant.getPartyEmail())
             .directionsQuestionnaireDeadline(defendant.getDirectionsQuestionnaireDeadline())
             .defendantId(defendant.getDefendantId());
+
+        countyCourtJudgmentMapper.from(defendant.getCountyCourtJudgementRequest(), builder);
 
         Optional.ofNullable(defendant.getResponseMoreTimeNeededOption()).ifPresent(
             moreTimeNeeded -> builder.moreTimeRequested(moreTimeNeeded.toBoolean())
