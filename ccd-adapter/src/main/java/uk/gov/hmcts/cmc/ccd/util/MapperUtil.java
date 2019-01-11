@@ -5,6 +5,10 @@ import java.util.stream.Stream;
 
 public class MapperUtil {
 
+    private MapperUtil(){
+        // Utility class, no instances
+    }
+
     public static boolean isAllNull(Object... objects) {
         return Stream.of(objects).allMatch(Objects::nonNull);
     }

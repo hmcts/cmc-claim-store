@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.deprecated.assertion;
 
-import uk.gov.hmcts.cmc.ccd.assertion.PartyStatementAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.EvidenceRowAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.PartyStatementAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.TimelineEventAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.BankAccountAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.ChildAssert;
@@ -12,10 +12,6 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
@@ -52,22 +48,6 @@ public class Assertions {
 
     public static TimelineEventAssert assertThat(TimelineEvent timelineEvent) {
         return new TimelineEventAssert(timelineEvent);
-    }
-
-    public static ClaimantResponseAssert assertThat(ClaimantResponse response) {
-        return new ClaimantResponseAssert(response);
-    }
-
-    public static ResponseRejectionAssert assertThat(ResponseRejection responseRejection) {
-        return new ResponseRejectionAssert(responseRejection);
-    }
-
-    public static CourtDeterminationAssert assertThat(CourtDetermination courtDetermination) {
-        return new CourtDeterminationAssert(courtDetermination);
-    }
-
-    public static ResponseAcceptationAssert assertThat(ResponseAcceptation responseAcceptation) {
-        return new ResponseAcceptationAssert(responseAcceptation);
     }
 
     public static EvidenceRowAssert assertThat(EvidenceRow evidenceRow) {

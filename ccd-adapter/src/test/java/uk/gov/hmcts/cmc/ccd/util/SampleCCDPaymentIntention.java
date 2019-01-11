@@ -8,7 +8,12 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class SampleCCDPaymentIntention {
-    public static CCDPaymentIntention withInstalment(){
+
+    private SampleCCDPaymentIntention() {
+        //Empty constructor
+    }
+
+    public static CCDPaymentIntention withInstalment() {
         return CCDPaymentIntention.builder().completionDate(LocalDate.now())
             .firstPaymentDate(LocalDate.now())
             .instalmentAmount(BigDecimal.TEN)

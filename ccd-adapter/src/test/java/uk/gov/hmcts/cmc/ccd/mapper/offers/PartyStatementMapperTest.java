@@ -20,7 +20,6 @@ import java.util.stream.Stream;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
-
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
 @RunWith(SpringJUnit4ClassRunner.class)

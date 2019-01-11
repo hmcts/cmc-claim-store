@@ -1,14 +1,13 @@
 package uk.gov.hmcts.cmc.ccd.assertion;
 
 import org.assertj.core.api.AbstractAssert;
-import org.junit.Assert;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 
 import java.util.Objects;
 
+import static org.junit.Assert.assertEquals;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
-
 
 public class PartyStatementAssert extends AbstractAssert<PartyStatementAssert, PartyStatement> {
 
@@ -19,20 +18,21 @@ public class PartyStatementAssert extends AbstractAssert<PartyStatementAssert, P
     public PartyStatementAssert isEqualTo(CCDPartyStatement ccdPartyStatement) {
         isNotNull();
 
-        if (null != actual.getMadeBy() && !Objects.equals(actual.getMadeBy().name(), ccdPartyStatement.getMadeBy().name())) {
+        if (null != actual.getMadeBy()
+            && !Objects.equals(actual.getMadeBy().name(), ccdPartyStatement.getMadeBy().name())) {
             failWithMessage("Expected Party Statement.made by to be <%s> but was <%s>",
                 ccdPartyStatement.getMadeBy(), actual.getMadeBy().name());
         }
 
-
-        if (null != actual.getType() && !Objects.equals(actual.getType().name(), ccdPartyStatement.getType().name())) {
+        if (null != actual.getType()
+            && !Objects.equals(actual.getType().name(), ccdPartyStatement.getType().name())) {
             failWithMessage("Expected Party Statement.type to be <%s> but was <%s>",
                 ccdPartyStatement.getType().name(), actual.getType().name());
         }
 
         actual.getOffer().ifPresent(offer -> {
-                Assert.assertEquals(offer.getContent(), ccdPartyStatement.getOfferContent());
-                Assert.assertEquals(offer.getCompletionDate(), ccdPartyStatement.getOfferCompletionDate());
+                assertEquals(offer.getContent(), ccdPartyStatement.getOfferContent());
+                assertEquals(offer.getCompletionDate(), ccdPartyStatement.getOfferCompletionDate());
 
                 offer.getPaymentIntention().ifPresent(
                     paymentIntention -> assertThat(paymentIntention).isEqualTo(ccdPartyStatement.getPaymentIntention())

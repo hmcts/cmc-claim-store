@@ -8,6 +8,10 @@ import java.time.LocalDate;
 
 public class SampleCCDPartyStatement {
 
+    private SampleCCDPartyStatement() {
+        // Empty constructor
+    }
+
     public static CCDPartyStatement withOffer() {
         return builder().madeBy(CCDMadeBy.CLAIMANT)
             .type(CCDStatementType.ACCEPTATION)

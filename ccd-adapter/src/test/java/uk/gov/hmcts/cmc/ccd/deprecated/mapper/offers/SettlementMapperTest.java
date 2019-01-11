@@ -62,7 +62,8 @@ public class SettlementMapperTest {
     public void shouldMapAcceptanceSettlementToCCD() {
         //given
         Settlement settlement = SampleSettlement.builder()
-            .withPartyStatements(SamplePartyStatement.offerPartyStatement, SamplePartyStatement.acceptPartyStatement).build();
+            .withPartyStatements(SamplePartyStatement.offerPartyStatement,
+                SamplePartyStatement.acceptPartyStatement).build();
 
         //when
         CCDSettlement ccdSettlement = settlementMapper.to(settlement);

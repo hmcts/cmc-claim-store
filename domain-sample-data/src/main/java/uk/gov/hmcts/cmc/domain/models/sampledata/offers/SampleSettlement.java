@@ -11,7 +11,8 @@ import java.util.List;
 
 public class SampleSettlement {
 
-    private List<PartyStatement> partyStatements = new ArrayList<>(Collections.singletonList(SamplePartyStatement.offerPartyStatement));
+    private List<PartyStatement> partyStatements =
+        new ArrayList<>(Collections.singletonList(SamplePartyStatement.offerPartyStatement));
 
     public static Settlement validDefaults() {
 

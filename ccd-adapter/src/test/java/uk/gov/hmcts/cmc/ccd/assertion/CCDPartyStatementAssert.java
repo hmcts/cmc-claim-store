@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.assertion;
 
 import org.assertj.core.api.AbstractAssert;
-import org.junit.Assert;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 
@@ -9,7 +8,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.isAnyNotNull;
-
 
 public class CCDPartyStatementAssert extends AbstractAssert<CCDPartyStatementAssert, CCDPartyStatement> {
 
@@ -20,17 +18,16 @@ public class CCDPartyStatementAssert extends AbstractAssert<CCDPartyStatementAss
     public CCDPartyStatementAssert isEqualTo(PartyStatement partyStatement) {
         isNotNull();
 
-        if (null != actual.getMadeBy() && !Objects.equals(actual.getMadeBy().name(), partyStatement.getMadeBy().name())) {
+        if (null != actual.getMadeBy()
+            && !Objects.equals(actual.getMadeBy().name(), partyStatement.getMadeBy().name())) {
             failWithMessage("Expected Party Statement.made by to be <%s> but was <%s>",
                 partyStatement.getMadeBy(), actual.getMadeBy().name());
         }
-
 
         if (null != actual.getType() && !Objects.equals(actual.getType().name(), partyStatement.getType().name())) {
             failWithMessage("Expected Party Statement.type to be <%s> but was <%s>",
                 partyStatement.getType().name(), actual.getType().name());
         }
-
 
         if (isAnyNotNull(actual.getOfferCompletionDate(), actual.getOfferContent(), actual.getPaymentIntention())) {
             partyStatement.getOffer().ifPresent(offer -> {
@@ -48,7 +45,9 @@ public class CCDPartyStatementAssert extends AbstractAssert<CCDPartyStatementAss
         }
 
         Optional.ofNullable(actual.getPaymentIntention()).ifPresent(pymtIntention -> {
-            Assertions.assertThat(partyStatement.getOffer().get().getPaymentIntention().get()).isEqualTo(actual.getPaymentIntention());
+            Assertions.assertThat(
+                partyStatement.getOffer().get().getPaymentIntention().get())
+                .isEqualTo(actual.getPaymentIntention());
         });
 
         return this;
