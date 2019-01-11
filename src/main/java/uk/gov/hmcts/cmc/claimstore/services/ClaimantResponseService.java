@@ -89,14 +89,12 @@ public class ClaimantResponseService {
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
 
         if (shouldFormaliseResponseAcceptance(response, claimantResponse)) {
-            ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponse;
-            if (responseAcceptation.getFormaliseOption().isPresent()) {
-                return responseAcceptation.getFormaliseOption().get() == FormaliseOption.SETTLEMENT;
-            }
+            return ((ResponseAcceptation) claimantResponse).getFormaliseOption()
+                .filter(Predicate.isEqual(FormaliseOption.SETTLEMENT)).isPresent();
         }
         return false;
     }
-    
+
     private boolean isReferredToJudge(ClaimantResponse response) {
         if (response.getType().equals(ACCEPTATION)) {
             ResponseAcceptation responseAcceptation = (ResponseAcceptation) response;
