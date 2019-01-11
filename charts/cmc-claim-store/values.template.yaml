@@ -15,6 +15,7 @@ claim-store:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   applicationPort: 4400
+  buildID: claim-store
   environment:
     REFORM_TEAM: cmc
     REFORM_SERVICE_NAME: claim-store

@@ -1,4 +1,4 @@
-description: A Helm chart for the HMCTS CMC Claim-Store service
+description: Helm chart for the HMCTS CMC Claim-Store service
 name: cmc-claim-store
 home: https://github.com/hmcts/cmc-claim-store
 version: 0.0.1
