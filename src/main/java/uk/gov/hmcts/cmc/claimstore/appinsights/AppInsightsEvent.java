@@ -16,13 +16,13 @@ public enum AppInsightsEvent {
     SETTLEMENT_AGREEMENT_REACHED("Settlement agreement reached"),
     SETTLEMENT_REACHED("Settlement reached"),
     CCJ_REQUESTED("CCJ requested"),
-    RESPONSE_MORE_TIME_REQUESTED("Defendant Response - More time requested"),
-    RESPONSE_MORE_TIME_REQUESTED_PAPER("Defendant Response - More time requested paper"),
-    CLAIMANT_RESPONSE_GENERATED_OFFER_MADE("Claimant Response - Generated offer made"),
+    RESPONSE_MORE_TIME_REQUESTED("Response - more time requested"),
+    RESPONSE_MORE_TIME_REQUESTED_PAPER("Response - more time requested paper"),
+    CLAIMANT_RESPONSE_GENERATED_OFFER_MADE("Claimant response - Generated offer made"),
     BULK_PRINT_FAILED("Bulk print failed"),
     SCHEDULER_JOB_FAILED("Scheduler job failed"),
-    CLAIMANT_RESPONSE_REJECTED("Claimant Response - rejected"),
-    CLAIMANT_RESPONSE_ACCEPTED("Claimant Response - accepted"),
+    CLAIMANT_RESPONSE_REJECTED("Claimant response - rejected"),
+    CLAIMANT_RESPONSE_ACCEPTED("Claimant response - accepted"),
     CCD_ASYNC_FAILURE("CCD Async handling - failure");
 
     private String displayName;
