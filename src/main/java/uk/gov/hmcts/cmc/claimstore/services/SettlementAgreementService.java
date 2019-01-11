@@ -19,7 +19,6 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.SETTLEMEN
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.SETTLEMENT_AGREEMENT_REACHED_BY_ADMISSION;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.SETTLEMENT_AGREEMENT_REJECTED;
 
-
 @Service
 @Transactional(transactionManager = "transactionManager")
 public class SettlementAgreementService {
@@ -72,8 +71,9 @@ public class SettlementAgreementService {
 
         eventProducer.createSettlementAgreementCountersignedEvent(updated);
         appInsights.trackEvent(SETTLEMENT_AGREEMENT_REACHED, REFERENCE_NUMBER, updated.getReferenceNumber());
-        if(settlement.isSettlementThroughAdmissions()) {
-            appInsights.trackEvent(SETTLEMENT_AGREEMENT_REACHED_BY_ADMISSION, REFERENCE_NUMBER, updated.getReferenceNumber());
+        if (settlement.isSettlementThroughAdmissions()) {
+            appInsights.trackEvent(SETTLEMENT_AGREEMENT_REACHED_BY_ADMISSION, REFERENCE_NUMBER,
+                updated.getReferenceNumber());
         }
         return updated;
 
