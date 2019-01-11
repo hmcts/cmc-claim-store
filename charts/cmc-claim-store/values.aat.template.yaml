@@ -1,4 +1,4 @@
-java:
+claim-store:
   environment:
     FRONTEND_BASE_URL: https://moneyclaims.aat.platform.hmcts.net
     IDAM_S2S_AUTH_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
