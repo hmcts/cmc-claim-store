@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.deprecated.assertion;
+package uk.gov.hmcts.cmc.ccd.assertion;
 
 import org.assertj.core.api.AbstractAssert;
 import org.junit.Assert;
