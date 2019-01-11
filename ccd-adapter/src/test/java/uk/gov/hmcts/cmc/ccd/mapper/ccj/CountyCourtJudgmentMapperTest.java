@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.mapper.ccj;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,7 @@ import static java.time.LocalDate.now;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -44,7 +43,8 @@ public class CountyCourtJudgmentMapperTest {
 
     @Test
     public void mapEmptyCCJWillReturnNull() {
-        Assert.assertNull(countyCourtJudgmentMapper.to(null));
+        assertNull(countyCourtJudgmentMapper.to(null));
+        assertNull(countyCourtJudgmentMapper.to(Claim.builder().build()));
     }
 
     @Test

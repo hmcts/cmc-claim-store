@@ -21,7 +21,7 @@ public class CountyCourtJudgmentMapper {
 
     public CCDCountyCourtJudgment to(Claim claim) {
 
-        if (claim.getCountyCourtJudgment() == null) {
+        if (claim == null || claim.getCountyCourtJudgment() == null) {
             return null;
         }
 
