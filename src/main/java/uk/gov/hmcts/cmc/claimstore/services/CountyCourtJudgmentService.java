@@ -90,7 +90,7 @@ public class CountyCourtJudgmentService {
             redetermination.getPartyType()
         );
 
-        appInsights.trackEvent(REDETERMINATION_REQUESTED, "referenceNumber", claim.getReferenceNumber());
+        appInsights.trackEvent(REDETERMINATION_REQUESTED, AppInsights.REFERENCE_NUMBER, claim.getReferenceNumber());
 
         return claimWithReDetermination;
 
