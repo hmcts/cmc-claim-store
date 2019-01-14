@@ -20,11 +20,11 @@ The service also delegates some responsibilities to other RESTful services e.g. 
 
 #### Environment variables
 
-Some environment variables are mandatory. Ask one of the cmc-developers for latest vars.
+Some environment variables are mandatory. 
 
-Or you can check cmc-integration-tests repo for how the docker stack is skaffolded: https://github.com/hmcts/cmc-integration-tests.
-
-We use this as the basis for our development environment.
+- Ask one of the cmc-developers for latest vars
+- Check the [Helm chart values](charts/cmc-claim-store/values.template.yaml)
+- Check cmc-integration-tests repo for how the docker stack is setup: https://github.com/hmcts/cmc-integration-tests. We use this as the basis for our development environment.
 
 ### Building
 
