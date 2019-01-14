@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
@@ -47,6 +48,10 @@ public class Assertions {
 
     public static CCDPartyStatementAssert assertThat(CCDPartyStatement ccdPartyStatement) {
         return new CCDPartyStatementAssert(ccdPartyStatement);
+    }
+
+    public static CountyCourtJudgmentAssert assertThat(CountyCourtJudgment countyCourtJudgment) {
+        return new CountyCourtJudgmentAssert(countyCourtJudgment);
     }
 
     public static PaymentIntentionAssert assertThat(PaymentIntention paymentIntention) {
