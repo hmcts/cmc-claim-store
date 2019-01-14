@@ -20,52 +20,11 @@ The service also delegates some responsibilities to other RESTful services e.g. 
 
 #### Environment variables
 
-The following environment variables are required - values given are for the dockerized local environment (cmc-integration-tests: https://github.com/hmcts/cmc-integration-tests):
-```
-GOV_NOTIFY_API_KEY=[YOU NEED THIS FROM SOMEONE WITH GOV NOTIFY ADMIN ACCESS]
-GOV_PAY_AUTH_KEY_CMC=[THIS IS GENERIC FOR TEAM - ASK]
-CMC_DB_HOST=localhost
-CMC_DB_PORT=5431
-CMC_DB_USERNAME=cmc
-CMC_DB_PASSWORD=cmc
-CLAIM_STORE_DB_HOST=localhost
-CLAIM_STORE_DB_PORT=5430
-CLAIM_STORE_DB_USERNAME=claimstore
-CLAIM_STORE_DB_PASSWORD=claimstore
-IDAM_API_URL=http://localhost:8080
-IDAM_S2S_AUTH_URL=http://localhost:4552
-FRONTEND_BASE_URL=https://localhost:3333
-FEATURE_TOGGLES_API_URL=http://localhost:8580
-RESPOND_TO_CLAIM_URL=https://localhost:3333/first-contact/start
-CLAIM_STORE_TEST_SUPPORT_ENABLED=true
-STAFF_NOTIFICATIONS_SENDER=no-reply@example.com
-STAFF_NOTIFICATIONS_RECIPIENT=civilmoneyclaims+staff-int-tests@gmail.com
-RPA_NOTIFICATIONS_SENDER=no-reply@example.com
-RPA_NOTIFICATIONS_SEALEDCLAIMRECIPIENT=civilmoneyclaims+rpa-claim-issued@gmail.com
-RPA_NOTIFICATIONS_MORETIMEREQUESTEDRECIPIENT=civilmoneyclaims+rpa-more-time-requested@gmail.com
-RPA_NOTIFICATIONS_RESPONSERECIPIENT=civilmoneyclaims+rpa-defence-response@gmail.com
-RPA_NOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT=civilmoneyclaims+rpa-county-court-judgement@gmail.com
-SPRING_MAIL_HOST=localhost
-SPRING_MAIL_PORT=1025
-PDF_SERVICE_URL=http://localhost:5500
-DOCUMENT_MANAGEMENT_URL=false
-CORE_CASE_DATA_API_URL=false
-FEATURE_TOGGLE_CORE_CASE_DATA=true
-IDAM_CASEWORKER_ANONYMOUS_USERNAME=civilmoneyclaims+anonymouscitizen@gmail.com
-IDAM_CASEWORKER_ANONYMOUS_PASSWORD=Password12
-IDAM_CASEWORKER_SYSTEM_USERNAME=civilmoneyclaims+systemupdate@gmail.com
-IDAM_CASEWORKER_SYSTEM_PASSWORD=Password12
-SEND_LETTER_URL=false
-APPINSIGHTS_INSTRUMENTATIONKEY=fake-key
-OAUTH2_CLIENT_SECRET=123456
-```
+Some environment variables are mandatory. Ask one of the cmc-developers for latest vars.
 
-And with CCD:
-```
-CORE_CASE_DATA_API_URL=http://ccd-data-store-api:4452
-FEATURE_TOGGLES_CCD_ENABLED=true
-FEATURE_TOGGLES_CCD_ASYNC_ENABLED=false
-```
+Or you can check cmc-integration-tests repo for how the docker stack is skaffolded: https://github.com/hmcts/cmc-integration-tests.
+
+We use this as the basis for our development environment.
 
 ### Building
 
