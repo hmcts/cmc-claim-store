@@ -189,7 +189,6 @@ public class CommonOperations {
             .post("/responses/" + claimExternalId + "/claimant/" + claimant.getUserDetails().getId());
     }
 
-
     public Response requestCCJ(String externalId, CountyCourtJudgment ccj, User user) {
         return RestAssured
             .given()

@@ -32,7 +32,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.cmc.ccd.deprecated.domain.CaseEvent.MORE_TIME_REQUESTED_ONLINE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED_ONLINE;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetails;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetailsWithMoreTimeExtension;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreStartResponse;
@@ -103,6 +103,7 @@ public class RequestMoreTimeForResponseWithCoreCaseDataTest extends BaseIntegrat
         MvcResult result = makeRequest(claimData.getExternalId().toString())
             .andExpect(status().isOk())
             .andReturn();
+
         Claim claim = deserializeObjectFrom(result, Claim.class);
 
         verify(notificationClient, times(3))
