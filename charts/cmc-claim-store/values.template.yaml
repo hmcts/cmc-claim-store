@@ -60,33 +60,3 @@ claim-store:
     SMOKE_TEST_SOLICITOR_USERNAME: ${SMOKE_TEST_SOLICITOR_USERNAME}
     SMOKE_TEST_USER_PASSWORD: ${SMOKE_TEST_USER_PASSWORD}
     GENERATED_USER_EMAIL_PATTERN: ${GENERATED_USER_EMAIL_PATTERN}
-
-#ccd:
-#  ingressHost: ${SERVICE_FQDN}
-#  ingressIP: ${INGRESS_IP}
-#  consulIP: ${CONSUL_LB_IP}
-#
-#  apiGateway:
-#    s2sKey: ${API_GATEWAY_S2S_KEY}
-#    idamClientSecret: ${API_GATEWAY_IDAM_SECRET}
-#
-#  dataStoreApi:
-#    s2sKey: ${DATA_STORE_S2S_KEY}
-#
-#  definitionStoreApi:
-#    s2sKey: ${DEFINITION_STORE_S2S_KEY}
-#
-#  caseManagementWeb:
-#    enabled: true
-#
-#  importer:
-#    definitions:
-#      - https://github.com/hmcts/Probate-CCD-Import-Spreadsheets/raw/master/spreadsheet/back-office/CCD_Probate_V04.32.01-Hlm.xlsx
-#      - https://github.com/hmcts/Probate-CCD-Import-Spreadsheets/raw/master/spreadsheet/legacy-cases/CCD_Probate_Legacy_V00.01-Dev.xlsx
-#    #      - https://github.com/hmcts/Probate-CCD-Import-Spreadsheets/raw/master/spreadsheet/CCD_Probate_V21.02-Dev.xlsx
-#    userRoles:
-#      - caseworker-probate
-#      - caseworker-probate-issuer
-#      - caseworker-probate-solicitor
-#      - citizen
-#      - caseworker-probate-examiner

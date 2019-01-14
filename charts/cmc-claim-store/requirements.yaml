@@ -6,6 +6,3 @@ dependencies:
     version: 0.0.9
     repository: '@hmcts'
     alias: claim-store
-#  - name: ccd
-#    version: '0.2.2'
-#    repository: '@hmcts'

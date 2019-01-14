@@ -6,5 +6,3 @@ claim-store:
     RESPOND_TO_CLAIM_URL: https://moneyclaims.aat.platform.hmcts.net/first-contact/start
     IDAM_API_URL: https://preprod-idamapi.reform.hmcts.net:3511
     PDF_SERVICE_URL: http://cmc-pdf-service-aat.service.core-compute-aat.internal
-#    CCD_GATEWAY_HOST: http://${SERVICE_NAME}-api-gateway
-#    SERVICES_CORECASEDATA_BASEURL : http://${SERVICE_NAME}-data-store-api
