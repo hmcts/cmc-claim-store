@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
@@ -70,13 +71,12 @@ public class SettlementAgreementService {
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
 
         eventProducer.createSettlementAgreementCountersignedEvent(updated);
-        appInsights.trackEvent(SETTLEMENT_AGREEMENT_REACHED, REFERENCE_NUMBER, updated.getReferenceNumber());
-        if (settlement.isSettlementThroughAdmissions()) {
-            appInsights.trackEvent(SETTLEMENT_AGREEMENT_REACHED_BY_ADMISSION, REFERENCE_NUMBER,
-                updated.getReferenceNumber());
-        }
-        return updated;
 
+        AppInsightsEvent appInsightsEvent = settlement.isSettlementThroughAdmissions() ?
+            SETTLEMENT_AGREEMENT_REACHED_BY_ADMISSION : SETTLEMENT_AGREEMENT_REACHED;
+        appInsights.trackEvent(appInsightsEvent, REFERENCE_NUMBER, updated.getReferenceNumber());
+
+        return updated;
     }
 
     private Settlement assertSettlementCanBeResponded(Claim claim) {
