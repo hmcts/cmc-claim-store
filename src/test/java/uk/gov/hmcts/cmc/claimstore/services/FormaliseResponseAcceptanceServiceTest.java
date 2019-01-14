@@ -580,7 +580,7 @@ public class FormaliseResponseAcceptanceServiceTest {
     private PartAdmissionResponse getPartAdmissionResponsePayByInstalments() {
         return SampleResponse
             .PartAdmission.builder()
-            .buildWithPaymentOptionInstallments();
+            .buildWithPaymentOptionInstalments();
     }
 
     private Response getPartAdmissionsResponsePayBySetDate() {
