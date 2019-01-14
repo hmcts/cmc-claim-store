@@ -49,7 +49,6 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetails
         "feature_toggles.ccd_enabled=true"
     }
 )
-@Ignore
 public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTest {
 
     private static final String CASE_REFERENCE = "000MC023";

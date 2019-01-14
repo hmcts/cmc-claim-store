@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.deprecated.assertion;
 
 import uk.gov.hmcts.cmc.ccd.assertion.EvidenceRowAssert;
-import uk.gov.hmcts.cmc.ccd.assertion.PartyStatementAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.TimelineEventAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.BankAccountAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.ChildAssert;
@@ -13,8 +12,6 @@ import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
-import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
-import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
@@ -26,20 +23,8 @@ public class Assertions {
     private Assertions() {
     }
 
-    public static RepaymentPlanAssert assertThat(RepaymentPlan repaymentPlan) {
-        return new RepaymentPlanAssert(repaymentPlan);
-    }
-
     public static CountyCourtJudgmentAssert assertThat(CountyCourtJudgment countyCourtJudgment) {
         return new CountyCourtJudgmentAssert(countyCourtJudgment);
-    }
-
-    public static SettlementAssert assertThat(Settlement settlement) {
-        return new SettlementAssert(settlement);
-    }
-
-    public static PartyStatementAssert assertThat(PartyStatement partyStatement) {
-        return new PartyStatementAssert(partyStatement);
     }
 
     public static OfferAssert assertThat(Offer offer) {
