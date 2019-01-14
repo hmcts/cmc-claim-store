@@ -15,15 +15,11 @@ claim-store:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   applicationPort: 4400
-  buildID: claim-store
-  configmap:
-    DUMMY: force-valid-manifest-yaml
   environment:
     REFORM_TEAM: cmc
     REFORM_SERVICE_NAME: claim-store
     REFORM_ENVIRONMENT: preview
     LOG_LEVEL: DEBUG
-    ROOT_APPENDER: CMC
     CLAIM_STORE_DB_HOST: ${SERVICE_NAME}-postgres
     CLAIM_STORE_DB_PORT: 5432
     CLAIM_STORE_DB_USERNAME: claimstore
