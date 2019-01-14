@@ -16,6 +16,8 @@ claim-store:
   ingressHost: ${SERVICE_FQDN}
   applicationPort: 4400
   buildID: claim-store
+  configmap:
+    DUMMY: force-valid-manifest-yaml
   environment:
     REFORM_TEAM: cmc
     REFORM_SERVICE_NAME: claim-store
