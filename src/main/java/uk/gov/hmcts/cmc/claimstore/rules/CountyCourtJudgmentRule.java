@@ -89,7 +89,7 @@ public class CountyCourtJudgmentRule {
 
     }
 
-    public boolean isCcJDueToSettlementBreach(Claim claim) {
+    public boolean isCCJDueToSettlementBreach(Claim claim) {
         requireNonNull(claim, "claim object can not be null");
 
         if (claim.getSettlement().isPresent()) {

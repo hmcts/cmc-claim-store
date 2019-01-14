@@ -17,7 +17,7 @@ public enum AppInsightsEvent {
     SETTLEMENT_AGREEMENT_REACHED_BY_ADMISSION("Settlement - Settlement agreement reached by admission"),
     SETTLEMENT_REACHED("Settlement reached"),
     CCJ_REQUESTED("CCJ requested"),
-    CCJ_REQUESTED_BY_ADMISSION("CCJ - CCJ by admission requested"),
+    CCJ_REQUESTED_BY_ADMISSION("CCJ - Requested by admission"),
     CCJ_REQUESTED_AFTER_SETTLEMENT_BREACH("CCJ - Settlement agreement breached"),
     RESPONSE_MORE_TIME_REQUESTED("Response - more time requested"),
     RESPONSE_MORE_TIME_REQUESTED_PAPER("Response - more time requested paper"),

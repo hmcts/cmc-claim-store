@@ -103,7 +103,7 @@ public class CountyCourtJudgmentRuleTest {
     }
 
     @Test
-    public void shouldReturnFalseWhenIsCcJDueToSettlementBreachAndClaimHasNoSettlement() {
+    public void shouldReturnFalseWhenIsCCJDueToSettlementBreachAndClaimHasNoSettlement() {
         Claim claim = SampleClaim.builder()
             .withResponse(SampleResponse.validDefaults())
             .withCountyCourtJudgmentRequestedAt(now())
@@ -112,11 +112,11 @@ public class CountyCourtJudgmentRuleTest {
                     .paymentOption(PaymentOption.IMMEDIATELY)
                     .build()
             ).build();
-        assertThat(countyCourtJudgmentRule.isCcJDueToSettlementBreach(claim)).isFalse();
+        assertThat(countyCourtJudgmentRule.isCCJDueToSettlementBreach(claim)).isFalse();
     }
 
     @Test
-    public void shouldReturnFalseWhenIsCcJDueToSettlementBreachAndClaimSettlementDateIsInTheFuture() {
+    public void shouldReturnFalseWhenIsCCJDueToSettlementBreachAndClaimSettlementDateIsInTheFuture() {
         Settlement settlement = new Settlement();
         settlement.makeOffer(SampleOffer.builderWithPaymentIntention().build(), MadeBy.DEFENDANT);
         settlement.accept(MadeBy.CLAIMANT);
@@ -130,11 +130,11 @@ public class CountyCourtJudgmentRuleTest {
                     .paymentOption(PaymentOption.IMMEDIATELY)
                     .build()
             ).build();
-        assertThat(countyCourtJudgmentRule.isCcJDueToSettlementBreach(claim)).isFalse();
+        assertThat(countyCourtJudgmentRule.isCCJDueToSettlementBreach(claim)).isFalse();
     }
 
     @Test
-    public void shouldReturnTrueWhenIsCcJDueToSettlementBreachAndClaimSettlementDateIsInTheFuture() {
+    public void shouldReturnTrueWhenIsCCJDueToSettlementBreachAndClaimSettlementDateIsInTheFuture() {
         Settlement settlement = new Settlement();
         settlement.makeOffer(SampleOffer.builderWithSetByDateInPast().build(), MadeBy.DEFENDANT);
         settlement.accept(MadeBy.CLAIMANT);
@@ -148,6 +148,6 @@ public class CountyCourtJudgmentRuleTest {
                     .paymentOption(PaymentOption.IMMEDIATELY)
                     .build()
             ).build();
-        assertThat(countyCourtJudgmentRule.isCcJDueToSettlementBreach(claim)).isTrue();
+        assertThat(countyCourtJudgmentRule.isCCJDueToSettlementBreach(claim)).isTrue();
     }
 }

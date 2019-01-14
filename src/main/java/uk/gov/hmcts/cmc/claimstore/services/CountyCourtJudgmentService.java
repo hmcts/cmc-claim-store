@@ -70,7 +70,7 @@ public class CountyCourtJudgmentService {
             appInsightsEvent = CCJ_REQUESTED_BY_ADMISSION;
         }
 
-        if (countyCourtJudgmentRule.isCcJDueToSettlementBreach(claimWithCCJ)) {
+        if (countyCourtJudgmentRule.isCCJDueToSettlementBreach(claimWithCCJ)) {
             appInsightsEvent = CCJ_REQUESTED_AFTER_SETTLEMENT_BREACH;
         }
 
