@@ -128,6 +128,8 @@ public class CountyCourtJudgmentServiceTest {
             eq(AUTHORISATION), eq(userDetails.getFullName()), eq(reDetermination.getPartyType()));
 
         verify(claimService, once()).saveReDetermination(eq(AUTHORISATION), any(), eq(reDetermination), eq(USER_ID));
+        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.REDETERMINATION_REQUESTED),
+            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 
     @Test(expected = NotFoundException.class)
