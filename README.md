@@ -20,13 +20,11 @@ The service also delegates some responsibilities to other RESTful services e.g. 
 
 #### Environment variables
 
-The following environment variables are required:
+Some environment variables are mandatory. 
 
-- `STAFF_NOTIFICATIONS_SENDER`, email address staff notifications are sent from
-- `STAFF_NOTIFICATIONS_RECIPIENT`, email address staff notifications are sent to
-- `SPRING_MAIL_HOST`, the host of an SMTP server, `localhost` for the dockerized local environment 
-- `SPRING_MAIL_PORT`, the port of an SMTP server, `1025` for the dockerized local environment
-- `PDF_SERVICE_URL`, the base url of PDF Service instance, `http://localhost:5500` for the dockerized local environment
+- Ask one of the cmc-developers for latest vars
+- Check the [Helm chart values](charts/cmc-claim-store/values.template.yaml)
+- Check cmc-integration-tests repo for how the docker stack is setup: https://github.com/hmcts/cmc-integration-tests. We use this as the basis for our development environment.
 
 ### Building
 
@@ -123,6 +121,11 @@ $ ./gradlew check
 
 We use [SemVer](http://semver.org/) for versioning.
 For the versions available, see the tags on this repository.
+
+## Preview Environment
+
+We get a fully functional environment in Azure Kubernetes (AKS) per pull request. For more
+info see: https://tools.hmcts.net/confluence/display/ROC/AKS+-+Azure+Managed+Kubernetes
 
 ## Troubleshooting
 
