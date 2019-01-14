@@ -18,9 +18,11 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
+import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -107,7 +109,31 @@ public class CountyCourtJudgmentServiceTest {
 
         verify(eventProducer, once()).createCountyCourtJudgmentEvent(any(Claim.class), any());
         verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any());
-        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_REQUESTED),
+        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_REQUESTED_BY_ADMISSION),
+            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+    }
+
+    @Test
+    public void saveShouldFinishCCJAfterBreachSuccessfullyForHappyPath() {
+
+        Settlement settlement = new Settlement();
+        settlement.makeOffer(SampleOffer.builderWithSetByDateInPast().build(), MadeBy.DEFENDANT);
+        settlement.accept(MadeBy.CLAIMANT);
+
+        Claim claim = SampleClaim
+            .builder()
+            .withResponse(SampleResponse.FullAdmission.builder().build())
+            .withSettlement(settlement)
+            .build();
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+
+        CountyCourtJudgment ccjByAdmission = SampleCountyCourtJudgment.builder().ccjType(ADMISSIONS).build();
+        countyCourtJudgmentService.save(ccjByAdmission, EXTERNAL_ID, AUTHORISATION);
+
+        verify(eventProducer, once()).createCountyCourtJudgmentEvent(any(Claim.class), any());
+        verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any());
+        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_REQUESTED_AFTER_SETTLEMENT_BREACH),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 

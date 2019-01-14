@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
+import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
 import javax.validation.constraints.NotNull;
 
@@ -86,5 +87,33 @@ public class CountyCourtJudgmentRule {
                 + externalId + " has been already redetermined");
         }
 
+    }
+
+    public boolean isCcJDueToSettlementBreach(Claim claim) {
+        requireNonNull(claim, "claim object can not be null");
+
+        if (claim.getSettlement().isPresent()) {
+            PaymentIntention paymentIntention = claim.getSettlement().orElseThrow(IllegalArgumentException::new)
+                .getLastOfferStatement().getOffer().orElseThrow(IllegalArgumentException::new)
+                .getPaymentIntention().orElseThrow(IllegalArgumentException::new);
+
+            switch (paymentIntention.getPaymentOption()) {
+                case IMMEDIATELY:
+                    return nowInLocalZone().toLocalDate().isAfter(
+                        paymentIntention.getPaymentDate().orElse(nowInLocalZone().toLocalDate()));
+                case BY_SPECIFIED_DATE:
+                    return nowInLocalZone().toLocalDate().isAfter(
+                        paymentIntention.getPaymentDate().orElse(nowInLocalZone().toLocalDate()));
+                case INSTALMENTS:
+                    return nowInLocalZone().toLocalDate().isAfter(
+                        paymentIntention.getRepaymentPlan()
+                        .orElseThrow(IllegalArgumentException::new).getFirstPaymentDate());
+                default:
+                    throw new IllegalArgumentException("Invalid part admission payment option");
+            }
+
+        }
+
+        return false;
     }
 }
