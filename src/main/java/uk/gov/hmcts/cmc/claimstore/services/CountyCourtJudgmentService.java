@@ -74,7 +74,7 @@ public class CountyCourtJudgmentService {
             appInsightsEvent = CCJ_REQUESTED_AFTER_SETTLEMENT_BREACH;
         }
 
-        appInsights.trackEvent(appInsightsEvent, "referenceNumber", claim.getReferenceNumber());
+        appInsights.trackEvent(appInsightsEvent, AppInsights.REFERENCE_NUMBER, claim.getReferenceNumber());
 
         return claimWithCCJ;
     }
