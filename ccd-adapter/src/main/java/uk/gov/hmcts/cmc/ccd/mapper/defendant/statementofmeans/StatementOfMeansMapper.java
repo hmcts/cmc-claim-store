@@ -361,8 +361,8 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
         return OtherDependants.builder()
             .details(details)
             .numberOfPeople(numberOfPeople)
-            .anyDisabled(ccdStatementOfMeans.getOtherDependantAnyDisabled() != null &&
-                ccdStatementOfMeans.getOtherDependantAnyDisabled().toBoolean()
+            .anyDisabled(ccdStatementOfMeans.getOtherDependantAnyDisabled() != null
+                && ccdStatementOfMeans.getOtherDependantAnyDisabled().toBoolean()
             )
             .build();
     }
