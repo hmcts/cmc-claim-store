@@ -138,7 +138,7 @@ public class CCDCaseHandler {
 
     }
 
-    //    @TransactionalEventListener
+    @TransactionalEventListener
     @LogExecutionTime
     public void saveClaimantResponse(CCDClaimantResponseEvent event) {
         String authorization = event.getAuthorization();
@@ -183,7 +183,7 @@ public class CCDCaseHandler {
         }
     }
 
-    //    @EventListener
+    @TransactionalEventListener
     @LogExecutionTime
     public void updateSettlement(CCDSettlementEvent event) {
         String authorization = event.getAuthorization();

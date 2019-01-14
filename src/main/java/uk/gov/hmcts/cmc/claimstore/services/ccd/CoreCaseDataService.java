@@ -38,7 +38,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_BY_ADMISSION;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_SEALED_CLAIM;
@@ -282,7 +282,7 @@ public class CoreCaseDataService {
 
     private CaseEvent getCCJEvent(CountyCourtJudgmentType countyCourtJudgmentType) {
         if (countyCourtJudgmentType.equals(CountyCourtJudgmentType.ADMISSIONS)) {
-            return CCJ_BY_ADMISSION;
+            return CCJ_REQUESTED;
         } else {
             return DEFAULT_CCJ_REQUESTED;
         }
