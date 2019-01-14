@@ -50,6 +50,14 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .paymentIntention(SamplePaymentIntention.immediately())
                 .build();
         }
+
+        public FullAdmissionResponse buildWithPaymentOptionInstalments() {
+            return FullAdmissionResponse.builder()
+                .moreTimeNeeded(YesNoOption.NO)
+                .defendant(SampleParty.builder().individual())
+                .paymentIntention(SamplePaymentIntention.instalments())
+                .build();
+        }
     }
 
     public static class PartAdmission extends SampleResponse<PartAdmission> {
