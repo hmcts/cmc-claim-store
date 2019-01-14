@@ -72,8 +72,8 @@ public class SettlementAgreementService {
 
         eventProducer.createSettlementAgreementCountersignedEvent(updated);
 
-        AppInsightsEvent appInsightsEvent = settlement.isSettlementThroughAdmissions() ?
-            SETTLEMENT_AGREEMENT_REACHED_BY_ADMISSION : SETTLEMENT_AGREEMENT_REACHED;
+        AppInsightsEvent appInsightsEvent = settlement.isSettlementThroughAdmissions()
+            ? SETTLEMENT_AGREEMENT_REACHED_BY_ADMISSION : SETTLEMENT_AGREEMENT_REACHED;
         appInsights.trackEvent(appInsightsEvent, REFERENCE_NUMBER, updated.getReferenceNumber());
 
         return updated;
