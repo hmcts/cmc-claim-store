@@ -4,6 +4,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleCourtDetermination;
 
 import java.math.BigDecimal;
@@ -12,6 +13,7 @@ import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.CC
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.REFER_TO_JUDGE;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.SETTLEMENT;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention.bySetDate;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention.instalments;
 
 public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>> {
 
@@ -104,6 +106,34 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
                 .courtDetermination(SampleCourtDetermination.bySetDate())
                 .build();
         }
+
+        public ClaimantResponse buildAcceptationReferToJudgeWithCourtDetermination() {
+            return ResponseAcceptation.builder()
+                .amountPaid(amountPaid)
+                .formaliseOption(REFER_TO_JUDGE)
+                .claimantPaymentIntention(bySetDate())
+                .courtDetermination(SampleCourtDetermination.bySetDate())
+                .build();
+        }
+
+        public ClaimantResponse buildAcceptanceIssueSettlementWithCourtDeterminationPayByInstalments() {
+            return ResponseAcceptation.builder()
+                .amountPaid(amountPaid)
+                .formaliseOption(SETTLEMENT)
+                .claimantPaymentIntention(instalments())
+                .courtDetermination(SampleCourtDetermination.instalments())
+                .build();
+        }
+
+        public ClaimantResponse buildAcceptanceIssueSettlementWithClaimantPaymentIntentionPayImmediately() {
+            return ResponseAcceptation.builder()
+                .amountPaid(amountPaid)
+                .formaliseOption(SETTLEMENT)
+                .claimantPaymentIntention(instalments())
+                .courtDetermination(SampleCourtDetermination.instalments())
+                .build();
+        }
+
     }
 
     public static class ClaimantResponseRejection extends SampleClaimantResponse<ClaimantResponseAcceptation> {
@@ -116,7 +146,7 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
         public ClaimantResponse build() {
             return ResponseRejection.builder()
                 .amountPaid(BigDecimal.TEN)
-                .freeMediation(false)
+                .freeMediation(YesNoOption.NO)
                 .reason("Some valid reason")
                 .build();
         }

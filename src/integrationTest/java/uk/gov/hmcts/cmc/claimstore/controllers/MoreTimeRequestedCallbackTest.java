@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpHeaders;
@@ -39,6 +40,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
         "core_case_data.api.url=http://core-case-data-api"
     }
 )
+@Ignore
 public class MoreTimeRequestedCallbackTest extends MockSpringTest {
 
     @SpyBean

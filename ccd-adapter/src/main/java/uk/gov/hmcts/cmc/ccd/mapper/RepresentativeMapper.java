@@ -2,11 +2,14 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CCDRepresentative;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 @Component
-public class RepresentativeMapper implements Mapper<CCDRepresentative, Representative> {
+public class RepresentativeMapper
+    implements BuilderMapper<CCDClaimant, Representative, CCDClaimant.CCDClaimantBuilder> {
 
     private final AddressMapper addressMapper;
     private final ContactDetailsMapper contactDetailsMapper;
@@ -18,30 +21,33 @@ public class RepresentativeMapper implements Mapper<CCDRepresentative, Represent
     }
 
     @Override
-    public CCDRepresentative to(Representative representative) {
+    public void to(Representative representative, CCDClaimant.CCDClaimantBuilder builder) {
 
-        CCDRepresentative.CCDRepresentativeBuilder builder = CCDRepresentative.builder();
         representative.getOrganisationContactDetails()
-            .ifPresent(organisationContactDetails -> builder.organisationContactDetails(
-                contactDetailsMapper.to(organisationContactDetails))
-            );
+            .ifPresent(organisationContactDetails ->
+                contactDetailsMapper.to(organisationContactDetails, builder));
 
-        return builder
-            .organisationName(representative.getOrganisationName())
-            .organisationAddress(addressMapper.to(representative.getOrganisationAddress()))
-            .build();
+        builder
+            .representativeOrganisationName(representative.getOrganisationName())
+            .representativeOrganisationAddress(addressMapper.to(representative.getOrganisationAddress()));
     }
 
     @Override
-    public Representative from(CCDRepresentative representative) {
-        if (representative == null) {
+    public Representative from(CCDClaimant ccdClaimant) {
+        if (isBlank(ccdClaimant.getRepresentativeOrganisationName())
+            && ccdClaimant.getRepresentativeOrganisationAddress() == null
+            && isBlank(ccdClaimant.getRepresentativeOrganisationEmail())
+            && isBlank(ccdClaimant.getRepresentativeOrganisationPhone())
+            && isBlank(ccdClaimant.getRepresentativeOrganisationDxAddress())
+        ) {
             return null;
         }
 
         return new Representative(
-            representative.getOrganisationName(),
-            addressMapper.from(representative.getOrganisationAddress()),
-            contactDetailsMapper.from(representative.getOrganisationContactDetails().orElse(null))
+            ccdClaimant.getRepresentativeOrganisationName(),
+            addressMapper.from(ccdClaimant.getRepresentativeOrganisationAddress()),
+            contactDetailsMapper.from(ccdClaimant)
         );
+
     }
 }

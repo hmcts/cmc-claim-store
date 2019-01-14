@@ -2,11 +2,11 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCompany;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
 import uk.gov.hmcts.cmc.domain.models.party.Company;
 
 @Component
-public class CompanyMapper implements Mapper<CCDCompany, Company> {
+public class CompanyMapper implements BuilderMapper<CCDClaimant, Company, CCDClaimant.CCDClaimantBuilder> {
 
     private final AddressMapper addressMapper;
     private final RepresentativeMapper representativeMapper;
@@ -18,35 +18,33 @@ public class CompanyMapper implements Mapper<CCDCompany, Company> {
     }
 
     @Override
-    public CCDCompany to(Company company) {
+    public void to(Company company, CCDClaimant.CCDClaimantBuilder builder) {
 
-        CCDCompany.CCDCompanyBuilder builder = CCDCompany.builder();
-        company.getMobilePhone().ifPresent(builder::phoneNumber);
-        company.getContactPerson().ifPresent(builder::contactPerson);
+        company.getMobilePhone().ifPresent(builder::partyPhone);
+        company.getContactPerson().ifPresent(builder::partyContactPerson);
 
         company.getCorrespondenceAddress()
-            .ifPresent(address -> builder.correspondenceAddress(addressMapper.to(address)));
+            .ifPresent(address -> builder.partyCorrespondenceAddress(addressMapper.to(address)));
 
         company.getRepresentative()
-            .ifPresent(representative -> builder.representative(representativeMapper.to(representative)));
+            .ifPresent(representative -> representativeMapper.to(representative, builder));
 
         builder
-            .name(company.getName())
-            .address(addressMapper.to(company.getAddress()));
+            .partyName(company.getName())
+            .partyAddress(addressMapper.to(company.getAddress()));
 
-        return builder.build();
     }
 
     @Override
-    public Company from(CCDCompany company) {
+    public Company from(CCDClaimant company) {
 
         return new Company(
-            company.getName(),
-            addressMapper.from(company.getAddress()),
-            addressMapper.from(company.getCorrespondenceAddress()),
-            company.getPhoneNumber(),
-            representativeMapper.from(company.getRepresentative()),
-            company.getContactPerson()
+            company.getPartyName(),
+            addressMapper.from(company.getPartyAddress()),
+            addressMapper.from(company.getPartyCorrespondenceAddress()),
+            company.getPartyPhone(),
+            representativeMapper.from(company),
+            company.getPartyContactPerson()
         );
     }
 }

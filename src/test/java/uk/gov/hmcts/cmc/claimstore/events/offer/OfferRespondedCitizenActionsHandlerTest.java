@@ -53,7 +53,6 @@ public class OfferRespondedCitizenActionsHandlerTest {
         when(emailTemplates.getOfferRejectedByClaimantEmailToDefendant()).thenReturn(OFFER_REJECTED_TO_DEFENDANT);
         when(emailTemplates.getOfferRejectedByClaimantEmailToClaimant()).thenReturn(OFFER_REJECTED_TO_CLAIMANT);
 
-
         handler = new OfferRespondedCitizenActionsHandler(notificationService, notificationsProperties);
     }
 

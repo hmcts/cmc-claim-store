@@ -11,11 +11,11 @@ public class AddressMapper implements Mapper<CCDAddress, Address> {
     public CCDAddress to(Address address) {
         return CCDAddress
             .builder()
-            .line1(address.getLine1())
-            .line2(address.getLine2())
-            .line3(address.getLine3())
-            .city(address.getCity())
-            .postcode(address.getPostcode())
+            .addressLine1(address.getLine1())
+            .addressLine2(address.getLine2())
+            .addressLine3(address.getLine3())
+            .postTown(address.getCity())
+            .postCode(address.getPostcode())
             .build();
     }
 
@@ -25,7 +25,7 @@ public class AddressMapper implements Mapper<CCDAddress, Address> {
             return null;
         }
 
-        return new Address(address.getLine1(), address.getLine2(), address.getLine3(),
-            address.getCity(), address.getPostcode());
+        return new Address(address.getAddressLine1(), address.getAddressLine2(), address.getAddressLine3(),
+            address.getPostTown(), address.getPostCode());
     }
 }

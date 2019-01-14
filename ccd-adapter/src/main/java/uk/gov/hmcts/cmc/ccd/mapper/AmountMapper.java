@@ -1,9 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CCDAmount;
-import uk.gov.hmcts.cmc.ccd.domain.CCDAmountBreakDown;
-import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRange;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.domain.models.amount.Amount;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
@@ -15,7 +13,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.AmountType.NOT_KNOWN;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.RANGE;
 
 @Component
-public class AmountMapper implements Mapper<CCDAmount, Amount> {
+public class AmountMapper implements BuilderMapper<CCDCase, Amount, CCDCase.CCDCaseBuilder> {
 
     private final AmountRangeMapper amountRangeMapper;
     private final AmountBreakDownMapper amountBreakDownMapper;
@@ -26,35 +24,30 @@ public class AmountMapper implements Mapper<CCDAmount, Amount> {
     }
 
     @Override
-    public CCDAmount to(Amount amount) {
-        CCDAmount.CCDAmountBuilder builder = CCDAmount.builder();
+    public void to(Amount amount, CCDCase.CCDCaseBuilder builder) {
         if (amount instanceof AmountRange) {
-            builder.type(RANGE);
+            builder.amountType(RANGE);
             AmountRange amountRange = (AmountRange) amount;
-            builder.amountRange(amountRangeMapper.to(amountRange));
+            amountRangeMapper.to(amountRange, builder);
         } else if (amount instanceof AmountBreakDown) {
-            builder.type(BREAK_DOWN);
+            builder.amountType(BREAK_DOWN);
             AmountBreakDown amountBreakDown = (AmountBreakDown) amount;
-            builder.amountBreakDown(amountBreakDownMapper.to(amountBreakDown));
+            amountBreakDownMapper.to(amountBreakDown, builder);
         } else if (amount instanceof NotKnown) {
-            builder.type(NOT_KNOWN);
+            builder.amountType(NOT_KNOWN);
         }
-
-        return builder.build();
     }
 
     @Override
-    public Amount from(CCDAmount ccdAmount) {
+    public Amount from(CCDCase ccdCase) {
 
-        switch (ccdAmount.getType()) {
+        switch (ccdCase.getAmountType()) {
             case RANGE:
-                CCDAmountRange ccdAmountRange = ccdAmount.getAmountRange();
-                return amountRangeMapper.from(ccdAmountRange);
+                return amountRangeMapper.from(ccdCase);
             case NOT_KNOWN:
                 return new NotKnown();
             case BREAK_DOWN:
-                CCDAmountBreakDown ccdAmountBreakDown = ccdAmount.getAmountBreakDown();
-                return amountBreakDownMapper.from(ccdAmountBreakDown);
+                return amountBreakDownMapper.from(ccdCase);
             default:
                 throw new MappingException();
         }

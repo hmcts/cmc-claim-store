@@ -196,7 +196,7 @@ public class DefendantResponseStaffNotificationServiceTest extends MockSpringTes
     @Test
     public void shouldSendEmailWithExpectedContentPartAdmissionPayByInstalments() {
         Claim claimWithFullAdmission = SampleClaim.builder()
-            .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionInstallments())
+            .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionInstalments())
             .withRespondedAt(LocalDateTime.now())
             .build();
 

@@ -30,5 +30,4 @@ public class SampleUser {
         return SampleUser.builder().build();
     }
 
-
 }

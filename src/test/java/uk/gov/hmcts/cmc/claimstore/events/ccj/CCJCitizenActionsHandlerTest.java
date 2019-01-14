@@ -32,7 +32,7 @@ public class CCJCitizenActionsHandlerTest {
             "Bearer token here"
         );
 
-        handler.sendNotification(eventWithoutAdmission);
+        handler.onCountyCourtJudgment(eventWithoutAdmission);
 
         verify(ccjNotificationService, once()).notifyClaimantForCCJRequest(eq(eventWithoutAdmission.getClaim()));
     }
@@ -44,7 +44,7 @@ public class CCJCitizenActionsHandlerTest {
             "Bearer token here"
         );
 
-        handler.sendNotification(eventWithAdmission);
+        handler.onCountyCourtJudgment(eventWithAdmission);
 
         verify(ccjNotificationService, once()).notifyClaimantForCCJRequest(eq(eventWithAdmission.getClaim()));
         verify(ccjNotificationService, once()).notifyDefendantForCCJRequested(eq(eventWithAdmission.getClaim()));

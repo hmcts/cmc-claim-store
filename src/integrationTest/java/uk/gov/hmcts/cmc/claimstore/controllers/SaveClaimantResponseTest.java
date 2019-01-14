@@ -10,11 +10,14 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
@@ -71,7 +74,10 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).willReturn(PDF_BYTES);
         caseRepository.linkDefendant(BEARER_TOKEN);
 
-        claimStore.saveResponse(claim, SampleResponse.PartAdmission.builder().build());
+        claimStore.saveResponse(
+            claim,
+            SampleResponse.PartAdmission.builder().buildWithPaymentOptionImmediately()
+        );
     }
 
     @Test
@@ -89,6 +95,26 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
             .orElseThrow(AssertionError::new);
 
         assertThat(claimantResponse.getAmountPaid().orElse(null)).isEqualTo(BigDecimal.TEN);
+    }
+
+    @Test
+    public void shouldSaveClaimantResponseAcceptationReferToJudge() throws Exception {
+        ClaimantResponse response = builder().buildAcceptationReferToJudgeWithCourtDetermination();
+
+        makeRequest(claim.getExternalId(), SUBMITTER_ID, response)
+            .andExpect(status().isCreated());
+
+        Claim claimWithClaimantResponse = claimStore.getClaimByExternalId(claim.getExternalId());
+
+        assertThat(claimWithClaimantResponse.getClaimantRespondedAt().isPresent()).isTrue();
+
+        ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
+            .orElseThrow(AssertionError::new);
+
+        assertThat(claimantResponse.getFormaliseOption().equals(FormaliseOption.REFER_TO_JUDGE));
+        assertThat(claimantResponse.getCourtDetermination()).isPresent();
+        assertThat(claimantResponse.getClaimantPaymentIntention()).isPresent();
+
     }
 
     @Test
@@ -149,9 +175,11 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).willReturn(PDF_BYTES);
         caseRepository.linkDefendant(BEARER_TOKEN);
 
-
         Response defendantResponse = PartAdmissionResponse.builder()
             .defendant(SampleParty.builder().individual())
+            .paymentIntention(
+                PaymentIntention.builder().paymentOption(PaymentOption.IMMEDIATELY).build()
+            )
             .moreTimeNeeded(YesNoOption.NO)
             .amount(BigDecimal.valueOf(120))
             .paymentDeclaration(null)
@@ -159,6 +187,7 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
             .timeline(SampleDefendantTimeline.validDefaults())
             .evidence(SampleDefendantEvidence.validDefaults())
             .build();
+
         claimStore.saveResponse(claim, defendantResponse);
 
         ClaimantResponse response = builder().buildAcceptationIssueCCJWithCourtDetermination();
