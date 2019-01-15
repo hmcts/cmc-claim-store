@@ -10,6 +10,7 @@ public enum AppInsightsEvent {
     RESPONSE_PART_ADMISSION_SUBMITTED_IMMEDIATELY("Defendant Response - Part admission submitted - Immediate"),
     RESPONSE_PART_ADMISSION_SUBMITTED_SET_DATE("Defendant Response - Part admission submitted - By set date"),
     RESPONSE_PART_ADMISSION_SUBMITTED_INSTALMENTS("Defendant Response - Part admission submitted - Instalments"),
+    RESPONSE_PART_ADMISSION("Defendant Response - Part admission submitted"),
     OFFER_MADE("Offer made"),
     OFFER_REJECTED("Offer rejected"),
     SETTLEMENT_AGREEMENT_REJECTED("Settlement agreement rejected"),
@@ -23,7 +24,8 @@ public enum AppInsightsEvent {
     SCHEDULER_JOB_FAILED("Scheduler job failed"),
     CLAIMANT_RESPONSE_REJECTED("Claimant response - rejected"),
     CLAIMANT_RESPONSE_ACCEPTED("Claimant response - accepted"),
-    CCD_ASYNC_FAILURE("CCD Async handling - failure");
+    CCD_ASYNC_FAILURE("CCD Async handling - failure"),
+    REDETERMINATION_REQUESTED("CCJ - Requested by re-determination ");
 
     private String displayName;
 
