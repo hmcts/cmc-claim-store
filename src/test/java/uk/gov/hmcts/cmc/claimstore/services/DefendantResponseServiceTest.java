@@ -186,14 +186,14 @@ public class DefendantResponseServiceTest {
     public void getAppInsightsEventNameShouldReturnPartAdmissionForSetByDatePayment() {
         Response response = SampleResponse.PartAdmission.builder().buildWithPaymentOptionBySpecifiedDate();
         assertThat(responseService.getAppInsightsEventName(response))
-            .isEqualTo(RESPONSE_PART_ADMISSION);
+            .isEqualTo(RESPONSE_PART_ADMISSION_SUBMITTED_SET_DATE);
     }
 
     @Test
     public void getAppInsightsEventNameShouldReturnPartAdmissionForInstalmentPayment() {
         Response response = SampleResponse.PartAdmission.builder().buildWithPaymentOptionInstalments();
         assertThat(responseService.getAppInsightsEventName(response))
-            .isEqualTo(RESPONSE_PART_ADMISSION);
+            .isEqualTo(RESPONSE_PART_ADMISSION_SUBMITTED_INSTALMENTS);
     }
 
     @Test
