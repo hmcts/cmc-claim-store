@@ -27,13 +27,14 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED_IMMEDIATELY;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED_INSTALMENTS;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED_SET_DATE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_DEFENCE_SUBMITTED;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_IMMEDIATELY;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_INSTALMENTS;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_SET_DATE;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
-import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_ADMISSION;
-import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_DEFENCE;
-import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.PART_ADMISSION;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
@@ -143,20 +144,52 @@ public class DefendantResponseServiceTest {
 
     @Test
     public void getAppInsightsEventNameShouldReturnFullDefence() {
-        assertThat(responseService.getAppInsightsEventName(FULL_DEFENCE))
+        Response response = SampleResponse.FullDefence.builder().build();
+
+        assertThat(responseService.getAppInsightsEventName(response))
             .isEqualTo(RESPONSE_FULL_DEFENCE_SUBMITTED);
     }
 
     @Test
-    public void getAppInsightsEventNameShouldReturnFullAdmission() {
-        assertThat(responseService.getAppInsightsEventName(FULL_ADMISSION))
-            .isEqualTo(RESPONSE_FULL_ADMISSION_SUBMITTED);
+    public void getAppInsightsEventNameShouldReturnFullAdmissionForImmediatePayment() {
+        Response response = SampleResponse.FullAdmission.builder().buildWithPaymentOptionImmediately();
+        assertThat(responseService.getAppInsightsEventName(response))
+            .isEqualTo(RESPONSE_FULL_ADMISSION_SUBMITTED_IMMEDIATELY);
     }
 
     @Test
-    public void getAppInsightsEventNameShouldReturnPartAdmission() {
-        assertThat(responseService.getAppInsightsEventName(PART_ADMISSION))
-            .isEqualTo(RESPONSE_PART_ADMISSION_SUBMITTED);
+    public void getAppInsightsEventNameShouldReturnFullAdmissionForSetByDatePayment() {
+        Response response = SampleResponse.FullAdmission.builder().buildWithPaymentOptionBySpecifiedDate();
+        assertThat(responseService.getAppInsightsEventName(response))
+            .isEqualTo(RESPONSE_FULL_ADMISSION_SUBMITTED_SET_DATE);
+    }
+
+    @Test
+    public void getAppInsightsEventNameShouldReturnFullAdmissionForInstalmentPayment() {
+        Response response = SampleResponse.FullAdmission.builder().buildWithPaymentOptionInstalments();
+        assertThat(responseService.getAppInsightsEventName(response))
+            .isEqualTo(RESPONSE_FULL_ADMISSION_SUBMITTED_INSTALMENTS);
+    }
+
+    @Test
+    public void getAppInsightsEventNameShouldReturnPartAdmissionForImmediatePayment() {
+        Response response = SampleResponse.PartAdmission.builder().buildWithPaymentOptionImmediately();
+        assertThat(responseService.getAppInsightsEventName(response))
+            .isEqualTo(RESPONSE_PART_ADMISSION_SUBMITTED_IMMEDIATELY);
+    }
+
+    @Test
+    public void getAppInsightsEventNameShouldReturnPartAdmissionForSetByDatePayment() {
+        Response response = SampleResponse.PartAdmission.builder().buildWithPaymentOptionBySpecifiedDate();
+        assertThat(responseService.getAppInsightsEventName(response))
+            .isEqualTo(RESPONSE_PART_ADMISSION_SUBMITTED_SET_DATE);
+    }
+
+    @Test
+    public void getAppInsightsEventNameShouldReturnPartAdmissionForInstalmentPayment() {
+        Response response = SampleResponse.PartAdmission.builder().buildWithPaymentOptionInstalments();
+        assertThat(responseService.getAppInsightsEventName(response))
+            .isEqualTo(RESPONSE_PART_ADMISSION_SUBMITTED_INSTALMENTS);
     }
 
     @Test(expected = NullPointerException.class)
