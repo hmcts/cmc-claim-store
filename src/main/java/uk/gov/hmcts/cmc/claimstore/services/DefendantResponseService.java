@@ -23,6 +23,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED_SET_DATE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_DEFENCE_SUBMITTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_SUBMITTED;
 
 @Service
 public class DefendantResponseService {
@@ -78,8 +79,7 @@ public class DefendantResponseService {
         eventProducer.createDefendantResponseEvent(claimAfterSavingResponse);
         ccdEventProducer.createCCDDefendantResponseEvent(claimAfterSavingResponse, authorization);
 
-        appInsights.trackEvent(getAppInsightsEventName(response),
-            REFERENCE_NUMBER, claim.getReferenceNumber());
+        appInsights.trackEvent(RESPONSE_SUBMITTED, REFERENCE_NUMBER, claim.getReferenceNumber());
 
         return claimAfterSavingResponse;
     }
