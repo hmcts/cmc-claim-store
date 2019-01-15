@@ -44,9 +44,8 @@ public class PartyStatementMapperTest {
     public void mapPartyStatementWithoutOfferToCCD() {
         //given
         final List<PartyStatement> partyStatements = Arrays.asList(
-            SamplePartyStatement.acceptPartyStatement,
-            SamplePartyStatement.rejectPartyStatement,
             SamplePartyStatement.counterSignPartyStatement,
+            SamplePartyStatement.acceptPartyStatement,
             SamplePartyStatement.offerPartyStatement
         );
 
