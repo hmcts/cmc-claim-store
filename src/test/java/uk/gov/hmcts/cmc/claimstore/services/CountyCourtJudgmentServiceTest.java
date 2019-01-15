@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
@@ -29,6 +30,7 @@ import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
@@ -88,9 +90,12 @@ public class CountyCourtJudgmentServiceTest {
 
         CountyCourtJudgment ccjByDefault = SampleCountyCourtJudgment.builder().ccjType(DEFAULT).build();
         countyCourtJudgmentService.save(ccjByDefault, EXTERNAL_ID, AUTHORISATION);
-        verify(eventProducer, once()).createCountyCourtJudgmentEvent(any(Claim.class), any());
-        verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any());
-        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_REQUESTED),
+
+        InOrder inOrder = inOrder(claimService, eventProducer, appInsights);
+
+        inOrder.verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any());
+        inOrder.verify(eventProducer, once()).createCountyCourtJudgmentEvent(any(Claim.class), any());
+        inOrder.verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_REQUESTED),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 
@@ -107,9 +112,11 @@ public class CountyCourtJudgmentServiceTest {
         CountyCourtJudgment ccjByAdmission = SampleCountyCourtJudgment.builder().ccjType(ADMISSIONS).build();
         countyCourtJudgmentService.save(ccjByAdmission, EXTERNAL_ID, AUTHORISATION);
 
-        verify(eventProducer, once()).createCountyCourtJudgmentEvent(any(Claim.class), any());
-        verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any());
-        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_REQUESTED_BY_ADMISSION),
+        InOrder inOrder = inOrder(claimService, eventProducer, appInsights);
+
+        inOrder.verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any());
+        inOrder.verify(eventProducer, once()).createCountyCourtJudgmentEvent(any(Claim.class), any());
+        inOrder.verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_REQUESTED_BY_ADMISSION),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 
@@ -131,9 +138,11 @@ public class CountyCourtJudgmentServiceTest {
         CountyCourtJudgment ccjByAdmission = SampleCountyCourtJudgment.builder().ccjType(ADMISSIONS).build();
         countyCourtJudgmentService.save(ccjByAdmission, EXTERNAL_ID, AUTHORISATION);
 
-        verify(eventProducer, once()).createCountyCourtJudgmentEvent(any(Claim.class), any());
-        verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any());
-        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_REQUESTED_AFTER_SETTLEMENT_BREACH),
+        InOrder inOrder = inOrder(claimService, eventProducer, appInsights);
+
+        inOrder.verify(claimService, once()).saveCountyCourtJudgment(eq(AUTHORISATION), any(), any());
+        inOrder.verify(eventProducer, once()).createCountyCourtJudgmentEvent(any(Claim.class), any());
+        inOrder.verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.CCJ_REQUESTED_AFTER_SETTLEMENT_BREACH),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 

@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
@@ -90,10 +92,12 @@ public class SettlementAgreementServiceTest {
 
         settlementAgreementService.countersign(claimWithSettlementAgreement, AUTHORISATION);
 
-        verify(caseRepository).updateSettlement(eq(claimWithSettlementAgreement), any(Settlement.class),
+        InOrder inOrder = inOrder(caseRepository, eventProducer, appInsights);
+
+        inOrder.verify(caseRepository).updateSettlement(eq(claimWithSettlementAgreement), any(Settlement.class),
             eq(AUTHORISATION), eq("SETTLEMENT_AGREEMENT_COUNTERSIGNED_BY_DEFENDANT"));
 
-        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.SETTLEMENT_AGREEMENT_REACHED),
+        inOrder.verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.SETTLEMENT_AGREEMENT_REACHED),
             eq(REFERENCE_NUMBER), eq(claimWithSettlementAgreement.getReferenceNumber()));
     }
 
@@ -106,10 +110,12 @@ public class SettlementAgreementServiceTest {
 
         settlementAgreementService.countersign(claimWithSettlementAgreement, AUTHORISATION);
 
-        verify(caseRepository).updateSettlement(eq(claimWithSettlementAgreement), any(Settlement.class),
+        InOrder inOrder = inOrder(caseRepository, eventProducer, appInsights);
+
+        inOrder.verify(caseRepository).updateSettlement(eq(claimWithSettlementAgreement), any(Settlement.class),
             eq(AUTHORISATION), eq("SETTLEMENT_AGREEMENT_COUNTERSIGNED_BY_DEFENDANT"));
 
-        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.SETTLEMENT_AGREEMENT_REACHED_BY_ADMISSION),
+        inOrder.verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.SETTLEMENT_AGREEMENT_REACHED_BY_ADMISSION),
             eq(REFERENCE_NUMBER), eq(claimWithSettlementAgreement.getReferenceNumber()));
 
     }

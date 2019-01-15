@@ -109,7 +109,7 @@ public class CountyCourtJudgmentRule {
                         paymentIntention.getRepaymentPlan()
                         .orElseThrow(IllegalArgumentException::new).getFirstPaymentDate());
                 default:
-                    throw new IllegalArgumentException("Invalid part admission payment option");
+                    throw new IllegalArgumentException("Invalid payment option");
             }
 
         }
