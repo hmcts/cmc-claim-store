@@ -12,7 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ResponseAlreadySubmittedException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
-import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
+
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 
@@ -108,7 +108,6 @@ public class DefendantResponseService {
                         throw new IllegalArgumentException("Invalid full admission payment option");
                 }
             case PART_ADMISSION:
-
                 if (isResponseStatesPaid(response)) {
                     return RESPONSE_PART_ADMISSION_STATES_PAID;
                 }
@@ -126,6 +125,7 @@ public class DefendantResponseService {
                     default:
                         throw new IllegalArgumentException("Invalid part admission payment option");
                 }
+
             case FULL_DEFENCE:
                 return RESPONSE_FULL_DEFENCE_SUBMITTED;
             default:
