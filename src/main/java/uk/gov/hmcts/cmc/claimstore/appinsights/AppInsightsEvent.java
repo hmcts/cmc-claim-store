@@ -3,9 +3,13 @@ package uk.gov.hmcts.cmc.claimstore.appinsights;
 public enum AppInsightsEvent {
     CLAIM_ISSUED_LEGAL("Claim issued - Legal"),
     CLAIM_ISSUED_CITIZEN("Claim issued - Citizen"),
-    RESPONSE_FULL_DEFENCE_SUBMITTED("Response full defence submitted"),
-    RESPONSE_FULL_ADMISSION_SUBMITTED("Response full admission submitted"),
-    RESPONSE_PART_ADMISSION_SUBMITTED("Response part admission submitted"),
+    RESPONSE_FULL_DEFENCE_SUBMITTED("Defendant Response - Full defence submitted"),
+    RESPONSE_FULL_ADMISSION_SUBMITTED_IMMEDIATELY("Defendant Response - Full admission submitted - Immediate"),
+    RESPONSE_FULL_ADMISSION_SUBMITTED_SET_DATE("Defendant Response - Full admission submitted - By set date"),
+    RESPONSE_FULL_ADMISSION_SUBMITTED_INSTALMENTS("Defendant Response - Full admission submitted - Instalments"),
+    RESPONSE_PART_ADMISSION_SUBMITTED_IMMEDIATELY("Defendant Response - Part admission submitted - Immediate"),
+    RESPONSE_PART_ADMISSION_SUBMITTED_SET_DATE("Defendant Response - Part admission submitted - By set date"),
+    RESPONSE_PART_ADMISSION_SUBMITTED_INSTALMENTS("Defendant Response - Part admission submitted - Instalments"),
     OFFER_MADE("Offer made"),
     OFFER_REJECTED("Offer rejected"),
     SETTLEMENT_AGREEMENT_REJECTED("Settlement agreement rejected"),
@@ -19,7 +23,8 @@ public enum AppInsightsEvent {
     SCHEDULER_JOB_FAILED("Scheduler job failed"),
     CLAIMANT_RESPONSE_REJECTED("Claimant response - rejected"),
     CLAIMANT_RESPONSE_ACCEPTED("Claimant response - accepted"),
-    CCD_ASYNC_FAILURE("CCD Async handling - failure");
+    CCD_ASYNC_FAILURE("CCD Async handling - failure"),
+    REDETERMINATION_REQUESTED("CCJ - Requested by re-determination ");
 
     private String displayName;
 
