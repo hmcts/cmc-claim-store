@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.deprecated.domain.offers;
+package uk.gov.hmcts.cmc.ccd.domain.offers;
 
 public enum CCDMadeBy {
     CLAIMANT("claimant"),
