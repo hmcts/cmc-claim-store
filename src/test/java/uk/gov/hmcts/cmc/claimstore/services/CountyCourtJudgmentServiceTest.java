@@ -77,7 +77,7 @@ public class CountyCourtJudgmentServiceTest {
     }
 
     @Test
-    public void saveShouldFinishCCJByDefaultRequestSuccessfullyForHappyPath() {
+    public void saveShouldFinishCCJByDefaultRequestSuccessfully() {
 
         Claim claim = SampleClaim
             .builder()
@@ -95,7 +95,7 @@ public class CountyCourtJudgmentServiceTest {
     }
 
     @Test
-    public void saveShouldFinishCCJByAdmissionSuccessfullyForHappyPath() {
+    public void shouldSaveCCJByAdmissionRequestSuccessfully() {
 
         Claim claim = SampleClaim
             .builder()
@@ -114,7 +114,7 @@ public class CountyCourtJudgmentServiceTest {
     }
 
     @Test
-    public void saveShouldFinishCCJAfterBreachSuccessfullyForHappyPath() {
+    public void shouldSaveCCJAfterBreachOfSettlementAgreement() {
 
         Settlement settlement = new Settlement();
         settlement.makeOffer(SampleOffer.builderWithSetByDateInPast().build(), MadeBy.DEFENDANT);
