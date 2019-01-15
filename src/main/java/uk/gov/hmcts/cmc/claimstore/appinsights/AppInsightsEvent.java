@@ -24,7 +24,7 @@ public enum AppInsightsEvent {
     CLAIMANT_RESPONSE_REJECTED("Claimant response - rejected"),
     CLAIMANT_RESPONSE_ACCEPTED("Claimant response - accepted"),
     CCD_ASYNC_FAILURE("CCD Async handling - failure"),
-    REDETERMINATION_REQUESTED("CCJ - Re-determination requested");
+    REDETERMINATION_REQUESTED("CCJ - Requested by re-determination ");
 
     private String displayName;
 
