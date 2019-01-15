@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
@@ -27,6 +28,7 @@ import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
@@ -124,10 +126,14 @@ public class CountyCourtJudgmentServiceTest {
 
         countyCourtJudgmentService.reDetermination(reDetermination, EXTERNAL_ID, AUTHORISATION);
 
-        verify(eventProducer, once()).createRedeterminationEvent(any(Claim.class),
-            eq(AUTHORISATION), eq(userDetails.getFullName()), eq(reDetermination.getPartyType()));
+        InOrder inOrder = inOrder(claimService, eventProducer, appInsights);
 
-        verify(claimService, once()).saveReDetermination(eq(AUTHORISATION), any(), eq(reDetermination), eq(USER_ID));
+        inOrder.verify(claimService, once()).saveReDetermination(eq(AUTHORISATION), any(),
+            eq(reDetermination), eq(USER_ID));
+        inOrder.verify(eventProducer, once()).createRedeterminationEvent(any(Claim.class),
+            eq(AUTHORISATION), eq(userDetails.getFullName()), eq(reDetermination.getPartyType()));
+        inOrder.verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.REDETERMINATION_REQUESTED),
+            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 
     @Test(expected = NotFoundException.class)
