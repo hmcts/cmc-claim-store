@@ -159,10 +159,14 @@ public class CountyCourtJudgmentServiceTest {
 
         countyCourtJudgmentService.reDetermination(reDetermination, EXTERNAL_ID, AUTHORISATION);
 
-        verify(eventProducer, once()).createRedeterminationEvent(any(Claim.class),
-            eq(AUTHORISATION), eq(userDetails.getFullName()), eq(reDetermination.getPartyType()));
+        InOrder inOrder = inOrder(claimService, eventProducer, appInsights);
 
-        verify(claimService, once()).saveReDetermination(eq(AUTHORISATION), any(), eq(reDetermination), eq(USER_ID));
+        inOrder.verify(claimService, once()).saveReDetermination(eq(AUTHORISATION), any(),
+            eq(reDetermination), eq(USER_ID));
+        inOrder.verify(eventProducer, once()).createRedeterminationEvent(any(Claim.class),
+            eq(AUTHORISATION), eq(userDetails.getFullName()), eq(reDetermination.getPartyType()));
+        inOrder.verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.REDETERMINATION_REQUESTED),
+            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 
     @Test(expected = NotFoundException.class)

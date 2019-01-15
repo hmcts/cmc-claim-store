@@ -31,9 +31,8 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED_INSTALMENTS;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED_SET_DATE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_DEFENCE_SUBMITTED;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_IMMEDIATELY;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_INSTALMENTS;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_SET_DATE;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION;
+
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_ID;
@@ -175,21 +174,22 @@ public class DefendantResponseServiceTest {
     public void getAppInsightsEventNameShouldReturnPartAdmissionForImmediatePayment() {
         Response response = SampleResponse.PartAdmission.builder().buildWithPaymentOptionImmediately();
         assertThat(responseService.getAppInsightsEventName(response))
-            .isEqualTo(RESPONSE_PART_ADMISSION_SUBMITTED_IMMEDIATELY);
+            .isEqualTo(RESPONSE_PART_ADMISSION);
+
     }
 
     @Test
     public void getAppInsightsEventNameShouldReturnPartAdmissionForSetByDatePayment() {
         Response response = SampleResponse.PartAdmission.builder().buildWithPaymentOptionBySpecifiedDate();
         assertThat(responseService.getAppInsightsEventName(response))
-            .isEqualTo(RESPONSE_PART_ADMISSION_SUBMITTED_SET_DATE);
+            .isEqualTo(RESPONSE_PART_ADMISSION);
     }
 
     @Test
     public void getAppInsightsEventNameShouldReturnPartAdmissionForInstalmentPayment() {
         Response response = SampleResponse.PartAdmission.builder().buildWithPaymentOptionInstalments();
         assertThat(responseService.getAppInsightsEventName(response))
-            .isEqualTo(RESPONSE_PART_ADMISSION_SUBMITTED_INSTALMENTS);
+            .isEqualTo(RESPONSE_PART_ADMISSION);
     }
 
     @Test(expected = NullPointerException.class)
