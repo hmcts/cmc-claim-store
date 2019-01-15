@@ -79,7 +79,7 @@ public class CountyCourtJudgmentServiceTest {
     }
 
     @Test
-    public void saveShouldFinishCCJByDefaultRequestSuccessfully() {
+    public void shouldSaveCCJByDefaultRequestSuccessfully() {
 
         Claim claim = SampleClaim
             .builder()

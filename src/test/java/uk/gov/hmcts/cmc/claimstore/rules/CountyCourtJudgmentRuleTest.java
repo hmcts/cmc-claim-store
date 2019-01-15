@@ -134,7 +134,7 @@ public class CountyCourtJudgmentRuleTest {
     }
 
     @Test
-    public void shouldReturnTrueWhenIsCCJDueToSettlementBreachAndClaimSettlementDateIsInTheFuture() {
+    public void shouldReturnTrueWhenIsCCJDueToSettlementBreachAndClaimSettlementDateIsInThePast() {
         Settlement settlement = new Settlement();
         settlement.makeOffer(SampleOffer.builderWithSetByDateInPast().build(), MadeBy.DEFENDANT);
         settlement.accept(MadeBy.CLAIMANT);
