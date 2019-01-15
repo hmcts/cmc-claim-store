@@ -55,6 +55,7 @@ public class MigrateCoreCaseDataService {
         CCDCase ccdCase = caseMapper.to(claim);
 
         StartEventResponse startEventResponse = startEvent(authorisation, eventRequestData, ccdId);
+        System.out.println("start event : " + startEventResponse);
 
         CaseDataContent caseDataContent = CaseDataContent.builder()
             .eventToken(startEventResponse.getToken())
@@ -87,7 +88,8 @@ public class MigrateCoreCaseDataService {
                     .summary("Migrating case")
                     .description("Migrating case - create new record")
                     .build()
-            ).data(ccdCase)
+            )
+            .data(ccdCase)
             .build();
 
         CaseDetails caseDetails = submit(authorisation, eventRequestData, caseDataContent);

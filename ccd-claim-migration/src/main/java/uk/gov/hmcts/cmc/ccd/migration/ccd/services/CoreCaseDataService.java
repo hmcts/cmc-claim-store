@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.migration.ccd.services;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +11,6 @@ import uk.gov.hmcts.cmc.ccd.migration.ccd.services.exceptions.OverwriteCaseExcep
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
-import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
-import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
-import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -65,111 +60,62 @@ public class CoreCaseDataService {
         this.authTokenGenerator = authTokenGenerator;
     }
 
-    public void create(User user, Claim claim) {
-        for (CaseEvent event : CaseEvent.values()) {
-            if (eventHasBeenPerformedOnClaim(event, claim)) {
-                logger.info("Create case in CCD, claim id = %d, event = %s", claim.getId(), event.getValue());
-                try {
+    public void create(User user, Claim claim, CaseEvent event) {
+        logger.info("Create case in CCD, claim id = " + claim.getId() + ", event = " + event.getValue());
+        try {
 
-                    EventRequestData eventRequestData = EventRequestData.builder()
-                        .userId(user.getUserDetails().getId())
-                        .jurisdictionId(JURISDICTION_ID)
-                        .caseTypeId(CASE_TYPE_ID)
-                        .eventId(event.getValue())
-                        .ignoreWarning(true)
-                        .build();
+            EventRequestData eventRequestData = EventRequestData.builder()
+                .userId(user.getUserDetails().getId())
+                .jurisdictionId(JURISDICTION_ID)
+                .caseTypeId(CASE_TYPE_ID)
+                .eventId(event.getValue())
+                .ignoreWarning(true)
+                .build();
 
-                    migrateCoreCaseDataService.save(user.getAuthorisation(), eventRequestData, claim);
-                } catch (Exception exception) {
-                    throw new CreateCaseException(
-                        String.format("Failed storing claim in CCD store for claim on %s on event %s",
-                            claim.getReferenceNumber(), event.getValue()),
-                        exception
-                    );
-                }
-            }
+            migrateCoreCaseDataService.save(user.getAuthorisation(), eventRequestData, claim);
+        } catch (Exception exception) {
+            throw new CreateCaseException(
+                String.format("Failed storing claim in CCD store for claim on %s on event %s",
+                    claim.getReferenceNumber(), event.getValue()),
+                exception
+            );
         }
     }
 
-    private boolean eventHasBeenPerformedOnClaim(CaseEvent event, Claim claim) {
-        switch (event) {
-            case SUBMIT_PRE_PAYMENT:
-                return true;
-            case SUBMIT_POST_PAYMENT:
-                return claim.getCreatedAt() != null;
-            case LINK_DEFENDANT:
-                return StringUtils.isNoneBlank(claim.getDefendantId());
-            case MORE_TIME_REQUESTED_ONLINE:
-                return claim.isMoreTimeRequested();
-            case FULL_ADMISSION:
-                return claim.getRespondedAt() != null
-                    && claim.getResponse().isPresent()
-                    && claim.getResponse().get().getResponseType() == ResponseType.FULL_ADMISSION;
-            case PART_ADMISSION:
-                return claim.getRespondedAt() != null
-                    && claim.getResponse().isPresent()
-                    && claim.getResponse().get().getResponseType() == ResponseType.PART_ADMISSION;
-            case DISPUTE:
-                return claim.getRespondedAt() != null
-                    && claim.getResponse().isPresent()
-                    && claim.getResponse().get().getResponseType() == ResponseType.FULL_DEFENCE
-                    && ((FullDefenceResponse) claim.getResponse().get()).getDefenceType() == DefenceType.DISPUTE;
-            case ALREADY_PAID:
-                return claim.getRespondedAt() != null
-                    && claim.getResponse().isPresent()
-                    && claim.getResponse().get().getResponseType() == ResponseType.FULL_DEFENCE
-                    && ((FullDefenceResponse) claim.getResponse().get()).getDefenceType() == DefenceType.ALREADY_PAID;
-            case DEFAULT_CCJ_REQUESTED:
-                return claim.getCountyCourtJudgmentRequestedAt() != null
-                    && claim.getCountyCourtJudgment() != null
-                    && claim.getCountyCourtJudgment().getCcjType() == CountyCourtJudgmentType.DEFAULT;
-            case CCJ_BY_ADMISSION:
-                return claim.getCountyCourtJudgmentRequestedAt() != null
-                    && claim.getCountyCourtJudgment() != null
-                    && claim.getCountyCourtJudgment().getCcjType() == CountyCourtJudgmentType.ADMISSIONS;
-            case CCJ_BY_DETERMINATION:
-                return claim.getCountyCourtJudgmentRequestedAt() != null
-                    && claim.getCountyCourtJudgment() != null
-                    && claim.getCountyCourtJudgment().getCcjType() == CountyCourtJudgmentType.DETERMINATION;
-            case DIRECTIONS_QUESTIONNAIRE_DEADLINE:
+    public void overwrite(User user, Long caseId, Claim claim, CaseEvent event) {
 
-            default:
-                return false;
-        }
-    }
-
-    public void overwrite(User user, Long ccdId, Claim claim) {
-        logger.info("Overwrite " + ccdId + ", claim id = " + claim.getId());
+        logger.info("Overwrite " + caseId + ", claim id = " + claim.getId());
         try {
             EventRequestData eventRequestData = EventRequestData.builder()
                 .userId(user.getUserDetails().getId())
                 .jurisdictionId(JURISDICTION_ID)
                 .caseTypeId(CASE_TYPE_ID)
-                .eventId(EventType.MIGRATED_FROM_CLAIMSTORE_UPDATE.getValue())
+                .eventId(event.getValue())
                 .ignoreWarning(true)
                 .build();
 
-            migrateCoreCaseDataService.update(user.getAuthorisation(), eventRequestData, ccdId, claim);
+            migrateCoreCaseDataService
+                .update(user.getAuthorisation(), eventRequestData, caseId, claim);
         } catch (Exception exception) {
             throw new OverwriteCaseException(
                 String.format(
                     "Failed updating claim in CCD store for claim %s on event %s",
                     claim.getReferenceNumber(),
-                    EventType.MIGRATED_FROM_CLAIMSTORE_UPDATE), exception
+                    event), exception
             );
         }
     }
 
-    public Optional<Long> getCcdIdByReferenceNumber(User user, String referenceNumber) {
+    public Optional<CaseDetails> getCcdIdByReferenceNumber(User user, String referenceNumber) {
         logger.info("Get claim from CCD " + referenceNumber);
 
-        Optional<Long> ccdId = search(user, ImmutableMap.of("case.referenceNumber", referenceNumber));
-        ccdId.ifPresent(id -> logger.info("Claim found " + id));
+        Optional<CaseDetails> caseDetails = search(user, ImmutableMap.of("case.referenceNumber", referenceNumber));
+        caseDetails.ifPresent(id -> logger.info("Claim found " + id));
 
-        return ccdId;
+        return caseDetails;
     }
 
-    private Optional<Long> search(User user, Map<String, String> searchString) {
+    private Optional<CaseDetails> search(User user, Map<String, String> searchString) {
 
         List<CaseDetails> result;
         result = this.coreCaseDataApi.searchForCaseworker(
@@ -181,6 +127,6 @@ public class CoreCaseDataService {
             searchString
         );
 
-        return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0).getId());
+        return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
     }
 }

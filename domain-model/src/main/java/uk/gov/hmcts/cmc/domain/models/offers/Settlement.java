@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
@@ -52,7 +53,7 @@ public class Settlement {
     }
 
     @JsonIgnore
-    public PartyStatement getLastOfferStatement() {
+    public PartyStatement getLastStatementOfType(StatementType statementType) {
         if (partyStatements.isEmpty()) {
             throw new IllegalSettlementStatementException(NO_STATEMENTS_MADE);
         }
@@ -61,7 +62,7 @@ public class Settlement {
         Collections.reverse(tmpList);
 
         return tmpList.stream()
-            .filter((partyStatement -> partyStatement.getType() == StatementType.OFFER))
+            .filter((partyStatement -> partyStatement.getType() == statementType))
             .findFirst()
             .orElseThrow(() -> new IllegalSettlementStatementException("No statements with an offer found"));
 
@@ -69,7 +70,7 @@ public class Settlement {
 
     @JsonIgnore
     public boolean isSettlementThroughAdmissions() {
-        return getLastOfferStatement().getOffer().orElseThrow(IllegalStateException::new)
+        return getLastStatementOfType(StatementType.OFFER).getOffer().orElseThrow(IllegalStateException::new)
             .getPaymentIntention().isPresent();
     }
 
@@ -129,6 +130,16 @@ public class Settlement {
         PartyStatement lastStatement = getLastStatement();
         return lastStatement.getType().equals(StatementType.ACCEPTATION)
             && !lastStatement.getMadeBy().equals(madeBy);
+    }
+
+
+    public Optional<PartyStatement> getSecondLastStatementWhenLastOneIsCountersign() {
+        if (!partyStatements.isEmpty()
+            && getLastStatement().getType() == StatementType.COUNTERSIGNATURE) {
+            return Optional.of(partyStatements.get(partyStatements.size() - 2));
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override

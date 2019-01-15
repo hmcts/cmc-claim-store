@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
@@ -367,7 +368,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         PaymentIntention paymentIntentionWithinOffer = settlementArgumentCaptor
             .getValue()
-            .getLastOfferStatement()
+            .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
             .orElseThrow(IllegalStateException::new)
             .getPaymentIntention()
@@ -401,7 +402,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         PaymentIntention paymentIntentionWithinOffer = settlementArgumentCaptor
             .getValue()
-            .getLastOfferStatement()
+            .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
             .orElseThrow(IllegalStateException::new)
             .getPaymentIntention()
@@ -438,7 +439,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         PaymentIntention paymentIntentionWithinOffer = settlementArgumentCaptor
             .getValue()
-            .getLastOfferStatement()
+            .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
             .orElseThrow(IllegalStateException::new)
             .getPaymentIntention()
@@ -476,7 +477,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         PaymentIntention paymentIntentionWithinOffer = settlementArgumentCaptor
             .getValue()
-            .getLastOfferStatement()
+            .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
             .orElseThrow(IllegalStateException::new)
             .getPaymentIntention()
@@ -507,7 +508,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         Offer offer = settlementArgumentCaptor
             .getValue()
-            .getLastOfferStatement()
+            .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
             .orElseThrow(IllegalStateException::new);
 
@@ -547,7 +548,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         Offer offer = settlementArgumentCaptor
             .getValue()
-            .getLastOfferStatement()
+            .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
             .orElseThrow(IllegalStateException::new);
 
