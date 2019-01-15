@@ -13,6 +13,8 @@ public enum CaseEvent {
     CLAIMANT_RESPONSE_ACCEPTATION("ClaimantAccepts"),
     CLAIMANT_RESPONSE_REJECTION("ClaimantRejects"),
     CCJ_REQUESTED("CCJRequested"),
+    INTERLOCATORY_JUDGEMENT("InterlocatoryJudgement"),
+    REJECT_ORGANISATION_PAYMENT_PLAN("RejectOrganisationPaymentPlan"),
     AGREEMENT_SIGNED_BY_CLAIMANT("AgreementSignedByClaimant"),
     MORE_TIME_REQUESTED_ONLINE("MoreTimeRequestedOnline"),
     MORE_TIME_REQUESTED_PAPER("MoreTimeRequestedPaper"),
