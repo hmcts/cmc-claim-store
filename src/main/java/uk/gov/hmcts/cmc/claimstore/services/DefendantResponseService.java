@@ -17,7 +17,6 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED_IMMEDIATELY;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED_INSTALMENTS;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED_SET_DATE;
