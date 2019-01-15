@@ -12,7 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ResponseAlreadySubmittedException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
-
+import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 
@@ -22,7 +22,11 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED_INSTALMENTS;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED_SET_DATE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_DEFENCE_SUBMITTED;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_IMMEDIATELY;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_SET_DATE;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_INSTALMENTS;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_STATES_PAID;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseStatesPaid;
 
 @Service
 public class DefendantResponseService {
@@ -86,6 +90,7 @@ public class DefendantResponseService {
 
     public AppInsightsEvent getAppInsightsEventName(Response response) {
         requireNonNull(response, "response must not be null");
+
         PaymentOption paymentOption;
         ResponseType responseType = response.getResponseType();
 
@@ -103,7 +108,24 @@ public class DefendantResponseService {
                         throw new IllegalArgumentException("Invalid full admission payment option");
                 }
             case PART_ADMISSION:
-                return RESPONSE_PART_ADMISSION;
+
+                if (isResponseStatesPaid(response)) {
+                    return RESPONSE_PART_ADMISSION_STATES_PAID;
+                }
+
+                paymentOption = ((PartAdmissionResponse) response).getPaymentIntention()
+                    .orElseThrow(IllegalStateException::new)
+                    .getPaymentOption();
+                switch (paymentOption) {
+                    case IMMEDIATELY:
+                        return RESPONSE_PART_ADMISSION_SUBMITTED_IMMEDIATELY;
+                    case BY_SPECIFIED_DATE:
+                        return RESPONSE_PART_ADMISSION_SUBMITTED_SET_DATE;
+                    case INSTALMENTS:
+                        return RESPONSE_PART_ADMISSION_SUBMITTED_INSTALMENTS;
+                    default:
+                        throw new IllegalArgumentException("Invalid part admission payment option");
+                }
             case FULL_DEFENCE:
                 return RESPONSE_FULL_DEFENCE_SUBMITTED;
             default:

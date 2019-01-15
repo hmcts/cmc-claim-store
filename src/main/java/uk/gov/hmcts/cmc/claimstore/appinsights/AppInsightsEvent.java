@@ -10,6 +10,7 @@ public enum AppInsightsEvent {
     RESPONSE_PART_ADMISSION_SUBMITTED_IMMEDIATELY("Defendant Response - Part admission submitted - Immediate"),
     RESPONSE_PART_ADMISSION_SUBMITTED_SET_DATE("Defendant Response - Part admission submitted - By set date"),
     RESPONSE_PART_ADMISSION_SUBMITTED_INSTALMENTS("Defendant Response - Part admission submitted - Instalments"),
+    RESPONSE_PART_ADMISSION_STATES_PAID("Defendant Response - Part admission submitted - States Paid"),
     RESPONSE_PART_ADMISSION("Defendant Response - Part admission submitted"),
     OFFER_MADE("Offer made"),
     OFFER_REJECTED("Offer rejected"),
