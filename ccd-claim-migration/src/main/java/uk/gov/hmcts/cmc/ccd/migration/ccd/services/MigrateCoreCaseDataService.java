@@ -55,7 +55,6 @@ public class MigrateCoreCaseDataService {
         CCDCase ccdCase = caseMapper.to(claim);
 
         StartEventResponse startEventResponse = startEvent(authorisation, eventRequestData, ccdId);
-        System.out.println("start event : " + startEventResponse);
 
         CaseDataContent caseDataContent = CaseDataContent.builder()
             .eventToken(startEventResponse.getToken())

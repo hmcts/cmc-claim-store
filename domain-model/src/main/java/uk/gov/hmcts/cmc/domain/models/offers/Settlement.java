@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
@@ -130,16 +129,6 @@ public class Settlement {
         PartyStatement lastStatement = getLastStatement();
         return lastStatement.getType().equals(StatementType.ACCEPTATION)
             && !lastStatement.getMadeBy().equals(madeBy);
-    }
-
-
-    public Optional<PartyStatement> getSecondLastStatementWhenLastOneIsCountersign() {
-        if (!partyStatements.isEmpty()
-            && getLastStatement().getType() == StatementType.COUNTERSIGNATURE) {
-            return Optional.of(partyStatements.get(partyStatements.size() - 2));
-        } else {
-            return Optional.empty();
-        }
     }
 
     @Override

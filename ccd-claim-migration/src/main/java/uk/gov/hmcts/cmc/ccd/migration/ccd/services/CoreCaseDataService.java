@@ -109,10 +109,7 @@ public class CoreCaseDataService {
     public Optional<CaseDetails> getCcdIdByReferenceNumber(User user, String referenceNumber) {
         logger.info("Get claim from CCD " + referenceNumber);
 
-        Optional<CaseDetails> caseDetails = search(user, ImmutableMap.of("case.referenceNumber", referenceNumber));
-        caseDetails.ifPresent(id -> logger.info("Claim found " + id));
-
-        return caseDetails;
+        return search(user, ImmutableMap.of("case.referenceNumber", referenceNumber));
     }
 
     private Optional<CaseDetails> search(User user, Map<String, String> searchString) {

@@ -6,6 +6,7 @@ public enum CaseEvent {
     SUBMIT_POST_PAYMENT("SubmitPostPayment"),
     LINK_DEFENDANT("LinkDefendant"),
     MORE_TIME_REQUESTED_ONLINE("MoreTimeRequestedOnline"),
+    DEFAULT_CCJ_REQUESTED("DefaultCCJRequested"),
     DISPUTE("DisputesAll"),
     ALREADY_PAID("StatesPaid"),
     FULL_ADMISSION("AdmitAll"),
@@ -23,7 +24,11 @@ public enum CaseEvent {
     AGREEMENT_SIGNED_BY_DEFENDANT("AgreementSignedByDefendant"),
     AGREEMENT_REJECTED_BY_DEFENDANT("AgreementRejectedByDefendant"),
     SETTLED_PRE_JUDGMENT("SettledPreJudgment"),
-    CCJ_REQUESTED("CCJRequested");
+    CCJ_REQUESTED("CCJRequested"),
+    INTERLOCATORY_JUDGEMENT("InterlocatoryJudgement"),
+    REJECT_ORGANISATION_PAYMENT_PLAN("RejectOrganisationPaymentPlan"),
+    REFER_TO_JUDGE_BY_CLAIMANT("ReferToJudgeByClaimant"),
+    REFER_TO_JUDGE_BY_DEFENDANT("ReferToJudgeByDefendant");
 
     private String value;
 

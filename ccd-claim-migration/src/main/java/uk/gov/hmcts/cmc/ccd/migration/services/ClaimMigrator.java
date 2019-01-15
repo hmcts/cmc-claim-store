@@ -13,11 +13,14 @@ import uk.gov.hmcts.cmc.ccd.migration.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
+import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.util.Comparator;
@@ -25,7 +28,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
-import java.util.function.ToLongFunction;
 
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 
@@ -109,7 +111,8 @@ public class ClaimMigrator {
                     updatedClaims.incrementAndGet();
                 }
             }
-            claimRepository.markAsMigrated(claim.getId());
+//Enable below line for final run on prod
+// claimRepository.markAsMigrated(claim.getId());
         } catch (Exception e) {
             logger.info(e.getMessage(), e);
             failedMigrations.incrementAndGet();
@@ -181,21 +184,24 @@ public class ClaimMigrator {
                 return claim.getSettlement().isPresent()
                     && ((claim.getSettlement().get().getLastStatement().getType() == StatementType.ACCEPTATION
                     && claim.getSettlement().get().getLastStatement().getMadeBy() == MadeBy.CLAIMANT)
-                    || ((claim.getSettlement().get().getLastStatement().getType() == StatementType.COUNTERSIGNATURE
+                    || (claim.getSettlement().get().getLastStatement().getType() == StatementType.COUNTERSIGNATURE
                     && claim.getSettlement().get().getLastStatementOfType(StatementType.ACCEPTATION)
                     .getMadeBy() == MadeBy.CLAIMANT))
-                );
+                    && !claim.getClaimantResponse().isPresent();
             case OFFER_SIGNED_BY_DEFENDANT:
                 return claim.getSettlement().isPresent()
-                    && (claim.getSettlement().get().getLastStatement().getType() == StatementType.COUNTERSIGNATURE);
+                    && (claim.getSettlement().get().getLastStatement().getType() == StatementType.COUNTERSIGNATURE)
+                    && !claim.getClaimantResponse().isPresent();
             case OFFER_REJECTED_BY_DEFENDANT:
                 return claim.getSettlement().isPresent()
                     && claim.getSettlement().get().getLastStatement().getType() == StatementType.REJECTION
-                    && claim.getSettlement().get().getLastStatement().getMadeBy() == MadeBy.DEFENDANT;
+                    && claim.getSettlement().get().getLastStatement().getMadeBy() == MadeBy.DEFENDANT
+                    && !claim.getClaimantResponse().isPresent();
             case OFFER_REJECTED_BY_CLAIMANT:
                 return claim.getSettlement().isPresent()
                     && claim.getSettlement().get().getLastStatement().getType() == StatementType.REJECTION
-                    && claim.getSettlement().get().getLastStatement().getMadeBy() == MadeBy.CLAIMANT;
+                    && claim.getSettlement().get().getLastStatement().getMadeBy() == MadeBy.CLAIMANT
+                    && !claim.getClaimantResponse().isPresent();
             case SETTLED_PRE_JUDGMENT:
                 return claim.getMoneyReceivedOn().isPresent();
             case CLAIMANT_RESPONSE_REJECTION:
@@ -206,19 +212,24 @@ public class ClaimMigrator {
                 return claim.getClaimantRespondedAt().isPresent()
                     && claim.getClaimantResponse().isPresent()
                     && claim.getClaimantResponse().get().getType() == ClaimantResponseType.ACCEPTATION;
+            case DEFAULT_CCJ_REQUESTED:
+                return claim.getCountyCourtJudgmentRequestedAt() != null
+                    && claim.getCountyCourtJudgment() != null
+                    && (claim.getCountyCourtJudgment().getCcjType() == null
+                    || claim.getCountyCourtJudgment().getCcjType() == CountyCourtJudgmentType.DEFAULT);
             case CCJ_REQUESTED:
                 return claim.getCountyCourtJudgmentRequestedAt() != null
                     && claim.getCountyCourtJudgment() != null
-                    && (claim.getCountyCourtJudgment().getCcjType() == CountyCourtJudgmentType.DEFAULT
-                    || claim.getCountyCourtJudgment().getCcjType() == CountyCourtJudgmentType.ADMISSIONS
+                    && claim.getCountyCourtJudgment().getCcjType() != null
+                    && (claim.getCountyCourtJudgment().getCcjType() == CountyCourtJudgmentType.ADMISSIONS
                     || claim.getCountyCourtJudgment().getCcjType() == CountyCourtJudgmentType.DETERMINATION);
             case AGREEMENT_SIGNED_BY_CLAIMANT:
                 return claim.getSettlement().isPresent()
                     && ((claim.getSettlement().get().getLastStatement().getType() == StatementType.ACCEPTATION
                     && claim.getSettlement().get().getLastStatement().getMadeBy() == MadeBy.CLAIMANT)
-                    || ((claim.getSettlement().get().getLastStatement().getType() == StatementType.COUNTERSIGNATURE
+                    || (claim.getSettlement().get().getLastStatement().getType() == StatementType.COUNTERSIGNATURE
                     && claim.getSettlement().get().getLastStatementOfType(StatementType.ACCEPTATION)
-                    .getMadeBy() == MadeBy.CLAIMANT))
+                    .getMadeBy() == MadeBy.CLAIMANT)
                     && claim.getClaimantResponse().isPresent()
                 );
             case AGREEMENT_SIGNED_BY_DEFENDANT:
@@ -230,7 +241,31 @@ public class ClaimMigrator {
                     && claim.getSettlement().get().getLastStatement().getType() == StatementType.REJECTION
                     && claim.getSettlement().get().getLastStatement().getMadeBy() == MadeBy.DEFENDANT
                     && claim.getClaimantResponse().isPresent();
+            case INTERLOCATORY_JUDGEMENT:
+                return claim.getClaimantResponse().isPresent()
+                    && claim.getClaimantResponse().get().getType() == ClaimantResponseType.ACCEPTATION
+                    && claim.getResponse().isPresent()
+                    && !PartyUtils.isCompanyOrOrganisation(claim.getResponse().get().getDefendant())
+                    && ((ResponseAcceptation) claim.getClaimantResponse().get()).getFormaliseOption().isPresent()
+                    && ((ResponseAcceptation) claim.getClaimantResponse().get()).getFormaliseOption()
+                    .get() == FormaliseOption.REFER_TO_JUDGE;
 
+            case REJECT_ORGANISATION_PAYMENT_PLAN:
+                return claim.getClaimantResponse().isPresent()
+                    && claim.getClaimantResponse().get().getType() == ClaimantResponseType.ACCEPTATION
+                    && claim.getResponse().isPresent()
+                    && PartyUtils.isCompanyOrOrganisation(claim.getResponse().get().getDefendant())
+                    && ((ResponseAcceptation) claim.getClaimantResponse().get()).getFormaliseOption().isPresent()
+                    && ((ResponseAcceptation) claim.getClaimantResponse().get()).getFormaliseOption()
+                    .get() == FormaliseOption.REFER_TO_JUDGE;
+            case REFER_TO_JUDGE_BY_CLAIMANT:
+                return claim.getReDeterminationRequestedAt().isPresent()
+                    && claim.getReDetermination().isPresent()
+                    && claim.getReDetermination().get().getPartyType() == MadeBy.CLAIMANT;
+            case REFER_TO_JUDGE_BY_DEFENDANT:
+                return claim.getReDeterminationRequestedAt().isPresent()
+                    && claim.getReDetermination().isPresent()
+                    && claim.getReDetermination().get().getPartyType() == MadeBy.DEFENDANT;
             default:
                 return false;
         }
