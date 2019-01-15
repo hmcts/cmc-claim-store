@@ -41,7 +41,7 @@ public class SamplePaymentIntention {
     public static PaymentIntention bySetDateInPast() {
         return builder()
             .paymentOption(PaymentOption.BY_SPECIFIED_DATE)
-            .paymentDate(LocalDate.now().plusDays(-2))
+            .paymentDate(LocalDate.now().minusDays(2))
             .build();
     }
 
