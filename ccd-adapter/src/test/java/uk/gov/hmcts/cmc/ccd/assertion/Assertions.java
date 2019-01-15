@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.IncomeAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.LivingPartnerAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.StatementOfMeansAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
+import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
@@ -38,6 +40,14 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 public class Assertions {
 
     private Assertions() {
+    }
+
+    public static PartyStatementAssert assertThat(PartyStatement partyStatement) {
+        return new PartyStatementAssert(partyStatement);
+    }
+
+    public static CCDPartyStatementAssert assertThat(CCDPartyStatement ccdPartyStatement) {
+        return new CCDPartyStatementAssert(ccdPartyStatement);
     }
 
     public static CountyCourtJudgmentAssert assertThat(CountyCourtJudgment countyCourtJudgment) {
