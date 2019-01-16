@@ -4,6 +4,7 @@ public enum AppInsightsEvent {
     CLAIM_ISSUED_LEGAL("Claim issued - Legal"),
     CLAIM_ISSUED_CITIZEN("Claim issued - Citizen"),
     RESPONSE_FULL_DEFENCE_SUBMITTED("Defendant Response - Full defence submitted"),
+    RESPONSE_FULL_DEFENCE_SUBMITTED_STATES_PAID("Defendant Response - Full defence submitted - States Paid"),
     RESPONSE_FULL_ADMISSION_SUBMITTED_IMMEDIATELY("Defendant Response - Full admission submitted - Immediate"),
     RESPONSE_FULL_ADMISSION_SUBMITTED_SET_DATE("Defendant Response - Full admission submitted - By set date"),
     RESPONSE_FULL_ADMISSION_SUBMITTED_INSTALMENTS("Defendant Response - Full admission submitted - Instalments"),
