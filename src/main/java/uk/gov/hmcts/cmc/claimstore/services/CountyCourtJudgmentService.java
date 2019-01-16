@@ -4,14 +4,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.rules.CountyCourtJudgmentRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED_AFTER_SETTLEMENT_BREACH;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED_BY_ADMISSION;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.REDETERMINATION_REQUESTED;
 
 @Component
@@ -62,7 +66,16 @@ public class CountyCourtJudgmentService {
 
         eventProducer.createCountyCourtJudgmentEvent(claimWithCCJ, authorisation);
 
-        appInsights.trackEvent(CCJ_REQUESTED, "referenceNumber", claim.getReferenceNumber());
+        AppInsightsEvent appInsightsEvent = CCJ_REQUESTED;
+        if (countyCourtJudgment.getCcjType() == CountyCourtJudgmentType.ADMISSIONS) {
+            appInsightsEvent = CCJ_REQUESTED_BY_ADMISSION;
+        }
+
+        if (countyCourtJudgmentRule.isCCJDueToSettlementBreach(claimWithCCJ)) {
+            appInsightsEvent = CCJ_REQUESTED_AFTER_SETTLEMENT_BREACH;
+        }
+
+        appInsights.trackEvent(appInsightsEvent, AppInsights.REFERENCE_NUMBER, claim.getReferenceNumber());
 
         return claimWithCCJ;
     }
