@@ -169,4 +169,10 @@ public class CCDCaseRepository implements CaseRepository {
     ) {
         throw new NotImplementedException("We do not implement CCD yet");
     }
+
+    @Override
+    public void saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent) {
+        coreCaseDataService.saveCaseEvent(authorisation, claim.getId(), caseEvent);
+    }
+
 }
