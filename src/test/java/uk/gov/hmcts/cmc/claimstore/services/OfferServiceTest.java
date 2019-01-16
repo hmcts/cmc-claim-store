@@ -22,14 +22,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_ACCEPTED_BY_CLAIMANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_MADE_BY_DEFENDANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_REJECTED_BY_CLAIMANT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_SIGNED_BY_CLAIMANT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OfferServiceTest {
@@ -102,7 +101,7 @@ public class OfferServiceTest {
 
         //then
         verify(caseRepository).updateSettlement(eq(claimWithOffer), eq(settlement),
-            eq(AUTHORISATION), eq(OFFER_ACCEPTED_BY_CLAIMANT.name()));
+            eq(AUTHORISATION), eq(OFFER_SIGNED_BY_CLAIMANT.name()));
 
         verify(eventProducer).createOfferAcceptedEvent(eq(acceptedOffer), eq(decidedBy));
     }
@@ -145,36 +144,9 @@ public class OfferServiceTest {
         //then
         verify(caseRepository)
             .reachSettlementAgreement(eq(claimWithAcceptedOffer), any(Settlement.class), eq(AUTHORISATION),
-                eq(CaseEvent.SETTLED_PRE_JUDGMENT.name()));
+                eq(CaseEvent.OFFER_SIGNED_BY_DEFENDANT.name()));
 
         verify(eventProducer).createAgreementCountersignedEvent(eq(settledClaim), eq(madeBy));
-    }
-
-    @Test
-    public void shouldSuccessfullySignSettlementAgreement() {
-        // given
-        when(claimService.getClaimByExternalId(eq(claim.getExternalId()),
-            eq(AUTHORISATION))).thenReturn(claim);
-
-        //when
-        offersService.signSettlementAgreement(claim.getExternalId(), buildSettlement(), AUTHORISATION);
-
-        //then
-        verify(caseRepository)
-            .updateSettlement(eq(claim), any(Settlement.class), eq(AUTHORISATION), anyString());
-
-        verify(eventProducer).createSignSettlementAgreementEvent(eq(claim));
-
-    }
-
-    @Test(expected = ConflictException.class)
-    public void signSettlementAgreementShouldThrowConflictExceptionWhenSettlementAlreadyReached() {
-        // given
-        when(claimService.getClaimByExternalId(eq(settledClaim.getExternalId()),
-            eq(AUTHORISATION))).thenReturn(settledClaim);
-
-        //when
-        offersService.signSettlementAgreement(settledClaim.getExternalId(), buildSettlement(), AUTHORISATION);
     }
 
     private static Settlement buildSettlement() {
