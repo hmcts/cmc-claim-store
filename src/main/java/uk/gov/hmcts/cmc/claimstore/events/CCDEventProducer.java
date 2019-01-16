@@ -96,7 +96,6 @@ public class CCDEventProducer {
 
     public void createCCDRejectOrganisationPaymentPlanEvent(Claim claim, String authorisation) {
         publisher.publishEvent(new CCDRejectOrganisationPaymentPlanEvent(claim, authorisation));
-
     }
 
     public void createCCDInterlocutoryJudgmentEvent(Claim claim, String authorisation) {
