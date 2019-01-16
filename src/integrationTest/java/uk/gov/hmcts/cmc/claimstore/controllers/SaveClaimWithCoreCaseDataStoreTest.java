@@ -28,7 +28,8 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulPrePaym
         "feature_toggles.ccd_async_enabled=false",
         "feature_toggles.ccd_enabled=true"
     }
-) public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
+)
+public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
 
     @Test
     public void shouldStoreRepresentedClaimIntoCCD() throws Exception {

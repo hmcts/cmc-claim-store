@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -49,7 +48,6 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
         "feature_toggles.reminderEmails=true"
     }
 )
-@Ignore
 public class LinkDefendantToClaimWithWithCoreCaseDataTest extends BaseIntegrationTest {
 
     private static final String ANONYMOUS_BEARER_TOKEN = "Anonymous Bearer token";
