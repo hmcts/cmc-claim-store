@@ -23,7 +23,7 @@ public class BankAccountMapper implements Mapper<CCDBankAccount, BankAccount> {
     public BankAccount from(CCDBankAccount ccdBankAccount) {
         return new BankAccount(
             ccdBankAccount.getType(),
-            ccdBankAccount.getJoint().toBoolean(),
+            ccdBankAccount.getJoint() != null && ccdBankAccount.getJoint().toBoolean(),
             ccdBankAccount.getBalance()
         );
     }
