@@ -27,8 +27,8 @@ public class LivingPartnerMapper implements Mapper<CCDLivingPartner, LivingPartn
 
         return LivingPartner.builder()
             .disability(ccdLivingPartner.getDisability())
-            .over18(ccdLivingPartner.getOver18().toBoolean())
-            .pensioner(ccdLivingPartner.getPensioner().toBoolean())
+            .over18(ccdLivingPartner.getOver18() != null && ccdLivingPartner.getOver18().toBoolean())
+            .pensioner(ccdLivingPartner.getPensioner() != null && ccdLivingPartner.getPensioner().toBoolean())
             .build();
     }
 }
