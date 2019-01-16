@@ -284,13 +284,6 @@
       {% if responseType == "PART_ADMISSION" %}
         {% if paymentDeclaration is defined and paymentDeclaration is not empty %}
           <tr>
-            <td>Amount they admit they owe</td>
-            <td>
-              {{ amount }}
-            </td>
-          </tr>
-        {% else %}
-          <tr>
             <td>Amount they have paid</td>
             <td>
               {{ amount }}
@@ -305,13 +298,20 @@
           </tr>
           {% endif %}
           {% if paymentMethod is defined and paymentMethod is not empty %}
-            <tr>
-              <td>How they paid the amount</td>
-              <td>
-                {{ paymentMethod | trim }}
-              </td>
-            </tr>
+          <tr>
+            <td>How they paid the amount</td>
+            <td>
+              {{ paymentMethod | trim }}
+            </td>
+          </tr>
           {% endif %}
+        {% else %}
+          <tr>
+            <td>Amount they admit they owe</td>
+            <td>
+              {{ amount }}
+            </td>
+          </tr>
         {% endif %}
           <tr>
             <td>Why they dispute the claim</td>
@@ -378,27 +378,6 @@
         <td><strong>Comments about claimant’s evidence</strong></td>
         <td>
           {{ evidenceComment }}
-        </td>
-      </tr>
-      {% endif %}
-
-      {% if paymentDeclaration is defined %}
-      <tr>
-        <td>Amount they have paid</td>
-        <td>
-          {{ amount }}
-        </td>
-      </tr>
-      <tr>
-        <td>When they paid this amount</td>
-        <td>
-          {{ paymentDeclaration.paidDate }}
-        </td>
-      </tr>
-      <tr>
-        <td>How they paid the amount</td>
-        <td>
-          {{ paymentDeclaration.explanation }}
         </td>
       </tr>
       {% endif %}

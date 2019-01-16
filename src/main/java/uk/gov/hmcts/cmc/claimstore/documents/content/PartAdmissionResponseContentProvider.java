@@ -52,6 +52,7 @@ public class PartAdmissionResponseContentProvider {
 
         partAdmissionResponse.getPaymentDeclaration()
             .ifPresent(paymentDeclaration -> {
+                content.put("paymentDeclaration", paymentDeclaration);
                 content.put("paymentDate", formatDate(paymentDeclaration.getPaidDate()));
                 content.put("paymentMethod", paymentDeclaration.getExplanation());
             });
