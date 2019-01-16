@@ -9,8 +9,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
-            include = JsonTypeInfo.As.EXISTING_PROPERTY,
-            property = "claimantResponseType")
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "claimantResponseType")
 @JsonSubTypes({
     @JsonSubTypes.Type(value = CCDResponseAcceptation.class, name = "ACCEPTATION"),
     @JsonSubTypes.Type(value = CCDResponseRejection.class, name = "REJECTION")
