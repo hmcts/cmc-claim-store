@@ -5,11 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.ClaimStoreApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 
-@Component
+@Component @ConditionalOnProperty(prefix = "appinsightstool", name = "true")
 public class AppInsightsTool implements CommandLineRunner {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AppInsightsTool.class);
