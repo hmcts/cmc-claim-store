@@ -12,7 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ResponseAlreadySubmittedException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
-import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
+
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 
@@ -22,9 +22,8 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED_INSTALMENTS;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED_SET_DATE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_DEFENCE_SUBMITTED;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_IMMEDIATELY;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_INSTALMENTS;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_SET_DATE;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_SUBMITTED;
 
 @Service
 public class DefendantResponseService {
@@ -80,8 +79,7 @@ public class DefendantResponseService {
         eventProducer.createDefendantResponseEvent(claimAfterSavingResponse);
         ccdEventProducer.createCCDDefendantResponseEvent(claimAfterSavingResponse, authorization);
 
-        appInsights.trackEvent(getAppInsightsEventName(response),
-            REFERENCE_NUMBER, claim.getReferenceNumber());
+        appInsights.trackEvent(RESPONSE_SUBMITTED, REFERENCE_NUMBER, claim.getReferenceNumber());
 
         return claimAfterSavingResponse;
     }
@@ -105,19 +103,7 @@ public class DefendantResponseService {
                         throw new IllegalArgumentException("Invalid full admission payment option");
                 }
             case PART_ADMISSION:
-                paymentOption = ((PartAdmissionResponse) response).getPaymentIntention()
-                    .orElseThrow(IllegalStateException::new)
-                    .getPaymentOption();
-                switch (paymentOption) {
-                    case IMMEDIATELY:
-                        return RESPONSE_PART_ADMISSION_SUBMITTED_IMMEDIATELY;
-                    case BY_SPECIFIED_DATE:
-                        return RESPONSE_PART_ADMISSION_SUBMITTED_SET_DATE;
-                    case INSTALMENTS:
-                        return RESPONSE_PART_ADMISSION_SUBMITTED_INSTALMENTS;
-                    default:
-                        throw new IllegalArgumentException("Invalid part admission payment option");
-                }
+                return RESPONSE_PART_ADMISSION;
             case FULL_DEFENCE:
                 return RESPONSE_FULL_DEFENCE_SUBMITTED;
             default:
