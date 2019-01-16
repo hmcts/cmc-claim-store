@@ -79,11 +79,11 @@ public class FormaliseResponseAcceptanceService {
         CaseEvent caseEvent;
         if (isCompanyOrOrganisation(response.getDefendant())) {
             eventProducer.createRejectOrganisationPaymentPlanEvent(claim);
-            caseEvent = INTERLOCATORY_JUDGEMENT;
+            caseEvent = REJECT_ORGANISATION_PAYMENT_PLAN;
             ccdEventProducer.createCCDRejectOrganisationPaymentPlanEvent(claim, authorisation);
         } else {
             eventProducer.createInterlocutoryJudgmentEvent(claim);
-            caseEvent = REJECT_ORGANISATION_PAYMENT_PLAN;
+            caseEvent = INTERLOCATORY_JUDGEMENT;
             ccdEventProducer.createCCDInterlocutoryJudgmentEvent(claim, authorisation);
         }
         this.caseRepository.saveCaseEvent(authorisation, claim, caseEvent);
