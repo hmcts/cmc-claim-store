@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.AGREEMENT_REJECTED_BY_DEFENDANT;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -66,7 +67,10 @@ public class SettlementAgreementServiceTest {
         settlementAgreementService.reject(claimWithSettlementAgreement, AUTHORISATION);
 
         verify(caseRepository).updateSettlement(eq(claimWithSettlementAgreement), any(Settlement.class),
-            eq(AUTHORISATION), eq(AGREEMENT_REJECTED_BY_DEFENDANT.name()));
+            eq(AUTHORISATION), eq(AGREEMENT_REJECTED_BY_DEFENDANT.getValue()));
+
+        verify(ccdEventProducer).createCCDSettlementEvent(eq(claimWithSettlementAgreement), any(Settlement.class),
+            eq(AUTHORISATION), eq(AGREEMENT_REJECTED_BY_DEFENDANT.getValue()));
     }
 
     @Test(expected = ConflictException.class)
@@ -97,7 +101,10 @@ public class SettlementAgreementServiceTest {
         settlementAgreementService.countersign(claimWithSettlementAgreement, AUTHORISATION);
 
         verify(caseRepository).updateSettlement(eq(claimWithSettlementAgreement), any(Settlement.class),
-            eq(AUTHORISATION), eq("AGREEMENT_COUNTERSIGNED_BY_DEFENDANT"));
+            eq(AUTHORISATION), eq(AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT.getValue()));
+
+        verify(ccdEventProducer).createCCDSettlementEvent(eq(claimWithSettlementAgreement), any(Settlement.class),
+            eq(AUTHORISATION), eq(AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT.getValue()));
     }
 
     @Test(expected = ConflictException.class)
@@ -122,6 +129,9 @@ public class SettlementAgreementServiceTest {
             .updateSettlement(eq(claim), any(Settlement.class), eq(AUTHORISATION), anyString());
 
         verify(eventProducer).createSignSettlementAgreementEvent(eq(claim));
+
+        verify(ccdEventProducer)
+            .createCCDSettlementEvent(eq(claim), any(Settlement.class), eq(AUTHORISATION), anyString());
 
     }
 

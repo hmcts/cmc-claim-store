@@ -16,7 +16,12 @@ import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import java.util.function.Supplier;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_SIGNED_BY_DEFENDANT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_COUNTER_SIGNED_BY_DEFENDANT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_MADE_BY_CLAIMANT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_MADE_BY_DEFENDANT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_REJECTED_BY_CLAIMANT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_REJECTED_BY_DEFENDANT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_SIGNED_BY_CLAIMANT;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.OFFER_MADE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.OFFER_REJECTED;
@@ -53,7 +58,9 @@ public class OffersService {
         Settlement settlement = claim.getSettlement().orElse(new Settlement());
         settlement.makeOffer(offer, party);
 
-        String userAction = userAction("OFFER_MADE_BY", party.name());
+        String userAction
+            = party == MadeBy.CLAIMANT ? OFFER_MADE_BY_CLAIMANT.getValue() : OFFER_MADE_BY_DEFENDANT.getValue();
+
         caseRepository.updateSettlement(claim, settlement, authorisation, userAction);
 
         this.ccdEventProducer.createCCDSettlementEvent(claim, settlement, authorisation, userAction);
@@ -71,7 +78,7 @@ public class OffersService {
 
         settlement.accept(party);
 
-        String userAction = userAction("OFFER_SIGNED_BY", party.name());
+        String userAction = OFFER_SIGNED_BY_CLAIMANT.getValue();
         caseRepository.updateSettlement(claim, settlement, authorisation, userAction);
         this.ccdEventProducer.createCCDSettlementEvent(claim, settlement, authorisation, userAction);
 
@@ -87,7 +94,8 @@ public class OffersService {
             .orElseThrow(conflictOfferIsNotMade());
         settlement.reject(party);
 
-        String userAction = userAction("OFFER_REJECTED_BY", party.name());
+        String userAction
+            = party == MadeBy.CLAIMANT ? OFFER_REJECTED_BY_CLAIMANT.getValue() : OFFER_REJECTED_BY_DEFENDANT.getValue();
         caseRepository.updateSettlement(claim, settlement, authorisation, userAction);
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createOfferRejectedEvent(updated, party);
@@ -103,12 +111,12 @@ public class OffersService {
             .orElseThrow(conflictOfferIsNotMade());
         settlement.countersign(party);
 
-        caseRepository.reachSettlementAgreement(claim, settlement, authorisation, OFFER_SIGNED_BY_DEFENDANT.name());
+        caseRepository.reachSettlementAgreement(claim, settlement, authorisation, OFFER_COUNTER_SIGNED_BY_DEFENDANT.getValue());
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createAgreementCountersignedEvent(updated, party);
 
         this.ccdEventProducer.createCCDSettlementEvent(claim, settlement, authorisation,
-            OFFER_SIGNED_BY_DEFENDANT.name());
+            OFFER_COUNTER_SIGNED_BY_DEFENDANT.getValue());
 
         appInsights.trackEvent(SETTLEMENT_REACHED, REFERENCE_NUMBER, updated.getReferenceNumber());
         return updated;

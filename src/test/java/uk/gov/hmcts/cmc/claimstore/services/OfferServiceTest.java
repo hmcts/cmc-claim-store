@@ -25,10 +25,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_COUNTER_SIGNED_BY_DEFENDANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_MADE_BY_DEFENDANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_REJECTED_BY_CLAIMANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_SIGNED_BY_CLAIMANT;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_SIGNED_BY_DEFENDANT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OfferServiceTest {
@@ -76,7 +76,7 @@ public class OfferServiceTest {
         offersService.makeOffer(claim, offer, madeBy, AUTHORISATION);
         //then
         verify(caseRepository).updateSettlement(eq(claim), any(Settlement.class),
-            eq(AUTHORISATION), eq(OFFER_MADE_BY_DEFENDANT.name()));
+            eq(AUTHORISATION), eq(OFFER_MADE_BY_DEFENDANT.getValue()));
 
         verify(eventProducer).createOfferMadeEvent(eq(claim));
     }
@@ -101,7 +101,7 @@ public class OfferServiceTest {
 
         //then
         verify(caseRepository).updateSettlement(eq(claimWithOffer), eq(settlement),
-            eq(AUTHORISATION), eq(OFFER_SIGNED_BY_CLAIMANT.name()));
+            eq(AUTHORISATION), eq(OFFER_SIGNED_BY_CLAIMANT.getValue()));
 
         verify(eventProducer).createOfferAcceptedEvent(eq(acceptedOffer), eq(decidedBy));
     }
@@ -122,7 +122,7 @@ public class OfferServiceTest {
 
         //then
         verify(caseRepository).updateSettlement(eq(claimWithOffer), any(Settlement.class),
-            eq(AUTHORISATION), eq(OFFER_REJECTED_BY_CLAIMANT.name()));
+            eq(AUTHORISATION), eq(OFFER_REJECTED_BY_CLAIMANT.getValue()));
 
         verify(eventProducer).createOfferRejectedEvent(eq(claimWithOffer), eq(decidedBy));
     }
@@ -144,7 +144,7 @@ public class OfferServiceTest {
         //then
         verify(caseRepository)
             .reachSettlementAgreement(eq(claimWithAcceptedOffer), any(Settlement.class), eq(AUTHORISATION),
-                eq(OFFER_SIGNED_BY_DEFENDANT.name()));
+                eq(OFFER_COUNTER_SIGNED_BY_DEFENDANT.getValue()));
 
         verify(eventProducer).createAgreementCountersignedEvent(eq(settledClaim), eq(madeBy));
     }
