@@ -260,7 +260,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
             .priorityDebts(priorityDebts)
             .partner(livingPartnerMapper.from(ccdStatementOfMeans.getLivingPartner()))
             .disability(ccdStatementOfMeans.getDisabilityStatus())
-            .carer(ccdStatementOfMeans.getCarer().toBoolean())
+            .carer(ccdStatementOfMeans.getCarer() != null && ccdStatementOfMeans.getCarer().toBoolean())
             .build();
     }
 
@@ -337,7 +337,9 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
         return Dependant.builder()
             .numberOfMaintainedChildren(ccdStatementOfMeans.getNoOfMaintainedChildren())
             .otherDependants(extractOtherDependants(ccdStatementOfMeans))
-            .anyDisabledChildren(ccdStatementOfMeans.getAnyDisabledChildren().toBoolean())
+            .anyDisabledChildren(ccdStatementOfMeans.getAnyDisabledChildren() != null
+                && ccdStatementOfMeans.getAnyDisabledChildren().toBoolean()
+            )
             .children(extractChildren(ccdStatementOfMeans.getDependantChildren()))
             .build();
     }
@@ -359,7 +361,9 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
         return OtherDependants.builder()
             .details(details)
             .numberOfPeople(numberOfPeople)
-            .anyDisabled(ccdStatementOfMeans.getOtherDependantAnyDisabled().toBoolean())
+            .anyDisabled(ccdStatementOfMeans.getOtherDependantAnyDisabled() != null
+                && ccdStatementOfMeans.getOtherDependantAnyDisabled().toBoolean()
+            )
             .build();
     }
 
