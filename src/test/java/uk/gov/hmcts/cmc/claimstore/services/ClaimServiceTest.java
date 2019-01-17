@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
@@ -295,6 +296,8 @@ public class ClaimServiceTest {
         verify(caseRepository, once()).paidInFull(eq(claim), eq(paidInFull), eq(AUTHORISATION));
 
         verify(eventProducer, once()).createPaidInFullEvent(eq(claim));
+
+        verify(appInsights, once()).trackEvent(AppInsightsEvent.PAID_IN_FULL, AppInsights.REFERENCE_NUMBER, claim.getReferenceNumber());
     }
 
     @Test(expected = ConflictException.class)
