@@ -111,7 +111,9 @@ public class OffersService {
             .orElseThrow(conflictOfferIsNotMade());
         settlement.countersign(party);
 
-        caseRepository.reachSettlementAgreement(claim, settlement, authorisation, OFFER_COUNTER_SIGNED_BY_DEFENDANT.getValue());
+        caseRepository.reachSettlementAgreement(claim, settlement, authorisation,
+            OFFER_COUNTER_SIGNED_BY_DEFENDANT.getValue());
+
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createAgreementCountersignedEvent(updated, party);
 
@@ -130,9 +132,5 @@ public class OffersService {
         if (claim.getSettlementReachedAt() != null) {
             throw new ConflictException(format("Settlement for claim %d has been already reached", claim.getId()));
         }
-    }
-
-    private String userAction(String userAction, String userType) {
-        return userAction + "_" + userType;
     }
 }

@@ -8,9 +8,7 @@ import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static java.math.BigDecimal.TEN;
@@ -161,7 +159,7 @@ public class SampleCCDDefendant {
                     .value(SampleCCDPartyStatement.acceptPartyStatement()).build(),
                 CCDCollectionElement.<CCDPartyStatement>builder()
                     .value(SampleCCDPartyStatement.counterSignPartyStatement()).build()
-                );
+            );
         return withPartAdmissionResponse().settlementReachedAt(LocalDateTime.now())
             .settlementPartyStatements(partyStatements);
     }

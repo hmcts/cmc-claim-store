@@ -233,7 +233,7 @@ public class DefendantMapperTest {
                     SamplePartyStatement.offerPartyStatement,
                     SamplePartyStatement.acceptPartyStatement)
                     .build());
-        LocalDateTime settlementReachedAt = claimWithSettlement.getSettlementReachedAt();
+        final LocalDateTime settlementReachedAt = claimWithSettlement.getSettlementReachedAt();
 
         //When
         CCDDefendant ccdDefendant = mapper.to(theirDetails, claimWithSettlement);
