@@ -28,10 +28,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
-import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.AGREEMENT_REJECTED_BY_DEFENDANT;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SettlementAgreementServiceTest {
@@ -105,10 +105,13 @@ public class SettlementAgreementServiceTest {
 
         settlementAgreementService.countersign(claimWithSettlementAgreement, AUTHORISATION);
 
-        InOrder inOrder = inOrder(caseRepository, eventProducer, appInsights);
+        InOrder inOrder = inOrder(caseRepository, eventProducer, ccdEventProducer, appInsights);
 
         inOrder.verify(caseRepository).updateSettlement(eq(claimWithSettlementAgreement), any(Settlement.class),
-            eq(AUTHORISATION), eq("SETTLEMENT_AGREEMENT_COUNTERSIGNED_BY_DEFENDANT"));
+            eq(AUTHORISATION), eq(AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT.getValue()));
+
+        inOrder.verify(ccdEventProducer).createCCDSettlementEvent(eq(claimWithSettlementAgreement), any(Settlement.class),
+            eq(AUTHORISATION), eq(AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT.getValue()));
 
         inOrder.verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.SETTLEMENT_AGREEMENT_REACHED),
             eq(REFERENCE_NUMBER), eq(claimWithSettlementAgreement.getReferenceNumber()));
@@ -123,10 +126,13 @@ public class SettlementAgreementServiceTest {
 
         settlementAgreementService.countersign(claimWithSettlementAgreement, AUTHORISATION);
 
-        InOrder inOrder = inOrder(caseRepository, eventProducer, appInsights);
+        InOrder inOrder = inOrder(caseRepository, eventProducer, ccdEventProducer, appInsights);
 
         inOrder.verify(caseRepository).updateSettlement(eq(claimWithSettlementAgreement), any(Settlement.class),
-            eq(AUTHORISATION), eq("SETTLEMENT_AGREEMENT_COUNTERSIGNED_BY_DEFENDANT"));
+            eq(AUTHORISATION), eq(AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT.getValue()));
+
+        inOrder.verify(ccdEventProducer).createCCDSettlementEvent(eq(claimWithSettlementAgreement), any(Settlement.class),
+            eq(AUTHORISATION), eq(AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT.getValue()));
 
         inOrder.verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.SETTLEMENT_AGREEMENT_REACHED_BY_ADMISSION),
             eq(REFERENCE_NUMBER), eq(claimWithSettlementAgreement.getReferenceNumber()));
