@@ -7,7 +7,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
@@ -29,16 +31,17 @@ import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCATORY_JUDGEMENT;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType.CLAIMANT;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType.COURT;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType.DEFENDANT;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.CCJ;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.SETTLEMENT;
-
 
 @RunWith(MockitoJUnitRunner.class)
 public class FormaliseResponseAcceptanceServiceTest {
@@ -56,6 +59,12 @@ public class FormaliseResponseAcceptanceServiceTest {
     @Mock
     private EventProducer eventProducer;
 
+    @Mock
+    private CCDEventProducer ccdEventProducer;
+
+    @Mock
+    private CaseRepository caseRepository;
+
     @Captor
     private ArgumentCaptor<CountyCourtJudgment> countyCourtJudgmentArgumentCaptor;
 
@@ -67,7 +76,9 @@ public class FormaliseResponseAcceptanceServiceTest {
         formaliseResponseAcceptanceService = new FormaliseResponseAcceptanceService(
             countyCourtJudgmentService,
             offersService,
-            eventProducer
+            eventProducer,
+            ccdEventProducer,
+            caseRepository
         );
     }
 
@@ -270,7 +281,6 @@ public class FormaliseResponseAcceptanceServiceTest {
             countyCourtJudgmentArgumentCaptor.capture(),
             eq(claim.getExternalId()),
             eq(AUTH));
-
 
         assertThat(countyCourtJudgmentArgumentCaptor
             .getValue()
@@ -575,6 +585,8 @@ public class FormaliseResponseAcceptanceServiceTest {
             .formalise(claim, responseAcceptation, AUTH)).doesNotThrowAnyException();
 
         verify(eventProducer, once()).createInterlocutoryJudgmentEvent(eq(claim));
+        verify(ccdEventProducer, once()).createCCDInterlocutoryJudgmentEvent(eq(claim), anyString());
+        verify(caseRepository, once()).saveCaseEvent(anyString(), eq(claim), eq(INTERLOCATORY_JUDGEMENT));
         verifyZeroInteractions(countyCourtJudgmentService);
         verifyZeroInteractions(offersService);
     }
@@ -582,7 +594,7 @@ public class FormaliseResponseAcceptanceServiceTest {
     private PartAdmissionResponse getPartAdmissionResponsePayByInstalments() {
         return SampleResponse
             .PartAdmission.builder()
-            .buildWithPaymentOptionInstallments();
+            .buildWithPaymentOptionInstalments();
     }
 
     private Response getPartAdmissionsResponsePayBySetDate() {

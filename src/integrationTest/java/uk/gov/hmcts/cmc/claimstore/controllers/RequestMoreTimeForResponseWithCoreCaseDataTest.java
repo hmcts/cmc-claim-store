@@ -41,7 +41,9 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
 @TestPropertySource(
     properties = {
         "document_management.api_gateway.url=false",
-        "core_case_data.api.url=http://core-case-data-api"
+        "feature_toggles.ccd_async_enabled=false",
+        "feature_toggles.ccd_enabled=true",
+        "feature_toggles.reminderEmails=true"
     }
 )
 public class RequestMoreTimeForResponseWithCoreCaseDataTest extends BaseIntegrationTest {
@@ -101,6 +103,7 @@ public class RequestMoreTimeForResponseWithCoreCaseDataTest extends BaseIntegrat
         MvcResult result = makeRequest(claimData.getExternalId().toString())
             .andExpect(status().isOk())
             .andReturn();
+
         Claim claim = deserializeObjectFrom(result, Claim.class);
 
         verify(notificationClient, times(3))

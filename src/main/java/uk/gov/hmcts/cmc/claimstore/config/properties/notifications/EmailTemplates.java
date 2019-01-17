@@ -84,4 +84,31 @@ public class EmailTemplates {
 
     @NotEmpty
     private String claimantSaysDefendantHasPaidInFull;
+
+    @NotEmpty
+    private String claimantRequestedInterlocutoryJudgement;
+
+    @NotEmpty
+    private String redeterminationEmailToClaimant;
+
+    @NotEmpty
+    private String settlementRejectedEmailToClaimant;
+
+    @NotEmpty
+    private String settlementRejectedEmailToDefendant;
+
+    @NotEmpty
+    private String claimantSignedSettlementAgreementToDefendant;
+
+    @NotEmpty
+    private String claimantSignedSettlementAgreementToClaimant;
+
+    @NotEmpty
+    private String defendantSignedSettlementAgreementToDefendant;
+
+    @NotEmpty
+    private String defendantSignedSettlementAgreementToClaimant;
+
+    @NotEmpty
+    private String defendantAdmissionResponseToClaimant;
 }

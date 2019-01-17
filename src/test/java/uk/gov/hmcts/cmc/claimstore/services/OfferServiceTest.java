@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
@@ -56,11 +57,14 @@ public class OfferServiceTest {
     private EventProducer eventProducer;
 
     @Mock
+    private CCDEventProducer ccdEventProducer;
+
+    @Mock
     private AppInsights appInsights;
 
     @Before
     public void setup() {
-        offersService = new OffersService(claimService, caseRepository, eventProducer, appInsights);
+        offersService = new OffersService(claimService, caseRepository, eventProducer, appInsights, ccdEventProducer);
     }
 
     @Test
@@ -198,7 +202,6 @@ public class OfferServiceTest {
         Settlement settlement = new Settlement();
         settlement.makeOffer(SampleOffer.builder().build(), madeBy);
         settlement.accept(MadeBy.CLAIMANT);
-
 
         return SampleClaim.builder()
             .withSettlement(settlement).build();

@@ -1,12 +1,11 @@
 package uk.gov.hmcts.cmc.ccd.assertion;
 
 import org.assertj.core.api.AbstractAssert;
+import org.junit.Assert;
 import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 
 import java.util.Objects;
-
-import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 public class CountyCourtJudgmentAssert extends AbstractAssert<CountyCourtJudgmentAssert, CountyCourtJudgment> {
 
@@ -19,7 +18,8 @@ public class CountyCourtJudgmentAssert extends AbstractAssert<CountyCourtJudgmen
 
         actual.getDefendantDateOfBirth().ifPresent(dob -> {
             if (!Objects.equals(dob, ccdCountyCourtJudgment.getDefendantDateOfBirth())) {
-                failWithMessage("Expected CountyCourtJudgment.defendantDateOfBirth to be <%s> but was <%s>",
+                failWithMessage(
+                    "Expected CountyCourtJudgment.defendantDateOfBirth to be <%s> but was <%s>",
                     ccdCountyCourtJudgment.getDefendantDateOfBirth(), actual.getDefendantDateOfBirth());
             }
         });
@@ -30,7 +30,6 @@ public class CountyCourtJudgmentAssert extends AbstractAssert<CountyCourtJudgmen
                     ccdCountyCourtJudgment.getPayBySetDate(), actual.getPayBySetDate());
             }
         });
-
 
         if (!Objects.equals(actual.getPaidAmount().orElse(null),
             ccdCountyCourtJudgment.getPaidAmount())) {
@@ -44,10 +43,25 @@ public class CountyCourtJudgmentAssert extends AbstractAssert<CountyCourtJudgmen
         }
 
         actual.getRepaymentPlan()
-            .ifPresent(repaymentPlan -> assertThat(repaymentPlan).isEqualTo(ccdCountyCourtJudgment.getRepaymentPlan()));
+            .ifPresent(repaymentPlan -> {
+                Assert.assertEquals(repaymentPlan.getCompletionDate(),
+                    ccdCountyCourtJudgment.getRepaymentPlanCompletionDate());
+                Assert.assertEquals(repaymentPlan.getFirstPaymentDate(),
+                    ccdCountyCourtJudgment.getRepaymentPlanFirstPaymentDate());
+                Assert.assertEquals(repaymentPlan.getInstalmentAmount(),
+                    ccdCountyCourtJudgment.getRepaymentPlanInstalmentAmount());
+                Assert.assertEquals(repaymentPlan.getPaymentLength(),
+                    ccdCountyCourtJudgment.getRepaymentPlanPaymentLength());
+                Assert.assertEquals(repaymentPlan.getPaymentSchedule().getDescription(),
+                    ccdCountyCourtJudgment.getRepaymentPlanPaymentSchedule().getDescription());
+            });
 
-        actual.getStatementOfTruth().ifPresent(statementOfTruth ->
-            assertThat(statementOfTruth).isEqualTo(ccdCountyCourtJudgment.getStatementOfTruth()));
+        actual.getStatementOfTruth().ifPresent(statementOfTruth -> {
+            Assert.assertEquals(statementOfTruth.getSignerName(),
+                ccdCountyCourtJudgment.getStatementOfTruthSignerName());
+            Assert.assertEquals(statementOfTruth.getSignerRole(),
+                ccdCountyCourtJudgment.getStatementOfTruthSignerRole());
+        });
 
         return this;
     }

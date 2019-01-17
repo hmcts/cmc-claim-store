@@ -1,19 +1,23 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 
 @Component
 public class ResponseAcceptationContentProvider {
     public static final String ADMISSIONS_FORM_NO = "OCON9A";
 
+    static final LocalDate SYSTEM_MAX_DATE = LocalDate.of(9999, 12, 31);
     private final PaymentIntentionContentProvider paymentIntentionContentProvider;
 
     public ResponseAcceptationContentProvider(
@@ -37,14 +41,23 @@ public class ResponseAcceptationContentProvider {
                 "courtDecision"
             ));
             PaymentIntention courtPaymentIntention = courtDetermination.getCourtPaymentIntention();
-            content.putAll(paymentIntentionContentProvider.createContent(
-                courtPaymentIntention.getPaymentOption(),
-                courtPaymentIntention.getRepaymentPlan().orElse(null),
-                courtPaymentIntention.getPaymentDate().orElse(null),
-                "The agreed amount",
-                "courtPaymentIntention"
-                )
-            );
+            Optional<LocalDate> paymentDate = courtPaymentIntention.getPaymentDate();
+            if (courtPaymentIntention.getPaymentOption() == PaymentOption.BY_SPECIFIED_DATE
+                && paymentDate.isPresent()
+                && paymentDate.get().equals(SYSTEM_MAX_DATE)) {
+                content.put("hasNegativeDisposableIncome", "The defendant’s disposable income is "
+                    + formatMoney(courtDetermination.getDisposableIncome())
+                    + ". As such, the court has selected the defendant’s repayment plan.");
+            } else {
+                content.putAll(paymentIntentionContentProvider.createContent(
+                    courtPaymentIntention.getPaymentOption(),
+                    courtPaymentIntention.getRepaymentPlan().orElse(null),
+                    paymentDate.orElse(null),
+                    "The agreed amount",
+                    "courtPaymentIntention"
+                    )
+                );
+            }
         });
 
         Optional<PaymentIntention> claimantPaymentIntention = responseAcceptation.getClaimantPaymentIntention();

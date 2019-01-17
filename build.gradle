@@ -24,7 +24,7 @@ dependencyUpdates.resolutionStrategy = {
   }
 }
 
-def springBootVersion = '2.0.5.RELEASE'
+def springBootVersion = '2.1.0.RELEASE'
 def springCloudVersion = 'Finchley.SR1'
 
 allprojects {
@@ -40,7 +40,7 @@ allprojects {
   checkstyle {
     maxWarnings = 0
 
-    toolVersion = '8.8'
+    toolVersion = '8.16'
     // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
     configDir = new File(rootDir, 'config/checkstyle')
   }
@@ -142,7 +142,7 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-json'
 
-  compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.1'
+  compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
 
   compile group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
   compile group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
@@ -156,17 +156,16 @@ dependencies {
 
   compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
 
-  compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.12.0-RELEASE'
+  compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.13.0-RELEASE'
 
   compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformJavaLogging
   compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: versions.reformJavaLogging
   compile group: 'uk.gov.hmcts.reform', name: 'http-proxy-spring-boot-autoconfigure', version: '2.0.0'
-  compile group: 'uk.gov.hmcts.reform', name: 'pdf-service-client', version: '6.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.4.1'
   compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '4.0.1'
-  compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '1.0.4'
-  compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.4.1'
-  compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.1.1'
+  compile group: 'uk.gov.hmcts.reform', name: 'pdf-service-client', version: '7.0.0'
+  compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '2.0.0'
+  compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.1.2'
 
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
 
@@ -183,14 +182,15 @@ dependencies {
 
   testCompile project(':domain-sample-data')
   testCompile project(path: ":ccd-adapter", configuration: 'testArtifacts')
-  testCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.2.0'
+  testCompile group: 'io.rest-assured', name: 'rest-assured', version: '3.3.0'
 
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
   testCompile group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock'
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.11.1'
-  testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.10.1'
+  testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.10.4'
   testCompile group: 'org.mockito', name: 'mockito-core', version: '2.23.4'
   testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
+  testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.4.0'
 
 }
 
@@ -304,6 +304,8 @@ sonarqube {
     property "sonar.jacoco.itReportPath", "${listFiles('**/apiTest.exec')}"
     property "sonar.exclusions", "**/ccd/domain/**," +
       "**/cmc/domain/models/**," +
+      "**/cmc/ccd/deprecated/**," +
+      "**/cmc/ccd/mapper/**," +
       "**/cmc/claimstore/idam/models/**," +
       "**/ExceptionForClient.java," +
       "**/config/**," +
@@ -311,9 +313,11 @@ sonarqube {
       "**/*Event.java," +
       "**/PathPatterns.java," +
       "**/ClaimRepository.java," +
+      "**/CCDCaseRepository.java," +
       "**/cmc/claimstore/appinsights/**," +
       "**/ccd/migration/**," +
-      "**/EmailData.java"
+      "**/EmailData.java," +
+      "**/CCDCaseHandler.java"
   }
 }
 

@@ -48,7 +48,10 @@ public class SealedClaimJsonMapperTest {
         Claim claim = SampleClaim.builder()
             .withClaimData(SampleClaimData.builder()
                 .withClaimant(SampleParty.builder().individual())
-                .withDefendant(SampleTheirDetails.builder().individualDetails())
+                .withDefendant(SampleTheirDetails.builder()
+                    .withDateOfBirth(null)
+                    .withServiceAddress(null)
+                    .individualDetails())
                 .withInterest(interest)
                 .build())
             .withIssuedOn(issueDate)
@@ -64,12 +67,15 @@ public class SealedClaimJsonMapperTest {
         Claim claim = SampleClaim.builder()
             .withClaimData(SampleClaimData.builder()
                 .withClaimant(SampleParty.builder().withBusinessName("AutoTraders").soleTrader())
-                .withDefendant(SampleTheirDetails.builder().withBusinessName("RoboticsTraders").soleTraderDetails())
+                .withDefendant(SampleTheirDetails.builder().withBusinessName("RoboticsTraders")
+                    .withDateOfBirth(null)
+                    .withServiceAddress(null)
+                    .soleTraderDetails())
                 .withInterest(interest)
                 .build())
             .withIssuedOn(issueDate)
             .build();
-        
+
         String expected = new ResourceReader().read("/claim/sole_trader_rpa_case.json").trim();
 
         assertEquals(expected, mapper.map(claim).toString(), STRICT);
@@ -80,7 +86,10 @@ public class SealedClaimJsonMapperTest {
         Claim claim = SampleClaim.builder()
             .withClaimData(SampleClaimData.builder()
                 .withClaimant(SampleParty.builder().company())
-                .withDefendant(SampleTheirDetails.builder().companyDetails())
+                .withDefendant(SampleTheirDetails.builder()
+                    .withDateOfBirth(null)
+                    .withServiceAddress(null)
+                    .companyDetails())
                 .withInterest(interest)
                 .build())
             .withIssuedOn(issueDate)
@@ -98,6 +107,8 @@ public class SealedClaimJsonMapperTest {
                 .withClaimant(SampleParty.builder()
                     .organisation())
                 .withDefendant(SampleTheirDetails.builder()
+                    .withDateOfBirth(null)
+                    .withServiceAddress(null)
                     .organisationDetails())
                 .withInterest(interest)
                 .build())

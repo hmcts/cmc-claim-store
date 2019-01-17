@@ -1,25 +1,27 @@
 {
   "externalId": "9f49d8df-b734-4e86-aeb6-e22f0c2ca78d",
-  "claimants": [{
-    "type": "individual",
-    "name": "John Rambo",
-    "address": {
-      "line1": "52",
-      "line2": "Down Street",
-      "line3": "Salford",
-      "city": "Manchester",
-      "postcode": "DF1 3LJ"
-    },
-    "correspondenceAddress": {
-      "line1": "52",
-      "line2": "Down Street",
-      "line3": "Salford",
-      "city": "Manchester",
-      "postcode": "DF1 3LJ"
-    },
-    "dateOfBirth": "1968-01-02",
-    "mobilePhone": "07873727165"
-  }],
+  "claimants": [
+    {
+      "type": "individual",
+      "name": "John Rambo",
+      "address": {
+        "line1": "52",
+        "line2": "Down Street",
+        "line3": "Salford",
+        "city": "Manchester",
+        "postcode": "DF1 3LJ"
+      },
+      "correspondenceAddress": {
+        "line1": "52",
+        "line2": "Down Street",
+        "line3": "Salford",
+        "city": "Manchester",
+        "postcode": "DF1 3LJ"
+      },
+      "dateOfBirth": "1968-01-02",
+      "mobilePhone": "07873727165"
+    }
+  ],
   "amount": {
     "type": "breakdown",
     "rows": [
@@ -56,7 +58,9 @@
   "payment": {
     "amount": 4000,
     "reference": "RC-1524-6488-1670-7520",
-    "status": "success"
+    "status": "success",
+    "id": "PaymentId",
+    "date_created": "2019-01-01"
   },
   "feeAmountInPennies": 4000,
   "reason": "reason",

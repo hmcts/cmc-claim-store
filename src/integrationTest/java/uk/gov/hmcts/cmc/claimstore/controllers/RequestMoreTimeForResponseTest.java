@@ -37,7 +37,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @TestPropertySource(
     properties = {
-        "core_case_data.api.url=false"
+        "core_case_data.api.url=false",
+        "feature_toggles.reminderEmails=true"
     }
 )
 public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
@@ -120,7 +121,6 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
         verify(notificationClient, times(8))
             .sendEmail(anyString(), anyString(), anyMap(), anyString());
     }
-
 
     @Test
     public void shouldReturn404HttpStatusWhenClaimDoesNotExist() throws Exception {

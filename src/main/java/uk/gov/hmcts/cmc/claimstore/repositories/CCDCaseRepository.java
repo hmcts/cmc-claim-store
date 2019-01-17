@@ -21,8 +21,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
+
 @Service("caseRepository")
-@ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
 public class CCDCaseRepository implements CaseRepository {
     private final CCDCaseApi ccdCaseApi;
     private final CoreCaseDataService coreCaseDataService;
@@ -93,7 +95,6 @@ public class CCDCaseRepository implements CaseRepository {
         CountyCourtJudgment countyCourtJudgment
     ) {
         coreCaseDataService.saveCountyCourtJudgment(authorisation, claim.getId(), countyCourtJudgment);
-
     }
 
     @Override
@@ -136,7 +137,7 @@ public class CCDCaseRepository implements CaseRepository {
 
     @Override
     public void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, String userAction) {
-        coreCaseDataService.reachSettlementAgreement(claim.getId(), settlement, authorisation,
+        coreCaseDataService.reachSettlementAgreement(claim.getId(), settlement, nowInUTC(), authorisation,
             CaseEvent.valueOf(userAction));
     }
 
@@ -168,4 +169,10 @@ public class CCDCaseRepository implements CaseRepository {
     ) {
         throw new NotImplementedException("We do not implement CCD yet");
     }
+
+    @Override
+    public void saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent) {
+        coreCaseDataService.saveCaseEvent(authorisation, claim.getId(), caseEvent);
+    }
+
 }

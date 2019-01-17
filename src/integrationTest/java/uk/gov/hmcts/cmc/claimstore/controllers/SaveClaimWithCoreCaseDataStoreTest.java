@@ -1,17 +1,14 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableList;
 import feign.FeignException;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
-import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
-
-import java.util.Collections;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -21,78 +18,83 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreStartResponse;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitRepresentativeResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponse;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulPrePaymentCoreCaseDataStoreSubmitResponse;
 
 @TestPropertySource(
     properties = {
         "document_management.url=false",
-        "core_case_data.api.url=http://core-case-data-api"
+        "feature_toggles.ccd_async_enabled=false",
+        "feature_toggles.ccd_enabled=true"
     }
 )
-@Ignore // Ignored until we decide how we are testing against CCD
 public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
 
     @Test
     public void shouldStoreRepresentedClaimIntoCCD() throws Exception {
         ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
 
-        given(coreCaseDataApi.searchForCitizen(
-            eq(AUTHORISATION_TOKEN),
+        CaseDetails prepaymentCaseDetails = successfulPrePaymentCoreCaseDataStoreSubmitResponse();
+        given(coreCaseDataApi.searchForCaseworker(
+            eq(SOLICITOR_AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("case.externalId", claimData.getExternalId().toString()))
+            anyMap()
             )
-        ).willReturn(Collections.emptyList());
+        ).willReturn(ImmutableList.of(prepaymentCaseDetails))
+            .willReturn(ImmutableList.of(successfulCoreCaseDataStoreSubmitResponse()));
 
-        given(coreCaseDataApi.startForCaseworker(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN), eq(USER_ID),
+        given(coreCaseDataApi.startEventForCaseWorker(
+            eq(SOLICITOR_AUTHORISATION_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(EVENT_ID)
+            eq(prepaymentCaseDetails.getId().toString()),
+            eq(SUBMIT_POST_PAYMENT)
             )
         ).willReturn(successfulCoreCaseDataStoreStartResponse());
 
-        given(coreCaseDataApi.submitForCaseworker(
-            eq(AUTHORISATION_TOKEN),
+        given(coreCaseDataApi.submitEventForCaseWorker(
+            eq(SOLICITOR_AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
+            eq(prepaymentCaseDetails.getId().toString()),
             eq(IGNORE_WARNING),
             any()
             )
-        ).willReturn(successfulCoreCaseDataStoreSubmitResponse());
+        ).willReturn(successfulCoreCaseDataStoreSubmitRepresentativeResponse());
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
 
-        MvcResult result = makeIssueClaimRequest(claimData)
+        makeIssueClaimRequest(claimData, SOLICITOR_AUTHORISATION_TOKEN)
             .andExpect(status().isOk())
             .andReturn();
 
-        assertThat(deserializeObjectFrom(result, Claim.class))
-            .extracting(Claim::getClaimData)
-            .isEqualTo(claimData);
-
         verify(coreCaseDataApi)
-            .startForCaseworker(
-                eq(AUTHORISATION_TOKEN),
+            .startEventForCaseWorker(
+                eq(SOLICITOR_AUTHORISATION_TOKEN),
                 eq(SERVICE_TOKEN),
                 eq(USER_ID),
                 eq(JURISDICTION_ID),
                 eq(CASE_TYPE_ID),
-                eq(EVENT_ID)
+                eq(prepaymentCaseDetails.getId().toString()),
+                eq(SUBMIT_POST_PAYMENT)
             );
 
         verify(coreCaseDataApi)
-            .submitForCaseworker(
-                eq(AUTHORISATION_TOKEN),
+            .submitEventForCaseWorker(
+                eq(SOLICITOR_AUTHORISATION_TOKEN),
                 eq(SERVICE_TOKEN),
                 eq(USER_ID),
                 eq(JURISDICTION_ID),
                 eq(CASE_TYPE_ID),
+                eq(prepaymentCaseDetails.getId().toString()),
                 eq(IGNORE_WARNING),
                 any()
             );
@@ -102,32 +104,36 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
     public void shouldStoreCitizenClaimIntoCCD() throws Exception {
         ClaimData claimData = SampleClaimData.submittedByClaimantBuilder().build();
 
+        CaseDetails prepaymentCaseDetails = successfulPrePaymentCoreCaseDataStoreSubmitResponse();
         given(coreCaseDataApi.searchForCitizen(
             eq(AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("case.externalId", claimData.getExternalId().toString()))
+            anyMap()
             )
-        ).willReturn(Collections.emptyList());
+        ).willReturn(ImmutableList.of(prepaymentCaseDetails))
+            .willReturn(ImmutableList.of(successfulCoreCaseDataStoreSubmitResponse()));
 
-        given(coreCaseDataApi.startForCitizen(
+        given(coreCaseDataApi.startEventForCitizen(
             eq(AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(EVENT_ID)
+            eq(prepaymentCaseDetails.getId().toString()),
+            eq(SUBMIT_POST_PAYMENT)
             )
         ).willReturn(successfulCoreCaseDataStoreStartResponse());
 
-        given(coreCaseDataApi.submitForCitizen(
+        given(coreCaseDataApi.submitEventForCitizen(
             eq(AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
+            eq(prepaymentCaseDetails.getId().toString()),
             eq(IGNORE_WARNING),
             any()
             )
@@ -135,102 +141,103 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
 
-        MvcResult result = makeIssueClaimRequest(claimData)
+        makeIssueClaimRequest(claimData, AUTHORISATION_TOKEN)
             .andExpect(status().isOk())
             .andReturn();
 
-        assertThat(deserializeObjectFrom(result, Claim.class))
-            .extracting(Claim::getClaimData)
-            .isEqualTo(claimData);
-
         verify(coreCaseDataApi)
-            .startForCitizen(
+            .startEventForCitizen(
                 eq(AUTHORISATION_TOKEN),
                 eq(SERVICE_TOKEN),
                 eq(USER_ID),
                 eq(JURISDICTION_ID),
                 eq(CASE_TYPE_ID),
-                eq(EVENT_ID)
+                eq(prepaymentCaseDetails.getId().toString()),
+                eq(SUBMIT_POST_PAYMENT)
             );
 
         verify(coreCaseDataApi)
-            .submitForCitizen(
+            .submitEventForCitizen(
                 eq(AUTHORISATION_TOKEN),
                 eq(SERVICE_TOKEN),
                 eq(USER_ID),
                 eq(JURISDICTION_ID),
                 eq(CASE_TYPE_ID),
+                eq(prepaymentCaseDetails.getId().toString()),
                 eq(IGNORE_WARNING),
                 any()
             );
     }
 
-
     @Test
-    public void shouldIssueClaimEvenWhenCCDStoreFailsToStartEvent() throws Exception {
+    public void shouldFailIssuingClaimEvenWhenCCDStoreFailsToStartEvent() throws Exception {
         ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
 
-        given(coreCaseDataApi.searchForCitizen(
-            eq(AUTHORISATION_TOKEN),
+        CaseDetails prepaymentCaseDetails = successfulPrePaymentCoreCaseDataStoreSubmitResponse();
+        given(coreCaseDataApi.searchForCaseworker(
+            eq(SOLICITOR_AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("case.externalId", claimData.getExternalId().toString()))
+            anyMap()
             )
-        ).willReturn(Collections.emptyList());
+        ).willReturn(ImmutableList.of(prepaymentCaseDetails));
 
-        given(coreCaseDataApi.startForCaseworker(
-            eq(AUTHORISATION_TOKEN),
+        given(coreCaseDataApi.startEventForCaseWorker(
+            eq(SOLICITOR_AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(EVENT_ID)
+            eq(prepaymentCaseDetails.getId().toString()),
+            eq(SUBMIT_POST_PAYMENT)
             )
         ).willThrow(FeignException.class);
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
 
-        MvcResult result = makeIssueClaimRequest(claimData)
-            .andExpect(status().isOk())
+        MvcResult result = makeIssueClaimRequest(claimData, SOLICITOR_AUTHORISATION_TOKEN)
+            .andExpect(status().isInternalServerError())
             .andReturn();
 
-        assertThat(deserializeObjectFrom(result, Claim.class))
-            .extracting(Claim::getClaimData)
-            .isEqualTo(claimData);
+        assertThat(result.getResolvedException().getMessage())
+            .isEqualTo("Failed updating claim in CCD store for case id 000LR001 on event SUBMIT_POST_PAYMENT");
     }
 
     @Test
     public void shouldIssueClaimEvenWhenCCDStoreFailsToSubmitEvent() throws Exception {
         ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
 
-        given(coreCaseDataApi.searchForCitizen(
-            eq(AUTHORISATION_TOKEN),
+        CaseDetails prepaymentCaseDetails = successfulPrePaymentCoreCaseDataStoreSubmitResponse();
+        given(coreCaseDataApi.searchForCaseworker(
+            eq(SOLICITOR_AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("case.externalId", claimData.getExternalId().toString()))
+            anyMap()
             )
-        ).willReturn(Collections.emptyList());
+        ).willReturn(ImmutableList.of(prepaymentCaseDetails));
 
-        given(coreCaseDataApi.startForCaseworker(
-            eq(AUTHORISATION_TOKEN),
+        given(coreCaseDataApi.startEventForCaseWorker(
+            eq(SOLICITOR_AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(EVENT_ID)
+            eq(prepaymentCaseDetails.getId().toString()),
+            eq(SUBMIT_CLAIM_EVENT)
             )
         ).willReturn(successfulCoreCaseDataStoreStartResponse());
 
-        given(coreCaseDataApi.submitForCaseworker(
-            eq(AUTHORISATION_TOKEN),
+        given(coreCaseDataApi.submitEventForCaseWorker(
+            eq(SOLICITOR_AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
+            eq(prepaymentCaseDetails.getId().toString()),
             eq(IGNORE_WARNING),
             any()
             )
@@ -238,37 +245,26 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
 
-        MvcResult result = makeIssueClaimRequest(claimData)
-            .andExpect(status().isOk())
+        MvcResult result = makeIssueClaimRequest(claimData, SOLICITOR_AUTHORISATION_TOKEN)
+            .andExpect(status().isInternalServerError())
             .andReturn();
 
-        assertThat(deserializeObjectFrom(result, Claim.class))
-            .extracting(Claim::getClaimData)
-            .isEqualTo(claimData);
+        assertThat(result.getResolvedException().getMessage())
+            .isEqualTo("Failed updating claim in CCD store for case id 000LR001 on event SUBMIT_POST_PAYMENT");
     }
 
     @Test
     public void shouldIssueClaimEvenWhenS2STokenGenerationFails() throws Exception {
         ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
 
-        given(coreCaseDataApi.searchForCitizen(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("case.externalId", claimData.getExternalId().toString()))
-            )
-        ).willReturn(Collections.emptyList());
-
         given(serviceAuthorisationApi.serviceToken(anyMap())).willThrow(FeignException.class);
 
-        MvcResult result = makeIssueClaimRequest(claimData)
-            .andExpect(status().isOk())
+        MvcResult result = makeIssueClaimRequest(claimData, SOLICITOR_AUTHORISATION_TOKEN)
+            .andExpect(status().isNotFound())
             .andReturn();
 
-        assertThat(deserializeObjectFrom(result, Claim.class))
-            .extracting(Claim::getClaimData)
-            .isEqualTo(claimData);
+        assertThat(result.getResolvedException().getMessage())
+            .isEqualTo(String.format("Case %s not found.", claimData.getExternalId().toString()));
+
     }
 }

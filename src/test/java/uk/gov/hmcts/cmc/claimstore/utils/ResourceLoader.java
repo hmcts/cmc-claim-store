@@ -37,10 +37,19 @@ public class ResourceLoader {
         return jsonMapper.fromJson(response, CaseDetails.class);
     }
 
+    public static CaseDetails successfulCoreCaseDataStoreSubmitRepresentativeResponse() {
+        String response = getResource("/core-case-data/submit-representative-response.success.json");
+        return jsonMapper.fromJson(response, CaseDetails.class);
+    }
+
+    public static CaseDetails successfulPrePaymentCoreCaseDataStoreSubmitResponse() {
+        String response = getResource("/core-case-data/search-prepayment-response.success.json");
+        return jsonMapper.fromJson(response, CaseDetails.class);
+    }
+
     private static String getResource(String resourceName) {
         return new ResourceReader().read(resourceName);
     }
-
 
     public static CaseDetails successfulCoreCaseDataStoreSubmitResponseWithMoreTimeExtension() {
         String response = getResource("/core-case-data/submit-response.success.json")
@@ -63,7 +72,7 @@ public class ResourceLoader {
 
     public static List<CaseDetails> listOfCaseDetailsWithMoreTimeExtension() {
         String response = new ResourceReader().read("/core-case-data/search-response.success.json")
-            .replace("2020-02-06", "2020-02-19");
+            .replace("2020-02-06", "2020-02-18");
 
         return ImmutableList.of(jsonMapper.fromJson(response, CaseDetails.class));
     }

@@ -89,7 +89,7 @@ public class ResponseNeededNotificationService {
         String caseReference = (String) emailData.get("caseReference");
         logger.error(LOG_TEMPLATE, caseReference, exception.getMessage(), exception);
 
-        appInsights.trackEvent(AppInsightsEvent.SCHEDULER_JOB_FAILED, caseReference);
+        appInsights.trackEvent(AppInsightsEvent.SCHEDULER_JOB_FAILED, "referenceNumber", caseReference);
     }
 
     private Map<String, String> aggregateParams(Claim claim) {

@@ -80,7 +80,7 @@ public class ClaimantResponseTest extends BaseTest {
             .orElseThrow(AssertionError::new);
 
         assertThat(claimantResponse.getAmountPaid().orElse(ZERO)).isEqualTo(BigDecimal.TEN);
-        assertThat(claimantResponse.getFormaliseOption()).isEqualTo(CCJ);
+        assertThat(claimantResponse.getFormaliseOption().orElseThrow(AssertionError::new)).isEqualTo(CCJ);
         CountyCourtJudgment countyCourtJudgment = claimWithClaimantResponse.getCountyCourtJudgment();
         assertThat(countyCourtJudgment).isNotNull();
         assertThat(countyCourtJudgment.getPayBySetDate()).isNotEmpty();
@@ -93,7 +93,7 @@ public class ClaimantResponseTest extends BaseTest {
             claim.getExternalId(),
             claimant
         ).then()
-            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+            .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
@@ -147,7 +147,7 @@ public class ClaimantResponseTest extends BaseTest {
             .orElseThrow(AssertionError::new);
 
         assertThat(claimantResponse.getAmountPaid().orElse(ZERO)).isEqualTo(BigDecimal.TEN);
-        assertThat(claimantResponse.getFormaliseOption()).isEqualTo(SETTLEMENT);
+        assertThat(claimantResponse.getFormaliseOption().orElseThrow(AssertionError::new)).isEqualTo(SETTLEMENT);
         assertThat(claimWithClaimantResponse.getCountyCourtJudgment()).isNull();
         assertThat(claimWithClaimantResponse.getSettlement()).isNotEmpty();
     }

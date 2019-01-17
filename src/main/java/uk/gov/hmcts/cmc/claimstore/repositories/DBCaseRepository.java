@@ -1,8 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
@@ -27,7 +28,7 @@ import java.util.Optional;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service("caseRepository")
-@ConditionalOnProperty(prefix = "core_case_data", name = "api.url", havingValue = "false")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled", havingValue = "false")
 public class DBCaseRepository implements CaseRepository {
 
     private final ClaimRepository claimRepository;
@@ -230,5 +231,10 @@ public class DBCaseRepository implements CaseRepository {
         String submitterId
     ) {
         claimRepository.saveReDetermination(claim.getExternalId(), jsonMapper.toJson(reDetermination));
+    }
+
+    @Override
+    public void saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent) {
+        // No implementation required for claim-store repository
     }
 }

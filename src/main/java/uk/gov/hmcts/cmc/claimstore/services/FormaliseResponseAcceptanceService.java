@@ -2,7 +2,10 @@ package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
@@ -25,8 +28,11 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCATORY_JUDGEMENT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REJECT_ORGANISATION_PAYMENT_PLAN;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
+import static uk.gov.hmcts.cmc.domain.utils.PartyUtils.isCompanyOrOrganisation;
 
 @Service
 public class FormaliseResponseAcceptanceService {
@@ -34,20 +40,26 @@ public class FormaliseResponseAcceptanceService {
     private final CountyCourtJudgmentService countyCourtJudgmentService;
     private final OffersService offersService;
     private final EventProducer eventProducer;
+    private final CCDEventProducer ccdEventProducer;
+    private final CaseRepository caseRepository;
 
     @Autowired
     public FormaliseResponseAcceptanceService(
         CountyCourtJudgmentService countyCourtJudgmentService,
         OffersService offersService,
-        EventProducer eventProducer
+        EventProducer eventProducer,
+        CCDEventProducer ccdEventProducer,
+        CaseRepository caseRepository
     ) {
         this.countyCourtJudgmentService = countyCourtJudgmentService;
         this.offersService = offersService;
         this.eventProducer = eventProducer;
+        this.ccdEventProducer = ccdEventProducer;
+        this.caseRepository = caseRepository;
     }
 
     public void formalise(Claim claim, ResponseAcceptation responseAcceptation, String authorisation) {
-        switch (responseAcceptation.getFormaliseOption()) {
+        switch (responseAcceptation.getFormaliseOption().orElseThrow(IllegalStateException::new)) {
             case CCJ:
                 formaliseCCJ(claim, responseAcceptation, authorisation);
                 break;
@@ -55,11 +67,26 @@ public class FormaliseResponseAcceptanceService {
                 formaliseSettlement(claim, responseAcceptation, authorisation);
                 break;
             case REFER_TO_JUDGE:
-                eventProducer.createInterlocutoryJudgmentEvent(claim);
+                createEventForReferToJudge(claim, authorisation);
                 break;
             default:
                 throw new IllegalStateException("Invalid formaliseOption");
         }
+    }
+
+    private void createEventForReferToJudge(Claim claim, String authorisation) {
+        Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
+        CaseEvent caseEvent;
+        if (isCompanyOrOrganisation(response.getDefendant())) {
+            eventProducer.createRejectOrganisationPaymentPlanEvent(claim);
+            caseEvent = REJECT_ORGANISATION_PAYMENT_PLAN;
+            ccdEventProducer.createCCDRejectOrganisationPaymentPlanEvent(claim, authorisation);
+        } else {
+            eventProducer.createInterlocutoryJudgmentEvent(claim);
+            caseEvent = INTERLOCATORY_JUDGEMENT;
+            ccdEventProducer.createCCDInterlocutoryJudgmentEvent(claim, authorisation);
+        }
+        this.caseRepository.saveCaseEvent(authorisation, claim, caseEvent);
     }
 
     private void formaliseSettlement(Claim claim, ResponseAcceptation responseAcceptation, String authorisation) {

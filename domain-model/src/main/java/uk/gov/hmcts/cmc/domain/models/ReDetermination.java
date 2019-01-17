@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.domain.models;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -23,8 +22,6 @@ public class ReDetermination {
     @NotNull
     private final MadeBy partyType;
 
-
-    @JsonCreator
     @Builder
     public ReDetermination(String explanation, MadeBy partyType) {
         this.explanation = explanation;

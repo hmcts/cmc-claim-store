@@ -9,8 +9,8 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import java.time.LocalDate;
 import java.util.Optional;
 
-@ConditionalOnProperty(prefix = "core_case_data", name = "api.url", havingValue = "false")
 @Service("supportRepository")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled", havingValue = "false")
 public class DBTestingSupportRepository implements SupportRepository {
 
     private final TestingSupportRepository testingSupportRepository;

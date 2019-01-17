@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.domain.models;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
@@ -20,7 +19,6 @@ public class TimelineEvent {
     @Size(max = 99000)
     private final String description;
 
-    @JsonCreator
     public TimelineEvent(String eventDate, String description) {
         this.date = eventDate;
         this.description = description;
