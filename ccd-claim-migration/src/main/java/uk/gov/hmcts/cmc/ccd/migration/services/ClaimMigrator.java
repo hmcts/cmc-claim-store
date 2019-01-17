@@ -188,7 +188,7 @@ public class ClaimMigrator {
                     && claim.getSettlement().get().getLastStatementOfType(StatementType.ACCEPTATION)
                     .getMadeBy() == MadeBy.CLAIMANT))
                     && !claim.getClaimantResponse().isPresent();
-            case OFFER_SIGNED_BY_DEFENDANT:
+            case OFFER_COUNTER_SIGNED_BY_DEFENDANT:
                 return claim.getSettlement().isPresent()
                     && (claim.getSettlement().get().getLastStatement().getType() == StatementType.COUNTERSIGNATURE)
                     && !claim.getClaimantResponse().isPresent();
@@ -232,7 +232,7 @@ public class ClaimMigrator {
                     .getMadeBy() == MadeBy.CLAIMANT)
                     && claim.getClaimantResponse().isPresent()
                 );
-            case AGREEMENT_SIGNED_BY_DEFENDANT:
+            case AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT:
                 return claim.getSettlement().isPresent()
                     && (claim.getSettlement().get().getLastStatement().getType() == StatementType.COUNTERSIGNATURE)
                     && claim.getClaimantResponse().isPresent();

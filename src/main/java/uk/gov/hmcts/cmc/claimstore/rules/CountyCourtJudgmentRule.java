@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
+import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
 import javax.validation.constraints.NotNull;
@@ -95,7 +96,7 @@ public class CountyCourtJudgmentRule {
 
         if (claim.getSettlement().isPresent()) {
             PaymentIntention paymentIntention = claim.getSettlement().orElseThrow(IllegalArgumentException::new)
-                .getLastOfferStatement().getOffer().orElseThrow(IllegalArgumentException::new)
+                .getLastStatementOfType(StatementType.OFFER).getOffer().orElseThrow(IllegalArgumentException::new)
                 .getPaymentIntention().orElseThrow(IllegalArgumentException::new);
 
             switch (paymentIntention.getPaymentOption()) {
