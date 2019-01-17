@@ -164,10 +164,10 @@ public class CCDCaseRepository implements CaseRepository {
     public void saveReDetermination(
         String authorisation,
         Claim claim,
-        ReDetermination reDetermination,
-        String submitterId
+        ReDetermination reDetermination
     ) {
-        throw new NotImplementedException("We do not implement CCD yet");
+        coreCaseDataService.saveReDetermination(authorisation, claim.getId(), reDetermination,
+            CaseEvent.valueOf("REFER_TO_JUDGE_BY_" + reDetermination.getPartyType().name()));
     }
 
     @Override

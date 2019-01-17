@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDClaimantResponse;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
+import uk.gov.hmcts.cmc.ccd.domain.offers.CCDMadeBy;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -90,4 +91,9 @@ public class CCDDefendant {
     private LocalDate ccjRequestedDate;
 
     private CCDClaimantResponse claimantResponse;
+
+    private String reDeterminationExplaination;
+    private LocalDateTime reDeterminationRequestedDate;
+    private CCDMadeBy reDeterminationMadeBy;
+
 }
