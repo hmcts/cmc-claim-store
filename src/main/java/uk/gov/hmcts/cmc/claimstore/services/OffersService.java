@@ -131,7 +131,7 @@ public class OffersService {
     public Claim signSettlementAgreement(String externalId, Settlement settlement, String authorisation) {
         final Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
         assertSettlementIsNotReached(claim);
-        final String userAction = userAction("OFFER_ACCEPTED_BY", CLAIMANT.name());
+        final String userAction = userAction("AGREEMENT_SIGNED_BY", CLAIMANT.name());
         this.caseRepository.updateSettlement(claim, settlement, authorisation, userAction);
 
         final Claim signedSettlementClaim = this.claimService.getClaimByExternalId(externalId, authorisation);
