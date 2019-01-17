@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
+import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
 import javax.validation.constraints.NotNull;
 
@@ -15,6 +16,7 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 public class CountyCourtJudgmentRule {
 
     private ClaimDeadlineService claimDeadlineService;
+    private static final String CLAIM_OBJECT_CANNOT_BE_NULL = "claim object can not be null";
 
     @Autowired
     public CountyCourtJudgmentRule(ClaimDeadlineService claimDeadlineService) {
@@ -23,7 +25,7 @@ public class CountyCourtJudgmentRule {
 
     public void assertCountyCourtJudgementCanBeRequested(@NotNull Claim claim,
                                                          CountyCourtJudgmentType countyCourtJudgmentType) {
-        requireNonNull(claim, "claim object can not be null");
+        requireNonNull(claim, CLAIM_OBJECT_CANNOT_BE_NULL);
         String externalId = claim.getExternalId();
 
         if (isCountyCourtJudgmentAlreadySubmitted(claim)) {
@@ -72,7 +74,7 @@ public class CountyCourtJudgmentRule {
     }
 
     public void assertRedeterminationCanBeRequestedOnCountyCourtJudgement(Claim claim) {
-        requireNonNull(claim, "claim object can not be null");
+        requireNonNull(claim, CLAIM_OBJECT_CANNOT_BE_NULL);
 
         String externalId = claim.getExternalId();
 
@@ -86,5 +88,33 @@ public class CountyCourtJudgmentRule {
                 + externalId + " has been already redetermined");
         }
 
+    }
+
+    public boolean isCCJDueToSettlementBreach(Claim claim) {
+        requireNonNull(claim, CLAIM_OBJECT_CANNOT_BE_NULL);
+
+        if (claim.getSettlement().isPresent()) {
+            PaymentIntention paymentIntention = claim.getSettlement().orElseThrow(IllegalArgumentException::new)
+                .getLastOfferStatement().getOffer().orElseThrow(IllegalArgumentException::new)
+                .getPaymentIntention().orElseThrow(IllegalArgumentException::new);
+
+            switch (paymentIntention.getPaymentOption()) {
+                case IMMEDIATELY:
+                    return nowInLocalZone().toLocalDate().isAfter(
+                        paymentIntention.getPaymentDate().orElse(nowInLocalZone().toLocalDate()));
+                case BY_SPECIFIED_DATE:
+                    return nowInLocalZone().toLocalDate().isAfter(
+                        paymentIntention.getPaymentDate().orElse(nowInLocalZone().toLocalDate()));
+                case INSTALMENTS:
+                    return nowInLocalZone().toLocalDate().isAfter(
+                        paymentIntention.getRepaymentPlan()
+                        .orElseThrow(IllegalArgumentException::new).getFirstPaymentDate());
+                default:
+                    throw new IllegalArgumentException("Invalid payment option");
+            }
+
+        }
+
+        return false;
     }
 }
