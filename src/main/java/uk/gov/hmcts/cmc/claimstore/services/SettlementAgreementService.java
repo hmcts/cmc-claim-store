@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.AGREEMENT_REJECTED_BY_DEFENDANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.AGREEMENT_SIGNED_BY_CLAIMANT;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_RESPONSE_GENERATED_OFFER_MADE;
@@ -54,7 +55,7 @@ public class SettlementAgreementService {
         Settlement settlement = assertSettlementCanBeResponded(claim);
         settlement.reject(MadeBy.DEFENDANT);
 
-        String userAction = format("AGREEMENT_REJECTED_BY_%s", MadeBy.DEFENDANT.name());
+        String userAction = AGREEMENT_REJECTED_BY_DEFENDANT.name();
         caseRepository.updateSettlement(claim, settlement, authorisation, userAction);
 
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);

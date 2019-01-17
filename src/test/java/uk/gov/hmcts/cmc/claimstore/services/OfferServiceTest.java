@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
@@ -29,6 +28,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_MADE_BY_DEFENDANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_REJECTED_BY_CLAIMANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_SIGNED_BY_CLAIMANT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.OFFER_SIGNED_BY_DEFENDANT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OfferServiceTest {
@@ -144,7 +144,7 @@ public class OfferServiceTest {
         //then
         verify(caseRepository)
             .reachSettlementAgreement(eq(claimWithAcceptedOffer), any(Settlement.class), eq(AUTHORISATION),
-                eq(CaseEvent.OFFER_SIGNED_BY_DEFENDANT.name()));
+                eq(OFFER_SIGNED_BY_DEFENDANT.name()));
 
         verify(eventProducer).createAgreementCountersignedEvent(eq(settledClaim), eq(madeBy));
     }

@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.mapper.TheirDetailsMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.claimantresponse.ClaimantResponseMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.offers.SettlementMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -23,18 +24,21 @@ public class DefendantMapper {
     private final ResponseMapper responseMapper;
     private final ClaimantResponseMapper claimantResponseMapper;
     private final CountyCourtJudgmentMapper countyCourtJudgmentMapper;
+    private final SettlementMapper settlementMapper;
 
     @Autowired
     public DefendantMapper(
         TheirDetailsMapper theirDetailsMapper,
         ResponseMapper responseMapper,
         CountyCourtJudgmentMapper countyCourtJudgmentMapper,
-        ClaimantResponseMapper claimantResponseMapper
+        ClaimantResponseMapper claimantResponseMapper,
+        SettlementMapper settlementMapper
     ) {
         this.theirDetailsMapper = theirDetailsMapper;
         this.responseMapper = responseMapper;
         this.countyCourtJudgmentMapper = countyCourtJudgmentMapper;
         this.claimantResponseMapper = claimantResponseMapper;
+        this.settlementMapper = settlementMapper;
     }
 
     public CCDDefendant to(TheirDetails theirDetails, Claim claim) {
@@ -49,6 +53,13 @@ public class DefendantMapper {
         builder.responseMoreTimeNeededOption(CCDYesNoOption.valueOf(claim.isMoreTimeRequested()));
         builder.directionsQuestionnaireDeadline(claim.getDirectionsQuestionnaireDeadline());
         builder.countyCourtJudgementRequest(countyCourtJudgmentMapper.to(claim));
+
+        claim.getSettlement().ifPresent(settlement ->
+            builder.settlementPartyStatements(
+                settlementMapper.toCCDPartyStatements(settlement)
+            )
+        );
+        builder.settlementReachedAt(claim.getSettlementReachedAt());
 
         claim.getResponse().ifPresent(toResponse(claim, builder));
         theirDetailsMapper.to(builder, theirDetails);
@@ -67,10 +78,13 @@ public class DefendantMapper {
             .defendantId(defendant.getDefendantId());
 
         countyCourtJudgmentMapper.from(defendant.getCountyCourtJudgementRequest(), builder);
+        builder.settlement(settlementMapper.fromCCDDefendant(defendant));
 
         Optional.ofNullable(defendant.getResponseMoreTimeNeededOption()).ifPresent(
             moreTimeNeeded -> builder.moreTimeRequested(moreTimeNeeded.toBoolean())
         );
+
+        builder.settlementReachedAt(defendant.getSettlementReachedAt());
 
         builder.respondedAt(defendant.getResponseSubmittedOn());
         responseMapper.from(builder, defendant);
@@ -86,4 +100,5 @@ public class DefendantMapper {
             builder.responseSubmittedOn(claim.getRespondedAt());
         };
     }
+
 }

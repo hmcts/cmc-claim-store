@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.AGREEMENT_REJECTED_BY_DEFENDANT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SettlementAgreementServiceTest {
@@ -65,7 +66,7 @@ public class SettlementAgreementServiceTest {
         settlementAgreementService.reject(claimWithSettlementAgreement, AUTHORISATION);
 
         verify(caseRepository).updateSettlement(eq(claimWithSettlementAgreement), any(Settlement.class),
-            eq(AUTHORISATION), eq("AGREEMENT_REJECTED_BY_DEFENDANT"));
+            eq(AUTHORISATION), eq(AGREEMENT_REJECTED_BY_DEFENDANT.name()));
     }
 
     @Test(expected = ConflictException.class)

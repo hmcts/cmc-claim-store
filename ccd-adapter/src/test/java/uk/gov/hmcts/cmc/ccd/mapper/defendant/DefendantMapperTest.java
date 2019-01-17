@@ -17,12 +17,17 @@ import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
+import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SamplePartyStatement;
+import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
+
+import java.time.LocalDateTime;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.ORGANISATION;
@@ -203,6 +208,41 @@ public class DefendantMapperTest {
         assertNotNull(ccdCountyCourtJudgment);
         assertEquals(ccdCountyCourtJudgment.getType().name(), countyCourtJudgment.getCcjType().name());
         assertEquals(ccdCountyCourtJudgment.getRequestedDate(), claimWithCCJ.getCountyCourtJudgmentRequestedAt());
+    }
+
+    @Test
+    public void mapToCCDDefendantWithNullSettlement() {
+        //Given
+        TheirDetails theirDetails = SampleTheirDetails.builder().organisationDetails();
+        Claim claimWithCCJ = SampleClaim.getWithSettlement(null);
+
+        //When
+        CCDDefendant ccdDefendant = mapper.to(theirDetails, claimWithCCJ);
+
+        //Then
+        assertNull(ccdDefendant.getSettlementPartyStatements());
+    }
+
+    @Test
+    public void mapToCCDDefendantWithSettlements() {
+        //Given
+        TheirDetails theirDetails = SampleTheirDetails.builder().organisationDetails();
+        Claim claimWithSettlement = SampleClaim
+            .getWithSettlement(
+                SampleSettlement.builder().withPartyStatements(
+                    SamplePartyStatement.offerPartyStatement,
+                    SamplePartyStatement.acceptPartyStatement)
+                    .build());
+        LocalDateTime settlementReachedAt = claimWithSettlement.getSettlementReachedAt();
+
+        //When
+        CCDDefendant ccdDefendant = mapper.to(theirDetails, claimWithSettlement);
+
+        //Then
+        assertNotNull(ccdDefendant.getSettlementPartyStatements());
+        assertNotNull(ccdDefendant.getSettlementReachedAt());
+        assertThat(ccdDefendant.getSettlementPartyStatements().size(), is(2));
+        assertEquals(settlementReachedAt, ccdDefendant.getSettlementReachedAt());
     }
 
 }
