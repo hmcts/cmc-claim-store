@@ -3,9 +3,11 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
@@ -23,8 +25,11 @@ import java.time.LocalDateTime;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.AGREEMENT_REJECTED_BY_DEFENDANT;
 
@@ -100,11 +105,32 @@ public class SettlementAgreementServiceTest {
 
         settlementAgreementService.countersign(claimWithSettlementAgreement, AUTHORISATION);
 
-        verify(caseRepository).updateSettlement(eq(claimWithSettlementAgreement), any(Settlement.class),
-            eq(AUTHORISATION), eq(AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT.getValue()));
+        InOrder inOrder = inOrder(caseRepository, eventProducer, appInsights);
 
-        verify(ccdEventProducer).createCCDSettlementEvent(eq(claimWithSettlementAgreement), any(Settlement.class),
-            eq(AUTHORISATION), eq(AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT.getValue()));
+        inOrder.verify(caseRepository).updateSettlement(eq(claimWithSettlementAgreement), any(Settlement.class),
+            eq(AUTHORISATION), eq("SETTLEMENT_AGREEMENT_COUNTERSIGNED_BY_DEFENDANT"));
+
+        inOrder.verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.SETTLEMENT_AGREEMENT_REACHED),
+            eq(REFERENCE_NUMBER), eq(claimWithSettlementAgreement.getReferenceNumber()));
+    }
+
+    @Test
+    public void shouldSuccessfullyCountersignSettlementAgreementByAdmission() {
+        Claim claimWithSettlementAgreement = buildClaimWithSettlementPaymentIntention();
+
+        when(claimService.getClaimByExternalId(claimWithSettlementAgreement.getExternalId(), AUTHORISATION))
+            .thenReturn(claimWithSettlementAgreement);
+
+        settlementAgreementService.countersign(claimWithSettlementAgreement, AUTHORISATION);
+
+        InOrder inOrder = inOrder(caseRepository, eventProducer, appInsights);
+
+        inOrder.verify(caseRepository).updateSettlement(eq(claimWithSettlementAgreement), any(Settlement.class),
+            eq(AUTHORISATION), eq("SETTLEMENT_AGREEMENT_COUNTERSIGNED_BY_DEFENDANT"));
+
+        inOrder.verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.SETTLEMENT_AGREEMENT_REACHED_BY_ADMISSION),
+            eq(REFERENCE_NUMBER), eq(claimWithSettlementAgreement.getReferenceNumber()));
+
     }
 
     @Test(expected = ConflictException.class)
@@ -187,5 +213,13 @@ public class SettlementAgreementServiceTest {
         settlement.accept(MadeBy.CLAIMANT);
 
         return settlement;
+    }
+
+    private Claim buildClaimWithSettlementPaymentIntention() {
+        Settlement settlement = new Settlement();
+        settlement.makeOffer(SampleOffer.builderWithPaymentIntention().build(), MadeBy.DEFENDANT);
+        settlement.accept(MadeBy.CLAIMANT);
+
+        return SampleClaim.builder().withSettlement(settlement).build();
     }
 }
