@@ -282,7 +282,7 @@
       </tr>
 
       {% if responseType == "PART_ADMISSION" %}
-        {% if paymentDeclaration is defined and paymentDeclaration is not empty %}
+        {% if paymentDeclarationIsPresent %}
           <tr>
             <td>Amount they have paid</td>
             <td>

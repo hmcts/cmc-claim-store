@@ -50,9 +50,9 @@ public class PartAdmissionResponseContentProvider {
 
         content.put("amount", formatMoney(partAdmissionResponse.getAmount()));
 
+        content.put("paymentDeclarationIsPresent", partAdmissionResponse.getPaymentDeclaration().isPresent());
         partAdmissionResponse.getPaymentDeclaration()
             .ifPresent(paymentDeclaration -> {
-                content.put("paymentDeclaration", paymentDeclaration);
                 content.put("paymentDate", formatDate(paymentDeclaration.getPaidDate()));
                 content.put("paymentMethod", paymentDeclaration.getExplanation());
             });
