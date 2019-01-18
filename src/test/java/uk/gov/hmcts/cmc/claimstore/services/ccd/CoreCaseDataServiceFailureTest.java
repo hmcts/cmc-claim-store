@@ -22,6 +22,7 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDet
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
+import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -42,6 +43,7 @@ import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.time.LocalDate.now;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -64,7 +66,7 @@ public class CoreCaseDataServiceFailureTest {
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder().build();
     private static final User ANONYMOUS_USER = new User(AUTHORISATION, USER_DETAILS);
     private static final String AUTH_TOKEN = "authorisation token";
-    private static final LocalDate FUTURE_DATE = LocalDate.now().plusWeeks(4L);
+    private static final LocalDate FUTURE_DATE = now().plusWeeks(4);
 
     @Mock
     private CaseMapper caseMapper;
@@ -554,5 +556,16 @@ public class CoreCaseDataServiceFailureTest {
         when(jsonMapper.fromMap(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
 
         service.saveCaseEvent(AUTHORISATION, claim.getId(), INTERLOCATORY_JUDGEMENT);
+    }
+
+    @Test(expected = CoreCaseDataStoreException.class)
+    public void savePaidInFullFailure() {
+        Claim claim = SampleClaim.getDefault();
+        PaidInFull paidInFull = PaidInFull.builder().moneyReceivedOn(now()).build();
+
+        when(jsonMapper.fromMap(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
+
+        service.savePaidInFull(claim.getId(), paidInFull, AUTHORISATION);
     }
 }

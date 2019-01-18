@@ -205,6 +205,21 @@ public class CCDCaseHandler {
 
     @TransactionalEventListener
     @LogExecutionTime
+    public void savePaidInFull(CCDPaidInFullEvent event) {
+        try {
+            Claim ccdClaim = ccdCaseRepository.getClaimByExternalId(
+                event.getClaim().getExternalId(), event.getAuthorization()
+            ).orElseThrow(IllegalStateException::new);
+
+            ccdCaseRepository.paidInFull(ccdClaim, event.getPaidInFull(), event.getAuthorization());
+        } catch (FeignException e) {
+            appInsights.trackEvent(CCD_ASYNC_FAILURE, REFERENCE_NUMBER, event.getClaim().getReferenceNumber());
+            throw e;
+        }
+    }
+
+    @TransactionalEventListener
+    @LogExecutionTime
     public void saveInterlocutoryJudgment(CCDInterlocutoryJudgmentEvent event) {
         saveCaseEvent(event.getClaim(), event.getAuthorization(), INTERLOCATORY_JUDGEMENT);
     }

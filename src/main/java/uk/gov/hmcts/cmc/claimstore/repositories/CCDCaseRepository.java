@@ -113,7 +113,7 @@ public class CCDCaseRepository implements CaseRepository {
 
     @Override
     public void paidInFull(Claim claim, PaidInFull paidInFull, String authorisation) {
-        throw new NotImplementedException("Save received to be implemented on CCD");
+        coreCaseDataService.savePaidInFull(claim.getId(), paidInFull, authorisation);
     }
 
     @Override
