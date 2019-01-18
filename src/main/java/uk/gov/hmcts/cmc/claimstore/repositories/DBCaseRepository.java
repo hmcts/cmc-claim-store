@@ -227,8 +227,7 @@ public class DBCaseRepository implements CaseRepository {
     public void saveReDetermination(
         String authorisation,
         Claim claim,
-        ReDetermination reDetermination,
-        String submitterId
+        ReDetermination reDetermination
     ) {
         claimRepository.saveReDetermination(claim.getExternalId(), jsonMapper.toJson(reDetermination));
     }

@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -21,6 +22,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_DEFENDANT;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service("caseRepository")
@@ -164,10 +166,13 @@ public class CCDCaseRepository implements CaseRepository {
     public void saveReDetermination(
         String authorisation,
         Claim claim,
-        ReDetermination reDetermination,
-        String submitterId
+        ReDetermination reDetermination
     ) {
-        throw new NotImplementedException("We do not implement CCD yet");
+        CaseEvent event = reDetermination.getPartyType() == MadeBy.DEFENDANT
+            ? REFER_TO_JUDGE_BY_DEFENDANT
+            : CaseEvent.REFER_TO_JUDGE_BY_CLAIMANT;
+
+        coreCaseDataService.saveReDetermination(authorisation, claim.getId(), reDetermination, event);
     }
 
     @Override
