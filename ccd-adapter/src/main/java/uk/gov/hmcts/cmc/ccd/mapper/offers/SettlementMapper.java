@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.ccd.mapper.offers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
@@ -35,8 +36,7 @@ public class SettlementMapper {
     }
 
     public Settlement fromCCDDefendant(CCDDefendant ccdDefendant) {
-        if (ccdDefendant.getSettlementPartyStatements() == null
-            || ccdDefendant.getSettlementPartyStatements().isEmpty()) {
+        if (CollectionUtils.isEmpty(ccdDefendant.getSettlementPartyStatements())) {
             return null;
         }
         List<PartyStatement> partyStatements = ccdDefendant.getSettlementPartyStatements().stream()

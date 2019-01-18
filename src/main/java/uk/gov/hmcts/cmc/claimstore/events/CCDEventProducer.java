@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.events;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDClaimantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDCountyCourtJudgmentEvent;
@@ -77,9 +78,9 @@ public class CCDEventProducer {
         Claim claim,
         Settlement settlement,
         String authorization,
-        String userAction
+        CaseEvent caseEvent
     ) {
-        publisher.publishEvent(new CCDSettlementEvent(claim, settlement, authorization, userAction));
+        publisher.publishEvent(new CCDSettlementEvent(claim, settlement, authorization, caseEvent));
     }
 
     public void createCCDResponseDeadlineEvent(

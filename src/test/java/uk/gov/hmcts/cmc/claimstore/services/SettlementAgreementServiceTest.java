@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
@@ -23,7 +24,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
@@ -72,10 +72,10 @@ public class SettlementAgreementServiceTest {
         settlementAgreementService.reject(claimWithSettlementAgreement, AUTHORISATION);
 
         verify(caseRepository).updateSettlement(eq(claimWithSettlementAgreement), any(Settlement.class),
-            eq(AUTHORISATION), eq(AGREEMENT_REJECTED_BY_DEFENDANT.getValue()));
+            eq(AUTHORISATION), eq(AGREEMENT_REJECTED_BY_DEFENDANT));
 
         verify(ccdEventProducer).createCCDSettlementEvent(eq(claimWithSettlementAgreement), any(Settlement.class),
-            eq(AUTHORISATION), eq(AGREEMENT_REJECTED_BY_DEFENDANT.getValue()));
+            eq(AUTHORISATION), eq(AGREEMENT_REJECTED_BY_DEFENDANT));
     }
 
     @Test(expected = ConflictException.class)
@@ -108,10 +108,10 @@ public class SettlementAgreementServiceTest {
         InOrder inOrder = inOrder(caseRepository, eventProducer, ccdEventProducer, appInsights);
 
         inOrder.verify(caseRepository).updateSettlement(eq(claimWithSettlementAgreement), any(Settlement.class),
-            eq(AUTHORISATION), eq(AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT.getValue()));
+            eq(AUTHORISATION), eq(AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT));
 
         inOrder.verify(ccdEventProducer).createCCDSettlementEvent(eq(claimWithSettlementAgreement),
-            any(Settlement.class), eq(AUTHORISATION), eq(AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT.getValue()));
+            any(Settlement.class), eq(AUTHORISATION), eq(AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT));
 
         inOrder.verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.SETTLEMENT_AGREEMENT_REACHED),
             eq(REFERENCE_NUMBER), eq(claimWithSettlementAgreement.getReferenceNumber()));
@@ -129,10 +129,10 @@ public class SettlementAgreementServiceTest {
         InOrder inOrder = inOrder(caseRepository, eventProducer, ccdEventProducer, appInsights);
 
         inOrder.verify(caseRepository).updateSettlement(eq(claimWithSettlementAgreement), any(Settlement.class),
-            eq(AUTHORISATION), eq(AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT.getValue()));
+            eq(AUTHORISATION), eq(AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT));
 
         inOrder.verify(ccdEventProducer).createCCDSettlementEvent(eq(claimWithSettlementAgreement),
-            any(Settlement.class), eq(AUTHORISATION), eq(AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT.getValue()));
+            any(Settlement.class), eq(AUTHORISATION), eq(AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT));
 
         inOrder.verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.SETTLEMENT_AGREEMENT_REACHED_BY_ADMISSION),
             eq(REFERENCE_NUMBER), eq(claimWithSettlementAgreement.getReferenceNumber()));
@@ -158,12 +158,12 @@ public class SettlementAgreementServiceTest {
 
         //then
         verify(caseRepository)
-            .updateSettlement(eq(claim), any(Settlement.class), eq(AUTHORISATION), anyString());
+            .updateSettlement(eq(claim), any(Settlement.class), eq(AUTHORISATION), any(CaseEvent.class));
 
         verify(eventProducer).createSignSettlementAgreementEvent(eq(claim));
 
         verify(ccdEventProducer)
-            .createCCDSettlementEvent(eq(claim), any(Settlement.class), eq(AUTHORISATION), anyString());
+            .createCCDSettlementEvent(eq(claim), any(Settlement.class), eq(AUTHORISATION), any(CaseEvent.class));
 
     }
 

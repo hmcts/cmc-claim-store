@@ -245,4 +245,35 @@ public class DefendantMapperTest {
         assertEquals(settlementReachedAt, ccdDefendant.getSettlementReachedAt());
     }
 
+    @Test
+    public void mapFromCCDDefendantWithNoSettlementDetails() {
+        //Given
+        CCDDefendant ccdDefendant = SampleCCDDefendant.withResponseMoreTimeNeededOption().build();
+        Claim.ClaimBuilder claimBuilder = Claim.builder();
+
+        //when
+        TheirDetails party = mapper.from(claimBuilder, ccdDefendant);
+        Claim finalClaim = claimBuilder.build();
+
+        //Then
+        assertNull(ccdDefendant.getSettlementReachedAt());
+        assertNull(ccdDefendant.getSettlementPartyStatements());
+    }
+
+    @Test
+    public void mapFromCCDDefendantWithSettlements() {
+        //Given
+        CCDDefendant ccdDefendant = SampleCCDDefendant.withPartyStatements().build();
+        Claim.ClaimBuilder claimBuilder = Claim.builder();
+
+        //when
+        mapper.from(claimBuilder, ccdDefendant);
+        Claim finalClaim = claimBuilder.build();
+
+        // Then
+        assertNotNull(finalClaim.getSettlementReachedAt());
+        assertNotNull(finalClaim.getSettlement());
+        assertThat(finalClaim.getSettlement().get().getPartyStatements().size(), is(3));
+    }
+
 }

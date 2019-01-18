@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
 import static java.math.BigDecimal.TEN;
@@ -152,7 +151,7 @@ public class SampleCCDDefendant {
 
     public static CCDDefendant.CCDDefendantBuilder withPartyStatements() {
         List<CCDCollectionElement<CCDPartyStatement>> partyStatements =
-            Arrays.asList(
+            asList(
                 CCDCollectionElement.<CCDPartyStatement>builder()
                     .value(SampleCCDPartyStatement.offerPartyStatement()).build(),
                 CCDCollectionElement.<CCDPartyStatement>builder()

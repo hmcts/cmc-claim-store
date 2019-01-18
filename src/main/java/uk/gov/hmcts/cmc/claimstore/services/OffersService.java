@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
@@ -58,12 +59,12 @@ public class OffersService {
         Settlement settlement = claim.getSettlement().orElse(new Settlement());
         settlement.makeOffer(offer, party);
 
-        String userAction
-            = party == MadeBy.CLAIMANT ? OFFER_MADE_BY_CLAIMANT.getValue() : OFFER_MADE_BY_DEFENDANT.getValue();
+        CaseEvent caseEvent =
+            party == MadeBy.CLAIMANT ? OFFER_MADE_BY_CLAIMANT : OFFER_MADE_BY_DEFENDANT;
 
-        caseRepository.updateSettlement(claim, settlement, authorisation, userAction);
+        caseRepository.updateSettlement(claim, settlement, authorisation, caseEvent);
 
-        this.ccdEventProducer.createCCDSettlementEvent(claim, settlement, authorisation, userAction);
+        this.ccdEventProducer.createCCDSettlementEvent(claim, settlement, authorisation, caseEvent);
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createOfferMadeEvent(updated);
         appInsights.trackEvent(OFFER_MADE, REFERENCE_NUMBER, updated.getReferenceNumber());
@@ -78,9 +79,9 @@ public class OffersService {
 
         settlement.accept(party);
 
-        String userAction = OFFER_SIGNED_BY_CLAIMANT.getValue();
-        caseRepository.updateSettlement(claim, settlement, authorisation, userAction);
-        this.ccdEventProducer.createCCDSettlementEvent(claim, settlement, authorisation, userAction);
+        CaseEvent caseEvent = OFFER_SIGNED_BY_CLAIMANT;
+        caseRepository.updateSettlement(claim, settlement, authorisation, caseEvent);
+        this.ccdEventProducer.createCCDSettlementEvent(claim, settlement, authorisation, caseEvent);
 
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createOfferAcceptedEvent(updated, party);
@@ -94,12 +95,12 @@ public class OffersService {
             .orElseThrow(conflictOfferIsNotMade());
         settlement.reject(party);
 
-        String userAction
-            = party == MadeBy.CLAIMANT ? OFFER_REJECTED_BY_CLAIMANT.getValue() : OFFER_REJECTED_BY_DEFENDANT.getValue();
-        caseRepository.updateSettlement(claim, settlement, authorisation, userAction);
+        CaseEvent caseEvent
+            = party == MadeBy.CLAIMANT ? OFFER_REJECTED_BY_CLAIMANT : OFFER_REJECTED_BY_DEFENDANT;
+        caseRepository.updateSettlement(claim, settlement, authorisation, caseEvent);
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createOfferRejectedEvent(updated, party);
-        this.ccdEventProducer.createCCDSettlementEvent(claim, settlement, authorisation, userAction);
+        this.ccdEventProducer.createCCDSettlementEvent(claim, settlement, authorisation, caseEvent);
         appInsights.trackEvent(OFFER_REJECTED, REFERENCE_NUMBER, updated.getReferenceNumber());
         return updated;
     }
@@ -112,13 +113,13 @@ public class OffersService {
         settlement.countersign(party);
 
         caseRepository.reachSettlementAgreement(claim, settlement, authorisation,
-            OFFER_COUNTER_SIGNED_BY_DEFENDANT.getValue());
+            OFFER_COUNTER_SIGNED_BY_DEFENDANT);
 
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createAgreementCountersignedEvent(updated, party);
 
         this.ccdEventProducer.createCCDSettlementEvent(claim, settlement, authorisation,
-            OFFER_COUNTER_SIGNED_BY_DEFENDANT.getValue());
+            OFFER_COUNTER_SIGNED_BY_DEFENDANT);
 
         appInsights.trackEvent(SETTLEMENT_REACHED, REFERENCE_NUMBER, updated.getReferenceNumber());
         return updated;

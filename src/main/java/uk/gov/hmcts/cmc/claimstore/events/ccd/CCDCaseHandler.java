@@ -196,7 +196,7 @@ public class CCDCaseHandler {
             Claim ccdClaim = ccdCaseRepository.getClaimByExternalId(claim.getExternalId(), authorization)
                 .orElseThrow(IllegalStateException::new);
 
-            ccdCaseRepository.updateSettlement(ccdClaim, event.getSettlement(), authorization, event.getUserAction());
+            ccdCaseRepository.updateSettlement(ccdClaim, event.getSettlement(), authorization, event.getCaseEvent());
         } catch (FeignException e) {
             appInsights.trackEvent(CCD_ASYNC_FAILURE, REFERENCE_NUMBER, claim.getReferenceNumber());
             throw e;

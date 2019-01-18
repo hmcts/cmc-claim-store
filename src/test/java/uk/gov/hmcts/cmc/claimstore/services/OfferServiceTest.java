@@ -76,7 +76,7 @@ public class OfferServiceTest {
         offersService.makeOffer(claim, offer, madeBy, AUTHORISATION);
         //then
         verify(caseRepository).updateSettlement(eq(claim), any(Settlement.class),
-            eq(AUTHORISATION), eq(OFFER_MADE_BY_DEFENDANT.getValue()));
+            eq(AUTHORISATION), eq(OFFER_MADE_BY_DEFENDANT));
 
         verify(eventProducer).createOfferMadeEvent(eq(claim));
     }
@@ -101,7 +101,7 @@ public class OfferServiceTest {
 
         //then
         verify(caseRepository).updateSettlement(eq(claimWithOffer), eq(settlement),
-            eq(AUTHORISATION), eq(OFFER_SIGNED_BY_CLAIMANT.getValue()));
+            eq(AUTHORISATION), eq(OFFER_SIGNED_BY_CLAIMANT));
 
         verify(eventProducer).createOfferAcceptedEvent(eq(acceptedOffer), eq(decidedBy));
     }
@@ -122,7 +122,7 @@ public class OfferServiceTest {
 
         //then
         verify(caseRepository).updateSettlement(eq(claimWithOffer), any(Settlement.class),
-            eq(AUTHORISATION), eq(OFFER_REJECTED_BY_CLAIMANT.getValue()));
+            eq(AUTHORISATION), eq(OFFER_REJECTED_BY_CLAIMANT));
 
         verify(eventProducer).createOfferRejectedEvent(eq(claimWithOffer), eq(decidedBy));
     }
@@ -144,7 +144,7 @@ public class OfferServiceTest {
         //then
         verify(caseRepository)
             .reachSettlementAgreement(eq(claimWithAcceptedOffer), any(Settlement.class), eq(AUTHORISATION),
-                eq(OFFER_COUNTER_SIGNED_BY_DEFENDANT.getValue()));
+                eq(OFFER_COUNTER_SIGNED_BY_DEFENDANT));
 
         verify(eventProducer).createAgreementCountersignedEvent(eq(settledClaim), eq(madeBy));
     }

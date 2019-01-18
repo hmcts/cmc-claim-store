@@ -178,13 +178,13 @@ public class DBCaseRepository implements CaseRepository {
         Claim claim,
         Settlement settlement,
         String authorisation,
-        String userAction
+        CaseEvent userAction
     ) {
         offersRepository.updateSettlement(claim.getExternalId(), jsonMapper.toJson(settlement));
     }
 
     @Override
-    public void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, String userAction) {
+    public void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, CaseEvent caseEvent) {
         offersRepository.reachSettlement(
             claim.getExternalId(),
             jsonMapper.toJson(settlement),

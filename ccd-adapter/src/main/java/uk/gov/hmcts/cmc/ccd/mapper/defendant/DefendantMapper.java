@@ -79,12 +79,11 @@ public class DefendantMapper {
 
         countyCourtJudgmentMapper.from(defendant.getCountyCourtJudgementRequest(), builder);
         builder.settlement(settlementMapper.fromCCDDefendant(defendant));
+        builder.settlementReachedAt(defendant.getSettlementReachedAt());
 
         Optional.ofNullable(defendant.getResponseMoreTimeNeededOption()).ifPresent(
             moreTimeNeeded -> builder.moreTimeRequested(moreTimeNeeded.toBoolean())
         );
-
-        builder.settlementReachedAt(defendant.getSettlementReachedAt());
 
         builder.respondedAt(defendant.getResponseSubmittedOn());
         responseMapper.from(builder, defendant);
