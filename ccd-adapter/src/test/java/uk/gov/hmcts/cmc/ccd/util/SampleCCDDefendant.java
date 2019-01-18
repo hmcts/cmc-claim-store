@@ -123,7 +123,7 @@ public class SampleCCDDefendant {
     public static CCDDefendant.CCDDefendantBuilder withReDetermination() {
         return withParty()
             .reDeterminationMadeBy(CCDMadeBy.CLAIMANT)
-            .reDeterminationExplaination("Need money sooner")
+            .reDeterminationExplanation("Need money sooner")
             .reDeterminationRequestedDate(LocalDateTime.now());
     }
 

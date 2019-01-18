@@ -18,7 +18,7 @@ public class ReDeterminationMapper {
 
         claim.getReDetermination().ifPresent(reDetermination -> {
             builder
-                .reDeterminationExplaination(reDetermination.getExplanation())
+                .reDeterminationExplanation(reDetermination.getExplanation())
                 .reDeterminationMadeBy(CCDMadeBy.valueOf(reDetermination.getPartyType().name()));
         });
 
@@ -26,7 +26,7 @@ public class ReDeterminationMapper {
     }
 
     public void from(Claim.ClaimBuilder builder, CCDDefendant defendant) {
-        if (StringUtils.isBlank(defendant.getReDeterminationExplaination())
+        if (StringUtils.isBlank(defendant.getReDeterminationExplanation())
             && defendant.getReDeterminationMadeBy() == null
             && defendant.getReDeterminationRequestedDate() == null
         ) {
@@ -34,7 +34,7 @@ public class ReDeterminationMapper {
         }
 
         builder.reDetermination(ReDetermination.builder()
-            .explanation(defendant.getReDeterminationExplaination())
+            .explanation(defendant.getReDeterminationExplanation())
             .partyType(MadeBy.valueOf(defendant.getReDeterminationMadeBy().name()))
             .build())
             .reDeterminationRequestedAt(defendant.getReDeterminationRequestedDate());

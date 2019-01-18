@@ -92,7 +92,7 @@ public class CCDDefendant {
 
     private CCDClaimantResponse claimantResponse;
 
-    private String reDeterminationExplaination;
+    private String reDeterminationExplanation;
     private LocalDateTime reDeterminationRequestedDate;
     private CCDMadeBy reDeterminationMadeBy;
 
