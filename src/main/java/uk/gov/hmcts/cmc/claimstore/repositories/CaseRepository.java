@@ -62,7 +62,7 @@ public interface CaseRepository {
 
     void linkSealedClaimDocument(String authorisation, Claim claim, URI documentURI);
 
-    void saveReDetermination(String authorisation, Claim claim, ReDetermination reDetermination, String submitterId);
+    void saveReDetermination(String authorisation, Claim claim, ReDetermination reDetermination);
 
     void saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent);
 }

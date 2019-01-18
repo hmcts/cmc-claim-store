@@ -11,12 +11,14 @@ import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDLinkDefendantEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDLinkSealedClaimDocumentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDMoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDPrePaymentEvent;
+import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDReDetermination;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDRejectOrganisationPaymentPlanEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDSettlementEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDTestingLinkDefendantEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDTestingResponseDeadlineEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 
@@ -100,5 +102,13 @@ public class CCDEventProducer {
 
     public void createCCDInterlocutoryJudgmentEvent(Claim claim, String authorisation) {
         publisher.publishEvent(new CCDInterlocutoryJudgmentEvent(claim, authorisation));
+    }
+
+    public void createCCDReDetermination(
+        Claim claim,
+        String authorisation,
+        ReDetermination redetermination
+    ) {
+        publisher.publishEvent(new CCDReDetermination(claim, authorisation, redetermination));
     }
 }
