@@ -70,5 +70,4 @@ withPipeline("java", product, component) {
   enableSlackNotifications(notificationsChannel)
   enableDockerBuild()
   installCharts()
-  setVaultName('cmc')
 }
