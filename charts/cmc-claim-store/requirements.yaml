@@ -3,6 +3,6 @@ dependencies:
     version: ~2.6.5
     repository: '@stable'
   - name: java
-    version: 0.0.9
+    version: 0.0.10
     repository: '@hmcts'
     alias: claim-store
