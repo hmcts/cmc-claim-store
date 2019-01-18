@@ -18,6 +18,9 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
+import java.time.LocalDate;
+
+import static java.time.LocalDate.now;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -205,4 +208,18 @@ public class DefendantMapperTest {
         assertEquals(ccdCountyCourtJudgment.getRequestedDate(), claimWithCCJ.getCountyCourtJudgmentRequestedAt());
     }
 
+    @Test
+    public void mapPaidInFullToCCDDefendant() {
+        //Given
+        TheirDetails theirDetails = SampleTheirDetails.builder().individualDetails();
+        LocalDate moneyReceivedOn = now();
+        Claim claimWithPaidInFull = SampleClaim.builder().withMoneyReceivedOn(moneyReceivedOn).build();
+
+        //When
+        CCDDefendant ccdDefendant = mapper.to(theirDetails, claimWithPaidInFull);
+
+        //Then
+        assertNotNull(ccdDefendant.getPaidInFullDate());
+        assertEquals(moneyReceivedOn, ccdDefendant.getPaidInFullDate());
+    }
 }
