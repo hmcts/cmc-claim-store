@@ -50,10 +50,10 @@ public class ReDeterminationMapperTest {
         //when
         CCDDefendant.CCDDefendantBuilder builder = CCDDefendant.builder();
         mapper.to(builder, claim);
+        CCDDefendant ccdDefendant = builder.build();
 
         //then
         ReDetermination reDetermination = claim.getReDetermination().orElseThrow(AssertionError::new);
-        CCDDefendant ccdDefendant = builder.build();
         assertThat(reDetermination.getExplanation()).isEqualTo(ccdDefendant.getReDeterminationExplanation());
         assertThat(reDetermination.getPartyType().name()).isEqualTo(ccdDefendant.getReDeterminationMadeBy().name());
 
@@ -71,9 +71,9 @@ public class ReDeterminationMapperTest {
         //when
         CCDDefendant.CCDDefendantBuilder builder = CCDDefendant.builder();
         mapper.to(builder, claim);
+        CCDDefendant ccdDefendant = builder.build();
 
         //then
-        CCDDefendant ccdDefendant = builder.build();
         assertThat(ccdDefendant.getReDeterminationExplanation()).isBlank();
         assertThat(ccdDefendant.getReDeterminationMadeBy()).isNull();
         assertThat(ccdDefendant.getReDeterminationRequestedDate()).isNull();
@@ -87,9 +87,9 @@ public class ReDeterminationMapperTest {
 
         //when
         mapper.from(builder, ccdDefendant);
+        Claim claim = builder.build();
 
         //then
-        Claim claim = builder.build();
         assertThat(claim.getReDetermination().isPresent()).isFalse();
         assertThat(claim.getReDeterminationRequestedAt().isPresent()).isFalse();
     }
@@ -102,9 +102,9 @@ public class ReDeterminationMapperTest {
 
         //when
         mapper.from(builder, ccdDefendant);
+        Claim claim = builder.build();
 
         //then
-        Claim claim = builder.build();
         ReDetermination reDetermination = claim.getReDetermination().orElseThrow(AssertionError::new);
         assertThat(reDetermination.getPartyType().name()).isEqualTo(ccdDefendant.getReDeterminationMadeBy().name());
         assertThat(reDetermination.getExplanation()).isEqualTo(ccdDefendant.getReDeterminationExplanation());
