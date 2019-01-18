@@ -5,20 +5,31 @@
 def product = "cmc"
 def component = "claim-store"
 
-List<LinkedHashMap<String, Object>> secrets = [
-  secret('smoke-test-citizen-username', 'SMOKE_TEST_CITIZEN_USERNAME'),
-  secret('smoke-test-solicitor-username', 'SMOKE_TEST_SOLICITOR_USERNAME'),
-  secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
-  secret('generated-user-email-pattern', 'GENERATED_USER_EMAIL_PATTERN'),
-  secret('citizen-oauth-client-secret', 'OAUTH2_CLIENT_SECRET'),
-  secret('claim-store-s2s-secret', 'CLAIM_STORE_S2S_SECRET'),
-  secret('anonymous-caseworker-username', 'ANONYMOUS_CASEWORKER_USERNAME'),
-  secret('anonymous-caseworker-password', 'ANONYMOUS_CASEWORKER_PASSWORD'),
-  secret('system-update-username', 'SYSTEM_UPDATE_USERNAME'),
-  secret('system-update-password', 'SYSTEM_UPDATE_PASSWORD'),
-  secret('notify-api-key', 'NOTIFY_API_KEY'),
-  secret('staff-email', 'STAFF_EMAIL'),
-  secret('AppInsightsInstrumentationKey', 'APPINSIGHTS_INSTRUMENTATIONKEY'),
+def secrets = [
+  'cmc-${env}'      : [
+    secret('smoke-test-citizen-username', 'SMOKE_TEST_CITIZEN_USERNAME'),
+    secret('smoke-test-solicitor-username', 'SMOKE_TEST_SOLICITOR_USERNAME'),
+    secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
+    secret('generated-user-email-pattern', 'GENERATED_USER_EMAIL_PATTERN'),
+    secret('citizen-oauth-client-secret', 'OAUTH2_CLIENT_SECRET'),
+    secret('claim-store-s2s-secret', 'CLAIM_STORE_S2S_SECRET'),
+    secret('anonymous-caseworker-username', 'ANONYMOUS_CASEWORKER_USERNAME'),
+    secret('anonymous-caseworker-password', 'ANONYMOUS_CASEWORKER_PASSWORD'),
+    secret('system-update-username', 'SYSTEM_UPDATE_USERNAME'),
+    secret('system-update-password', 'SYSTEM_UPDATE_PASSWORD'),
+    secret('notify-api-key', 'NOTIFY_API_KEY'),
+    secret('staff-email', 'STAFF_EMAIL'),
+    secret('AppInsightsInstrumentationKey', 'APPINSIGHTS_INSTRUMENTATIONKEY')
+  ],
+  's2s-${env}'      : [
+    secret('microservicekey-ccd-data', 'DATA_STORE_S2S_KEY'),
+    secret('microservicekey-ccd-definition', 'DEFINITION_STORE_S2S_KEY'),
+    secret('microservicekey-ccd-gw', 'API_GATEWAY_S2S_KEY'),
+    secret('microservicekey-ccd-ps', 'PRINT_S2S_KEY')
+  ],
+  'ccd-${env}'      : [
+    secret('ccd-api-gateway-oauth2-client-secret', 'API_GATEWAY_IDAM_SECRET')
+  ]
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
