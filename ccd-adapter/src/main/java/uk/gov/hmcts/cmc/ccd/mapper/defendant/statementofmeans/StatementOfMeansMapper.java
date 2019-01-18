@@ -31,12 +31,12 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Unemployed;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Unemployment;
 
+import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;

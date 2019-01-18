@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalcu
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
@@ -228,6 +229,23 @@ public class CCDCaseHandler {
     @LogExecutionTime
     public void saveRejectOrganisationPaymentPlan(CCDRejectOrganisationPaymentPlanEvent event) {
         saveCaseEvent(event.getClaim(), event.getAuthorization(), REJECT_ORGANISATION_PAYMENT_PLAN);
+    }
+
+    @TransactionalEventListener
+    @LogExecutionTime
+    public void saveReDetermination(CCDReDetermination event) {
+        Claim claim = event.getClaim();
+        String authorization = event.getAuthorisation();
+        try {
+            Claim ccdClaim = ccdCaseRepository.getClaimByExternalId(claim.getExternalId(), authorization)
+                .orElseThrow(IllegalStateException::new);
+
+            ReDetermination redetermination = event.getRedetermination();
+            ccdCaseRepository.saveReDetermination(authorization, ccdClaim, redetermination);
+        } catch (FeignException e) {
+            appInsights.trackEvent(CCD_ASYNC_FAILURE, REFERENCE_NUMBER, claim.getReferenceNumber());
+            throw e;
+        }
     }
 
     private void saveCaseEvent(Claim claim, String authorization, CaseEvent caseEvent) {
