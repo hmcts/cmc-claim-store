@@ -344,9 +344,10 @@ public class ClaimService {
     public void saveReDetermination(
         String authorisation,
         Claim claim,
-        ReDetermination redetermination,
-        String submitterId
+        ReDetermination redetermination
     ) {
-        caseRepository.saveReDetermination(authorisation, claim, redetermination, submitterId);
+        caseRepository.saveReDetermination(authorisation, claim, redetermination);
+        ccdEventProducer.createCCDReDetermination(claim, authorisation, redetermination);
+
     }
 }

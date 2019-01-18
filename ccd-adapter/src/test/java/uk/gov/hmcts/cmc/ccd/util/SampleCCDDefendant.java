@@ -4,8 +4,10 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
+import uk.gov.hmcts.cmc.ccd.domain.offers.CCDMadeBy;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static java.math.BigDecimal.TEN;
 import static java.time.LocalDate.now;
@@ -116,6 +118,13 @@ public class SampleCCDDefendant {
             .responseType(FULL_ADMISSION)
             .statementOfMeans(getCCDStatementOfMeans())
             .defendantPaymentIntention(getCCDPaymentIntention());
+    }
+
+    public static CCDDefendant.CCDDefendantBuilder withReDetermination() {
+        return withParty()
+            .reDeterminationMadeBy(CCDMadeBy.CLAIMANT)
+            .reDeterminationExplanation("Need money sooner")
+            .reDeterminationRequestedDate(LocalDateTime.now());
     }
 
     public static CCDDefendant.CCDDefendantBuilder withPartAdmissionResponse() {
