@@ -116,3 +116,27 @@ nodejs:
     DRAFT_STORE_SECRET_SECONDARY: ${DRAFT_STORE_SECRET_SECONDARY}
     COOKIE_ENCRYPTION_KEY: ${COOKIE_ENCRYPTION_KEY}
     CONTACT_EMAIL: ${CONTACT_EMAIL}
+
+ccd:
+  ingressHost: ${SERVICE_FQDN}
+  ingressIP: ${INGRESS_IP}
+  consulIP: ${CONSUL_LB_IP}
+  apiGateway:
+    s2sKey: ${API_GATEWAY_S2S_KEY}
+    idamClientSecret: ${API_GATEWAY_IDAM_SECRET}
+  dataStoreApi:
+    s2sKey: ${DATA_STORE_S2S_KEY}
+  definitionStoreApi:
+    s2sKey: ${DEFINITION_STORE_S2S_KEY}
+  caseManagementWeb:
+    enabled: true
+  importer:
+    definitions:
+      - https://github.com/hmcts/cmc-ccd-definitions/raw/master/helm-testing.xlsx
+    userRoles:
+      - citizen
+      - caseworker-cmc
+      - caseworker-cmc-solicitor
+      - caseworker-cmc-systemupdate
+      - letter-holder
+      - caseworker-autotest1
