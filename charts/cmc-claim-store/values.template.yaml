@@ -76,7 +76,7 @@ ccd:
     enabled: true
   importer:
     definitions:
-      - https://github.com/hmcts/cmc-ccd-definitions/raw/master/helm-testing.xlsx
+      - https://raw.githubusercontent.com/hmcts/cmc-ccd-definitions/master/helm-testing.xlsx
     userRoles:
       - citizen
       - caseworker-cmc
