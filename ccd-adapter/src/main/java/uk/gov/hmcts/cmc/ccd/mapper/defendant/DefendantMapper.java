@@ -54,6 +54,7 @@ public class DefendantMapper {
         theirDetailsMapper.to(builder, theirDetails);
 
         builder.claimantResponse(claimantResponseMapper.to(claim));
+        claim.getMoneyReceivedOn().ifPresent(builder::paidInFullDate);
 
         return builder.build();
     }
@@ -76,6 +77,8 @@ public class DefendantMapper {
         responseMapper.from(builder, defendant);
 
         claimantResponseMapper.from(defendant.getClaimantResponse(), builder);
+
+        builder.moneyReceivedOn(defendant.getPaidInFullDate());
 
         return theirDetailsMapper.from(defendant);
     }
