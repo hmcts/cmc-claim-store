@@ -559,7 +559,7 @@ public class CoreCaseDataServiceFailureTest {
     }
 
     @Test(expected = CoreCaseDataStoreException.class)
-    public void savePaidInFullFailure() {
+    public void savePaidInFullSubmitEventFailure() {
         Claim claim = SampleClaim.getDefault();
         PaidInFull paidInFull = PaidInFull.builder().moneyReceivedOn(now()).build();
 
