@@ -222,4 +222,18 @@ public class DefendantMapperTest {
         assertNotNull(ccdDefendant.getPaidInFullDate());
         assertEquals(moneyReceivedOn, ccdDefendant.getPaidInFullDate());
     }
+
+    @Test
+    public void mapPaidInFullFromCCDDefendant() {
+        //Given
+        CCDDefendant ccdDefendant = SampleCCDDefendant.withPaidInFull(now()).build();
+        Claim.ClaimBuilder claimBuilder = Claim.builder();
+
+        //when
+        mapper.from(claimBuilder, ccdDefendant);
+        Claim claim = claimBuilder.build();
+
+        //Then
+        assertEquals(ccdDefendant.getPaidInFullDate(), claim.getMoneyReceivedOn().orElseThrow(AssertionError::new));
+    }
 }
