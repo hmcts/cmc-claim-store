@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper.defendant;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -234,6 +235,7 @@ public class DefendantMapperTest {
         Claim claim = claimBuilder.build();
 
         //Then
+        Assertions.assertThat(claim.getMoneyReceivedOn()).isPresent();
         assertEquals(ccdDefendant.getPaidInFullDate(), claim.getMoneyReceivedOn().orElseThrow(AssertionError::new));
     }
 }
