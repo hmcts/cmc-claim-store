@@ -154,4 +154,8 @@ public class SampleCCDDefendant {
                     ).build()
                 ));
     }
+
+    public static CCDDefendant.CCDDefendantBuilder withPaidInFull(LocalDate paidInFullDate) {
+        return withDefault().paidInFullDate(paidInFullDate);
+    }
 }
