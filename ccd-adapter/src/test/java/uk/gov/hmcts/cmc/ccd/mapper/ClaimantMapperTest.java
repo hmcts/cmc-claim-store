@@ -9,6 +9,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -35,11 +36,12 @@ public class ClaimantMapperTest {
         Party party = SampleParty.builder().individual();
 
         //when
-        CCDClaimant ccdParty = claimantMapper.to(party, claim);
+        CCDCollectionElement<CCDClaimant> ccdParty = claimantMapper.to(party, claim);
+        CCDClaimant value = ccdParty.getValue();
 
         //then
-        assertThat(party).isEqualTo(ccdParty);
-        Assertions.assertThat(ccdParty.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
+        assertThat(party).isEqualTo(value);
+        Assertions.assertThat(value.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
     }
 
     @Test
@@ -48,11 +50,12 @@ public class ClaimantMapperTest {
         Party party = SampleParty.builder().company();
 
         //when
-        CCDClaimant ccdParty = claimantMapper.to(party, claim);
+        CCDCollectionElement<CCDClaimant> ccdParty = claimantMapper.to(party, claim);
+        CCDClaimant value = ccdParty.getValue();
 
         //then
-        assertThat(party).isEqualTo(ccdParty);
-        Assertions.assertThat(ccdParty.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
+        assertThat(party).isEqualTo(value);
+        Assertions.assertThat(value.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
     }
 
     @Test
@@ -61,11 +64,12 @@ public class ClaimantMapperTest {
         Party party = SampleParty.builder().organisation();
 
         //when
-        CCDClaimant ccdParty = claimantMapper.to(party, claim);
+        CCDCollectionElement<CCDClaimant> ccdParty = claimantMapper.to(party, claim);
+        CCDClaimant value = ccdParty.getValue();
 
         //then
-        assertThat(party).isEqualTo(ccdParty);
-        Assertions.assertThat(ccdParty.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
+        assertThat(party).isEqualTo(value);
+        Assertions.assertThat(value.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
     }
 
     @Test
@@ -74,11 +78,12 @@ public class ClaimantMapperTest {
         Party party = SampleParty.builder().soleTrader();
 
         //when
-        CCDClaimant ccdParty = claimantMapper.to(party, claim);
+        CCDCollectionElement<CCDClaimant> ccdParty = claimantMapper.to(party, claim);
+        CCDClaimant value = ccdParty.getValue();
 
         //then
-        assertThat(party).isEqualTo(ccdParty);
-        Assertions.assertThat(ccdParty.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
+        assertThat(party).isEqualTo(value);
+        Assertions.assertThat(value.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
     }
 
     @Test
@@ -87,7 +92,8 @@ public class ClaimantMapperTest {
         CCDClaimant ccdParty = getCCDClaimantIndividual();
 
         //when
-        Party party = claimantMapper.from(ccdParty);
+        Party party = claimantMapper
+            .from(CCDCollectionElement.<CCDClaimant>builder().value(ccdParty).build());
 
         //then
         assertThat(party).isEqualTo(ccdParty);
@@ -99,7 +105,8 @@ public class ClaimantMapperTest {
         CCDClaimant ccdParty = getCCDClaimantCompany();
 
         //when
-        Party party = claimantMapper.from(ccdParty);
+        Party party = claimantMapper
+            .from(CCDCollectionElement.<CCDClaimant>builder().value(ccdParty).build());
 
         //then
         assertThat(party).isEqualTo(ccdParty);
@@ -111,7 +118,8 @@ public class ClaimantMapperTest {
         CCDClaimant ccdParty = getCCDClaimantOrganisation();
 
         //when
-        Party party = claimantMapper.from(ccdParty);
+        Party party = claimantMapper
+            .from(CCDCollectionElement.<CCDClaimant>builder().value(ccdParty).build());
 
         //then
         assertThat(party).isEqualTo(ccdParty);
@@ -123,7 +131,8 @@ public class ClaimantMapperTest {
         CCDClaimant ccdParty = getCCDClaimantSoleTrader();
 
         //when
-        Party party = claimantMapper.from(ccdParty);
+        Party party = claimantMapper
+            .from(CCDCollectionElement.<CCDClaimant>builder().value(ccdParty).build());
 
         //then
         assertThat(party).isEqualTo(ccdParty);

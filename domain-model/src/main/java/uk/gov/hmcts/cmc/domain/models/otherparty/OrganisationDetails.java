@@ -1,12 +1,13 @@
 package uk.gov.hmcts.cmc.domain.models.otherparty;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.domain.models.party.HasContactPerson;
 
-import java.util.Optional;
 import javax.validation.constraints.Size;
+import java.util.Optional;
 
 @EqualsAndHashCode(callSuper = true)
 public class OrganisationDetails extends TheirDetails implements HasContactPerson {
@@ -15,7 +16,9 @@ public class OrganisationDetails extends TheirDetails implements HasContactPerso
     private final String contactPerson;
     private final String companiesHouseNumber;
 
+    @Builder
     public OrganisationDetails(
+        String id,
         String name,
         Address address,
         String email,
@@ -24,7 +27,7 @@ public class OrganisationDetails extends TheirDetails implements HasContactPerso
         String contactPerson,
         String companiesHouseNumber
     ) {
-        super(name, address, email, representative, serviceAddress);
+        super(id, name, address, email, representative, serviceAddress);
         this.contactPerson = contactPerson;
         this.companiesHouseNumber = companiesHouseNumber;
     }

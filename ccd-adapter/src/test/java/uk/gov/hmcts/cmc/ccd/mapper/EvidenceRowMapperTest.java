@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceType;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
@@ -25,7 +26,7 @@ public class EvidenceRowMapperTest {
     @Test
     public void shouldMapEvidenceRowToCCD() {
         //given
-        EvidenceRow evidenceRow = new EvidenceRow(EvidenceType.CORRESPONDENCE, "description");
+        EvidenceRow evidenceRow = new EvidenceRow(null, EvidenceType.CORRESPONDENCE, "description");
 
         //when
         CCDEvidenceRow ccdEvidenceRow = mapper.to(evidenceRow);
@@ -38,7 +39,7 @@ public class EvidenceRowMapperTest {
     @Test
     public void shouldMapEvidenceRowToCCDWhenNoDescriptionProvided() {
         //given
-        EvidenceRow evidenceRow = new EvidenceRow(EvidenceType.CORRESPONDENCE, null);
+        EvidenceRow evidenceRow = new EvidenceRow(null, EvidenceType.CORRESPONDENCE, null);
 
         //when
         CCDEvidenceRow ccdEvidenceRow = mapper.to(evidenceRow);
@@ -57,7 +58,8 @@ public class EvidenceRowMapperTest {
             .build();
 
         //when
-        EvidenceRow evidenceRow = mapper.from(ccdEvidenceRow);
+        EvidenceRow evidenceRow = mapper.from(CCDCollectionElement.<CCDEvidenceRow>builder()
+            .value(ccdEvidenceRow).build());
 
         //then
         assertThat(evidenceRow).isEqualTo(ccdEvidenceRow);
@@ -71,7 +73,8 @@ public class EvidenceRowMapperTest {
             .build();
 
         //when
-        EvidenceRow evidenceRow = mapper.from(ccdEvidenceRow);
+        EvidenceRow evidenceRow = mapper.from(CCDCollectionElement.<CCDEvidenceRow>builder()
+            .value(ccdEvidenceRow).build());
 
         //then
         assertThat(evidenceRow).isEqualTo(ccdEvidenceRow);

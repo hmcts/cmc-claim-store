@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.ccd.mapper.defendant;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
@@ -138,7 +137,6 @@ public class ResponseMapper {
             builder.defendantTimeLineEvents(asStream(timeline.getEvents())
                 .map(timelineEventMapper::to)
                 .filter(Objects::nonNull)
-                .map(event -> CCDCollectionElement.<CCDTimelineEvent>builder().value(event).build())
                 .collect(Collectors.toList())
             );
         };
@@ -223,7 +221,6 @@ public class ResponseMapper {
     private DefendantTimeline extractDefendantTimeline(CCDDefendant defendant) {
         return new DefendantTimeline(
             asStream(defendant.getDefendantTimeLineEvents())
-                .map(CCDCollectionElement::getValue)
                 .map(timelineEventMapper::from)
                 .collect(Collectors.toList()),
             defendant.getDefendantTimeLineComment()
@@ -233,7 +230,6 @@ public class ResponseMapper {
     private DefendantEvidence extractDefendantEvidence(CCDDefendant defendant) {
         return new DefendantEvidence(
             asStream(defendant.getResponseEvidenceRows())
-                .map(CCDCollectionElement::getValue)
                 .map(evidenceRowMapper::from)
                 .collect(Collectors.toList()),
             defendant.getResponseEvidenceComment()

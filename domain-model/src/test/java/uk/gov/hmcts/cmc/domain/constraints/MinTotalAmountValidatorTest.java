@@ -7,9 +7,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.domain.models.AmountRow;
 
+import javax.validation.ConstraintValidatorContext;
 import java.math.BigDecimal;
 import java.util.List;
-import javax.validation.ConstraintValidatorContext;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -76,9 +76,9 @@ public class MinTotalAmountValidatorTest {
 
     private AmountRow rowWithAmount(String amountString) {
         if (amountString != null) {
-            return new AmountRow("Any reason", new BigDecimal(amountString));
+            return new AmountRow(null, "Any reason", new BigDecimal(amountString));
         } else {
-            return new AmountRow("Any reason", null);
+            return new AmountRow(null, "Any reason", null);
         }
     }
 

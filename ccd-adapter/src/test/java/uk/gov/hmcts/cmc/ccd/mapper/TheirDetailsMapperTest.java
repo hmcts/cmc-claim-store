@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
@@ -82,7 +83,8 @@ public class TheirDetailsMapperTest {
         CCDDefendant ccdParty = getCCDDefendantIndividual();
 
         //when
-        TheirDetails party = theirDetailsMapper.from(ccdParty);
+        TheirDetails party = theirDetailsMapper
+            .from(CCDCollectionElement.<CCDDefendant>builder().value(ccdParty).build());
 
         //then
         assertThat(party).isEqualTo(ccdParty);
@@ -94,7 +96,8 @@ public class TheirDetailsMapperTest {
         CCDDefendant ccdParty = getCCDDefendantCompany();
 
         //when
-        TheirDetails party = theirDetailsMapper.from(ccdParty);
+        TheirDetails party = theirDetailsMapper
+            .from(CCDCollectionElement.<CCDDefendant>builder().value(ccdParty).build());
 
         //then
         assertThat(party).isEqualTo(ccdParty);
@@ -106,7 +109,8 @@ public class TheirDetailsMapperTest {
         CCDDefendant ccdParty = getCCDDefendantOrganisation();
 
         //when
-        TheirDetails party = theirDetailsMapper.from(ccdParty);
+        TheirDetails party = theirDetailsMapper
+            .from(CCDCollectionElement.<CCDDefendant>builder().value(ccdParty).build());
 
         //then
         assertThat(party).isEqualTo(ccdParty);
@@ -118,7 +122,8 @@ public class TheirDetailsMapperTest {
         CCDDefendant ccdParty = getCCDDefendantSoleTrader();
 
         //when
-        TheirDetails party = theirDetailsMapper.from(ccdParty);
+        TheirDetails party = theirDetailsMapper
+            .from(CCDCollectionElement.<CCDDefendant>builder().value(ccdParty).build());
 
         //then
         assertThat(party).isEqualTo(ccdParty);

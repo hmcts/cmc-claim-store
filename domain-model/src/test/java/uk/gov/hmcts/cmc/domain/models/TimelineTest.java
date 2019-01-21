@@ -13,7 +13,7 @@ public class TimelineTest {
 
     @Test
     public void shouldPassValidationForValidTimeline() {
-        Timeline timeline = new Timeline(asList(new TimelineEvent("Last Year", "description")));
+        Timeline timeline = new Timeline(asList(new TimelineEvent(null, "Last Year", "description")));
 
         Set<String> response = validate(timeline);
 

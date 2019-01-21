@@ -3,6 +3,7 @@
   "claimants": [
     {
       "type": "individual",
+      "id": "3b302a80-e54b-4872-b488-4ce8212c4c10",
       "name": "John Rambo",
       "address": {
         "line1": "52",
@@ -18,32 +19,14 @@
         "city": "Manchester",
         "postcode": "DF1 3LJ"
       },
-      "dateOfBirth": "1968-01-02",
-      "mobilePhone": "07873727165"
+      "mobilePhone": "07873727165",
+      "dateOfBirth": "1968-01-02"
     }
   ],
-  "amount": {
-    "type": "breakdown",
-    "rows": [
-      {
-        "reason": "reason",
-        "amount": 40
-      }
-    ]
-  },
-  "interest": {
-    "type": "standard",
-    "rate": 8,
-    "interestDate": {
-      "type": "custom",
-      "date": "2015-02-02",
-      "reason": "I want to claim from this date because that's when that happened",
-      "endDateType": "settled_or_judgment"
-    }
-  },
   "defendants": [
     {
       "type": "individual",
+      "id": "3d0bc933-0d46-4564-94bd-79e6e69b838b",
       "name": "John Smith",
       "address": {
         "line1": "52",
@@ -56,18 +39,38 @@
     }
   ],
   "payment": {
+    "id": "PaymentId",
     "amount": 4000,
     "reference": "RC-1524-6488-1670-7520",
     "status": "success",
-    "id": "PaymentId",
     "date_created": "2019-01-01"
   },
+  "amount": {
+    "type": "breakdown",
+    "rows": [
+      {
+        "id": "359fda9d-e5fd-4d6e-9525-238642d0157d",
+        "reason": "reason",
+        "amount": 40
+      }
+    ]
+  },
   "feeAmountInPennies": 4000,
-  "reason": "reason",
   "feeCode": "X0012",
+  "interest": {
+    "type": "standard",
+    "rate": 8,
+    "interestDate": {
+      "type": "custom",
+      "date": "2015-02-02",
+      "reason": "I want to claim from this date because that's when that happened",
+      "endDateType": "settled_or_judgment"
+    }
+  },
   "timeline": {
     "rows": [
       {
+        "id": "359fda9d-e5fd-4d6e-9525-238642d0157d",
         "date": "Last Year",
         "description": "signed a contract"
       }
@@ -76,9 +79,11 @@
   "evidence": {
     "rows": [
       {
+        "id": "359fda9d-e5fd-4d6e-9525-238642d0157d",
         "type": "CORRESPONDENCE",
         "description": "description"
       }
     ]
-  }
+  },
+  "reason": "reason"
 }

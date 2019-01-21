@@ -43,7 +43,6 @@ public class EvidenceMapper implements BuilderMapper<CCDCase, Evidence, CCDCase.
         }
         return new Evidence(
             ccdCase.getEvidence().stream()
-                .map(CCDCollectionElement::getValue)
                 .map(evidenceRowMapper::from)
                 .collect(Collectors.toList())
         );

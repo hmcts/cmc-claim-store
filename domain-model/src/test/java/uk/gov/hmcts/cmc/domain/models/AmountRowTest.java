@@ -13,7 +13,7 @@ public class AmountRowTest {
     @Test
     public void shouldBeSuccessfulValidationForFullAmountDetails() {
         //given
-        AmountRow amountRow = new AmountRow("reason", new BigDecimal("40"));
+        AmountRow amountRow = new AmountRow(null, "reason", new BigDecimal("40"));
         //when
         Set<String> errors = validate(amountRow);
         //then
@@ -23,7 +23,7 @@ public class AmountRowTest {
     @Test
     public void shouldReturnValidationMessageWhenAmountHasMissingReason() {
         //given
-        AmountRow amountRow = new AmountRow(null, new BigDecimal("40"));
+        AmountRow amountRow = new AmountRow(null, null, new BigDecimal("40"));
         //when
         Set<String> errors = validate(amountRow);
         //then
@@ -35,7 +35,7 @@ public class AmountRowTest {
     @Test
     public void shouldReturnValidationMessageWhenAmountHasMissingAmount() {
         //given
-        AmountRow amountRow = new AmountRow("reason", null);
+        AmountRow amountRow = new AmountRow(null, "reason", null);
         //when
         Set<String> errors = validate(amountRow);
         //then
@@ -47,7 +47,7 @@ public class AmountRowTest {
     @Test
     public void shouldReturnValidationMessageWhenAmountHasValueLessThanMinimum() {
         //given
-        AmountRow amountRow = new AmountRow("reason", new BigDecimal("0.00"));
+        AmountRow amountRow = new AmountRow(null, "reason", new BigDecimal("0.00"));
         //when
         Set<String> errors = validate(amountRow);
         //then
@@ -59,7 +59,7 @@ public class AmountRowTest {
     @Test
     public void shouldBeSuccessfulValidationForFullAmountDetailsWithTwoFraction() {
         //given
-        AmountRow amountRow = new AmountRow("reason", new BigDecimal("40.50"));
+        AmountRow amountRow = new AmountRow(null, "reason", new BigDecimal("40.50"));
         //when
         Set<String> errors = validate(amountRow);
         //then
@@ -69,7 +69,7 @@ public class AmountRowTest {
     @Test
     public void shouldReturnValidationMessageWhenAmountHasValueWithMoreThanAllowedFractions() {
         //given
-        AmountRow amountRow = new AmountRow("reason", new BigDecimal("40.123"));
+        AmountRow amountRow = new AmountRow(null, "reason", new BigDecimal("40.123"));
         //when
         Set<String> errors = validate(amountRow);
         //then

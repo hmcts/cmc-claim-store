@@ -2,12 +2,12 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.domain.models.otherparty.OrganisationDetails;
 
 @Component
-public class OrganisationDetailsMapper
-    implements BuilderMapper<CCDDefendant, OrganisationDetails, CCDDefendant.CCDDefendantBuilder> {
+public class OrganisationDetailsMapper {
 
     private final AddressMapper addressMapper;
     private final DefendantRepresentativeMapper representativeMapper;
@@ -18,7 +18,6 @@ public class OrganisationDetailsMapper
         this.representativeMapper = representativeMapper;
     }
 
-    @Override
     public void to(OrganisationDetails organisation, CCDDefendant.CCDDefendantBuilder builder) {
 
         organisation.getServiceAddress()
@@ -33,17 +32,17 @@ public class OrganisationDetailsMapper
             .claimantProvidedAddress(addressMapper.to(organisation.getAddress()));
     }
 
-    @Override
-    public OrganisationDetails from(CCDDefendant ccdOrganisation) {
+    public OrganisationDetails from(CCDCollectionElement<CCDDefendant> ccdOrganisation) {
+        CCDDefendant value = ccdOrganisation.getValue();
 
-        return new OrganisationDetails(
-            ccdOrganisation.getClaimantProvidedName(),
-            addressMapper.from(ccdOrganisation.getClaimantProvidedAddress()),
-            ccdOrganisation.getClaimantProvidedEmail(),
-            representativeMapper.from(ccdOrganisation),
-            addressMapper.from(ccdOrganisation.getClaimantProvidedServiceAddress()),
-            ccdOrganisation.getClaimantProvidedContactPerson(),
-            ccdOrganisation.getClaimantProvidedCompaniesHouseNumber()
-        );
+        return OrganisationDetails.builder()
+            .name(value.getClaimantProvidedName())
+            .address(addressMapper.from(value.getClaimantProvidedAddress()))
+            .email(value.getClaimantProvidedEmail())
+            .representative(representativeMapper.from(value))
+            .serviceAddress(addressMapper.from(value.getClaimantProvidedServiceAddress()))
+            .contactPerson(value.getClaimantProvidedContactPerson())
+            .companiesHouseNumber(value.getClaimantProvidedCompaniesHouseNumber())
+            .build();
     }
 }

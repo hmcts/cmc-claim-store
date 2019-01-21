@@ -16,7 +16,7 @@ public class DefendantTimelineTest {
     @Test
     public void shouldPassValidationForValidDefendantTimeline() {
         DefendantTimeline timeline = new DefendantTimeline(
-            asList(new TimelineEvent("Last Year", "description")), "comments"
+            asList(new TimelineEvent(null, "Last Year", "description")), "comments"
         );
 
         Set<String> response = validate(timeline);
@@ -59,7 +59,7 @@ public class DefendantTimelineTest {
     @Test
     public void shouldPassValidationForNullComment() {
         DefendantTimeline timeline = new DefendantTimeline(
-            asList(new TimelineEvent("Last Year", "description")), null
+            asList(new TimelineEvent(null, "Last Year", "description")), null
         );
 
         Set<String> response = validate(timeline);
@@ -71,7 +71,7 @@ public class DefendantTimelineTest {
     @Test
     public void shouldPassValidationForEmptyComment() {
         DefendantTimeline timeline = new DefendantTimeline(
-            asList(new TimelineEvent("Last Year", "description")), ""
+            asList(new TimelineEvent(null, "Last Year", "description")), ""
         );
 
         Set<String> response = validate(timeline);
@@ -83,7 +83,7 @@ public class DefendantTimelineTest {
     @Test
     public void shouldPFailValidationForTooLongComment() {
         DefendantTimeline timeline = new DefendantTimeline(
-            asList(new TimelineEvent("Last Year", "description")), repeat("a", 99001)
+            asList(new TimelineEvent(null, "Last Year", "description")), repeat("a", 99001)
         );
 
         Set<String> response = validate(timeline);

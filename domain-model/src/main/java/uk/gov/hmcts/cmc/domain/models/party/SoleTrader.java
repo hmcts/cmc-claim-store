@@ -6,8 +6,8 @@ import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 
-import java.util.Optional;
 import javax.validation.constraints.Size;
+import java.util.Optional;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @EqualsAndHashCode(callSuper = true)
@@ -20,6 +20,7 @@ public class SoleTrader extends Party implements TitledParty {
 
     @Builder
     public SoleTrader(
+        String id,
         String name,
         Address address,
         Address correspondenceAddress,
@@ -28,7 +29,7 @@ public class SoleTrader extends Party implements TitledParty {
         String title,
         String businessName
     ) {
-        super(name, address, correspondenceAddress, mobilePhone, representative);
+        super(id, name, address, correspondenceAddress, mobilePhone, representative);
         this.title = title;
         this.businessName = businessName;
     }

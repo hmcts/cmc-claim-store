@@ -3,10 +3,11 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.domain.models.party.Company;
 
 @Component
-public class CompanyMapper implements BuilderMapper<CCDClaimant, Company, CCDClaimant.CCDClaimantBuilder> {
+public class CompanyMapper {
 
     private final AddressMapper addressMapper;
     private final RepresentativeMapper representativeMapper;
@@ -17,7 +18,6 @@ public class CompanyMapper implements BuilderMapper<CCDClaimant, Company, CCDCla
         this.representativeMapper = representativeMapper;
     }
 
-    @Override
     public void to(Company company, CCDClaimant.CCDClaimantBuilder builder) {
 
         company.getMobilePhone().ifPresent(builder::partyPhone);
@@ -35,16 +35,16 @@ public class CompanyMapper implements BuilderMapper<CCDClaimant, Company, CCDCla
 
     }
 
-    @Override
-    public Company from(CCDClaimant company) {
-
-        return new Company(
-            company.getPartyName(),
-            addressMapper.from(company.getPartyAddress()),
-            addressMapper.from(company.getPartyCorrespondenceAddress()),
-            company.getPartyPhone(),
-            representativeMapper.from(company),
-            company.getPartyContactPerson()
-        );
+    public Company from(CCDCollectionElement<CCDClaimant> company) {
+        CCDClaimant value = company.getValue();
+        return Company.builder()
+            .id(company.getId())
+            .name(value.getPartyName())
+            .address(addressMapper.from(value.getPartyAddress()))
+            .correspondenceAddress(addressMapper.from(value.getPartyCorrespondenceAddress()))
+            .mobilePhone(value.getPartyPhone())
+            .representative(representativeMapper.from(value))
+            .contactPerson(value.getPartyContactPerson())
+            .build();
     }
 }

@@ -7,12 +7,13 @@ import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.domain.models.Address;
+import uk.gov.hmcts.cmc.domain.models.CollectionId;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 
-import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
@@ -29,8 +30,8 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
         @JsonSubTypes.Type(value = Organisation.class, name = "organisation")
     }
 )
-@EqualsAndHashCode
-public abstract class Party implements NamedParty {
+@EqualsAndHashCode(callSuper = true)
+public abstract class Party extends CollectionId implements NamedParty {
 
     @NotBlank
     @Size(max = 255, message = "may not be longer than {max} characters")
@@ -50,12 +51,14 @@ public abstract class Party implements NamedParty {
     private final Representative representative;
 
     public Party(
+        String id,
         String name,
         Address address,
         Address correspondenceAddress,
         String mobilePhone,
         Representative representative
     ) {
+        super(id);
         this.name = name;
         this.address = address;
         this.correspondenceAddress = correspondenceAddress;

@@ -2,12 +2,12 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
 
 @Component
-public class IndividualDetailsMapper
-    implements BuilderMapper<CCDDefendant, IndividualDetails, CCDDefendant.CCDDefendantBuilder> {
+public class IndividualDetailsMapper {
 
     private final AddressMapper addressMapper;
     private DefendantRepresentativeMapper representativeMapper;
@@ -21,7 +21,6 @@ public class IndividualDetailsMapper
         this.representativeMapper = defendantRepresentativeMapper;
     }
 
-    @Override
     public void to(IndividualDetails individual, CCDDefendant.CCDDefendantBuilder builder) {
 
         individual.getServiceAddress()
@@ -39,16 +38,16 @@ public class IndividualDetailsMapper
             .claimantProvidedAddress(addressMapper.to(individual.getAddress()));
     }
 
-    @Override
-    public IndividualDetails from(CCDDefendant ccdDefendant) {
+    public IndividualDetails from(CCDCollectionElement<CCDDefendant> ccdDefendant) {
+        CCDDefendant value = ccdDefendant.getValue();
 
-        return new IndividualDetails(
-            ccdDefendant.getClaimantProvidedName(),
-            addressMapper.from(ccdDefendant.getClaimantProvidedAddress()),
-            ccdDefendant.getClaimantProvidedEmail(),
-            representativeMapper.from(ccdDefendant),
-            addressMapper.from(ccdDefendant.getClaimantProvidedServiceAddress()),
-            ccdDefendant.getClaimantProvidedDateOfBirth()
-        );
+        return IndividualDetails.builder()
+            .name(value.getClaimantProvidedName())
+            .address(addressMapper.from(value.getClaimantProvidedAddress()))
+            .email(value.getClaimantProvidedEmail())
+            .representative(representativeMapper.from(value))
+            .serviceAddress(addressMapper.from(value.getClaimantProvidedServiceAddress()))
+            .dateOfBirth(value.getClaimantProvidedDateOfBirth())
+            .build();
     }
 }

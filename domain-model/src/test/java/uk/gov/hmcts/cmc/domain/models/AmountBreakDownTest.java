@@ -27,7 +27,7 @@ public class AmountBreakDownTest {
     public void shouldReturnValidationMessageWhenAmountBreakDownHasNullRows() {
         //given
         AmountBreakDown amountBreakDown = SampleAmountBreakdown.builder()
-            .rows(null)
+            .withRows(null)
             .build();
         //when
         Set<String> validationMessages = validate(amountBreakDown);
@@ -41,9 +41,9 @@ public class AmountBreakDownTest {
     public void shouldReturnValidationMessageWhenHasInvalidAmountRow() {
         //given
         AmountBreakDown amountBreakDown = SampleAmountBreakdown.builder()
-            .rows(ImmutableList.of(
-                new AmountRow("reason", null),
-                new AmountRow("reason", new BigDecimal("10"))))
+            .withRows(ImmutableList.of(
+                new AmountRow(null, "reason", null),
+                new AmountRow(null, "reason", new BigDecimal("10"))))
             .build();
         //when
         Set<String> validationMessages = validate(amountBreakDown);
@@ -57,7 +57,7 @@ public class AmountBreakDownTest {
     public void shouldReturnValidationMessageWhenBreakdownHasEmptyRowsList() {
         //given
         AmountBreakDown amountBreakDown = SampleAmountBreakdown.builder()
-            .rows(ImmutableList.of())
+            .withRows(ImmutableList.of())
             .build();
         //when
         Set<String> validationMessages = validate(amountBreakDown);
@@ -71,7 +71,7 @@ public class AmountBreakDownTest {
     public void shouldReturnValidationMessagesWhenBreakdownHasRowWith0Amount() {
         //given
         AmountBreakDown amountBreakDown = SampleAmountBreakdown.builder()
-            .rows(ImmutableList.of(new AmountRow("reason", new BigDecimal("0"))))
+            .withRows(ImmutableList.of(new AmountRow(null, "reason", new BigDecimal("0"))))
             .build();
         //when
         Set<String> validationMessages = validate(amountBreakDown);

@@ -2,17 +2,19 @@ package uk.gov.hmcts.cmc.domain.models.evidence;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.domain.models.CollectionId;
 
-import java.util.Optional;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-@Builder
-@EqualsAndHashCode
-public class EvidenceRow {
+@EqualsAndHashCode(callSuper = true)
+@Getter
+public class EvidenceRow extends CollectionId {
 
     @NotNull
     private final EvidenceType type;
@@ -20,13 +22,11 @@ public class EvidenceRow {
     @Size(max = 99000)
     private final String description;
 
-    public EvidenceRow(EvidenceType type, String description) {
+    @Builder
+    public EvidenceRow(String id, EvidenceType type, String description) {
+        super(id);
         this.type = type;
         this.description = description;
-    }
-
-    public EvidenceType getType() {
-        return type;
     }
 
     public Optional<String> getDescription() {

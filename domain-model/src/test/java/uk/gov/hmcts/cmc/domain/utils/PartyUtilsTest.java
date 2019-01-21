@@ -38,13 +38,13 @@ public class PartyUtilsTest {
 
     @Test(expected = NotificationException.class)
     public void getTypeThrowsWhenPartyTypeUnknown() {
-        PartyUtils.getType(new Party(null, null, null, null, null) {
+        PartyUtils.getType(new Party(null, null, null, null, null, null) {
         });
     }
 
     @Test(expected = NotificationException.class)
     public void getTypeTheirDetailsThrowsWhenPartyTypeUnknown() {
-        PartyUtils.getType(new TheirDetails(null, null, null, null, null) {
+        PartyUtils.getType(new TheirDetails(null, null, null, null, null, null) {
         });
     }
 

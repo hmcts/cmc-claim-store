@@ -12,7 +12,7 @@ public class TimelineEventTest {
 
     @Test
     public void shouldBeSuccessfulValidationForCorrectTimelineEvent() {
-        TimelineEvent timelineEvent = new TimelineEvent("Last Year", "description");
+        TimelineEvent timelineEvent = new TimelineEvent(null, "Last Year", "description");
 
         Set<String> response = validate(timelineEvent);
 
@@ -21,7 +21,7 @@ public class TimelineEventTest {
 
     @Test
     public void shouldFailValidationForNullEventDate() {
-        TimelineEvent timelineEvent = new TimelineEvent(null, "description");
+        TimelineEvent timelineEvent = new TimelineEvent(null, null, "description");
 
         Set<String> response = validate(timelineEvent);
 
@@ -32,7 +32,7 @@ public class TimelineEventTest {
 
     @Test
     public void shouldFailValidationForEmptyEventDate() {
-        TimelineEvent timelineEvent = new TimelineEvent("", "description");
+        TimelineEvent timelineEvent = new TimelineEvent(null, "", "description");
 
         Set<String> response = validate(timelineEvent);
 
@@ -43,7 +43,7 @@ public class TimelineEventTest {
 
     @Test
     public void shouldFailValidationForTooLongEventDate() {
-        TimelineEvent timelineEvent = new TimelineEvent(repeat("a", 21), "description");
+        TimelineEvent timelineEvent = new TimelineEvent(null, repeat("a", 21), "description");
 
         Set<String> response = validate(timelineEvent);
 
@@ -54,7 +54,7 @@ public class TimelineEventTest {
 
     @Test
     public void shouldFailValidationForNullDescription() {
-        TimelineEvent timelineEvent = new TimelineEvent("Last Year", null);
+        TimelineEvent timelineEvent = new TimelineEvent(null, "Last Year", null);
 
         Set<String> response = validate(timelineEvent);
 
@@ -65,7 +65,7 @@ public class TimelineEventTest {
 
     @Test
     public void shouldFailValidationForEmptyDescription() {
-        TimelineEvent timelineEvent = new TimelineEvent("Last Year", "");
+        TimelineEvent timelineEvent = new TimelineEvent(null, "Last Year", "");
 
         Set<String> response = validate(timelineEvent);
 
@@ -76,7 +76,7 @@ public class TimelineEventTest {
 
     @Test
     public void shouldFailValidationForTooLongDescription() {
-        TimelineEvent timelineEvent = new TimelineEvent("Last Year", repeat("a", 99001));
+        TimelineEvent timelineEvent = new TimelineEvent(null, "Last Year", repeat("a", 99001));
 
         Set<String> response = validate(timelineEvent);
 

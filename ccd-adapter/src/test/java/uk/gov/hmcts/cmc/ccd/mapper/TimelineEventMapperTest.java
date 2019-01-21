@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 
@@ -23,13 +24,13 @@ public class TimelineEventMapperTest {
     @Test
     public void shouldMapTimelineEventToCCD() {
         //given
-        TimelineEvent timelineEvent = new TimelineEvent("Last Year", "Work done");
+        TimelineEvent timelineEvent = new TimelineEvent(null, "Last Year", "Work done");
 
         //when
-        CCDTimelineEvent ccdTimelineEvent = mapper.to(timelineEvent);
+        CCDCollectionElement<CCDTimelineEvent> ccdTimelineEvent = mapper.to(timelineEvent);
 
         //then
-        assertThat(timelineEvent).isEqualTo(ccdTimelineEvent);
+        assertThat(timelineEvent).isEqualTo(ccdTimelineEvent.getValue());
 
     }
 
@@ -42,7 +43,8 @@ public class TimelineEventMapperTest {
             .build();
 
         //when
-        TimelineEvent timelineEvent = mapper.from(ccdTimelineEvent);
+        TimelineEvent timelineEvent
+            = mapper.from(CCDCollectionElement.<CCDTimelineEvent>builder().value(ccdTimelineEvent).build());
 
         //then
         assertThat(timelineEvent).isEqualTo(ccdTimelineEvent);

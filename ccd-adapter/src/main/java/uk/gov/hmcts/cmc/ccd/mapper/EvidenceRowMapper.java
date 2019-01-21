@@ -1,15 +1,15 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceType;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceType;
 
 @Component
-public class EvidenceRowMapper implements Mapper<CCDEvidenceRow, EvidenceRow> {
+public class EvidenceRowMapper {
 
-    @Override
     public CCDEvidenceRow to(EvidenceRow evidenceRow) {
         CCDEvidenceRow.CCDEvidenceRowBuilder builder = CCDEvidenceRow.builder();
         builder.type(CCDEvidenceType.valueOf(evidenceRow.getType().name()));
@@ -17,11 +17,11 @@ public class EvidenceRowMapper implements Mapper<CCDEvidenceRow, EvidenceRow> {
         return builder.build();
     }
 
-    @Override
-    public EvidenceRow from(CCDEvidenceRow row) {
-        if (row == null || row.getType() == null) {
+    public EvidenceRow from(CCDCollectionElement<CCDEvidenceRow> row) {
+        CCDEvidenceRow value = row.getValue();
+        if (value == null || value.getType() == null) {
             return null;
         }
-        return new EvidenceRow(EvidenceType.valueOf(row.getType().name()), row.getDescription());
+        return new EvidenceRow(row.getId(), EvidenceType.valueOf(value.getType().name()), value.getDescription());
     }
 }

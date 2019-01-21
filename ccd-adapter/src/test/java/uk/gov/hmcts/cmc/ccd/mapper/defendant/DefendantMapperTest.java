@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.util.SampleCCDDefendant;
@@ -55,7 +56,8 @@ public class DefendantMapperTest {
             "referenceNumber");
 
         //When
-        CCDDefendant defendant = mapper.to(theirDetails, claim);
+        CCDCollectionElement<CCDDefendant> ccdDefendant = mapper.to(theirDetails, claim);
+        CCDDefendant defendant = ccdDefendant.getValue();
 
         //Then
         assertEquals("Claim response deadline is not mapped properly",
@@ -84,8 +86,8 @@ public class DefendantMapperTest {
         Claim claim = SampleClaim.getClaimWithFullDefenceNoMediation();
 
         //When
-        CCDDefendant defendant = mapper.to(theirDetails, claim);
-
+        CCDCollectionElement<CCDDefendant> ccdDefendant = mapper.to(theirDetails, claim);
+        CCDDefendant defendant = ccdDefendant.getValue();
         //Then
         assertEquals("Claim response deadline is not mapped properly",
             defendant.getResponseDeadline(), claim.getResponseDeadline());
@@ -124,7 +126,7 @@ public class DefendantMapperTest {
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         //when
-        mapper.from(claimBuilder, ccdDefendant);
+        mapper.from(claimBuilder, CCDCollectionElement.<CCDDefendant>builder().value(ccdDefendant).build());
         Claim finalClaim = claimBuilder.build();
 
         // Then
@@ -151,7 +153,7 @@ public class DefendantMapperTest {
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         //when
-        mapper.from(claimBuilder, ccdDefendant);
+        mapper.from(claimBuilder, CCDCollectionElement.<CCDDefendant>builder().value(ccdDefendant).build());
         Claim finalClaim = claimBuilder.build();
 
         // Then
@@ -166,7 +168,7 @@ public class DefendantMapperTest {
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         //when
-        TheirDetails party = mapper.from(claimBuilder, ccdDefendant);
+        TheirDetails party = mapper.from(claimBuilder, CCDCollectionElement.<CCDDefendant>builder().value(ccdDefendant).build());
         Claim finalClaim = claimBuilder.build();
 
         // Then
@@ -196,8 +198,8 @@ public class DefendantMapperTest {
         CountyCourtJudgment countyCourtJudgment = claimWithCCJ.getCountyCourtJudgment();
 
         //When
-        CCDDefendant ccdDefendant = mapper.to(theirDetails, claimWithCCJ);
-
+        CCDCollectionElement<CCDDefendant> defendant = mapper.to(theirDetails, claimWithCCJ);
+        CCDDefendant ccdDefendant = defendant.getValue();
         //Then
         CCDCountyCourtJudgment ccdCountyCourtJudgment = ccdDefendant.getCountyCourtJudgementRequest();
         assertNotNull(ccdCountyCourtJudgment);

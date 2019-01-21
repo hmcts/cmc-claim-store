@@ -13,7 +13,7 @@ public class EvidenceTest {
 
     @Test
     public void shouldPassValidationForValidEvidence() {
-        Evidence evidence = new Evidence(asList(new EvidenceRow(PHOTO, "description")));
+        Evidence evidence = new Evidence(asList(new EvidenceRow(null, PHOTO, "description")));
 
         Set<String> response = validate(evidence);
 

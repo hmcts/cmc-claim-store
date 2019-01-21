@@ -13,9 +13,9 @@ public class AmountBreakDownTotalAmountTest {
     @Test
     public void shouldCorrectlySumBreakdownAmounts() {
         AmountBreakDown breakDown = new AmountBreakDown(asList(
-            new AmountRow("one", BigDecimal.ONE),
-            new AmountRow("two", BigDecimal.TEN),
-            new AmountRow("three", new BigDecimal("3.4"))
+            new AmountRow(null, "one", BigDecimal.ONE),
+            new AmountRow(null, "two", BigDecimal.TEN),
+            new AmountRow(null, "three", new BigDecimal("3.4"))
         ));
 
         assertThat(breakDown.getTotalAmount()).isEqualTo("14.4");
@@ -24,9 +24,9 @@ public class AmountBreakDownTotalAmountTest {
     @Test
     public void shouldIgnoreRowsWithNullAmount() {
         AmountBreakDown breakDown = new AmountBreakDown(asList(
-            new AmountRow("one", BigDecimal.ONE),
-            new AmountRow("two", null),
-            new AmountRow("three", new BigDecimal("1.2"))
+            new AmountRow(null, "one", BigDecimal.ONE),
+            new AmountRow(null, "two", null),
+            new AmountRow(null, "three", new BigDecimal("1.2"))
         ));
 
         assertThat(breakDown.getTotalAmount()).isEqualTo("2.2");

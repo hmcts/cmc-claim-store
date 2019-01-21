@@ -19,6 +19,6 @@ public class AmountRowMapper implements Mapper<CCDAmountRow, AmountRow> {
 
     @Override
     public AmountRow from(CCDAmountRow ccdAmountRow) {
-        return new AmountRow(ccdAmountRow.getReason(), ccdAmountRow.getAmount());
+        return new AmountRow(null, ccdAmountRow.getReason(), ccdAmountRow.getAmount());
     }
 }
