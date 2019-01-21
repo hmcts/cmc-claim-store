@@ -184,7 +184,8 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, CaseEvent caseEvent) {
+    public void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation,
+                                         CaseEvent caseEvent) {
         offersRepository.reachSettlement(
             claim.getExternalId(),
             jsonMapper.toJson(settlement),
@@ -208,7 +209,8 @@ public class DBCaseRepository implements CaseRepository {
             claimRepository.saveRepresented(claimDataString, claim.getSubmitterId(), claim.getIssuedOn(),
                 claim.getResponseDeadline(), claim.getExternalId(), claim.getSubmitterEmail(), features);
         } else {
-            claimRepository.saveSubmittedByClaimant(claimDataString, claim.getSubmitterId(), claim.getLetterHolderId(),
+            claimRepository.saveSubmittedByClaimant(claimDataString,
+                claim.getSubmitterId(), claim.getLetterHolderId(),
                 claim.getIssuedOn(), claim.getResponseDeadline(), claim.getExternalId(),
                 claim.getSubmitterEmail(), features);
         }

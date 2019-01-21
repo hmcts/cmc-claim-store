@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.mapper.defendant;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +20,8 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SamplePartyStatement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 
-import java.time.LocalDateTime;
-
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static java.time.LocalDate.now;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -33,6 +31,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.ORGANISATION;
 
@@ -240,9 +239,10 @@ public class DefendantMapperTest {
         Claim claim = claimBuilder.build();
 
         //Then
-        Assertions.assertThat(claim.getMoneyReceivedOn()).isPresent();
+        assertTrue(claim.getMoneyReceivedOn().isPresent());
         assertEquals(ccdDefendant.getPaidInFullDate(), claim.getMoneyReceivedOn().orElseThrow(AssertionError::new));
     }
+
     @Test
     public void mapToCCDDefendantWithNullSettlement() {
         //Given

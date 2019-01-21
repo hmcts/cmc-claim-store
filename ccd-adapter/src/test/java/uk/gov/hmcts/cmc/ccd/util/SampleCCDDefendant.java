@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.util;
 
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
@@ -171,7 +172,9 @@ public class SampleCCDDefendant {
                 CCDCollectionElement.<CCDPartyStatement>builder()
                     .value(SampleCCDPartyStatement.counterSignPartyStatement()).build()
             );
-        return withPartAdmissionResponse().settlementReachedAt(LocalDateTime.now())
+        return withPartAdmissionResponse()
+            .claimantProvidedType(CCDPartyType.INDIVIDUAL)
+            .settlementReachedAt(LocalDateTime.now())
             .settlementPartyStatements(partyStatements);
     }
 }
