@@ -161,7 +161,7 @@ public class CountyCourtJudgmentServiceTest {
         InOrder inOrder = inOrder(claimService, eventProducer, appInsights);
 
         inOrder.verify(claimService, once()).saveReDetermination(eq(AUTHORISATION), any(),
-            eq(reDetermination), eq(USER_ID));
+            eq(reDetermination));
         inOrder.verify(eventProducer, once()).createRedeterminationEvent(any(Claim.class),
             eq(AUTHORISATION), eq(userDetails.getFullName()), eq(reDetermination.getPartyType()));
         inOrder.verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.REDETERMINATION_REQUESTED),
