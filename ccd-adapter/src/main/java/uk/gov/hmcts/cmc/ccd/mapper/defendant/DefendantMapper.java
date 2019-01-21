@@ -23,6 +23,7 @@ public class DefendantMapper {
     private final TheirDetailsMapper theirDetailsMapper;
     private final ResponseMapper responseMapper;
     private final ClaimantResponseMapper claimantResponseMapper;
+    private final ReDeterminationMapper reDeterminationMapper;
     private final CountyCourtJudgmentMapper countyCourtJudgmentMapper;
 
     @Autowired
@@ -30,12 +31,14 @@ public class DefendantMapper {
         TheirDetailsMapper theirDetailsMapper,
         ResponseMapper responseMapper,
         CountyCourtJudgmentMapper countyCourtJudgmentMapper,
-        ClaimantResponseMapper claimantResponseMapper
+        ClaimantResponseMapper claimantResponseMapper,
+        ReDeterminationMapper reDeterminationMapper
     ) {
         this.theirDetailsMapper = theirDetailsMapper;
         this.responseMapper = responseMapper;
         this.countyCourtJudgmentMapper = countyCourtJudgmentMapper;
         this.claimantResponseMapper = claimantResponseMapper;
+        this.reDeterminationMapper = reDeterminationMapper;
     }
 
     public CCDCollectionElement<CCDDefendant> to(TheirDetails theirDetails, Claim claim) {
@@ -55,6 +58,9 @@ public class DefendantMapper {
         theirDetailsMapper.to(builder, theirDetails);
 
         builder.claimantResponse(claimantResponseMapper.to(claim));
+        claim.getMoneyReceivedOn().ifPresent(builder::paidInFullDate);
+
+        reDeterminationMapper.to(builder, claim);
 
         return CCDCollectionElement.<CCDDefendant>builder()
             .value(builder.build())
@@ -83,6 +89,10 @@ public class DefendantMapper {
         responseMapper.from(builder, ccdDefendant);
 
         claimantResponseMapper.from(ccdDefendant.getClaimantResponse(), builder);
+
+        reDeterminationMapper.from(builder, defendant);
+
+        builder.moneyReceivedOn(defendant.getPaidInFullDate());
 
         return theirDetailsMapper.from(defendant);
     }
