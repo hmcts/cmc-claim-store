@@ -333,6 +333,7 @@ public class ClaimService {
         this.caseRepository.paidInFull(claim, paidInFull, authorisation);
         Claim updatedClaim = getClaimByExternalId(externalId, authorisation);
         this.eventProducer.createPaidInFullEvent(updatedClaim);
+        this.ccdEventProducer.createCCDPaidInFullEvent(authorisation, claim, paidInFull);
         return updatedClaim;
     }
 
