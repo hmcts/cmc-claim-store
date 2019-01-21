@@ -285,8 +285,7 @@ public class DefendantMapperTest {
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         //when
-        TheirDetails party = mapper.from(claimBuilder, ccdDefendant);
-        Claim finalClaim = claimBuilder.build();
+        mapper.from(claimBuilder, ccdDefendant);
 
         //Then
         assertNull(ccdDefendant.getSettlementReachedAt());
