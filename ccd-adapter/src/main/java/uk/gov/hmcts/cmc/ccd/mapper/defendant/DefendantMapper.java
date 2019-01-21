@@ -23,6 +23,7 @@ public class DefendantMapper {
     private final TheirDetailsMapper theirDetailsMapper;
     private final ResponseMapper responseMapper;
     private final ClaimantResponseMapper claimantResponseMapper;
+    private final ReDeterminationMapper reDeterminationMapper;
     private final CountyCourtJudgmentMapper countyCourtJudgmentMapper;
     private final SettlementMapper settlementMapper;
 
@@ -32,6 +33,7 @@ public class DefendantMapper {
         ResponseMapper responseMapper,
         CountyCourtJudgmentMapper countyCourtJudgmentMapper,
         ClaimantResponseMapper claimantResponseMapper,
+        ReDeterminationMapper reDeterminationMapper,
         SettlementMapper settlementMapper
     ) {
         this.theirDetailsMapper = theirDetailsMapper;
@@ -39,6 +41,7 @@ public class DefendantMapper {
         this.countyCourtJudgmentMapper = countyCourtJudgmentMapper;
         this.claimantResponseMapper = claimantResponseMapper;
         this.settlementMapper = settlementMapper;
+        this.reDeterminationMapper = reDeterminationMapper;
     }
 
     public CCDDefendant to(TheirDetails theirDetails, Claim claim) {
@@ -65,6 +68,9 @@ public class DefendantMapper {
         theirDetailsMapper.to(builder, theirDetails);
 
         builder.claimantResponse(claimantResponseMapper.to(claim));
+        claim.getMoneyReceivedOn().ifPresent(builder::paidInFullDate);
+
+        reDeterminationMapper.to(builder, claim);
 
         return builder.build();
     }
@@ -90,6 +96,10 @@ public class DefendantMapper {
 
         claimantResponseMapper.from(defendant.getClaimantResponse(), builder);
 
+        reDeterminationMapper.from(builder, defendant);
+
+        builder.moneyReceivedOn(defendant.getPaidInFullDate());
+
         return theirDetailsMapper.from(defendant);
     }
 
@@ -99,5 +109,4 @@ public class DefendantMapper {
             builder.responseSubmittedOn(claim.getRespondedAt());
         };
     }
-
 }

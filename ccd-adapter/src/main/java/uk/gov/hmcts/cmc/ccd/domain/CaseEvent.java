@@ -29,7 +29,9 @@ public enum CaseEvent {
     AGREEMENT_SIGNED_BY_CLAIMANT("AgreementSignedByClaimant"),
     SETTLED_PRE_JUDGMENT("SettledPreJudgment"),
     LINK_DEFENDANT("LinkDefendant"),
-    LINK_SEALED_CLAIM("LinkSealedClaimDocument");
+    LINK_SEALED_CLAIM("LinkSealedClaimDocument"),
+    REFER_TO_JUDGE_BY_CLAIMANT("ReferToJudgeByClaimant"),
+    REFER_TO_JUDGE_BY_DEFENDANT("ReferToJudgeByDefendant");
 
     private String value;
 

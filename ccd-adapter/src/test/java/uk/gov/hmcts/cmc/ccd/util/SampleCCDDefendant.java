@@ -5,6 +5,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
+import uk.gov.hmcts.cmc.ccd.domain.offers.CCDMadeBy;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -121,6 +122,13 @@ public class SampleCCDDefendant {
             .defendantPaymentIntention(getCCDPaymentIntention());
     }
 
+    public static CCDDefendant.CCDDefendantBuilder withReDetermination() {
+        return withParty()
+            .reDeterminationMadeBy(CCDMadeBy.CLAIMANT)
+            .reDeterminationExplanation("Need money sooner")
+            .reDeterminationRequestedDate(LocalDateTime.now());
+    }
+
     public static CCDDefendant.CCDDefendantBuilder withPartAdmissionResponse() {
         return withResponse()
             .responseType(PART_ADMISSION)
@@ -147,6 +155,10 @@ public class SampleCCDDefendant {
                         .build()
                     ).build()
                 ));
+    }
+
+    public static CCDDefendant.CCDDefendantBuilder withPaidInFull(LocalDate paidInFullDate) {
+        return withDefault().paidInFullDate(paidInFullDate);
     }
 
     public static CCDDefendant.CCDDefendantBuilder withPartyStatements() {

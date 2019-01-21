@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper.defendant;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,9 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 
 import java.time.LocalDateTime;
 
+import java.time.LocalDate;
+
+import static java.time.LocalDate.now;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -210,6 +214,35 @@ public class DefendantMapperTest {
         assertEquals(ccdCountyCourtJudgment.getRequestedDate(), claimWithCCJ.getCountyCourtJudgmentRequestedAt());
     }
 
+    @Test
+    public void mapPaidInFullToCCDDefendant() {
+        //Given
+        TheirDetails theirDetails = SampleTheirDetails.builder().individualDetails();
+        LocalDate moneyReceivedOn = now();
+        Claim claimWithPaidInFull = SampleClaim.builder().withMoneyReceivedOn(moneyReceivedOn).build();
+
+        //When
+        CCDDefendant ccdDefendant = mapper.to(theirDetails, claimWithPaidInFull);
+
+        //Then
+        assertNotNull(ccdDefendant.getPaidInFullDate());
+        assertEquals(moneyReceivedOn, ccdDefendant.getPaidInFullDate());
+    }
+
+    @Test
+    public void mapPaidInFullFromCCDDefendant() {
+        //Given
+        CCDDefendant ccdDefendant = SampleCCDDefendant.withPaidInFull(now()).build();
+        Claim.ClaimBuilder claimBuilder = Claim.builder();
+
+        //when
+        mapper.from(claimBuilder, ccdDefendant);
+        Claim claim = claimBuilder.build();
+
+        //Then
+        Assertions.assertThat(claim.getMoneyReceivedOn()).isPresent();
+        assertEquals(ccdDefendant.getPaidInFullDate(), claim.getMoneyReceivedOn().orElseThrow(AssertionError::new));
+    }
     @Test
     public void mapToCCDDefendantWithNullSettlement() {
         //Given
