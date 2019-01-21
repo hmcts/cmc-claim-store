@@ -38,7 +38,7 @@ import static uk.gov.hmcts.cmc.domain.utils.PartyUtils.isCompanyOrOrganisation;
 public class FormaliseResponseAcceptanceService {
 
     private final CountyCourtJudgmentService countyCourtJudgmentService;
-    private final OffersService offersService;
+    private final SettlementAgreementService settlementAgreementService;
     private final EventProducer eventProducer;
     private final CCDEventProducer ccdEventProducer;
     private final CaseRepository caseRepository;
@@ -46,13 +46,13 @@ public class FormaliseResponseAcceptanceService {
     @Autowired
     public FormaliseResponseAcceptanceService(
         CountyCourtJudgmentService countyCourtJudgmentService,
-        OffersService offersService,
+        SettlementAgreementService settlementAgreementService,
         EventProducer eventProducer,
         CCDEventProducer ccdEventProducer,
         CaseRepository caseRepository
     ) {
         this.countyCourtJudgmentService = countyCourtJudgmentService;
-        this.offersService = offersService;
+        this.settlementAgreementService = settlementAgreementService;
         this.eventProducer = eventProducer;
         this.ccdEventProducer = ccdEventProducer;
         this.caseRepository = caseRepository;
@@ -86,7 +86,7 @@ public class FormaliseResponseAcceptanceService {
             caseEvent = INTERLOCATORY_JUDGEMENT;
             ccdEventProducer.createCCDInterlocutoryJudgmentEvent(claim, authorisation);
         }
-        this.caseRepository.saveCaseEvent(authorisation, claim, caseEvent);
+        caseRepository.saveCaseEvent(authorisation, claim, caseEvent);
     }
 
     private void formaliseSettlement(Claim claim, ResponseAcceptation responseAcceptation, String authorisation) {
@@ -110,7 +110,7 @@ public class FormaliseResponseAcceptanceService {
 
         }
         settlement.acceptCourtDetermination(MadeBy.CLAIMANT);
-        this.offersService.signSettlementAgreement(claim.getExternalId(), settlement, authorisation);
+        settlementAgreementService.signSettlementAgreement(claim.getExternalId(), settlement, authorisation);
     }
 
     private DecisionType getDecisionType(ResponseAcceptation responseAcceptation) {

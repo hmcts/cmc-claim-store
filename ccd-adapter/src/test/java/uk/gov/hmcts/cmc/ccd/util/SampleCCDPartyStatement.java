@@ -29,6 +29,36 @@ public class SampleCCDPartyStatement {
             .build();
     }
 
+    public static CCDPartyStatement offerPartyStatement() {
+        return CCDPartyStatement.builder().madeBy(CCDMadeBy.DEFENDANT)
+            .offerContent("Will pay you soon")
+            .offerCompletionDate(LocalDate.now().plusMonths(6L))
+            .type(CCDStatementType.OFFER)
+            .paymentIntention(SampleCCDPaymentIntention.withInstalment())
+            .build();
+    }
+
+    public static CCDPartyStatement rejectPartyStatement() {
+        return CCDPartyStatement.builder().madeBy(CCDMadeBy.CLAIMANT)
+            .offerContent("I got no money mate")
+            .type(CCDStatementType.REJECTION)
+            .build();
+    }
+
+    public static CCDPartyStatement acceptPartyStatement() {
+        return CCDPartyStatement.builder().madeBy(CCDMadeBy.CLAIMANT)
+            .offerContent("Cheers.")
+            .type(CCDStatementType.ACCEPTATION)
+            .build();
+    }
+
+    public static CCDPartyStatement counterSignPartyStatement() {
+        return CCDPartyStatement.builder().madeBy(CCDMadeBy.DEFENDANT)
+            .offerContent("Forgot my pen, will sign soon")
+            .type(CCDStatementType.COUNTERSIGNATURE)
+            .build();
+    }
+
     private static CCDPartyStatement.CCDPartyStatementBuilder builder() {
         return CCDPartyStatement.builder();
     }
