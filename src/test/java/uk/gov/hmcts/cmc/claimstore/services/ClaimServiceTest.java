@@ -327,6 +327,9 @@ public class ClaimServiceTest {
         verify(caseRepository, once()).paidInFull(eq(claim), eq(paidInFull), eq(AUTHORISATION));
 
         verify(eventProducer, once()).createPaidInFullEvent(eq(claim));
+
+        verify(appInsights).trackEvent(AppInsightsEvent.PAID_IN_FULL,
+            AppInsights.REFERENCE_NUMBER, claim.getReferenceNumber());
     }
 
     @Test(expected = ConflictException.class)
