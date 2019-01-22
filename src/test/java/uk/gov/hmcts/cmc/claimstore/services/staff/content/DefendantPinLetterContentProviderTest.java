@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -23,22 +24,29 @@ public class DefendantPinLetterContentProviderTest {
 
     private static final String DEFENDANT_PIN = "dsf4dd2";
     private static final String RESPOND_TO_CLAIM_URL = "https://moneyclaim.hmcts.net/first-contact/start";
+    private static final String STAFF_NOTIFICATIONS_RECIPIENT = "email@domain.gov";
 
     private final Claim claim = SampleClaim.getDefault();
 
     @Mock
     private NotificationsProperties notificationsProperties;
 
+    @Mock
+    private StaffEmailProperties staffEmailProperties;
+
     private DefendantPinLetterContentProvider provider;
 
     @Before
     public void beforeEachTest() {
-        provider = new DefendantPinLetterContentProvider(notificationsProperties,
+        provider = new DefendantPinLetterContentProvider(
+            notificationsProperties,
+            staffEmailProperties,
             new InterestContentProvider(
                 new InterestCalculationService(Clock.systemDefaultZone())
             )
         );
         when(notificationsProperties.getRespondToClaimUrl()).thenReturn(RESPOND_TO_CLAIM_URL);
+        when(staffEmailProperties.getRecipient()).thenReturn(STAFF_NOTIFICATIONS_RECIPIENT);
     }
 
     @Test(expected = NullPointerException.class)
@@ -103,6 +111,13 @@ public class DefendantPinLetterContentProviderTest {
         Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
 
         assertThat(content).containsEntry("responseDeadline", formatDate(RESPONSE_DEADLINE));
+    }
+
+    @Test
+    public void shouldProvideHmctsEmail() {
+        Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
+
+        assertThat(content).containsEntry("hmctsEmail", STAFF_NOTIFICATIONS_RECIPIENT);
     }
 
 }
