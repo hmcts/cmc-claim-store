@@ -18,7 +18,7 @@ claim-store:
     REFORM_SERVICE_NAME: claim-store
     REFORM_ENVIRONMENT: preview
     LOG_LEVEL: DEBUG
-    CLAIM_STORE_DB_HOST: ${SERVICE_NAME}-postgres
+    CLAIM_STORE_DB_HOST: ${SERVICE_NAME}-claim-store-postgres
     CLAIM_STORE_DB_PORT: 5432
     CLAIM_STORE_DB_USERNAME: claimstore
     CLAIM_STORE_DB_PASSWORD: claimstore
@@ -75,7 +75,6 @@ feature-toggle-api:
 nodejs:
   releaseNameOverride: ${SERVICE_NAME}-nodejs
   registerDns: true
-  ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP}
   image: hmcts/cmc-citizen-frontend:latest  # master
