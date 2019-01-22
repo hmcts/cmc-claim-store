@@ -333,6 +333,8 @@ public class ClaimService {
         this.caseRepository.paidInFull(claim, paidInFull, authorisation);
         Claim updatedClaim = getClaimByExternalId(externalId, authorisation);
         this.eventProducer.createPaidInFullEvent(updatedClaim);
+        appInsights.trackEvent(AppInsightsEvent.PAID_IN_FULL, REFERENCE_NUMBER, claim.getReferenceNumber());
+        this.ccdEventProducer.createCCDPaidInFullEvent(authorisation, claim, paidInFull);
         return updatedClaim;
     }
 
@@ -344,9 +346,10 @@ public class ClaimService {
     public void saveReDetermination(
         String authorisation,
         Claim claim,
-        ReDetermination redetermination,
-        String submitterId
+        ReDetermination redetermination
     ) {
-        caseRepository.saveReDetermination(authorisation, claim, redetermination, submitterId);
+        caseRepository.saveReDetermination(authorisation, claim, redetermination);
+        ccdEventProducer.createCCDReDetermination(claim, authorisation, redetermination);
+
     }
 }

@@ -11,9 +11,12 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
+import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
+import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -97,5 +100,54 @@ public class CountyCourtJudgmentRuleTest {
                     .build()
             ).build();
         countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, CountyCourtJudgmentType.ADMISSIONS);
+    }
+
+    @Test
+    public void shouldReturnFalseWhenIsCCJDueToSettlementBreachAndClaimHasNoSettlement() {
+        Claim claim = SampleClaim.builder()
+            .withResponse(SampleResponse.validDefaults())
+            .withCountyCourtJudgmentRequestedAt(now())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .paymentOption(PaymentOption.IMMEDIATELY)
+                    .build()
+            ).build();
+        assertThat(countyCourtJudgmentRule.isCCJDueToSettlementBreach(claim)).isFalse();
+    }
+
+    @Test
+    public void shouldReturnFalseWhenIsCCJDueToSettlementBreachAndClaimSettlementDateIsInTheFuture() {
+        Settlement settlement = new Settlement();
+        settlement.makeOffer(SampleOffer.builderWithPaymentIntention().build(), MadeBy.DEFENDANT);
+        settlement.accept(MadeBy.CLAIMANT);
+
+        Claim claim = SampleClaim.builder()
+            .withResponse(SampleResponse.validDefaults())
+            .withSettlement(settlement)
+            .withCountyCourtJudgmentRequestedAt(now())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .paymentOption(PaymentOption.IMMEDIATELY)
+                    .build()
+            ).build();
+        assertThat(countyCourtJudgmentRule.isCCJDueToSettlementBreach(claim)).isFalse();
+    }
+
+    @Test
+    public void shouldReturnTrueWhenIsCCJDueToSettlementBreachAndClaimSettlementDateIsInThePast() {
+        Settlement settlement = new Settlement();
+        settlement.makeOffer(SampleOffer.builderWithSetByDateInPast().build(), MadeBy.DEFENDANT);
+        settlement.accept(MadeBy.CLAIMANT);
+
+        Claim claim = SampleClaim.builder()
+            .withResponse(SampleResponse.validDefaults())
+            .withSettlement(settlement)
+            .withCountyCourtJudgmentRequestedAt(now())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .paymentOption(PaymentOption.IMMEDIATELY)
+                    .build()
+            ).build();
+        assertThat(countyCourtJudgmentRule.isCCJDueToSettlementBreach(claim)).isTrue();
     }
 }
