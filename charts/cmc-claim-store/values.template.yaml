@@ -7,7 +7,7 @@ postgresql:
       CREATE DATABASE claimstore WITH OWNER = claimstore ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE USER cmc WITH PASSWORD 'cmc';
       CREATE DATABASE cmc WITH OWNER = cmc ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-  nameOverride: postgres
+  nameOverride: claim-store-postgres
   persistence:
     enabled: false
 
