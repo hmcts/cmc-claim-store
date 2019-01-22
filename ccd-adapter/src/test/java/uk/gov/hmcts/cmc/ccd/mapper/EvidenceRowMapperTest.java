@@ -11,9 +11,9 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceType;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
-import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceType;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.domain.models.evidence.EvidenceType.CORRESPONDENCE;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -26,7 +26,7 @@ public class EvidenceRowMapperTest {
     @Test
     public void shouldMapEvidenceRowToCCD() {
         //given
-        EvidenceRow evidenceRow = new EvidenceRow(null, EvidenceType.CORRESPONDENCE, "description");
+        EvidenceRow evidenceRow = EvidenceRow.builder().type(CORRESPONDENCE).description("description").build();
 
         //when
         CCDEvidenceRow ccdEvidenceRow = mapper.to(evidenceRow);
@@ -39,7 +39,7 @@ public class EvidenceRowMapperTest {
     @Test
     public void shouldMapEvidenceRowToCCDWhenNoDescriptionProvided() {
         //given
-        EvidenceRow evidenceRow = new EvidenceRow(null, EvidenceType.CORRESPONDENCE, null);
+        EvidenceRow evidenceRow = EvidenceRow.builder().type(CORRESPONDENCE).description(null).build();
 
         //when
         CCDEvidenceRow ccdEvidenceRow = mapper.to(evidenceRow);

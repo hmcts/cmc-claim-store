@@ -30,7 +30,6 @@ public class AmountBreakDownMapper implements BuilderMapper<CCDCase, AmountBreak
     public AmountBreakDown from(CCDCase ccdCase) {
         return new AmountBreakDown(
             ccdCase.getAmountBreakDown().stream()
-                .map(CCDCollectionElement::getValue)
                 .map(amountRowMapper::from)
                 .collect(Collectors.toList())
         );

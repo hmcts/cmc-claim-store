@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.domain.models.evidence;
 import org.junit.Test;
 
 import java.util.Set;
+import java.util.UUID;
 
 import static org.apache.commons.lang3.StringUtils.repeat;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,7 +17,7 @@ public class EvidenceRowTest {
 
     @Test
     public void shouldBeSuccessfulValidationForCorrectEvidenceRow() {
-        EvidenceRow evidenceRow = new EvidenceRow(null, EXPERT_WITNESS, "description");
+        EvidenceRow evidenceRow = EvidenceRow.builder().type(EXPERT_WITNESS).description("description").build();
 
         Set<String> response = validate(evidenceRow);
 
@@ -25,7 +26,7 @@ public class EvidenceRowTest {
 
     @Test
     public void shouldBeSuccessfulValidationForNullDescription() {
-        EvidenceRow evidenceRow = new EvidenceRow(null, STATEMENT_OF_ACCOUNT, null);
+        EvidenceRow evidenceRow = EvidenceRow.builder().type(STATEMENT_OF_ACCOUNT).description(null).build();
 
         Set<String> response = validate(evidenceRow);
 
@@ -34,7 +35,7 @@ public class EvidenceRowTest {
 
     @Test
     public void shouldBeSuccessfulValidationForEmptyDescription() {
-        EvidenceRow evidenceRow = new EvidenceRow(null, CONTRACTS_AND_AGREEMENTS, "");
+        EvidenceRow evidenceRow = EvidenceRow.builder().type(CONTRACTS_AND_AGREEMENTS).description("").build();
 
         Set<String> response = validate(evidenceRow);
 
@@ -43,7 +44,7 @@ public class EvidenceRowTest {
 
     @Test
     public void shouldFailValidationForNullEvidenceType() {
-        EvidenceRow evidenceRow = new EvidenceRow(null, null, "description");
+        EvidenceRow evidenceRow = EvidenceRow.builder().type(null).description("description").build();
 
         Set<String> response = validate(evidenceRow);
 
@@ -54,7 +55,7 @@ public class EvidenceRowTest {
 
     @Test
     public void shouldFailValidationForTooLongDescription() {
-        EvidenceRow evidenceRow = new EvidenceRow(null, OTHER, repeat("a", 99001));
+        EvidenceRow evidenceRow = new EvidenceRow(UUID.randomUUID().toString(), OTHER, repeat("a", 99001));
 
         Set<String> response = validate(evidenceRow);
 

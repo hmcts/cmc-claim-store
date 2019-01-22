@@ -22,7 +22,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepresentative;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTimeline;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTimelineEvent;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 
 import java.math.BigDecimal;
@@ -33,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 
@@ -63,20 +61,13 @@ public class JsonMapperTest {
             .withPersonalInjury(null)
             .withStatementOfTruth(null)
             .clearClaimants()
-            .addClaimant(SampleParty.builder()
-                .withCollectionId("3b302a80-e54b-4872-b488-4ce8212c4c10")
-                .withRepresentative(null).individual())
+            .addClaimant(SampleParty.builder().withRepresentative(null).individual())
             .withDefendant(SampleTheirDetails.builder()
-                .withCollectionId("3d0bc933-0d46-4564-94bd-79e6e69b838b")
                 .withRepresentative(null)
                 .withServiceAddress(null)
                 .withDateOfBirth(null)
                 .individualDetails())
             .withFeeCode("X0012")
-            .withTimeline(SampleTimeline.builder().withEvents(singletonList(SampleTimelineEvent.builder()
-                .withCollectionId("359fda9d-e5fd-4d6e-9525-238642d0157d")
-                .build()))
-                .build())
             .build();
 
         //when
@@ -115,19 +106,13 @@ public class JsonMapperTest {
             .withPersonalInjury(null)
             .withStatementOfTruth(null)
             .clearClaimants()
-            .addClaimant(SampleParty.builder()
-                .withCollectionId("3b302a80-e54b-4872-b488-4ce8212c4c10")
-                .withRepresentative(null).individual())
+            .addClaimant(SampleParty.builder().withRepresentative(null).individual())
             .withDefendant(SampleTheirDetails.builder()
-                .withCollectionId("3d0bc933-0d46-4564-94bd-79e6e69b838b")
                 .withRepresentative(null)
                 .withServiceAddress(null)
                 .withDateOfBirth(null)
                 .individualDetails())
-            .withTimeline(SampleTimeline.builder().withEvents(singletonList(SampleTimelineEvent.builder()
-                .withCollectionId("359fda9d-e5fd-4d6e-9525-238642d0157d")
-                .build()))
-                .build())
+            .withTimeline(SampleTimeline.validDefaults())
             .withEvidence(SampleEvidence.validDefaults())
             .build();
 
@@ -161,15 +146,11 @@ public class JsonMapperTest {
                     .lowerValue(BigDecimal.valueOf(123.56))
                     .higherValue(BigDecimal.valueOf(123.56))
                     .build())
-            .withClaimants(singletonList(SampleParty.builder()
-                .withCollectionId("f526119b-4da5-473f-954d-c80035dbe239")
-                .individual()))
             .withDefendant(
                 SampleTheirDetails.builder()
                     .withRepresentative(SampleRepresentative.builder().build())
                     .withServiceAddress(SampleAddress.builder().build())
                     .withDateOfBirth(null)
-                    .withCollectionId("fc847ac66-afcb-44fd-aff2-845dd79cab2a")
                     .individualDetails())
             .withTimeline(null)
             .withPayment(null)
@@ -187,13 +168,7 @@ public class JsonMapperTest {
         Response output = processor.fromJson(input, Response.class);
 
         //then
-        Response expected = SampleResponse.FullDefence.builder()
-            .withDefendantDetails(SampleParty.builder()
-                .withCollectionId("acd82549-d279-4adc-b38c-d195dd0db0d6")
-                .withRepresentative(null)
-                .individual())
-            .build();
-
+        Response expected = SampleResponse.validDefaults();
         assertThat(output).isEqualTo(expected);
     }
 

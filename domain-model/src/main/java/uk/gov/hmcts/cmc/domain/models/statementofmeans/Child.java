@@ -3,16 +3,16 @@ package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.domain.models.CollectionId;
 
-import java.util.Optional;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-@Builder
-@EqualsAndHashCode
-public class Child {
+@EqualsAndHashCode(callSuper = true)
+public class Child extends CollectionId {
 
     public enum AgeGroupType {
         UNDER_11("Under 11"),
@@ -40,11 +40,14 @@ public class Child {
     @Min(0)
     private final Integer numberOfChildrenLivingWithYou;
 
+    @Builder
     public Child(
+        String id,
         AgeGroupType ageGroupType,
         Integer numberOfChildren,
         Integer numberOfChildrenLivingWithYou
     ) {
+        super(id);
         this.ageGroupType = ageGroupType;
         this.numberOfChildren = numberOfChildren;
         this.numberOfChildrenLivingWithYou = numberOfChildrenLivingWithYou;

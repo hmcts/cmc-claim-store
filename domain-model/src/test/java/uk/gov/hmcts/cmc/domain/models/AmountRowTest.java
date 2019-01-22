@@ -13,7 +13,7 @@ public class AmountRowTest {
     @Test
     public void shouldBeSuccessfulValidationForFullAmountDetails() {
         //given
-        AmountRow amountRow = new AmountRow(null, "reason", new BigDecimal("40"));
+        AmountRow amountRow = AmountRow.builder().reason("reason").amount(new BigDecimal("40")).build();
         //when
         Set<String> errors = validate(amountRow);
         //then
@@ -23,7 +23,7 @@ public class AmountRowTest {
     @Test
     public void shouldReturnValidationMessageWhenAmountHasMissingReason() {
         //given
-        AmountRow amountRow = new AmountRow(null, null, new BigDecimal("40"));
+        AmountRow amountRow = AmountRow.builder().reason(null).amount(new BigDecimal("40")).build();
         //when
         Set<String> errors = validate(amountRow);
         //then
@@ -35,7 +35,7 @@ public class AmountRowTest {
     @Test
     public void shouldReturnValidationMessageWhenAmountHasMissingAmount() {
         //given
-        AmountRow amountRow = new AmountRow(null, "reason", null);
+        AmountRow amountRow = AmountRow.builder().reason("reason").amount(null).build();
         //when
         Set<String> errors = validate(amountRow);
         //then
@@ -47,7 +47,7 @@ public class AmountRowTest {
     @Test
     public void shouldReturnValidationMessageWhenAmountHasValueLessThanMinimum() {
         //given
-        AmountRow amountRow = new AmountRow(null, "reason", new BigDecimal("0.00"));
+        AmountRow amountRow = AmountRow.builder().reason("reason").amount(new BigDecimal("0.00")).build();
         //when
         Set<String> errors = validate(amountRow);
         //then
@@ -59,7 +59,7 @@ public class AmountRowTest {
     @Test
     public void shouldBeSuccessfulValidationForFullAmountDetailsWithTwoFraction() {
         //given
-        AmountRow amountRow = new AmountRow(null, "reason", new BigDecimal("40.50"));
+        AmountRow amountRow = AmountRow.builder().reason("reason").amount(new BigDecimal("40.50")).build();
         //when
         Set<String> errors = validate(amountRow);
         //then
@@ -69,7 +69,7 @@ public class AmountRowTest {
     @Test
     public void shouldReturnValidationMessageWhenAmountHasValueWithMoreThanAllowedFractions() {
         //given
-        AmountRow amountRow = new AmountRow(null, "reason", new BigDecimal("40.123"));
+        AmountRow amountRow = AmountRow.builder().reason("reason").amount(new BigDecimal("40.123")).build();
         //when
         Set<String> errors = validate(amountRow);
         //then

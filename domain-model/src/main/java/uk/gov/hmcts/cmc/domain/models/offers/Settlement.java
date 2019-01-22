@@ -20,27 +20,27 @@ public class Settlement {
 
     public void makeOffer(Offer offer, MadeBy party) {
         assertOfferCanBeMadeBy(party);
-        partyStatements.add(new PartyStatement(StatementType.OFFER, party, offer));
+        partyStatements.add(PartyStatement.builder().type(StatementType.OFFER).madeBy(party).build());
     }
 
     public void accept(MadeBy party) {
         assertOfferCanBeResponded(party);
-        partyStatements.add(new PartyStatement(StatementType.ACCEPTATION, party));
+        partyStatements.add(PartyStatement.builder().type(StatementType.ACCEPTATION).madeBy(party).build());
     }
 
     public void acceptCourtDetermination(MadeBy party) {
         assertOfferCanBeAccepted();
-        partyStatements.add(new PartyStatement(StatementType.ACCEPTATION, party));
+        partyStatements.add(PartyStatement.builder().type(StatementType.ACCEPTATION).madeBy(party).build());
     }
 
     public void reject(MadeBy party) {
         assertOfferCanBeRejected(party);
-        partyStatements.add(new PartyStatement(StatementType.REJECTION, party));
+        partyStatements.add(PartyStatement.builder().type(StatementType.REJECTION).madeBy(party).build());
     }
 
     public void countersign(MadeBy party) {
         assertOfferHasBeenAcceptedByOtherParty(party);
-        partyStatements.add(new PartyStatement(StatementType.COUNTERSIGNATURE, party));
+        partyStatements.add(PartyStatement.builder().type(StatementType.COUNTERSIGNATURE).madeBy(party).build());
     }
 
     @JsonIgnore

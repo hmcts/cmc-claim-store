@@ -4,27 +4,31 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.domain.models.CollectionId;
 
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-@Builder
-@EqualsAndHashCode
-public class PartyStatement {
+@EqualsAndHashCode(callSuper = true)
+public class PartyStatement extends CollectionId {
 
     private StatementType type;
     private MadeBy madeBy;
     private Offer offer;
 
     @JsonCreator
-    public PartyStatement(StatementType type, MadeBy madeBy, Offer offer) {
+    @Builder
+    public PartyStatement(String id, StatementType type, MadeBy madeBy, Offer offer) {
+        super(id);
         this.type = type;
         this.madeBy = madeBy;
         this.offer = offer;
     }
 
-    public PartyStatement(StatementType type, MadeBy madeBy) {
+    @Builder
+    public PartyStatement(String id, StatementType type, MadeBy madeBy) {
+        super(id);
         this.type = type;
         this.madeBy = madeBy;
     }

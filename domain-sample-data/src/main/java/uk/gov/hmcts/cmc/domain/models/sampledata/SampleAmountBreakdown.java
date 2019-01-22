@@ -2,28 +2,20 @@ package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.AmountRow;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
+import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown.AmountBreakDownBuilder;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 import static java.util.Collections.singletonList;
 
 public class SampleAmountBreakdown {
 
-    private List<AmountRow> rows = singletonList(SampleAmountRow.builder().build());
-    ;
-
-    public static SampleAmountBreakdown builder() {
-        return new SampleAmountBreakdown();
+    private SampleAmountBreakdown() {
+        super();
     }
 
-    public SampleAmountBreakdown withRows(List<AmountRow> rows) {
-        this.rows = rows;
-        return this;
+    public static AmountBreakDownBuilder builder() {
+        AmountRow amountRow = new AmountRow("359fda9d-e5fd-4d6e-9525-238642d0157d", "reason", new BigDecimal("40"));
+        return AmountBreakDown.builder().rows(singletonList(amountRow));
     }
-
-    public AmountBreakDown build() {
-        return new AmountBreakDown(this.rows);
-    }
-
 }
-

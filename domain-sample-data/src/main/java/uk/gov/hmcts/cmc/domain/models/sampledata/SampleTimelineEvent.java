@@ -6,7 +6,7 @@ public class SampleTimelineEvent {
 
     private String date = "Last Year";
     private String description = "signed a contract";
-    private String collectionId;
+    private String collectionId = "359fda9d-e5fd-4d6e-9525-238642d0157d";
 
     public static SampleTimelineEvent builder() {
         return new SampleTimelineEvent();

@@ -24,7 +24,7 @@ public class SampleParty {
     private LocalDate dateOfBirth = LocalDate.of(1968, 1, 2);
     private Representative representative = SampleRepresentative.builder().build();
     private String companiesHouseNumber;
-    private String collectionId;
+    private String collectionId = "acd82549-d279-4adc-b38c-d195dd0db0d6";
 
     public static SampleParty builder() {
         return new SampleParty();

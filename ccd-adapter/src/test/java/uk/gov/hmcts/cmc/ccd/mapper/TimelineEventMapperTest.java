@@ -24,7 +24,7 @@ public class TimelineEventMapperTest {
     @Test
     public void shouldMapTimelineEventToCCD() {
         //given
-        TimelineEvent timelineEvent = new TimelineEvent(null, "Last Year", "Work done");
+        TimelineEvent timelineEvent = TimelineEvent.builder().eventDate("Last Year").description("Work done").build();
 
         //when
         CCDCollectionElement<CCDTimelineEvent> ccdTimelineEvent = mapper.to(timelineEvent);

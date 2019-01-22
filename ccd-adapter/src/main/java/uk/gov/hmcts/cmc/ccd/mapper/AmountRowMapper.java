@@ -2,12 +2,12 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRow;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.domain.models.AmountRow;
 
 @Component
-public class AmountRowMapper implements Mapper<CCDAmountRow, AmountRow> {
+public class AmountRowMapper {
 
-    @Override
     public CCDAmountRow to(AmountRow amountRow) {
         if (amountRow.getAmount() == null) {
             return null;
@@ -17,8 +17,9 @@ public class AmountRowMapper implements Mapper<CCDAmountRow, AmountRow> {
         return builder.reason(amountRow.getReason()).amount(amountRow.getAmount()).build();
     }
 
-    @Override
-    public AmountRow from(CCDAmountRow ccdAmountRow) {
-        return new AmountRow(null, ccdAmountRow.getReason(), ccdAmountRow.getAmount());
+    public AmountRow from(CCDCollectionElement<CCDAmountRow> ccdAmountRow) {
+
+        CCDAmountRow value = ccdAmountRow.getValue();
+        return new AmountRow(ccdAmountRow.getId(), value.getReason(), value.getAmount());
     }
 }

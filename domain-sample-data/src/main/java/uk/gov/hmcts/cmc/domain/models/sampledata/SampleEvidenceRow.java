@@ -1,34 +1,20 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
-import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceType;
+import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow.EvidenceRowBuilder;
+
+import static uk.gov.hmcts.cmc.domain.models.evidence.EvidenceType.CORRESPONDENCE;
 
 public class SampleEvidenceRow {
 
-    private EvidenceType evidenceType = EvidenceType.CORRESPONDENCE;
-    private String collectionId;
-    private String description = "description";
-
-    public static SampleEvidenceRow builder() {
-        return new SampleEvidenceRow();
+    private SampleEvidenceRow() {
+        super();
     }
 
-    public SampleEvidenceRow withEvidenceType(EvidenceType evidenceType) {
-        this.evidenceType = evidenceType;
-        return this;
-    }
-
-    public SampleEvidenceRow withDescription(String description) {
-        this.description = description;
-        return this;
-    }
-
-    public SampleEvidenceRow withCollectionId(String collectionId) {
-        this.collectionId = collectionId;
-        return this;
-    }
-
-    public EvidenceRow build() {
-        return new EvidenceRow(collectionId, evidenceType, description);
+    public static EvidenceRowBuilder builder() {
+        return EvidenceRow.builder()
+            .id("d839f2f0-025f-4ee9-9a98-16bbe6ab3b35")
+            .type(CORRESPONDENCE)
+            .description("description");
     }
 }

@@ -26,7 +26,7 @@ public class SampleTheirDetails {
     private String companiesHouseNumber;
     private Address serviceAddress;
     private LocalDate dateOfBirth;
-    private String collectionId;
+    private String collectionId = "3d0bc933-0d46-4564-94bd-79e6e69b838b";
 
     public static SampleTheirDetails builder() {
         return new SampleTheirDetails();

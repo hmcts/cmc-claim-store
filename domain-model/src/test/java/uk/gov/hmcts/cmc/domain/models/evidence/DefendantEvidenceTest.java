@@ -15,7 +15,7 @@ public class DefendantEvidenceTest {
     @Test
     public void shouldPassValidationForValidDefendantEvidence() {
         DefendantEvidence defendantEvidence = new DefendantEvidence(
-            asList(new EvidenceRow(null, EXPERT_WITNESS, "description")), "comments"
+            asList(EvidenceRow.builder().type(EXPERT_WITNESS).description("description").build()), "comments"
         );
 
         Set<String> response = validate(defendantEvidence);
@@ -48,7 +48,7 @@ public class DefendantEvidenceTest {
     @Test
     public void shouldPassValidationForNullComment() {
         DefendantEvidence defendantEvidence = new DefendantEvidence(
-            asList(new EvidenceRow(null, EXPERT_WITNESS, "description")), null
+            asList(EvidenceRow.builder().type(EXPERT_WITNESS).description("description").build()), null
         );
 
         Set<String> response = validate(defendantEvidence);
@@ -60,7 +60,7 @@ public class DefendantEvidenceTest {
     @Test
     public void shouldPassValidationForEmptyComment() {
         DefendantEvidence defendantEvidence = new DefendantEvidence(
-            asList(new EvidenceRow(null, EXPERT_WITNESS, "description")), ""
+            asList(EvidenceRow.builder().type(EXPERT_WITNESS).description("description").build()), ""
         );
 
         Set<String> response = validate(defendantEvidence);
@@ -72,7 +72,7 @@ public class DefendantEvidenceTest {
     @Test
     public void shouldPFailValidationForTooLongComment() {
         DefendantEvidence defendantEvidence = new DefendantEvidence(
-            asList(new EvidenceRow(null, EXPERT_WITNESS, "description")), repeat("a", 99001)
+            asList(EvidenceRow.builder().type(EXPERT_WITNESS).description("description").build()), repeat("a", 99001)
         );
 
         Set<String> response = validate(defendantEvidence);
