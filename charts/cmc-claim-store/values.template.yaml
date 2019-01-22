@@ -1,8 +1,6 @@
 postgresql:
   initdbScripts:
     init.sql: |-
-      CREATE USER features WITH PASSWORD 'features';
-      CREATE DATABASE features WITH OWNER = features ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE USER claimstore WITH PASSWORD 'claimstore';
       CREATE DATABASE claimstore WITH OWNER = claimstore ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE USER cmc WITH PASSWORD 'cmc';
