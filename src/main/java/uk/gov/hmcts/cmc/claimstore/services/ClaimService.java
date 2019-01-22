@@ -206,7 +206,7 @@ public class ClaimService {
         } catch (ConflictException e) {
             appInsights.trackEvent(AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE, CLAIM_EXTERNAL_ID, externalId);
             issuedClaim = caseRepository.getClaimByExternalId(externalId, authorisation)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new NotFoundException("Could not find claim with external ID '" + externalId + "'"));
         }
 
         eventProducer.createClaimIssuedEvent(
