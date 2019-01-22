@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 import java.time.LocalDate;
 
 import static java.time.LocalDateTime.now;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 
@@ -158,5 +160,14 @@ public class ClaimantResponseRuleTest {
         assertThatCode(() ->
             claimantResponseRule.isValid(claim)
         ).doesNotThrowAnyException();
+    }
+
+    @Test
+    public void shouldNotHaveFormaliseOptionWhenPartAdmissionAndStatesPaidResponse() {
+        Response response = SampleResponse
+            .PartAdmission
+            .builder()
+            .buildWithStatesPaid();
+        assertThat(ClaimantResponseRule.isFormaliseOptionExpectedForResponse(response)).isFalse();
     }
 }
