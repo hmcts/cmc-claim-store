@@ -23,7 +23,7 @@ claim-store:
     CLAIM_STORE_DB_USERNAME: claimstore
     CLAIM_STORE_DB_PASSWORD: claimstore
     CLAIM_STORE_DB_NAME: claimstore
-    CMC_DB_HOST: ${SERVICE_NAME}-postgres
+    CMC_DB_HOST: ${SERVICE_NAME}-claim-store-postgres
     CMC_DB_PORT: 5432
     CMC_DB_USERNAME: cmc
     CMC_DB_PASSWORD: cmc
