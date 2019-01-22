@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
@@ -39,10 +40,12 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.CLAIM_EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
@@ -168,36 +171,43 @@ public class ClaimService {
         List<String> features
     ) {
         String externalId = claimData.getExternalId().toString();
-
-        Long prePaymentClaimId = caseRepository.getOnHoldIdByExternalId(externalId, authorisation);
-
-        LocalDateTime now = LocalDateTimeFactory.nowInLocalZone();
         Optional<GeneratePinResponse> pinResponse = Optional.empty();
+        UserDetails userDetails = userService.getUserDetails(authorisation);
 
         if (!claimData.isClaimantRepresented()) {
             pinResponse = Optional.of(userService.generatePin(claimData.getDefendant().getName(), authorisation));
         }
 
-        Optional<String> letterHolderId = pinResponse.map(GeneratePinResponse::getUserId);
-        LocalDate issuedOn = issueDateCalculator.calculateIssueDay(now);
-        LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
-        UserDetails userDetails = userService.getUserDetails(authorisation);
-        String submitterEmail = userDetails.getEmail();
+        Claim issuedClaim;
+        try {
+            Long prePaymentClaimId = caseRepository.getOnHoldIdByExternalId(externalId, authorisation);
 
-        Claim claim = Claim.builder()
-            .id(prePaymentClaimId)
-            .claimData(claimData)
-            .submitterId(submitterId)
-            .issuedOn(issuedOn)
-            .responseDeadline(responseDeadline)
-            .externalId(externalId)
-            .submitterEmail(submitterEmail)
-            .createdAt(nowInUTC())
-            .letterHolderId(letterHolderId.orElse(null))
-            .features(features)
-            .build();
+            LocalDateTime now = LocalDateTimeFactory.nowInLocalZone();
 
-        Claim issuedClaim = caseRepository.saveClaim(authorisation, claim);
+            Optional<String> letterHolderId = pinResponse.map(GeneratePinResponse::getUserId);
+            LocalDate issuedOn = issueDateCalculator.calculateIssueDay(now);
+            LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
+            String submitterEmail = userDetails.getEmail();
+
+            Claim claim = Claim.builder()
+                .id(prePaymentClaimId)
+                .claimData(claimData)
+                .submitterId(submitterId)
+                .issuedOn(issuedOn)
+                .responseDeadline(responseDeadline)
+                .externalId(externalId)
+                .submitterEmail(submitterEmail)
+                .createdAt(nowInUTC())
+                .letterHolderId(letterHolderId.orElse(null))
+                .features(features)
+                .build();
+
+            issuedClaim = caseRepository.saveClaim(authorisation, claim);
+        } catch (ConflictException e) {
+            appInsights.trackEvent(AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE, CLAIM_EXTERNAL_ID, externalId);
+            issuedClaim = caseRepository.getClaimByExternalId(externalId, authorisation)
+                .orElseThrow(RuntimeException::new);
+        }
 
         eventProducer.createClaimIssuedEvent(
             issuedClaim,
