@@ -51,7 +51,7 @@ public class PaidInFullCitizenNotificationHandler {
 
     private Optional<String> getDefendantEmail(Claim claim) {
         if (StringUtils.isNotBlank(claim.getDefendantEmail())) {
-            return Optional.ofNullable(claim.getDefendantEmail());
+            return Optional.of(claim.getDefendantEmail());
         } else {
             return claim.getClaimData().getDefendant().getEmail();
         }
