@@ -7,6 +7,7 @@
   },
   "defence": "defence string",
   "freeMediation": "yes",
+  "mediationPhoneNumber": "07999999999",
   "moreTimeNeeded": "yes",
   "defendant": {
     "type": "individual",

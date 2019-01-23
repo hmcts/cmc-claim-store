@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.party.Party;
 import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
@@ -33,6 +34,9 @@ public abstract class Response {
 
     private final YesNoOption freeMediation;
 
+    @Size(max = 30, message = "may not be longer than {max} characters")
+    private final String mediationPhoneNumber;
+
     @JsonUnwrapped
     private final YesNoOption moreTimeNeeded;
 
@@ -46,12 +50,14 @@ public abstract class Response {
     public Response(
         ResponseType responseType,
         YesNoOption freeMediation,
+        String mediationPhoneNumber,
         YesNoOption moreTimeNeeded,
         Party defendant,
         StatementOfTruth statementOfTruth
     ) {
         this.responseType = responseType;
         this.freeMediation = freeMediation;
+        this.mediationPhoneNumber = mediationPhoneNumber;
         this.moreTimeNeeded = moreTimeNeeded;
         this.defendant = defendant;
         this.statementOfTruth = statementOfTruth;

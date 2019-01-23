@@ -58,6 +58,16 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .paymentIntention(SamplePaymentIntention.instalments())
                 .build();
         }
+
+        public FullAdmissionResponse buildWithFreeMediation() {
+            return FullAdmissionResponse.builder()
+                .moreTimeNeeded(YesNoOption.NO)
+                .freeMediation(YesNoOption.YES)
+                .mediationPhoneNumber("07999999999")
+                .defendant(SampleParty.builder().individual())
+                .paymentIntention(SamplePaymentIntention.instalments())
+                .build();
+        }
     }
 
     public static class PartAdmission extends SampleResponse<PartAdmission> {
@@ -137,6 +147,17 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .paymentDeclaration(SamplePaymentDeclaration.builder().build())
                 .build();
         }
+
+        public PartAdmissionResponse buildWithFreeMediation() {
+            return PartAdmissionResponse.builder()
+                .defendant(SampleParty.builder().individual())
+                .freeMediation(YesNoOption.YES)
+                .mediationPhoneNumber("07999999999")
+                .moreTimeNeeded(YesNoOption.NO)
+                .amount(BigDecimal.valueOf(120))
+                .paymentDeclaration(SamplePaymentDeclaration.builder().build())
+                .build();
+        }
     }
 
     public static class FullDefence extends SampleResponse<FullDefence> {
@@ -177,13 +198,14 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
 
         public FullDefenceResponse build() {
             return new FullDefenceResponse(
-                freeMediationOption, moreTimeNeededOption, defendantDetails, statementOfTruth,
+                freeMediationOption, mediationPhoneNumber, moreTimeNeededOption, defendantDetails, statementOfTruth,
                 defenceType, defence, paymentDeclaration, timeline, evidence
             );
         }
     }
 
     protected YesNoOption freeMediationOption = YesNoOption.YES;
+    protected String mediationPhoneNumber = "07999999999";
     protected YesNoOption moreTimeNeededOption = YesNoOption.YES;
     protected Party defendantDetails = SampleParty.builder().withRepresentative(null).individual();
     protected StatementOfTruth statementOfTruth;

@@ -27,13 +27,14 @@ public class FullAdmissionResponse extends Response {
     @Builder
     public FullAdmissionResponse(
         YesNoOption freeMediation,
+        String mediationPhoneNumber,
         YesNoOption moreTimeNeeded,
         Party defendant,
         StatementOfTruth statementOfTruth,
         PaymentIntention paymentIntention,
         StatementOfMeans statementOfMeans
     ) {
-        super(FULL_ADMISSION, freeMediation, moreTimeNeeded, defendant, statementOfTruth);
+        super(FULL_ADMISSION, freeMediation, mediationPhoneNumber, moreTimeNeeded, defendant, statementOfTruth);
         this.paymentIntention = paymentIntention;
         this.statementOfMeans = statementOfMeans;
     }
