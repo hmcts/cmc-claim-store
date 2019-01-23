@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse.ClaimantResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
-import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 
@@ -179,33 +178,6 @@ public class ReDeterminationTest extends BaseTest {
             .body("message", containsString("County Court Judgment for the claim "
                 + claim.getExternalId()
                 + " is not yet submitted"));
-    }
-
-    @Test
-    public void shouldNotAllowReDeterminationWhenUserIsNotParticipant() {
-        String explanation = "I want it sooner";
-
-        commonOperations.submitClaimantResponse(
-            ClaimantResponseAcceptation.builder().build(),
-            claim.getExternalId(),
-            claimant
-        ).then()
-            .statusCode(HttpStatus.CREATED.value());
-
-        User nonParticipatingUser = idamTestService.createCitizen();
-
-        commonOperations.submitReDetermination(
-            ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build(),
-            claim.getExternalId(),
-            nonParticipatingUser
-        ).then()
-            .statusCode(HttpStatus.FORBIDDEN.value())
-            .body("message", containsString(format(
-                "Provided user %s is not a participant on this claim (%s, %s)",
-                nonParticipatingUser.getUserDetails().getId(),
-                claimant.getUserDetails().getId(),
-                claim.getDefendantId()
-            )));
     }
 
     private Claim createClaimWithResponse(Claim createdCase, User defendant) {
