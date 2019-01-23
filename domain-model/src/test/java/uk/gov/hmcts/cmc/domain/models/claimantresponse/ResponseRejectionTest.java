@@ -30,6 +30,15 @@ public class ResponseRejectionTest {
     }
 
     @Test
+    public void shouldBeValidWithFreeMediationResponse() {
+        ClaimantResponse claimantResponse = SampleClaimantResponse.validRejectionWithFreeMediation();
+
+        Set<String> response = validate(claimantResponse);
+
+        assertThat(response).hasSize(0);
+    }
+
+    @Test
     public void shouldBeInvalidWhenReasonTooLong() {
         ClaimantResponse claimantResponse = ResponseRejection.builder().reason(randomAlphabetic(99001)).build();
 

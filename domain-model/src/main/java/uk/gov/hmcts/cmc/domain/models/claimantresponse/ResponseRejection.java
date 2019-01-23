@@ -19,14 +19,18 @@ public class ResponseRejection extends ClaimantResponse {
 
     private final YesNoOption freeMediation;
 
+    @Size(max = 30, message = "may not be longer than {max} characters")
+    private final String mediationPhoneNumber;
+
     @Size(max = 99000)
     private final String reason;
 
     @Builder
     @JsonCreator
-    public ResponseRejection(BigDecimal amountPaid, YesNoOption freeMediation, String reason) {
+    public ResponseRejection(BigDecimal amountPaid, YesNoOption freeMediation, String mediationPhoneNumber, String reason) {
         super(ClaimantResponseType.REJECTION, amountPaid);
         this.freeMediation = freeMediation;
+        this.mediationPhoneNumber = mediationPhoneNumber;
         this.reason = reason;
     }
 
