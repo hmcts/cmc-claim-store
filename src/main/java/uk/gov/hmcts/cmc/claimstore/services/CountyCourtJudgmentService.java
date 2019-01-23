@@ -80,6 +80,7 @@ public class CountyCourtJudgmentService {
         return claimWithCCJ;
     }
 
+    @Transactional(transactionManager = "transactionManager")
     public Claim reDetermination(
         ReDetermination redetermination,
         String externalId,
@@ -92,7 +93,7 @@ public class CountyCourtJudgmentService {
         authorisationService.assertIsParticipantOnClaim(claim, userDetails.getId());
         countyCourtJudgmentRule.assertRedeterminationCanBeRequestedOnCountyCourtJudgement(claim);
 
-        claimService.saveReDetermination(authorisation, claim, redetermination, userDetails.getId());
+        claimService.saveReDetermination(authorisation, claim, redetermination);
 
         Claim claimWithReDetermination = claimService.getClaimByExternalId(externalId, authorisation);
 
