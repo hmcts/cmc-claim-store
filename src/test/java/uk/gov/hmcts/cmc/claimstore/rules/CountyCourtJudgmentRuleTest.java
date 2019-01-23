@@ -106,7 +106,7 @@ public class CountyCourtJudgmentRuleTest {
     public void shouldThrowExceptionWhenCountyCourtJudgmentWasForAdmissionResponseThatHasNoResponse() {
         Claim claim = SampleClaim.builder()
             .withCountyCourtJudgmentRequestedAt(now())
-           .build();
+            .build();
         countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, CountyCourtJudgmentType.ADMISSIONS);
     }
 
