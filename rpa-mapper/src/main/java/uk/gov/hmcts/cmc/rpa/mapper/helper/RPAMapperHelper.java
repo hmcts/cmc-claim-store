@@ -1,7 +1,12 @@
 package uk.gov.hmcts.cmc.rpa.mapper.helper;
 
+import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
+import uk.gov.hmcts.cmc.rpa.DateFormatter;
+import uk.gov.hmcts.cmc.rpa.mapper.json.NullAwareJsonObjectBuilder;
+
+import javax.json.JsonObject;
 
 public class RPAMapperHelper {
 
@@ -15,5 +20,16 @@ public class RPAMapperHelper {
 
     public static boolean isAddressAmended(Party ownParty, TheirDetails oppositeParty) {
         return !ownParty.getAddress().equals(oppositeParty.getAddress()) ? true : false;
+    }
+
+    public static JsonObject toJson(RepaymentPlan repaymentPlan) {
+        if (repaymentPlan != null) {
+            return new NullAwareJsonObjectBuilder()
+                .add("amount", repaymentPlan.getInstalmentAmount())
+                .add("firstPayment", DateFormatter.format(repaymentPlan.getFirstPaymentDate()))
+                .add("frequency", repaymentPlan.getPaymentSchedule().name())
+                .build();
+        }
+        return null;
     }
 }

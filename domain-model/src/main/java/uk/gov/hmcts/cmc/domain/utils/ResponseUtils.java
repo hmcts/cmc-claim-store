@@ -54,4 +54,9 @@ public class ResponseUtils {
             .filter(Predicate.isEqual(PaymentOption.IMMEDIATELY))
             .isPresent();
     }
+
+    public static boolean isAdmissionResponse(Response response) {
+        ResponseType responseType = response.getResponseType();
+        return responseType == ResponseType.FULL_ADMISSION || responseType == ResponseType.PART_ADMISSION;
+    }
 }
