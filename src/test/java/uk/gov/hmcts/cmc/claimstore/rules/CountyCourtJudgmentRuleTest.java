@@ -46,13 +46,6 @@ public class CountyCourtJudgmentRuleTest {
         countyCourtJudgmentRule = new CountyCourtJudgmentRule(claimDeadlineService);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionWhenInvalidCourtJudgmentTypeIsProvided() {
-        Claim respondedClaim = SampleClaim.builder().withRespondedAt(now().minusDays(2)).build();
-        countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(respondedClaim,
-            CountyCourtJudgmentType.valueOf("type that doesn't exist"));
-    }
-
     @Test
     public void shouldNotThrowExceptionWhenDeadlineWasYesterdayAndCCJCanBeRequested() {
         Claim claim = SampleClaim.builder().withResponseDeadline(LocalDate.now().minusDays(1)).build();

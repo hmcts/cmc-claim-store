@@ -55,7 +55,7 @@ public class CountyCourtJudgmentRule {
                 // Action pending
                 break;
             default:
-                throw new IllegalArgumentException(COUNTY_COURT_JUDGMENT_FOR_CLAIM + externalId + " is not supported");
+                throw new ForbiddenActionException(COUNTY_COURT_JUDGMENT_FOR_CLAIM + externalId + " is not supported");
 
         }
     }
