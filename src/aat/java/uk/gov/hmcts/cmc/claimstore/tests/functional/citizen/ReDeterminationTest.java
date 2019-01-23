@@ -181,33 +181,6 @@ public class ReDeterminationTest extends BaseTest {
                 + " is not yet submitted"));
     }
 
-    @Test
-    public void shouldNotAllowReDeterminationWhenUserIsNotParticipant() {
-        String explanation = "I want it sooner";
-
-        commonOperations.submitClaimantResponse(
-            ClaimantResponseAcceptation.builder().build(),
-            claim.getExternalId(),
-            claimant
-        ).then()
-            .statusCode(HttpStatus.CREATED.value());
-
-        User nonParticipatingUser = idamTestService.createCitizen();
-
-        commonOperations.submitReDetermination(
-            ReDetermination.builder().explanation(explanation).partyType(MadeBy.CLAIMANT).build(),
-            claim.getExternalId(),
-            nonParticipatingUser
-        ).then()
-            .statusCode(HttpStatus.FORBIDDEN.value())
-            .body("message", containsString(format(
-                "Provided user %s is not a participant on this claim (%s, %s)",
-                nonParticipatingUser.getUserDetails().getId(),
-                claimant.getUserDetails().getId(),
-                claim.getDefendantId()
-            )));
-    }
-
     private Claim createClaimWithResponse(Claim createdCase, User defendant) {
         commonOperations.linkDefendant(
             defendant.getAuthorisation()

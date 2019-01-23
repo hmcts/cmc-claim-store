@@ -104,7 +104,7 @@ public class CCDCaseApi {
 
     public List<Claim> getByDefendantId(String id, String authorisation) {
         User user = userService.getUser(authorisation);
-        return getAllCasesBy(user, ImmutableMap.of("case.defendantId", id));
+        return getAllCasesBy(user, ImmutableMap.of());
     }
 
     public List<Claim> getBySubmitterEmail(String submitterEmail, String authorisation) {
@@ -114,12 +114,12 @@ public class CCDCaseApi {
 
     public List<Claim> getByDefendantEmail(String defendantEmail, String authorisation) {
         User user = userService.getUser(authorisation);
-        return getAllCasesBy(user, ImmutableMap.of("case.defendantEmail", defendantEmail));
+        return getAllCasesBy(user, ImmutableMap.of());
     }
 
     public List<Claim> getByPaymentReference(String payReference, String authorisation) {
         User user = userService.getUser(authorisation);
-        return getAllCasesBy(user, ImmutableMap.of("case.claimData.payment.reference", payReference));
+        return getAllCasesBy(user, ImmutableMap.of("case.paymentReference", payReference));
     }
 
     public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
