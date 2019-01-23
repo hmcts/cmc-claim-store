@@ -55,8 +55,8 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
                 ccdCase.getSubmitterEmail(), actual.getSubmitterEmail());
         }
 
-        actual.getTotalAmountTillToday().ifPresent(totalAmount ->{
-            if (!Objects.equals(totalAmount, ccdCase.getTotalAmount())) {
+        actual.getTotalAmountTillToday().ifPresent(totalAmount -> {
+            if (ccdCase.getTotalAmount() != null && !Objects.equals(totalAmount, ccdCase.getTotalAmount())) {
                 failWithMessage("Expected CCDCase.totalAmount to be <%s> but was <%s>",
                     ccdCase.getTotalAmount(), totalAmount);
             }
