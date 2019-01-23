@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.events;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDClaimantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDCountyCourtJudgmentEvent;
@@ -10,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDInterlocutoryJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDLinkDefendantEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDLinkSealedClaimDocumentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDMoreTimeRequestedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDPaidInFullEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDPrePaymentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDReDetermination;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDRejectOrganisationPaymentPlanEvent;
@@ -18,6 +20,7 @@ import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDTestingLinkDefendantEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDTestingResponseDeadlineEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
@@ -79,9 +82,9 @@ public class CCDEventProducer {
         Claim claim,
         Settlement settlement,
         String authorization,
-        String userAction
+        CaseEvent caseEvent
     ) {
-        publisher.publishEvent(new CCDSettlementEvent(claim, settlement, authorization, userAction));
+        publisher.publishEvent(new CCDSettlementEvent(claim, settlement, authorization, caseEvent));
     }
 
     public void createCCDResponseDeadlineEvent(
@@ -110,5 +113,9 @@ public class CCDEventProducer {
         ReDetermination redetermination
     ) {
         publisher.publishEvent(new CCDReDetermination(claim, authorisation, redetermination));
+    }
+
+    public void createCCDPaidInFullEvent(String authorisation, Claim claim, PaidInFull paidInFull) {
+        publisher.publishEvent(new CCDPaidInFullEvent(authorisation, claim, paidInFull));
     }
 }

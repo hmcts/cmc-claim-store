@@ -150,6 +150,15 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
                 .build();
         }
+
+        public PartAdmissionResponse buildWithStatesPaid() {
+            return PartAdmissionResponse.builder()
+                .defendant(SampleParty.builder().individual())
+                .moreTimeNeeded(YesNoOption.NO)
+                .amount(BigDecimal.valueOf(120))
+                .paymentDeclaration(SamplePaymentDeclaration.builder().build())
+                .build();
+        }
     }
 
     public static class FullDefence extends SampleResponse<FullDefence> {

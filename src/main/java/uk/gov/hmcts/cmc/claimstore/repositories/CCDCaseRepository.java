@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -115,7 +114,7 @@ public class CCDCaseRepository implements CaseRepository {
 
     @Override
     public void paidInFull(Claim claim, PaidInFull paidInFull, String authorisation) {
-        throw new NotImplementedException("Save received to be implemented on CCD");
+        coreCaseDataService.savePaidInFull(claim.getId(), paidInFull, authorisation);
     }
 
     @Override
@@ -133,14 +132,15 @@ public class CCDCaseRepository implements CaseRepository {
         Claim claim,
         Settlement settlement,
         String authorisation,
-        String userAction) {
-        coreCaseDataService.saveSettlement(claim.getId(), settlement, authorisation, CaseEvent.valueOf(userAction));
+        CaseEvent caseEvent) {
+        coreCaseDataService.saveSettlement(claim.getId(), settlement, authorisation, caseEvent);
     }
 
     @Override
-    public void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, String userAction) {
+    public void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation,
+                                         CaseEvent caseEvent) {
         coreCaseDataService.reachSettlementAgreement(claim.getId(), settlement, nowInUTC(), authorisation,
-            CaseEvent.valueOf(userAction));
+            caseEvent);
     }
 
     @Override

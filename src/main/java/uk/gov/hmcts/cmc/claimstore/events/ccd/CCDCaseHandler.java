@@ -197,9 +197,24 @@ public class CCDCaseHandler {
             Claim ccdClaim = ccdCaseRepository.getClaimByExternalId(claim.getExternalId(), authorization)
                 .orElseThrow(IllegalStateException::new);
 
-            ccdCaseRepository.updateSettlement(ccdClaim, event.getSettlement(), authorization, event.getUserAction());
+            ccdCaseRepository.updateSettlement(ccdClaim, event.getSettlement(), authorization, event.getCaseEvent());
         } catch (FeignException e) {
             appInsights.trackEvent(CCD_ASYNC_FAILURE, REFERENCE_NUMBER, claim.getReferenceNumber());
+            throw e;
+        }
+    }
+
+    @EventListener
+    @LogExecutionTime
+    public void savePaidInFull(CCDPaidInFullEvent event) {
+        try {
+            Claim ccdClaim = ccdCaseRepository.getClaimByExternalId(
+                event.getClaim().getExternalId(), event.getAuthorization()
+            ).orElseThrow(IllegalStateException::new);
+
+            ccdCaseRepository.paidInFull(ccdClaim, event.getPaidInFull(), event.getAuthorization());
+        } catch (FeignException e) {
+            appInsights.trackEvent(CCD_ASYNC_FAILURE, REFERENCE_NUMBER, event.getClaim().getReferenceNumber());
             throw e;
         }
     }

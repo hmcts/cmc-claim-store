@@ -3,11 +3,13 @@ package uk.gov.hmcts.cmc.ccd.util;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.ccd.domain.offers.CCDMadeBy;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static java.math.BigDecimal.TEN;
 import static java.time.LocalDate.now;
@@ -153,5 +155,25 @@ public class SampleCCDDefendant {
                         .build()
                     ).build()
                 ));
+    }
+
+    public static CCDDefendant.CCDDefendantBuilder withPaidInFull(LocalDate paidInFullDate) {
+        return withDefault().paidInFullDate(paidInFullDate);
+    }
+
+    public static CCDDefendant.CCDDefendantBuilder withPartyStatements() {
+        List<CCDCollectionElement<CCDPartyStatement>> partyStatements =
+            asList(
+                CCDCollectionElement.<CCDPartyStatement>builder()
+                    .value(SampleCCDPartyStatement.offerPartyStatement()).build(),
+                CCDCollectionElement.<CCDPartyStatement>builder()
+                    .value(SampleCCDPartyStatement.acceptPartyStatement()).build(),
+                CCDCollectionElement.<CCDPartyStatement>builder()
+                    .value(SampleCCDPartyStatement.counterSignPartyStatement()).build()
+            );
+        return withPartAdmissionResponse()
+            .claimantProvidedType(INDIVIDUAL)
+            .settlementReachedAt(LocalDateTime.now())
+            .settlementPartyStatements(partyStatements);
     }
 }

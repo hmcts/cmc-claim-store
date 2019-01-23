@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.domain.utils.PartyUtils.isCompanyOrOrganisation;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseStatesPaid;
 
 @Service
 public class ClaimantResponseRule {
@@ -94,6 +95,10 @@ public class ClaimantResponseRule {
     public static boolean isFormaliseOptionExpectedForResponse(Response response) {
         switch (response.getResponseType()) {
             case PART_ADMISSION:
+                if (isResponseStatesPaid(response)) {
+                    return false;
+                }
+
                 return ((PartAdmissionResponse) response).getPaymentIntention()
                     .orElseThrow(IllegalStateException::new)
                     .getPaymentOption() != PaymentOption.IMMEDIATELY;
