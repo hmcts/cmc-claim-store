@@ -14,6 +14,8 @@ locals {
 
   ccdCnpUrl = "http://ccd-data-store-api-${local.local_env}.service.${local.local_ase}.internal"
 
+  document_management_url = "https://dm-store-${local.local_env}.service.${local.local_ase}.internal"
+
   previewVaultName = "${var.raw_product}-aat"
   nonPreviewVaultName = "${var.raw_product}-${var.env}"
   vaultName = "${(var.env == "preview" || var.env == "spreview") ? local.previewVaultName : local.nonPreviewVaultName}"
@@ -192,5 +194,9 @@ module "claim-store-api" {
     ASYNC_MAX_THREADPOOL_SIZE = 50
 
     ROOT_APPENDER = "CMC"
+
+    // document management
+    DOCUMENT_MANAGEMENT_URL = "${local.document_management_url}"
+
   }
 }
