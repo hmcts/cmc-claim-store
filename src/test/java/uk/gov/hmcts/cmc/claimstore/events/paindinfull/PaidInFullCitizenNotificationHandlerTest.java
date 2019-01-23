@@ -9,7 +9,10 @@ import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullCitizenNotificati
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.BaseNotificationServiceTest;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.service.notify.NotificationClientException;
 
 import static org.mockito.ArgumentMatchers.anyMap;
