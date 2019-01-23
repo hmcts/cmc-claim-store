@@ -87,6 +87,8 @@ public class ClaimMapper {
         interestMapper.to(claimData.getInterest(), builder);
         amountMapper.to(claimData.getAmount(), builder);
 
+        claim.getTotalAmountTillDateOfIssue().ifPresent(builder::totalAmount);
+
         builder
             .reason(claimData.getReason())
             .feeAmountInPennies(claimData.getFeeAmountInPennies());
