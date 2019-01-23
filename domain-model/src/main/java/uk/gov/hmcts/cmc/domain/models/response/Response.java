@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import uk.gov.hmcts.cmc.domain.models.FreeMediation;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 
@@ -34,8 +33,6 @@ public abstract class Response {
 
     private final YesNoOption freeMediation;
 
-    private final FreeMediation freeMediationWithPhoneNumber;
-
     @JsonUnwrapped
     private final YesNoOption moreTimeNeeded;
 
@@ -49,14 +46,12 @@ public abstract class Response {
     public Response(
         ResponseType responseType,
         YesNoOption freeMediation,
-        FreeMediation freeMediationWithPhoneNumber,
         YesNoOption moreTimeNeeded,
         Party defendant,
         StatementOfTruth statementOfTruth
     ) {
         this.responseType = responseType;
         this.freeMediation = freeMediation;
-        this.freeMediationWithPhoneNumber = freeMediationWithPhoneNumber;
         this.moreTimeNeeded = moreTimeNeeded;
         this.defendant = defendant;
         this.statementOfTruth = statementOfTruth;
@@ -68,10 +63,6 @@ public abstract class Response {
 
     public Optional<YesNoOption> getFreeMediation() {
         return Optional.ofNullable(freeMediation);
-    }
-
-    public Optional<FreeMediation> getFreeMediationWithPhoneNumber() {
-        return Optional.ofNullable(freeMediationWithPhoneNumber);
     }
 
     public YesNoOption getMoreTimeNeeded() {

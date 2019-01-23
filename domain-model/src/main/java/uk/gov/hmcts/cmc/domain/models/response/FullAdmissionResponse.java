@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.domain.models.response;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import uk.gov.hmcts.cmc.domain.models.FreeMediation;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
@@ -28,14 +27,13 @@ public class FullAdmissionResponse extends Response {
     @Builder
     public FullAdmissionResponse(
         YesNoOption freeMediation,
-        FreeMediation freeMediationWithPhoneNumber,
         YesNoOption moreTimeNeeded,
         Party defendant,
         StatementOfTruth statementOfTruth,
         PaymentIntention paymentIntention,
         StatementOfMeans statementOfMeans
     ) {
-        super(FULL_ADMISSION, freeMediation, freeMediationWithPhoneNumber, moreTimeNeeded, defendant, statementOfTruth);
+        super(FULL_ADMISSION, freeMediation, moreTimeNeeded, defendant, statementOfTruth);
         this.paymentIntention = paymentIntention;
         this.statementOfMeans = statementOfMeans;
     }

@@ -5,7 +5,6 @@ import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
 import uk.gov.hmcts.cmc.domain.constraints.ValidAdmission;
-import uk.gov.hmcts.cmc.domain.models.FreeMediation;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
@@ -54,7 +53,6 @@ public class PartAdmissionResponse extends Response {
     @Builder
     public PartAdmissionResponse(
         YesNoOption freeMediation,
-        FreeMediation freeMediationWithPhoneNumber,
         YesNoOption moreTimeNeeded,
         Party defendant,
         StatementOfTruth statementOfTruth,
@@ -66,7 +64,7 @@ public class PartAdmissionResponse extends Response {
         DefendantEvidence evidence,
         StatementOfMeans statementOfMeans
     ) {
-        super(PART_ADMISSION, freeMediation, freeMediationWithPhoneNumber, moreTimeNeeded, defendant, statementOfTruth);
+        super(PART_ADMISSION, freeMediation, moreTimeNeeded, defendant, statementOfTruth);
         this.amount = amount;
         this.paymentDeclaration = paymentDeclaration;
         this.paymentIntention = paymentIntention;
