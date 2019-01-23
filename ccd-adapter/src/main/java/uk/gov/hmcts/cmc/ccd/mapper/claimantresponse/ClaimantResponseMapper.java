@@ -24,10 +24,15 @@ import static java.util.Objects.requireNonNull;
 public class ClaimantResponseMapper {
 
     private final PaymentIntentionMapper paymentIntentionMapper;
+    private CourtDeterminationMapper courtDeterminationMapper;
 
     @Autowired
-    public ClaimantResponseMapper(PaymentIntentionMapper paymentIntentionMapper) {
+    public ClaimantResponseMapper(
+        PaymentIntentionMapper paymentIntentionMapper,
+        CourtDeterminationMapper courtDeterminationMapper
+    ) {
         this.paymentIntentionMapper = paymentIntentionMapper;
+        this.courtDeterminationMapper = courtDeterminationMapper;
     }
 
     public CCDClaimantResponse to(Claim claim) {
@@ -71,6 +76,9 @@ public class ClaimantResponseMapper {
         responseAcceptation.getClaimantPaymentIntention().ifPresent(
             paymentIntention -> builder.claimantPaymentIntention(paymentIntentionMapper.to(paymentIntention))
         );
+        responseAcceptation.getCourtDetermination().ifPresent(courtDetermination ->
+            builder.courtDetermination(courtDeterminationMapper.to(courtDetermination)));
+
         claim.getClaimantRespondedAt().ifPresent(builder::submittedOn);
         return builder.build();
     }
@@ -107,14 +115,19 @@ public class ClaimantResponseMapper {
     private void fromAcceptation(CCDClaimantResponse ccdClaimantResponse, Claim.ClaimBuilder claimBuilder) {
         CCDResponseAcceptation ccdResponseAcceptation = (CCDResponseAcceptation) ccdClaimantResponse;
         ResponseAcceptation.ResponseAcceptationBuilder responseAcceptationBuilder = ResponseAcceptation.builder();
-        responseAcceptationBuilder.amountPaid(ccdResponseAcceptation.getAmountPaid())
-            .claimantPaymentIntention(paymentIntentionMapper.from(ccdResponseAcceptation
-                .getClaimantPaymentIntention()));
+
+        responseAcceptationBuilder
+            .amountPaid(ccdResponseAcceptation.getAmountPaid())
+            .claimantPaymentIntention(paymentIntentionMapper.from(ccdResponseAcceptation.getClaimantPaymentIntention()))
+            .courtDetermination(courtDeterminationMapper.from(ccdResponseAcceptation.getCourtDetermination()));
+
         if (ccdResponseAcceptation.getFormaliseOption() != null) {
             responseAcceptationBuilder.formaliseOption(FormaliseOption.valueOf(ccdResponseAcceptation
                 .getFormaliseOption().name()));
         }
-        claimBuilder.claimantResponse(responseAcceptationBuilder.build())
+
+        claimBuilder
+            .claimantResponse(responseAcceptationBuilder.build())
             .claimantRespondedAt(ccdClaimantResponse.getSubmittedOn());
     }
 }
