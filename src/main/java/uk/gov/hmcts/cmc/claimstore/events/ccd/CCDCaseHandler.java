@@ -204,7 +204,7 @@ public class CCDCaseHandler {
         }
     }
 
-    @TransactionalEventListener
+    @EventListener
     @LogExecutionTime
     public void savePaidInFull(CCDPaidInFullEvent event) {
         try {
