@@ -17,7 +17,7 @@ public class CountyCourtJudgmentRule {
 
     private ClaimDeadlineService claimDeadlineService;
     private static final String CLAIM_OBJECT_CANNOT_BE_NULL = "claim object can not be null";
-    private static final String COUNTY_COURT_JUDGMENT_FOR_CLAIM = "County Court Judgment for claim ";
+    private static final String COUNTY_COURT_JUDGMENT_FOR_CLAIM = "County Court Judgment for the claim ";
 
     @Autowired
     public CountyCourtJudgmentRule(ClaimDeadlineService claimDeadlineService) {
