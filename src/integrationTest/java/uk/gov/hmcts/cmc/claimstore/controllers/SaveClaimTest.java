@@ -100,17 +100,6 @@ public class SaveClaimTest extends BaseSaveTest {
     }
 
     @Test
-    public void shouldFailWhenDuplicateExternalId() throws Exception {
-        UUID externalId = UUID.randomUUID();
-
-        ClaimData claimData = SampleClaimData.builder().withExternalId(externalId).build();
-        claimStore.saveClaim(claimData);
-
-        makeIssueClaimRequest(claimData, AUTHORISATION_TOKEN)
-            .andExpect(status().isConflict());
-    }
-
-    @Test
     public void shouldFailWhenStaffNotificationFails() throws Exception {
         doThrow(new RuntimeException("Sending failed"))
             .when(emailService).sendEmail(anyString(), any(EmailData.class));
