@@ -27,6 +27,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.AGREEMENT_REJECTED_BY_DEFENDANT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.AGREEMENT_SIGNED_BY_CLAIMANT;
 
 @TestPropertySource(
     properties = {
@@ -60,12 +62,12 @@ public class RejectSettlementAgreementTest extends BaseIntegrationTest {
         caseRepository.saveClaimantResponse(claim,
             new SampleClaimantResponse.ClaimantResponseAcceptation()
                 .buildAcceptationIssueSettlementWithClaimantPaymentIntention(),
-                BEARER_TOKEN);
+            BEARER_TOKEN);
 
         Settlement settlement = new Settlement();
         settlement.makeOffer(new Offer("offer", LocalDate.now(), null), MadeBy.DEFENDANT);
         settlement.accept(MadeBy.CLAIMANT);
-        caseRepository.updateSettlement(claim, settlement, BEARER_TOKEN, SUBMITTER_ID);
+        caseRepository.updateSettlement(claim, settlement, BEARER_TOKEN, AGREEMENT_SIGNED_BY_CLAIMANT);
     }
 
     @Test
@@ -95,7 +97,7 @@ public class RejectSettlementAgreementTest extends BaseIntegrationTest {
     @Test
     public void shouldReturn400WhenClaimIsNotInStateForSettlementAgreementRejection() throws Exception {
         Settlement settlement = new Settlement();
-        caseRepository.updateSettlement(claim, settlement, BEARER_TOKEN, SUBMITTER_ID);
+        caseRepository.updateSettlement(claim, settlement, BEARER_TOKEN, AGREEMENT_REJECTED_BY_DEFENDANT);
 
         makeRequest(claim.getExternalId(), "reject").andExpect(status().isBadRequest());
     }

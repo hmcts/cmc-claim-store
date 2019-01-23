@@ -236,7 +236,9 @@ public final class SampleClaim {
     }
 
     public static Claim getWithSettlement(Settlement settlement) {
-        return builder().withSettlement(settlement).build();
+        return builder().withSettlement(settlement)
+            .withSettlementReachedAt(LocalDateTime.now())
+            .build();
     }
 
     public static Claim getClaimWithNoDefendantEmail() {
