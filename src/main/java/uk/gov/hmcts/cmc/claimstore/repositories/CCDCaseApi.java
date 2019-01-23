@@ -24,12 +24,7 @@ import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.UserId;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -103,6 +98,7 @@ public class CCDCaseApi {
     }
 
     public List<Claim> getByDefendantId(String id, String authorisation) {
+        LOGGER.debug("ccd search is by authorisation instead of defendant id {}", id);
         User user = userService.getUser(authorisation);
         return getAllCasesBy(user, ImmutableMap.of());
     }
@@ -113,6 +109,7 @@ public class CCDCaseApi {
     }
 
     public List<Claim> getByDefendantEmail(String defendantEmail, String authorisation) {
+        LOGGER.debug("ccd search is by authorisation instead of defendant email {}", defendantEmail);
         User user = userService.getUser(authorisation);
         return getAllCasesBy(user, ImmutableMap.of());
     }
