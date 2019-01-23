@@ -7,7 +7,7 @@ dependencies:
     repository: '@hmcts'
     alias: claim-store
   - name: nodejs
-    version: 0.0.8
+    version: 0.0.9
     repository: '@hmcts'
   - name: feature-toggle-api
     version: 0.0.3
