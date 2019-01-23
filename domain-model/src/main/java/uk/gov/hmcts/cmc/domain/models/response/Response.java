@@ -71,6 +71,10 @@ public abstract class Response {
         return Optional.ofNullable(freeMediation);
     }
 
+    public Optional<String> getMediationPhoneNumber() {
+        return Optional.ofNullable(mediationPhoneNumber);
+    }
+
     public YesNoOption getMoreTimeNeeded() {
         return moreTimeNeeded;
     }
