@@ -15,19 +15,23 @@ public enum CaseEvent {
     CCJ_REQUESTED("CCJRequested"),
     INTERLOCATORY_JUDGEMENT("InterlocatoryJudgement"),
     REJECT_ORGANISATION_PAYMENT_PLAN("RejectOrganisationPaymentPlan"),
-    AGREEMENT_SIGNED_BY_CLAIMANT("AgreementSignedByClaimant"),
     MORE_TIME_REQUESTED_ONLINE("MoreTimeRequestedOnline"),
     MORE_TIME_REQUESTED_PAPER("MoreTimeRequestedPaper"),
     TEST_SUPPORT_UPDATE("TestSupportUpdate"),
-    OFFER_REJECTED_BY_CLAIMANT("OfferRejectedByClaimant"),
-    OFFER_REJECTED_BY_DEFENDANT("OfferRejectedByDefendant"),
-    OFFER_ACCEPTED_BY_CLAIMANT("OfferAcceptedByClaimant"),
-    OFFER_ACCEPTED_BY_DEFENDANT("OfferAcceptedByDefendant"),
     OFFER_MADE_BY_CLAIMANT("OfferMadeByClaimant"),
     OFFER_MADE_BY_DEFENDANT("OfferMadeByDefendant"),
+    OFFER_REJECTED_BY_CLAIMANT("OfferRejectedByClaimant"),
+    OFFER_REJECTED_BY_DEFENDANT("OfferRejectedByDefendant"),
+    OFFER_SIGNED_BY_CLAIMANT("OfferSignedByClaimant"),
+    OFFER_COUNTER_SIGNED_BY_DEFENDANT("OfferCounterSignedByDefendant"),
+    AGREEMENT_REJECTED_BY_DEFENDANT("AgreementRejectedByDefendant"),
+    AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT("AgreementCounterSignedByDefendant"),
+    AGREEMENT_SIGNED_BY_CLAIMANT("AgreementSignedByClaimant"),
     SETTLED_PRE_JUDGMENT("SettledPreJudgment"),
     LINK_DEFENDANT("LinkDefendant"),
-    LINK_SEALED_CLAIM("LinkSealedClaimDocument");
+    LINK_SEALED_CLAIM("LinkSealedClaimDocument"),
+    REFER_TO_JUDGE_BY_CLAIMANT("ReferToJudgeByClaimant"),
+    REFER_TO_JUDGE_BY_DEFENDANT("ReferToJudgeByDefendant");
 
     private String value;
 

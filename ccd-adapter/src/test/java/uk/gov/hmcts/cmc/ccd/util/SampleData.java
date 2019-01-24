@@ -33,6 +33,7 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -372,8 +373,8 @@ public class SampleData {
             .sotSignerRole("role")
             .externalReferenceNumber("external ref")
             .externalId(UUID.randomUUID().toString())
-            .feeAccountNumber("PBA1234567")
             .feeCode("X1202")
+            .feeAmountInPennies(BigInteger.valueOf(100))
             .reason("Reason for the case")
             .preferredCourt("London Court")
             .interestType(CCDInterestType.DIFFERENT)
