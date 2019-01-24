@@ -318,7 +318,9 @@ sonarqube {
       "**/cmc/claimstore/appinsights/**," +
       "**/ccd/migration/**," +
       "**/EmailData.java," +
-      "**/CCDCaseHandler.java"
+      "**/CCDCaseHandler.java," +
+      "**/CCDReDetermination.java," +
+      "**/CCDEventProducer.java"
   }
 }
 
