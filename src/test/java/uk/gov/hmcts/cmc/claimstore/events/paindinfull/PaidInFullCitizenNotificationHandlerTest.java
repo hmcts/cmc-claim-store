@@ -9,7 +9,6 @@ import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullCitizenNotificati
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.BaseNotificationServiceTest;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
-import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
@@ -62,7 +61,8 @@ public class PaidInFullCitizenNotificationHandlerTest extends BaseNotificationSe
     @Test
     public void sendNotificationsSendsNotificationsToDefendantEmailLinked() throws NotificationClientException {
         Response fullDefenceResponse = SampleResponse.FullDefence.builder().build();
-        PaidInFullEvent event = new PaidInFullEvent(SampleClaim.getWithResponseDefendantEmailVerified(fullDefenceResponse));
+        PaidInFullEvent event =
+            new PaidInFullEvent(SampleClaim.getWithResponseDefendantEmailVerified(fullDefenceResponse));
 
         handler.notifyDefendantForPaidInFull(event);
         verify(notificationService, once()).sendMail(
