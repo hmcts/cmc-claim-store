@@ -37,7 +37,6 @@ public class RPAMapperHelperTest {
         RepaymentPlan repaymentPlan = SampleRepaymentPlan.builder().build();
         JsonObject toJson = RPAMapperHelper.toJson(repaymentPlan);
         assertThat(toJson).isNotNull();
-        assertThat(toJson).containsKeys("amount", "firstPayment", "frequency");
-        assertThat(toJson.size()).isEqualTo(3);
+        assertThat(toJson).containsOnlyKeys("amount", "firstPayment", "frequency");
     }
 }

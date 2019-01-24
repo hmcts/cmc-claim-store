@@ -135,7 +135,7 @@ public class ResponseUtilsTest {
     }
 
     @Test
-    public void shouldReturnTrueWhenNonAdmissionResponse() {
+    public void shouldReturnFalseWhenNonAdmissionResponse() {
         Response response = FullDefenceResponse.builder().build();
         assertThat(ResponseUtils.isAdmissionResponse(response)).isFalse();
     }

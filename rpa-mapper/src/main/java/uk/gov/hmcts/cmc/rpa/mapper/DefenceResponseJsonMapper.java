@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 
+import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractFromSubclass;
 
 @Component
@@ -58,14 +59,14 @@ public class DefenceResponseJsonMapper {
     private JsonObject mapPayment(Response response) {
         JsonObjectBuilder jsonObjectBuilder = new NullAwareJsonObjectBuilder();
         if (ResponseUtils.isAdmissionResponse(response)) {
-            jsonObjectBuilder = retrievePaymentBuilder(jsonObjectBuilder, response);
+            updateJsonBuilderForAdmissions(jsonObjectBuilder, response);
             return jsonObjectBuilder.build();
-        } else {
-            return null;
         }
+
+        return null;
     }
 
-    private JsonObjectBuilder retrievePaymentBuilder(JsonObjectBuilder jsonObjectBuilder, Response response) {
+    private void updateJsonBuilderForAdmissions(JsonObjectBuilder jsonObjectBuilder, Response response) {
         PaymentIntention paymentIntention = null;
         if (response instanceof PartAdmissionResponse) {
             PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse) response;
@@ -74,16 +75,17 @@ public class DefenceResponseJsonMapper {
             FullAdmissionResponse fullAdmissionResponse = (FullAdmissionResponse) response;
             paymentIntention = fullAdmissionResponse.getPaymentIntention();
         }
+        requireNonNull(paymentIntention);
         PaymentOption paymentOption = paymentIntention.getPaymentOption();
         jsonObjectBuilder.add("paymentType", paymentOption.name());
         String fullPaymentDeadLine = paymentOption.equals(PaymentOption.BY_SPECIFIED_DATE)
             ? paymentIntention.getPaymentDate().map(DateFormatter::format)
-                .orElseThrow(IllegalArgumentException::new) : null;
+            .orElseThrow(IllegalArgumentException::new) : null;
         jsonObjectBuilder.add("fullPaymentDeadline", fullPaymentDeadLine);
-        jsonObjectBuilder.add("instalments", RPAMapperHelper
-            .toJson(paymentIntention.getRepaymentPlan().orElse(null)));
+        JsonObject installmentObj = paymentOption.equals(PaymentOption.INSTALMENTS) ? RPAMapperHelper
+            .toJson(paymentIntention.getRepaymentPlan().orElseThrow(IllegalArgumentException::new)) : null;
+        jsonObjectBuilder.add("instalments", installmentObj);
 
-        return jsonObjectBuilder;
     }
 
     private String defenceResponse(Response response) {

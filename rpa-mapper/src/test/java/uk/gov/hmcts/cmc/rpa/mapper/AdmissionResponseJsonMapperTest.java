@@ -7,11 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAddress;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
@@ -30,13 +32,14 @@ import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 @SuppressWarnings({"LineLength"})
 public class AdmissionResponseJsonMapperTest extends BaseResponseJsonMapper {
 
-    private static final String INDIVIDUAL_PART_ADMISSION_PAYING_IMMEDIATELY = "/admissions/individual_part_admission_immediately_rpa_case.json";
-    private static final String INDIVIDUAL_PART_ADMISSION_BY_SET_DATE = "/admissions/individual_part_admission_by_set_date_rpa_case.json";
-    private static final String INDIVIDUAL_PART_ADMISSION_BY_INSTALMENTS = "/admissions/individual_part_admission_by_instalments_rpa_case.json";
+    private static final String INDIVIDUAL_PART_ADMISSION_PAYING_IMMEDIATELY = "/admissions/individual_part_admission_immediately.json";
+    private static final String INDIVIDUAL_PART_ADMISSION_BY_SET_DATE = "/admissions/individual_part_admission_by_set_date.json";
+    private static final String INDIVIDUAL_PART_ADMISSION_BY_INSTALMENTS = "/admissions/individual_part_admission_by_instalments.json";
 
-    private static final String INDIVIDUAL_FULL_ADMISSION_BY_INSTALMENTS = "/admissions/individual_full_admission_by_instalments_rpa_case.json";
-    private static final String INDIVIDUAL_FULL_ADMISSION_IMMEDIATELY = "/admissions/individual_full_admission_immediately_rpa_case.json";
-    private static final String INDIVIDUAL_FULL_ADMISSION_BY_SET_DATE = "/admissions/individual_full_admission_by_set_date_rpa_case.json";
+    private static final String INDIVIDUAL_FULL_ADMISSION_BY_INSTALMENTS = "/admissions/individual_full_admission_by_instalments.json";
+    private static final String INDIVIDUAL_FULL_ADMISSION_IMMEDIATELY = "/admissions/individual_full_admission_immediately.json";
+    private static final String INDIVIDUAL_FULL_ADMISSION_BY_SET_DATE = "/admissions/individual_full_admission_by_set_date.json";
+    private static final String SOLE_TRADER_ADDRESS_MODIFIED_BY_INSTALMENTS = "/admissions/sole_trader_part_admission_address_modified_corres_address.json";
 
     @Autowired
     private DefenceResponseJsonMapper responseMapper;
@@ -139,4 +142,20 @@ public class AdmissionResponseJsonMapperTest extends BaseResponseJsonMapper {
         assertEquals(expected, responseMapper.map(claim).toString(), STRICT);
     }
 
+    @Test
+    public void shouldMapSoleTraderPartAdmissionWithAddressModifiedPayingByInstalmentsToRPA() throws JSONException {
+        PaymentIntention instalments = SamplePaymentIntention.instalments();
+        Address modifiedAddress = SampleAddress.builder().city("London").build();
+        Party soleTrader = SampleParty.builder().withAddress(modifiedAddress).soleTrader();
+        PartAdmissionResponse partAdmissionResponse = SampleResponse
+            .PartAdmission.builder()
+            .buildWithPaymentIntentionAndParty(instalments, soleTrader);
+        Claim claim = withCommonDefEmailAndRespondedAt()
+            .withResponse(partAdmissionResponse)
+            .build();
+
+        String expected = new ResourceReader().read(SOLE_TRADER_ADDRESS_MODIFIED_BY_INSTALMENTS).trim();
+
+        assertEquals(expected, responseMapper.map(claim).toString(), STRICT);
+    }
 }
