@@ -193,7 +193,7 @@ module "claim-store-api" {
 
     ROOT_APPENDER = "CMC"
 
-    document_management.caseWorkerRole = "caseworker-cmc"
+    DOCUMENT_MANAGEMENT_CASEWORKERROLE = "caseworker-cmc"
 
   }
 }
