@@ -91,7 +91,7 @@ public class DefendantResponseContentProvider {
                 content.putAll(fullAdmissionResponseContentProvider
                     .createContent((FullAdmissionResponse) defendantResponse,
                         claim.getTotalAmountTillToday()
-                            .orElseThrow(() -> new IllegalArgumentException("Claim aount cant be empty or null"))));
+                            .orElseThrow(() -> new IllegalArgumentException("Claim amount cant be empty or null"))));
                 break;
             case PART_ADMISSION:
                 content.putAll(
