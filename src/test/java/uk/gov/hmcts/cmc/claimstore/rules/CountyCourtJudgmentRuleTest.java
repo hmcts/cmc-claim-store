@@ -102,6 +102,14 @@ public class CountyCourtJudgmentRuleTest {
         countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, CountyCourtJudgmentType.ADMISSIONS);
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowExceptionWhenCountyCourtJudgmentWasForAdmissionResponseThatHasNoResponse() {
+        Claim claim = SampleClaim.builder()
+            .withCountyCourtJudgmentRequestedAt(now())
+            .build();
+        countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, CountyCourtJudgmentType.ADMISSIONS);
+    }
+
     @Test
     public void shouldReturnFalseWhenIsCCJDueToSettlementBreachAndClaimHasNoSettlement() {
         Claim claim = SampleClaim.builder()
