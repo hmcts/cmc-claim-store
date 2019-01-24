@@ -74,6 +74,7 @@ public class CCDDefendant {
     private CCDDefenceType responseDefenceType;
     private String responseDefence;
     private CCDYesNoOption responseFreeMediationOption;
+    private String responseMediationPhoneNumber;
     private CCDYesNoOption responseMoreTimeNeededOption;
     private String responseDefendantSOTSignerName;
     private String responseDefendantSOTSignerRole;

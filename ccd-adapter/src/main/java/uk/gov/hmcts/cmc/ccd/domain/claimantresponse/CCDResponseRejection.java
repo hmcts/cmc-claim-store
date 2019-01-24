@@ -14,15 +14,19 @@ public class CCDResponseRejection extends CCDClaimantResponse {
 
     private CCDYesNoOption freeMediationOption;
 
+    private String mediationPhoneNumber;
+
     private String reason;
 
     @Builder
     public CCDResponseRejection(BigDecimal amountPaid,
                                 LocalDateTime submittedOn,
                                 CCDYesNoOption freeMediationOption,
+                                String mediationPhoneNumber,
                                 String reason) {
         super(amountPaid, submittedOn);
         this.freeMediationOption = freeMediationOption;
+        this.mediationPhoneNumber = mediationPhoneNumber;
         this.reason = reason;
     }
 

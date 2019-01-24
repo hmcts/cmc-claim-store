@@ -67,6 +67,8 @@ public class ResponseMapper {
         response.getFreeMediation().ifPresent(freeMediation ->
             builder.responseFreeMediationOption(CCDYesNoOption.valueOf(freeMediation.name())));
 
+        response.getMediationPhoneNumber().ifPresent(builder::responseMediationPhoneNumber);
+
         if (response.getMoreTimeNeeded() != null) {
             builder.responseMoreTimeNeededOption(CCDYesNoOption.valueOf(response.getMoreTimeNeeded().name()));
         }
