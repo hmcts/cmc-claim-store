@@ -100,6 +100,7 @@ public class SampleData {
             .amountPaid(BigDecimal.valueOf(123.98))
             .submittedOn(LocalDateTimeFactory.nowInLocalZone())
             .freeMediationOption(YES)
+            .mediationPhoneNumber("07999999999")
             .reason("Rejection Reason")
             .build();
     }

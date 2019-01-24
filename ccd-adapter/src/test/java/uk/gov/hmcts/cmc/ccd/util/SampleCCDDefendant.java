@@ -17,6 +17,7 @@ import static java.util.Arrays.asList;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.COMPANY;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType.ALREADY_PAID;
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType.FULL_ADMISSION;
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType.FULL_DEFENCE;
@@ -113,6 +114,12 @@ public class SampleCCDDefendant {
                         .build()
                     ).build()
                 ));
+    }
+
+    public static CCDDefendant.CCDDefendantBuilder withFullDefenceResponseAndFreeMediation() {
+        return withFullDefenceResponse()
+            .responseFreeMediationOption(YES)
+            .responseMediationPhoneNumber("07999999999");
     }
 
     public static CCDDefendant.CCDDefendantBuilder withFullAdmissionResponse() {
