@@ -75,11 +75,12 @@ feature-toggle-api:
     nameOverride: ftr-tgl-api-postgres
 
 nodejs:
-  releaseNameOverride: ${SERVICE_NAME}-nodejs
-  registerDns: true
-  ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP}
+  releaseNameOverride: ${SERVICE_NAME}-nodejs
+  registerAdditionalDns:
+    enabled: true
+    ingressHost: www-${SERVICE_FQDN}
   image: hmcts/cmc-citizen-frontend:latest  # master
   applicationPort: 3000
   memoryRequests: 256Mi
@@ -87,6 +88,7 @@ nodejs:
   memoryLimits: 512Mi
   cpuLimits: 1
   environment:
+    CLAIM_STORE_URL: http://${SERVICE_NAME}:4400
     REFORM_TEAM: cmc
     REFORM_SERVICE_NAME: citizen-frontend
     REFORM_ENVIRONMENT: preview
