@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,11 +31,11 @@ public class EmployerMapperTest {
             .build();
 
         //when
-        CCDEmployer ccdEmployer = mapper.to(employer);
+        CCDCollectionElement<CCDEmployer> ccdEmployer = mapper.to(employer);
 
         //then
-        assertThat(employer).isEqualTo(ccdEmployer);
-
+        assertThat(employer).isEqualTo(ccdEmployer.getValue());
+        Assertions.assertThat(employer.getId()).isEqualTo(ccdEmployer.getId());
     }
 
     @Test

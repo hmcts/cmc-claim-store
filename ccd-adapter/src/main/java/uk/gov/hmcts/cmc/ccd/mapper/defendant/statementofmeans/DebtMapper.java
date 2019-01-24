@@ -8,11 +8,17 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Debt;
 @Component
 public class DebtMapper {
 
-    public CCDDebt to(Debt debt) {
-        return CCDDebt.builder()
-            .description(debt.getDescription())
-            .totalOwed(debt.getTotalOwed())
-            .monthlyPayments(debt.getMonthlyPayments())
+    public CCDCollectionElement<CCDDebt> to(Debt debt) {
+        if (debt == null) {
+            return null;
+        }
+        return CCDCollectionElement.<CCDDebt>builder()
+            .value(CCDDebt.builder()
+                .description(debt.getDescription())
+                .totalOwed(debt.getTotalOwed())
+                .monthlyPayments(debt.getMonthlyPayments())
+                .build())
+            .id(debt.getId())
             .build();
     }
 

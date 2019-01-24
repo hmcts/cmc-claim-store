@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper.offers;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,10 +36,11 @@ public class PartyStatementMapperTest {
         PartyStatement partyStatement = SamplePartyStatement.builder().build();
 
         //when
-        CCDPartyStatement ccdPartyStatement = partyStatementMapper.to(partyStatement);
+        CCDCollectionElement<CCDPartyStatement> ccdPartyStatement = partyStatementMapper.to(partyStatement);
 
         //then
-        assertThat(partyStatement).isEqualTo(ccdPartyStatement);
+        assertThat(partyStatement).isEqualTo(ccdPartyStatement.getValue());
+        Assertions.assertThat(partyStatement.getId()).isEqualTo(ccdPartyStatement.getId());
     }
 
     @Test
@@ -51,16 +53,17 @@ public class PartyStatementMapperTest {
         );
 
         //when
-        List<CCDPartyStatement> ccdPartyStatements = partyStatements.stream()
+        List<CCDCollectionElement<CCDPartyStatement>> ccdPartyStatements = partyStatements.stream()
             .map(partyStatementMapper::to)
             .collect(Collectors.toList());
 
         //then
         ListIterator<PartyStatement> partyStatementIterator = partyStatements.listIterator();
-        ListIterator<CCDPartyStatement> ccdPartyStatementIterator = ccdPartyStatements.listIterator();
+        ListIterator<CCDCollectionElement<CCDPartyStatement>> ccdPartyStatementIterator
+            = ccdPartyStatements.listIterator();
 
         while (partyStatementIterator.hasNext()) {
-            assertThat(partyStatementIterator.next()).isEqualTo(ccdPartyStatementIterator.next());
+            assertThat(partyStatementIterator.next()).isEqualTo(ccdPartyStatementIterator.next().getValue());
         }
 
     }
@@ -75,7 +78,6 @@ public class PartyStatementMapperTest {
             SamplePartyStatement.offerPartyStatement,
             SamplePartyStatement.builder().build())
             .map(partyStatementMapper::to)
-            .map(statement -> CCDCollectionElement.<CCDPartyStatement>builder().value(statement).build())
             .collect(Collectors.toList());
 
         //when

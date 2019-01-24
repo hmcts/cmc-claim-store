@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,10 +37,11 @@ public class BankAccountMapperTest {
             .build();
 
         //when
-        CCDBankAccount ccdBankAccount = mapper.to(bankAccount);
+        CCDCollectionElement<CCDBankAccount> ccdBankAccount = mapper.to(bankAccount);
 
         //then
-        assertThat(bankAccount).isEqualTo(ccdBankAccount);
+        Assertions.assertThat(bankAccount.getId()).isEqualTo(ccdBankAccount.getId());
+        assertThat(bankAccount).isEqualTo(ccdBankAccount.getValue());
     }
 
     @Test

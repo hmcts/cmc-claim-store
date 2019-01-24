@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
+import uk.gov.hmcts.cmc.domain.models.CollectionId;
 
 import java.math.BigDecimal;
 import javax.validation.constraints.DecimalMin;
@@ -11,9 +12,8 @@ import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-@Builder
-@EqualsAndHashCode
-public class PriorityDebt {
+@EqualsAndHashCode(callSuper = true)
+public class PriorityDebt extends CollectionId {
 
     public enum PriorityDebtType {
         MORTGAGE("Mortgage"),
@@ -46,11 +46,14 @@ public class PriorityDebt {
     @DecimalMin(value = "0.01")
     private final BigDecimal amount;
 
+    @Builder
     public PriorityDebt(
+        String id,
         PriorityDebtType type,
         PaymentFrequency frequency,
         BigDecimal amount
     ) {
+        super(id);
         this.type = type;
         this.frequency = frequency;
         this.amount = amount;

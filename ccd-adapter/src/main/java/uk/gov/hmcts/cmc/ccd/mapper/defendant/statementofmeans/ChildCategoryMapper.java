@@ -8,11 +8,14 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 @Component
 public class ChildCategoryMapper {
 
-    public CCDChildCategory to(Child child) {
-        return CCDChildCategory.builder()
-            .ageGroupType(child.getAgeGroupType())
-            .numberOfChildren(child.getNumberOfChildren())
-            .numberOfResidentChildren(child.getNumberOfChildrenLivingWithYou().orElse(null))
+    public CCDCollectionElement<CCDChildCategory> to(Child child) {
+        return CCDCollectionElement.<CCDChildCategory>builder()
+            .value(CCDChildCategory.builder()
+                .ageGroupType(child.getAgeGroupType())
+                .numberOfChildren(child.getNumberOfChildren())
+                .numberOfResidentChildren(child.getNumberOfChildrenLivingWithYou().orElse(null))
+                .build())
+            .id(child.getId())
             .build();
     }
 

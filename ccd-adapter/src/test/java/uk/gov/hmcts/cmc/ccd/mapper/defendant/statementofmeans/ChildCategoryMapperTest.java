@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,11 +34,11 @@ public class ChildCategoryMapperTest {
             .build();
 
         //when
-        CCDChildCategory ccdChildCategory = mapper.to(child);
+        CCDCollectionElement<CCDChildCategory> ccdChildCategory = mapper.to(child);
 
         //then
-        assertThat(child).isEqualTo(ccdChildCategory);
-
+        assertThat(child).isEqualTo(ccdChildCategory.getValue());
+        Assertions.assertThat(child.getId()).isEqualTo(ccdChildCategory.getId());
     }
 
     @Test

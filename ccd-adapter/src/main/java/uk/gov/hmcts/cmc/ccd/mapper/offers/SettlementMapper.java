@@ -30,7 +30,6 @@ public class SettlementMapper {
         }
         return settlement.getPartyStatements().stream()
             .map(partyStatement -> partyStatementMapper.to(partyStatement))
-            .map(partyStatement -> CCDCollectionElement.<CCDPartyStatement>builder().value(partyStatement).build())
             .collect(Collectors.toList());
 
     }

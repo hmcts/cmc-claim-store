@@ -10,11 +10,18 @@ import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.valueOf;
 @Component
 public class BankAccountMapper {
 
-    public CCDBankAccount to(BankAccount bankAccount) {
-        return CCDBankAccount.builder()
-            .type(bankAccount.getType())
-            .joint(valueOf(bankAccount.isJoint()))
-            .balance(bankAccount.getBalance())
+    public CCDCollectionElement<CCDBankAccount> to(BankAccount bankAccount) {
+        if (bankAccount == null) {
+            return null;
+        }
+
+        return CCDCollectionElement.<CCDBankAccount>builder()
+            .value(CCDBankAccount.builder()
+                .type(bankAccount.getType())
+                .joint(valueOf(bankAccount.isJoint()))
+                .balance(bankAccount.getBalance())
+                .build())
+            .id(bankAccount.getId())
             .build();
     }
 

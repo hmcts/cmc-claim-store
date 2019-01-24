@@ -8,12 +8,19 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
 @Component
 public class IncomeMapper {
 
-    public CCDIncome to(Income income) {
-        return CCDIncome.builder()
-            .type(income.getType())
-            .amountReceived(income.getAmount())
-            .frequency(income.getFrequency())
-            .otherSource(income.getOtherSource().orElse(null))
+    public CCDCollectionElement<CCDIncome> to(Income income) {
+        if (income == null) {
+            return null;
+        }
+
+        return CCDCollectionElement.<CCDIncome>builder()
+            .value(CCDIncome.builder()
+                .type(income.getType())
+                .amountReceived(income.getAmount())
+                .frequency(income.getFrequency())
+                .otherSource(income.getOtherSource().orElse(null))
+                .build())
+            .id(income.getId())
             .build();
     }
 

@@ -4,13 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDBankAccount;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDChildCategory;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDCourtOrder;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDebt;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDEmployer;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpense;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncome;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.ccd.mapper.Mapper;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
@@ -93,7 +87,6 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
             asStream(statementOfMeans.getBankAccounts())
                 .map(bankAccountMapper::to)
                 .filter(Objects::nonNull)
-                .map(bankAccount -> CCDCollectionElement.<CCDBankAccount>builder().value(bankAccount).build())
                 .collect(Collectors.toList()));
 
         builder.debts(
@@ -101,7 +94,6 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
                 .stream()
                 .map(debtMapper::to)
                 .filter(Objects::nonNull)
-                .map(debt -> CCDCollectionElement.<CCDDebt>builder().value(debt).build())
                 .collect(Collectors.toList())
         );
 
@@ -109,7 +101,6 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
             .stream()
             .map(incomeMapper::to)
             .filter(Objects::nonNull)
-            .map(income -> CCDCollectionElement.<CCDIncome>builder().value(income).build())
             .collect(Collectors.toList())
         );
 
@@ -118,7 +109,6 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
                 .stream()
                 .map(expenseMapper::to)
                 .filter(Objects::nonNull)
-                .map(expense -> CCDCollectionElement.<CCDExpense>builder().value(expense).build())
                 .collect(Collectors.toList())
         );
 
@@ -127,7 +117,6 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
                 .stream()
                 .map(courtOrderMapper::to)
                 .filter(Objects::nonNull)
-                .map(courtOrder -> CCDCollectionElement.<CCDCourtOrder>builder().value(courtOrder).build())
                 .collect(Collectors.toList())
         );
 
@@ -135,7 +124,11 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
             statementOfMeans.getPriorityDebts()
                 .stream()
                 .filter(Objects::nonNull)
-                .map(priorityDebt -> CCDCollectionElement.<PriorityDebt>builder().value(priorityDebt).build())
+                .map(priorityDebt -> CCDCollectionElement.<PriorityDebt>builder()
+                    .value(priorityDebt)
+                    .id(priorityDebt.getId())
+                    .build()
+                )
                 .collect(Collectors.toList())
         );
 
@@ -157,7 +150,6 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
                 asStream(employment.getEmployers())
                     .map(employerMapper::to)
                     .filter(Objects::nonNull)
-                    .map(employer -> CCDCollectionElement.<CCDEmployer>builder().value(employer).build())
                     .collect(Collectors.toList()));
         };
     }
@@ -200,7 +192,6 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
                 asStream(dependant.getChildren())
                     .map(childCategoryMapper::to)
                     .filter(Objects::nonNull)
-                    .map(childCategory -> CCDCollectionElement.<CCDChildCategory>builder().value(childCategory).build())
                     .collect(Collectors.toList())
             );
         };

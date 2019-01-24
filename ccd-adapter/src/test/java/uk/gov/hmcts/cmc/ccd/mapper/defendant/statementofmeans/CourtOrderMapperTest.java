@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,11 +34,11 @@ public class CourtOrderMapperTest {
             .build();
 
         //when
-        CCDCourtOrder ccdCourtOrder = mapper.to(courtOrder);
+        CCDCollectionElement<CCDCourtOrder> ccdCourtOrder = mapper.to(courtOrder);
 
         //then
-        assertThat(courtOrder).isEqualTo(ccdCourtOrder);
-
+        assertThat(courtOrder).isEqualTo(ccdCourtOrder.getValue());
+        Assertions.assertThat(courtOrder.getId()).isEqualTo(ccdCourtOrder.getId());
     }
 
     @Test

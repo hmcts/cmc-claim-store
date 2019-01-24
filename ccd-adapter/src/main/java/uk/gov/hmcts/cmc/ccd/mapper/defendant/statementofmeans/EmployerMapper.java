@@ -8,10 +8,16 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employer;
 @Component
 public class EmployerMapper {
 
-    public CCDEmployer to(Employer employer) {
-        return CCDEmployer.builder()
-            .employerName(employer.getName())
-            .jobTitle(employer.getJobTitle())
+    public CCDCollectionElement<CCDEmployer> to(Employer employer) {
+        if (employer == null) {
+            return null;
+        }
+        return CCDCollectionElement.<CCDEmployer>builder()
+            .value(CCDEmployer.builder()
+                .employerName(employer.getName())
+                .jobTitle(employer.getJobTitle())
+                .build())
+            .id(employer.getId())
             .build();
     }
 

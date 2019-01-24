@@ -10,11 +10,15 @@ import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceType;
 @Component
 public class EvidenceRowMapper {
 
-    public CCDEvidenceRow to(EvidenceRow evidenceRow) {
+    public CCDCollectionElement<CCDEvidenceRow> to(EvidenceRow evidenceRow) {
+        if (evidenceRow == null) {
+            return null;
+        }
+
         CCDEvidenceRow.CCDEvidenceRowBuilder builder = CCDEvidenceRow.builder();
         builder.type(CCDEvidenceType.valueOf(evidenceRow.getType().name()));
         evidenceRow.getDescription().ifPresent(builder::description);
-        return builder.build();
+        return CCDCollectionElement.<CCDEvidenceRow>builder().value(builder.build()).id(evidenceRow.getId()).build();
     }
 
     public EvidenceRow from(CCDCollectionElement<CCDEvidenceRow> row) {

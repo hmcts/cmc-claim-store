@@ -8,13 +8,15 @@ import uk.gov.hmcts.cmc.domain.models.AmountRow;
 @Component
 public class AmountRowMapper {
 
-    public CCDAmountRow to(AmountRow amountRow) {
+    public CCDCollectionElement<CCDAmountRow> to(AmountRow amountRow) {
         if (amountRow.getAmount() == null) {
             return null;
         }
 
-        CCDAmountRow.CCDAmountRowBuilder builder = CCDAmountRow.builder();
-        return builder.reason(amountRow.getReason()).amount(amountRow.getAmount()).build();
+        return CCDCollectionElement.<CCDAmountRow>builder()
+            .value(CCDAmountRow.builder().reason(amountRow.getReason()).amount(amountRow.getAmount()).build())
+            .id(amountRow.getId())
+            .build();
     }
 
     public AmountRow from(CCDCollectionElement<CCDAmountRow> ccdAmountRow) {

@@ -26,7 +26,7 @@ public class PartyStatementMapper {
         this.paymentIntentionMapper = paymentIntentionMapper;
     }
 
-    public CCDPartyStatement to(PartyStatement partyStatement) {
+    public CCDCollectionElement<CCDPartyStatement> to(PartyStatement partyStatement) {
         CCDPartyStatement.CCDPartyStatementBuilder builder = CCDPartyStatement.builder();
         builder.type(CCDStatementType.valueOf(partyStatement.getType().name()));
         builder.madeBy(CCDMadeBy.valueOf(partyStatement.getMadeBy().name()));
@@ -38,7 +38,10 @@ public class PartyStatementMapper {
             );
         });
 
-        return builder.build();
+        return CCDCollectionElement.<CCDPartyStatement>builder()
+            .value(builder.build())
+            .id(partyStatement.getId())
+            .build();
     }
 
     public PartyStatement from(CCDCollectionElement<CCDPartyStatement> ccdPartyStatement) {

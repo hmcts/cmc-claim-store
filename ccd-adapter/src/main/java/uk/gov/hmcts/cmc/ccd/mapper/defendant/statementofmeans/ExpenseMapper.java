@@ -8,12 +8,18 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
 @Component
 public class ExpenseMapper {
 
-    public CCDExpense to(Expense expense) {
-        return CCDExpense.builder()
-            .type(expense.getType())
-            .amountPaid(expense.getAmount())
-            .frequency(expense.getFrequency())
-            .description(expense.getOtherName().orElse(null))
+    public CCDCollectionElement<CCDExpense> to(Expense expense) {
+        if (expense == null) {
+            return null;
+        }
+        return CCDCollectionElement.<CCDExpense>builder()
+            .value(CCDExpense.builder()
+                .type(expense.getType())
+                .amountPaid(expense.getAmount())
+                .frequency(expense.getFrequency())
+                .description(expense.getOtherName().orElse(null))
+                .build())
+            .id(expense.getId())
             .build();
     }
 

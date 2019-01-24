@@ -8,11 +8,17 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
 @Component
 public class CourtOrderMapper {
 
-    public CCDCourtOrder to(CourtOrder courtOrder) {
-        return CCDCourtOrder.builder()
+    public CCDCollectionElement<CCDCourtOrder> to(CourtOrder courtOrder) {
+        if (courtOrder == null) {
+            return null;
+        }
+
+        return CCDCollectionElement.<CCDCourtOrder>builder().value(CCDCourtOrder.builder()
             .claimNumber(courtOrder.getClaimNumber())
             .amountOwed(courtOrder.getAmountOwed())
             .monthlyInstalmentAmount(courtOrder.getMonthlyInstalmentAmount())
+            .build())
+            .id(courtOrder.getId())
             .build();
     }
 
