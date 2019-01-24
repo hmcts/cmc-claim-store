@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
@@ -18,29 +19,41 @@ public class Settlement {
     private static final String NO_STATEMENTS_MADE = "No statements have yet been made during that settlement";
     private final List<PartyStatement> partyStatements = new ArrayList<>();
 
-    public void makeOffer(Offer offer, MadeBy party) {
+    public void makeOffer(Offer offer, MadeBy party, String partyStatementId) {
         assertOfferCanBeMadeBy(party);
-        partyStatements.add(PartyStatement.builder().type(StatementType.OFFER).madeBy(party).offer(offer).build());
+        partyStatements.add(PartyStatement.builder().type(StatementType.OFFER)
+            .id(Optional.ofNullable(partyStatementId).orElse(null))
+            .madeBy(party)
+            .offer(offer)
+            .build());
     }
 
-    public void accept(MadeBy party) {
+    public void accept(MadeBy party, String partyStatementId) {
         assertOfferCanBeResponded(party);
-        partyStatements.add(PartyStatement.builder().type(StatementType.ACCEPTATION).madeBy(party).build());
+        partyStatements.add(PartyStatement.builder().type(StatementType.ACCEPTATION)
+            .id(Optional.ofNullable(partyStatementId).orElse(null))
+            .madeBy(party).build());
     }
 
-    public void acceptCourtDetermination(MadeBy party) {
+    public void acceptCourtDetermination(MadeBy party, String partyStatementId) {
         assertOfferCanBeAccepted();
-        partyStatements.add(PartyStatement.builder().type(StatementType.ACCEPTATION).madeBy(party).build());
+        partyStatements.add(PartyStatement.builder().type(StatementType.ACCEPTATION)
+            .id(Optional.ofNullable(partyStatementId).orElse(null))
+            .madeBy(party).build());
     }
 
-    public void reject(MadeBy party) {
+    public void reject(MadeBy party, String partyStatementId) {
         assertOfferCanBeRejected(party);
-        partyStatements.add(PartyStatement.builder().type(StatementType.REJECTION).madeBy(party).build());
+        partyStatements.add(PartyStatement.builder().type(StatementType.REJECTION)
+            .id(Optional.ofNullable(partyStatementId).orElse(null))
+            .madeBy(party).build());
     }
 
-    public void countersign(MadeBy party) {
+    public void countersign(MadeBy party, String partyStatementId) {
         assertOfferHasBeenAcceptedByOtherParty(party);
-        partyStatements.add(PartyStatement.builder().type(StatementType.COUNTERSIGNATURE).madeBy(party).build());
+        partyStatements.add(PartyStatement.builder().type(StatementType.COUNTERSIGNATURE)
+            .id(Optional.ofNullable(partyStatementId).orElse(null))
+            .madeBy(party).build());
     }
 
     @JsonIgnore

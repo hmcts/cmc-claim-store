@@ -61,7 +61,6 @@ public class PartyStatementMapper {
             .id(ccdPartyStatement.getId());
 
         return partyStatementBuilder.build();
-
     }
 
     private Offer buildOfferFromCCDPartyStatement(CCDPartyStatement ccdPartyStatement) {

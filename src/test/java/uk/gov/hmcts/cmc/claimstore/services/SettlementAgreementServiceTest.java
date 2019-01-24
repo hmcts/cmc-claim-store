@@ -182,26 +182,26 @@ public class SettlementAgreementServiceTest {
 
     private Claim buildClaimWithSettlementAgreementOffer() {
         Settlement settlement = new Settlement();
-        settlement.makeOffer(SampleOffer.builder().build(), MadeBy.CLAIMANT);
-        settlement.acceptCourtDetermination(MadeBy.CLAIMANT);
+        settlement.makeOffer(SampleOffer.builder().build(), MadeBy.CLAIMANT, null);
+        settlement.acceptCourtDetermination(MadeBy.CLAIMANT, null);
 
         return SampleClaim.builder().withSettlement(settlement).build();
     }
 
     private Claim buildClaimWithSettlementAgreementRejected() {
         Settlement settlement = new Settlement();
-        settlement.makeOffer(SampleOffer.builder().build(), MadeBy.CLAIMANT);
-        settlement.acceptCourtDetermination(MadeBy.CLAIMANT);
-        settlement.reject(MadeBy.DEFENDANT);
+        settlement.makeOffer(SampleOffer.builder().build(), MadeBy.CLAIMANT, null);
+        settlement.acceptCourtDetermination(MadeBy.CLAIMANT, null);
+        settlement.reject(MadeBy.DEFENDANT, null);
 
         return SampleClaim.builder().withSettlement(settlement).build();
     }
 
     private Claim buildClaimWithSettlementReached() {
         Settlement settlement = new Settlement();
-        settlement.makeOffer(SampleOffer.builder().build(), MadeBy.DEFENDANT);
-        settlement.accept(MadeBy.CLAIMANT);
-        settlement.countersign(MadeBy.DEFENDANT);
+        settlement.makeOffer(SampleOffer.builder().build(), MadeBy.DEFENDANT, null);
+        settlement.accept(MadeBy.CLAIMANT, null);
+        settlement.countersign(MadeBy.DEFENDANT, null);
 
         return SampleClaim.builder().withSettlement(settlement)
             .withSettlementReachedAt(LocalDateTime.now()).build();
@@ -214,17 +214,17 @@ public class SettlementAgreementServiceTest {
                 .content("Defendant's admission content")
                 .completionDate(LocalDate.now().plusDays(60))
                 .build(),
-            MadeBy.DEFENDANT);
+            MadeBy.DEFENDANT, null);
 
-        settlement.accept(MadeBy.CLAIMANT);
+        settlement.accept(MadeBy.CLAIMANT, null);
 
         return settlement;
     }
 
     private Claim buildClaimWithSettlementPaymentIntention() {
         Settlement settlement = new Settlement();
-        settlement.makeOffer(SampleOffer.builderWithPaymentIntention().build(), MadeBy.DEFENDANT);
-        settlement.accept(MadeBy.CLAIMANT);
+        settlement.makeOffer(SampleOffer.builderWithPaymentIntention().build(), MadeBy.DEFENDANT, null);
+        settlement.accept(MadeBy.CLAIMANT, null);
 
         return SampleClaim.builder().withSettlement(settlement).build();
     }

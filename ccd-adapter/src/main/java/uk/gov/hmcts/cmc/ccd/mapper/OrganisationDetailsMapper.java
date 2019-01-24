@@ -36,6 +36,7 @@ public class OrganisationDetailsMapper {
         CCDDefendant value = ccdOrganisation.getValue();
 
         return OrganisationDetails.builder()
+            .id(ccdOrganisation.getId())
             .name(value.getClaimantProvidedName())
             .address(addressMapper.from(value.getClaimantProvidedAddress()))
             .email(value.getClaimantProvidedEmail())

@@ -42,6 +42,7 @@ public class IndividualDetailsMapper {
         CCDDefendant value = ccdDefendant.getValue();
 
         return IndividualDetails.builder()
+            .id(ccdDefendant.getId())
             .name(value.getClaimantProvidedName())
             .address(addressMapper.from(value.getClaimantProvidedAddress()))
             .email(value.getClaimantProvidedEmail())

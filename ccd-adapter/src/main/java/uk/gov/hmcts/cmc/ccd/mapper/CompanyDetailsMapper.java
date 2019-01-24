@@ -39,6 +39,7 @@ public class CompanyDetailsMapper {
         CCDDefendant value = company.getValue();
 
         return CompanyDetails.builder()
+            .id(company.getId())
             .name(value.getClaimantProvidedName())
             .address(addressMapper.from(value.getClaimantProvidedAddress()))
             .email(value.getClaimantProvidedEmail())

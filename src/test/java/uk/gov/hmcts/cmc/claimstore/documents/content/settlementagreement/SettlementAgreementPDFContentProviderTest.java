@@ -32,12 +32,12 @@ public class SettlementAgreementPDFContentProviderTest {
     @Before
     public void setUp() {
         Settlement settlement = new Settlement();
-        settlement.makeOffer(SampleOffer.builder().build(), MadeBy.DEFENDANT);
-        settlement.accept(MadeBy.CLAIMANT);
+        settlement.makeOffer(SampleOffer.builder().build(), MadeBy.DEFENDANT, null);
+        settlement.accept(MadeBy.CLAIMANT, null);
 
         Settlement settlementWithInstalments = new Settlement();
-        settlementWithInstalments.makeOffer(SampleOffer.builderWithPaymentIntention().build(), MadeBy.DEFENDANT);
-        settlementWithInstalments.accept(MadeBy.CLAIMANT);
+        settlementWithInstalments.makeOffer(SampleOffer.builderWithPaymentIntention().build(), MadeBy.DEFENDANT, null);
+        settlementWithInstalments.accept(MadeBy.CLAIMANT, null);
 
         claimWithSettlement = SampleClaim
             .builder()

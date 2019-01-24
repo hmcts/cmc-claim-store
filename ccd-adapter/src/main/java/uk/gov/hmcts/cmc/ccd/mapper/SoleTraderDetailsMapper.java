@@ -37,6 +37,7 @@ public class SoleTraderDetailsMapper {
         CCDDefendant value = ccdSoleTrader.getValue();
 
         return SoleTraderDetails.builder()
+            .id(ccdSoleTrader.getId())
             .name(value.getClaimantProvidedName())
             .address(addressMapper.from(value.getClaimantProvidedAddress()))
             .email(value.getClaimantProvidedEmail())

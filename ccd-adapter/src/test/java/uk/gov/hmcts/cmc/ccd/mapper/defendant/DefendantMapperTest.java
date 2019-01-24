@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper.defendant;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +70,8 @@ public class DefendantMapperTest {
         CCDDefendant defendant = ccdDefendant.getValue();
 
         //Then
+        Assertions.assertThat(theirDetails.getId()).isEqualTo(ccdDefendant.getId());
+
         assertEquals("Claim response deadline is not mapped properly",
             defendant.getResponseDeadline(), claim.getResponseDeadline());
 
