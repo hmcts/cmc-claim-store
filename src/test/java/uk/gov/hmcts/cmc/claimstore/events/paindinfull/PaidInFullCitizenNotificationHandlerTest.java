@@ -46,12 +46,11 @@ public class PaidInFullCitizenNotificationHandlerTest extends BaseNotificationSe
 
     @Test
     public void sendNotificationsSendsNotificationsToDefendantEmailNotLinked() throws NotificationClientException {
-        Response fullDefenceResponse = SampleResponse.FullDefence.builder().build();
-        PaidInFullEvent event = new PaidInFullEvent(SampleClaim.getWithResponse(fullDefenceResponse));
+        PaidInFullEvent event = new PaidInFullEvent(SampleClaim.getDefault());
 
         handler.notifyDefendantForPaidInFull(event);
         verify(notificationService, once()).sendMail(
-            eq(event.getClaim().getDefendantEmail()),
+            eq(event.getClaim().getClaimData().getDefendant().getEmail().get()),
             eq(CLAIMANT_SAYS_DEFENDANT_PAID_IN_FULL_TEMPLATE),
             anyMap(),
             eq(referenceForDefendant(event.getClaim().getReferenceNumber()))

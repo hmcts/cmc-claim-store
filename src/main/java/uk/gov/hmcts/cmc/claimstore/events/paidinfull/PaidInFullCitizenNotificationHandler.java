@@ -47,8 +47,6 @@ public class PaidInFullCitizenNotificationHandler {
     }
 
     private Optional<String> getDefendantEmail(Claim claim) {
-        System.out.print("hi wtf am i here, i'm meant to be defendant: " + claim.getDefendantEmail());
-        System.out.print("THEIR DETAILS: " + claim.getClaimData().getDefendant().getEmail());
         if (StringUtils.isNotBlank(claim.getDefendantEmail())) {
             return Optional.of(claim.getDefendantEmail());
         } else {
