@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDCourtOrder;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
 
@@ -49,7 +50,7 @@ public class CourtOrderMapperTest {
             .build();
 
         //when
-        CourtOrder courtOrder = mapper.from(ccdCourtOrder);
+        CourtOrder courtOrder = mapper.from(CCDCollectionElement.<CCDCourtOrder>builder().value(ccdCourtOrder).build());
 
         //then
         assertThat(courtOrder).isEqualTo(ccdCourtOrder);

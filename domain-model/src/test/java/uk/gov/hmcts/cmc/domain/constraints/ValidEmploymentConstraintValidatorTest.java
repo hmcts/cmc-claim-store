@@ -5,10 +5,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.*;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employer;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.SelfEmployment;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Unemployed;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Unemployment;
 
-import javax.validation.ConstraintValidatorContext;
 import java.math.BigDecimal;
+import javax.validation.ConstraintValidatorContext;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;

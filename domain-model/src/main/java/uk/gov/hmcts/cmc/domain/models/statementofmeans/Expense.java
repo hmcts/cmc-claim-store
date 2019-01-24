@@ -7,14 +7,14 @@ import uk.gov.hmcts.cmc.domain.constraints.Money;
 import uk.gov.hmcts.cmc.domain.constraints.ValidExpense;
 import uk.gov.hmcts.cmc.domain.models.CollectionId;
 
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Optional;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
 @ValidExpense
 public class Expense extends CollectionId {
 

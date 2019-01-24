@@ -95,12 +95,11 @@ public class OfferServiceTest {
         when(claimService.getClaimByExternalId(eq(claimWithOffer.getExternalId()), eq(AUTHORISATION)))
             .thenReturn(acceptedOffer);
 
-        Settlement settlement = acceptedOffer.getSettlement().orElse(null);
         // when
         offersService.accept(claimWithOffer, decidedBy, AUTHORISATION);
 
         //then
-        verify(caseRepository).updateSettlement(eq(claimWithOffer), eq(settlement),
+        verify(caseRepository).updateSettlement(eq(claimWithOffer), any(Settlement.class),
             eq(AUTHORISATION), eq(OFFER_SIGNED_BY_CLAIMANT));
 
         verify(eventProducer).createOfferAcceptedEvent(eq(acceptedOffer), eq(decidedBy));

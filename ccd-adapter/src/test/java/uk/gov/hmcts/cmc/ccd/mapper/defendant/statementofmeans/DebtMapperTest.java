@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDebt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Debt;
 
@@ -49,7 +50,7 @@ public class DebtMapperTest {
             .build();
 
         //when
-        Debt debt = mapper.from(ccdDebt);
+        Debt debt = mapper.from(CCDCollectionElement.<CCDDebt>builder().value(ccdDebt).build());
 
         //then
         assertThat(debt).isEqualTo(ccdDebt);

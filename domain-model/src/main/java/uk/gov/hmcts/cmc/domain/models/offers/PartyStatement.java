@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.domain.models.offers;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -17,20 +16,12 @@ public class PartyStatement extends CollectionId {
     private MadeBy madeBy;
     private Offer offer;
 
-    @JsonCreator
     @Builder
     public PartyStatement(String id, StatementType type, MadeBy madeBy, Offer offer) {
         super(id);
         this.type = type;
         this.madeBy = madeBy;
         this.offer = offer;
-    }
-
-    @Builder
-    public PartyStatement(String id, StatementType type, MadeBy madeBy) {
-        super(id);
-        this.type = type;
-        this.madeBy = madeBy;
     }
 
     public StatementType getType() {

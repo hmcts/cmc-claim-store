@@ -20,7 +20,7 @@ public class Settlement {
 
     public void makeOffer(Offer offer, MadeBy party) {
         assertOfferCanBeMadeBy(party);
-        partyStatements.add(PartyStatement.builder().type(StatementType.OFFER).madeBy(party).build());
+        partyStatements.add(PartyStatement.builder().type(StatementType.OFFER).madeBy(party).offer(offer).build());
     }
 
     public void accept(MadeBy party) {

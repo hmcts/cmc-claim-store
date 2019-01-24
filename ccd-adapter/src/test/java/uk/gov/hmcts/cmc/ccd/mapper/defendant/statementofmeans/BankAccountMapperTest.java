@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDBankAccount;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
@@ -51,7 +52,9 @@ public class BankAccountMapperTest {
             .build();
 
         //when
-        BankAccount bankAccount = mapper.from(ccdBankAccount);
+        BankAccount bankAccount = mapper.from(CCDCollectionElement.<CCDBankAccount>builder()
+            .value(ccdBankAccount)
+            .build());
 
         //then
         assertThat(bankAccount).isEqualTo(ccdBankAccount);

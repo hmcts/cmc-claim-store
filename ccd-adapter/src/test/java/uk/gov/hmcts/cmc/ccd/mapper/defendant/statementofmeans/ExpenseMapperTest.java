@@ -52,7 +52,7 @@ public class ExpenseMapperTest {
             .build();
 
         //when
-        Expense expense = mapper.from(CCDCollectionElement.builder().value(ccdExpense).build());
+        Expense expense = mapper.from(CCDCollectionElement.<CCDExpense>builder().value(ccdExpense).build());
 
         //then
         assertThat(expense).isEqualTo(ccdExpense);

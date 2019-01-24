@@ -40,7 +40,6 @@ public class SettlementMapper {
             return null;
         }
         List<PartyStatement> partyStatements = ccdDefendant.getSettlementPartyStatements().stream()
-            .map(CCDCollectionElement::getValue)
             .map(partyStatement -> partyStatementMapper.from(partyStatement))
             .collect(Collectors.toList());
 

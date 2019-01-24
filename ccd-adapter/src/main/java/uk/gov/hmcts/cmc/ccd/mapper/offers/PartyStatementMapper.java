@@ -2,10 +2,10 @@ package uk.gov.hmcts.cmc.ccd.mapper.offers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
 import uk.gov.hmcts.cmc.ccd.domain.offers.CCDMadeBy;
 import uk.gov.hmcts.cmc.ccd.domain.offers.CCDStatementType;
-import uk.gov.hmcts.cmc.ccd.mapper.Mapper;
 import uk.gov.hmcts.cmc.ccd.mapper.PaymentIntentionMapper;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @Component
-public class PartyStatementMapper implements Mapper<CCDPartyStatement, PartyStatement> {
+public class PartyStatementMapper {
 
     private final PaymentIntentionMapper paymentIntentionMapper;
 
@@ -26,7 +26,6 @@ public class PartyStatementMapper implements Mapper<CCDPartyStatement, PartyStat
         this.paymentIntentionMapper = paymentIntentionMapper;
     }
 
-    @Override
     public CCDPartyStatement to(PartyStatement partyStatement) {
         CCDPartyStatement.CCDPartyStatementBuilder builder = CCDPartyStatement.builder();
         builder.type(CCDStatementType.valueOf(partyStatement.getType().name()));
@@ -42,17 +41,21 @@ public class PartyStatementMapper implements Mapper<CCDPartyStatement, PartyStat
         return builder.build();
     }
 
-    @Override
-    public PartyStatement from(CCDPartyStatement ccdPartyStatement) {
-
+    public PartyStatement from(CCDCollectionElement<CCDPartyStatement> ccdPartyStatement) {
+        CCDPartyStatement value = ccdPartyStatement.getValue();
         PartyStatement.PartyStatementBuilder partyStatementBuilder = PartyStatement.builder();
-        Optional.ofNullable(ccdPartyStatement.getMadeBy()).ifPresent(ccdMadeBy ->
+
+        Optional.ofNullable(value.getMadeBy()).ifPresent(ccdMadeBy ->
             partyStatementBuilder.madeBy(MadeBy.valueOf(ccdMadeBy.name()))
         );
-        Optional.ofNullable(ccdPartyStatement.getType()).ifPresent(ccdStatementType ->
+
+        Optional.ofNullable(value.getType()).ifPresent(ccdStatementType ->
             partyStatementBuilder.type(StatementType.valueOf(ccdStatementType.name()))
         );
-        partyStatementBuilder.offer(buildOfferFromCCDPartyStatement(ccdPartyStatement));
+
+        partyStatementBuilder
+            .offer(buildOfferFromCCDPartyStatement(value))
+            .id(ccdPartyStatement.getId());
 
         return partyStatementBuilder.build();
 

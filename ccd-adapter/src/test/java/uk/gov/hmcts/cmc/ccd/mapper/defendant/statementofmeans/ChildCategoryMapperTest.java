@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDChildCategory;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 
@@ -49,7 +50,7 @@ public class ChildCategoryMapperTest {
             .build();
 
         //when
-        Child child = mapper.from(ccdChildCategory);
+        Child child = mapper.from(CCDCollectionElement.<CCDChildCategory>builder().value(ccdChildCategory).build());
 
         //then
         assertThat(child).isEqualTo(ccdChildCategory);

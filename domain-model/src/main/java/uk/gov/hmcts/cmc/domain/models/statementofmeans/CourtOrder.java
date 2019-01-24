@@ -7,9 +7,9 @@ import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
 import uk.gov.hmcts.cmc.domain.models.CollectionId;
 
+import java.math.BigDecimal;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 

@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncome;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
 
@@ -52,7 +53,7 @@ public class IncomeMapperTest {
             .build();
 
         //when
-        Income income = mapper.from(ccdIncome);
+        Income income = mapper.from(CCDCollectionElement.<CCDIncome>builder().value(ccdIncome).build());
 
         //then
         assertThat(income).isEqualTo(ccdIncome);
