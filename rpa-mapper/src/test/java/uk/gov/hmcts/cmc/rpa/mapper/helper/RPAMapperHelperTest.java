@@ -33,6 +33,16 @@ public class RPAMapperHelperTest {
     }
 
     @Test
+    public void shouldReturnFalseWhenAddressIsNotAmended() {
+        Address address = SampleAddress.builder().postcode("MK15 5EW").build();
+        Party ownParty = SampleParty.builder().withAddress(address).individual();
+
+        TheirDetails theirDetails = SampleTheirDetails.builder().withAddress(address).individualDetails();
+
+        assertThat(RPAMapperHelper.isAddressAmended(ownParty, theirDetails)).isFalse();
+    }
+
+    @Test
     public void shouldReturnJsonOfRepaymentPlan() {
         RepaymentPlan repaymentPlan = SampleRepaymentPlan.builder().build();
         JsonObject toJson = RPAMapperHelper.toJson(repaymentPlan);

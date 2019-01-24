@@ -19,7 +19,7 @@ public class RPAMapperHelper {
     }
 
     public static boolean isAddressAmended(Party ownParty, TheirDetails oppositeParty) {
-        return !ownParty.getAddress().equals(oppositeParty.getAddress()) ? true : false;
+        return !ownParty.getAddress().equals(oppositeParty.getAddress());
     }
 
     public static JsonObject toJson(RepaymentPlan repaymentPlan) {
