@@ -83,7 +83,3 @@ variable "ccd_async_enabled" {
 variable "common_tags" {
   type = "map"
 }
-
-variable "case_worker_roles" {
-  default = "caseworker-cmc"
-}
