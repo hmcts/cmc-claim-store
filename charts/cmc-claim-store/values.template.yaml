@@ -88,7 +88,7 @@ nodejs:
   memoryLimits: 512Mi
   cpuLimits: 1
   environment:
-    CLAIM_STORE_URL: http://${SERVICE_NAME}-claim-store:4400
+    CLAIM_STORE_URL: http://${SERVICE_NAME}-claim-store
     REFORM_TEAM: cmc
     REFORM_SERVICE_NAME: citizen-frontend
     REFORM_ENVIRONMENT: preview
