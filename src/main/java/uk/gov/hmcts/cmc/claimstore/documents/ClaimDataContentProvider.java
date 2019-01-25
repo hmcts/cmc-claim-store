@@ -104,7 +104,7 @@ public class ClaimDataContentProvider {
     }
 
     private static List<String> split(String reason) {
-        return Arrays.stream(reason.split("(?<=[.!?])|\\n|\\r"))
+        return Arrays.stream(reason.split("[\\n\\r]+"))
             .map(String::trim)
             .filter(line -> !line.isEmpty())
             .collect(Collectors.toList());
