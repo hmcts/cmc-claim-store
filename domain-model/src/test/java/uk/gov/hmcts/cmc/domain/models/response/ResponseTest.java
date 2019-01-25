@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
@@ -78,6 +79,24 @@ public class ResponseTest {
             .hasSize(1)
             .contains(
                 "defence : size must be between 1 and 99000"
+            );
+    }
+
+    @Test
+    public void shouldHaveValidationErrorWhenMediationPhoneNumberExceedSizeLimit() {
+        //given
+        Response response = SampleResponse.FullDefence.builder()
+            .withMediationPhoneNumber(RandomStringUtils.randomAlphabetic(31))
+            .build();
+
+        //when
+        Set<String> errors = validate(response);
+
+        //then
+        assertThat(errors)
+            .hasSize(1)
+            .contains(
+                "mediationPhoneNumber : may not be longer than 30 characters"
             );
     }
 }
