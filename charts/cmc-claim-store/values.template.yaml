@@ -80,7 +80,8 @@ nodejs:
   releaseNameOverride: ${SERVICE_NAME}-nodejs
   registerAdditionalDns:
     enabled: true
-    ingressHost: www-${SERVICE_FQDN}
+    primaryIngressHost: ${SERVICE_FQDN}
+    prefix: www
   image: hmcts/cmc-citizen-frontend:latest  # master
   applicationPort: 3000
   memoryRequests: 256Mi
