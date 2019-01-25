@@ -211,11 +211,22 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
 
         actual.getFreeMediation().ifPresent(freeMediation -> {
             if (!Objects.equals(
-                actual.getFreeMediation().orElse(YesNoOption.NO).name(),
+                actual.getFreeMediation().orElse(YesNoOption.YES).name(),
                 ccdDefendant.getResponseFreeMediationOption().name())
             ) {
                 failWithMessage("Expected CCDDefendant.responseFreeMediationOption to be <%s> but was <%s>",
                     ccdDefendant.getResponseFreeMediationOption(), actual.getFreeMediation());
+            }
+        });
+
+        actual.getMediationPhoneNumber().ifPresent(mediationPhoneNumber -> {
+            if (!Objects.equals(
+                mediationPhoneNumber,
+                ccdDefendant.getResponseMediationPhoneNumber())) {
+                failWithMessage( "Expected CCDDefendant.responseMediationPhoneNumber to be " +
+                    "<%s> but was <%s>",
+                    ccdDefendant.getResponseMediationPhoneNumber(),
+                    actual.getMediationPhoneNumber());
             }
         });
 
