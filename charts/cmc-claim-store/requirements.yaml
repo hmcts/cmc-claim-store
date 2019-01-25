@@ -1,0 +1,8 @@
+dependencies:
+  - name: postgresql
+    version: ~2.6.5
+    repository: '@stable'
+  - name: java
+    version: 0.0.10
+    repository: '@hmcts'
+    alias: claim-store

@@ -57,7 +57,6 @@ public class SaveCountyCourtJudgementTest extends BaseIntegrationTest {
 
     private Claim claim;
 
-
     @Before
     public void setUp() {
         claim = claimStore.saveClaim(SampleClaimData.builder()

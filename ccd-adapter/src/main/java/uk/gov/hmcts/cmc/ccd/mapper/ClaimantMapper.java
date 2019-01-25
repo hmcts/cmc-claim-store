@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.party.Company;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.party.Organisation;
@@ -12,14 +12,13 @@ import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 
 @Component
-public class ClaimantMapper implements Mapper<CCDClaimant, Party> {
+public class ClaimantMapper {
 
     private final IndividualMapper individualMapper;
     private final CompanyMapper companyMapper;
     private final OrganisationMapper organisationMapper;
     private final SoleTraderMapper soleTraderMapper;
 
-    @Autowired
     public ClaimantMapper(IndividualMapper individualMapper,
                           CompanyMapper companyMapper,
                           OrganisationMapper organisationMapper,
@@ -31,9 +30,9 @@ public class ClaimantMapper implements Mapper<CCDClaimant, Party> {
         this.soleTraderMapper = soleTraderMapper;
     }
 
-    @Override
-    public CCDClaimant to(Party party) {
+    public CCDClaimant to(Party party, Claim claim) {
         CCDClaimant.CCDClaimantBuilder builder = CCDClaimant.builder();
+        builder.partyEmail(claim.getSubmitterEmail());
 
         if (party instanceof Individual) {
             builder.partyType(CCDPartyType.INDIVIDUAL);
@@ -55,7 +54,6 @@ public class ClaimantMapper implements Mapper<CCDClaimant, Party> {
         return builder.build();
     }
 
-    @Override
     public Party from(CCDClaimant ccdClaimant) {
         switch (ccdClaimant.getPartyType()) {
             case COMPANY:

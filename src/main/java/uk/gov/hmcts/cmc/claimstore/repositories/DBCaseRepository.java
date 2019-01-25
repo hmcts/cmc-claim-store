@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.repositories;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
@@ -177,13 +178,14 @@ public class DBCaseRepository implements CaseRepository {
         Claim claim,
         Settlement settlement,
         String authorisation,
-        String userAction
+        CaseEvent userAction
     ) {
         offersRepository.updateSettlement(claim.getExternalId(), jsonMapper.toJson(settlement));
     }
 
     @Override
-    public void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, String userAction) {
+    public void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation,
+                                         CaseEvent caseEvent) {
         offersRepository.reachSettlement(
             claim.getExternalId(),
             jsonMapper.toJson(settlement),
@@ -207,7 +209,8 @@ public class DBCaseRepository implements CaseRepository {
             claimRepository.saveRepresented(claimDataString, claim.getSubmitterId(), claim.getIssuedOn(),
                 claim.getResponseDeadline(), claim.getExternalId(), claim.getSubmitterEmail(), features);
         } else {
-            claimRepository.saveSubmittedByClaimant(claimDataString, claim.getSubmitterId(), claim.getLetterHolderId(),
+            claimRepository.saveSubmittedByClaimant(claimDataString,
+                claim.getSubmitterId(), claim.getLetterHolderId(),
                 claim.getIssuedOn(), claim.getResponseDeadline(), claim.getExternalId(),
                 claim.getSubmitterEmail(), features);
         }
@@ -226,9 +229,13 @@ public class DBCaseRepository implements CaseRepository {
     public void saveReDetermination(
         String authorisation,
         Claim claim,
-        ReDetermination reDetermination,
-        String submitterId
+        ReDetermination reDetermination
     ) {
         claimRepository.saveReDetermination(claim.getExternalId(), jsonMapper.toJson(reDetermination));
+    }
+
+    @Override
+    public void saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent) {
+        // No implementation required for claim-store repository
     }
 }

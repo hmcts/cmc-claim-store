@@ -10,8 +10,7 @@ public class ResponseHelper {
         // Utility class, no instances
     }
 
-    public static boolean admissionResponse(Claim claim) {
-        Response response = claim.getResponse().orElse(null);
+    public static boolean admissionResponse(Response response) {
         if (response != null && (response.getResponseType().equals(ResponseType.PART_ADMISSION)
             || response.getResponseType().equals(ResponseType.FULL_ADMISSION))) {
             return true;
@@ -20,7 +19,7 @@ public class ResponseHelper {
     }
 
     public static String getResponseType(Claim claim) {
-        Response response =  claim.getResponse().orElse(null);
+        Response response = claim.getResponse().orElse(null);
         return response != null ? response.getResponseType().name() : null;
     }
 }

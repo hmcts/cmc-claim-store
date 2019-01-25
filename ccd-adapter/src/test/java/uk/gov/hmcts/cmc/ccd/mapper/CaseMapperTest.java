@@ -6,15 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.hmcts.cmc.ccd.SampleData;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.util.SampleData;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
-import static uk.gov.hmcts.cmc.ccd.SampleData.getAmountBreakDown;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
-
+import static uk.gov.hmcts.cmc.ccd.util.SampleData.getAmountBreakDown;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -27,7 +26,7 @@ public class CaseMapperTest {
     @Test
     public void shouldMapLegalClaimToCCD() {
         //given
-        Claim claim = SampleClaim.getDefaultForLegal();
+        Claim claim = SampleClaim.getLegalDataWithReps();
 
         //when
         CCDCase ccdCase = ccdCaseMapper.to(claim);
@@ -39,7 +38,7 @@ public class CaseMapperTest {
     @Test
     public void shouldMapCitizenClaimToCCD() {
         //given
-        Claim claim = SampleClaim.getDefault();
+        Claim claim = SampleClaim.withFullClaimData();
 
         //when
         CCDCase ccdCase = ccdCaseMapper.to(claim);

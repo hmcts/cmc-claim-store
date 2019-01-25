@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 public class ResponseUtilsTest {
 
     @Test

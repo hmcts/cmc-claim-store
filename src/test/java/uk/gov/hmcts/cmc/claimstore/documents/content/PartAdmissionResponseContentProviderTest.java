@@ -29,6 +29,7 @@ public class PartAdmissionResponseContentProviderTest {
         PartAdmissionResponse partAdmissionResponse = builder().build();
         Map<String, Object> content = provider.createContent(partAdmissionResponse);
 
+        assertThat(content).containsKey("paymentDeclarationIsPresent");
         assertThat(content).containsKey("paymentDate");
         assertThat(content).containsKey("paymentMethod")
             .containsValue("Paid cash");
@@ -67,7 +68,7 @@ public class PartAdmissionResponseContentProviderTest {
 
     @Test
     public void shouldProvidePartAdmissionPaymentOptionInstalments() {
-        PartAdmissionResponse partAdmissionResponse = builder().buildWithPaymentOptionInstallments();
+        PartAdmissionResponse partAdmissionResponse = builder().buildWithPaymentOptionInstalments();
         Map<String, Object> content = provider.createContent(partAdmissionResponse);
 
         assertThat(content)
@@ -90,7 +91,7 @@ public class PartAdmissionResponseContentProviderTest {
 
     @Test
     public void shouldProvideCorrectFormNumber() {
-        PartAdmissionResponse partAdmissionResponse = builder().buildWithPaymentOptionInstallments();
+        PartAdmissionResponse partAdmissionResponse = builder().buildWithPaymentOptionInstalments();
         Map<String, Object> content = provider.createContent(partAdmissionResponse);
         assertThat(content).containsKey("formNumber");
         assertThat(content).containsValue("OCON9A");
