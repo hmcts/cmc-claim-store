@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 public abstract class SampleResponse<T extends SampleResponse<T>> {
 
     public static final String USER_DEFENCE = "defence string";
+    String mediationPhoneNumber = "07999999999";
 
     public static class FullAdmission extends SampleResponse<FullAdmission> {
         public static FullAdmission builder() {
@@ -63,7 +64,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
             return FullAdmissionResponse.builder()
                 .moreTimeNeeded(YesNoOption.NO)
                 .freeMediation(YesNoOption.YES)
-                .mediationPhoneNumber("07999999999")
+                .mediationPhoneNumber(mediationPhoneNumber)
                 .defendant(SampleParty.builder().individual())
                 .paymentIntention(SamplePaymentIntention.instalments())
                 .build();
@@ -152,7 +153,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
             return PartAdmissionResponse.builder()
                 .defendant(SampleParty.builder().individual())
                 .freeMediation(YesNoOption.YES)
-                .mediationPhoneNumber("07999999999")
+                .mediationPhoneNumber(mediationPhoneNumber)
                 .moreTimeNeeded(YesNoOption.NO)
                 .amount(BigDecimal.valueOf(120))
                 .paymentDeclaration(SamplePaymentDeclaration.builder().build())
@@ -205,7 +206,6 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
     }
 
     protected YesNoOption freeMediationOption = YesNoOption.YES;
-    protected String mediationPhoneNumber = "07999999999";
     protected YesNoOption moreTimeNeededOption = YesNoOption.YES;
     protected Party defendantDetails = SampleParty.builder().withRepresentative(null).individual();
     protected StatementOfTruth statementOfTruth;
