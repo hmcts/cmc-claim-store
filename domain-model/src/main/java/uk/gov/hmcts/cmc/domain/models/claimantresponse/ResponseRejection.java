@@ -8,6 +8,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.Optional;
 import javax.validation.constraints.Size;
 
@@ -36,6 +37,10 @@ public class ResponseRejection extends ClaimantResponse {
 
     public Optional<YesNoOption> getFreeMediation() {
         return Optional.ofNullable(freeMediation);
+    }
+
+    public Optional<String> getMediationPhoneNumber() {
+        return Optional.ofNullable(mediationPhoneNumber);
     }
 
     public Optional<String> getReason() {
