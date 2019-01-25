@@ -76,7 +76,7 @@ public class SettlementAgreementService {
         settlement.countersign(MadeBy.DEFENDANT, null);
 
         CaseEvent caseEvent = AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT;
-        caseRepository.updateSettlement(claim, settlement, authorisation, caseEvent);
+        caseRepository.reachSettlementAgreement(claim, settlement, authorisation, caseEvent);
 
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
 
