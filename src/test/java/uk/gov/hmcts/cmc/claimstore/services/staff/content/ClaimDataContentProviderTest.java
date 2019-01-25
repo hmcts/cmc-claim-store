@@ -48,25 +48,16 @@ public class ClaimDataContentProviderTest {
 
     @Test
     public void shouldProvideExpectedReasonWithoutDelimiters() {
-        testReason("reason", "reason");
-    }
-
-    @Test
-    public void shouldProvideDelimitedReason() {
-        testReason("My first sentence is exciting! The second less so. Am I finished? Guess so",
-            "My first sentence is exciting!",
-            "The second less so.",
-            "Am I finished?",
-            "Guess so");
+        testReason("reason one reason two", "reason one reason two");
     }
 
     @Test
     public void shouldProvideReasonHonouringInputParagraphs() {
-        testReason("'Twas brillig and the slithy toves did gyre and gimble in the wabe\n"
-                + "All mimsy were the borogoves and the mome raths outgrabe",
+        testReason("'Twas brillig and the slithy toves\ndid gyre and gimble in the wabe\r\n"
+                + "All mimsy were the borogoves\rand the mome raths outgrabe",
 
-            "'Twas brillig and the slithy toves did gyre and gimble in the wabe",
-            "All mimsy were the borogoves and the mome raths outgrabe");
+            "'Twas brillig and the slithy toves", "did gyre and gimble in the wabe",
+            "All mimsy were the borogoves", "and the mome raths outgrabe");
     }
 
     @Test
