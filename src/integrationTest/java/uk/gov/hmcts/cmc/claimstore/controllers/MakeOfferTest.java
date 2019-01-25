@@ -38,7 +38,6 @@ public class MakeOfferTest extends BaseIntegrationTest {
 
     private static final String DEFENDANT_AUTH_TOKEN = "authDataString";
 
-
     private Claim claim;
 
     @Before

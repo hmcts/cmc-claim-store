@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.document;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -33,6 +34,7 @@ public class DocumentManagementService {
     private final DocumentUploadClientApi documentUploadClient;
     private final AuthTokenGenerator authTokenGenerator;
     private final UserService userService;
+    private final String caseWorkerRole;
 
     @Autowired
     public DocumentManagementService(
@@ -40,13 +42,15 @@ public class DocumentManagementService {
         DocumentDownloadClientApi documentDownloadClientApi,
         DocumentUploadClientApi documentUploadClientApi,
         AuthTokenGenerator authTokenGenerator,
-        UserService userService
+        UserService userService,
+        @Value("${document_management.caseWorkerRole}") String caseWorkerRole
     ) {
         this.documentMetadataDownloadClient = documentMetadataDownloadApi;
         this.documentDownloadClient = documentDownloadClientApi;
         this.documentUploadClient = documentUploadClientApi;
         this.authTokenGenerator = authTokenGenerator;
         this.userService = userService;
+        this.caseWorkerRole = caseWorkerRole;
     }
 
     public URI uploadDocument(String authorisation, PDF document) {
@@ -79,12 +83,14 @@ public class DocumentManagementService {
         Document documentMetadata = documentMetadataDownloadClient.getDocumentMetadata(
             authorisation,
             authTokenGenerator.generate(),
+            caseWorkerRole,
             documentSelf.getPath()
         );
 
         ResponseEntity<Resource> responseEntity = documentDownloadClient.downloadBinary(
             authorisation,
             authTokenGenerator.generate(),
+            caseWorkerRole,
             URI.create(documentMetadata.links.binary.href).getPath()
         );
 

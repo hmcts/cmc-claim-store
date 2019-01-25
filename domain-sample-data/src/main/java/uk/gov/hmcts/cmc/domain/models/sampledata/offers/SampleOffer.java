@@ -22,4 +22,9 @@ public class SampleOffer {
         return builder()
             .paymentIntention(SamplePaymentIntention.instalments());
     }
+
+    public static OfferBuilder builderWithSetByDateInPast() {
+        return builder()
+            .paymentIntention(SamplePaymentIntention.bySetDateInPast());
+    }
 }

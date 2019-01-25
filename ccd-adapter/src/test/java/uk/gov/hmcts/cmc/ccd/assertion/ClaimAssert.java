@@ -16,7 +16,6 @@ import java.util.Objects;
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
 
     public ClaimAssert(Claim actual) {
@@ -55,6 +54,13 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
             failWithMessage("Expected CCDCase.submitterEmail to be <%s> but was <%s>",
                 ccdCase.getSubmitterEmail(), actual.getSubmitterEmail());
         }
+
+        actual.getTotalAmountTillToday().ifPresent(totalAmount -> {
+            if (ccdCase.getTotalAmount() != null && !Objects.equals(totalAmount, ccdCase.getTotalAmount())) {
+                failWithMessage("Expected CCDCase.totalAmount to be <%s> but was <%s>",
+                    ccdCase.getTotalAmount(), totalAmount);
+            }
+        });
 
         ClaimData claimData = actual.getClaimData();
         if (!Objects.equals(claimData.getReason(), ccdCase.getReason())) {
@@ -205,7 +211,6 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
                     ccdCase.getPersonalInjuryGeneralDamages(), personalInjury.getGeneralDamages());
             }
         });
-
 
         claimData.getHousingDisrepair().ifPresent(housingDisrepair -> {
             if (!Objects.equals(housingDisrepair.getCostOfRepairsDamages().name(),

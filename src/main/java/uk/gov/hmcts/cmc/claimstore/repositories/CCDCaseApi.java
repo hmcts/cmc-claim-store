@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
@@ -104,8 +103,9 @@ public class CCDCaseApi {
     }
 
     public List<Claim> getByDefendantId(String id, String authorisation) {
+        LOGGER.debug("ccd search is by authorisation instead of defendant id {}", id);
         User user = userService.getUser(authorisation);
-        return getAllCasesBy(user, ImmutableMap.of("case.defendantId", id));
+        return getAllCasesBy(user, ImmutableMap.of());
     }
 
     public List<Claim> getBySubmitterEmail(String submitterEmail, String authorisation) {
@@ -114,13 +114,14 @@ public class CCDCaseApi {
     }
 
     public List<Claim> getByDefendantEmail(String defendantEmail, String authorisation) {
+        LOGGER.debug("ccd search is by authorisation instead of defendant email {}", defendantEmail);
         User user = userService.getUser(authorisation);
-        return getAllCasesBy(user, ImmutableMap.of("case.defendantEmail", defendantEmail));
+        return getAllCasesBy(user, ImmutableMap.of());
     }
 
     public List<Claim> getByPaymentReference(String payReference, String authorisation) {
         User user = userService.getUser(authorisation);
-        return getAllCasesBy(user, ImmutableMap.of("case.claimData.payment.reference", payReference));
+        return getAllCasesBy(user, ImmutableMap.of("case.paymentReference", payReference));
     }
 
     public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
@@ -260,12 +261,11 @@ public class CCDCaseApi {
         String defendantId,
         String defendantEmail
     ) {
-        return coreCaseDataService.update(
+        return coreCaseDataService.linkDefendant(
             defendantUser.getAuthorisation(),
-            CCDCase.builder().id(Long.valueOf(caseId))
-                //.defendantId(defendantId)
-                //.defendantEmail(defendantEmail)
-                .build(),
+            Long.valueOf(caseId),
+            defendantId,
+            defendantEmail,
             CaseEvent.LINK_DEFENDANT
         );
     }

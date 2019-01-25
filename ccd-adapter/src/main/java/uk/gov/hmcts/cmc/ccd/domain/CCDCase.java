@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.ccd.domain;
 
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 
 import java.math.BigDecimal;
@@ -30,6 +31,7 @@ public class CCDCase {
     private BigDecimal amountLowerValue;
     private BigDecimal amountHigherValue;
     private List<CCDCollectionElement<CCDAmountRow>> amountBreakDown;
+    private BigDecimal totalAmount;
     private CCDNotKnown notKnown;
     private CCDInterestType interestType;
     private BigDecimal interestBreakDownAmount;

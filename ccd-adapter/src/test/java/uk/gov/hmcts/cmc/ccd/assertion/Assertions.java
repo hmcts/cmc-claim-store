@@ -1,21 +1,73 @@
 package uk.gov.hmcts.cmc.ccd.assertion;
 
-import uk.gov.hmcts.cmc.ccd.assertion.response.DefendantEvidenceAssert;
-import uk.gov.hmcts.cmc.ccd.assertion.response.DefendantTimelineAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.claimantresponse.CourtDeterminationAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.claimantresponse.ResponseAcceptationAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.claimantresponse.ResponseRejectionAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.defendant.PaymentIntentionAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.defendant.ResponseAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.BankAccountAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.ChildAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.CourtOrderAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.DebtAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.ExpenseAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.IncomeAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.LivingPartnerAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.StatementOfMeansAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
-import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
+import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
-import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
-
+import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Debt;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.LivingPartner;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
 public class Assertions {
 
     private Assertions() {
+    }
+
+    public static PartyStatementAssert assertThat(PartyStatement partyStatement) {
+        return new PartyStatementAssert(partyStatement);
+    }
+
+    public static CCDPartyStatementAssert assertThat(CCDPartyStatement ccdPartyStatement) {
+        return new CCDPartyStatementAssert(ccdPartyStatement);
+    }
+
+    public static CountyCourtJudgmentAssert assertThat(CountyCourtJudgment countyCourtJudgment) {
+        return new CountyCourtJudgmentAssert(countyCourtJudgment);
+    }
+
+    public static PaymentIntentionAssert assertThat(PaymentIntention paymentIntention) {
+        return new PaymentIntentionAssert(paymentIntention);
+    }
+
+    public static CourtDeterminationAssert assertThat(CourtDetermination courtDetermination) {
+        return new CourtDeterminationAssert(courtDetermination);
+    }
+
+    public static ResponseRejectionAssert assertThat(ResponseRejection responseRejection) {
+        return new ResponseRejectionAssert(responseRejection);
+    }
+
+    public static ResponseAcceptationAssert assertThat(ResponseAcceptation responseAcceptation) {
+        return new ResponseAcceptationAssert(responseAcceptation);
     }
 
     public static AddressAssert assertThat(Address address) {
@@ -34,14 +86,6 @@ public class Assertions {
         return new EvidenceRowAssert(evidenceRow);
     }
 
-    public static DefendantTimelineAssert assertThat(DefendantTimeline timeline) {
-        return new DefendantTimelineAssert(timeline);
-    }
-
-    public static DefendantEvidenceAssert assertThat(DefendantEvidence evidence) {
-        return new DefendantEvidenceAssert(evidence);
-    }
-
     public static ClaimAssert assertThat(Claim claim) {
         return new ClaimAssert(claim);
     }
@@ -50,7 +94,43 @@ public class Assertions {
         return new ClaimantAssert(party);
     }
 
-    public static DefendantAssert assertThat(TheirDetails theirDetails) {
-        return new DefendantAssert(theirDetails);
+    public static TheirDetailsAssert assertThat(TheirDetails theirDetails) {
+        return new TheirDetailsAssert(theirDetails);
+    }
+
+    public static ChildAssert assertThat(Child child) {
+        return new ChildAssert(child);
+    }
+
+    public static BankAccountAssert assertThat(BankAccount bankAccount) {
+        return new BankAccountAssert(bankAccount);
+    }
+
+    public static CourtOrderAssert assertThat(CourtOrder courtOrder) {
+        return new CourtOrderAssert(courtOrder);
+    }
+
+    public static DebtAssert assertThat(Debt debt) {
+        return new DebtAssert(debt);
+    }
+
+    public static IncomeAssert assertThat(Income income) {
+        return new IncomeAssert(income);
+    }
+
+    public static ExpenseAssert assertThat(Expense expense) {
+        return new ExpenseAssert(expense);
+    }
+
+    public static StatementOfMeansAssert assertThat(StatementOfMeans statementOfMeans) {
+        return new StatementOfMeansAssert(statementOfMeans);
+    }
+
+    public static LivingPartnerAssert assertThat(LivingPartner livingPartner) {
+        return new LivingPartnerAssert(livingPartner);
+    }
+
+    public static ResponseAssert assertThat(Response response) {
+        return new ResponseAssert(response);
     }
 }
