@@ -24,7 +24,7 @@ dependencyUpdates.resolutionStrategy = {
   }
 }
 
-def springBootVersion = '2.1.0.RELEASE'
+def springBootVersion = '2.1.2.RELEASE'
 def springCloudVersion = 'Finchley.SR1'
 
 allprojects {
@@ -318,7 +318,9 @@ sonarqube {
       "**/cmc/claimstore/appinsights/**," +
       "**/ccd/migration/**," +
       "**/EmailData.java," +
-      "**/CCDCaseHandler.java"
+      "**/CCDCaseHandler.java," +
+      "**/CCDReDetermination.java," +
+      "**/CCDEventProducer.java"
   }
 }
 

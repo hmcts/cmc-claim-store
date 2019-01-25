@@ -29,6 +29,7 @@ public class PartAdmissionResponseContentProviderTest {
         PartAdmissionResponse partAdmissionResponse = builder().build();
         Map<String, Object> content = provider.createContent(partAdmissionResponse);
 
+        assertThat(content).containsKey("paymentDeclarationIsPresent");
         assertThat(content).containsKey("paymentDate");
         assertThat(content).containsKey("paymentMethod")
             .containsValue("Paid cash");
