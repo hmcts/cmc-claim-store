@@ -197,6 +197,11 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
             return this;
         }
 
+        public FullDefence withMediationPhoneNumber(String mediationPhoneNumber) {
+            this.mediationPhoneNumber = mediationPhoneNumber;
+            return this;
+        }
+
         public FullDefenceResponse build() {
             return new FullDefenceResponse(
                 freeMediationOption, mediationPhoneNumber, moreTimeNeededOption, defendantDetails, statementOfTruth,
