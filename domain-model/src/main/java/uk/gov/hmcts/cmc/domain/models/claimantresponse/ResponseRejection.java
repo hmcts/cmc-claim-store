@@ -7,10 +7,9 @@ import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
-import java.math.BigDecimal;
-import java.util.Objects;
-import java.util.Optional;
 import javax.validation.constraints.Size;
+import java.math.BigDecimal;
+import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
@@ -28,7 +27,12 @@ public class ResponseRejection extends ClaimantResponse {
 
     @Builder
     @JsonCreator
-    public ResponseRejection(BigDecimal amountPaid, YesNoOption freeMediation, String mediationPhoneNumber, String reason) {
+    public ResponseRejection(
+        BigDecimal amountPaid,
+        YesNoOption freeMediation,
+        String mediationPhoneNumber,
+        String reason
+    ) {
         super(ClaimantResponseType.REJECTION, amountPaid);
         this.freeMediation = freeMediation;
         this.mediationPhoneNumber = mediationPhoneNumber;
