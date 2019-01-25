@@ -1,12 +1,10 @@
-package uk.gov.hmcts.cmc.claimstore.events.paindinfull;
+package uk.gov.hmcts.cmc.claimstore.events.paidinfull;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullCitizenNotificationHandler;
-import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.BaseNotificationServiceTest;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -73,7 +71,7 @@ public class PaidInFullCitizenNotificationHandlerTest extends BaseNotificationSe
     }
 
     @Test
-    public void sendNotificationsSendsNotificationsToDefendantNoEmail() throws NotificationClientException {
+    public void sendNotificationsDoesNotSendNotificationToDefendantWhenNoEmailAddress() throws NotificationClientException {
         PaidInFullEvent event = new PaidInFullEvent(SampleClaim.getDefault());
 
         handler.notifyDefendantForPaidInFull(event);
