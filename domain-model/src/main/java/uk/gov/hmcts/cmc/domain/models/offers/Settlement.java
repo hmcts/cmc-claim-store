@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.domain.exceptions.IllegalSettlementStatementException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
@@ -22,7 +21,7 @@ public class Settlement {
     public void makeOffer(Offer offer, MadeBy party, String partyStatementId) {
         assertOfferCanBeMadeBy(party);
         partyStatements.add(PartyStatement.builder().type(StatementType.OFFER)
-            .id(Optional.ofNullable(partyStatementId).orElse(null))
+            .id(partyStatementId)
             .madeBy(party)
             .offer(offer)
             .build());
@@ -31,28 +30,28 @@ public class Settlement {
     public void accept(MadeBy party, String partyStatementId) {
         assertOfferCanBeResponded(party);
         partyStatements.add(PartyStatement.builder().type(StatementType.ACCEPTATION)
-            .id(Optional.ofNullable(partyStatementId).orElse(null))
+            .id(partyStatementId)
             .madeBy(party).build());
     }
 
     public void acceptCourtDetermination(MadeBy party, String partyStatementId) {
         assertOfferCanBeAccepted();
         partyStatements.add(PartyStatement.builder().type(StatementType.ACCEPTATION)
-            .id(Optional.ofNullable(partyStatementId).orElse(null))
+            .id(partyStatementId)
             .madeBy(party).build());
     }
 
     public void reject(MadeBy party, String partyStatementId) {
         assertOfferCanBeRejected(party);
         partyStatements.add(PartyStatement.builder().type(StatementType.REJECTION)
-            .id(Optional.ofNullable(partyStatementId).orElse(null))
+            .id(partyStatementId)
             .madeBy(party).build());
     }
 
     public void countersign(MadeBy party, String partyStatementId) {
         assertOfferHasBeenAcceptedByOtherParty(party);
         partyStatements.add(PartyStatement.builder().type(StatementType.COUNTERSIGNATURE)
-            .id(Optional.ofNullable(partyStatementId).orElse(null))
+            .id(partyStatementId)
             .madeBy(party).build());
     }
 

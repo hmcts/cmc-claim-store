@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +11,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;
 
 @SpringBootTest
@@ -32,7 +32,7 @@ public class TimelineEventMapperTest {
 
         //then
         assertThat(timelineEvent).isEqualTo(ccdTimelineEvent.getValue());
-        Assertions.assertThat(timelineEvent.getId()).isEqualTo(ccdTimelineEvent.getId());
+        assertThat(timelineEvent.getId()).isEqualTo(ccdTimelineEvent.getId());
     }
 
     @Test

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,7 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
 
 import java.math.BigDecimal;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 @SpringBootTest
@@ -38,7 +38,7 @@ public class CourtOrderMapperTest {
 
         //then
         assertThat(courtOrder).isEqualTo(ccdCourtOrder.getValue());
-        Assertions.assertThat(courtOrder.getId()).isEqualTo(ccdCourtOrder.getId());
+        assertThat(courtOrder.getId()).isEqualTo(ccdCourtOrder.getId());
     }
 
     @Test

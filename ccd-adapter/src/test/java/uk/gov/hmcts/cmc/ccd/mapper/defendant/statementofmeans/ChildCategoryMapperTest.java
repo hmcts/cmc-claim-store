@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +11,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDChildCategory;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Child.AgeGroupType.BETWEEN_11_AND_15;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Child.AgeGroupType.BETWEEN_16_AND_19;
@@ -38,7 +38,7 @@ public class ChildCategoryMapperTest {
 
         //then
         assertThat(child).isEqualTo(ccdChildCategory.getValue());
-        Assertions.assertThat(child.getId()).isEqualTo(ccdChildCategory.getId());
+        assertThat(child.getId()).isEqualTo(ccdChildCategory.getId());
     }
 
     @Test

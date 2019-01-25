@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,7 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
 
 import java.math.BigDecimal;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense.ExpenseType.COUNCIL_TAX;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense.ExpenseType.MORTGAGE;
@@ -41,7 +41,7 @@ public class ExpenseMapperTest {
 
         //then
         assertThat(expense).isEqualTo(ccdExpense.getValue());
-        Assertions.assertThat(expense.getId()).isEqualTo(ccdExpense.getId());
+        assertThat(expense.getId()).isEqualTo(ccdExpense.getId());
     }
 
     @Test

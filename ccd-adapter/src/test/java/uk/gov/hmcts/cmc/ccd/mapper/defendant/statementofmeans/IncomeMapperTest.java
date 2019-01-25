@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,7 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
 
 import java.math.BigDecimal;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Income.IncomeType.JOB;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Income.IncomeType.OTHER;
@@ -41,7 +41,7 @@ public class IncomeMapperTest {
 
         //then
         assertThat(income).isEqualTo(ccdIncome.getValue());
-        Assertions.assertThat(income.getId()).isEqualTo(ccdIncome.getId());
+        assertThat(income.getId()).isEqualTo(ccdIncome.getId());
     }
 
     @Test

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.mapper.offers;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +19,7 @@ import java.util.ListIterator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 @SpringBootTest
@@ -40,7 +40,7 @@ public class PartyStatementMapperTest {
 
         //then
         assertThat(partyStatement).isEqualTo(ccdPartyStatement.getValue());
-        Assertions.assertThat(partyStatement.getId()).isEqualTo(ccdPartyStatement.getId());
+        assertThat(partyStatement.getId()).isEqualTo(ccdPartyStatement.getId());
     }
 
     @Test

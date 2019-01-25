@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
 
 import java.math.BigDecimal;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount.BankAccountType.CURRENT_ACCOUNT;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount.BankAccountType.SAVINGS_ACCOUNT;
@@ -40,7 +40,7 @@ public class BankAccountMapperTest {
         CCDCollectionElement<CCDBankAccount> ccdBankAccount = mapper.to(bankAccount);
 
         //then
-        Assertions.assertThat(bankAccount.getId()).isEqualTo(ccdBankAccount.getId());
+        assertThat(bankAccount.getId()).isEqualTo(ccdBankAccount.getId());
         assertThat(bankAccount).isEqualTo(ccdBankAccount.getValue());
     }
 

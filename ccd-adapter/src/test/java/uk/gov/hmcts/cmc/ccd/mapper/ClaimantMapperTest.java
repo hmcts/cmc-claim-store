@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDClaimantCompany;
 import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDClaimantIndividual;
@@ -41,7 +41,7 @@ public class ClaimantMapperTest {
 
         //then
         assertThat(party).isEqualTo(value);
-        Assertions.assertThat(value.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
+        assertThat(value.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
     }
 
     @Test
@@ -55,7 +55,7 @@ public class ClaimantMapperTest {
 
         //then
         assertThat(party).isEqualTo(value);
-        Assertions.assertThat(value.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
+        assertThat(value.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
     }
 
     @Test
@@ -69,7 +69,7 @@ public class ClaimantMapperTest {
 
         //then
         assertThat(party).isEqualTo(value);
-        Assertions.assertThat(value.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
+        assertThat(value.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
     }
 
     @Test
@@ -83,7 +83,7 @@ public class ClaimantMapperTest {
 
         //then
         assertThat(party).isEqualTo(value);
-        Assertions.assertThat(value.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
+        assertThat(value.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
     }
 
     @Test

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,7 @@ import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceType;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.models.evidence.EvidenceType.CORRESPONDENCE;
 
@@ -34,7 +34,7 @@ public class EvidenceRowMapperTest {
 
         //then
         assertThat(evidenceRow).isEqualTo(ccdEvidenceRow.getValue());
-        Assertions.assertThat(evidenceRow.getId()).isEqualTo(ccdEvidenceRow.getId());
+        assertThat(evidenceRow.getId()).isEqualTo(ccdEvidenceRow.getId());
     }
 
     @Test
@@ -47,7 +47,7 @@ public class EvidenceRowMapperTest {
 
         //then
         assertThat(evidenceRow).isEqualTo(ccdEvidenceRow.getValue());
-        Assertions.assertThat(evidenceRow.getId()).isEqualTo(ccdEvidenceRow.getId());
+        assertThat(evidenceRow.getId()).isEqualTo(ccdEvidenceRow.getId());
     }
 
     @Test
