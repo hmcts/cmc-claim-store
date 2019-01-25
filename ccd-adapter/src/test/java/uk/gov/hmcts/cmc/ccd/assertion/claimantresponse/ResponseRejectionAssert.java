@@ -24,6 +24,15 @@ public class ResponseRejectionAssert extends AbstractAssert<ResponseRejectionAss
                 ccdResponseRejection.getFreeMediationOption(), freeMediation);
         }
 
+        actual.getMediationPhoneNumber().ifPresent(mediationPhoneNumber -> {
+            if (!Objects.equals(
+                mediationPhoneNumber,
+                ccdResponseRejection.getMediationPhoneNumber())) {
+                failWithMessage("Expected ResponseRejection.mediationPhoneNumber to be <%s> but was <%s>",
+                    ccdResponseRejection.getMediationPhoneNumber(), mediationPhoneNumber);
+            }
+        });
+
         actual.getAmountPaid().ifPresent(amountPaid -> {
             if (!Objects.equals(amountPaid, ccdResponseRejection.getAmountPaid())) {
                 failWithMessage("Expected ResponseRejection.amountPaid to be <%s> but was <%s>",
