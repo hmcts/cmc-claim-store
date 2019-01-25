@@ -107,7 +107,7 @@ public class SettlementAgreementServiceTest {
 
         InOrder inOrder = inOrder(caseRepository, eventProducer, ccdEventProducer, appInsights);
 
-        inOrder.verify(caseRepository).updateSettlement(eq(claimWithSettlementAgreement), any(Settlement.class),
+        inOrder.verify(caseRepository).reachSettlementAgreement(eq(claimWithSettlementAgreement), any(Settlement.class),
             eq(AUTHORISATION), eq(AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT));
 
         inOrder.verify(ccdEventProducer).createCCDSettlementEvent(eq(claimWithSettlementAgreement),
@@ -128,7 +128,7 @@ public class SettlementAgreementServiceTest {
 
         InOrder inOrder = inOrder(caseRepository, eventProducer, ccdEventProducer, appInsights);
 
-        inOrder.verify(caseRepository).updateSettlement(eq(claimWithSettlementAgreement), any(Settlement.class),
+        inOrder.verify(caseRepository).reachSettlementAgreement(eq(claimWithSettlementAgreement), any(Settlement.class),
             eq(AUTHORISATION), eq(AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT));
 
         inOrder.verify(ccdEventProducer).createCCDSettlementEvent(eq(claimWithSettlementAgreement),
