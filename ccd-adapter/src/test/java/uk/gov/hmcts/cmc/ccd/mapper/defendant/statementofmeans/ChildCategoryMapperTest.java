@@ -11,6 +11,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDChildCategory;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Child.AgeGroupType.BETWEEN_11_AND_15;
@@ -49,11 +51,16 @@ public class ChildCategoryMapperTest {
             .numberOfResidentChildren(1)
             .ageGroupType(BETWEEN_11_AND_15)
             .build();
+        String collectionId = UUID.randomUUID().toString();
 
         //when
-        Child child = mapper.from(CCDCollectionElement.<CCDChildCategory>builder().value(ccdChildCategory).build());
+        Child child = mapper.from(CCDCollectionElement.<CCDChildCategory>builder()
+            .id(collectionId)
+            .value(ccdChildCategory)
+            .build());
 
         //then
         assertThat(child).isEqualTo(ccdChildCategory);
+        assertThat(child.getId()).isEqualTo(collectionId);
     }
 }

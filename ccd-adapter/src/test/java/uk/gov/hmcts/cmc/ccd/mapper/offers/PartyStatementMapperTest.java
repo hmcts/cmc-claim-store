@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SamplePartyStatement;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -100,7 +101,9 @@ public class PartyStatementMapperTest {
     public void mapEmptyCCDPartyStatementToDomain() {
         //given
         CCDPartyStatement ccdPartyStatement = CCDPartyStatement.builder().build();
+        String collectionId = UUID.randomUUID().toString();
         CCDCollectionElement<CCDPartyStatement> collectionElement = CCDCollectionElement.<CCDPartyStatement>builder()
+            .id(collectionId)
             .value(ccdPartyStatement)
             .build();
 
@@ -109,13 +112,16 @@ public class PartyStatementMapperTest {
 
         //then
         assertThat(ccdPartyStatement).isEqualTo(partyStatement);
+        assertThat(partyStatement.getId()).isEqualTo(collectionId);
     }
 
     @Test
     public void mapCCDPartyStatementWithOfferToDomain() {
         //given
         CCDPartyStatement ccdPartyStatement = SampleCCDPartyStatement.withOffer();
+        String collectionId = UUID.randomUUID().toString();
         CCDCollectionElement<CCDPartyStatement> collectionElement = CCDCollectionElement.<CCDPartyStatement>builder()
+            .id(collectionId)
             .value(ccdPartyStatement)
             .build();
 
@@ -124,13 +130,17 @@ public class PartyStatementMapperTest {
 
         //then
         assertThat(ccdPartyStatement).isEqualTo(partyStatement);
+        assertThat(partyStatement.getId()).isEqualTo(collectionId);
     }
 
     @Test
     public void mapCCDPartyStatementWithOfferPaymentIntentionToDomain() {
         //given
         CCDPartyStatement ccdPartyStatement = SampleCCDPartyStatement.withPaymentIntention();
+        String collectionId = UUID.randomUUID().toString();
+
         CCDCollectionElement<CCDPartyStatement> collectionElement = CCDCollectionElement.<CCDPartyStatement>builder()
+            .id(collectionId)
             .value(ccdPartyStatement)
             .build();
 
@@ -139,6 +149,7 @@ public class PartyStatementMapperTest {
 
         //then
         assertThat(ccdPartyStatement).isEqualTo(partyStatement);
+        assertThat(partyStatement.getId()).isEqualTo(collectionId);
     }
 
 }

@@ -11,6 +11,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;
 
@@ -43,11 +45,17 @@ public class TimelineEventMapperTest {
             .description("My description")
             .build();
 
+        String collectionId = UUID.randomUUID().toString();
+
         //when
-        TimelineEvent timelineEvent
-            = mapper.from(CCDCollectionElement.<CCDTimelineEvent>builder().value(ccdTimelineEvent).build());
+        TimelineEvent timelineEvent = mapper.from(CCDCollectionElement.<CCDTimelineEvent>builder()
+            .id(collectionId)
+            .value(ccdTimelineEvent)
+            .build()
+        );
 
         //then
         assertThat(timelineEvent).isEqualTo(ccdTimelineEvent);
+        assertThat(timelineEvent.getId()).isEqualTo(collectionId);
     }
 }

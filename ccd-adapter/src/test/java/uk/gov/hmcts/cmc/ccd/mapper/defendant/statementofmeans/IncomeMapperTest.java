@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncome;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
@@ -53,11 +54,16 @@ public class IncomeMapperTest {
             .amountReceived(BigDecimal.TEN)
             .otherSource("Trading")
             .build();
+        String collectionId = UUID.randomUUID().toString();
 
         //when
-        Income income = mapper.from(CCDCollectionElement.<CCDIncome>builder().value(ccdIncome).build());
+        Income income = mapper.from(CCDCollectionElement.<CCDIncome>builder()
+            .id(collectionId)
+            .value(ccdIncome)
+            .build());
 
         //then
         assertThat(income).isEqualTo(ccdIncome);
+        assertThat(income.getId()).isEqualTo(collectionId);
     }
 }

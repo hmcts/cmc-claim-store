@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpense;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
@@ -53,10 +54,15 @@ public class ExpenseMapperTest {
             .amountPaid(BigDecimal.TEN)
             .build();
 
+        String collectionId = UUID.randomUUID().toString();
+
         //when
-        Expense expense = mapper.from(CCDCollectionElement.<CCDExpense>builder().value(ccdExpense).build());
+        Expense expense = mapper.from(CCDCollectionElement.<CCDExpense>builder()
+            .id(collectionId)
+            .value(ccdExpense).build());
 
         //then
         assertThat(expense).isEqualTo(ccdExpense);
+        assertThat(expense.getId()).isEqualTo(collectionId);
     }
 }

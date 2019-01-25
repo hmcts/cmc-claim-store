@@ -11,6 +11,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDEmployer;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employer;
 
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;
 
@@ -46,10 +48,15 @@ public class EmployerMapperTest {
             .employerName("CCD")
             .build();
 
+        String collectionId = UUID.randomUUID().toString();
+
         //when
-        Employer employer = mapper.from(CCDCollectionElement.<CCDEmployer>builder().value(ccdEmployer).build());
+        Employer employer = mapper.from(CCDCollectionElement.<CCDEmployer>builder()
+            .id(collectionId)
+            .value(ccdEmployer).build());
 
         //then
         assertThat(employer).isEqualTo(ccdEmployer);
+        assertThat(employer.getId()).isEqualTo(collectionId);
     }
 }

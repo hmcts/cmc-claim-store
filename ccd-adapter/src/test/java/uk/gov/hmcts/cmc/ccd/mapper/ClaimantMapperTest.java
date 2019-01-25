@@ -14,6 +14,8 @@ import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDClaimantCompany;
@@ -90,52 +92,68 @@ public class ClaimantMapperTest {
     public void shouldMapIndividualFromCCD() {
         //given
         CCDClaimant ccdParty = getCCDClaimantIndividual();
+        String collectionId = UUID.randomUUID().toString();
 
         //when
         Party party = claimantMapper
-            .from(CCDCollectionElement.<CCDClaimant>builder().value(ccdParty).build());
+            .from(CCDCollectionElement.<CCDClaimant>builder()
+                .id(collectionId)
+                .value(ccdParty).build());
 
         //then
         assertThat(party).isEqualTo(ccdParty);
+        assertThat(party.getId()).isEqualTo(collectionId);
     }
 
     @Test
     public void shouldMapCompanyFromCCD() {
         //given
         CCDClaimant ccdParty = getCCDClaimantCompany();
+        String collectionId = UUID.randomUUID().toString();
 
         //when
         Party party = claimantMapper
-            .from(CCDCollectionElement.<CCDClaimant>builder().value(ccdParty).build());
+            .from(CCDCollectionElement.<CCDClaimant>builder()
+                .id(collectionId)
+                .value(ccdParty).build());
 
         //then
         assertThat(party).isEqualTo(ccdParty);
+        assertThat(party.getId()).isEqualTo(collectionId);
     }
 
     @Test
     public void shouldMapOrganisationFromCCD() {
         //given
         CCDClaimant ccdParty = getCCDClaimantOrganisation();
+        String collectionId = UUID.randomUUID().toString();
 
         //when
         Party party = claimantMapper
-            .from(CCDCollectionElement.<CCDClaimant>builder().value(ccdParty).build());
+            .from(CCDCollectionElement.<CCDClaimant>builder()
+                .id(collectionId)
+                .value(ccdParty).build());
 
         //then
         assertThat(party).isEqualTo(ccdParty);
+        assertThat(party.getId()).isEqualTo(collectionId);
     }
 
     @Test
     public void shouldMapSoleTraderFromCCD() {
         //given
         CCDClaimant ccdParty = getCCDClaimantSoleTrader();
+        String collectionId = UUID.randomUUID().toString();
 
         //when
         Party party = claimantMapper
-            .from(CCDCollectionElement.<CCDClaimant>builder().value(ccdParty).build());
+            .from(CCDCollectionElement.<CCDClaimant>builder()
+                .id(collectionId)
+                .value(ccdParty).build());
 
         //then
         assertThat(party).isEqualTo(ccdParty);
+        assertThat(party.getId()).isEqualTo(collectionId);
     }
 
 }
