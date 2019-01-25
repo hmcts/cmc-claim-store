@@ -284,7 +284,8 @@ public class CoreCaseDataService {
     }
 
     private CaseEvent getCCJEvent(CountyCourtJudgmentType countyCourtJudgmentType) {
-        if (countyCourtJudgmentType.equals(CountyCourtJudgmentType.ADMISSIONS)) {
+        if (countyCourtJudgmentType == CountyCourtJudgmentType.ADMISSIONS
+            || countyCourtJudgmentType == CountyCourtJudgmentType.DETERMINATION) {
             return CCJ_REQUESTED;
         } else {
             return DEFAULT_CCJ_REQUESTED;
