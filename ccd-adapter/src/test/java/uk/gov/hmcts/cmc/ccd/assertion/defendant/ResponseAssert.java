@@ -223,7 +223,7 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
             if (!Objects.equals(
                 mediationPhoneNumber,
                 ccdDefendant.getResponseMediationPhoneNumber())) {
-                failWithMessage( "Expected CCDDefendant.responseMediationPhoneNumber to be "
+                failWithMessage("Expected CCDDefendant.responseMediationPhoneNumber to be "
                         + "<%s> but was <%s>",
                     ccdDefendant.getResponseMediationPhoneNumber(),
                     actual.getMediationPhoneNumber());
