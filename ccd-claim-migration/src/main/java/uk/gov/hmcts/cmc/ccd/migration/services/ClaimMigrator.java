@@ -62,7 +62,7 @@ public class ClaimMigrator {
         AtomicInteger updatedClaims = new AtomicInteger(0);
         AtomicInteger failedMigrations = new AtomicInteger(0);
 
-        notMigratedClaims.sort(Comparator.comparing(Claim::getId));
+        notMigratedClaims.sort(Comparator.comparing(Claim::getId).reversed());
 
         notMigratedClaims.forEach(claim -> {
             Optional<CaseDetails> caseDetails
