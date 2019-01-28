@@ -52,9 +52,9 @@ public interface CaseRepository {
 
     void requestMoreTimeForResponse(String authorisation, Claim claim, LocalDate newResponseDeadline);
 
-    void updateSettlement(Claim claim, Settlement settlement, String authorisation, String userAction);
+    void updateSettlement(Claim claim, Settlement settlement, String authorisation, CaseEvent caseEvent);
 
-    void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, String userAction);
+    void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, CaseEvent caseEvent);
 
     CaseReference savePrePaymentClaim(String externalId, String authorisation);
 
@@ -62,7 +62,7 @@ public interface CaseRepository {
 
     void linkSealedClaimDocument(String authorisation, Claim claim, URI documentURI);
 
-    void saveReDetermination(String authorisation, Claim claim, ReDetermination reDetermination, String submitterId);
+    void saveReDetermination(String authorisation, Claim claim, ReDetermination reDetermination);
 
     void saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent);
 }

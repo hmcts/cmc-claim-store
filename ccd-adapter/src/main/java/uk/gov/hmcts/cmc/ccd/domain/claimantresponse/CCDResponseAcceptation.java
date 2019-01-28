@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = true)
 public class CCDResponseAcceptation extends CCDClaimantResponse {
 
+    private CCDCourtDetermination courtDetermination;
     private CCDPaymentIntention claimantPaymentIntention;
     private CCDFormaliseOption formaliseOption;
 
@@ -20,12 +21,16 @@ public class CCDResponseAcceptation extends CCDClaimantResponse {
     }
 
     @Builder
-    public CCDResponseAcceptation(BigDecimal amountPaid,
-                                  LocalDateTime submittedOn,
-                                  CCDPaymentIntention claimantPaymentIntention,
-                                  CCDFormaliseOption formaliseOption) {
+    public CCDResponseAcceptation(
+        BigDecimal amountPaid,
+        LocalDateTime submittedOn,
+        CCDPaymentIntention claimantPaymentIntention,
+        CCDFormaliseOption formaliseOption,
+        CCDCourtDetermination courtDetermination
+    ) {
         super(amountPaid, submittedOn);
         this.claimantPaymentIntention = claimantPaymentIntention;
         this.formaliseOption = formaliseOption;
+        this.courtDetermination = courtDetermination;
     }
 }

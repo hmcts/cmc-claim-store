@@ -52,7 +52,7 @@ public class FormaliseResponseAcceptanceServiceTest {
     private FormaliseResponseAcceptanceService formaliseResponseAcceptanceService;
 
     @Mock
-    private OffersService offersService;
+    private SettlementAgreementService settlementAgreementService;
 
     @Mock
     private CountyCourtJudgmentService countyCourtJudgmentService;
@@ -76,7 +76,7 @@ public class FormaliseResponseAcceptanceServiceTest {
     public void before() {
         formaliseResponseAcceptanceService = new FormaliseResponseAcceptanceService(
             countyCourtJudgmentService,
-            offersService,
+            settlementAgreementService,
             eventProducer,
             ccdEventProducer,
             caseRepository
@@ -150,7 +150,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .orElseThrow(IllegalStateException::new))
             .isEqualTo(respondentPayingBySetDate);
 
-        verifyZeroInteractions(offersService);
+        verifyZeroInteractions(settlementAgreementService);
     }
 
     @Test
@@ -181,7 +181,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .getRepaymentPlan().orElseThrow(IllegalAccessError::new))
             .isEqualTo(repaymentPlanOfDefendant);
 
-        verifyZeroInteractions(offersService);
+        verifyZeroInteractions(settlementAgreementService);
     }
 
     @Test
@@ -216,7 +216,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .orElseThrow(IllegalStateException::new))
             .isEqualTo(appliedPaymentDate);
 
-        verifyZeroInteractions(offersService);
+        verifyZeroInteractions(settlementAgreementService);
     }
 
     @Test
@@ -253,7 +253,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .orElseThrow(IllegalStateException::new))
             .isEqualTo(appliedPaymentDate);
 
-        verifyZeroInteractions(offersService);
+        verifyZeroInteractions(settlementAgreementService);
     }
 
     @Test
@@ -287,7 +287,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .getValue()
             .getPayBySetDate().isPresent()).isFalse();
 
-        verifyZeroInteractions(offersService);
+        verifyZeroInteractions(settlementAgreementService);
     }
 
     @Test
@@ -322,7 +322,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .orElseThrow(IllegalStateException::new))
             .isEqualTo(appliedPlan);
 
-        verifyZeroInteractions(offersService);
+        verifyZeroInteractions(settlementAgreementService);
     }
 
     @Test
@@ -354,7 +354,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .orElseThrow(IllegalStateException::new))
             .isEqualTo(repaymentPlan);
 
-        verifyZeroInteractions(offersService);
+        verifyZeroInteractions(settlementAgreementService);
     }
 
     @Test
@@ -373,7 +373,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
 
-        verify(offersService).signSettlementAgreement(
+        verify(settlementAgreementService).signSettlementAgreement(
             eq(claim.getExternalId()),
             settlementArgumentCaptor.capture(),
             eq(AUTH));
@@ -407,7 +407,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
 
-        verify(offersService).signSettlementAgreement(
+        verify(settlementAgreementService).signSettlementAgreement(
             eq(claim.getExternalId()),
             settlementArgumentCaptor.capture(),
             eq(AUTH));
@@ -444,7 +444,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
 
-        verify(offersService).signSettlementAgreement(
+        verify(settlementAgreementService).signSettlementAgreement(
             eq(claim.getExternalId()),
             settlementArgumentCaptor.capture(),
             eq(AUTH));
@@ -482,7 +482,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
 
-        verify(offersService).signSettlementAgreement(
+        verify(settlementAgreementService).signSettlementAgreement(
             eq(claim.getExternalId()),
             settlementArgumentCaptor.capture(),
             eq(AUTH));
@@ -513,7 +513,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
 
-        verify(offersService).signSettlementAgreement(
+        verify(settlementAgreementService).signSettlementAgreement(
             eq(claim.getExternalId()),
             settlementArgumentCaptor.capture(),
             eq(AUTH));
@@ -553,7 +553,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
 
-        verify(offersService).signSettlementAgreement(
+        verify(settlementAgreementService).signSettlementAgreement(
             eq(claim.getExternalId()),
             settlementArgumentCaptor.capture(),
             eq(AUTH));
@@ -589,7 +589,7 @@ public class FormaliseResponseAcceptanceServiceTest {
         verify(ccdEventProducer, once()).createCCDInterlocutoryJudgmentEvent(eq(claim), anyString());
         verify(caseRepository, once()).saveCaseEvent(anyString(), eq(claim), eq(INTERLOCATORY_JUDGEMENT));
         verifyZeroInteractions(countyCourtJudgmentService);
-        verifyZeroInteractions(offersService);
+        verifyZeroInteractions(settlementAgreementService);
     }
 
     private PartAdmissionResponse getPartAdmissionResponsePayByInstalments() {

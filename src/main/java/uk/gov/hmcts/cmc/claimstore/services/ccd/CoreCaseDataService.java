@@ -17,6 +17,8 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
+import uk.gov.hmcts.cmc.domain.models.PaidInFull;
+import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
@@ -43,6 +45,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED_ONLINE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_POST_PAYMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_PRE_PAYMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
@@ -875,6 +878,84 @@ public class CoreCaseDataService {
                     CCD_UPDATE_FAILURE_MESSAGE,
                     caseId,
                     caseEvent
+                ), exception
+            );
+        }
+    }
+
+    public void saveReDetermination(
+        String authorisation,
+        Long caseId,
+        ReDetermination reDetermination,
+        CaseEvent event
+    ) {
+        try {
+            UserDetails userDetails = userService.getUserDetails(authorisation);
+
+            EventRequestData eventRequestData = eventRequest(event, userDetails.getId());
+
+            StartEventResponse startEventResponse = startUpdate(
+                authorisation,
+                eventRequestData,
+                caseId,
+                userDetails.isSolicitor() || userDetails.isCaseworker()
+            );
+
+            Claim updatedClaim = toClaimBuilder(startEventResponse)
+                .reDetermination(reDetermination)
+                .reDeterminationRequestedAt(nowInUTC())
+                .build();
+
+            CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);
+
+            submitUpdate(authorisation,
+                eventRequestData,
+                caseDataContent,
+                caseId,
+                userDetails.isSolicitor() || userDetails.isCaseworker()
+            );
+        } catch (Exception exception) {
+            throw new CoreCaseDataStoreException(
+                String.format(
+                    CCD_UPDATE_FAILURE_MESSAGE,
+                    caseId,
+                    event
+                ), exception
+            );
+        }
+    }
+
+    public void savePaidInFull(Long caseId, PaidInFull paidInFull, String authorisation) {
+        try {
+            UserDetails userDetails = userService.getUserDetails(authorisation);
+
+            EventRequestData eventRequestData = eventRequest(SETTLED_PRE_JUDGMENT, userDetails.getId());
+
+            StartEventResponse startEventResponse = startUpdate(
+                authorisation,
+                eventRequestData,
+                caseId,
+                userDetails.isSolicitor() || userDetails.isCaseworker()
+            );
+
+            Claim updatedClaim = toClaimBuilder(startEventResponse)
+                .moneyReceivedOn(paidInFull.getMoneyReceivedOn())
+                .build();
+
+            CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);
+
+            submitUpdate(authorisation,
+                eventRequestData,
+                caseDataContent,
+                caseId,
+                userDetails.isSolicitor() || userDetails.isCaseworker()
+            );
+        } catch (Exception exception) {
+            throw new CoreCaseDataStoreException(
+                String.format(
+                    CCD_UPDATE_FAILURE_MESSAGE,
+                    caseId,
+                    SETTLED_PRE_JUDGMENT
                 ), exception
             );
         }
