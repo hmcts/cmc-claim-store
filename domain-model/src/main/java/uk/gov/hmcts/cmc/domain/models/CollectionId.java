@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @EqualsAndHashCode
 public abstract class CollectionId {
-    String id;
+    private final String id;
 
     public CollectionId(String id) {
         this.id = Optional.ofNullable(id).orElse(UUID.randomUUID().toString());
