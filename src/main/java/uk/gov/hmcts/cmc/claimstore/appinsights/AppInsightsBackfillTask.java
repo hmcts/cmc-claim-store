@@ -9,18 +9,20 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 
-@Component @ConditionalOnProperty(prefix = "appinsightstool", name = "true")
-public class AppInsightsTool implements CommandLineRunner {
+// To back fill 'paid in full' custom events on App Insight
+@Component @ConditionalOnProperty(name="appinsightstool", havingValue="true")
+public class AppInsightsBackfillTask implements CommandLineRunner {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AppInsightsTool.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AppInsightsBackfillTask.class);
 
     @Autowired
     private AppInsights appInsights;
 
+    // First 1485 'paid in full' claims being back filled
     @Override
     public void run(String... args) throws Exception {
         LOGGER.info("Tracking events");
-        trackEvent(AppInsightsEvent.PAID_IN_FULL, 10); //1103);
+        trackEvent(AppInsightsEvent.PAID_IN_FULL, 1485);
         LOGGER.info("Done");
     }
 
