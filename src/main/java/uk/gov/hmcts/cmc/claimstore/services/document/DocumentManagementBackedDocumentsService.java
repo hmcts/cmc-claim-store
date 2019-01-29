@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.net.URI;
+import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 
@@ -57,8 +58,9 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     public byte[] getSealedClaim(String externalId, String authorisation) {
         Claim claim = getClaimByExternalId(externalId, authorisation);
         final String baseFileName = buildSealedClaimFileBaseName(claim.getReferenceNumber());
-        if (claim.getSealedClaimDocument().isPresent()) {
-            URI documentSelfPath = claim.getSealedClaimDocument().get();
+        Optional<URI> sealedClaimDocumentUri = claim.getSealedClaimDocument();
+        if (sealedClaimDocumentUri.isPresent()) {
+            URI documentSelfPath = sealedClaimDocumentUri.get();
             return documentManagementService.downloadDocument(authorisation, documentSelfPath, baseFileName);
         } else {
             DocumentDetails documentDetails = uploadToDocumentManagement(sealedClaimPdfService.createPdf(claim),
