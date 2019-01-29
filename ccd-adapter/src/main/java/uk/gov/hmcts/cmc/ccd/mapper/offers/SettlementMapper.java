@@ -1,11 +1,11 @@
-package uk.gov.hmcts.cmc.ccd.deprecated.mapper.offers;
+package uk.gov.hmcts.cmc.ccd.mapper.offers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.offers.CCDPartyStatement;
-import uk.gov.hmcts.cmc.ccd.deprecated.domain.offers.CCDSettlement;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class SettlementMapper implements Mapper<CCDSettlement, Settlement> {
+public class SettlementMapper {
 
     private PartyStatementMapper partyStatementMapper;
 
@@ -23,23 +23,23 @@ public class SettlementMapper implements Mapper<CCDSettlement, Settlement> {
         this.partyStatementMapper = partyStatementMapper;
     }
 
-    @Override
-    public CCDSettlement to(Settlement settlement) {
-        CCDSettlement.CCDSettlementBuilder builder = CCDSettlement.builder();
-
-        List<CCDCollectionElement<CCDPartyStatement>> partyStatements = settlement.getPartyStatements().stream()
+    public List<CCDCollectionElement<CCDPartyStatement>> toCCDPartyStatements(Settlement settlement) {
+        if (settlement == null || settlement.getPartyStatements() == null
+            || settlement.getPartyStatements().isEmpty()) {
+            return null;
+        }
+        return settlement.getPartyStatements().stream()
             .map(partyStatement -> partyStatementMapper.to(partyStatement))
             .map(partyStatement -> CCDCollectionElement.<CCDPartyStatement>builder().value(partyStatement).build())
             .collect(Collectors.toList());
 
-        builder.partyStatements(partyStatements);
-
-        return builder.build();
     }
 
-    @Override
-    public Settlement from(CCDSettlement ccdSettlement) {
-        List<PartyStatement> partyStatements = ccdSettlement.getPartyStatements().stream()
+    public Settlement fromCCDDefendant(CCDDefendant ccdDefendant) {
+        if (CollectionUtils.isEmpty(ccdDefendant.getSettlementPartyStatements())) {
+            return null;
+        }
+        List<PartyStatement> partyStatements = ccdDefendant.getSettlementPartyStatements().stream()
             .map(CCDCollectionElement::getValue)
             .map(partyStatement -> partyStatementMapper.from(partyStatement))
             .collect(Collectors.toList());

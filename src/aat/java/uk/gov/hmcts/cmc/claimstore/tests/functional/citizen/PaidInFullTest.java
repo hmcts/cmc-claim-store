@@ -104,19 +104,4 @@ public class PaidInFullTest extends BaseTest {
             .then()
             .statusCode(HttpStatus.NOT_FOUND.value());
     }
-
-    @Test
-    public void shouldNotAllowPaidInFullWhenUserIsNotOwner() {
-        String claimantId = claimant.getUserDetails().getId();
-        Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimantId
-        );
-
-        User claimantNotOwner = idamTestService.createCitizen();
-        commonOperations
-            .paidInFull(createdCase.getExternalId(), new PaidInFull(now()), claimantNotOwner)
-            .then()
-            .statusCode(HttpStatus.FORBIDDEN.value());
-    }
 }

@@ -17,13 +17,21 @@ import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
+import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SamplePartyStatement;
+import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import static java.time.LocalDate.now;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.ORGANISATION;
 
@@ -203,6 +211,101 @@ public class DefendantMapperTest {
         assertNotNull(ccdCountyCourtJudgment);
         assertEquals(ccdCountyCourtJudgment.getType().name(), countyCourtJudgment.getCcjType().name());
         assertEquals(ccdCountyCourtJudgment.getRequestedDate(), claimWithCCJ.getCountyCourtJudgmentRequestedAt());
+    }
+
+    @Test
+    public void mapPaidInFullToCCDDefendant() {
+        //Given
+        TheirDetails theirDetails = SampleTheirDetails.builder().individualDetails();
+        LocalDate moneyReceivedOn = now();
+        Claim claimWithPaidInFull = SampleClaim.builder().withMoneyReceivedOn(moneyReceivedOn).build();
+
+        //When
+        CCDDefendant ccdDefendant = mapper.to(theirDetails, claimWithPaidInFull);
+
+        //Then
+        assertNotNull(ccdDefendant.getPaidInFullDate());
+        assertEquals(moneyReceivedOn, ccdDefendant.getPaidInFullDate());
+    }
+
+    @Test
+    public void mapPaidInFullFromCCDDefendant() {
+        //Given
+        CCDDefendant ccdDefendant = SampleCCDDefendant.withPaidInFull(now()).build();
+        Claim.ClaimBuilder claimBuilder = Claim.builder();
+
+        //when
+        mapper.from(claimBuilder, ccdDefendant);
+        Claim claim = claimBuilder.build();
+
+        //Then
+        assertTrue(claim.getMoneyReceivedOn().isPresent());
+        assertEquals(ccdDefendant.getPaidInFullDate(), claim.getMoneyReceivedOn().orElseThrow(AssertionError::new));
+    }
+
+    @Test
+    public void mapToCCDDefendantWithNullSettlement() {
+        //Given
+        TheirDetails theirDetails = SampleTheirDetails.builder().organisationDetails();
+        Claim claimWithCCJ = SampleClaim.getWithSettlement(null);
+
+        //When
+        CCDDefendant ccdDefendant = mapper.to(theirDetails, claimWithCCJ);
+
+        //Then
+        assertNull(ccdDefendant.getSettlementPartyStatements());
+    }
+
+    @Test
+    public void mapToCCDDefendantWithSettlements() {
+        //Given
+        TheirDetails theirDetails = SampleTheirDetails.builder().organisationDetails();
+        Claim claimWithSettlement = SampleClaim
+            .getWithSettlement(
+                SampleSettlement.builder().withPartyStatements(
+                    SamplePartyStatement.offerPartyStatement,
+                    SamplePartyStatement.acceptPartyStatement)
+                    .build());
+        final LocalDateTime settlementReachedAt = claimWithSettlement.getSettlementReachedAt();
+
+        //When
+        CCDDefendant ccdDefendant = mapper.to(theirDetails, claimWithSettlement);
+
+        //Then
+        assertNotNull(ccdDefendant.getSettlementPartyStatements());
+        assertNotNull(ccdDefendant.getSettlementReachedAt());
+        assertThat(ccdDefendant.getSettlementPartyStatements().size(), is(2));
+        assertEquals(settlementReachedAt, ccdDefendant.getSettlementReachedAt());
+    }
+
+    @Test
+    public void mapFromCCDDefendantWithNoSettlementDetails() {
+        //Given
+        CCDDefendant ccdDefendant = SampleCCDDefendant.withResponseMoreTimeNeededOption().build();
+        Claim.ClaimBuilder claimBuilder = Claim.builder();
+
+        //when
+        mapper.from(claimBuilder, ccdDefendant);
+
+        //Then
+        assertNull(ccdDefendant.getSettlementReachedAt());
+        assertNull(ccdDefendant.getSettlementPartyStatements());
+    }
+
+    @Test
+    public void mapFromCCDDefendantWithSettlements() {
+        //Given
+        CCDDefendant ccdDefendant = SampleCCDDefendant.withPartyStatements().build();
+        Claim.ClaimBuilder claimBuilder = Claim.builder();
+
+        //when
+        mapper.from(claimBuilder, ccdDefendant);
+        Claim finalClaim = claimBuilder.build();
+
+        // Then
+        assertNotNull(finalClaim.getSettlementReachedAt());
+        assertNotNull(finalClaim.getSettlement());
+        assertThat(finalClaim.getSettlement().get().getPartyStatements().size(), is(3));
     }
 
 }
