@@ -32,7 +32,9 @@ public enum AppInsightsEvent {
     CLAIMANT_RESPONSE_ACCEPTED("Claimant response - accepted"),
     CCD_ASYNC_FAILURE("CCD Async handling - failure"),
     REDETERMINATION_REQUESTED("CCJ - Requested by re-determination "),
-    PAID_IN_FULL("Paid in full");
+    PAID_IN_FULL("Paid in full"),
+    DOCUMENT_MANAGEMENT_UPLOAD_FAILURE("Document management upload - failure"),
+    DOCUMENT_MANAGEMENT_DOWNLOAD_FAILURE("Document management download - failure");
 
     private String displayName;
 
