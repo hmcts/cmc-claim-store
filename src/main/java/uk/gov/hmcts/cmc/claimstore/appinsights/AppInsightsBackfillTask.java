@@ -4,13 +4,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
 
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 
 // To back fill 'paid in full' custom events on App Insight
-@Component @ConditionalOnProperty(name="appinsightstool", havingValue="true")
+@Component
+@ConditionalOnProperty(name = "appinsightstool", havingValue = "true")
 public class AppInsightsBackfillTask implements CommandLineRunner {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AppInsightsBackfillTask.class);
@@ -29,7 +30,7 @@ public class AppInsightsBackfillTask implements CommandLineRunner {
     private void trackEvent(AppInsightsEvent event, int number) throws InterruptedException {
         LOGGER.info("Tracking {} count {}", event, number);
         for (int i = 0; i < number; i++) {
-            appInsights.trackEvent(event,REFERENCE_NUMBER, null);
+            appInsights.trackEvent(event, REFERENCE_NUMBER, null);
             Thread.sleep(200);
         }
     }
