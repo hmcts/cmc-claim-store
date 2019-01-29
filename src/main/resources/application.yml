@@ -67,6 +67,10 @@ idam:
 pdf-service:
   url: "${PDF_SERVICE_URL:}"
 
+document_management:
+  url: ${DOCUMENT_MANAGEMENT_URL}
+  caseWorkerRole: ${DOCUMENT_MANAGEMENT_CASEWORKERROLE}
+
 bankHolidays:
   api:
     url: "https://www.gov.uk"

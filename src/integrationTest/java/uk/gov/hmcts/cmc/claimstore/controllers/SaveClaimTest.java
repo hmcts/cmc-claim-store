@@ -19,8 +19,6 @@ import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.service.notify.NotificationClientException;
 
-import java.util.UUID;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -97,17 +95,6 @@ public class SaveClaimTest extends BaseSaveTest {
         assertThat(deserializeObjectFrom(result, Claim.class))
             .extracting(Claim::getFeatures)
             .isEqualTo(features);
-    }
-
-    @Test
-    public void shouldFailWhenDuplicateExternalId() throws Exception {
-        UUID externalId = UUID.randomUUID();
-
-        ClaimData claimData = SampleClaimData.builder().withExternalId(externalId).build();
-        claimStore.saveClaim(claimData);
-
-        makeIssueClaimRequest(claimData, AUTHORISATION_TOKEN)
-            .andExpect(status().isConflict());
     }
 
     @Test
