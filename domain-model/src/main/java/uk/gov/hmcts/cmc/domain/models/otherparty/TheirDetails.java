@@ -8,6 +8,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.domain.models.Address;
+import uk.gov.hmcts.cmc.domain.models.CollectionId;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.domain.models.party.NamedParty;
 
@@ -31,8 +32,8 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
         @JsonSubTypes.Type(value = OrganisationDetails.class, name = "organisation")
     }
 )
-@EqualsAndHashCode
-public abstract class TheirDetails implements NamedParty {
+@EqualsAndHashCode(callSuper = true)
+public abstract class TheirDetails extends CollectionId implements NamedParty {
 
     @NotBlank
     @Size(max = 255, message = "may not be longer than {max} characters")
@@ -52,12 +53,14 @@ public abstract class TheirDetails implements NamedParty {
     private final Address serviceAddress;
 
     public TheirDetails(
+        String id,
         String name,
         Address address,
         String email,
         Representative representative,
         Address serviceAddress
     ) {
+        super(id);
         this.name = name;
         this.address = address;
         this.email = email;

@@ -7,11 +7,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDCourtOrder;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 @SpringBootTest
@@ -32,11 +35,11 @@ public class CourtOrderMapperTest {
             .build();
 
         //when
-        CCDCourtOrder ccdCourtOrder = mapper.to(courtOrder);
+        CCDCollectionElement<CCDCourtOrder> ccdCourtOrder = mapper.to(courtOrder);
 
         //then
-        assertThat(courtOrder).isEqualTo(ccdCourtOrder);
-
+        assertThat(courtOrder).isEqualTo(ccdCourtOrder.getValue());
+        assertThat(courtOrder.getId()).isEqualTo(ccdCourtOrder.getId());
     }
 
     @Test
@@ -48,10 +51,16 @@ public class CourtOrderMapperTest {
             .monthlyInstalmentAmount(BigDecimal.ONE)
             .build();
 
+        String collectionId = UUID.randomUUID().toString();
+
         //when
-        CourtOrder courtOrder = mapper.from(ccdCourtOrder);
+        CourtOrder courtOrder = mapper.from(CCDCollectionElement.<CCDCourtOrder>builder()
+            .id(collectionId)
+            .value(ccdCourtOrder)
+            .build());
 
         //then
         assertThat(courtOrder).isEqualTo(ccdCourtOrder);
+        assertThat(courtOrder.getId()).isEqualTo(collectionId);
     }
 }
