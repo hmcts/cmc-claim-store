@@ -279,14 +279,14 @@ public class DefendantMapperTest {
         final LocalDateTime settlementReachedAt = claimWithSettlement.getSettlementReachedAt();
 
         //When
-        CCDCollectionElement<CCDDefendant> ccdDefendant = mapper.to(theirDetails, claimWithSettlement);
-        CCDDefendant value = ccdDefendant.getValue();
+        CCDCollectionElement<CCDDefendant> collectionElement = mapper.to(theirDetails, claimWithSettlement);
+        CCDDefendant ccdDefendant = collectionElement.getValue();
 
         //Then
-        assertNotNull(value.getSettlementPartyStatements());
-        assertNotNull(value.getSettlementReachedAt());
-        assertThat(value.getSettlementPartyStatements().size(), is(2));
-        assertEquals(settlementReachedAt, value.getSettlementReachedAt());
+        assertNotNull(ccdDefendant.getSettlementPartyStatements());
+        assertNotNull(ccdDefendant.getSettlementReachedAt());
+        assertThat(ccdDefendant.getSettlementPartyStatements().size(), is(2));
+        assertEquals(settlementReachedAt, ccdDefendant.getSettlementReachedAt());
     }
 
     @Test
@@ -318,5 +318,4 @@ public class DefendantMapperTest {
         assertNotNull(finalClaim.getSettlement());
         assertThat(finalClaim.getSettlement().get().getPartyStatements().size(), is(3));
     }
-
 }

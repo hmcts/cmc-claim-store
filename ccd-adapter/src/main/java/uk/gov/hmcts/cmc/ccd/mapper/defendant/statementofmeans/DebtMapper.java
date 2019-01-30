@@ -22,17 +22,18 @@ public class DebtMapper {
             .build();
     }
 
-    public Debt from(CCDCollectionElement<CCDDebt> ccdDebt) {
-        CCDDebt value = ccdDebt.getValue();
-        if (value == null) {
+    public Debt from(CCDCollectionElement<CCDDebt> collectionElement) {
+        CCDDebt ccdDebt = collectionElement.getValue();
+
+        if (ccdDebt == null) {
             return null;
         }
 
         return Debt.builder()
-            .id(ccdDebt.getId())
-            .description(value.getDescription())
-            .totalOwed(value.getTotalOwed())
-            .monthlyPayments(value.getMonthlyPayments())
+            .id(collectionElement.getId())
+            .description(ccdDebt.getDescription())
+            .totalOwed(ccdDebt.getTotalOwed())
+            .monthlyPayments(ccdDebt.getMonthlyPayments())
             .build();
     }
 }

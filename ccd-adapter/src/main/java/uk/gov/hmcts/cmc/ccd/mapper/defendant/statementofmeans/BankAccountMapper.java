@@ -25,17 +25,18 @@ public class BankAccountMapper {
             .build();
     }
 
-    public BankAccount from(CCDCollectionElement<CCDBankAccount> ccdBankAccount) {
-        CCDBankAccount value = ccdBankAccount.getValue();
-        if (value == null) {
+    public BankAccount from(CCDCollectionElement<CCDBankAccount> collectionElement) {
+        CCDBankAccount ccdBankAccount = collectionElement.getValue();
+        
+        if (ccdBankAccount == null) {
             return null;
         }
 
         return BankAccount.builder()
-            .id(ccdBankAccount.getId())
-            .type(value.getType())
-            .joint(value.getJoint() != null && value.getJoint().toBoolean())
-            .balance(value.getBalance())
+            .id(collectionElement.getId())
+            .type(ccdBankAccount.getType())
+            .joint(ccdBankAccount.getJoint() != null && ccdBankAccount.getJoint().toBoolean())
+            .balance(ccdBankAccount.getBalance())
             .build();
     }
 }

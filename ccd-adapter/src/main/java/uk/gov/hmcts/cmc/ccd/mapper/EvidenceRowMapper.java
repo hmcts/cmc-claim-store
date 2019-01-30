@@ -21,11 +21,17 @@ public class EvidenceRowMapper {
         return CCDCollectionElement.<CCDEvidenceRow>builder().value(builder.build()).id(evidenceRow.getId()).build();
     }
 
-    public EvidenceRow from(CCDCollectionElement<CCDEvidenceRow> row) {
-        CCDEvidenceRow value = row.getValue();
-        if (value == null || value.getType() == null) {
+    public EvidenceRow from(CCDCollectionElement<CCDEvidenceRow> collectionElement) {
+        CCDEvidenceRow evidenceRow = collectionElement.getValue();
+
+        if (evidenceRow == null || evidenceRow.getType() == null) {
             return null;
         }
-        return new EvidenceRow(row.getId(), EvidenceType.valueOf(value.getType().name()), value.getDescription());
+
+        return EvidenceRow.builder()
+            .id(collectionElement.getId())
+            .type(EvidenceType.valueOf(evidenceRow.getType().name()))
+            .description(evidenceRow.getDescription())
+            .build();
     }
 }

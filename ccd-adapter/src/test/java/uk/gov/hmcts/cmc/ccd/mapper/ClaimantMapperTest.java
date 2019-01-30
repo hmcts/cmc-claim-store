@@ -39,11 +39,11 @@ public class ClaimantMapperTest {
 
         //when
         CCDCollectionElement<CCDClaimant> ccdParty = claimantMapper.to(party, claim);
-        CCDClaimant value = ccdParty.getValue();
+        CCDClaimant ccdClaimant = ccdParty.getValue();
 
         //then
-        assertThat(party).isEqualTo(value);
-        assertThat(value.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
+        assertThat(party).isEqualTo(ccdClaimant);
+        assertThat(ccdClaimant.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
     }
 
     @Test
@@ -53,11 +53,11 @@ public class ClaimantMapperTest {
 
         //when
         CCDCollectionElement<CCDClaimant> ccdParty = claimantMapper.to(party, claim);
-        CCDClaimant value = ccdParty.getValue();
+        CCDClaimant ccdClaimant = ccdParty.getValue();
 
         //then
-        assertThat(party).isEqualTo(value);
-        assertThat(value.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
+        assertThat(party).isEqualTo(ccdClaimant);
+        assertThat(ccdClaimant.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
     }
 
     @Test
@@ -67,11 +67,11 @@ public class ClaimantMapperTest {
 
         //when
         CCDCollectionElement<CCDClaimant> ccdParty = claimantMapper.to(party, claim);
-        CCDClaimant value = ccdParty.getValue();
+        CCDClaimant ccdClaimant = ccdParty.getValue();
 
         //then
-        assertThat(party).isEqualTo(value);
-        assertThat(value.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
+        assertThat(party).isEqualTo(ccdClaimant);
+        assertThat(ccdClaimant.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
     }
 
     @Test
@@ -81,11 +81,11 @@ public class ClaimantMapperTest {
 
         //when
         CCDCollectionElement<CCDClaimant> ccdParty = claimantMapper.to(party, claim);
-        CCDClaimant value = ccdParty.getValue();
+        CCDClaimant ccdClaimant = ccdParty.getValue();
 
         //then
-        assertThat(party).isEqualTo(value);
-        assertThat(value.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
+        assertThat(party).isEqualTo(ccdClaimant);
+        assertThat(ccdClaimant.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
     }
 
     @Test

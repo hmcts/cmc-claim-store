@@ -22,13 +22,18 @@ public class CourtOrderMapper {
             .build();
     }
 
-    public CourtOrder from(CCDCollectionElement<CCDCourtOrder> ccdCourtOrder) {
-        CCDCourtOrder value = ccdCourtOrder.getValue();
+    public CourtOrder from(CCDCollectionElement<CCDCourtOrder> collectionElement) {
+        CCDCourtOrder ccdCourtOrder = collectionElement.getValue();
+
+        if(ccdCourtOrder == null){
+            return null;
+        }
+
         return CourtOrder.builder()
-            .id(ccdCourtOrder.getId())
-            .claimNumber(value.getClaimNumber())
-            .amountOwed(value.getAmountOwed())
-            .monthlyInstalmentAmount(value.getMonthlyInstalmentAmount())
+            .id(collectionElement.getId())
+            .claimNumber(ccdCourtOrder.getClaimNumber())
+            .amountOwed(ccdCourtOrder.getAmountOwed())
+            .monthlyInstalmentAmount(ccdCourtOrder.getMonthlyInstalmentAmount())
             .build();
     }
 }

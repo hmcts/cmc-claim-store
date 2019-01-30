@@ -21,7 +21,7 @@ public class TimelineEventTest {
 
     @Test
     public void shouldFailValidationForNullEventDate() {
-        TimelineEvent timelineEvent = TimelineEvent.builder().eventDate(null).description("description").build();
+        TimelineEvent timelineEvent = TimelineEvent.builder().description("description").build();
 
         Set<String> response = validate(timelineEvent);
 

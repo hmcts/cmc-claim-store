@@ -19,9 +19,13 @@ public class AmountRowMapper {
             .build();
     }
 
-    public AmountRow from(CCDCollectionElement<CCDAmountRow> ccdAmountRow) {
-
-        CCDAmountRow value = ccdAmountRow.getValue();
-        return new AmountRow(ccdAmountRow.getId(), value.getReason(), value.getAmount());
+    public AmountRow from(CCDCollectionElement<CCDAmountRow> collectionElement) {
+        CCDAmountRow ccdAmountRow = collectionElement.getValue();
+        
+        return AmountRow.builder()
+            .id(collectionElement.getId())
+            .reason(ccdAmountRow.getReason())
+            .amount(ccdAmountRow.getAmount())
+            .build();
     }
 }

@@ -21,16 +21,16 @@ public class EmployerMapper {
             .build();
     }
 
-    public Employer from(CCDCollectionElement<CCDEmployer> ccdEmployer) {
-        CCDEmployer value = ccdEmployer.getValue();
-        if (value == null) {
+    public Employer from(CCDCollectionElement<CCDEmployer> collectionElement) {
+        CCDEmployer ccdEmployer = collectionElement.getValue();
+        if (ccdEmployer == null) {
             return null;
         }
 
         return Employer.builder()
-            .id(ccdEmployer.getId())
-            .jobTitle(value.getJobTitle())
-            .name(value.getEmployerName())
+            .id(collectionElement.getId())
+            .jobTitle(ccdEmployer.getJobTitle())
+            .name(ccdEmployer.getEmployerName())
             .build();
 
     }

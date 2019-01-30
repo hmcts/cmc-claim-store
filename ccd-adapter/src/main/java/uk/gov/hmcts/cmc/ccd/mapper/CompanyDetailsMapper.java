@@ -35,17 +35,17 @@ public class CompanyDetailsMapper {
 
     }
 
-    public CompanyDetails from(CCDCollectionElement<CCDDefendant> company) {
-        CCDDefendant value = company.getValue();
+    public CompanyDetails from(CCDCollectionElement<CCDDefendant> collectionElement) {
+        CCDDefendant ccdDefendant = collectionElement.getValue();
 
         return CompanyDetails.builder()
-            .id(company.getId())
-            .name(value.getClaimantProvidedName())
-            .address(addressMapper.from(value.getClaimantProvidedAddress()))
-            .email(value.getClaimantProvidedEmail())
-            .representative(representativeMapper.from(value))
-            .serviceAddress(addressMapper.from(value.getClaimantProvidedServiceAddress()))
-            .contactPerson(value.getClaimantProvidedContactPerson())
+            .id(collectionElement.getId())
+            .name(ccdDefendant.getClaimantProvidedName())
+            .address(addressMapper.from(ccdDefendant.getClaimantProvidedAddress()))
+            .email(ccdDefendant.getClaimantProvidedEmail())
+            .representative(representativeMapper.from(ccdDefendant))
+            .serviceAddress(addressMapper.from(ccdDefendant.getClaimantProvidedServiceAddress()))
+            .contactPerson(ccdDefendant.getClaimantProvidedContactPerson())
             .build();
     }
 }
