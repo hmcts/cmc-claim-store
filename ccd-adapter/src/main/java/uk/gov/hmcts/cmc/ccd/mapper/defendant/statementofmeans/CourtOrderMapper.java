@@ -25,7 +25,7 @@ public class CourtOrderMapper {
     public CourtOrder from(CCDCollectionElement<CCDCourtOrder> collectionElement) {
         CCDCourtOrder ccdCourtOrder = collectionElement.getValue();
 
-        if(ccdCourtOrder == null){
+        if (ccdCourtOrder == null) {
             return null;
         }
 
