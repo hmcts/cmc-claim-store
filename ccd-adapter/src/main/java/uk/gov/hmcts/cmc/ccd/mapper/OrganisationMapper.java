@@ -3,10 +3,11 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.domain.models.party.Organisation;
 
 @Component
-public class OrganisationMapper implements BuilderMapper<CCDClaimant, Organisation, CCDClaimant.CCDClaimantBuilder> {
+public class OrganisationMapper {
 
     private final AddressMapper addressMapper;
     private final RepresentativeMapper representativeMapper;
@@ -17,7 +18,6 @@ public class OrganisationMapper implements BuilderMapper<CCDClaimant, Organisati
         this.representativeMapper = representativeMapper;
     }
 
-    @Override
     public void to(Organisation organisation, CCDClaimant.CCDClaimantBuilder builder) {
 
         organisation.getCorrespondenceAddress()
@@ -33,16 +33,17 @@ public class OrganisationMapper implements BuilderMapper<CCDClaimant, Organisati
 
     }
 
-    @Override
-    public Organisation from(CCDClaimant ccdOrganisation) {
-        return new Organisation(
-            ccdOrganisation.getPartyName(),
-            addressMapper.from(ccdOrganisation.getPartyAddress()),
-            addressMapper.from(ccdOrganisation.getPartyCorrespondenceAddress()),
-            ccdOrganisation.getPartyPhone(),
-            representativeMapper.from(ccdOrganisation),
-            ccdOrganisation.getPartyContactPerson(),
-            ccdOrganisation.getPartyCompaniesHouseNumber()
-        );
+    public Organisation from(CCDCollectionElement<CCDClaimant> organisation) {
+        CCDClaimant value = organisation.getValue();
+        return Organisation.builder()
+            .id(organisation.getId())
+            .name(value.getPartyName())
+            .address(addressMapper.from(value.getPartyAddress()))
+            .correspondenceAddress(addressMapper.from(value.getPartyCorrespondenceAddress()))
+            .mobilePhone(value.getPartyPhone())
+            .representative(representativeMapper.from(value))
+            .contactPerson(value.getPartyContactPerson())
+            .companiesHouseNumber(value.getPartyCompaniesHouseNumber())
+            .build();
     }
 }

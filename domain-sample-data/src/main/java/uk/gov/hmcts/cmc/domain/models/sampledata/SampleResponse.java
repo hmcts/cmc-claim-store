@@ -29,7 +29,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         public FullAdmissionResponse build() {
             return FullAdmissionResponse.builder()
                 .moreTimeNeeded(YesNoOption.NO)
-                .defendant(SampleParty.builder().individual())
+                .defendant(SampleParty.builder().withCollectionId("acd82549-d279-4adc-b38c-d195dd0db0d6").individual())
                 .paymentIntention(SamplePaymentIntention.instalments())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
                 .build();

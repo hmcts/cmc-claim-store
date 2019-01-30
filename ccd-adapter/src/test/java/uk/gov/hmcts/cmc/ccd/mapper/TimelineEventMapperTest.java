@@ -7,9 +7,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;
 
 @SpringBootTest
@@ -23,14 +27,14 @@ public class TimelineEventMapperTest {
     @Test
     public void shouldMapTimelineEventToCCD() {
         //given
-        TimelineEvent timelineEvent = new TimelineEvent("Last Year", "Work done");
+        TimelineEvent timelineEvent = TimelineEvent.builder().eventDate("Last Year").description("Work done").build();
 
         //when
-        CCDTimelineEvent ccdTimelineEvent = mapper.to(timelineEvent);
+        CCDCollectionElement<CCDTimelineEvent> ccdTimelineEvent = mapper.to(timelineEvent);
 
         //then
-        assertThat(timelineEvent).isEqualTo(ccdTimelineEvent);
-
+        assertThat(timelineEvent).isEqualTo(ccdTimelineEvent.getValue());
+        assertThat(timelineEvent.getId()).isEqualTo(ccdTimelineEvent.getId());
     }
 
     @Test
@@ -41,10 +45,17 @@ public class TimelineEventMapperTest {
             .description("My description")
             .build();
 
+        String collectionId = UUID.randomUUID().toString();
+
         //when
-        TimelineEvent timelineEvent = mapper.from(ccdTimelineEvent);
+        TimelineEvent timelineEvent = mapper.from(CCDCollectionElement.<CCDTimelineEvent>builder()
+            .id(collectionId)
+            .value(ccdTimelineEvent)
+            .build()
+        );
 
         //then
         assertThat(timelineEvent).isEqualTo(ccdTimelineEvent);
+        assertThat(timelineEvent.getId()).isEqualTo(collectionId);
     }
 }

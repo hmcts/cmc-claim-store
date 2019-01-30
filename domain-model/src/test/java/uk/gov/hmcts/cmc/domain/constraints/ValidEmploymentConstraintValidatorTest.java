@@ -69,7 +69,7 @@ public class ValidEmploymentConstraintValidatorTest {
     @Test
     public void shouldBeValidWhenOnlyEmployersIsPopulated() {
         Employment model = Employment.builder()
-            .employers(asList(new Employer("job", "company")))
+            .employers(asList(Employer.builder().jobTitle("job").name("company").build()))
             .build();
 
         assertThat(validator.isValid(model, validatorContext)).isTrue();
@@ -79,7 +79,7 @@ public class ValidEmploymentConstraintValidatorTest {
     public void shouldBeValidWhenEmployersAndSelfEmployedArePopulated() {
         Employment model = Employment.builder()
             .selfEmployment(new SelfEmployment("job", BigDecimal.TEN, null))
-            .employers(asList(new Employer("job", "company")))
+            .employers(asList(Employer.builder().jobTitle("job").name("company").build()))
             .build();
 
         assertThat(validator.isValid(model, validatorContext)).isTrue();
@@ -89,7 +89,7 @@ public class ValidEmploymentConstraintValidatorTest {
     public void shouldBeInvalidWhenAllFieldsPopulated() {
         Employment model = Employment.builder()
             .selfEmployment(new SelfEmployment("job", BigDecimal.TEN, null))
-            .employers(asList(new Employer("job", "company")))
+            .employers(asList(Employer.builder().jobTitle("job").name("company").build()))
             .unemployment(Unemployment.builder().retired(true).build())
             .build();
 

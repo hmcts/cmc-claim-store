@@ -20,6 +20,7 @@ public class SoleTrader extends Party implements TitledParty {
 
     @Builder
     public SoleTrader(
+        String id,
         String name,
         Address address,
         Address correspondenceAddress,
@@ -28,7 +29,7 @@ public class SoleTrader extends Party implements TitledParty {
         String title,
         String businessName
     ) {
-        super(name, address, correspondenceAddress, mobilePhone, representative);
+        super(id, name, address, correspondenceAddress, mobilePhone, representative);
         this.title = title;
         this.businessName = businessName;
     }
