@@ -7,8 +7,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ParagraphEnumeratorTest {
-    private final static String PARAGRAPH_1 = "Lorem ipsum dolor sit amet";
-    private final static String PARAGRAPH_2 = "Consectetur adipiscing alit";
+    private static final String PARAGRAPH_1 = "Lorem ipsum dolor sit amet";
+    private static final String PARAGRAPH_2 = "Consectetur adipiscing alit";
 
     @SuppressWarnings("ConstantConditions")
     @Test(expected = NullPointerException.class)
