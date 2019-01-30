@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
 import uk.gov.hmcts.cmc.domain.constraints.ValidIncome;
+import uk.gov.hmcts.cmc.domain.models.CollectionId;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -13,10 +14,9 @@ import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-@Builder
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
 @ValidIncome
-public class Income {
+public class Income extends CollectionId {
 
     public enum IncomeType {
         JOB("Income from your job"),
@@ -55,11 +55,14 @@ public class Income {
     @DecimalMin(value = "0.01")
     private final BigDecimal amount;
 
-    public Income(IncomeType type,
+    @Builder
+    public Income(String id,
+                  IncomeType type,
                   String otherSource,
                   PaymentFrequency frequency,
                   BigDecimal amount
     ) {
+        super(id);
         this.type = type;
         this.otherSource = otherSource;
         this.frequency = frequency;

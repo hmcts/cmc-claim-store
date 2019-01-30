@@ -16,6 +16,7 @@ public class Company extends Party implements HasContactPerson {
 
     @Builder
     public Company(
+        String id,
         String name,
         Address address,
         Address correspondenceAddress,
@@ -23,7 +24,7 @@ public class Company extends Party implements HasContactPerson {
         Representative representative,
         String contactPerson
     ) {
-        super(name, address, correspondenceAddress, mobilePhone, representative);
+        super(id, name, address, correspondenceAddress, mobilePhone, representative);
         this.contactPerson = contactPerson;
     }
 
