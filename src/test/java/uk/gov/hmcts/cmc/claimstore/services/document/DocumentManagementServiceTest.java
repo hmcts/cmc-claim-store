@@ -62,7 +62,7 @@ public class DocumentManagementServiceTest {
     private PDF document = new PDF("0000-claim", "test".getBytes());
 
     @Before
-    public void setup() {
+    public void setUp() {
         when(authTokenGenerator.generate()).thenReturn("authString");
         documentManagementService = new DocumentManagementService(documentMetadataDownloadClient,
             documentDownloadClient, documentUploadClient, authTokenGenerator, userService,
