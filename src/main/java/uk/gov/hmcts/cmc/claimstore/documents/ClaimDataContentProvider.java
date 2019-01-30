@@ -19,7 +19,6 @@ import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -32,6 +31,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDateTime;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
+import static uk.gov.hmcts.cmc.claimstore.utils.ParagraphEnumerator.split;
 
 @Component
 public class ClaimDataContentProvider {
@@ -101,13 +101,6 @@ public class ClaimDataContentProvider {
             evidences,
             mapToAmountRowContent(amountBreakDown.getRows())
         );
-    }
-
-    private static List<String> split(String reason) {
-        return Arrays.stream(reason.split("[\\n\\r]+"))
-            .map(String::trim)
-            .filter(line -> !line.isEmpty())
-            .collect(Collectors.toList());
     }
 
     private static List<AmountRowContent> mapToAmountRowContent(List<AmountRow> rows) {
