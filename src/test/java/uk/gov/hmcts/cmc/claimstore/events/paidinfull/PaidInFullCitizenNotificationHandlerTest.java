@@ -12,8 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.service.notify.NotificationClientException;
 
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -71,15 +70,16 @@ public class PaidInFullCitizenNotificationHandlerTest extends BaseNotificationSe
     }
 
     @Test
-    public void sendNotificationsDoesNotSendNotificationToDefendantWhenNoEmailAddress() throws NotificationClientException {
-        PaidInFullEvent event = new PaidInFullEvent(SampleClaim.getDefault());
+    public void sendNotificationsDoesNotSendNotificationToDefendantWhenNoEmailAddress()
+        throws NotificationClientException {
+        PaidInFullEvent event = new PaidInFullEvent(SampleClaim.withClaimData());
 
-        handler.notifyDefendantForPaidInFull(event);
+            handler.notifyDefendantForPaidInFull(event);
         verify(notificationService, never()).sendMail(
-            eq(event.getClaim().getDefendantEmail()),
-            eq(CLAIMANT_SAYS_DEFENDANT_PAID_IN_FULL_TEMPLATE),
+            anyString(),
+            anyString(),
             anyMap(),
-            eq(referenceForDefendant(event.getClaim().getReferenceNumber()))
+            anyString()
         );
     }
 }
