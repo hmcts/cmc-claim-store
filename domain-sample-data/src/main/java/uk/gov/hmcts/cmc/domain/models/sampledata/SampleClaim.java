@@ -275,9 +275,9 @@ public final class SampleClaim {
     public static Claim getClaimWithSettlementAgreementRejected() {
 
         Settlement settlement = new Settlement();
-        settlement.makeOffer(SampleOffer.builder().build(), CLAIMANT);
-        settlement.acceptCourtDetermination(CLAIMANT);
-        settlement.reject(MadeBy.DEFENDANT);
+        settlement.makeOffer(SampleOffer.builder().build(), CLAIMANT, null);
+        settlement.acceptCourtDetermination(CLAIMANT, null);
+        settlement.reject(MadeBy.DEFENDANT, null);
 
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
@@ -289,9 +289,9 @@ public final class SampleClaim {
     public static Claim withSettlementReached() {
 
         Settlement settlement = new Settlement();
-        settlement.makeOffer(SampleOffer.builder().build(), CLAIMANT);
-        settlement.acceptCourtDetermination(CLAIMANT);
-        settlement.countersign(MadeBy.DEFENDANT);
+        settlement.makeOffer(SampleOffer.builder().build(), CLAIMANT, null);
+        settlement.acceptCourtDetermination(CLAIMANT, null);
+        settlement.countersign(MadeBy.DEFENDANT, null);
 
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
