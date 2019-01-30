@@ -18,29 +18,41 @@ public class Settlement {
     private static final String NO_STATEMENTS_MADE = "No statements have yet been made during that settlement";
     private final List<PartyStatement> partyStatements = new ArrayList<>();
 
-    public void makeOffer(Offer offer, MadeBy party) {
+    public void makeOffer(Offer offer, MadeBy party, String partyStatementId) {
         assertOfferCanBeMadeBy(party);
-        partyStatements.add(new PartyStatement(StatementType.OFFER, party, offer));
+        partyStatements.add(PartyStatement.builder().type(StatementType.OFFER)
+            .id(partyStatementId)
+            .madeBy(party)
+            .offer(offer)
+            .build());
     }
 
-    public void accept(MadeBy party) {
+    public void accept(MadeBy party, String partyStatementId) {
         assertOfferCanBeResponded(party);
-        partyStatements.add(new PartyStatement(StatementType.ACCEPTATION, party));
+        partyStatements.add(PartyStatement.builder().type(StatementType.ACCEPTATION)
+            .id(partyStatementId)
+            .madeBy(party).build());
     }
 
-    public void acceptCourtDetermination(MadeBy party) {
+    public void acceptCourtDetermination(MadeBy party, String partyStatementId) {
         assertOfferCanBeAccepted();
-        partyStatements.add(new PartyStatement(StatementType.ACCEPTATION, party));
+        partyStatements.add(PartyStatement.builder().type(StatementType.ACCEPTATION)
+            .id(partyStatementId)
+            .madeBy(party).build());
     }
 
-    public void reject(MadeBy party) {
+    public void reject(MadeBy party, String partyStatementId) {
         assertOfferCanBeRejected(party);
-        partyStatements.add(new PartyStatement(StatementType.REJECTION, party));
+        partyStatements.add(PartyStatement.builder().type(StatementType.REJECTION)
+            .id(partyStatementId)
+            .madeBy(party).build());
     }
 
-    public void countersign(MadeBy party) {
+    public void countersign(MadeBy party, String partyStatementId) {
         assertOfferHasBeenAcceptedByOtherParty(party);
-        partyStatements.add(new PartyStatement(StatementType.COUNTERSIGNATURE, party));
+        partyStatements.add(PartyStatement.builder().type(StatementType.COUNTERSIGNATURE)
+            .id(partyStatementId)
+            .madeBy(party).build());
     }
 
     @JsonIgnore

@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
@@ -54,8 +55,8 @@ public class TheirDetailsMapper {
         }
     }
 
-    public TheirDetails from(CCDDefendant ccdDefendant) {
-        switch (ccdDefendant.getClaimantProvidedType()) {
+    public TheirDetails from(CCDCollectionElement<CCDDefendant> ccdDefendant) {
+        switch (ccdDefendant.getValue().getClaimantProvidedType()) {
             case COMPANY:
                 return companyDetailsMapper.from(ccdDefendant);
             case INDIVIDUAL:
@@ -65,7 +66,8 @@ public class TheirDetailsMapper {
             case ORGANISATION:
                 return organisationDetailsMapper.from(ccdDefendant);
             default:
-                throw new MappingException("Invalid defendant type, " + ccdDefendant.getClaimantProvidedType());
+                throw new MappingException("Invalid defendant type, "
+                    + ccdDefendant.getValue().getClaimantProvidedType());
         }
     }
 }

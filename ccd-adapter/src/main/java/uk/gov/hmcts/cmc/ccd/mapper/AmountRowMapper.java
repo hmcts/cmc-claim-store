@@ -2,23 +2,30 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRow;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.domain.models.AmountRow;
 
 @Component
-public class AmountRowMapper implements Mapper<CCDAmountRow, AmountRow> {
+public class AmountRowMapper {
 
-    @Override
-    public CCDAmountRow to(AmountRow amountRow) {
+    public CCDCollectionElement<CCDAmountRow> to(AmountRow amountRow) {
         if (amountRow.getAmount() == null) {
             return null;
         }
 
-        CCDAmountRow.CCDAmountRowBuilder builder = CCDAmountRow.builder();
-        return builder.reason(amountRow.getReason()).amount(amountRow.getAmount()).build();
+        return CCDCollectionElement.<CCDAmountRow>builder()
+            .value(CCDAmountRow.builder().reason(amountRow.getReason()).amount(amountRow.getAmount()).build())
+            .id(amountRow.getId())
+            .build();
     }
 
-    @Override
-    public AmountRow from(CCDAmountRow ccdAmountRow) {
-        return new AmountRow(ccdAmountRow.getReason(), ccdAmountRow.getAmount());
+    public AmountRow from(CCDCollectionElement<CCDAmountRow> collectionElement) {
+        CCDAmountRow ccdAmountRow = collectionElement.getValue();
+        
+        return AmountRow.builder()
+            .id(collectionElement.getId())
+            .reason(ccdAmountRow.getReason())
+            .amount(ccdAmountRow.getAmount())
+            .build();
     }
 }
