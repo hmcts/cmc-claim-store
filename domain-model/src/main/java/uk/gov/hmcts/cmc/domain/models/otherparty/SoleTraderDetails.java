@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.otherparty;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
@@ -17,7 +18,9 @@ public class SoleTraderDetails extends TheirDetails implements TitledParty {
     @Size(max = 35, message = "may not be longer than {max} characters")
     private final String businessName;
 
+    @Builder
     public SoleTraderDetails(
+        String id,
         String name,
         Address address,
         String email,
@@ -26,7 +29,7 @@ public class SoleTraderDetails extends TheirDetails implements TitledParty {
         String title,
         String businessName
     ) {
-        super(name, address, email, representative, serviceAddress);
+        super(id, name, address, email, representative, serviceAddress);
         this.title = title;
         this.businessName = businessName;
     }

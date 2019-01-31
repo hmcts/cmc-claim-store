@@ -3,12 +3,13 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 
 import java.util.Optional;
 
 @Component
-public class IndividualMapper implements BuilderMapper<CCDClaimant, Individual, CCDClaimant.CCDClaimantBuilder> {
+public class IndividualMapper {
 
     private final AddressMapper addressMapper;
     private final RepresentativeMapper representativeMapper;
@@ -19,7 +20,6 @@ public class IndividualMapper implements BuilderMapper<CCDClaimant, Individual, 
         this.representativeMapper = representativeMapper;
     }
 
-    @Override
     public void to(Individual individual, CCDClaimant.CCDClaimantBuilder builder) {
 
         individual.getMobilePhone().ifPresent(builder::partyPhone);
@@ -37,16 +37,16 @@ public class IndividualMapper implements BuilderMapper<CCDClaimant, Individual, 
             .partyAddress(addressMapper.to(individual.getAddress()));
     }
 
-    @Override
-    public Individual from(CCDClaimant ccdClaimant) {
-
-        return new Individual(
-            ccdClaimant.getPartyName(),
-            addressMapper.from(ccdClaimant.getPartyAddress()),
-            addressMapper.from(ccdClaimant.getPartyCorrespondenceAddress()),
-            ccdClaimant.getPartyPhone(),
-            representativeMapper.from(ccdClaimant),
-            ccdClaimant.getPartyDateOfBirth()
-        );
+    public Individual from(CCDCollectionElement<CCDClaimant> individual) {
+        CCDClaimant value = individual.getValue();
+        return Individual.builder()
+            .id(individual.getId())
+            .name(value.getPartyName())
+            .address(addressMapper.from(value.getPartyAddress()))
+            .correspondenceAddress(addressMapper.from(value.getPartyCorrespondenceAddress()))
+            .mobilePhone(value.getPartyPhone())
+            .representative(representativeMapper.from(value))
+            .dateOfBirth(value.getPartyDateOfBirth())
+            .build();
     }
 }
