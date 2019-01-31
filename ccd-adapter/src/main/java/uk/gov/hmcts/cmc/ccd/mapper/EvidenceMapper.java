@@ -3,8 +3,6 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.evidence.Evidence;
 
 import java.util.Objects;
@@ -31,7 +29,6 @@ public class EvidenceMapper implements BuilderMapper<CCDCase, Evidence, CCDCase.
                 .stream()
                 .map(evidenceRowMapper::to)
                 .filter(Objects::nonNull)
-                .map(row -> CCDCollectionElement.<CCDEvidenceRow>builder().value(row).build())
                 .collect(Collectors.toList())
         );
     }
@@ -43,7 +40,6 @@ public class EvidenceMapper implements BuilderMapper<CCDCase, Evidence, CCDCase.
         }
         return new Evidence(
             ccdCase.getEvidence().stream()
-                .map(CCDCollectionElement::getValue)
                 .map(evidenceRowMapper::from)
                 .collect(Collectors.toList())
         );
