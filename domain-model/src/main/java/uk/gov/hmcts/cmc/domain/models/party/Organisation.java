@@ -17,6 +17,7 @@ public class Organisation extends Party implements HasContactPerson {
 
     @Builder
     public Organisation(
+        String id,
         String name,
         Address address,
         Address correspondenceAddress,
@@ -25,7 +26,7 @@ public class Organisation extends Party implements HasContactPerson {
         String contactPerson,
         String companiesHouseNumber
     ) {
-        super(name, address, correspondenceAddress, mobilePhone, representative);
+        super(id, name, address, correspondenceAddress, mobilePhone, representative);
         this.contactPerson = contactPerson;
         this.companiesHouseNumber = companiesHouseNumber;
     }

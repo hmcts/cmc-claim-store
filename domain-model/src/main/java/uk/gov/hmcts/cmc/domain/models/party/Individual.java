@@ -20,6 +20,7 @@ public class Individual extends Party {
 
     @Builder
     public Individual(
+        String id,
         String name,
         Address address,
         Address correspondenceAddress,
@@ -27,7 +28,7 @@ public class Individual extends Party {
         Representative representative,
         LocalDate dateOfBirth
     ) {
-        super(name, address, correspondenceAddress, mobilePhone, representative);
+        super(id, name, address, correspondenceAddress, mobilePhone, representative);
         this.dateOfBirth = dateOfBirth;
     }
 

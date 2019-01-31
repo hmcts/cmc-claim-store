@@ -2,6 +2,7 @@
   "externalId": "9f49d8df-b734-4e86-aeb6-e22f0c2ca78d",
   "claimants": [
     {
+      "id": "acd82549-d279-4adc-b38c-d195dd0db0d6",
       "type": "individual",
       "title": "Dr.",
       "name": "John Rambo",
@@ -27,6 +28,7 @@
     "type": "breakdown",
     "rows": [
       {
+        "id": "359fda9d-e5fd-4d6e-9525-238642d0157d",
         "reason": "reason",
         "amount": 40
       }
@@ -44,6 +46,7 @@
   },
   "defendants": [
     {
+      "id": "3d0bc933-0d46-4564-94bd-79e6e69b838b",
       "type": "individual",
       "title": "Dr.",
       "name": "John Smith",
@@ -70,6 +73,7 @@
   "timeline": {
     "rows": [
       {
+        "id": "359fda9d-e5fd-4d6e-9525-238642d0157d",
         "date": "Last Year",
         "description": "signed a contract"
       }
@@ -78,6 +82,7 @@
   "evidence": {
     "rows": [
       {
+        "id": "d839f2f0-025f-4ee9-9a98-16bbe6ab3b35",
         "type": "CORRESPONDENCE",
         "description": "description"
       }

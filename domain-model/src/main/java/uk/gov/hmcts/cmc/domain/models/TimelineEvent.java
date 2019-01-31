@@ -1,6 +1,8 @@
 package uk.gov.hmcts.cmc.domain.models;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -8,8 +10,9 @@ import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-@EqualsAndHashCode
-public class TimelineEvent {
+@EqualsAndHashCode(callSuper = true)
+@Getter
+public class TimelineEvent extends CollectionId {
 
     @NotBlank
     @Size(max = 20)
@@ -19,17 +22,11 @@ public class TimelineEvent {
     @Size(max = 99000)
     private final String description;
 
-    public TimelineEvent(String eventDate, String description) {
+    @Builder
+    public TimelineEvent(String id, String eventDate, String description) {
+        super(id);
         this.date = eventDate;
         this.description = description;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public String getDescription() {
-        return description;
     }
 
     @Override
