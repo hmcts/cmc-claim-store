@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -30,7 +31,7 @@ public class ClaimantMapper {
         this.soleTraderMapper = soleTraderMapper;
     }
 
-    public CCDClaimant to(Party party, Claim claim) {
+    public CCDCollectionElement<CCDClaimant> to(Party party, Claim claim) {
         CCDClaimant.CCDClaimantBuilder builder = CCDClaimant.builder();
         builder.partyEmail(claim.getSubmitterEmail());
 
@@ -51,11 +52,14 @@ public class ClaimantMapper {
             SoleTrader soleTrader = (SoleTrader) party;
             soleTraderMapper.to(soleTrader, builder);
         }
-        return builder.build();
+        return CCDCollectionElement.<CCDClaimant>builder()
+            .value(builder.build())
+            .id(party.getId())
+            .build();
     }
 
-    public Party from(CCDClaimant ccdClaimant) {
-        switch (ccdClaimant.getPartyType()) {
+    public Party from(CCDCollectionElement<CCDClaimant> ccdClaimant) {
+        switch (ccdClaimant.getValue().getPartyType()) {
             case COMPANY:
                 return companyMapper.from(ccdClaimant);
             case INDIVIDUAL:
@@ -65,7 +69,7 @@ public class ClaimantMapper {
             case ORGANISATION:
                 return organisationMapper.from(ccdClaimant);
             default:
-                throw new MappingException("Invalid claimant type, " + ccdClaimant.getPartyType());
+                throw new MappingException("Invalid claimant type, " + ccdClaimant.getValue().getPartyType());
         }
     }
 }

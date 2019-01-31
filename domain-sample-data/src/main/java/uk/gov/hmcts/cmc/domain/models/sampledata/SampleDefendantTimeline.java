@@ -9,7 +9,9 @@ import static java.util.Arrays.asList;
 
 public class SampleDefendantTimeline {
 
-    private List<TimelineEvent> events = asList(SampleTimelineEvent.builder().build());
+    private List<TimelineEvent> events = asList(SampleTimelineEvent.builder()
+        .withCollectionId("3616a889-dd1e-496c-ac13-7dd3decc1225")
+        .build());
 
     private String comment = "More information";
 
