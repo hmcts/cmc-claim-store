@@ -135,6 +135,7 @@ feature_toggles:
   reminderEmails: false
   ccd_async_enabled: false
   ccd_enabled: false
+  es_search_enabled: false
 
 feign:
   httpclient:

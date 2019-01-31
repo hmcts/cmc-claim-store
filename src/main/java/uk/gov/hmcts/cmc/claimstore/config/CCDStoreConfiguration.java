@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.SearchRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.support.CCDTestingSupportRepository;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
@@ -70,10 +71,11 @@ public class CCDStoreConfiguration {
         CaseAccessApi caseAccessApi,
         CoreCaseDataService coreCaseDataService,
         CCDCaseDataToClaim ccdCaseDataToClaim,
-        JobSchedulerService jobSchedulerService
+        JobSchedulerService jobSchedulerService,
+        SearchRepository searchRepository
     ) {
         return new CCDCaseApi(coreCaseDataApi, authTokenGenerator, userService, caseAccessApi,
-            coreCaseDataService, ccdCaseDataToClaim, jobSchedulerService, true);
+            coreCaseDataService, ccdCaseDataToClaim, jobSchedulerService, true, searchRepository);
     }
 
     @Bean

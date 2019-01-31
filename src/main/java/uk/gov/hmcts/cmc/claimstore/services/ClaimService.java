@@ -265,7 +265,7 @@ public class ClaimService {
         LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
 
         Map<String, Object> data = new HashMap<>(((Map<String, Object>) callbackRequest.getCaseDetails()
-            .get("case_data"))
+            .getData())
         );
         data.put("moreTimeRequested", CCDYesNoOption.YES);
         data.put("responseDeadline", newDeadline);
@@ -292,8 +292,8 @@ public class ClaimService {
     @SuppressWarnings("unchecked")
     private Claim convertCallbackToClaim(CallbackRequest caseDetails) {
         return ccdCaseDataToClaim.to(
-            (long) caseDetails.getCaseDetails().get("id"),
-            (Map<String, Object>) caseDetails.getCaseDetails().get("case_data")
+            (long) caseDetails.getCaseDetails().getId(),
+            (Map<String, Object>) caseDetails.getCaseDetails().getData()
         );
     }
 
