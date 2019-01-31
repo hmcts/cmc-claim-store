@@ -57,7 +57,7 @@ public class OffersService {
         assertSettlementIsNotReached(claim);
 
         Settlement settlement = claim.getSettlement().orElse(new Settlement());
-        settlement.makeOffer(offer, party);
+        settlement.makeOffer(offer, party, null);
 
         CaseEvent caseEvent =
             party == MadeBy.CLAIMANT ? OFFER_MADE_BY_CLAIMANT : OFFER_MADE_BY_DEFENDANT;
@@ -77,7 +77,7 @@ public class OffersService {
         Settlement settlement = claim.getSettlement()
             .orElseThrow(conflictOfferIsNotMade());
 
-        settlement.accept(party);
+        settlement.accept(party, null);
 
         CaseEvent caseEvent = OFFER_SIGNED_BY_CLAIMANT;
         caseRepository.updateSettlement(claim, settlement, authorisation, caseEvent);
@@ -93,7 +93,7 @@ public class OffersService {
 
         Settlement settlement = claim.getSettlement()
             .orElseThrow(conflictOfferIsNotMade());
-        settlement.reject(party);
+        settlement.reject(party, null);
 
         CaseEvent caseEvent
             = party == MadeBy.CLAIMANT ? OFFER_REJECTED_BY_CLAIMANT : OFFER_REJECTED_BY_DEFENDANT;
@@ -110,7 +110,7 @@ public class OffersService {
 
         Settlement settlement = claim.getSettlement()
             .orElseThrow(conflictOfferIsNotMade());
-        settlement.countersign(party);
+        settlement.countersign(party, null);
 
         caseRepository.reachSettlementAgreement(claim, settlement, authorisation,
             OFFER_COUNTER_SIGNED_BY_DEFENDANT);
