@@ -93,15 +93,6 @@ public final class SampleClaim {
             ).build();
     }
 
-    public static Claim withClaimData() {
-        return builder()
-            .withClaimData(
-                SampleClaimData.builder()
-                    .withDefendant(SampleTheirDetails.builder().withEmail(null).individualDetails())
-                    .build()
-            ).build();
-    }
-
     public static Claim withFullClaimData() {
         return builder()
             .withClaimData(SampleClaimData.builder()

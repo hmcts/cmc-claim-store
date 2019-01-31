@@ -7,9 +7,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.BaseNotificationServiceTest;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 import uk.gov.service.notify.NotificationClientException;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -72,9 +75,13 @@ public class PaidInFullCitizenNotificationHandlerTest extends BaseNotificationSe
     @Test
     public void sendNotificationsDoesNotSendNotificationToDefendantWhenNoEmailAddress()
         throws NotificationClientException {
-        PaidInFullEvent event = new PaidInFullEvent(SampleClaim.withClaimData());
+        Claim claim = SampleClaim.builder().withClaimData(SampleClaimData.builder()
+            .withDefendant(SampleTheirDetails.builder().withEmail(null).individualDetails())
+            .build()).build();
 
-            handler.notifyDefendantForPaidInFull(event);
+        PaidInFullEvent event = new PaidInFullEvent(claim);
+
+        handler.notifyDefendantForPaidInFull(event);
         verify(notificationService, never()).sendMail(
             anyString(),
             anyString(),
