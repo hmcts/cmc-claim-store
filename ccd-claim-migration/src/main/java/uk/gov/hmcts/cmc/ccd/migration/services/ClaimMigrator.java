@@ -111,10 +111,13 @@ public class ClaimMigrator {
                     updatedClaims.incrementAndGet();
                 }
             }
-//Enable below line for final run on prod
-// claimRepository.markAsMigrated(claim.getId());
+            //Enable below line for final run on prod
+            //claimRepository.markAsMigrated(claim.getId());
         } catch (Exception e) {
-            logger.info(e.getMessage(), e);
+            logger.info("Claim Migration failed for Claim reference "
+                    + claim.getReferenceNumber()
+                    + " due to " + e.getMessage(),
+                e);
             failedMigrations.incrementAndGet();
         }
     }
@@ -230,8 +233,7 @@ public class ClaimMigrator {
                     || (claim.getSettlement().get().getLastStatement().getType() == StatementType.COUNTERSIGNATURE
                     && claim.getSettlement().get().getLastStatementOfType(StatementType.ACCEPTATION)
                     .getMadeBy() == MadeBy.CLAIMANT)
-                    && claim.getClaimantResponse().isPresent()
-                );
+                    && claim.getClaimantResponse().isPresent());
             case AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT:
                 return claim.getSettlement().isPresent()
                     && (claim.getSettlement().get().getLastStatement().getType() == StatementType.COUNTERSIGNATURE)

@@ -84,7 +84,7 @@ public class CoreCaseDataService {
 
     public void overwrite(User user, Long caseId, Claim claim, CaseEvent event) {
 
-        logger.info("Overwrite " + caseId + ", claim id = " + claim.getId());
+        logger.info("Overwrite " + caseId + ", claim reference number = " + claim.getReferenceNumber());
         try {
             EventRequestData eventRequestData = EventRequestData.builder()
                 .userId(user.getUserDetails().getId())
