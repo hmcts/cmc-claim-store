@@ -38,19 +38,19 @@ public class SampleSettlement {
 
     private void addPartyStatement(PartyStatement partyStatement, Settlement settlement) {
         if (partyStatement.getType().equals(StatementType.OFFER)) {
-            settlement.makeOffer(partyStatement.getOffer().orElse(null), partyStatement.getMadeBy());
+            settlement.makeOffer(partyStatement.getOffer().orElse(null), partyStatement.getMadeBy(), null);
         }
 
         if (partyStatement.getType().equals(StatementType.REJECTION)) {
-            settlement.reject(partyStatement.getMadeBy());
+            settlement.reject(partyStatement.getMadeBy(), null);
         }
 
         if (partyStatement.getType().equals(StatementType.ACCEPTATION)) {
-            settlement.accept(partyStatement.getMadeBy());
+            settlement.accept(partyStatement.getMadeBy(), null);
         }
 
         if (partyStatement.getType().equals(StatementType.COUNTERSIGNATURE)) {
-            settlement.countersign(partyStatement.getMadeBy());
+            settlement.countersign(partyStatement.getMadeBy(), null);
         }
     }
 }

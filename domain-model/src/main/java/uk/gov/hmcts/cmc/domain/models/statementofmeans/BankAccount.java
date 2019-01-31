@@ -4,15 +4,15 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
+import uk.gov.hmcts.cmc.domain.models.CollectionId;
 
 import java.math.BigDecimal;
 import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-@Builder
-@EqualsAndHashCode
-public class BankAccount {
+@EqualsAndHashCode(callSuper = true)
+public class BankAccount extends CollectionId {
 
     public enum BankAccountType {
         CURRENT_ACCOUNT("Current account"),
@@ -40,7 +40,9 @@ public class BankAccount {
     @NotNull
     private final BigDecimal balance;
 
-    public BankAccount(BankAccountType type, boolean joint, BigDecimal balance) {
+    @Builder
+    public BankAccount(String id, BankAccountType type, boolean joint, BigDecimal balance) {
+        super(id);
         this.type = type;
         this.joint = joint;
         this.balance = balance;

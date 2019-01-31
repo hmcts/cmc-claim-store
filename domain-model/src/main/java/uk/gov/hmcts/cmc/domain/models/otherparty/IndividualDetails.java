@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.otherparty;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.cmc.domain.constraints.AgeRangeValidator;
 import uk.gov.hmcts.cmc.domain.models.Address;
@@ -14,7 +15,9 @@ public class IndividualDetails extends TheirDetails {
     @AgeRangeValidator
     private final LocalDate dateOfBirth;
 
+    @Builder
     public IndividualDetails(
+        String id,
         String name,
         Address address,
         String email,
@@ -22,7 +25,7 @@ public class IndividualDetails extends TheirDetails {
         Address serviceAddress,
         LocalDate dateOfBirth
     ) {
-        super(name, address, email, representative, serviceAddress);
+        super(id, name, address, email, representative, serviceAddress);
         this.dateOfBirth = dateOfBirth;
     }
 
