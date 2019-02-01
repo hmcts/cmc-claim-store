@@ -126,8 +126,8 @@ public class CountyCourtJudgmentRuleTest {
     @Test
     public void shouldReturnFalseWhenIsCCJDueToSettlementBreachAndClaimSettlementDateIsInTheFuture() {
         Settlement settlement = new Settlement();
-        settlement.makeOffer(SampleOffer.builderWithPaymentIntention().build(), MadeBy.DEFENDANT);
-        settlement.accept(MadeBy.CLAIMANT);
+        settlement.makeOffer(SampleOffer.builderWithPaymentIntention().build(), MadeBy.DEFENDANT, null);
+        settlement.accept(MadeBy.CLAIMANT, null);
 
         Claim claim = SampleClaim.builder()
             .withResponse(SampleResponse.validDefaults())
@@ -144,8 +144,8 @@ public class CountyCourtJudgmentRuleTest {
     @Test
     public void shouldReturnTrueWhenIsCCJDueToSettlementBreachAndClaimSettlementDateIsInThePast() {
         Settlement settlement = new Settlement();
-        settlement.makeOffer(SampleOffer.builderWithSetByDateInPast().build(), MadeBy.DEFENDANT);
-        settlement.accept(MadeBy.CLAIMANT);
+        settlement.makeOffer(SampleOffer.builderWithSetByDateInPast().build(), MadeBy.DEFENDANT, null);
+        settlement.accept(MadeBy.CLAIMANT, null);
 
         Claim claim = SampleClaim.builder()
             .withResponse(SampleResponse.validDefaults())

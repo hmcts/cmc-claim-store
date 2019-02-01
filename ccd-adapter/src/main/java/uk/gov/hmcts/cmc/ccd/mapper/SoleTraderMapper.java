@@ -3,10 +3,11 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 
 @Component
-public class SoleTraderMapper implements BuilderMapper<CCDClaimant, SoleTrader, CCDClaimant.CCDClaimantBuilder> {
+public class SoleTraderMapper {
 
     private final AddressMapper addressMapper;
     private final RepresentativeMapper representativeMapper;
@@ -17,7 +18,6 @@ public class SoleTraderMapper implements BuilderMapper<CCDClaimant, SoleTrader, 
         this.representativeMapper = representativeMapper;
     }
 
-    @Override
     public void to(SoleTrader soleTrader, CCDClaimant.CCDClaimantBuilder builder) {
 
         soleTrader.getTitle().ifPresent(builder::partyTitle);
@@ -33,16 +33,17 @@ public class SoleTraderMapper implements BuilderMapper<CCDClaimant, SoleTrader, 
 
     }
 
-    @Override
-    public SoleTrader from(CCDClaimant ccdSoleTrader) {
-        return new SoleTrader(
-            ccdSoleTrader.getPartyName(),
-            addressMapper.from(ccdSoleTrader.getPartyAddress()),
-            addressMapper.from(ccdSoleTrader.getPartyCorrespondenceAddress()),
-            ccdSoleTrader.getPartyPhone(),
-            representativeMapper.from(ccdSoleTrader),
-            ccdSoleTrader.getPartyTitle(),
-            ccdSoleTrader.getPartyBusinessName()
-        );
+    public SoleTrader from(CCDCollectionElement<CCDClaimant> soletrader) {
+        CCDClaimant value = soletrader.getValue();
+        return SoleTrader.builder()
+            .id(soletrader.getId())
+            .name(value.getPartyName())
+            .address(addressMapper.from(value.getPartyAddress()))
+            .correspondenceAddress(addressMapper.from(value.getPartyCorrespondenceAddress()))
+            .mobilePhone(value.getPartyPhone())
+            .representative(representativeMapper.from(value))
+            .title(value.getPartyTitle())
+            .businessName(value.getPartyBusinessName())
+            .build();
     }
 }

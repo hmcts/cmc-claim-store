@@ -49,7 +49,6 @@ public class UnemploymentTest {
             .build();
         //when
         Set<String> response = validate(unemployment);
-        System.out.println(response);
         //then
         assertThat(response)
             .hasSize(1)

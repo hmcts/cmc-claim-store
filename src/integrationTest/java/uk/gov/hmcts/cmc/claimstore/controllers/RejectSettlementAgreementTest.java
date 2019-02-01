@@ -65,8 +65,8 @@ public class RejectSettlementAgreementTest extends BaseIntegrationTest {
             BEARER_TOKEN);
 
         Settlement settlement = new Settlement();
-        settlement.makeOffer(new Offer("offer", LocalDate.now(), null), MadeBy.DEFENDANT);
-        settlement.accept(MadeBy.CLAIMANT);
+        settlement.makeOffer(new Offer("offer", LocalDate.now(), null), MadeBy.DEFENDANT, null);
+        settlement.accept(MadeBy.CLAIMANT, null);
         caseRepository.updateSettlement(claim, settlement, BEARER_TOKEN, AGREEMENT_SIGNED_BY_CLAIMANT);
     }
 

@@ -2,12 +2,12 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.domain.models.otherparty.CompanyDetails;
 
 @Component
-public class CompanyDetailsMapper
-    implements BuilderMapper<CCDDefendant, CompanyDetails, CCDDefendant.CCDDefendantBuilder> {
+public class CompanyDetailsMapper {
 
     private final AddressMapper addressMapper;
     private final DefendantRepresentativeMapper representativeMapper;
@@ -18,7 +18,6 @@ public class CompanyDetailsMapper
         this.representativeMapper = representativeMapper;
     }
 
-    @Override
     public void to(CompanyDetails company, CCDDefendant.CCDDefendantBuilder builder) {
 
         company.getEmail().ifPresent(builder::claimantProvidedEmail);
@@ -36,16 +35,17 @@ public class CompanyDetailsMapper
 
     }
 
-    @Override
-    public CompanyDetails from(CCDDefendant company) {
+    public CompanyDetails from(CCDCollectionElement<CCDDefendant> collectionElement) {
+        CCDDefendant ccdDefendant = collectionElement.getValue();
 
-        return new CompanyDetails(
-            company.getClaimantProvidedName(),
-            addressMapper.from(company.getClaimantProvidedAddress()),
-            company.getClaimantProvidedEmail(),
-            representativeMapper.from(company),
-            addressMapper.from(company.getClaimantProvidedServiceAddress()),
-            company.getClaimantProvidedContactPerson()
-        );
+        return CompanyDetails.builder()
+            .id(collectionElement.getId())
+            .name(ccdDefendant.getClaimantProvidedName())
+            .address(addressMapper.from(ccdDefendant.getClaimantProvidedAddress()))
+            .email(ccdDefendant.getClaimantProvidedEmail())
+            .representative(representativeMapper.from(ccdDefendant))
+            .serviceAddress(addressMapper.from(ccdDefendant.getClaimantProvidedServiceAddress()))
+            .contactPerson(ccdDefendant.getClaimantProvidedContactPerson())
+            .build();
     }
 }

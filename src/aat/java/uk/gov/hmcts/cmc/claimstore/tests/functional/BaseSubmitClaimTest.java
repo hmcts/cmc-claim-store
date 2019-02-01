@@ -56,18 +56,5 @@ public abstract class BaseSubmitClaimTest extends BaseTest {
             .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
 
-    @Test
-    public void shouldReturnConflictResponseWhenClaimDataWithDuplicatedExternalIdIsSubmitted() {
-        ClaimData claimData = getSampleClaimDataBuilder().get().build();
-
-        commonOperations.submitPrePaymentClaim(claimData.getExternalId().toString(), user.getAuthorisation());
-
-        submitClaim(claimData)
-            .andReturn();
-        submitClaim(claimData)
-            .then()
-            .statusCode(HttpStatus.CONFLICT.value());
-    }
-
     protected abstract Supplier<SampleClaimData> getSampleClaimDataBuilder();
 }

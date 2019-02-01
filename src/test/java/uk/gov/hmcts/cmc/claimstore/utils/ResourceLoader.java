@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.claimstore.repositories.mapping.JsonMapperFactory;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
+import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.document.domain.UploadResponse;
 
 import java.util.List;
@@ -96,5 +97,10 @@ public class ResourceLoader {
     public static List<CaseDetails> listOfCaseDetailsWithDefResponse() {
         String response = new ResourceReader().read("/core-case-data/search-response-with-def-res.success.json");
         return ImmutableList.of(jsonMapper.fromJson(response, CaseDetails.class));
+    }
+
+    public static Document successfulDocumentManagementDownloadResponse() {
+        String response = new ResourceReader().read("/document-management/download.success.json");
+        return jsonMapper.fromJson(response, Document.class);
     }
 }
