@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.ccd.migration.idam.models.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.idam.services.UserService;
 import uk.gov.hmcts.cmc.ccd.migration.repositories.ClaimRepository;
+import uk.gov.hmcts.cmc.ccd.migration.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
@@ -50,6 +51,7 @@ public class ClaimMigrator {
         this.coreCaseDataService = coreCaseDataService;
     }
 
+    @LogExecutionTime
     public void migrate() {
         logger.info("===== MIGRATE CLAIMS TO CCD =====");
 
