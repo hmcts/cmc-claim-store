@@ -107,6 +107,22 @@
       padding: 0;
     }
 
+    ol.enumerate {
+      margin-top: 0;
+      counter-reset: enumerated;
+      list-style: none;
+    }
+
+    ol.enumerate li::before {
+      content: counter(section) "." counter(enumerated) ". ";
+      counter-increment: enumerated;
+      color: #888;
+    }
+
+    ol.enumerate li {
+      margin-bottom: 5px;
+    }
+
     @media print {
       td {
         word-wrap: break-word;
@@ -313,8 +329,12 @@
     <div class="section-body">
       <table>
         <tr>
-          <td colspan="2" class="keep-white-space"><strong>Reason for claim:</strong><br/>
-            {{ claim.reason | trim }}
+          <td colspan="2" class="keep-white-space"><strong>Reason for claim:</strong>
+            <ol class="enumerate">
+              {% for reasonLine in claim.reason %}
+              <li>{{ reasonLine }}</li>
+              {% endfor %}
+            </ol>
           </td>
         </tr>
         {% if claim.events is defined %}
