@@ -123,8 +123,8 @@ public class CountyCourtJudgmentServiceTest {
     public void saveCCJAfterBreachOfSettlementAgreement() {
 
         Settlement settlement = new Settlement();
-        settlement.makeOffer(SampleOffer.builderWithSetByDateInPast().build(), MadeBy.DEFENDANT);
-        settlement.accept(MadeBy.CLAIMANT);
+        settlement.makeOffer(SampleOffer.builderWithSetByDateInPast().build(), MadeBy.DEFENDANT, null);
+        settlement.accept(MadeBy.CLAIMANT, null);
 
         Claim claim = SampleClaim
             .builder()

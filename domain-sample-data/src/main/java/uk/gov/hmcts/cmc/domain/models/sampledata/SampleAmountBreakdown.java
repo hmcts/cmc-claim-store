@@ -15,7 +15,7 @@ public class SampleAmountBreakdown {
     }
 
     public static AmountBreakDownBuilder builder() {
-        return AmountBreakDown.builder()
-            .rows(singletonList(new AmountRow("reason", new BigDecimal("40"))));
+        AmountRow amountRow = new AmountRow("359fda9d-e5fd-4d6e-9525-238642d0157d", "reason", new BigDecimal("40"));
+        return AmountBreakDown.builder().rows(singletonList(amountRow));
     }
 }
