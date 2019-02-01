@@ -64,7 +64,7 @@ public class Settlement {
     }
 
     @JsonIgnore
-    public PartyStatement getLastOfferStatement() {
+    public PartyStatement getLastStatementOfType(StatementType statementType) {
         if (partyStatements.isEmpty()) {
             throw new IllegalSettlementStatementException(NO_STATEMENTS_MADE);
         }
@@ -73,7 +73,7 @@ public class Settlement {
         Collections.reverse(tmpList);
 
         return tmpList.stream()
-            .filter((partyStatement -> partyStatement.getType() == StatementType.OFFER))
+            .filter((partyStatement -> partyStatement.getType() == statementType))
             .findFirst()
             .orElseThrow(() -> new IllegalSettlementStatementException("No statements with an offer found"));
 
@@ -81,7 +81,7 @@ public class Settlement {
 
     @JsonIgnore
     public boolean isSettlementThroughAdmissions() {
-        return getLastOfferStatement().getOffer().orElseThrow(IllegalStateException::new)
+        return getLastStatementOfType(StatementType.OFFER).getOffer().orElseThrow(IllegalStateException::new)
             .getPaymentIntention().isPresent();
     }
 
