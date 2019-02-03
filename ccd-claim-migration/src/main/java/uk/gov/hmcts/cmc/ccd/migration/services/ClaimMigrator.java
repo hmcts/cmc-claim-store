@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.CoreCaseDataService;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.CaseEvent;
@@ -40,15 +41,22 @@ public class ClaimMigrator {
     private ClaimRepository claimRepository;
     private UserService userService;
     private CoreCaseDataService coreCaseDataService;
+    private long delayBetweenCasesLots;
+    private int casesLotsSize;
 
     @Autowired
     public ClaimMigrator(
         ClaimRepository claimRepository,
         UserService userService,
-        CoreCaseDataService coreCaseDataService) {
+        CoreCaseDataService coreCaseDataService,
+        @Value("${migration.delay.between.cases.lots}") long delayBetweenCasesLots,
+        @Value("${migration.cases.lots.size}") int casesLotsSize
+    ) {
         this.claimRepository = claimRepository;
         this.userService = userService;
         this.coreCaseDataService = coreCaseDataService;
+        this.delayBetweenCasesLots = delayBetweenCasesLots;
+        this.casesLotsSize = casesLotsSize;
     }
 
     @LogExecutionTime
@@ -67,6 +75,8 @@ public class ClaimMigrator {
         notMigratedClaims.sort(Comparator.comparing(Claim::getId).reversed());
 
         notMigratedClaims.forEach(claim -> {
+            delayMigrationWhenMigratedCaseLotsReachedAllowed(migratedClaims);
+
             Optional<CaseDetails> caseDetails
                 = coreCaseDataService.getCcdIdByReferenceNumber(user, claim.getReferenceNumber());
 
@@ -83,6 +93,19 @@ public class ClaimMigrator {
         logger.info("Successfully migrated: " + migratedClaims.toString());
         logger.info("Successfully updated: " + updatedClaims.toString());
         logger.info("Failed to migrate: " + failedMigrations.toString());
+    }
+
+    private void delayMigrationWhenMigratedCaseLotsReachedAllowed(AtomicInteger migratedClaims) {
+
+        int noOfMigratedClaims = migratedClaims.get();
+
+        if (casesLotsSize != 0 && noOfMigratedClaims % casesLotsSize == 0) {
+            try {
+                Thread.sleep(delayBetweenCasesLots);
+            } catch (InterruptedException e) {
+                logger.info("failed sleeping between lots on count %d", noOfMigratedClaims);
+            }
+        }
     }
 
     private void updateCase(
