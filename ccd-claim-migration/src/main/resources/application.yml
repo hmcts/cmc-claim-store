@@ -28,3 +28,12 @@ feign:
 oauth2:
   client:
     id: 'cmc_citizen'
+
+migration:
+  cases:
+    lots:
+      size: 0
+  delay:
+    between:
+      cases:
+        lots: 0
