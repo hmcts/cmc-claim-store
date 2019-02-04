@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
@@ -12,6 +13,8 @@ import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import java.time.Clock;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -85,7 +88,7 @@ public class DefendantResponseContentProviderTest {
         assertThat(content)
             .containsEntry("responseDefence",
                 ((FullDefenceResponse) claim.getResponse().orElseThrow(IllegalStateException::new))
-                    .getDefence().orElse(null)
+                    .getDefence().map(ImmutableList::of).map(List.class::cast).orElseGet(Collections::emptyList)
             );
     }
 

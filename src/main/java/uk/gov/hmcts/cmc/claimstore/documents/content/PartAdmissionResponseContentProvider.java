@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import static uk.gov.hmcts.cmc.claimstore.documents.content.FullAdmissionResponseContentProvider.ADMISSIONS_FORM_NO;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
+import static uk.gov.hmcts.cmc.claimstore.utils.ParagraphEnumerator.split;
 
 @Component
 public class PartAdmissionResponseContentProvider {
@@ -45,11 +46,12 @@ public class PartAdmissionResponseContentProvider {
         String timelineComment = null;
         String evidenceComment = null;
 
-        content.put("responseDefence", partAdmissionResponse.getDefence());
+        content.put("responseDefence", split(partAdmissionResponse.getDefence()));
         content.put("responseTypeSelected", deriveResponseTypeSelected(partAdmissionResponse));
 
         content.put("amount", formatMoney(partAdmissionResponse.getAmount()));
 
+        content.put("paymentDeclarationIsPresent", partAdmissionResponse.getPaymentDeclaration().isPresent());
         partAdmissionResponse.getPaymentDeclaration()
             .ifPresent(paymentDeclaration -> {
                 content.put("paymentDate", formatDate(paymentDeclaration.getPaidDate()));

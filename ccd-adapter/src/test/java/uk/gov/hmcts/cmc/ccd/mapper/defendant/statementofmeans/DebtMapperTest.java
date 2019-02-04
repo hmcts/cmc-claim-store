@@ -7,11 +7,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDebt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Debt;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 @SpringBootTest
@@ -32,11 +35,11 @@ public class DebtMapperTest {
             .build();
 
         //when
-        CCDDebt ccdDebt = mapper.to(debt);
+        CCDCollectionElement<CCDDebt> ccdDebt = mapper.to(debt);
 
         //then
-        assertThat(debt).isEqualTo(ccdDebt);
-
+        assertThat(debt).isEqualTo(ccdDebt.getValue());
+        assertThat(debt.getId()).isEqualTo(ccdDebt.getId());
     }
 
     @Test
@@ -48,10 +51,16 @@ public class DebtMapperTest {
             .monthlyPayments(BigDecimal.ONE)
             .build();
 
+        String collectionId = UUID.randomUUID().toString();
+
         //when
-        Debt debt = mapper.from(ccdDebt);
+        Debt debt = mapper.from(CCDCollectionElement.<CCDDebt>builder()
+            .id(collectionId)
+            .value(ccdDebt)
+            .build());
 
         //then
         assertThat(debt).isEqualTo(ccdDebt);
+        assertThat(debt.getId()).isEqualTo(collectionId);
     }
 }

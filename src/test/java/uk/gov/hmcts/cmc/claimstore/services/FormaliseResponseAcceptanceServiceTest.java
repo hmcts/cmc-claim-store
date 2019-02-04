@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
@@ -51,7 +52,7 @@ public class FormaliseResponseAcceptanceServiceTest {
     private FormaliseResponseAcceptanceService formaliseResponseAcceptanceService;
 
     @Mock
-    private OffersService offersService;
+    private SettlementAgreementService settlementAgreementService;
 
     @Mock
     private CountyCourtJudgmentService countyCourtJudgmentService;
@@ -75,7 +76,7 @@ public class FormaliseResponseAcceptanceServiceTest {
     public void before() {
         formaliseResponseAcceptanceService = new FormaliseResponseAcceptanceService(
             countyCourtJudgmentService,
-            offersService,
+            settlementAgreementService,
             eventProducer,
             ccdEventProducer,
             caseRepository
@@ -149,7 +150,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .orElseThrow(IllegalStateException::new))
             .isEqualTo(respondentPayingBySetDate);
 
-        verifyZeroInteractions(offersService);
+        verifyZeroInteractions(settlementAgreementService);
     }
 
     @Test
@@ -180,7 +181,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .getRepaymentPlan().orElseThrow(IllegalAccessError::new))
             .isEqualTo(repaymentPlanOfDefendant);
 
-        verifyZeroInteractions(offersService);
+        verifyZeroInteractions(settlementAgreementService);
     }
 
     @Test
@@ -215,7 +216,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .orElseThrow(IllegalStateException::new))
             .isEqualTo(appliedPaymentDate);
 
-        verifyZeroInteractions(offersService);
+        verifyZeroInteractions(settlementAgreementService);
     }
 
     @Test
@@ -252,7 +253,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .orElseThrow(IllegalStateException::new))
             .isEqualTo(appliedPaymentDate);
 
-        verifyZeroInteractions(offersService);
+        verifyZeroInteractions(settlementAgreementService);
     }
 
     @Test
@@ -286,7 +287,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .getValue()
             .getPayBySetDate().isPresent()).isFalse();
 
-        verifyZeroInteractions(offersService);
+        verifyZeroInteractions(settlementAgreementService);
     }
 
     @Test
@@ -321,7 +322,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .orElseThrow(IllegalStateException::new))
             .isEqualTo(appliedPlan);
 
-        verifyZeroInteractions(offersService);
+        verifyZeroInteractions(settlementAgreementService);
     }
 
     @Test
@@ -353,7 +354,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .orElseThrow(IllegalStateException::new))
             .isEqualTo(repaymentPlan);
 
-        verifyZeroInteractions(offersService);
+        verifyZeroInteractions(settlementAgreementService);
     }
 
     @Test
@@ -372,14 +373,14 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
 
-        verify(offersService).signSettlementAgreement(
+        verify(settlementAgreementService).signSettlementAgreement(
             eq(claim.getExternalId()),
             settlementArgumentCaptor.capture(),
             eq(AUTH));
 
         PaymentIntention paymentIntentionWithinOffer = settlementArgumentCaptor
             .getValue()
-            .getLastOfferStatement()
+            .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
             .orElseThrow(IllegalStateException::new)
             .getPaymentIntention()
@@ -406,14 +407,14 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
 
-        verify(offersService).signSettlementAgreement(
+        verify(settlementAgreementService).signSettlementAgreement(
             eq(claim.getExternalId()),
             settlementArgumentCaptor.capture(),
             eq(AUTH));
 
         PaymentIntention paymentIntentionWithinOffer = settlementArgumentCaptor
             .getValue()
-            .getLastOfferStatement()
+            .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
             .orElseThrow(IllegalStateException::new)
             .getPaymentIntention()
@@ -443,14 +444,14 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
 
-        verify(offersService).signSettlementAgreement(
+        verify(settlementAgreementService).signSettlementAgreement(
             eq(claim.getExternalId()),
             settlementArgumentCaptor.capture(),
             eq(AUTH));
 
         PaymentIntention paymentIntentionWithinOffer = settlementArgumentCaptor
             .getValue()
-            .getLastOfferStatement()
+            .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
             .orElseThrow(IllegalStateException::new)
             .getPaymentIntention()
@@ -481,14 +482,14 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
 
-        verify(offersService).signSettlementAgreement(
+        verify(settlementAgreementService).signSettlementAgreement(
             eq(claim.getExternalId()),
             settlementArgumentCaptor.capture(),
             eq(AUTH));
 
         PaymentIntention paymentIntentionWithinOffer = settlementArgumentCaptor
             .getValue()
-            .getLastOfferStatement()
+            .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
             .orElseThrow(IllegalStateException::new)
             .getPaymentIntention()
@@ -512,14 +513,14 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
 
-        verify(offersService).signSettlementAgreement(
+        verify(settlementAgreementService).signSettlementAgreement(
             eq(claim.getExternalId()),
             settlementArgumentCaptor.capture(),
             eq(AUTH));
 
         Offer offer = settlementArgumentCaptor
             .getValue()
-            .getLastOfferStatement()
+            .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
             .orElseThrow(IllegalStateException::new);
 
@@ -552,14 +553,14 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         formaliseResponseAcceptanceService.formalise(claim, responseAcceptation, AUTH);
 
-        verify(offersService).signSettlementAgreement(
+        verify(settlementAgreementService).signSettlementAgreement(
             eq(claim.getExternalId()),
             settlementArgumentCaptor.capture(),
             eq(AUTH));
 
         Offer offer = settlementArgumentCaptor
             .getValue()
-            .getLastOfferStatement()
+            .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
             .orElseThrow(IllegalStateException::new);
 
@@ -588,7 +589,7 @@ public class FormaliseResponseAcceptanceServiceTest {
         verify(ccdEventProducer, once()).createCCDInterlocutoryJudgmentEvent(eq(claim), anyString());
         verify(caseRepository, once()).saveCaseEvent(anyString(), eq(claim), eq(INTERLOCATORY_JUDGEMENT));
         verifyZeroInteractions(countyCourtJudgmentService);
-        verifyZeroInteractions(offersService);
+        verifyZeroInteractions(settlementAgreementService);
     }
 
     private PartAdmissionResponse getPartAdmissionResponsePayByInstalments() {

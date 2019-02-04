@@ -3,8 +3,6 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.Timeline;
 
 import java.util.Objects;
@@ -31,7 +29,6 @@ public class TimelineMapper implements BuilderMapper<CCDCase, Timeline, CCDCase.
                 .stream()
                 .map(timelineEventMapper::to)
                 .filter(Objects::nonNull)
-                .map(event -> CCDCollectionElement.<CCDTimelineEvent>builder().value(event).build())
                 .collect(Collectors.toList()));
 
     }
@@ -43,7 +40,6 @@ public class TimelineMapper implements BuilderMapper<CCDCase, Timeline, CCDCase.
         }
         return new Timeline(
             ccdCase.getTimeline().stream()
-                .map(CCDCollectionElement::getValue)
                 .map(timelineEventMapper::from)
                 .collect(Collectors.toList())
         );

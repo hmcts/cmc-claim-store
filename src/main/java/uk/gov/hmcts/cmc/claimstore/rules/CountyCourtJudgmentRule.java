@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
+import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
 import javax.validation.constraints.NotNull;
@@ -17,6 +18,7 @@ public class CountyCourtJudgmentRule {
 
     private ClaimDeadlineService claimDeadlineService;
     private static final String CLAIM_OBJECT_CANNOT_BE_NULL = "claim object can not be null";
+    private static final String COUNTY_COURT_JUDGMENT_FOR_CLAIM = "County Court Judgment for the claim ";
 
     @Autowired
     public CountyCourtJudgmentRule(ClaimDeadlineService claimDeadlineService) {
@@ -29,8 +31,7 @@ public class CountyCourtJudgmentRule {
         String externalId = claim.getExternalId();
 
         if (isCountyCourtJudgmentAlreadySubmitted(claim)) {
-            throw new ForbiddenActionException("County Court Judgment for the claim "
-                + externalId + " was submitted");
+            throw new ForbiddenActionException(COUNTY_COURT_JUDGMENT_FOR_CLAIM + externalId + " was submitted");
         }
 
         switch (countyCourtJudgmentType) {
@@ -41,7 +42,7 @@ public class CountyCourtJudgmentRule {
 
                 if (!claimDeadlineService.isPastDeadline(nowInLocalZone(), claim.getResponseDeadline())) {
                     throw new ForbiddenActionException(
-                        "County Court Judgment for claim " + externalId + " cannot be requested yet"
+                        COUNTY_COURT_JUDGMENT_FOR_CLAIM + externalId + " cannot be requested yet"
                     );
                 }
                 break;
@@ -55,8 +56,7 @@ public class CountyCourtJudgmentRule {
                 // Action pending
                 break;
             default:
-                throw new ForbiddenActionException("County Court Judgment for claim "
-                    + externalId + " is not supported");
+                throw new ForbiddenActionException(COUNTY_COURT_JUDGMENT_FOR_CLAIM + externalId + " is not supported");
 
         }
     }
@@ -79,12 +79,11 @@ public class CountyCourtJudgmentRule {
         String externalId = claim.getExternalId();
 
         if (!isCountyCourtJudgmentAlreadySubmitted(claim)) {
-            throw new ForbiddenActionException("County Court Judgment for the claim "
-                + externalId + " is not yet submitted");
+            throw new ForbiddenActionException(COUNTY_COURT_JUDGMENT_FOR_CLAIM + externalId + " is not yet submitted");
         }
 
         if (isCountyCourtJudgmentAlreadyRedetermined(claim)) {
-            throw new ForbiddenActionException("County Court Judgment for the claim "
+            throw new ForbiddenActionException(COUNTY_COURT_JUDGMENT_FOR_CLAIM
                 + externalId + " has been already redetermined");
         }
 
@@ -95,7 +94,7 @@ public class CountyCourtJudgmentRule {
 
         if (claim.getSettlement().isPresent()) {
             PaymentIntention paymentIntention = claim.getSettlement().orElseThrow(IllegalArgumentException::new)
-                .getLastOfferStatement().getOffer().orElseThrow(IllegalArgumentException::new)
+                .getLastStatementOfType(StatementType.OFFER).getOffer().orElseThrow(IllegalArgumentException::new)
                 .getPaymentIntention().orElseThrow(IllegalArgumentException::new);
 
             switch (paymentIntention.getPaymentOption()) {

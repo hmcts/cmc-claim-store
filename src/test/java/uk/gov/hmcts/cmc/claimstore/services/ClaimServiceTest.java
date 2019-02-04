@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
@@ -193,6 +194,37 @@ public class ClaimServiceTest {
     }
 
     @Test
+    public void saveClaimShouldProceedWhenDuplicated() {
+        ClaimData claimData = SampleClaimData.validDefaults();
+        when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(claimantDetails);
+        when(caseRepository.getOnHoldIdByExternalId(anyString(), eq(AUTHORISATION)))
+            .thenThrow(new ConflictException("Duplicate claim for external id " + claimData.getExternalId()));
+        when(caseRepository.getClaimByExternalId(anyString(), eq(AUTHORISATION)))
+            .thenReturn(Optional.of(claim));
+
+        Claim createdClaim = claimService.saveClaim(USER_ID, claimData, AUTHORISATION, singletonList("admissions"));
+
+        assertThat(createdClaim.getClaimData()).isEqualTo(claim.getClaimData());
+
+        verify(appInsights).trackEvent(
+            AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE,
+            AppInsights.CLAIM_EXTERNAL_ID,
+            claimData.getExternalId().toString()
+        );
+        verify(eventProducer).createClaimIssuedEvent(
+            eq(createdClaim),
+            eq(null),
+            anyString(),
+            eq(AUTHORISATION)
+        );
+        verify(appInsights).trackEvent(
+            AppInsightsEvent.CLAIM_ISSUED_CITIZEN,
+            AppInsights.REFERENCE_NUMBER,
+            claim.getReferenceNumber()
+        );
+    }
+
+    @Test
     public void requestMoreTimeToRespondShouldFinishSuccessfully() {
 
         LocalDate newDeadline = RESPONSE_DEADLINE.plusDays(20);
@@ -295,6 +327,9 @@ public class ClaimServiceTest {
         verify(caseRepository, once()).paidInFull(eq(claim), eq(paidInFull), eq(AUTHORISATION));
 
         verify(eventProducer, once()).createPaidInFullEvent(eq(claim));
+
+        verify(appInsights).trackEvent(AppInsightsEvent.PAID_IN_FULL,
+            AppInsights.REFERENCE_NUMBER, claim.getReferenceNumber());
     }
 
     @Test(expected = ConflictException.class)

@@ -24,7 +24,7 @@ dependencyUpdates.resolutionStrategy = {
   }
 }
 
-def springBootVersion = '2.1.0.RELEASE'
+def springBootVersion = '2.1.2.RELEASE'
 def springCloudVersion = 'Finchley.SR1'
 
 allprojects {
@@ -163,7 +163,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'http-proxy-spring-boot-autoconfigure', version: '2.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'pdf-service-client', version: '7.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.3.1'
-  compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '4.0.1'
+  compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '4.0.2'
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '2.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.2.0'
   compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.1.2'
@@ -188,7 +188,7 @@ dependencies {
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
   testCompile group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock'
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.11.1'
-  testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.10.4'
+  testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.10.5'
   testCompile group: 'org.mockito', name: 'mockito-core', version: '2.23.4'
   testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
   testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.4.0'
@@ -318,7 +318,9 @@ sonarqube {
       "**/cmc/claimstore/appinsights/**," +
       "**/ccd/migration/**," +
       "**/EmailData.java," +
-      "**/CCDCaseHandler.java"
+      "**/CCDCaseHandler.java," +
+      "**/CCDReDetermination.java," +
+      "**/CCDEventProducer.java"
   }
 }
 

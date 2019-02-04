@@ -67,10 +67,13 @@ public class ClaimantResponseMapperTest {
     public void shouldMapClaimantAcceptanceWithCourtDeterminationPayByInstalmentsToCCDClaimantAcceptance() {
         ClaimantResponse response = SampleClaimantResponse.ClaimantResponseAcceptation.builder()
             .buildAcceptanceIssueSettlementWithCourtDeterminationPayByInstalments();
+
         Claim claim = claimBuilder.claimantResponse(response)
             .claimantRespondedAt(LocalDateTimeFactory.nowInLocalZone())
             .build();
+
         CCDClaimantResponse ccdResponse = mapper.to(claim);
+
         assertThat((ResponseAcceptation) response).isEqualTo((CCDResponseAcceptation) ccdResponse);
         assertNotNull(ccdResponse.getSubmittedOn());
     }

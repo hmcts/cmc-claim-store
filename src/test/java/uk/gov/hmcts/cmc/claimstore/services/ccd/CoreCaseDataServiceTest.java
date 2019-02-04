@@ -22,6 +22,7 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDet
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
+import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
@@ -46,6 +47,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -63,6 +65,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CLAIMANT_RESPONSE_REJECTION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCATORY_JUDGEMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_CLAIMANT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
@@ -75,7 +78,7 @@ public class CoreCaseDataServiceTest {
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder().build();
     private static final User ANONYMOUS_USER = new User(AUTHORISATION, USER_DETAILS);
     private static final String AUTH_TOKEN = "authorisation token";
-    private static final LocalDate FUTURE_DATE = LocalDate.now().plusWeeks(4L);
+    private static final LocalDate FUTURE_DATE = now().plusWeeks(4);
 
     @Mock
     private CaseMapper caseMapper;
@@ -513,7 +516,7 @@ public class CoreCaseDataServiceTest {
         Claim claim = SampleClaim.getDefault();
 
         when(jsonMapper.fromMap(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
-        
+
         when(caseMapper.from(any(CCDCase.class)))
             .thenReturn(SampleClaim.builder().withReDetermination(reDetermination).build());
 
@@ -521,5 +524,19 @@ public class CoreCaseDataServiceTest {
 
         verify(coreCaseDataApi, atLeastOnce()).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
             anyString(), anyString(), eq(REFER_TO_JUDGE_BY_CLAIMANT.getValue()));
+    }
+
+    @Test
+    public void savePaidInFull() {
+        Claim claim = SampleClaim.getDefault();
+        PaidInFull paidInFull = PaidInFull.builder().moneyReceivedOn(now()).build();
+
+        when(jsonMapper.fromMap(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
+
+        service.savePaidInFull(claim.getId(), paidInFull, AUTHORISATION);
+
+        verify(coreCaseDataApi).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
+            anyString(), anyString(), eq(SETTLED_PRE_JUDGMENT.getValue()));
     }
 }

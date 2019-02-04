@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper.defendant;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.util.SampleCCDDefendant;
@@ -17,15 +19,24 @@ import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
+import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import static java.time.LocalDate.now;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.ORGANISATION;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.offers.SamplePartyStatement.acceptPartyStatement;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.offers.SamplePartyStatement.offerPartyStatement;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -55,9 +66,12 @@ public class DefendantMapperTest {
             "referenceNumber");
 
         //When
-        CCDDefendant defendant = mapper.to(theirDetails, claim);
+        CCDCollectionElement<CCDDefendant> ccdDefendant = mapper.to(theirDetails, claim);
+        CCDDefendant defendant = ccdDefendant.getValue();
 
         //Then
+        Assertions.assertThat(theirDetails.getId()).isEqualTo(ccdDefendant.getId());
+
         assertEquals("Claim response deadline is not mapped properly",
             defendant.getResponseDeadline(), claim.getResponseDeadline());
 
@@ -84,8 +98,8 @@ public class DefendantMapperTest {
         Claim claim = SampleClaim.getClaimWithFullDefenceNoMediation();
 
         //When
-        CCDDefendant defendant = mapper.to(theirDetails, claim);
-
+        CCDCollectionElement<CCDDefendant> ccdDefendant = mapper.to(theirDetails, claim);
+        CCDDefendant defendant = ccdDefendant.getValue();
         //Then
         assertEquals("Claim response deadline is not mapped properly",
             defendant.getResponseDeadline(), claim.getResponseDeadline());
@@ -124,7 +138,7 @@ public class DefendantMapperTest {
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         //when
-        mapper.from(claimBuilder, ccdDefendant);
+        mapper.from(claimBuilder, CCDCollectionElement.<CCDDefendant>builder().value(ccdDefendant).build());
         Claim finalClaim = claimBuilder.build();
 
         // Then
@@ -151,7 +165,7 @@ public class DefendantMapperTest {
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         //when
-        mapper.from(claimBuilder, ccdDefendant);
+        mapper.from(claimBuilder, CCDCollectionElement.<CCDDefendant>builder().value(ccdDefendant).build());
         Claim finalClaim = claimBuilder.build();
 
         // Then
@@ -163,10 +177,14 @@ public class DefendantMapperTest {
     public void mapTheirDetailsFromCCDClaimWithResponse() {
         //Given
         CCDDefendant ccdDefendant = SampleCCDDefendant.withResponseMoreTimeNeededOption().build();
+
+        CCDCollectionElement<CCDDefendant> defendant
+            = CCDCollectionElement.<CCDDefendant>builder().value(ccdDefendant).build();
+
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         //when
-        TheirDetails party = mapper.from(claimBuilder, ccdDefendant);
+        TheirDetails party = mapper.from(claimBuilder, defendant);
         Claim finalClaim = claimBuilder.build();
 
         // Then
@@ -196,8 +214,8 @@ public class DefendantMapperTest {
         CountyCourtJudgment countyCourtJudgment = claimWithCCJ.getCountyCourtJudgment();
 
         //When
-        CCDDefendant ccdDefendant = mapper.to(theirDetails, claimWithCCJ);
-
+        CCDCollectionElement<CCDDefendant> defendant = mapper.to(theirDetails, claimWithCCJ);
+        CCDDefendant ccdDefendant = defendant.getValue();
         //Then
         CCDCountyCourtJudgment ccdCountyCourtJudgment = ccdDefendant.getCountyCourtJudgementRequest();
         assertNotNull(ccdCountyCourtJudgment);
@@ -205,4 +223,99 @@ public class DefendantMapperTest {
         assertEquals(ccdCountyCourtJudgment.getRequestedDate(), claimWithCCJ.getCountyCourtJudgmentRequestedAt());
     }
 
+    @Test
+    public void mapPaidInFullToCCDDefendant() {
+        //Given
+        TheirDetails theirDetails = SampleTheirDetails.builder().individualDetails();
+        LocalDate moneyReceivedOn = now();
+        Claim claimWithPaidInFull = SampleClaim.builder().withMoneyReceivedOn(moneyReceivedOn).build();
+
+        //When
+        CCDCollectionElement<CCDDefendant> ccdDefendant = mapper.to(theirDetails, claimWithPaidInFull);
+        CCDDefendant value = ccdDefendant.getValue();
+
+        //Then
+        assertNotNull(value.getPaidInFullDate());
+        assertEquals(moneyReceivedOn, value.getPaidInFullDate());
+    }
+
+    @Test
+    public void mapPaidInFullFromCCDDefendant() {
+        //Given
+        CCDDefendant ccdDefendant = SampleCCDDefendant.withPaidInFull(now()).build();
+        Claim.ClaimBuilder claimBuilder = Claim.builder();
+
+        //when
+        mapper.from(claimBuilder, CCDCollectionElement.<CCDDefendant>builder().value(ccdDefendant).build());
+        Claim claim = claimBuilder.build();
+
+        //Then
+        assertTrue(claim.getMoneyReceivedOn().isPresent());
+        assertEquals(ccdDefendant.getPaidInFullDate(), claim.getMoneyReceivedOn().orElseThrow(AssertionError::new));
+    }
+
+    @Test
+    public void mapToCCDDefendantWithNullSettlement() {
+        //Given
+        TheirDetails theirDetails = SampleTheirDetails.builder().organisationDetails();
+        Claim claimWithCCJ = SampleClaim.getWithSettlement(null);
+
+        //When
+        CCDCollectionElement<CCDDefendant> ccdDefendant = mapper.to(theirDetails, claimWithCCJ);
+        CCDDefendant value = ccdDefendant.getValue();
+
+        //Then
+        assertNull(value.getSettlementPartyStatements());
+    }
+
+    @Test
+    public void mapToCCDDefendantWithSettlements() {
+        //Given
+        TheirDetails theirDetails = SampleTheirDetails.builder().organisationDetails();
+        Claim claimWithSettlement = SampleClaim
+            .getWithSettlement(SampleSettlement.builder()
+                .withPartyStatements(offerPartyStatement, acceptPartyStatement).build());
+
+        final LocalDateTime settlementReachedAt = claimWithSettlement.getSettlementReachedAt();
+
+        //When
+        CCDCollectionElement<CCDDefendant> collectionElement = mapper.to(theirDetails, claimWithSettlement);
+        CCDDefendant ccdDefendant = collectionElement.getValue();
+
+        //Then
+        assertNotNull(ccdDefendant.getSettlementPartyStatements());
+        assertNotNull(ccdDefendant.getSettlementReachedAt());
+        assertThat(ccdDefendant.getSettlementPartyStatements().size(), is(2));
+        assertEquals(settlementReachedAt, ccdDefendant.getSettlementReachedAt());
+    }
+
+    @Test
+    public void mapFromCCDDefendantWithNoSettlementDetails() {
+        //Given
+        CCDDefendant ccdDefendant = SampleCCDDefendant.withResponseMoreTimeNeededOption().build();
+        Claim.ClaimBuilder claimBuilder = Claim.builder();
+
+        //when
+        mapper.from(claimBuilder, CCDCollectionElement.<CCDDefendant>builder().value(ccdDefendant).build());
+
+        //Then
+        assertNull(ccdDefendant.getSettlementReachedAt());
+        assertNull(ccdDefendant.getSettlementPartyStatements());
+    }
+
+    @Test
+    public void mapFromCCDDefendantWithSettlements() {
+        //Given
+        CCDDefendant ccdDefendant = SampleCCDDefendant.withPartyStatements().build();
+        Claim.ClaimBuilder claimBuilder = Claim.builder();
+
+        //when
+        mapper.from(claimBuilder, CCDCollectionElement.<CCDDefendant>builder().value(ccdDefendant).build());
+        Claim finalClaim = claimBuilder.build();
+
+        // Then
+        assertNotNull(finalClaim.getSettlementReachedAt());
+        assertNotNull(finalClaim.getSettlement());
+        assertThat(finalClaim.getSettlement().get().getPartyStatements().size(), is(3));
+    }
 }
