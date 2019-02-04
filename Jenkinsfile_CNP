@@ -6,6 +6,7 @@ def product = "cmc"
 def component = "claim-store"
 
 List<LinkedHashMap<String, Object>> secrets = [
+  secret('claim-store-db-password', 'CLAIM_STORE_DB_PASSWORD'),
   secret('smoke-test-citizen-username', 'SMOKE_TEST_CITIZEN_USERNAME'),
   secret('smoke-test-solicitor-username', 'SMOKE_TEST_SOLICITOR_USERNAME'),
   secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
@@ -58,11 +59,12 @@ withPipeline("java", product, component) {
     }
   }
 
+  env.CLAIM_STORE_DB_HOST = 'preprod-data-lb.moneyclaim.reform.hmcts.net'
   env.CLAIM_STORE_DB_PORT = '5432'
   env.CLAIM_STORE_DB_NAME = 'claimstore'
   env.CLAIM_STORE_DB_USERNAME = 'claimstore'
 
-  after('smoketest:aat') {
+  before('deploy:aat') {
     sh './gradlew :ccd-claim-migration:assemble migrateClaims'
   }
 
