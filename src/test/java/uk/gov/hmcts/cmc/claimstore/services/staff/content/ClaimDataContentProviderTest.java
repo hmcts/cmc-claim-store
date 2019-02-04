@@ -6,8 +6,10 @@ import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
 import java.time.Clock;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
@@ -45,10 +47,17 @@ public class ClaimDataContentProviderTest {
     }
 
     @Test
-    public void shouldProvideExpectedReason() {
-        ClaimContent claimContent = provider.createContent(claim);
+    public void shouldProvideExpectedReasonWithoutDelimiters() {
+        testReason("reason one reason two", "reason one reason two");
+    }
 
-        assertThat(claimContent.getReason()).isEqualTo(claim.getClaimData().getReason());
+    @Test
+    public void shouldProvideReasonHonouringInputParagraphs() {
+        testReason("'Twas brillig and the slithy toves\ndid gyre and gimble in the wabe\r\n"
+                + "All mimsy were the borogoves\rand the mome raths outgrabe",
+
+            "'Twas brillig and the slithy toves", "did gyre and gimble in the wabe",
+            "All mimsy were the borogoves", "and the mome raths outgrabe");
     }
 
     @Test
@@ -86,4 +95,12 @@ public class ClaimDataContentProviderTest {
         assertThat(claimContent.getClaimTotalAmount()).isEqualTo("£80.00");
     }
 
+    private void testReason(String inputReason, String... expectations) {
+        Claim claim = SampleClaim.builder()
+            .withClaimData(SampleClaimData.builder().withReason(inputReason).build())
+            .build();
+        ClaimContent claimContent = provider.createContent(claim);
+        List<String> reason = claimContent.getReason();
+        assertThat(reason).containsSequence(expectations);
+    }
 }
