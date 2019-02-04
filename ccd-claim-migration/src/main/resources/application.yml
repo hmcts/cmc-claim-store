@@ -1,5 +1,7 @@
 ---
 spring:
+  main:
+    allow-bean-definition-overriding: true  # https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.1-Release-Notes#bean-overriding
   datasource:
     claimstore:
       driverClassName: org.postgresql.Driver
