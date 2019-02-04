@@ -97,13 +97,14 @@ public class ClaimMigrator {
 
     private void delayMigrationWhenMigratedCaseLotsReachedAllowed(AtomicInteger migratedClaims) {
 
-        int noOfMigratedClaims = migratedClaims.get();
+        int migratedClaimsCount = migratedClaims.get();
 
-        if (casesLotsSize != 0 && noOfMigratedClaims % casesLotsSize == 0) {
+        if (casesLotsSize != 0 && migratedClaimsCount != 0 && (migratedClaimsCount % casesLotsSize) == 0) {
             try {
+                logger.info("Sleeping for {}", delayBetweenCasesLots);
                 Thread.sleep(delayBetweenCasesLots);
             } catch (InterruptedException e) {
-                logger.info("failed sleeping between lots on count %d", noOfMigratedClaims);
+                logger.info("failed sleeping between lots on count {}", migratedClaimsCount);
             }
         }
     }
