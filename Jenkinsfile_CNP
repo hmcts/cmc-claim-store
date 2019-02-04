@@ -12,6 +12,7 @@ List<LinkedHashMap<String, Object>> secrets = [
   secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
   secret('generated-user-email-pattern', 'GENERATED_USER_EMAIL_PATTERN'),
   secret('citizen-oauth-client-secret', 'OAUTH2_CLIENT_SECRET'),
+  secret('citizen-oauth-client-secret', 'OAUTH_CLIENT_SECRET'),
   secret('claim-store-s2s-secret', 'CLAIM_STORE_S2S_SECRET'),
   secret('anonymous-caseworker-username', 'IDAM_CASEWORKER_ANONYMOUS_USERNAME'),
   secret('anonymous-caseworker-password', 'IDAM_CASEWORKER_ANONYMOUS_PASSWORD'),
@@ -21,7 +22,6 @@ List<LinkedHashMap<String, Object>> secrets = [
   secret('staff-email', 'STAFF_EMAIL'),
   secret('AppInsightsInstrumentationKey', 'APPINSIGHTS_INSTRUMENTATIONKEY'),
   secret('postcode-lookup-api-key', 'POSTCODE_LOOKUP_API_KEY'),
-  secret('citizen-oauth-client-secret', 'OAUTH_CLIENT_SECRET'),
   secret('cmc-s2s-secret', 'IDAM_S2S_TOTP_SECRET'),
   secret('citizen-draft-store-primary', 'DRAFT_STORE_SECRET_PRIMARY'),
   secret('citizen-draft-store-secondary', 'DRAFT_STORE_SECRET_SECONDARY'),
@@ -59,13 +59,14 @@ withPipeline("java", product, component) {
     }
   }
 
-  env.ccdCnpUrl = 'http://ccd-data-store-api-aat.service.core-compute-aat.internal'
+  env.CORE_CASE_DATA_API_URL = 'http://ccd-data-store-api-aat.service.core-compute-aat.internal'
   env.CLAIM_STORE_DB_HOST = 'preprod-data-lb.moneyclaim.reform.hmcts.net'
   env.CLAIM_STORE_DB_PORT = '5432'
   env.CLAIM_STORE_DB_NAME = 'claimstore'
   env.CLAIM_STORE_DB_USERNAME = 'claimstore'
 
   before('deploy:aat') {
+    sh 'echo ${STAFF_EMAIL}'
     sh './gradlew :ccd-claim-migration:assemble migrateClaims'
   }
 
