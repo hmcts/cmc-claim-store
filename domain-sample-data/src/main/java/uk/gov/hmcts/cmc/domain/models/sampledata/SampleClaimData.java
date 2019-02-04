@@ -129,6 +129,11 @@ public class SampleClaimData {
         return this;
     }
 
+    public SampleClaimData withReason(String reason) {
+        this.reason = reason;
+        return this;
+    }
+
     public SampleClaimData withStatementOfTruth(StatementOfTruth statementOfTruth) {
         this.statementOfTruth = statementOfTruth;
         return this;
