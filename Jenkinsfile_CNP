@@ -65,7 +65,7 @@ withPipeline("java", product, component) {
   env.CLAIM_STORE_DB_NAME = 'claimstore'
   env.CLAIM_STORE_DB_USERNAME = 'claimstore'
 
-  before('deploy:aat') {
+  after('smoketest:aat') {
     sh 'echo ${STAFF_EMAIL}'
     sh './gradlew :ccd-claim-migration:assemble migrateClaims'
   }
