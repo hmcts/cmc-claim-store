@@ -59,6 +59,7 @@ withPipeline("java", product, component) {
     }
   }
 
+  env.IDAM_S2S_AUTH_URL = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
   env.CORE_CASE_DATA_API_URL = 'http://ccd-data-store-api-aat.service.core-compute-aat.internal'
   env.CLAIM_STORE_DB_HOST = 'preprod-data-lb.moneyclaim.reform.hmcts.net'
   env.CLAIM_STORE_DB_PORT = '5432'
