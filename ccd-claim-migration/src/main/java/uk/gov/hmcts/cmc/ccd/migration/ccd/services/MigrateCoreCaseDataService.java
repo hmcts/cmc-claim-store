@@ -87,7 +87,8 @@ public class MigrateCoreCaseDataService {
                     .summary("Migrating case")
                     .description("Migrating case - create new record")
                     .build()
-            ).data(ccdCase)
+            )
+            .data(ccdCase)
             .build();
 
         CaseDetails caseDetails = submit(authorisation, eventRequestData, caseDataContent);

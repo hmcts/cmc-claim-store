@@ -15,7 +15,7 @@ import uk.gov.hmcts.cmc.ccd.migration.services.ClaimMigrator;
 @SpringBootApplication(scanBasePackages = {
     "uk.gov.hmcts.reform.authorisation",
     "uk.gov.hmcts.cmc.ccd.migration",
-    "uk.gov.hmcts.cmc.ccd.deprecated.mapper"
+    "uk.gov.hmcts.cmc.ccd.mapper"
 })
 @SuppressWarnings({"HideUtilityClassConstructor", "squid:S1118"}) // Spring needs a constructor, its not a utility class
 @EnableFeignClients(basePackages =
