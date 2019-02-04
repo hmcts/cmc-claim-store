@@ -14,6 +14,7 @@ List<LinkedHashMap<String, Object>> secrets = [
   secret('citizen-oauth-client-secret', 'OAUTH2_CLIENT_SECRET'),
   secret('citizen-oauth-client-secret', 'OAUTH_CLIENT_SECRET'),
   secret('claim-store-s2s-secret', 'CLAIM_STORE_S2S_SECRET'),
+  secret('claim-store-s2s-secret', 'IDAM_S2S_AUTH_TOTP_SECRET'),
   secret('anonymous-caseworker-username', 'IDAM_CASEWORKER_ANONYMOUS_USERNAME'),
   secret('anonymous-caseworker-password', 'IDAM_CASEWORKER_ANONYMOUS_PASSWORD'),
   secret('system-update-username', 'IDAM_CASEWORKER_SYSTEM_USERNAME'),
