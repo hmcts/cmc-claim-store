@@ -59,6 +59,7 @@ withPipeline("java", product, component) {
     }
   }
 
+  env.ccdCnpUrl = 'http://ccd-data-store-api-aat.service.core-compute-aat.internal'
   env.CLAIM_STORE_DB_HOST = 'preprod-data-lb.moneyclaim.reform.hmcts.net'
   env.CLAIM_STORE_DB_PORT = '5432'
   env.CLAIM_STORE_DB_NAME = 'claimstore'
