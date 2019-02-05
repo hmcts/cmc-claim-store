@@ -215,11 +215,10 @@ public class ClaimService {
             authorisation
         );
 
-        Claim retrievedClaim = getClaimByExternalId(externalId, authorisation);
-        trackClaimIssued(retrievedClaim.getReferenceNumber(), retrievedClaim.getClaimData().isClaimantRepresented());
-        ccdEventProducer.createCCDClaimIssuedEvent(retrievedClaim, authorisation);
+        trackClaimIssued(issuedClaim.getReferenceNumber(), issuedClaim.getClaimData().isClaimantRepresented());
+        ccdEventProducer.createCCDClaimIssuedEvent(issuedClaim, authorisation);
 
-        return retrievedClaim;
+        return issuedClaim;
     }
 
     private void trackClaimIssued(String referenceNumber, boolean represented) {
