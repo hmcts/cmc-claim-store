@@ -99,7 +99,7 @@ public class DefendantPinLetterContentProvider {
     private String getPartyNameFor(NamedParty party) {
         StringBuilder name = new StringBuilder(party.getName());
 
-        if(party instanceof SoleTrader) {
+        if (party instanceof SoleTrader) {
             (((SoleTrader) party).getBusinessName()).ifPresent(t -> name.append(" T/A ").append(t));
         }
 

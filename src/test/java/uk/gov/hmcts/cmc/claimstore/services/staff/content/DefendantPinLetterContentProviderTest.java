@@ -80,7 +80,6 @@ public class DefendantPinLetterContentProviderTest {
         Claim claim = SampleClaim.builder().withClaimData(
             SampleClaimData.builder().withClaimant(claimant).build()).build();
 
-
         Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
 
         String expected = String.format("%s T/A %s", claimant.getName(),
