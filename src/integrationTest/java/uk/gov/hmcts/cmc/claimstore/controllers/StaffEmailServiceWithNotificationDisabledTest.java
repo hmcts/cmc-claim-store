@@ -107,10 +107,10 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
     @Test
     public void shouldNotSendStaffNotificationWhenCounterSignRequestSubmitted() throws Exception {
         Settlement settlement = new Settlement();
-        settlement.makeOffer(SampleOffer.builder().build(), MadeBy.DEFENDANT);
+        settlement.makeOffer(SampleOffer.builder().build(), MadeBy.DEFENDANT, null);
         claim = claimStore.makeOffer(claim.getExternalId(), settlement);
 
-        settlement.accept(MadeBy.CLAIMANT);
+        settlement.accept(MadeBy.CLAIMANT, null);
         claim = claimStore.acceptOffer(claim.getExternalId(), settlement);
 
         makeCounterOfferSignedRequest(claim.getExternalId()).andExpect(status().isCreated());

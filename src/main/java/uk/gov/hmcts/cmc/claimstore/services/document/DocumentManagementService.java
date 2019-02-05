@@ -1,12 +1,14 @@
 package uk.gov.hmcts.cmc.claimstore.services.document;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -21,6 +23,9 @@ import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 import java.net.URI;
 
 import static java.util.Collections.singletonList;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.DOCUMENT_NAME;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DOCUMENT_MANAGEMENT_DOWNLOAD_FAILURE;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DOCUMENT_MANAGEMENT_UPLOAD_FAILURE;
 
 @Service
 @ConditionalOnProperty(prefix = "document_management", name = "url")
@@ -33,6 +38,8 @@ public class DocumentManagementService {
     private final DocumentUploadClientApi documentUploadClient;
     private final AuthTokenGenerator authTokenGenerator;
     private final UserService userService;
+    private final String caseWorkerRole;
+    private final AppInsights appInsights;
 
     @Autowired
     public DocumentManagementService(
@@ -40,13 +47,17 @@ public class DocumentManagementService {
         DocumentDownloadClientApi documentDownloadClientApi,
         DocumentUploadClientApi documentUploadClientApi,
         AuthTokenGenerator authTokenGenerator,
-        UserService userService
+        UserService userService,
+        @Value("${document_management.caseWorkerRole}") String caseWorkerRole,
+        AppInsights appInsights
     ) {
         this.documentMetadataDownloadClient = documentMetadataDownloadApi;
         this.documentDownloadClient = documentDownloadClientApi;
         this.documentUploadClient = documentUploadClientApi;
         this.authTokenGenerator = authTokenGenerator;
         this.userService = userService;
+        this.caseWorkerRole = caseWorkerRole;
+        this.appInsights = appInsights;
     }
 
     public URI uploadDocument(String authorisation, PDF document) {
@@ -59,36 +70,49 @@ public class DocumentManagementService {
         byte[] documentBytes,
         String contentType
     ) {
-        MultipartFile file = new InMemoryMultipartFile(FILES_NAME, originalFileName, contentType, documentBytes);
-        UploadResponse response = documentUploadClient.upload(
-            authorisation,
-            authTokenGenerator.generate(),
-            userService.getUserDetails(authorisation).getId(),
-            singletonList(file)
-        );
+        try {
+            MultipartFile file = new InMemoryMultipartFile(FILES_NAME, originalFileName, contentType, documentBytes);
+            UploadResponse response = documentUploadClient.upload(
+                authorisation,
+                authTokenGenerator.generate(),
+                userService.getUserDetails(authorisation).getId(),
+                singletonList(file)
+            );
 
-        Document document = response.getEmbedded().getDocuments().stream()
-            .findFirst()
-            .orElseThrow(() ->
-                new DocumentManagementException("Document management failed uploading file" + originalFileName));
+            Document document = response.getEmbedded().getDocuments().stream()
+                .findFirst()
+                .orElseThrow(() ->
+                    new DocumentManagementException("Document management failed uploading file" + originalFileName));
 
-        return URI.create(document.links.self.href);
+            return URI.create(document.links.self.href);
+        } catch (Exception e) {
+            appInsights.trackEvent(DOCUMENT_MANAGEMENT_UPLOAD_FAILURE, DOCUMENT_NAME, originalFileName);
+            throw e;
+        }
+
     }
 
-    public byte[] downloadDocument(String authorisation, URI documentSelf) {
-        Document documentMetadata = documentMetadataDownloadClient.getDocumentMetadata(
-            authorisation,
-            authTokenGenerator.generate(),
-            documentSelf.getPath()
-        );
+    public byte[] downloadDocument(String authorisation, URI documentSelf, String baseFileName) {
+        try {
+            Document documentMetadata = documentMetadataDownloadClient.getDocumentMetadata(
+                authorisation,
+                authTokenGenerator.generate(),
+                caseWorkerRole,
+                documentSelf.getPath()
+            );
 
-        ResponseEntity<Resource> responseEntity = documentDownloadClient.downloadBinary(
-            authorisation,
-            authTokenGenerator.generate(),
-            URI.create(documentMetadata.links.binary.href).getPath()
-        );
+            ResponseEntity<Resource> responseEntity = documentDownloadClient.downloadBinary(
+                authorisation,
+                authTokenGenerator.generate(),
+                caseWorkerRole,
+                URI.create(documentMetadata.links.binary.href).getPath()
+            );
 
-        ByteArrayResource resource = (ByteArrayResource) responseEntity.getBody();
-        return resource.getByteArray();
+            ByteArrayResource resource = (ByteArrayResource) responseEntity.getBody();
+            return resource.getByteArray();
+        } catch (Exception e) {
+            appInsights.trackEvent(DOCUMENT_MANAGEMENT_DOWNLOAD_FAILURE, DOCUMENT_NAME, baseFileName + ".pdf");
+            throw e;
+        }
     }
 }

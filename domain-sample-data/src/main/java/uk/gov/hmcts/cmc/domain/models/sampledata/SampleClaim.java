@@ -148,11 +148,11 @@ public final class SampleClaim {
         return builder().withDefendantEmail(DEFENDANT_EMAIL)
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withCountyCourtJudgment(
-            SampleCountyCourtJudgment.builder()
-                .paymentOption(PaymentOption.IMMEDIATELY)
-                .ccjType(CountyCourtJudgmentType.DEFAULT)
-                .build()
-        ).withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
+                SampleCountyCourtJudgment.builder()
+                    .paymentOption(PaymentOption.IMMEDIATELY)
+                    .ccjType(CountyCourtJudgmentType.DEFAULT)
+                    .build()
+            ).withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
             .build();
     }
 
@@ -164,6 +164,17 @@ public final class SampleClaim {
             .withDefendantEmail(DEFENDANT_EMAIL)
             .withClaimantRespondedAt(LocalDateTime.now())
             .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
+            .build();
+    }
+
+    public static Claim getWithClaimantResponse(ClaimantResponse claimantResponse) {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withResponse(SampleResponse.FullAdmission.validDefaults())
+            .withRespondedAt(LocalDateTime.now())
+            .withDefendantEmail(DEFENDANT_EMAIL)
+            .withClaimantRespondedAt(LocalDateTime.now())
+            .withClaimantResponse(claimantResponse)
             .build();
     }
 
@@ -225,7 +236,9 @@ public final class SampleClaim {
     }
 
     public static Claim getWithSettlement(Settlement settlement) {
-        return builder().withSettlement(settlement).build();
+        return builder().withSettlement(settlement)
+            .withSettlementReachedAt(LocalDateTime.now())
+            .build();
     }
 
     public static Claim getClaimWithNoDefendantEmail() {
@@ -262,9 +275,9 @@ public final class SampleClaim {
     public static Claim getClaimWithSettlementAgreementRejected() {
 
         Settlement settlement = new Settlement();
-        settlement.makeOffer(SampleOffer.builder().build(), CLAIMANT);
-        settlement.acceptCourtDetermination(CLAIMANT);
-        settlement.reject(MadeBy.DEFENDANT);
+        settlement.makeOffer(SampleOffer.builder().build(), CLAIMANT, null);
+        settlement.acceptCourtDetermination(CLAIMANT, null);
+        settlement.reject(MadeBy.DEFENDANT, null);
 
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
@@ -276,9 +289,9 @@ public final class SampleClaim {
     public static Claim withSettlementReached() {
 
         Settlement settlement = new Settlement();
-        settlement.makeOffer(SampleOffer.builder().build(), CLAIMANT);
-        settlement.acceptCourtDetermination(CLAIMANT);
-        settlement.countersign(MadeBy.DEFENDANT);
+        settlement.makeOffer(SampleOffer.builder().build(), CLAIMANT, null);
+        settlement.acceptCourtDetermination(CLAIMANT, null);
+        settlement.countersign(MadeBy.DEFENDANT, null);
 
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())

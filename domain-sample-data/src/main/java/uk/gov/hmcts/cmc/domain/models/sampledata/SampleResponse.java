@@ -28,7 +28,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         public FullAdmissionResponse build() {
             return FullAdmissionResponse.builder()
                 .moreTimeNeeded(YesNoOption.NO)
-                .defendant(SampleParty.builder().individual())
+                .defendant(SampleParty.builder().withCollectionId("acd82549-d279-4adc-b38c-d195dd0db0d6").individual())
                 .paymentIntention(SamplePaymentIntention.instalments())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
                 .build();
@@ -48,6 +48,14 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .moreTimeNeeded(YesNoOption.NO)
                 .defendant(SampleParty.builder().individual())
                 .paymentIntention(SamplePaymentIntention.immediately())
+                .build();
+        }
+
+        public FullAdmissionResponse buildWithPaymentOptionInstalments() {
+            return FullAdmissionResponse.builder()
+                .moreTimeNeeded(YesNoOption.NO)
+                .defendant(SampleParty.builder().individual())
+                .paymentIntention(SamplePaymentIntention.instalments())
                 .build();
         }
     }
@@ -118,6 +126,15 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .timeline(SampleDefendantTimeline.validDefaults())
                 .evidence(SampleDefendantEvidence.validDefaults())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .build();
+        }
+
+        public PartAdmissionResponse buildWithStatesPaid() {
+            return PartAdmissionResponse.builder()
+                .defendant(SampleParty.builder().individual())
+                .moreTimeNeeded(YesNoOption.NO)
+                .amount(BigDecimal.valueOf(120))
+                .paymentDeclaration(SamplePaymentDeclaration.builder().build())
                 .build();
         }
     }

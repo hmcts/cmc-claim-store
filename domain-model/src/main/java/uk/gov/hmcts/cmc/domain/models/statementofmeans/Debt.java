@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
+import uk.gov.hmcts.cmc.domain.models.CollectionId;
 
 import java.math.BigDecimal;
 import javax.validation.constraints.DecimalMin;
@@ -12,9 +13,8 @@ import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-@Builder
-@EqualsAndHashCode
-public class Debt {
+@EqualsAndHashCode(callSuper = true)
+public class Debt extends CollectionId {
 
     @NotBlank
     private final String description;
@@ -29,7 +29,9 @@ public class Debt {
     @DecimalMin(value = "0.00")
     private final BigDecimal monthlyPayments;
 
-    public Debt(String description, BigDecimal totalOwed, BigDecimal monthlyPayments) {
+    @Builder
+    public Debt(String id, String description, BigDecimal totalOwed, BigDecimal monthlyPayments) {
+        super(id);
         this.description = description;
         this.totalOwed = totalOwed;
         this.monthlyPayments = monthlyPayments;

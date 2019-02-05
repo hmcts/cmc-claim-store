@@ -118,6 +118,22 @@
       padding: 0;
     }
 
+    ol.enumerate {
+      margin-top: 0;
+      counter-reset: enumerated;
+      list-style: none;
+    }
+
+    ol.enumerate li::before {
+      content: counter(section) "." counter(enumerated) ". ";
+      counter-increment: enumerated;
+      color: #888;
+    }
+
+    ol.enumerate li {
+      margin-bottom: 5px;
+    }
+
     .spacing-bottom {
       padding-bottom: 20px;
     }
@@ -282,14 +298,7 @@
       </tr>
 
       {% if responseType == "PART_ADMISSION" %}
-        {% if paymentDeclaration is defined and paymentDeclaration is not empty %}
-          <tr>
-            <td>Amount they admit they owe</td>
-            <td>
-              {{ amount }}
-            </td>
-          </tr>
-        {% else %}
+        {% if paymentDeclarationIsPresent %}
           <tr>
             <td>Amount they have paid</td>
             <td>
@@ -305,18 +314,29 @@
           </tr>
           {% endif %}
           {% if paymentMethod is defined and paymentMethod is not empty %}
-            <tr>
-              <td>How they paid the amount</td>
-              <td>
-                {{ paymentMethod | trim }}
-              </td>
-            </tr>
+          <tr>
+            <td>How they paid the amount</td>
+            <td>
+              {{ paymentMethod | trim }}
+            </td>
+          </tr>
           {% endif %}
+        {% else %}
+          <tr>
+            <td>Amount they admit they owe</td>
+            <td>
+              {{ amount }}
+            </td>
+          </tr>
         {% endif %}
           <tr>
             <td>Why they dispute the claim</td>
             <td>
-              {{ responseDefence | trim }}
+              <ol class="enumerate">
+                {% for responseDefenceLine in responseDefence %}
+                <li>{{ responseDefenceLine }}</li>
+                {% endfor %}
+              </ol>
             </td>
           </tr>
       {% else %}
@@ -326,7 +346,11 @@
         </tr>
         <tr class="no-border">
           <td colspan="2" class="single-cell">
-            {{ responseDefence | trim}}
+            <ol class="enumerate">
+              {% for responseDefenceLine in responseDefence %}
+              <li>{{ responseDefenceLine }}</li>
+              {% endfor %}
+            </ol>
           </td>
         </tr>
         {% endif %}
@@ -378,27 +402,6 @@
         <td><strong>Comments about claimant’s evidence</strong></td>
         <td>
           {{ evidenceComment }}
-        </td>
-      </tr>
-      {% endif %}
-
-      {% if paymentDeclaration is defined %}
-      <tr>
-        <td>Amount they have paid</td>
-        <td>
-          {{ amount }}
-        </td>
-      </tr>
-      <tr>
-        <td>When they paid this amount</td>
-        <td>
-          {{ paymentDeclaration.paidDate }}
-        </td>
-      </tr>
-      <tr>
-        <td>How they paid the amount</td>
-        <td>
-          {{ paymentDeclaration.explanation }}
         </td>
       </tr>
       {% endif %}
@@ -762,17 +765,25 @@
       {% endif %}
 
       {% if signerName is defined and signerName is not empty %}
+      {% if defendant.type == 'on behalf of a company' %}
       <tr class="no-border">
         <td class="no-border"></td>
-        <td class="no-border"><strong>Company: </strong> {{ defendant.businessName }}</td>
+        <td class="no-border"><strong>Company: </strong> {{ defendant.fullName }}</td>
       </tr>
+      {% endif %}
       <tr class="no-border">
         <td class="no-border"></td>
         <td class="no-border"><strong>Name: </strong> {{ signerName }}</td>
       </tr>
+      {% if defendant.type == 'as a sole trader or self-employed person' %}
       <tr class="no-border">
         <td class="no-border"></td>
-        <td class="no-border"><strong>Role: </strong>{{ signerRole }}</td>
+        <td class="no-border"><strong>Trading as: </strong>{{ defendant.businessName }}</td>
+      </tr>
+      {% endif %}
+      <tr class="no-border">
+        <td class="no-border"></td>
+        <td class="no-border"><strong>Job Title: </strong>{{ signerRole }}</td>
       </tr>
       {% endif %}
       <tr class="no-border">
