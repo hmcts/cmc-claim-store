@@ -7,11 +7,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpense;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense.ExpenseType.COUNCIL_TAX;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense.ExpenseType.MORTGAGE;
@@ -35,10 +38,11 @@ public class ExpenseMapperTest {
             .build();
 
         //when
-        CCDExpense ccdExpense = mapper.to(expense);
+        CCDCollectionElement<CCDExpense> ccdExpense = mapper.to(expense);
 
         //then
-        assertThat(expense).isEqualTo(ccdExpense);
+        assertThat(expense).isEqualTo(ccdExpense.getValue());
+        assertThat(expense.getId()).isEqualTo(ccdExpense.getId());
     }
 
     @Test
@@ -50,10 +54,15 @@ public class ExpenseMapperTest {
             .amountPaid(BigDecimal.TEN)
             .build();
 
+        String collectionId = UUID.randomUUID().toString();
+
         //when
-        Expense expense = mapper.from(ccdExpense);
+        Expense expense = mapper.from(CCDCollectionElement.<CCDExpense>builder()
+            .id(collectionId)
+            .value(ccdExpense).build());
 
         //then
         assertThat(expense).isEqualTo(ccdExpense);
+        assertThat(expense.getId()).isEqualTo(collectionId);
     }
 }

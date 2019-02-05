@@ -95,12 +95,11 @@ public class OfferServiceTest {
         when(claimService.getClaimByExternalId(eq(claimWithOffer.getExternalId()), eq(AUTHORISATION)))
             .thenReturn(acceptedOffer);
 
-        Settlement settlement = acceptedOffer.getSettlement().orElse(null);
         // when
         offersService.accept(claimWithOffer, decidedBy, AUTHORISATION);
 
         //then
-        verify(caseRepository).updateSettlement(eq(claimWithOffer), eq(settlement),
+        verify(caseRepository).updateSettlement(eq(claimWithOffer), any(Settlement.class),
             eq(AUTHORISATION), eq(OFFER_SIGNED_BY_CLAIMANT));
 
         verify(eventProducer).createOfferAcceptedEvent(eq(acceptedOffer), eq(decidedBy));
@@ -156,24 +155,24 @@ public class OfferServiceTest {
                 .content("Defendant's admission content")
                 .completionDate(LocalDate.now().plusDays(60))
                 .build(),
-            MadeBy.DEFENDANT);
+            MadeBy.DEFENDANT, null);
 
-        settlement.accept(MadeBy.CLAIMANT);
+        settlement.accept(MadeBy.CLAIMANT, null);
 
         return settlement;
     }
 
     private static Claim buildClaimWithOffer() {
         Settlement settlement = new Settlement();
-        settlement.makeOffer(SampleOffer.builder().build(), madeBy);
+        settlement.makeOffer(SampleOffer.builder().build(), madeBy, null);
 
         return SampleClaim.builder().withSettlement(settlement).build();
     }
 
     private static Claim buildClaimWithAcceptedOffer() {
         Settlement settlement = new Settlement();
-        settlement.makeOffer(SampleOffer.builder().build(), madeBy);
-        settlement.accept(MadeBy.CLAIMANT);
+        settlement.makeOffer(SampleOffer.builder().build(), madeBy, null);
+        settlement.accept(MadeBy.CLAIMANT, null);
 
         return SampleClaim.builder()
             .withSettlement(settlement).build();

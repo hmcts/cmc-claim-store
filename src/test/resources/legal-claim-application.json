@@ -1,6 +1,7 @@
 {
   "externalId": "9f49d8df-b734-4e86-aeb6-e22f0c2ca78d",
   "claimants": [{
+    "id": "acd82549-d279-4adc-b38c-d195dd0db0d6",
     "type": "individual",
     "name": "John Rambo",
     "address": {
@@ -52,6 +53,7 @@
   },
   "defendants": [
     {
+      "id": "3d0bc933-0d46-4564-94bd-79e6e69b838b",
       "type": "individual",
       "name": "John Smith",
       "address": {
