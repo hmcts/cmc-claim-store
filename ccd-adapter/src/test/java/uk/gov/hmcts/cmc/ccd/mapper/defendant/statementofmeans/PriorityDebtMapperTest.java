@@ -29,7 +29,7 @@ public class PriorityDebtMapperTest {
     private PriorityDebtMapper mapper;
 
     @Test
-    public void shouldMapExpenseToCCD() {
+    public void shouldMapPriorityDebtToCCD() {
         //given
         PriorityDebt priorityDebt = PriorityDebt.builder()
             .type(ELECTRICITY)
@@ -46,7 +46,7 @@ public class PriorityDebtMapperTest {
     }
 
     @Test
-    public void shouldMapIncomeFromCCD() {
+    public void shouldMapPriorityDebtFromCCD() {
         //given
         CCDPriorityDebt ccdPriorityDebt = CCDPriorityDebt.builder()
             .type(COUNCIL_TAX_COMMUNITY_CHARGE)
