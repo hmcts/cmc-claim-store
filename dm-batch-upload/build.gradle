@@ -1,0 +1,31 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+group 'uk.gov.hmcts.cmc'
+version '1.1.0'
+
+sourceCompatibility = 1.8
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  compile("org.springframework.boot:spring-boot-starter-batch")
+
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+  compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
+  compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.4'
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.2'
+
+  testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+bootJar {
+  baseName = 'dm-batch-upload'
+  version = '0.1.0'
+  mainClassName = 'uk.gov.hmcts.cmc.dm.batch.DocumentManagementBatchApp'
+}
