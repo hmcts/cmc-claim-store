@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import uk.gov.hmcts.cmc.dm.batch.idam.models.User;
 import uk.gov.hmcts.cmc.dm.batch.model.Claim;
 
 import java.util.List;
@@ -28,21 +29,16 @@ public class SealedClaimUploadWriter implements ItemWriter<Claim> {
 
     private final RestTemplate restTemplate;
     private final String baseUrl;
+    private final User user;
 
     @Autowired
-    public SealedClaimUploadWriter(RestTemplate restTemplate, @Value("${claimstore.api.url}") String baseUrl) {
+    public SealedClaimUploadWriter(RestTemplate restTemplate,
+                                   @Value("${claimstore.api.url}") String baseUrl,
+                                   User user) {
         this.restTemplate = restTemplate;
         this.baseUrl = baseUrl;
+        this.user = user;
     }
-
-    // TODO: remove this before merging to master.This is temporary and will be replaced with a
-    // token fetched from userservice
-    private final String tempAuth = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJvOTFxMXM4aXVvazlwNDVl"
-        + "ZDdlbHE1dTdoMSIsInN1YiI6IjI4IiwiaWF0IjoxNTQ5Mzc1NDE2LCJleHAiOjE1NDk0MDQyMTYsImRhdGEiOiJ"
-        + "jaXRpemVuLGNsYWltYW50LGNpdGl6ZW4tbG9hMSxjbGFpbWFudC1sb2ExIiwidHlwZSI6IkFDQ0VTUyIsImlkIjoiM"
-        + "jgiLCJmb3JlbmFtZSI6IkpvaG4iLCJzdXJuYW1lIjoiU21pdGgiLCJkZWZhdWx0LXNlcnZpY2UiOiJjbWMiLCJsb2E"
-        + "iOjEsImRlZmF1bHQtdXJsIjoiaHR0cHM6Ly93d3ctY2l0aXplbi5tb25leWNsYWltLnJlZm9ybS5obWN0cy5uZXQ6M"
-        + "zAwMC9jbWMiLCJncm91cCI6ImNpdGl6ZW5zIn0.2tHfr3L608DdNEjHmx5ZpYq9E6XvjlZPPrU28zNB984";
 
     @Override
     public void write(List<? extends Claim> items) throws Exception {
@@ -53,7 +49,7 @@ public class SealedClaimUploadWriter implements ItemWriter<Claim> {
             try {
                 log.info("Trying to upload sealed claim form for claim: {}", claim.getReferenceNumber());
                 HttpHeaders headers = new HttpHeaders();
-                headers.add("Authorization", tempAuth);
+                headers.add("Authorization", user.getAuthorisation());
                 HttpEntity<String> httpEntity = new HttpEntity<>(headers);
                 UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl)
                     .path(SEALED_CLAIM_URL_PATH)

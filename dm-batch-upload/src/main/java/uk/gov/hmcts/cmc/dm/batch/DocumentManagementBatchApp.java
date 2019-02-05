@@ -16,7 +16,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableBatchProcessing
 @EnableFeignClients(basePackages =
     {
-        "uk.gov.hmcts.cmc.ccd.migration.idam.api"
+        "uk.gov.hmcts.cmc.dm.batch.idam.api"
     }
 )
 public class DocumentManagementBatchApp {
