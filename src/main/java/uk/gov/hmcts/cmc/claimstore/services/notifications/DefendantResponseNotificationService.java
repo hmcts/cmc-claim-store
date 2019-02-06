@@ -75,7 +75,7 @@ public class DefendantResponseNotificationService {
         Response response = claim.getResponse().orElseThrow(() -> new IllegalStateException("Response expected"));
 
         if (isFullDefenceAndNoMediation(response)) {
-            return getEmailTemplates().getDefendantResponseWithNoMediationIssued();
+            return getEmailTemplates().getDefendantResponseIssuedToIndividual();
         }
 
         if (party instanceof Individual || party instanceof SoleTrader) {
