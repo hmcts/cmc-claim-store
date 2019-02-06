@@ -88,9 +88,10 @@ public class ClaimMigrator {
                     updateCase(user, updatedClaims, failedMigrations, claim, caseDetails.get());
                 }
             } catch (Exception e) {
-                logger.info("failed migrating for claim for reference {} for the migrated count {}",
+                logger.info("failed migrating for claim for reference {} for the migrated count {} due to {}",
                     claim.getReferenceNumber(),
-                    migratedClaims.get()
+                    migratedClaims.get(),
+                    e.getMessage()
                 );
             }
         });
