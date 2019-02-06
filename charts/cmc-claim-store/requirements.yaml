@@ -10,5 +10,5 @@ dependencies:
     version: 0.0.11
     repository: '@hmcts'
   - name: rpe-feature-toggle-api
-    version: 0.0.3
+    version: 0.0.4
     repository: '@hmcts'
