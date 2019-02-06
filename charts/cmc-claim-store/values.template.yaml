@@ -13,6 +13,7 @@ claim-store:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   applicationPort: 4400
+  cpuRequests: 25m
   environment:
     REFORM_TEAM: cmc
     REFORM_SERVICE_NAME: claim-store
@@ -95,7 +96,7 @@ nodejs:
   image: hmcts/cmc-citizen-frontend:latest  # master
   applicationPort: 3000
   memoryRequests: 256Mi
-  cpuRequests: 0.2
+  cpuRequests: 25m
   memoryLimits: 512Mi
   cpuLimits: 1
   environment:
