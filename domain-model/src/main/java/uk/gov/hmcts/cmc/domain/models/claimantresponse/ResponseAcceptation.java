@@ -6,6 +6,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
+
 import java.math.BigDecimal;
 import java.util.Optional;
 import javax.validation.Valid;
@@ -28,11 +30,13 @@ public class ResponseAcceptation extends ClaimantResponse {
     @JsonCreator
     public ResponseAcceptation(
         BigDecimal amountPaid,
+        YesNoOption paymentReceived,
+        YesNoOption settleForAmount,
         CourtDetermination courtDetermination,
         PaymentIntention claimantPaymentIntention,
         FormaliseOption formaliseOption
     ) {
-        super(ClaimantResponseType.ACCEPTATION, amountPaid);
+        super(ClaimantResponseType.ACCEPTATION, amountPaid, paymentReceived, settleForAmount);
         this.courtDetermination = courtDetermination;
         this.claimantPaymentIntention = claimantPaymentIntention;
         this.formaliseOption = formaliseOption;
