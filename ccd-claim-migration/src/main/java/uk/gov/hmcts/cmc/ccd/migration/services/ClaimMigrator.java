@@ -73,21 +73,26 @@ public class ClaimMigrator {
         AtomicInteger updatedClaims = new AtomicInteger(0);
         AtomicInteger failedMigrations = new AtomicInteger(0);
 
-        notMigratedClaims.sort(Comparator.comparing(Claim::getId).reversed());
-
         notMigratedClaims.forEach(claim -> {
-            delayMigrationWhenMigratedCaseLotsReachedAllowed(migratedClaims);
+            try {
+                delayMigrationWhenMigratedCaseLotsReachedAllowed(migratedClaims);
 
-            Optional<CaseDetails> caseDetails
-                = coreCaseDataService.getCcdIdByReferenceNumber(user, claim.getReferenceNumber());
+                Optional<CaseDetails> caseDetails
+                    = coreCaseDataService.getCcdIdByReferenceNumber(user, claim.getReferenceNumber());
 
-            if (!caseDetails.isPresent()) {
-                createCase(user, migratedClaims, claim, CaseEvent.SUBMIT_PRE_PAYMENT, failedMigrations);
-                updateCase(user, updatedClaims, failedMigrations, claim, null);
-            } else {
-                updateCase(user, updatedClaims, failedMigrations, claim, caseDetails.get());
+                if (!caseDetails.isPresent()) {
+                    createCase(user, migratedClaims, claim, CaseEvent.SUBMIT_PRE_PAYMENT, failedMigrations);
+                    updateCase(user, updatedClaims, failedMigrations, claim, null);
+                } else {
+                    updateCase(user, updatedClaims, failedMigrations, claim, caseDetails.get());
+                }
+            } catch (Exception e) {
+                logger.info("failed migrating for claim for reference {} for the migrated count {} due to {}",
+                    claim.getReferenceNumber(),
+                    migratedClaims.get(),
+                    e.getMessage()
+                );
             }
-
         });
 
         logger.info("Total Claims in database: " + notMigratedClaims.size());
