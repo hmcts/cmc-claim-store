@@ -1,10 +1,14 @@
 package uk.gov.hmcts.cmc.ccd.migration.ccd.services;
 
 import com.google.common.collect.ImmutableMap;
+import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.exceptions.CreateCaseException;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.exceptions.OverwriteCaseException;
@@ -16,6 +20,8 @@ import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 
+import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -106,10 +112,23 @@ public class CoreCaseDataService {
         }
     }
 
+    @Retryable(value = {SocketTimeoutException.class, FeignException.class, IOException.class},
+        backoff = @Backoff(delay = 200, maxDelay = 500)
+    )
     public Optional<CaseDetails> getCcdIdByReferenceNumber(User user, String referenceNumber) {
         logger.info("Get claim from CCD " + referenceNumber);
 
         return search(user, ImmutableMap.of("case.referenceNumber", referenceNumber));
+    }
+
+    @Recover
+    public void recoverSearchFailure(SocketTimeoutException exception, User user, String referenceNumber) {
+        String errorMessage = String.format(
+            "Failure: failed search by reference number ( %s for user %s ) due to %s",
+            referenceNumber, user.getUserDetails().getId(), exception.getMessage()
+        );
+
+        logger.info(errorMessage, exception);
     }
 
     private Optional<CaseDetails> search(User user, Map<String, String> searchString) {
