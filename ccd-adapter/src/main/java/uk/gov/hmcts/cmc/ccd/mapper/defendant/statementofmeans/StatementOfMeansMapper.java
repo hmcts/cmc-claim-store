@@ -48,6 +48,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
     private final EmployerMapper employerMapper;
     private final ChildCategoryMapper childCategoryMapper;
     private final LivingPartnerMapper livingPartnerMapper;
+    private final PriorityDebtMapper priorityDebtMapper;
 
     @Autowired
     @SuppressWarnings("squid:S00107")
@@ -59,7 +60,8 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
         CourtOrderMapper courtOrderMapper,
         EmployerMapper employerMapper,
         ChildCategoryMapper childCategoryMapper,
-        LivingPartnerMapper livingPartnerMapper
+        LivingPartnerMapper livingPartnerMapper,
+        PriorityDebtMapper priorityDebtMapper
     ) {
         this.bankAccountMapper = bankAccountMapper;
         this.debtMapper = debtMapper;
@@ -69,6 +71,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
         this.employerMapper = employerMapper;
         this.childCategoryMapper = childCategoryMapper;
         this.livingPartnerMapper = livingPartnerMapper;
+        this.priorityDebtMapper = priorityDebtMapper;
     }
 
     @Override
@@ -123,12 +126,8 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
         builder.priorityDebts(
             statementOfMeans.getPriorityDebts()
                 .stream()
+                .map(priorityDebtMapper::to)
                 .filter(Objects::nonNull)
-                .map(priorityDebt -> CCDCollectionElement.<PriorityDebt>builder()
-                    .value(priorityDebt)
-                    .id(priorityDebt.getId())
-                    .build()
-                )
                 .collect(Collectors.toList())
         );
 
@@ -229,7 +228,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
             .collect(Collectors.toList());
 
         List<PriorityDebt> priorityDebts = asStream(ccdStatementOfMeans.getPriorityDebts())
-            .map(CCDCollectionElement::getValue)
+            .map(priorityDebtMapper::from)
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
