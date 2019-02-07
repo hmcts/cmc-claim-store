@@ -16,13 +16,12 @@ public class ResponseAcceptationAssert extends AbstractAssert<ResponseAcceptatio
     public ResponseAcceptationAssert isEqualTo(CCDResponseAcceptation ccdResponseAcceptation) {
         isNotNull();
 
-        if (!Objects.equals(
-            actual.getFormaliseOption().orElseThrow(AssertionError::new).name(),
-            ccdResponseAcceptation.getFormaliseOption().name()
-        )) {
-            failWithMessage("Expected ResponseAcceptation.formaliseOption to be <%s> but was <%s>",
-                ccdResponseAcceptation.getFormaliseOption(), actual.getFormaliseOption());
-        }
+        actual.getFormaliseOption().ifPresent(formaliseOption -> {
+            if (!Objects.equals(formaliseOption.name(), ccdResponseAcceptation.getFormaliseOption().name())) {
+                failWithMessage("Expected ResponseAcceptation.formaliseOption to be <%s> but was <%s>",
+                    ccdResponseAcceptation.getFormaliseOption(), actual.getFormaliseOption());
+            }
+        });
 
         actual.getAmountPaid().ifPresent(amountPaid -> {
             if (!Objects.equals(amountPaid, ccdResponseAcceptation.getAmountPaid())) {
@@ -38,6 +37,21 @@ public class ResponseAcceptationAssert extends AbstractAssert<ResponseAcceptatio
         actual.getClaimantPaymentIntention().ifPresent(paymentIntention -> {
             assertThat(paymentIntention).isEqualTo(ccdResponseAcceptation.getClaimantPaymentIntention());
         });
+
+        actual.getSettleForAmount().ifPresent(settleForAmount -> {
+            if (!Objects.equals(settleForAmount.name(), ccdResponseAcceptation.getSettleForAmount().name())) {
+                failWithMessage("Expected ResponseAcceptation.settleForAmount to be <%s> but was <%s>",
+                    ccdResponseAcceptation.getSettleForAmount(), settleForAmount);
+            }
+        });
+
+        actual.getPaymentReceived().ifPresent(paymentReceived -> {
+            if (!Objects.equals(paymentReceived.name(), ccdResponseAcceptation.getPaymentReceived().name())) {
+                failWithMessage("Expected ResponseAcceptation.paymentReceived to be <%s> but was <%s>",
+                    ccdResponseAcceptation.getPaymentReceived(), paymentReceived);
+            }
+        });
+
         return this;
     }
 }

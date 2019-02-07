@@ -62,6 +62,14 @@ public class ClaimantResponseMapper {
             .ifPresent(rejection::freeMediationOption);
         responseRejection.getAmountPaid().ifPresent(rejection::amountPaid);
         responseRejection.getReason().ifPresent(rejection::reason);
+        responseRejection.getPaymentReceived()
+            .map(YesNoOption::name)
+            .map(CCDYesNoOption::valueOf)
+            .ifPresent(rejection::paymentReceived);
+        responseRejection.getSettleForAmount()
+            .map(YesNoOption::name)
+            .map(CCDYesNoOption::valueOf)
+            .ifPresent(rejection::settleForAmount);
         claim.getClaimantRespondedAt().ifPresent(rejection::submittedOn);
         return rejection.build();
     }
@@ -78,6 +86,15 @@ public class ClaimantResponseMapper {
         );
         responseAcceptation.getCourtDetermination().ifPresent(courtDetermination ->
             builder.courtDetermination(courtDeterminationMapper.to(courtDetermination)));
+
+        responseAcceptation.getPaymentReceived()
+            .map(YesNoOption::name)
+            .map(CCDYesNoOption::valueOf)
+            .ifPresent(builder::paymentReceived);
+        responseAcceptation.getSettleForAmount()
+            .map(YesNoOption::name)
+            .map(CCDYesNoOption::valueOf)
+            .ifPresent(builder::settleForAmount);
 
         claim.getClaimantRespondedAt().ifPresent(builder::submittedOn);
         return builder.build();
