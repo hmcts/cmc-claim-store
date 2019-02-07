@@ -22,6 +22,11 @@ public class ResponseRejectionAssert extends AbstractAssert<ResponseRejectionAss
             }
         });
 
+        if (ccdResponseRejection.getFreeMediationOption() != null && !actual.getFreeMediation().isPresent()) {
+            failWithMessage("Expected ResponseRejection.freeMediation to be not present but was <%s>",
+                actual.getFreeMediation());
+        }
+
         actual.getAmountPaid().ifPresent(amountPaid -> {
             if (!Objects.equals(amountPaid, ccdResponseRejection.getAmountPaid())) {
                 failWithMessage("Expected ResponseRejection.amountPaid to be <%s> but was <%s>",
@@ -43,12 +48,22 @@ public class ResponseRejectionAssert extends AbstractAssert<ResponseRejectionAss
             }
         });
 
+        if (ccdResponseRejection.getSettleForAmount() != null && !actual.getSettleForAmount().isPresent()) {
+            failWithMessage("Expected ResponseRejection.settleForAmount to be not present but was <%s>",
+                ccdResponseRejection.getSettleForAmount());
+        }
+
         actual.getPaymentReceived().ifPresent(paymentReceived -> {
             if (!Objects.equals(paymentReceived.name(), ccdResponseRejection.getPaymentReceived().name())) {
                 failWithMessage("Expected ResponseRejection.paymentReceived to be <%s> but was <%s>",
                     ccdResponseRejection.getPaymentReceived(), paymentReceived);
             }
         });
+
+        if (ccdResponseRejection.getPaymentReceived() != null && !actual.getPaymentReceived().isPresent()) {
+            failWithMessage("Expected CCDResponseRejection.paymentReceived to be not present but was <%s>",
+                ccdResponseRejection.getPaymentReceived());
+        }
 
         return this;
     }

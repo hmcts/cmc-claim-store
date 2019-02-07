@@ -23,6 +23,11 @@ public class ResponseAcceptationAssert extends AbstractAssert<ResponseAcceptatio
             }
         });
 
+        if (ccdResponseAcceptation.getFormaliseOption() != null && !actual.getFormaliseOption().isPresent()) {
+            failWithMessage("Expected ResponseAcceptation.formaliseOption to be not present but was <%s>",
+                actual.getFormaliseOption());
+        }
+
         actual.getAmountPaid().ifPresent(amountPaid -> {
             if (!Objects.equals(amountPaid, ccdResponseAcceptation.getAmountPaid())) {
                 failWithMessage("Expected ResponseAcceptation.amountPaid to be <%s> but was <%s>",
@@ -45,12 +50,22 @@ public class ResponseAcceptationAssert extends AbstractAssert<ResponseAcceptatio
             }
         });
 
+        if (ccdResponseAcceptation.getSettleForAmount() != null && !actual.getSettleForAmount().isPresent()) {
+            failWithMessage("Expected ResponseAcceptation.settleForAmount to be not present but was <%s>",
+                actual.getSettleForAmount());
+        }
+
         actual.getPaymentReceived().ifPresent(paymentReceived -> {
             if (!Objects.equals(paymentReceived.name(), ccdResponseAcceptation.getPaymentReceived().name())) {
                 failWithMessage("Expected ResponseAcceptation.paymentReceived to be <%s> but was <%s>",
                     ccdResponseAcceptation.getPaymentReceived(), paymentReceived);
             }
         });
+
+        if (ccdResponseAcceptation.getPaymentReceived() != null && !actual.getPaymentReceived().isPresent()) {
+            failWithMessage("Expected ResponseAcceptation.paymentReceived to be not present but was <%s>",
+                actual.getPaymentReceived());
+        }
 
         return this;
     }
