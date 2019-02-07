@@ -9,6 +9,7 @@ nodejs:
     PAY_URL: http://payment-api-aat.service.core-compute-aat.internal
     FEES_URL: http://fees-register-api-aat.service.core-compute-aat.internal
     DRAFT_STORE_URL: http://draft-store-service-aat.service.core-compute-aat.internal
+    DOCUMENT_MANAGEMENT_URL: http://dm-store-aat.service.core-compute-aat.internal
 
 claim-store:
   environment:
