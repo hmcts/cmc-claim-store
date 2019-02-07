@@ -31,6 +31,13 @@ public class SamplePaymentIntention {
             .build();
     }
 
+    public static PaymentIntention bySetDateWithDateSpecified(LocalDate localDate) {
+        return builder()
+            .paymentOption(PaymentOption.BY_SPECIFIED_DATE)
+            .paymentDate(localDate)
+            .build();
+    }
+
     public static PaymentIntention instalments() {
         return builder()
             .paymentOption(PaymentOption.INSTALMENTS)
