@@ -118,6 +118,22 @@
       padding: 0;
     }
 
+    ol.enumerate {
+      margin-top: 0;
+      counter-reset: enumerated;
+      list-style: none;
+    }
+
+    ol.enumerate li::before {
+      content: counter(section) "." counter(enumerated) ". ";
+      counter-increment: enumerated;
+      color: #888;
+    }
+
+    ol.enumerate li {
+      margin-bottom: 5px;
+    }
+
     .spacing-bottom {
       padding-bottom: 20px;
     }
@@ -316,7 +332,11 @@
           <tr>
             <td>Why they dispute the claim</td>
             <td>
-              {{ responseDefence | trim }}
+              <ol class="enumerate">
+                {% for responseDefenceLine in responseDefence %}
+                <li>{{ responseDefenceLine }}</li>
+                {% endfor %}
+              </ol>
             </td>
           </tr>
       {% else %}
@@ -326,7 +346,11 @@
         </tr>
         <tr class="no-border">
           <td colspan="2" class="single-cell">
-            {{ responseDefence | trim}}
+            <ol class="enumerate">
+              {% for responseDefenceLine in responseDefence %}
+              <li>{{ responseDefenceLine }}</li>
+              {% endfor %}
+            </ol>
           </td>
         </tr>
         {% endif %}

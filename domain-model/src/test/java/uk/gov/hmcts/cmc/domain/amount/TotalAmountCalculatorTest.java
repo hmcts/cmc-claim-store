@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -486,11 +487,44 @@ public class TotalAmountCalculatorTest {
             .isEqualTo(Optional.of(format(new BigDecimal("40.01"))));
     }
 
+    @Test
+    public void totalTillTodayShouldStopAtCCJRequestDate() {
+        assertThat(TotalAmountCalculator.totalTillToday(claimWithCCJ()))
+            .isEqualTo(Optional.of(format(new BigDecimal("60.01"))));
+    }
+
+    @Test
+    public void amountWithInterestShouldStopAtCCJRequestDate() {
+        assertThat(TotalAmountCalculator.amountWithInterest(claimWithCCJ()))
+            .isEqualTo(Optional.of(format(new BigDecimal("40.01"))));
+    }
+
+    @Test
+    public void calculateInterestForClaimShouldStopAtCCJRequestDate() {
+        assertThat(TotalAmountCalculator.calculateInterestForClaim(claimWithCCJ()))
+            .isEqualTo(Optional.of(format(new BigDecimal("0.01"))));
+    }
+
     private static Claim claimWithAmountRange() {
         return SampleClaim.builder()
             .withClaimData(
                 SampleClaimData.builder().withAmount(SampleAmountRange.builder().build()).build()
             ).build();
+    }
+
+    private static Claim claimWithCCJ() {
+        return SampleClaim.builder()
+            .withClaimData(
+                SampleClaimData.builder()
+                    .withAmount(SampleAmountBreakdown.builder().build())
+                    .withFeeAmount(TWENTY_POUNDS_IN_PENNIES)
+                    .withInterest(standardInterestBuilder().withInterestDate((SampleInterestDate.builder()
+                        .withDate(LocalDate.now().minusDays(3)).build())).build())
+                    .build()
+            )
+            .withIssuedOn(LocalDate.now().minusDays(1))
+            .withCountyCourtJudgmentRequestedAt(LocalDateTime.now().minusDays(2))
+            .build();
     }
 
     private static BigDecimal format(BigDecimal value) {
