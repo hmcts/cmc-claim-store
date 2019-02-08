@@ -7,7 +7,7 @@ dependencies:
     repository: '@hmcts'
     alias: claim-store
   - name: ccd
-    version: '0.4.0'
+    version: 0.4.0
     repository: '@hmcts'
   - name: nodejs
     version: 0.0.11
