@@ -68,8 +68,8 @@ withPipeline("java", product, component) {
 //  env.CLAIM_STORE_DB_NAME = 'claimstore'
 //  env.CLAIM_STORE_DB_USERNAME = 'claimstore'
 //
-//  after('smoketest:prod') {
-//    sh './gradlew :ccd-claim-migration:assemble migrateClaims'
+//  after('smoketest:aat') {
+//    sh './gradlew :ccd-claim-migration:assemble migrateClaims -Djava.util.concurrent.ForkJoinPool.common.parallelism=10'
 //  }
 
   loadVaultSecrets(secrets)
