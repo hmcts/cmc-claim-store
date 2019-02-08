@@ -1,12 +1,12 @@
 {
   "caseNumber": "000CM001",
   "responseSubmittedOn": "26-Apr-2018",
-  "defenceResponse": "DISPUTE",
-  "amountAdmitted": null,
+  "defenceResponse": "PART_ADMISSION",
+  "amountAdmitted": 120,
   "defendant": {
-    "type": "Individual",
+    "type": "SoleTrader",
     "name": "John Rambo",
-    "businessName": null,
+    "businessName": "T/A Trading as name",
     "contactPerson": null,
     "addressAmended": false,
     "address": {
@@ -17,8 +17,14 @@
       "postcode": "DF1 3LJ"
     },
     "emailAddress": "j.smith@example.com",
-    "correspondenceAddress": null,
-    "dateOfBirth": "02-Jan-1968",
+    "correspondenceAddress": {
+      "line1": "52",
+      "line2": "Down Street",
+      "line3": "Salford",
+      "city": "Manchester",
+      "postcode": "DF1 3LJ"
+    },
+    "dateOfBirth": null,
     "phoneNumber": "07873727165"
   },
   "payment": null,

@@ -10,8 +10,6 @@ import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.rpa.config.EmailProperties;
 import uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.response.Response;
-import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
@@ -48,12 +46,6 @@ public class DefenceResponseNotificationService {
     @EventListener
     public void notifyRobotics(DefendantResponseEvent event) {
         requireNonNull(event);
-
-        Response response = event.getClaim().getResponse().orElseThrow(IllegalArgumentException::new);
-        if (response.getResponseType() != ResponseType.FULL_DEFENCE) {
-            return;
-        }
-
         EmailData emailData = prepareEmailData(event.getClaim());
         emailService.sendEmail(emailProperties.getSender(), emailData);
     }
