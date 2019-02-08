@@ -151,9 +151,9 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .build();
         }
 
-        public PartAdmissionResponse buildWithStatesPaid() {
+        public PartAdmissionResponse buildWithStatesPaid(Party party) {
             return PartAdmissionResponse.builder()
-                .defendant(SampleParty.builder().individual())
+                .defendant(party)
                 .moreTimeNeeded(YesNoOption.NO)
                 .amount(BigDecimal.valueOf(120))
                 .paymentDeclaration(SamplePaymentDeclaration.builder().build())
