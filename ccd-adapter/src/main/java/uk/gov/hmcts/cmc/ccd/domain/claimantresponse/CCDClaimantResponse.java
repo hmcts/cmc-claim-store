@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -19,11 +20,20 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode
 public abstract class CCDClaimantResponse {
     private BigDecimal amountPaid;
-    private final LocalDateTime submittedOn;
+    private LocalDateTime submittedOn;
+    private CCDYesNoOption paymentReceived;
+    private CCDYesNoOption settleForAmount;
 
-    public CCDClaimantResponse(BigDecimal amountPaid, LocalDateTime submittedOn) {
+    public CCDClaimantResponse(
+        BigDecimal amountPaid,
+        LocalDateTime submittedOn,
+        CCDYesNoOption paymentReceived,
+        CCDYesNoOption settleForAmount
+    ) {
         this.amountPaid = amountPaid;
         this.submittedOn = submittedOn;
+        this.paymentReceived = paymentReceived;
+        this.settleForAmount = settleForAmount;
     }
 
     public abstract CCDClaimantResponseType getClaimantResponseType();
