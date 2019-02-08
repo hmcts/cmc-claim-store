@@ -35,6 +35,8 @@ public class AdmissionResponseJsonMapperTest extends BaseResponseJsonMapper {
     private static final String INDIVIDUAL_PART_ADMISSION_PAYING_IMMEDIATELY = "/admissions/individual_part_admission_immediately.json";
     private static final String INDIVIDUAL_PART_ADMISSION_BY_SET_DATE = "/admissions/individual_part_admission_by_set_date.json";
     private static final String INDIVIDUAL_PART_ADMISSION_BY_INSTALMENTS = "/admissions/individual_part_admission_by_instalments.json";
+    private static final String INDIVIDUAL_PART_ADMISSION_STATES_PAID = "/admissions/individual_part_admission_states_paid.json";
+    private static final String SOLE_TRADER_PART_ADMISSION_STATES_PAID = "/admissions/sole_trader_part_admission_states_paid.json";
 
     private static final String INDIVIDUAL_FULL_ADMISSION_BY_INSTALMENTS = "/admissions/individual_full_admission_by_instalments.json";
     private static final String INDIVIDUAL_FULL_ADMISSION_IMMEDIATELY = "/admissions/individual_full_admission_immediately.json";
@@ -89,6 +91,38 @@ public class AdmissionResponseJsonMapperTest extends BaseResponseJsonMapper {
             .build();
 
         String expected = new ResourceReader().read(INDIVIDUAL_PART_ADMISSION_BY_INSTALMENTS).trim();
+
+        assertEquals(expected, responseMapper.map(claim).toString(), STRICT);
+    }
+
+    @Test
+    public void shouldMapIndividualPartAdmissionStatesPaidToRPA() throws JSONException {
+        PartAdmissionResponse partAdmissionStatesPaidResponse = SampleResponse
+            .PartAdmission
+            .builder()
+            .buildWithStatesPaid(SampleParty.builder().individual());
+
+        Claim claim = withCommonDefEmailAndRespondedAt()
+            .withResponse(partAdmissionStatesPaidResponse)
+            .build();
+
+        String expected = new ResourceReader().read(INDIVIDUAL_PART_ADMISSION_STATES_PAID).trim();
+
+        assertEquals(expected, responseMapper.map(claim).toString(), STRICT);
+    }
+
+    @Test
+    public void shouldMapSoleTraderPartAdmissionStatesPaidToRPA() throws JSONException {
+        PartAdmissionResponse partAdmissionStatesPaidResponse = SampleResponse
+            .PartAdmission
+            .builder()
+            .buildWithStatesPaid(SampleParty.builder().soleTrader());
+
+        Claim claim = withCommonDefEmailAndRespondedAt()
+            .withResponse(partAdmissionStatesPaidResponse)
+            .build();
+
+        String expected = new ResourceReader().read(SOLE_TRADER_PART_ADMISSION_STATES_PAID).trim();
 
         assertEquals(expected, responseMapper.map(claim).toString(), STRICT);
     }
