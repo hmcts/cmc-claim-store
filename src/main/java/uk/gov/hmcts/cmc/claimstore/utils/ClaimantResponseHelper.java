@@ -11,7 +11,7 @@ import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
 public class ClaimantResponseHelper {
 
-    public ClaimantResponseHelper() {
+    private ClaimantResponseHelper() {
         // Utility class, no instances
     }
 
