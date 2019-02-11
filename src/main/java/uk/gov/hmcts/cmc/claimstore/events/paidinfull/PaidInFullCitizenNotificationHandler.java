@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.events.paidinfull;
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -8,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.PaidInFull.referenceForDefendant;
 
@@ -33,12 +35,23 @@ public class PaidInFullCitizenNotificationHandler {
     public void notifyDefendantForPaidInFull(PaidInFullEvent event) {
         Claim claim = event.getClaim();
         Map<String, String> parameters = aggregateParams(claim);
-        notificationService.sendMail(
-            claim.getDefendantEmail(),
-            notificationsProperties.getTemplates().getEmail().getClaimantSaysDefendantHasPaidInFull(),
-            parameters,
-            referenceForDefendant(claim.getReferenceNumber())
+
+        getDefendantEmail(claim).ifPresent(defendantEmail ->
+            notificationService.sendMail(
+                defendantEmail,
+                notificationsProperties.getTemplates().getEmail().getClaimantSaysDefendantHasPaidInFull(),
+                parameters,
+                referenceForDefendant(claim.getReferenceNumber())
+            )
         );
+    }
+
+    private Optional<String> getDefendantEmail(Claim claim) {
+        if (StringUtils.isNotBlank(claim.getDefendantEmail())) {
+            return Optional.of(claim.getDefendantEmail());
+        } else {
+            return claim.getClaimData().getDefendant().getEmail();
+        }
     }
 
     private Map<String, String> aggregateParams(Claim claim) {
