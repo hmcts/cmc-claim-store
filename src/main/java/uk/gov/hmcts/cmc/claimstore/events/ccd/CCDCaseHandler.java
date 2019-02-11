@@ -28,6 +28,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.CCD_LINK_DEFEN
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.CLAIM_EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCD_ASYNC_FAILURE;
+import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isSettlePreJudgment;
 
 @Async("threadPoolTaskExecutor")
 public class CCDCaseHandler {
@@ -154,7 +155,9 @@ public class CCDCaseHandler {
                 .orElseThrow(IllegalStateException::new);
 
             Claim updatedClaim = ccdCaseRepository.saveClaimantResponse(ccdClaim, event.getResponse(), authorization);
-            ccdCaseRepository.saveCaseEvent(authorization, updatedClaim, SETTLED_PRE_JUDGMENT);
+            if (isSettlePreJudgment(event.getResponse())) {
+                ccdCaseRepository.saveCaseEvent(authorization, updatedClaim, SETTLED_PRE_JUDGMENT);
+            }
         } catch (FeignException e) {
             appInsights.trackEvent(CCD_ASYNC_FAILURE, REFERENCE_NUMBER, claim.getReferenceNumber());
             throw e;
