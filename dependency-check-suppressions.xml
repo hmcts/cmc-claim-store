@@ -137,4 +137,11 @@
         <gav regex="true">.*</gav>
         <cve>CVE-2018-8088</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+			Not applicable - relates to XML processing
+			]]></notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2018-1000840</cve>
+    </suppress>
 </suppressions>
