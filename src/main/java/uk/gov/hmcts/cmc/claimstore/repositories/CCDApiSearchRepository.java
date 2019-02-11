@@ -12,7 +12,11 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service("searchRepository")
@@ -44,7 +48,7 @@ public class CCDApiSearchRepository implements SearchRepository {
 
     @Override
     public List<Claim> getAllCasesBy(User user, ImmutableMap<String, String> searchString) {
-         List<CaseDetails> validCases = searchAll(user, searchString)
+        List<CaseDetails> validCases = searchAll(user, searchString)
             .stream()
             .filter(c -> !isCaseOnHold(c))
             .collect(Collectors.toList());
@@ -113,7 +117,6 @@ public class CCDApiSearchRepository implements SearchRepository {
         return results;
     }
 
-
     private List<CaseDetails> performSearch(User user, Map<String, String> searchCriteria, String serviceAuthToken) {
         List<CaseDetails> result;
         if (user.getUserDetails().isSolicitor() || user.getUserDetails().isCaseworker()) {
@@ -165,7 +168,6 @@ public class CCDApiSearchRepository implements SearchRepository {
 
         return result;
     }
-
 
     private List<Claim> extractClaims(List<CaseDetails> result) {
         return result

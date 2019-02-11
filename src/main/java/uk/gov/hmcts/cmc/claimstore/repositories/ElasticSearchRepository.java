@@ -24,18 +24,21 @@ public class ElasticSearchRepository implements SearchRepository {
     public static final String CASE_FORMAT = "data.%s";
     public static final String CASE_TYPE_ID = "MoneyClaimCase";
 
-    private CoreCaseDataApi coreCaseDataApi;
-    private AuthTokenGenerator authTokenGenerator;
-    private CCDCaseDataToClaim ccdCaseDataToClaim;
+    private final CoreCaseDataApi coreCaseDataApi;
+    private final AuthTokenGenerator authTokenGenerator;
+    private final CCDCaseDataToClaim ccdCaseDataToClaim;
+    private final SearchCriteria searchCriteria;
 
     public ElasticSearchRepository(
         CoreCaseDataApi coreCaseDataApi,
         AuthTokenGenerator authTokenGenerator,
-        CCDCaseDataToClaim ccdCaseDataToClaim
+        CCDCaseDataToClaim ccdCaseDataToClaim,
+        SearchCriteria searchCriteria
     ) {
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;
         this.ccdCaseDataToClaim = ccdCaseDataToClaim;
+        this.searchCriteria = searchCriteria;
     }
 
     @Override
@@ -65,17 +68,16 @@ public class ElasticSearchRepository implements SearchRepository {
 
         String searchParams = null;
         for (Map.Entry<String, String> entry : searchString.entrySet()) {
-            searchParams = SearchCriteria.searchByQuery(
+            searchParams = searchCriteria.searchByQuery(
                 String.format(CASE_FORMAT, entry.getKey()),
-                entry.getValue()
-            );
+                entry.getValue());
         }
 
         String serviceAuthToken = this.authTokenGenerator.generate();
         SearchResult searchResult = coreCaseDataApi.searchCases(authorisation,
             serviceAuthToken,
             CASE_TYPE_ID,
-            searchParams != null ? searchParams : SearchCriteria.matchAllQuery()
+            searchParams != null ? searchParams : searchCriteria.matchAllQuery()
         );
 
         return searchResult.getCases();

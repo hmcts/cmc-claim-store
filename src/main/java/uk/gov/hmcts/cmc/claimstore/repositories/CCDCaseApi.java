@@ -106,8 +106,8 @@ public class CCDCaseApi {
         User user = userService.getUser(authorisation);
         List<Claim> allCases = searchRepository.getAllCasesBy(user, ImmutableMap.of());
 
-        return allCases.isEmpty() ?
-            Collections.emptyList()
+        return allCases.isEmpty()
+            ? Collections.emptyList()
             : allCases.stream()
             .filter(claim -> id.equals(claim.getDefendantId()))
             .collect(Collectors.toList());
@@ -122,8 +122,8 @@ public class CCDCaseApi {
         User user = userService.getUser(authorisation);
         List<Claim> allCases = searchRepository.getAllCasesBy(user, ImmutableMap.of());
 
-        return allCases.isEmpty() ?
-            Collections.emptyList()
+        return allCases.isEmpty()
+            ? Collections.emptyList()
             : allCases.stream()
             .filter(claim -> defendantEmail.equals(claim.getDefendantEmail()))
             .collect(Collectors.toList());
