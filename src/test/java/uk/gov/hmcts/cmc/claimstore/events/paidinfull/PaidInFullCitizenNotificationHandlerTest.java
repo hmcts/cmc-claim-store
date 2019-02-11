@@ -1,19 +1,24 @@
-package uk.gov.hmcts.cmc.claimstore.events.paindinfull;
+package uk.gov.hmcts.cmc.claimstore.events.paidinfull;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullCitizenNotificationHandler;
-import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.BaseNotificationServiceTest;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 import uk.gov.service.notify.NotificationClientException;
 
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.PaidInFull.referenceForDefendant;
@@ -42,17 +47,48 @@ public class PaidInFullCitizenNotificationHandlerTest extends BaseNotificationSe
     }
 
     @Test
-    public void sendNotificationsSendsNotificationsToDefendant() throws NotificationClientException {
-
+    public void sendNotificationsSendsNotificationsToDefendantEmailNotLinked() throws NotificationClientException {
         PaidInFullEvent event = new PaidInFullEvent(SampleClaim.getDefault());
 
         handler.notifyDefendantForPaidInFull(event);
+        verify(notificationService, once()).sendMail(
+            eq(event.getClaim().getClaimData().getDefendant().getEmail().get()),
+            eq(CLAIMANT_SAYS_DEFENDANT_PAID_IN_FULL_TEMPLATE),
+            anyMap(),
+            eq(referenceForDefendant(event.getClaim().getReferenceNumber()))
+        );
+    }
 
+    @Test
+    public void sendNotificationsSendsNotificationsToDefendantEmailLinked() throws NotificationClientException {
+        Response fullDefenceResponse = SampleResponse.FullDefence.builder().build();
+        PaidInFullEvent event =
+            new PaidInFullEvent(SampleClaim.getWithResponseDefendantEmailVerified(fullDefenceResponse));
+
+        handler.notifyDefendantForPaidInFull(event);
         verify(notificationService, once()).sendMail(
             eq(event.getClaim().getDefendantEmail()),
             eq(CLAIMANT_SAYS_DEFENDANT_PAID_IN_FULL_TEMPLATE),
             anyMap(),
             eq(referenceForDefendant(event.getClaim().getReferenceNumber()))
+        );
+    }
+
+    @Test
+    public void sendNotificationsDoesNotSendNotificationToDefendantWhenNoEmailAddress()
+        throws NotificationClientException {
+        Claim claim = SampleClaim.builder().withClaimData(SampleClaimData.builder()
+            .withDefendant(SampleTheirDetails.builder().withEmail(null).individualDetails())
+            .build()).build();
+
+        PaidInFullEvent event = new PaidInFullEvent(claim);
+
+        handler.notifyDefendantForPaidInFull(event);
+        verify(notificationService, never()).sendMail(
+            anyString(),
+            anyString(),
+            anyMap(),
+            anyString()
         );
     }
 }

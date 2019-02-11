@@ -57,19 +57,23 @@ public class DefenceResponseJsonMapper {
     }
 
     private JsonObject mapPayment(Response response) {
-        JsonObjectBuilder jsonObjectBuilder = new NullAwareJsonObjectBuilder();
         if (ResponseUtils.isAdmissionResponse(response)) {
-            updateJsonBuilderForAdmissions(jsonObjectBuilder, response);
-            return jsonObjectBuilder.build();
+            JsonObjectBuilder builder = updateJsonBuilderForAdmissions(response);
+            if (builder != null) {
+                return builder.build();
+            }
         }
-
         return null;
     }
 
-    private void updateJsonBuilderForAdmissions(JsonObjectBuilder jsonObjectBuilder, Response response) {
+    private JsonObjectBuilder updateJsonBuilderForAdmissions(Response response) {
         PaymentIntention paymentIntention = null;
+        JsonObjectBuilder jsonObjectBuilder = new NullAwareJsonObjectBuilder();
         if (response instanceof PartAdmissionResponse) {
             PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse) response;
+            if (partAdmissionResponse.getPaymentDeclaration().isPresent()) {
+                return null;
+            }
             paymentIntention = partAdmissionResponse.getPaymentIntention().orElseThrow(IllegalArgumentException::new);
         } else if (response instanceof FullAdmissionResponse) {
             FullAdmissionResponse fullAdmissionResponse = (FullAdmissionResponse) response;
@@ -85,6 +89,8 @@ public class DefenceResponseJsonMapper {
         JsonObject installmentObj = paymentOption.equals(PaymentOption.INSTALMENTS) ? RPAMapperHelper
             .toJson(paymentIntention.getRepaymentPlan().orElseThrow(IllegalArgumentException::new)) : null;
         jsonObjectBuilder.add("instalments", installmentObj);
+
+        return jsonObjectBuilder;
 
     }
 
