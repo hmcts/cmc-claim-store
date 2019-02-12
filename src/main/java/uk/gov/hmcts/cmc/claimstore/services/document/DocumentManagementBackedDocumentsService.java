@@ -9,7 +9,6 @@ import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
-import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
@@ -96,8 +95,8 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     }
 
     private DocumentDetails uploadToDocumentManagement(byte[] documentBytes,
-                                         String authorisation,
-                                         String baseFileName) throws DocumentManagementException {
+                                                       String authorisation,
+                                                       String baseFileName) {
         PDF document = new PDF(baseFileName, documentBytes);
         URI documentSelfPath = documentManagementService.uploadDocument(authorisation, document);
         return new DocumentDetails() {
