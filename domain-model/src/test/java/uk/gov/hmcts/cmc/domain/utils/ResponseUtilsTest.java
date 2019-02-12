@@ -4,6 +4,7 @@ import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -119,5 +120,23 @@ public class ResponseUtilsTest {
         Response response = FullAdmissionResponse.builder().build();
 
         assertThat(ResponseUtils.isResponsePartAdmitPayImmediately(response)).isFalse();
+    }
+
+    @Test
+    public void shouldReturnTrueWhenFullAdmissionResponse() {
+        Response response = FullAdmissionResponse.builder().build();
+        assertThat(ResponseUtils.isAdmissionResponse(response)).isTrue();
+    }
+
+    @Test
+    public void shouldReturnTrueWhenPartAdmissionResponse() {
+        Response response = PartAdmissionResponse.builder().build();
+        assertThat(ResponseUtils.isAdmissionResponse(response)).isTrue();
+    }
+
+    @Test
+    public void shouldReturnFalseWhenNonAdmissionResponse() {
+        Response response = FullDefenceResponse.builder().build();
+        assertThat(ResponseUtils.isAdmissionResponse(response)).isFalse();
     }
 }

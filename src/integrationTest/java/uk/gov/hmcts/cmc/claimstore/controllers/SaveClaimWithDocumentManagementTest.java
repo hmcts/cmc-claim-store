@@ -92,7 +92,13 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        assertThat(deserializeObjectFrom(result, Claim.class).getSealedClaimDocument())
+        MvcResult resultWithDocument = makeGetRequest("/claims/"
+            + deserializeObjectFrom(result, Claim.class).getExternalId())
+            .andExpect(status().isOk())
+            .andReturn();
+
+        assertThat(deserializeObjectFrom(resultWithDocument, Claim.class)
+            .getSealedClaimDocument())
             .isEqualTo(Optional.of(URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4")));
     }
 

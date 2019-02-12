@@ -12,8 +12,8 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.4'
-  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.2'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.6'
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.6'
 
   compile group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
   compile group: 'ch.qos.logback', name: 'logback-core', version: versions.logback

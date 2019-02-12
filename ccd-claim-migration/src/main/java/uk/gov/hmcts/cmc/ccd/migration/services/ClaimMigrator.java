@@ -6,8 +6,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.CoreCaseDataService;
-import uk.gov.hmcts.cmc.ccd.migration.idam.models.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.idam.services.UserService;
 import uk.gov.hmcts.cmc.ccd.migration.repositories.ClaimRepository;
@@ -25,18 +25,20 @@ import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
+import static uk.gov.hmcts.cmc.domain.models.response.DefenceType.ALREADY_PAID;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 
 @Service
 public class ClaimMigrator {
 
     private static final Logger logger = LoggerFactory.getLogger(ClaimMigrator.class);
+    public static final String ON_HOLD_STATE = "onhold";
+    public static final String OPEN_STATE = "open";
 
     private ClaimRepository claimRepository;
     private UserService userService;
@@ -72,21 +74,28 @@ public class ClaimMigrator {
         AtomicInteger updatedClaims = new AtomicInteger(0);
         AtomicInteger failedMigrations = new AtomicInteger(0);
 
-        notMigratedClaims.sort(Comparator.comparing(Claim::getId).reversed());
+        notMigratedClaims.parallelStream().forEach(claim -> {
+            try {
+                delayMigrationWhenMigratedCaseLotsReachedAllowed(migratedClaims);
 
-        notMigratedClaims.forEach(claim -> {
-            delayMigrationWhenMigratedCaseLotsReachedAllowed(migratedClaims);
+                Optional<CaseDetails> caseDetails
+                    = coreCaseDataService.getCcdIdByReferenceNumber(user, claim.getReferenceNumber());
 
-            Optional<CaseDetails> caseDetails
-                = coreCaseDataService.getCcdIdByReferenceNumber(user, claim.getReferenceNumber());
-
-            if (!caseDetails.isPresent()) {
-                createCase(user, migratedClaims, claim, CaseEvent.SUBMIT_PRE_PAYMENT, failedMigrations);
-                updateCase(user, updatedClaims, failedMigrations, claim, null);
-            } else {
-                updateCase(user, updatedClaims, failedMigrations, claim, caseDetails.get());
+                if (!caseDetails.isPresent()) {
+                    createCase(user, migratedClaims, claim, CaseEvent.SUBMIT_PRE_PAYMENT, failedMigrations);
+                    updatePostPaymentEvent(user, updatedClaims, failedMigrations, claim);
+                    updateCase(user, updatedClaims, failedMigrations, claim);
+                } else {
+                    updatePostPaymentEvent(user, updatedClaims, failedMigrations, claim);
+                    updateCase(user, updatedClaims, failedMigrations, claim);
+                }
+            } catch (Exception e) {
+                logger.info("failed migrating for claim for reference {} for the migrated count {} due to {}",
+                    claim.getReferenceNumber(),
+                    migratedClaims.get(),
+                    e.getMessage()
+                );
             }
-
         });
 
         logger.info("Total Claims in database: " + notMigratedClaims.size());
@@ -109,16 +118,52 @@ public class ClaimMigrator {
         }
     }
 
+    private void updatePostPaymentEvent(
+        User user,
+        AtomicInteger updatedClaims,
+        AtomicInteger failedMigrations,
+        Claim claim
+    ) {
+
+        CaseDetails ccdCase = coreCaseDataService.getCcdIdByReferenceNumber(user, claim.getReferenceNumber())
+            .orElse(null);
+
+        if (ccdCase == null) {
+            return;
+        }
+
+        try {
+            if (ccdCase.getState().equals(ON_HOLD_STATE) && claim.getCreatedAt() != null) {
+                logger.info("start migrating claim: "
+                    + claim.getReferenceNumber()
+                    + " for event: "
+                    + CaseEvent.SUBMIT_POST_PAYMENT);
+
+                coreCaseDataService.overwrite(user, ccdCase.getId(), claim, CaseEvent.SUBMIT_POST_PAYMENT);
+                logger.info("claim exists - overwrite");
+                updatedClaims.incrementAndGet();
+            }
+
+            //Enable below line for final run on prod
+            //claimRepository.markAsMigrated(claim.getId());
+        } catch (Exception e) {
+            logger.info("Claim Migration failed for Claim reference "
+                    + claim.getReferenceNumber()
+                    + " due to " + e.getMessage(),
+                e);
+            failedMigrations.incrementAndGet();
+        }
+    }
+
     private void updateCase(
         User user,
         AtomicInteger updatedClaims,
         AtomicInteger failedMigrations,
-        Claim claim,
-        CaseDetails caseDetails
+        Claim claim
     ) {
 
-        CaseDetails ccdCase = Optional.ofNullable(caseDetails).orElseGet(() ->
-            coreCaseDataService.getCcdIdByReferenceNumber(user, claim.getReferenceNumber()).orElse(null));
+        CaseDetails ccdCase = coreCaseDataService.getCcdIdByReferenceNumber(user, claim.getReferenceNumber())
+            .orElse(null);
 
         if (ccdCase == null) {
             return;
@@ -127,13 +172,13 @@ public class ClaimMigrator {
         try {
             for (CaseEvent event : CaseEvent.values()) {
                 if (eventNeedToBePerformedOnClaim(event, claim, ccdCase.getState())) {
-                    logger.info("\t\t start migrating claim: "
+                    logger.info("start migrating claim: "
                         + claim.getReferenceNumber()
                         + " for event: "
                         + event.getValue());
 
                     coreCaseDataService.overwrite(user, ccdCase.getId(), claim, event);
-                    logger.info("\t\t claim exists - overwrite");
+                    logger.info("claim exists - overwrite");
                     updatedClaims.incrementAndGet();
                 }
             }
@@ -156,13 +201,13 @@ public class ClaimMigrator {
         AtomicInteger failedMigrations
     ) {
         try {
-            logger.info("\t\t start migrating claim: "
+            logger.info("start migrating claim: "
                 + claim.getReferenceNumber()
                 + " for event: "
                 + event.getValue());
 
             coreCaseDataService.create(user, claim, event);
-            logger.info("\t\t claim created in ccd");
+            logger.info("claim created in ccd");
             migratedClaims.incrementAndGet();
         } catch (Exception e) {
             logger.info(e.getMessage(), e);
@@ -171,9 +216,11 @@ public class ClaimMigrator {
     }
 
     private boolean eventNeedToBePerformedOnClaim(CaseEvent event, Claim claim, String state) {
+        if (StringUtils.isBlank(state) || !state.equals(OPEN_STATE)) {
+            return false;
+        }
+
         switch (event) {
-            case SUBMIT_POST_PAYMENT:
-                return (StringUtils.isBlank(state) || state.equals("onhold")) && claim.getCreatedAt() != null;
             case LINK_DEFENDANT:
                 return StringUtils.isNotBlank(claim.getDefendantId());
             case MORE_TIME_REQUESTED_ONLINE:
@@ -195,16 +242,12 @@ public class ClaimMigrator {
                 return claim.getRespondedAt() != null
                     && claim.getResponse().isPresent()
                     && claim.getResponse().get().getResponseType() == ResponseType.FULL_DEFENCE
-                    && ((FullDefenceResponse) claim.getResponse().get()).getDefenceType() == DefenceType.ALREADY_PAID;
+                    && ((FullDefenceResponse) claim.getResponse().get()).getDefenceType() == ALREADY_PAID;
             case DIRECTIONS_QUESTIONNAIRE_DEADLINE:
                 return claim.getRespondedAt() != null
                     && claim.getResponse().isPresent()
                     && claim.getResponse().get().getResponseType().equals(ResponseType.FULL_DEFENCE)
                     && claim.getResponse().get().getFreeMediation().filter(Predicate.isEqual(NO)).isPresent();
-            case OFFER_MADE_BY_CLAIMANT:
-                return claim.getSettlement().isPresent()
-                    && claim.getSettlement().get().getLastStatementOfType(StatementType.OFFER)
-                    .getMadeBy() == MadeBy.CLAIMANT;
             case OFFER_MADE_BY_DEFENDANT:
                 return claim.getSettlement().isPresent()
                     && claim.getSettlement().get().getLastStatementOfType(StatementType.OFFER)
@@ -297,6 +340,7 @@ public class ClaimMigrator {
             default:
                 return false;
         }
+
     }
 
 }

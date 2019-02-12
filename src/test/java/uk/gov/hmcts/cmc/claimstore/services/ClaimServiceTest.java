@@ -181,8 +181,6 @@ public class ClaimServiceTest {
         when(responseDeadlineCalculator.calculateResponseDeadline(eq(ISSUE_DATE))).thenReturn(RESPONSE_DEADLINE);
         when(caseRepository.getOnHoldIdByExternalId(anyString(), eq(AUTHORISATION)))
             .thenReturn(Long.valueOf(1));
-        when(caseRepository.getClaimByExternalId(anyString(), eq(AUTHORISATION)))
-            .thenReturn(Optional.of(claim));
         when(caseRepository.saveClaim(eq(AUTHORISATION), any())).thenReturn(claim);
 
         Claim createdClaim = claimService.saveClaim(USER_ID, claimData, AUTHORISATION, singletonList("admissions"));
