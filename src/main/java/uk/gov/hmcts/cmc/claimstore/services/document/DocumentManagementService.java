@@ -60,7 +60,7 @@ public class DocumentManagementService {
         this.appInsights = appInsights;
     }
 
-    public URI uploadDocument(String authorisation, PDF document) throws DocumentManagementException {
+    public URI uploadDocument(String authorisation, PDF document) {
         return uploadDocument(authorisation, document.getFilename(), document.getBytes(), PDF.CONTENT_TYPE);
     }
 
@@ -69,7 +69,7 @@ public class DocumentManagementService {
         String originalFileName,
         byte[] documentBytes,
         String contentType
-    ) throws DocumentManagementException {
+    ) {
         try {
             MultipartFile file = new InMemoryMultipartFile(FILES_NAME, originalFileName, contentType, documentBytes);
             UploadResponse response = documentUploadClient.upload(
@@ -92,8 +92,7 @@ public class DocumentManagementService {
         }
     }
 
-    public byte[] downloadDocument(String authorisation, URI documentSelf, String baseFileName)
-        throws DocumentManagementException {
+    public byte[] downloadDocument(String authorisation, URI documentSelf, String baseFileName) {
         try {
             Document documentMetadata = documentMetadataDownloadClient.getDocumentMetadata(
                 authorisation,
