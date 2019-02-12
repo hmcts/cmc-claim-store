@@ -38,6 +38,7 @@ public class PartAdmissionResponseContentProvider {
     }
 
     public Map<String, Object> createContent(PartAdmissionResponse partAdmissionResponse) {
+
         Map<String, Object> content = new HashMap<>();
 
         List<TimelineEvent> events = null;
