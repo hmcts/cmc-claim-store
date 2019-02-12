@@ -38,7 +38,6 @@ public class PartAdmissionResponseContentProvider {
     }
 
     public Map<String, Object> createContent(PartAdmissionResponse partAdmissionResponse) {
-
         Map<String, Object> content = new HashMap<>();
 
         List<TimelineEvent> events = null;
@@ -82,6 +81,7 @@ public class PartAdmissionResponseContentProvider {
         content.put("evidences", evidences);
         content.put("evidenceComment", evidenceComment);
 
+        content.put("paymentIntentionIsPresent", partAdmissionResponse.getPaymentIntention().isPresent());
         partAdmissionResponse.getPaymentIntention().ifPresent(
             paymentIntention ->
                 content.putAll(paymentIntentionContentProvider.createContent(
