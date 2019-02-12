@@ -60,7 +60,7 @@ public class DocumentManagementService {
         this.appInsights = appInsights;
     }
 
-    public URI uploadDocument(String authorisation, PDF document) {
+    public URI uploadDocument(String authorisation, PDF document) throws DocumentManagementException {
         return uploadDocument(authorisation, document.getFilename(), document.getBytes(), PDF.CONTENT_TYPE);
     }
 
