@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -21,6 +23,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseStatesPaid;
 
 @Service
 public class NotificationToDefendantService {
@@ -46,6 +49,25 @@ public class NotificationToDefendantService {
             parameters,
             referenceForDefendant(claim.getReferenceNumber())
         );
+    }
+
+    public void notifyDefendantOfRejection(Claim claim) {
+        Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
+
+        if (isResponseStatesPaid(response) || response.getResponseType() == ResponseType.PART_ADMISSION) {
+            Map<String, String> parameters = aggregateParams(claim);
+            parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
+            sendNotificationEmail(
+                claim.getDefendantEmail(),
+                notificationsProperties.getTemplates().getEmail()
+                    .getClaimantRejectedPartAdmitOrStatesPaidEmailToDefendant(),
+                parameters,
+                referenceForDefendant(claim.getReferenceNumber())
+            );
+        } else {
+            notifyDefendant(claim);
+        }
+
     }
 
     public void notifyDefendantWhenInterlocutoryJudgementRequested(Claim claim) {
