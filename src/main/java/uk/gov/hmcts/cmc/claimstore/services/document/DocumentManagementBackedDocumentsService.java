@@ -94,9 +94,10 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         return claimService.getClaimByExternalId(externalId, authorisation);
     }
 
-    private DocumentDetails uploadToDocumentManagement(byte[] documentBytes,
-                                                       String authorisation,
-                                                       String baseFileName) {
+    private DocumentDetails uploadToDocumentManagement(
+        byte[] documentBytes,
+        String authorisation,
+        String baseFileName) {
         PDF document = new PDF(baseFileName, documentBytes);
         URI documentSelfPath = documentManagementService.uploadDocument(authorisation, document);
         return new DocumentDetails() {
