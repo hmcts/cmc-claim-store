@@ -179,24 +179,23 @@ public class ClaimServiceTest {
         when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(claimantDetails);
         when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(ISSUE_DATE);
         when(responseDeadlineCalculator.calculateResponseDeadline(eq(ISSUE_DATE))).thenReturn(RESPONSE_DEADLINE);
-        when(caseRepository.getOnHoldIdByExternalId(anyString(), eq(AUTHORISATION)))
-            .thenReturn(Long.valueOf(1));
         when(caseRepository.saveClaim(eq(AUTHORISATION), any())).thenReturn(claim);
 
         Claim createdClaim = claimService.saveClaim(USER_ID, claimData, AUTHORISATION, singletonList("admissions"));
 
         assertThat(createdClaim.getClaimData()).isEqualTo(claim.getClaimData());
 
+        verify(caseRepository, once()).saveClaim(any(String.class), any(Claim.class));
         verify(eventProducer, once()).createClaimIssuedEvent(eq(createdClaim), eq(null),
             anyString(), eq(AUTHORISATION));
+
+        verify(ccdEventProducer, once()).createCCDClaimIssuedEvent(eq(createdClaim), eq(AUTHORISATION));
     }
 
     @Test
     public void saveClaimShouldProceedWhenDuplicated() {
         ClaimData claimData = SampleClaimData.validDefaults();
         when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(claimantDetails);
-        when(caseRepository.getOnHoldIdByExternalId(anyString(), eq(AUTHORISATION)))
-            .thenThrow(new ConflictException("Duplicate claim for external id " + claimData.getExternalId()));
         when(caseRepository.getClaimByExternalId(anyString(), eq(AUTHORISATION)))
             .thenReturn(Optional.of(claim));
 

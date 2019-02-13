@@ -2,8 +2,7 @@ package uk.gov.hmcts.cmc.ccd.domain;
 
 public enum CaseEvent {
 
-    SUBMIT_PRE_PAYMENT("SubmitPrePayment"),
-    SUBMIT_POST_PAYMENT("SubmitPostPayment"),
+    CREATE_NEW_CASE("IssueClaim"),
     DEFAULT_CCJ_REQUESTED("DefaultCCJRequested"),
     DISPUTE("DisputesAll"),
     ALREADY_PAID("StatesPaid"),

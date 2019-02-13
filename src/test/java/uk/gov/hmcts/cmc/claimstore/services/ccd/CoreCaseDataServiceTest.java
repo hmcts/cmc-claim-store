@@ -11,7 +11,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
-import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
@@ -27,7 +26,6 @@ import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
-import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
@@ -163,57 +161,23 @@ public class CoreCaseDataServiceTest {
     }
 
     @Test
-    public void savePrePaymentShouldReturnReferenceNumber() {
-        when(coreCaseDataApi.submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
-        ))
-            .thenReturn(CaseDetails.builder().id(SampleClaim.CLAIM_ID).build());
-
-        CaseReference reference = service.savePrePayment(EXTERNAL_ID, AUTHORISATION);
-
-        verify(coreCaseDataApi).submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
-        );
-
-        assertNotNull(reference);
-        assertEquals(SampleClaim.CLAIM_ID.toString(), reference.getCaseReference());
-    }
-
-    @Test(expected = CoreCaseDataStoreException.class)
-    public void shouldThrowCCDExceptionWhenSubmitFails() {
-        when(coreCaseDataApi.submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
-        ))
-            .thenThrow(new RuntimeException("Any runtime exception"));
-
-        CaseReference reference = service.savePrePayment(EXTERNAL_ID, AUTHORISATION);
-
-        assertNotNull(reference);
-        assertEquals(SampleClaim.CLAIM_ID.toString(), reference.getCaseReference());
-    }
-
-    @Test
     public void submitPostPaymentShouldReturnClaim() {
         Claim providedClaim = SampleClaim.getDefault();
-        Claim expectedClaim = SampleClaim.claim(null, "000MC001");
+        Claim expectedClaim = SampleClaim.claim(providedClaim.getClaimData(), "000MC001");
+
+        when(coreCaseDataApi.submitForCitizen(
+            eq(AUTHORISATION),
+            eq(AUTH_TOKEN),
+            eq(USER_DETAILS.getId()),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(true),
+            any(CaseDataContent.class)
+        ))
+            .thenReturn(CaseDetails.builder()
+                .id(SampleClaim.CLAIM_ID)
+                .data(new HashMap<>())
+                .build());
 
         when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
         when(jsonMapper.fromMap(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
