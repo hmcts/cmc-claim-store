@@ -39,7 +39,6 @@ public class SettlementMapper {
             return null;
         }
 
-
         Settlement settlement = new Settlement();
         ccdDefendant.getSettlementPartyStatements().stream()
             .map(partyStatementMapper::from)
