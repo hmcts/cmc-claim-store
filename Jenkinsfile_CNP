@@ -31,11 +31,11 @@ List<LinkedHashMap<String, Object>> secrets = [
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
-  [ $class: 'AzureKeyVaultSecret',
-    secretType: 'Secret',
-    name: secretName,
-    version: '',
-    envVariable: envVar
+  [$class     : 'AzureKeyVaultSecret',
+   secretType : 'Secret',
+   name       : secretName,
+   version    : '',
+   envVariable: envVar
   ]
 }
 
@@ -50,7 +50,7 @@ withPipeline("java", product, component) {
   afterCheckout {
     onMaster {
       try {
-       sh """
+        sh """
           git fetch origin demo:demo
           git push --force origin HEAD:demo
         """
@@ -60,7 +60,23 @@ withPipeline("java", product, component) {
     }
   }
 
+// prod configuration
+
 //  env.IDAM_API_URL = 'https://idam-api.platform.hmcts.net'
+//  env.IDAM_S2S_AUTH_URL = 'http://rpe-service-auth-provider-prod.service.core-compute-prod.internal'
+//  env.CORE_CASE_DATA_API_URL = 'http://ccd-data-store-api-prod.service.core-compute-prod.internal'
+//  env.CLAIM_STORE_DB_HOST = 'prod-data-lb.moneyclaim.reform.hmcts.net'
+//  env.CLAIM_STORE_DB_PORT = '5432'
+//  env.CLAIM_STORE_DB_NAME = 'claimstore'
+//  env.CLAIM_STORE_DB_USERNAME = 'claimstore'
+//
+//  after('smoketest:prod') {
+//    sh './gradlew :ccd-claim-migration:assemble migrateClaims -Djava.util.concurrent.ForkJoinPool.common.parallelism=10'
+//  }
+  
+// aat configuration
+
+//env.IDAM_API_URL = 'https://preprod-idamapi.reform.hmcts.net:3511'
 //  env.IDAM_S2S_AUTH_URL = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
 //  env.CORE_CASE_DATA_API_URL = 'http://ccd-data-store-api-aat.service.core-compute-aat.internal'
 //  env.CLAIM_STORE_DB_HOST = 'preprod-data-lb.moneyclaim.reform.hmcts.net'
