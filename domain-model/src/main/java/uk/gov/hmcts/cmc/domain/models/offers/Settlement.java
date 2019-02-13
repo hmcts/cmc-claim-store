@@ -20,6 +20,10 @@ public class Settlement {
 
     public void makeOffer(Offer offer, MadeBy party, String partyStatementId) {
         assertOfferCanBeMadeBy(party);
+        addOffer(offer, party, partyStatementId);
+    }
+
+    public void addOffer(Offer offer, MadeBy party, String partyStatementId) {
         partyStatements.add(PartyStatement.builder().type(StatementType.OFFER)
             .id(partyStatementId)
             .madeBy(party)
