@@ -156,7 +156,7 @@ dependencies {
 
   compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
 
-  compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.13.0-RELEASE'
+  compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.14.0-RELEASE'
 
   compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformJavaLogging
   compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: versions.reformJavaLogging
@@ -166,7 +166,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '4.0.2'
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '2.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.2.0'
-  compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.1.2'
+  compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.2.0'
 
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
 
@@ -178,8 +178,8 @@ dependencies {
 
   compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '10.0.1'
 
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.4'
-  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.2'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.6'
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.6'
 
   testCompile project(':domain-sample-data')
   testCompile project(path: ":ccd-adapter", configuration: 'testArtifacts')
