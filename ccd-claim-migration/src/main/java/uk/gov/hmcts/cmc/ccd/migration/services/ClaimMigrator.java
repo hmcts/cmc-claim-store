@@ -6,8 +6,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.CoreCaseDataService;
-import uk.gov.hmcts.cmc.ccd.migration.idam.models.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.idam.services.UserService;
 import uk.gov.hmcts.cmc.ccd.migration.repositories.ClaimRepository;
@@ -248,10 +248,6 @@ public class ClaimMigrator {
                     && claim.getResponse().isPresent()
                     && claim.getResponse().get().getResponseType().equals(ResponseType.FULL_DEFENCE)
                     && claim.getResponse().get().getFreeMediation().filter(Predicate.isEqual(NO)).isPresent();
-            case OFFER_MADE_BY_CLAIMANT:
-                return claim.getSettlement().isPresent()
-                    && claim.getSettlement().get().getLastStatementOfType(StatementType.OFFER)
-                    .getMadeBy() == MadeBy.CLAIMANT;
             case OFFER_MADE_BY_DEFENDANT:
                 return claim.getSettlement().isPresent()
                     && claim.getSettlement().get().getLastStatementOfType(StatementType.OFFER)
