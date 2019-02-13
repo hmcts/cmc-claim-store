@@ -91,20 +91,45 @@ where event.id = subquery.id;
 -- settlements
 
 WITH subquery AS (
-WITH dataquery AS (
-SELECT
-case_data.id,
-case_data.jurisdiction,
-defendants -> 'value' as value
-FROM case_data , jsonb_array_elements(case_data.data::JSONB -> 'defendants') defendants
+      WITH dataquery AS (
+          SELECT
+          case_data.id,
+          case_data.jurisdiction,
+          defendants -> 'value' as value
+          FROM case_data , jsonb_array_elements(case_data.data::JSONB -> 'defendants') defendants
+      )
+      select event.id ,
+      event.created_date,
+      json_extract_path_text(data.value::JSON, 'settlementReachedAt') as date
+      from dataquery data, case_event event
+      where event.case_data_id = data.id and data.jurisdiction='CMC'
+      and (event.event_id = 'OfferCounterSignedByDefendant'
+      or event.event_id = 'AgreementCounterSignedByDefendant')
 )
-select event.id ,
-event.created_date,
-json_extract_path_text(data.value::JSON, 'settlementReachedAt') as date
-from dataquery data, case_event event
-where event.case_data_id = data.id and data.jurisdiction='CMC'
-and (event.event_id = 'OfferCounterSignedByDefendant'
-or event.event_id = 'AgreementCounterSignedByDefendant')
+update case_event event
+set
+  created_date = subquery.date::timestamp
+from subquery
+where event.id = subquery.id
+  and subquery.date is not null;
+
+-- re-determination
+
+WITH subquery AS (
+     WITH dataquery AS (
+        SELECT
+        case_data.id,
+        case_data.jurisdiction,
+        defendants -> 'value' as value
+        FROM case_data , jsonb_array_elements(case_data.data::JSONB -> 'defendants') defendants
+      )
+      select event.id ,
+      event.created_date,
+      json_extract_path_text(data.value::JSON, 'reDeterminationRequestedAt') as date
+      from dataquery data, case_event event
+      where event.case_data_id = data.id and data.jurisdiction='CMC'
+      and (event.event_id = 'ReferToJudgeByClaimant'
+      or event.event_id = 'ReferToJudgeByDefendant')
 )
 update case_event event
 set
