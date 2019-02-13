@@ -49,7 +49,7 @@ public class SettlementMapper {
     }
 
     private void addPartyStatement(PartyStatement partyStatement, Settlement settlement) {
-        if (StatementType.OFFER.equals(partyStatement.getType())) {
+        if (partyStatement.getType() == StatementType.OFFER) {
             settlement.addOffer(
                 partyStatement.getOffer().orElse(null),
                 partyStatement.getMadeBy(),
@@ -57,15 +57,15 @@ public class SettlementMapper {
             );
         }
 
-        if (StatementType.REJECTION.equals(partyStatement.getType())) {
+        if (partyStatement.getType() == StatementType.REJECTION) {
             settlement.reject(partyStatement.getMadeBy(), partyStatement.getId());
         }
 
-        if (StatementType.ACCEPTATION.equals(partyStatement.getType())) {
+        if (partyStatement.getType() == StatementType.ACCEPTATION) {
             settlement.accept(partyStatement.getMadeBy(), partyStatement.getId());
         }
 
-        if (StatementType.COUNTERSIGNATURE.equals(partyStatement.getType())) {
+        if (partyStatement.getType() == StatementType.COUNTERSIGNATURE) {
             settlement.countersign(partyStatement.getMadeBy(), partyStatement.getId());
         }
     }
