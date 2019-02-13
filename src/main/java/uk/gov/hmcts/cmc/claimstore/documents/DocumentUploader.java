@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.documents;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
@@ -16,7 +18,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.isSealedClaim;
 @Component
 @ConditionalOnProperty(prefix = "document_management", name = "url")
 public class DocumentUploader {
-
+    private static final Logger logger = LoggerFactory.getLogger(DocumentUploader.class);
     private final DocumentManagementService documentManagementService;
     private final ClaimService claimService;
 
@@ -30,15 +32,20 @@ public class DocumentUploader {
     @EventListener
     public void uploadIntoDocumentManagementStore(DocumentGeneratedEvent event) {
         event.getDocuments().forEach(document -> {
-            URI documentUri = this.documentManagementService.uploadDocument(
-                event.getAuthorisation(),
-                document.getFilename(),
-                document.getBytes(),
-                PDF.CONTENT_TYPE
-            );
+            try {
+                URI documentUri = this.documentManagementService.uploadDocument(
+                    event.getAuthorisation(),
+                    document.getFilename(),
+                    document.getBytes(),
+                    PDF.CONTENT_TYPE
+                );
 
-            if (isSealedClaim(document.getFilename())) {
-                claimService.linkSealedClaimDocument(event.getAuthorisation(), event.getClaim(), documentUri);
+                if (isSealedClaim(document.getFilename())) {
+                    claimService.linkSealedClaimDocument(event.getAuthorisation(), event.getClaim(), documentUri);
+                }
+            } catch (Exception ex) {
+                logger.warn(String.format("unable to upload document %s into document management",
+                    document.getFilename()), ex);
             }
         });
     }
