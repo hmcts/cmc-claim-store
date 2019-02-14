@@ -4,13 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDBankAccount;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDChildCategory;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDCourtOrder;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDebt;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDEmployer;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpense;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncome;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.ccd.mapper.Mapper;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
@@ -54,6 +48,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
     private final EmployerMapper employerMapper;
     private final ChildCategoryMapper childCategoryMapper;
     private final LivingPartnerMapper livingPartnerMapper;
+    private final PriorityDebtMapper priorityDebtMapper;
 
     @Autowired
     @SuppressWarnings("squid:S00107")
@@ -65,7 +60,8 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
         CourtOrderMapper courtOrderMapper,
         EmployerMapper employerMapper,
         ChildCategoryMapper childCategoryMapper,
-        LivingPartnerMapper livingPartnerMapper
+        LivingPartnerMapper livingPartnerMapper,
+        PriorityDebtMapper priorityDebtMapper
     ) {
         this.bankAccountMapper = bankAccountMapper;
         this.debtMapper = debtMapper;
@@ -75,6 +71,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
         this.employerMapper = employerMapper;
         this.childCategoryMapper = childCategoryMapper;
         this.livingPartnerMapper = livingPartnerMapper;
+        this.priorityDebtMapper = priorityDebtMapper;
     }
 
     @Override
@@ -93,7 +90,6 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
             asStream(statementOfMeans.getBankAccounts())
                 .map(bankAccountMapper::to)
                 .filter(Objects::nonNull)
-                .map(bankAccount -> CCDCollectionElement.<CCDBankAccount>builder().value(bankAccount).build())
                 .collect(Collectors.toList()));
 
         builder.debts(
@@ -101,7 +97,6 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
                 .stream()
                 .map(debtMapper::to)
                 .filter(Objects::nonNull)
-                .map(debt -> CCDCollectionElement.<CCDDebt>builder().value(debt).build())
                 .collect(Collectors.toList())
         );
 
@@ -109,7 +104,6 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
             .stream()
             .map(incomeMapper::to)
             .filter(Objects::nonNull)
-            .map(income -> CCDCollectionElement.<CCDIncome>builder().value(income).build())
             .collect(Collectors.toList())
         );
 
@@ -118,7 +112,6 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
                 .stream()
                 .map(expenseMapper::to)
                 .filter(Objects::nonNull)
-                .map(expense -> CCDCollectionElement.<CCDExpense>builder().value(expense).build())
                 .collect(Collectors.toList())
         );
 
@@ -127,15 +120,14 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
                 .stream()
                 .map(courtOrderMapper::to)
                 .filter(Objects::nonNull)
-                .map(courtOrder -> CCDCollectionElement.<CCDCourtOrder>builder().value(courtOrder).build())
                 .collect(Collectors.toList())
         );
 
         builder.priorityDebts(
             statementOfMeans.getPriorityDebts()
                 .stream()
+                .map(priorityDebtMapper::to)
                 .filter(Objects::nonNull)
-                .map(priorityDebt -> CCDCollectionElement.<PriorityDebt>builder().value(priorityDebt).build())
                 .collect(Collectors.toList())
         );
 
@@ -157,7 +149,6 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
                 asStream(employment.getEmployers())
                     .map(employerMapper::to)
                     .filter(Objects::nonNull)
-                    .map(employer -> CCDCollectionElement.<CCDEmployer>builder().value(employer).build())
                     .collect(Collectors.toList()));
         };
     }
@@ -200,7 +191,6 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
                 asStream(dependant.getChildren())
                     .map(childCategoryMapper::to)
                     .filter(Objects::nonNull)
-                    .map(childCategory -> CCDCollectionElement.<CCDChildCategory>builder().value(childCategory).build())
                     .collect(Collectors.toList())
             );
         };
@@ -213,37 +203,32 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
         }
 
         List<BankAccount> bankAccounts = asStream(ccdStatementOfMeans.getBankAccounts())
-            .map(CCDCollectionElement::getValue)
-            .filter(Objects::nonNull)
             .map(bankAccountMapper::from)
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
         List<Debt> debts = asStream(ccdStatementOfMeans.getDebts())
-            .map(CCDCollectionElement::getValue)
-            .filter(Objects::nonNull)
             .map(debtMapper::from)
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
         List<Income> incomes = asStream(ccdStatementOfMeans.getIncomes())
-            .map(CCDCollectionElement::getValue)
-            .filter(Objects::nonNull)
             .map(incomeMapper::from)
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
         List<Expense> expenses = asStream(ccdStatementOfMeans.getExpenses())
-            .map(CCDCollectionElement::getValue)
-            .filter(Objects::nonNull)
             .map(expenseMapper::from)
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
         List<CourtOrder> courtOrders = asStream(ccdStatementOfMeans.getCourtOrders())
-            .map(CCDCollectionElement::getValue)
-            .filter(Objects::nonNull)
             .map(courtOrderMapper::from)
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
         List<PriorityDebt> priorityDebts = asStream(ccdStatementOfMeans.getPriorityDebts())
-            .map(CCDCollectionElement::getValue)
+            .map(priorityDebtMapper::from)
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
@@ -267,9 +252,8 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
     private Employment extractEmployment(CCDStatementOfMeans ccdStatementOfMeans) {
 
         List<Employer> employers = asStream(ccdStatementOfMeans.getEmployers())
-            .map(CCDCollectionElement::getValue)
-            .filter(Objects::nonNull)
             .map(employerMapper::from)
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
         return Employment.builder()
@@ -346,7 +330,6 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
 
     private List<Child> extractChildren(List<CCDCollectionElement<CCDChildCategory>> dependantChildren) {
         return asStream(dependantChildren)
-            .map(CCDCollectionElement::getValue)
             .filter(Objects::nonNull)
             .map(childCategoryMapper::from)
             .collect(Collectors.toList());

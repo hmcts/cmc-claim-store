@@ -76,9 +76,9 @@ public class MinTotalAmountValidatorTest {
 
     private AmountRow rowWithAmount(String amountString) {
         if (amountString != null) {
-            return new AmountRow("Any reason", new BigDecimal(amountString));
+            return AmountRow.builder().reason("Any reason").amount(new BigDecimal(amountString)).build();
         } else {
-            return new AmountRow("Any reason", null);
+            return AmountRow.builder().reason("Any reason").amount(null).build();
         }
     }
 

@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import javax.sql.DataSource;
 
 import static org.springframework.test.context.TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @DirtiesContext
@@ -77,6 +78,13 @@ public abstract class BaseIntegrationTest extends MockSpringTest {
             "page", "1",
             "sortDirection", "desc",
             "case.externalId", externalId
+        );
+    }
+
+    protected ResultActions makeGetRequest(String urlTemplate) throws Exception {
+        return webClient.perform(
+            get(urlTemplate)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
         );
     }
 }

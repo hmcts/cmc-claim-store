@@ -7,12 +7,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceType;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
-import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceType;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.domain.models.evidence.EvidenceType.CORRESPONDENCE;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -25,27 +27,27 @@ public class EvidenceRowMapperTest {
     @Test
     public void shouldMapEvidenceRowToCCD() {
         //given
-        EvidenceRow evidenceRow = new EvidenceRow(EvidenceType.CORRESPONDENCE, "description");
+        EvidenceRow evidenceRow = EvidenceRow.builder().type(CORRESPONDENCE).description("description").build();
 
         //when
-        CCDEvidenceRow ccdEvidenceRow = mapper.to(evidenceRow);
+        CCDCollectionElement<CCDEvidenceRow> ccdEvidenceRow = mapper.to(evidenceRow);
 
         //then
-        assertThat(evidenceRow).isEqualTo(ccdEvidenceRow);
-
+        assertThat(evidenceRow).isEqualTo(ccdEvidenceRow.getValue());
+        assertThat(evidenceRow.getId()).isEqualTo(ccdEvidenceRow.getId());
     }
 
     @Test
     public void shouldMapEvidenceRowToCCDWhenNoDescriptionProvided() {
         //given
-        EvidenceRow evidenceRow = new EvidenceRow(EvidenceType.CORRESPONDENCE, null);
+        EvidenceRow evidenceRow = EvidenceRow.builder().type(CORRESPONDENCE).description(null).build();
 
         //when
-        CCDEvidenceRow ccdEvidenceRow = mapper.to(evidenceRow);
+        CCDCollectionElement<CCDEvidenceRow> ccdEvidenceRow = mapper.to(evidenceRow);
 
         //then
-        assertThat(evidenceRow).isEqualTo(ccdEvidenceRow);
-
+        assertThat(evidenceRow).isEqualTo(ccdEvidenceRow.getValue());
+        assertThat(evidenceRow.getId()).isEqualTo(ccdEvidenceRow.getId());
     }
 
     @Test
@@ -57,7 +59,8 @@ public class EvidenceRowMapperTest {
             .build();
 
         //when
-        EvidenceRow evidenceRow = mapper.from(ccdEvidenceRow);
+        EvidenceRow evidenceRow = mapper.from(CCDCollectionElement.<CCDEvidenceRow>builder()
+            .value(ccdEvidenceRow).build());
 
         //then
         assertThat(evidenceRow).isEqualTo(ccdEvidenceRow);
@@ -71,7 +74,8 @@ public class EvidenceRowMapperTest {
             .build();
 
         //when
-        EvidenceRow evidenceRow = mapper.from(ccdEvidenceRow);
+        EvidenceRow evidenceRow = mapper.from(CCDCollectionElement.<CCDEvidenceRow>builder()
+            .value(ccdEvidenceRow).build());
 
         //then
         assertThat(evidenceRow).isEqualTo(ccdEvidenceRow);

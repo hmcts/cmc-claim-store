@@ -13,7 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.net.URI;
-import java.util.function.Supplier;
+import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 
@@ -57,7 +57,22 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     @Override
     public byte[] getSealedClaim(String externalId, String authorisation) {
         Claim claim = getClaimByExternalId(externalId, authorisation);
-        return downloadOrGenerateAndUpload(claim, () -> sealedClaimPdfService.createPdf(claim), authorisation);
+        final String baseFileName = buildSealedClaimFileBaseName(claim.getReferenceNumber());
+        Optional<URI> sealedClaimDocumentUri = claim.getSealedClaimDocument();
+        try {
+            if (sealedClaimDocumentUri.isPresent()) {
+                URI documentSelfPath = sealedClaimDocumentUri.get();
+                return documentManagementService.downloadDocument(authorisation, documentSelfPath, baseFileName);
+            } else {
+                DocumentDetails documentDetails = uploadToDocumentManagement(sealedClaimPdfService.createPdf(claim),
+                    authorisation,
+                    baseFileName);
+                claimService.linkSealedClaimDocument(authorisation, claim, documentDetails.getDocumentSelfPath());
+                return documentDetails.getDocument().getBytes();
+            }
+        } catch (Exception ex) {
+            return sealedClaimPdfService.createPdf(claim);
+        }
     }
 
     @Override
@@ -79,18 +94,28 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         return claimService.getClaimByExternalId(externalId, authorisation);
     }
 
-    @SuppressWarnings("squid:S3655")
-    private byte[] downloadOrGenerateAndUpload(Claim claim, Supplier<byte[]> documentSupplier, String authorisation) {
-        if (claim.getSealedClaimDocument().isPresent()) {
-            URI documentSelfPath = claim.getSealedClaimDocument().get();
-            return documentManagementService.downloadDocument(authorisation, documentSelfPath);
-        } else {
-            PDF document = new PDF(buildSealedClaimFileBaseName(claim.getReferenceNumber()), documentSupplier.get());
+    private DocumentDetails uploadToDocumentManagement(
+        byte[] documentBytes,
+        String authorisation,
+        String baseFileName) {
+        PDF document = new PDF(baseFileName, documentBytes);
+        URI documentSelfPath = documentManagementService.uploadDocument(authorisation, document);
+        return new DocumentDetails() {
+            @Override
+            public URI getDocumentSelfPath() {
+                return documentSelfPath;
+            }
 
-            URI documentSelfPath = documentManagementService.uploadDocument(authorisation, document);
-            claimService.linkSealedClaimDocument(authorisation, claim, documentSelfPath);
+            @Override
+            public PDF getDocument() {
+                return document;
+            }
+        };
+    }
 
-            return document.getBytes();
-        }
+    private interface DocumentDetails {
+        URI getDocumentSelfPath();
+
+        PDF getDocument();
     }
 }

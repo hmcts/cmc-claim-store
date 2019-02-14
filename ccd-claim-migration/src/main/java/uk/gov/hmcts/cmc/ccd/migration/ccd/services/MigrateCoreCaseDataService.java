@@ -61,8 +61,8 @@ public class MigrateCoreCaseDataService {
             .event(
                 Event.builder()
                     .id(startEventResponse.getEventId())
-                    .summary("Migrating case")
-                    .description("Migrating case - overwriting existing record")
+                    .summary("CMC case update")
+                    .description("Submitting CMC case update")
                     .build()
             ).data(ccdCase)
             .build();
@@ -84,10 +84,11 @@ public class MigrateCoreCaseDataService {
             .event(
                 Event.builder()
                     .id(startEventResponse.getEventId())
-                    .summary("Migrating case")
-                    .description("Migrating case - create new record")
+                    .summary("CMC case submission event")
+                    .description("Submitting CMC pre-payment case")
                     .build()
-            ).data(ccdCase)
+            )
+            .data(ccdCase)
             .build();
 
         CaseDetails caseDetails = submit(authorisation, eventRequestData, caseDataContent);
