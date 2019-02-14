@@ -27,7 +27,7 @@ public class ClaimantResponseActionsHandler {
     @EventListener
     public void sendNotificationToDefendant(ClaimantResponseEvent event) {
         ClaimantResponse claimantResponse =
-            event.getClaim().getClaimantResponse().orElseThrow(IllegalArgumentException::new);
+            event.getClaim().getClaimantResponse().orElseThrow(IllegalStateException::new);
 
         if (claimantResponse.getType() == ClaimantResponseType.REJECTION) {
             this.notificationService.notifyDefendantOfRejection(event.getClaim());
