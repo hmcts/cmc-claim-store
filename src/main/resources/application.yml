@@ -139,6 +139,7 @@ feature_toggles:
 feign:
   httpclient:
     enabled: true
+    disableSslValidation: true
 
 claim-store:
   test-support:
