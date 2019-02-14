@@ -1,9 +1,13 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 
+import java.time.LocalDate;
+
+import static java.time.format.DateTimeFormatter.ISO_DATE;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Component
@@ -19,8 +23,11 @@ public class PaymentMapper implements BuilderMapper<CCDCase, Payment, CCDCase.CC
             .paymentAmount(payment.getAmount())
             .paymentId(payment.getId())
             .paymentReference(payment.getReference())
-            .paymentDateCreated(payment.getDateCreated())
             .paymentStatus(payment.getStatus());
+
+        if (StringUtils.isNotBlank(payment.getDateCreated())) {
+            builder.paymentDateCreated(LocalDate.parse(payment.getDateCreated(), ISO_DATE));
+        }
     }
 
     @Override
@@ -28,7 +35,7 @@ public class PaymentMapper implements BuilderMapper<CCDCase, Payment, CCDCase.CC
         if (isBlank(ccdCase.getPaymentId())
             && ccdCase.getPaymentAmount() == null
             && isBlank(ccdCase.getPaymentReference())
-            && isBlank(ccdCase.getPaymentDateCreated())
+            && ccdCase.getPaymentDateCreated() == null
             && isBlank(ccdCase.getPaymentStatus())
         ) {
             return null;
@@ -38,7 +45,7 @@ public class PaymentMapper implements BuilderMapper<CCDCase, Payment, CCDCase.CC
             ccdCase.getPaymentId(),
             ccdCase.getPaymentAmount(),
             ccdCase.getPaymentReference(),
-            ccdCase.getPaymentDateCreated(),
+            ccdCase.getPaymentDateCreated() != null ? ccdCase.getPaymentDateCreated().format(ISO_DATE) : null,
             ccdCase.getPaymentStatus()
         );
     }
