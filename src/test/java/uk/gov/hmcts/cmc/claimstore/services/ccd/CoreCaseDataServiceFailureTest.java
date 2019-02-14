@@ -56,7 +56,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCATORY_JUDGEMENT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCUTORY_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_CLAIMANT;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
@@ -558,7 +558,7 @@ public class CoreCaseDataServiceFailureTest {
 
         when(jsonMapper.fromMap(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
 
-        service.saveCaseEvent(AUTHORISATION, claim.getId(), INTERLOCATORY_JUDGEMENT);
+        service.saveCaseEvent(AUTHORISATION, claim.getId(), INTERLOCUTORY_JUDGMENT);
     }
 
     @Test(expected = CoreCaseDataStoreException.class)

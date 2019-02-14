@@ -312,7 +312,7 @@ public class ClaimMigrator {
                     && claim.getSettlement().get().getLastStatement().getType() == StatementType.REJECTION
                     && claim.getSettlement().get().getLastStatement().getMadeBy() == MadeBy.DEFENDANT
                     && claim.getClaimantResponse().isPresent();
-            case INTERLOCATORY_JUDGEMENT:
+            case INTERLOCUTORY_JUDGMENT:
                 return claim.getClaimantResponse().isPresent()
                     && claim.getClaimantResponse().get().getType() == ClaimantResponseType.ACCEPTATION
                     && claim.getResponse().isPresent()
