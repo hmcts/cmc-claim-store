@@ -84,7 +84,7 @@ public class DocumentManagementServiceTest {
     @Test
     public void uploadDocumentToDocumentManagementThrowsException() {
         expectedException.expect(DocumentManagementException.class);
-        expectedException.expectMessage("Document management failed uploading file0000-claim.pdf");
+        expectedException.expectMessage("Unable to upload document 0000-claim.pdf to document management");
         UserDetails userDetails = new UserDetails("id", "mail@mail.com",
             "userFirstName", "userLastName", Collections.singletonList("role"));
         when(userService.getUserDetails(anyString())).thenReturn(userDetails);
@@ -107,8 +107,10 @@ public class DocumentManagementServiceTest {
         assertArrayEquals("test".getBytes(), pdf);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void downloadDocumentFromDocumentManagementThrowException() {
+        expectedException.expect(DocumentManagementException.class);
+        expectedException.expectMessage("Unable to download document 0000-claim from document management");
         URI docUri = URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4");
         when(documentMetadataDownloadClient.getDocumentMetadata(anyString(), anyString(), anyString(), anyString()))
             .thenReturn(null);
