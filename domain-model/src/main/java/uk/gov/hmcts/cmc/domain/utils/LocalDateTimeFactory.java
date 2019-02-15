@@ -35,7 +35,7 @@ public class LocalDateTimeFactory {
     public static LocalDate fromLong(Long input) {
         Date date = new Date(input);
         return Instant.ofEpochMilli(date.getTime())
-            .atZone(ZoneId.systemDefault())
+            .atZone(UTC_ZONE)
             .toLocalDate();
     }
 
