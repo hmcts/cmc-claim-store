@@ -95,6 +95,7 @@ public class ClaimMigrator {
                     migratedClaims.get(),
                     e.getMessage()
                 );
+                failedMigrations.incrementAndGet();
             }
         });
 
