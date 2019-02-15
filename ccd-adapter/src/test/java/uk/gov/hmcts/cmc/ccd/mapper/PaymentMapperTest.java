@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SamplePayment;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -56,6 +57,25 @@ public class PaymentMapperTest {
 
         //then
         assertThat(ccdCase.getPaymentDateCreated()).isNull();
+        assertThat(payment.getId()).isEqualTo(ccdCase.getPaymentId());
+        assertThat(payment.getAmount()).isEqualTo(ccdCase.getPaymentAmount());
+        assertThat(payment.getReference()).isEqualTo(ccdCase.getPaymentReference());
+        assertThat(payment.getStatus()).isEqualTo(ccdCase.getPaymentStatus());
+    }
+
+    @Test
+    public void shouldMapPaymentToCCDWhenLongCreatedDateProvided() {
+        //given
+        Payment payment = SamplePayment.builder().dateCreated("1511169381890").build();
+
+        //when
+        CCDCase.CCDCaseBuilder caseBuilder = CCDCase.builder();
+        mapper.to(payment, caseBuilder);
+        CCDCase ccdCase = caseBuilder.build();
+
+        //then
+        assertThat(LocalDateTimeFactory.fromLong(Long.valueOf(payment.getDateCreated())))
+            .isEqualTo(ccdCase.getPaymentDateCreated());
         assertThat(payment.getId()).isEqualTo(ccdCase.getPaymentId());
         assertThat(payment.getAmount()).isEqualTo(ccdCase.getPaymentAmount());
         assertThat(payment.getReference()).isEqualTo(ccdCase.getPaymentReference());
