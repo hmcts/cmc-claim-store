@@ -11,8 +11,10 @@ import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
 import uk.gov.hmcts.cmc.domain.models.amount.NotKnown;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
+import static java.time.format.DateTimeFormatter.ISO_DATE;
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -193,7 +195,9 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
                     failWithMessage("Expected CCDCase.paymentAmount to be <%s> but was <%s>",
                         ccdCase.getPaymentAmount(), payment.getAmount());
                 }
-                if (!Objects.equals(payment.getDateCreated(), ccdCase.getPaymentDateCreated())) {
+                if (!Objects.equals(LocalDate.parse(payment.getDateCreated(), ISO_DATE),
+                    ccdCase.getPaymentDateCreated())
+                ) {
                     failWithMessage("Expected CCDCase.paymentDateCreated to be <%s> but was <%s>",
                         ccdCase.getPaymentDateCreated(), payment.getDateCreated());
                 }
