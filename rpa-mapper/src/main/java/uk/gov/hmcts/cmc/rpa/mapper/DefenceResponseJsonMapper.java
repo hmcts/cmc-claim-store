@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.rpa.mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
@@ -100,8 +101,9 @@ public class DefenceResponseJsonMapper {
                 return extractFromSubclass(response, FullDefenceResponse.class,
                     fullDefenceResponse -> fullDefenceResponse.getDefenceType().name());
             case FULL_ADMISSION:
-            case PART_ADMISSION:
                 return response.getResponseType().name();
+            case PART_ADMISSION:
+                return deriveResponseTypeName((PartAdmissionResponse)response);
             default:
                 throw new IllegalArgumentException("Invalid response type: " + response.getResponseType());
         }
@@ -116,5 +118,11 @@ public class DefenceResponseJsonMapper {
             }
         }
         return false;
+    }
+
+    private String deriveResponseTypeName(PartAdmissionResponse response) {
+        return response.getPaymentDeclaration().map(PaymentDeclaration::getPaidDate).isPresent()
+            ? DefenceType.ALREADY_PAID.name()
+            : response.getResponseType().name();
     }
 }
