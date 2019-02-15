@@ -19,13 +19,10 @@ import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.party.Organisation;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
-import uk.gov.hmcts.cmc.domain.models.response.Response;
-import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
+import uk.gov.hmcts.cmc.domain.models.response.*;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
-
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.Objects;
@@ -72,19 +69,28 @@ public class DefendantResponseNotificationService {
 
     private String getDefendantResponseIssuedEmailTemplate(Claim claim) {
         Party party = claim.getClaimData().getClaimant();
+        logger.info("before getting response");
         Response response = claim.getResponse().orElseThrow(() -> new IllegalStateException("Response expected"));
+        logger.info("hello?");
 
-        if (isFullDefenceAndNoMediation(response)) {
+        // I reject the claim -> I dispute all the claim -> no to mediation
+        if (isFullDefenceAndNoMediation(response) && ((FullDefenceResponse) response).getDefenceType().equals(DefenceType.DISPUTE)) {
+            logger.info("4pm email");
+            return getEmailTemplates().getDefendantResponseWithNoMediationIssued();
+        } else if (party instanceof Individual || party instanceof SoleTrader
+            || party instanceof Company || party instanceof Organisation) {
+            logger.info("individual, soletrader, company or organisation");
+            logger.info("lit everyone else");
             return getEmailTemplates().getDefendantResponseIssuedToIndividual();
-        }
-
-        if (party instanceof Individual || party instanceof SoleTrader) {
-            return getEmailTemplates().getDefendantResponseIssuedToIndividual();
-        } else if (party instanceof Company || party instanceof Organisation) {
-            return getEmailTemplates().getDefendantResponseIssuedToCompany();
         } else {
+            logger.info("omgz error");
             throw new NotificationException(("Unknown claimant type " + party));
         }
+    }
+
+    private boolean isFullDefenceAndDispute(Response response) {
+        return isFullDefenceAndNoMediation(response)
+            && ((FullDefenceResponse) response).getDefenceType().equals(DefenceType.DISPUTE);
     }
 
     private boolean isFullDefenceAndNoMediation(Response response) {

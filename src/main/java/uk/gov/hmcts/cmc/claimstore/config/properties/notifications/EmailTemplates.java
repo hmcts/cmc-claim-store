@@ -26,9 +26,6 @@ public class EmailTemplates {
     private String defendantResponseNeeded;
 
     @NotEmpty
-    private String defendantResponseIssuedToCompany;
-
-    @NotEmpty
     private String claimantResponseIssued;
 
     @NotEmpty
