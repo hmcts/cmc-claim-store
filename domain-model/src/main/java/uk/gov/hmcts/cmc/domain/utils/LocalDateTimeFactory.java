@@ -1,14 +1,18 @@
 package uk.gov.hmcts.cmc.domain.utils;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Date;
 
 public class LocalDateTimeFactory {
 
     private static final ZoneId UTC_ZONE = ZoneId.of("UTC");
     private static final ZoneId LOCAL_ZONE = ZoneId.of("Europe/London");
 
-    private LocalDateTimeFactory() {}
+    private LocalDateTimeFactory() {
+    }
 
     public static LocalDateTime fromNullableUTCtoLocalZone(LocalDateTime input) {
         return input == null ? null : fromUTC(input);
@@ -26,6 +30,13 @@ public class LocalDateTimeFactory {
 
     public static LocalDateTime nowInUTC() {
         return LocalDateTime.now(UTC_ZONE);
+    }
+
+    public static LocalDate fromLong(Long input) {
+        Date date = new Date(Long.valueOf(input));
+        return Instant.ofEpochMilli(date.getTime())
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate();
     }
 
 }
