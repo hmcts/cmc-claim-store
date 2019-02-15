@@ -388,7 +388,7 @@ public class SampleData {
             .interestSpecificDailyAmount(BigDecimal.valueOf(10))
             .interestEndDateType(CCDInterestEndDateType.SUBMISSION)
             .paymentStatus("success")
-            .paymentDateCreated("2019-01-01")
+            .paymentDateCreated(LocalDate.of(2019, 01, 01))
             .paymentId("PaymentId")
             .paymentAmount(BigDecimal.valueOf(4000))
             .paymentReference("RC-1524-6488-1670-7520")
