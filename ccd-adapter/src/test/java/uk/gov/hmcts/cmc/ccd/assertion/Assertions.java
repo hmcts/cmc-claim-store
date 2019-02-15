@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.BankAccountAsse
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.ChildAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.CourtOrderAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.DebtAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.EmployerAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.ExpenseAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.IncomeAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.LivingPartnerAssert;
@@ -33,6 +34,7 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Debt;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employer;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.LivingPartner;
@@ -139,4 +141,9 @@ public class Assertions {
     public static ResponseAssert assertThat(Response response) {
         return new ResponseAssert(response);
     }
+
+    public static EmployerAssert assertThat(Employer employer) {
+        return new EmployerAssert(employer);
+    }
+
 }

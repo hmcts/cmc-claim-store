@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentIntention;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -26,9 +27,11 @@ public class CCDResponseAcceptation extends CCDClaimantResponse {
         LocalDateTime submittedOn,
         CCDPaymentIntention claimantPaymentIntention,
         CCDFormaliseOption formaliseOption,
-        CCDCourtDetermination courtDetermination
+        CCDCourtDetermination courtDetermination,
+        CCDYesNoOption paymentReceived,
+        CCDYesNoOption settleForAmount
     ) {
-        super(amountPaid, submittedOn);
+        super(amountPaid, submittedOn, paymentReceived, settleForAmount);
         this.claimantPaymentIntention = claimantPaymentIntention;
         this.formaliseOption = formaliseOption;
         this.courtDetermination = courtDetermination;

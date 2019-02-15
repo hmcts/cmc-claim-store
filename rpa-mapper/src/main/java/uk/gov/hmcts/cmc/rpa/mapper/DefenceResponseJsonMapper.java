@@ -3,15 +3,24 @@ package uk.gov.hmcts.cmc.rpa.mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
+import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
+import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
+import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 import uk.gov.hmcts.cmc.rpa.DateFormatter;
+import uk.gov.hmcts.cmc.rpa.mapper.helper.RPAMapperHelper;
 import uk.gov.hmcts.cmc.rpa.mapper.json.NullAwareJsonObjectBuilder;
 
+import java.math.BigDecimal;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 
+import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractFromSubclass;
 
 @Component
@@ -26,15 +35,63 @@ public class DefenceResponseJsonMapper {
     }
 
     public JsonObject map(Claim claim) {
-        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+        Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
         String defendantsEmail = claim.getDefendantEmail();
+
         return new NullAwareJsonObjectBuilder()
             .add("caseNumber", claim.getReferenceNumber())
             .add("responseSubmittedOn", DateFormatter.format(claim.getRespondedAt()))
             .add("defenceResponse", defenceResponse(response))
             .add("defendant", defendantMapper.map(response.getDefendant(), claim.getClaimData().getDefendant(), defendantsEmail))
             .add("mediation", isMediationSelected(response))
+            .add("amountAdmitted", getAmountAdmitted(response))
+            .add("payment", mapPayment(response))
             .build();
+    }
+
+    private BigDecimal getAmountAdmitted(Response response) {
+        if (response instanceof PartAdmissionResponse) {
+            return ((PartAdmissionResponse) response).getAmount();
+        }
+        return null;
+    }
+
+    private JsonObject mapPayment(Response response) {
+        if (ResponseUtils.isAdmissionResponse(response)) {
+            JsonObjectBuilder builder = updateJsonBuilderForAdmissions(response);
+            if (builder != null) {
+                return builder.build();
+            }
+        }
+        return null;
+    }
+
+    private JsonObjectBuilder updateJsonBuilderForAdmissions(Response response) {
+        PaymentIntention paymentIntention = null;
+        JsonObjectBuilder jsonObjectBuilder = new NullAwareJsonObjectBuilder();
+        if (response instanceof PartAdmissionResponse) {
+            PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse) response;
+            if (partAdmissionResponse.getPaymentDeclaration().isPresent()) {
+                return null;
+            }
+            paymentIntention = partAdmissionResponse.getPaymentIntention().orElseThrow(IllegalArgumentException::new);
+        } else if (response instanceof FullAdmissionResponse) {
+            FullAdmissionResponse fullAdmissionResponse = (FullAdmissionResponse) response;
+            paymentIntention = fullAdmissionResponse.getPaymentIntention();
+        }
+        requireNonNull(paymentIntention);
+        PaymentOption paymentOption = paymentIntention.getPaymentOption();
+        jsonObjectBuilder.add("paymentType", paymentOption.name());
+        String fullPaymentDeadLine = paymentOption.equals(PaymentOption.BY_SPECIFIED_DATE)
+            ? paymentIntention.getPaymentDate().map(DateFormatter::format)
+            .orElseThrow(IllegalArgumentException::new) : null;
+        jsonObjectBuilder.add("fullPaymentDeadline", fullPaymentDeadLine);
+        JsonObject installmentObj = paymentOption.equals(PaymentOption.INSTALMENTS) ? RPAMapperHelper
+            .toJson(paymentIntention.getRepaymentPlan().orElseThrow(IllegalArgumentException::new)) : null;
+        jsonObjectBuilder.add("instalments", installmentObj);
+
+        return jsonObjectBuilder;
+
     }
 
     private String defenceResponse(Response response) {
