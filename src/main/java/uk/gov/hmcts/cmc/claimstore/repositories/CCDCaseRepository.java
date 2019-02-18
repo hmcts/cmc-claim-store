@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentStore;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
@@ -178,6 +179,11 @@ public class CCDCaseRepository implements CaseRepository {
     @Override
     public void saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent) {
         coreCaseDataService.saveCaseEvent(authorisation, claim.getId(), caseEvent);
+    }
+
+    @Override
+    public void linkClaimToDocument(String authorisation, Long claimId, ClaimDocumentStore claimDocumentStore) {
+        throw new UnsupportedOperationException("This operation is not yet supported for ccd");
     }
 
 }

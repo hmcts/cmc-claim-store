@@ -155,6 +155,15 @@ public interface ClaimRepository {
     );
 
     @SqlUpdate(
+        "UPDATE claim SET claim_document_store = :claimDocumentStore::JSONB"
+            + " WHERE id = :claimId"
+    )
+    Integer linkClaimToDocument(
+        @Bind("claimId") Long claimId,
+        @Bind("claimDocumentStore") String claimDocumentStore
+    );
+
+    @SqlUpdate(
         "UPDATE claim SET more_time_requested = TRUE, response_deadline = :responseDeadline "
             + "WHERE external_id = :externalId AND more_time_requested = FALSE"
     )

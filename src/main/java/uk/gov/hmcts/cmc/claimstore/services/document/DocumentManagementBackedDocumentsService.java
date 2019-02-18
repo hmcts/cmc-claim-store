@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.document;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
@@ -11,12 +12,18 @@ import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentStore;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.net.URI;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
+@Qualifier("DocumentManagementBackedDocumentsService")
 @Service
 @ConditionalOnProperty(prefix = "document_management", name = "url")
 public class DocumentManagementBackedDocumentsService implements DocumentsService {
@@ -64,11 +71,11 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
                 URI documentSelfPath = sealedClaimDocumentUri.get();
                 return documentManagementService.downloadDocument(authorisation, documentSelfPath, baseFileName);
             } else {
-                DocumentDetails documentDetails = uploadToDocumentManagement(sealedClaimPdfService.createPdf(claim),
+                return uploadToDocumentManagement(sealedClaimPdfService.createPdf(claim),
                     authorisation,
-                    baseFileName);
-                claimService.linkSealedClaimDocument(authorisation, claim, documentDetails.getDocumentSelfPath());
-                return documentDetails.getDocument().getBytes();
+                    baseFileName,
+                    SEALED_CLAIM,
+                    claim);
             }
         } catch (Exception ex) {
             return sealedClaimPdfService.createPdf(claim);
@@ -94,28 +101,30 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         return claimService.getClaimByExternalId(externalId, authorisation);
     }
 
-    private DocumentDetails uploadToDocumentManagement(
+    @Override
+    public byte[] uploadToDocumentManagement(
         byte[] documentBytes,
         String authorisation,
-        String baseFileName) {
-        PDF document = new PDF(baseFileName, documentBytes);
+        String baseFileName,
+        ClaimDocumentType claimDocumentType,
+        Claim claim) {
+        PDF document = new PDF(baseFileName, documentBytes, claimDocumentType);
         URI documentSelfPath = documentManagementService.uploadDocument(authorisation, document);
-        return new DocumentDetails() {
-            @Override
-            public URI getDocumentSelfPath() {
-                return documentSelfPath;
-            }
-
-            @Override
-            public PDF getDocument() {
-                return document;
-            }
-        };
+        claimService.linkClaimToDocument(authorisation,
+            claim.getId(),
+            getClaimDocumentStore(claim.getExternalId(), document, documentSelfPath, authorisation));
+        return documentBytes;
     }
 
-    private interface DocumentDetails {
-        URI getDocumentSelfPath();
-
-        PDF getDocument();
+    private ClaimDocumentStore getClaimDocumentStore(String externalId, PDF document, URI uri, String authorisation) {
+        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
+        ClaimDocumentStore claimDocumentStore = claim.getClaimDocumentStore().orElse(new ClaimDocumentStore());
+        claimDocumentStore.addClaimDocument(new ClaimDocument(uri,
+            document.getFilename(),
+            document.getClaimDocumentType(),
+            LocalDateTimeFactory.nowInLocalZone(),
+            LocalDateTimeFactory.nowInLocalZone(),
+            null));
+        return claimDocumentStore;
     }
 }

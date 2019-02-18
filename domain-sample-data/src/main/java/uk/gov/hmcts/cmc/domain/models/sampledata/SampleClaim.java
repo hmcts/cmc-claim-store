@@ -2,6 +2,9 @@ package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentStore;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.Interest;
@@ -14,6 +17,7 @@ import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
 import java.net.URI;
@@ -73,6 +77,7 @@ public final class SampleClaim {
     private LocalDate moneyReceivedOn;
     private LocalDateTime reDeterminationRequestedAt;
     private ReDetermination reDetermination = new ReDetermination("I feel defendant can pay", CLAIMANT);
+    private ClaimDocumentStore claimDocumentStore = new ClaimDocumentStore();
 
     private SampleClaim() {
     }
@@ -335,14 +340,14 @@ public final class SampleClaim {
             countyCourtJudgmentRequestedAt,
             settlement,
             settlementReachedAt,
-            sealedClaimDocument,
             features,
             claimantRespondedAt,
             claimantResponse,
             directionsQuestionnaireDeadline,
             moneyReceivedOn,
             reDetermination,
-            reDeterminationRequestedAt
+            reDeterminationRequestedAt,
+            claimDocumentStore
         );
     }
 
@@ -452,7 +457,13 @@ public final class SampleClaim {
     }
 
     public SampleClaim withSealedClaimDocument(URI sealedClaimDocument) {
-        this.sealedClaimDocument = sealedClaimDocument;
+        ClaimDocument claimDocument = new ClaimDocument(sealedClaimDocument,
+            "001CLAIM-FORM",
+            ClaimDocumentType.SEALED_CLAIM,
+            LocalDateTimeFactory.nowInLocalZone(),
+            LocalDateTimeFactory.nowInLocalZone(),
+            null);
+        this.claimDocumentStore.addClaimDocument(claimDocument);
         return this;
     }
 

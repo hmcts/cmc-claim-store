@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
@@ -11,14 +12,17 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 
 import java.net.URI;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -52,26 +56,39 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
     ) throws Exception {
         given(documentUploadClient.upload(eq(authorization), any(), any(), any()))
             .willReturn(successfulDocumentManagementUploadResponse());
-
+        given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
         MvcResult result = makeIssueClaimRequest(claimData, authorization)
             .andExpect(status().isOk())
             .andReturn();
+        final ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
+        InMemoryMultipartFile sealedClaimForm = new InMemoryMultipartFile(
+            "files",
+            deserializeObjectFrom(result, Claim.class).getReferenceNumber() + "-claim-form.pdff",
+            MediaType.APPLICATION_PDF_VALUE,
+            PDF_BYTES
+        );
 
-        verify(documentUploadClient).upload(
+        InMemoryMultipartFile defendantPinLetter = new InMemoryMultipartFile(
+            "files",
+            deserializeObjectFrom(result, Claim.class).getReferenceNumber() + "-defendant-pin-letter.pdff",
+            MediaType.APPLICATION_PDF_VALUE,
+            PDF_BYTES
+        );
+
+        verify(documentUploadClient, atLeastOnce()).upload(
             eq(authorization),
             any(),
             any(),
-            eq(
-                newArrayList(
-                    new InMemoryMultipartFile(
-                        "files",
-                        deserializeObjectFrom(result, Claim.class).getReferenceNumber() + "-claim-form.pdf",
-                        MediaType.APPLICATION_PDF_VALUE,
-                        PDF_BYTES
-                    )
-                )
-            )
+            argument.capture()
         );
+        verify(documentUploadClient, atMost(2)).upload(
+            eq(authorization),
+            any(),
+            any(),
+            argument.capture()
+        );
+        List<List> capturedArgument = argument.getAllValues();
+        assertThat(capturedArgument.contains(Collections.singleton(sealedClaimForm)));
     }
 
     @Test

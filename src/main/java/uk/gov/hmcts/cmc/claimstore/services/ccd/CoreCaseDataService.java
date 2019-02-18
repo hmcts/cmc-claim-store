@@ -311,7 +311,6 @@ public class CoreCaseDataService {
             );
 
             Claim updatedClaim = toClaimBuilder(startEventResponse)
-                .sealedClaimDocument(sealedClaimDocument)
                 .build();
 
             CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);
