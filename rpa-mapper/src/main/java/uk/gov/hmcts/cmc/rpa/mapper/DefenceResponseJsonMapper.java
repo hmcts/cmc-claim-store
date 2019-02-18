@@ -103,7 +103,10 @@ public class DefenceResponseJsonMapper {
             case FULL_ADMISSION:
                 return response.getResponseType().name();
             case PART_ADMISSION:
-                return deriveResponseTypeName((PartAdmissionResponse)response);
+                PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse) response;
+                return partAdmissionResponse.getPaymentDeclaration().map(PaymentDeclaration::getPaidDate).isPresent()
+                    ? DefenceType.ALREADY_PAID.name()
+                    : response.getResponseType().name();
             default:
                 throw new IllegalArgumentException("Invalid response type: " + response.getResponseType());
         }
@@ -120,9 +123,4 @@ public class DefenceResponseJsonMapper {
         return false;
     }
 
-    private String deriveResponseTypeName(PartAdmissionResponse response) {
-        return response.getPaymentDeclaration().map(PaymentDeclaration::getPaidDate).isPresent()
-            ? DefenceType.ALREADY_PAID.name()
-            : response.getResponseType().name();
-    }
 }
