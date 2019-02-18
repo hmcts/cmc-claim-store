@@ -66,7 +66,7 @@ public class MigratorHandler {
                 = coreCaseDataService.getCcdIdByReferenceNumber(user, claim.getReferenceNumber());
 
             if (!caseDetails.isPresent()) {
-                createCase(user, migratedClaims, claim, CaseEvent.SUBMIT_PRE_PAYMENT, failedMigrations);
+                createCase(user, migratedClaims, failedMigrations, claim);
                 updatePostPaymentEvent(user, updatedClaims, failedMigrations, claim);
                 updateCase(user, updatedClaims, failedMigrations, claim);
             } else {
@@ -105,11 +105,7 @@ public class MigratorHandler {
     ) {
 
         CaseDetails ccdCase = coreCaseDataService.getCcdIdByReferenceNumber(user, claim.getReferenceNumber())
-            .orElse(null);
-
-        if (ccdCase == null) {
-            return;
-        }
+            .orElseThrow(() -> new IllegalStateException("ccd case not found for " + claim.getReferenceNumber()));
 
         try {
             if (ccdCase.getState().equals(ON_HOLD_STATE) && claim.getCreatedAt() != null) {
@@ -140,11 +136,7 @@ public class MigratorHandler {
     ) {
 
         CaseDetails ccdCase = coreCaseDataService.getCcdIdByReferenceNumber(user, claim.getReferenceNumber())
-            .orElse(null);
-
-        if (ccdCase == null) {
-            return;
-        }
+            .orElseThrow(() -> new IllegalStateException("ccd case not found for " + claim.getReferenceNumber()));
 
         try {
             Arrays.stream(CaseEvent.values())
@@ -174,17 +166,16 @@ public class MigratorHandler {
     private void createCase(
         User user,
         AtomicInteger migratedClaims,
-        Claim claim,
-        CaseEvent event,
-        AtomicInteger failedMigrations
+        AtomicInteger failedMigrations,
+        Claim claim
     ) {
         try {
             logger.info("start migrating claim: "
                 + claim.getReferenceNumber()
                 + " for event: "
-                + event.getValue());
+                + CaseEvent.SUBMIT_PRE_PAYMENT.getValue());
 
-            coreCaseDataService.create(user, claim, event);
+            coreCaseDataService.create(user, claim, CaseEvent.SUBMIT_PRE_PAYMENT);
             logger.info("claim created in ccd");
             migratedClaims.incrementAndGet();
         } catch (Exception e) {
