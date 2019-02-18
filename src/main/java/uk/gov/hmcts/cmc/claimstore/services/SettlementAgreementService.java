@@ -57,7 +57,7 @@ public class SettlementAgreementService {
     public Claim reject(Claim claim, String authorisation) {
 
         Settlement settlement = assertSettlementCanBeResponded(claim);
-        settlement.reject(MadeBy.DEFENDANT);
+        settlement.reject(MadeBy.DEFENDANT, null);
 
         CaseEvent caseEvent = AGREEMENT_REJECTED_BY_DEFENDANT;
         caseRepository.updateSettlement(claim, settlement, authorisation, caseEvent);
@@ -73,7 +73,7 @@ public class SettlementAgreementService {
     public Claim countersign(Claim claim, String authorisation) {
 
         Settlement settlement = assertSettlementCanBeResponded(claim);
-        settlement.countersign(MadeBy.DEFENDANT);
+        settlement.countersign(MadeBy.DEFENDANT, null);
 
         CaseEvent caseEvent = AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT;
         caseRepository.reachSettlementAgreement(claim, settlement, authorisation, caseEvent);

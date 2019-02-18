@@ -1,12 +1,10 @@
-package uk.gov.hmcts.cmc.claimstore.events.paindinfull;
+package uk.gov.hmcts.cmc.claimstore.events.paidinfull;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
-import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.services.staff.PaidInFullStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 

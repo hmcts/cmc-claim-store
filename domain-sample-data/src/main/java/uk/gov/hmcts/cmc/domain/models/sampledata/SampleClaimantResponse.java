@@ -4,14 +4,16 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleCourtDetermination;
 
 import java.math.BigDecimal;
 
+import static java.math.BigDecimal.TEN;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.CCJ;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.REFER_TO_JUDGE;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.SETTLEMENT;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention.bySetDate;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention.instalments;
 
@@ -27,7 +29,7 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
 
     public static class ClaimantResponseAcceptation extends SampleClaimantResponse<ClaimantResponseAcceptation> {
 
-        private BigDecimal amountPaid = BigDecimal.TEN;
+        private BigDecimal amountPaid = TEN;
         private FormaliseOption formaliseOption = REFER_TO_JUDGE;
 
         public static ClaimantResponseAcceptation builder() {
@@ -134,6 +136,12 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
                 .build();
         }
 
+        public ClaimantResponse buildAcceptanceSettlePreJudgement() {
+            return ResponseAcceptation.builder()
+                .paymentReceived(YES)
+                .settleForAmount(YES)
+                .build();
+        }
     }
 
     public static class ClaimantResponseRejection extends SampleClaimantResponse<ClaimantResponseAcceptation> {
@@ -145,9 +153,16 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
         @Override
         public ClaimantResponse build() {
             return ResponseRejection.builder()
-                .amountPaid(BigDecimal.TEN)
-                .freeMediation(YesNoOption.NO)
+                .amountPaid(TEN)
+                .freeMediation(NO)
                 .reason("Some valid reason")
+                .build();
+        }
+
+        public ClaimantResponse buildRejectionSettlePreJudgement() {
+            return ResponseAcceptation.builder()
+                .paymentReceived(YES)
+                .settleForAmount(NO)
                 .build();
         }
     }

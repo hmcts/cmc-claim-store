@@ -1,0 +1,30 @@
+{
+  "caseNumber": "000CM001",
+  "responseSubmittedOn": "26-Apr-2018",
+  "defenceResponse": "FULL_ADMISSION",
+  "amountAdmitted": null,
+  "defendant": {
+    "type": "Individual",
+    "name": "John Rambo",
+    "businessName": null,
+    "contactPerson": null,
+    "addressAmended": false,
+    "address": {
+      "line1": "52",
+      "line2": "Down Street",
+      "line3": "Salford",
+      "city": "Manchester",
+      "postcode": "DF1 3LJ"
+    },
+    "emailAddress": "j.smith@example.com",
+    "correspondenceAddress": null,
+    "dateOfBirth": "02-Jan-1968",
+    "phoneNumber": "07873727165"
+  },
+  "payment": {
+    "paymentType": "BY_SPECIFIED_DATE",
+    "fullPaymentDeadline": "01-Jan-2018",
+    "instalments": null
+  },
+  "mediation": false
+}

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -27,13 +28,30 @@ public abstract class ClaimantResponse {
     @Min(value = 0)
     private final BigDecimal amountPaid;
 
-    public ClaimantResponse(ClaimantResponseType type, BigDecimal amountPaid) {
+    private final YesNoOption paymentReceived;
+
+    private final YesNoOption settleForAmount;
+
+    public ClaimantResponse(ClaimantResponseType type,
+                            BigDecimal amountPaid,
+                            YesNoOption paymentReceived,
+                            YesNoOption settleForAmount) {
         this.amountPaid = amountPaid;
         this.type = type;
+        this.paymentReceived = paymentReceived;
+        this.settleForAmount = settleForAmount;
     }
 
     public Optional<BigDecimal> getAmountPaid() {
         return Optional.ofNullable(amountPaid);
+    }
+
+    public Optional<YesNoOption> getPaymentReceived() {
+        return Optional.ofNullable(paymentReceived);
+    }
+
+    public Optional<YesNoOption> getSettleForAmount() {
+        return Optional.ofNullable(settleForAmount);
     }
 
     @Override

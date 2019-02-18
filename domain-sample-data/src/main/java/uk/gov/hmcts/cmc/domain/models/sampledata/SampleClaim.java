@@ -44,6 +44,7 @@ public final class SampleClaim {
     public static final LocalDateTime NOT_RESPONDED = null;
     public static final String SUBMITTER_EMAIL = "claimant@mail.com";
     public static final String DEFENDANT_EMAIL = SampleTheirDetails.DEFENDANT_EMAIL;
+    public static final String DEFENDANT_EMAIL_VERIFIED =  "defendant@mail.com";
 
     private String submitterId = USER_ID;
     private String letterHolderId = LETTER_HOLDER_ID;
@@ -135,6 +136,15 @@ public final class SampleClaim {
             .withResponse(response)
             .withRespondedAt(LocalDateTime.now())
             .withDefendantEmail(DEFENDANT_EMAIL)
+            .build();
+    }
+
+    public static Claim getWithResponseDefendantEmailVerified(Response response) {
+        return builder()
+            .withClaimData(SampleClaimData.validDefaults())
+            .withResponse(response)
+            .withRespondedAt(LocalDateTime.now())
+            .withDefendantEmail(DEFENDANT_EMAIL_VERIFIED)
             .build();
     }
 
@@ -275,9 +285,9 @@ public final class SampleClaim {
     public static Claim getClaimWithSettlementAgreementRejected() {
 
         Settlement settlement = new Settlement();
-        settlement.makeOffer(SampleOffer.builder().build(), CLAIMANT);
-        settlement.acceptCourtDetermination(CLAIMANT);
-        settlement.reject(MadeBy.DEFENDANT);
+        settlement.makeOffer(SampleOffer.builder().build(), CLAIMANT, null);
+        settlement.acceptCourtDetermination(CLAIMANT, null);
+        settlement.reject(MadeBy.DEFENDANT, null);
 
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
@@ -289,9 +299,9 @@ public final class SampleClaim {
     public static Claim withSettlementReached() {
 
         Settlement settlement = new Settlement();
-        settlement.makeOffer(SampleOffer.builder().build(), CLAIMANT);
-        settlement.acceptCourtDetermination(CLAIMANT);
-        settlement.countersign(MadeBy.DEFENDANT);
+        settlement.makeOffer(SampleOffer.builder().build(), CLAIMANT, null);
+        settlement.acceptCourtDetermination(CLAIMANT, null);
+        settlement.countersign(MadeBy.DEFENDANT, null);
 
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
