@@ -46,7 +46,7 @@ public class ClaimMigrator {
         AtomicInteger updatedClaims = new AtomicInteger(0);
         AtomicInteger failedMigrations = new AtomicInteger(0);
 
-        notMigratedClaims.forEach(claim -> {
+        notMigratedClaims.parallelStream().forEach(claim -> {
             migratorHandler.migrateClaim(migratedClaims, failedMigrations, updatedClaims, claim, user);
         });
 
