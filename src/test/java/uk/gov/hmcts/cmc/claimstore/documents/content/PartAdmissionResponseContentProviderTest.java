@@ -55,6 +55,9 @@ public class PartAdmissionResponseContentProviderTest {
             .isInstanceOf(List.class);
         assertThat((List<String>) content.get("responseDefence"))
             .contains(SampleResponse.USER_DEFENCE);
+        assertThat(content)
+            .containsKey("paymentIntentionIsPresent")
+            .containsValues(false);
     }
 
     @Test
@@ -68,6 +71,9 @@ public class PartAdmissionResponseContentProviderTest {
         assertThat(content)
             .containsKeys("paymentOption")
             .containsValues("Immediately");
+        assertThat(content)
+            .containsKeys("paymentIntentionIsPresent")
+            .containsValues(true);
     }
 
     @Test
