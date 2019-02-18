@@ -28,7 +28,7 @@ public enum CaseEvent {
     AGREEMENT_REJECTED_BY_DEFENDANT("AgreementRejectedByDefendant"),
     SETTLED_PRE_JUDGMENT("SettledPreJudgment"),
     CCJ_REQUESTED("CCJRequested"),
-    INTERLOCATORY_JUDGEMENT("InterlocatoryJudgement"),
+    INTERLOCATORY_JUDGEMENT("InterlocutoryJudgment"),
     REJECT_ORGANISATION_PAYMENT_PLAN("RejectOrganisationPaymentPlan"),
     REFER_TO_JUDGE_BY_CLAIMANT("ReferToJudgeByClaimant"),
     REFER_TO_JUDGE_BY_DEFENDANT("ReferToJudgeByDefendant");
