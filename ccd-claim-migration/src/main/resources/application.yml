@@ -37,7 +37,3 @@ migration:
     between:
       cases:
         lots: 0
-async:
-  max:
-    threadPool:
-      size: 50
