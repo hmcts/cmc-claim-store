@@ -2,6 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.cmc.claimstore.config.LoggerHandler;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -35,6 +38,7 @@ import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class ClaimController {
 
+    private static final Logger logger = LoggerFactory.getLogger(LoggerHandler.class);
     private final ClaimService claimService;
 
     @Autowired
@@ -100,6 +104,7 @@ public class ClaimController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
         @RequestHeader(value = "Features", required = false) List<String> features
     ) {
+        logger.info("FEATURES ::: {}", features);
         return claimService.saveClaim(submitterId, claimData, authorisation, features);
     }
 
