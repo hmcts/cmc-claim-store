@@ -69,28 +69,21 @@ public class DefendantResponseNotificationService {
 
     private String getDefendantResponseIssuedEmailTemplate(Claim claim) {
         Party party = claim.getClaimData().getClaimant();
-        logger.info("before getting response");
         Response response = claim.getResponse().orElseThrow(() -> new IllegalStateException("Response expected"));
-        logger.info("hello?");
 
-        // I reject the claim -> I dispute all the claim -> no to mediation
-        if (isFullDefenceAndNoMediation(response) && ((FullDefenceResponse) response).getDefenceType().equals(DefenceType.DISPUTE)) {
-            logger.info("4pm email");
+        if (isFullDefenceAndDispute(response)) {
             return getEmailTemplates().getDefendantResponseWithNoMediationIssued();
         } else if (party instanceof Individual || party instanceof SoleTrader
             || party instanceof Company || party instanceof Organisation) {
-            logger.info("individual, soletrader, company or organisation");
-            logger.info("lit everyone else");
             return getEmailTemplates().getDefendantResponseIssuedToIndividual();
         } else {
-            logger.info("omgz error");
             throw new NotificationException(("Unknown claimant type " + party));
         }
     }
 
     private boolean isFullDefenceAndDispute(Response response) {
-        return isFullDefenceAndNoMediation(response)
-            && ((FullDefenceResponse) response).getDefenceType().equals(DefenceType.DISPUTE);
+        return isFullDefenceAndNoMediation(response) && ((FullDefenceResponse) response)
+            .getDefenceType().equals(DefenceType.DISPUTE);
     }
 
     private boolean isFullDefenceAndNoMediation(Response response) {
