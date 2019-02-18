@@ -47,7 +47,7 @@ public class CCDCase {
     private BigDecimal paymentAmount;
     private String paymentReference;
     private String paymentStatus;
-    private String paymentDateCreated;
+    private LocalDate paymentDateCreated;
     private String preferredCourt;
     private String personalInjuryGeneralDamages;
     private String housingDisrepairCostOfRepairDamages;
