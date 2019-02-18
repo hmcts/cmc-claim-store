@@ -31,8 +31,8 @@ import static uk.gov.hmcts.cmc.domain.models.response.DefenceType.ALREADY_PAID;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 
 @Service
-public class MigratorHandler {
-    private static final Logger logger = LoggerFactory.getLogger(MigratorHandler.class);
+public class MigrationHandler {
+    private static final Logger logger = LoggerFactory.getLogger(MigrationHandler.class);
     public static final String ON_HOLD_STATE = "onhold";
     public static final String OPEN_STATE = "open";
 
@@ -40,7 +40,7 @@ public class MigratorHandler {
     private final long delayBetweenCasesLots;
     private final int casesLotsSize;
 
-    public MigratorHandler(
+    public MigrationHandler(
         CoreCaseDataService coreCaseDataService,
         @Value("${migration.delay.between.cases.lots}") long delayBetweenCasesLots,
         @Value("${migration.cases.lots.size}") int casesLotsSize

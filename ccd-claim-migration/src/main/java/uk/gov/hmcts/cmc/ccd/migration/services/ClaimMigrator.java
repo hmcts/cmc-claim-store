@@ -20,17 +20,17 @@ public class ClaimMigrator {
 
     private ClaimRepository claimRepository;
     private UserService userService;
-    private final MigratorHandler migratorHandler;
+    private final MigrationHandler migrationHandler;
 
     @Autowired
     public ClaimMigrator(
         ClaimRepository claimRepository,
         UserService userService,
-        MigratorHandler migratorHandler
+        MigrationHandler migrationHandler
     ) {
         this.claimRepository = claimRepository;
         this.userService = userService;
-        this.migratorHandler = migratorHandler;
+        this.migrationHandler = migrationHandler;
     }
 
     @LogExecutionTime
@@ -47,7 +47,7 @@ public class ClaimMigrator {
         AtomicInteger failedMigrations = new AtomicInteger(0);
 
         notMigratedClaims.parallelStream().forEach(claim -> {
-            migratorHandler.migrateClaim(migratedClaims, failedMigrations, updatedClaims, claim, user);
+            migrationHandler.migrateClaim(migratedClaims, failedMigrations, updatedClaims, claim, user);
         });
 
         logger.info("Total Claims in database: " + notMigratedClaims.size());
