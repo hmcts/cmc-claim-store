@@ -1,12 +1,13 @@
 package uk.gov.hmcts.cmc.domain.utils;
 
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
-import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
-import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
-import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
-import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
+import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
+import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
+import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.function.Predicate;
 
@@ -59,4 +60,15 @@ public class ResponseUtils {
         ResponseType responseType = response.getResponseType();
         return responseType == ResponseType.FULL_ADMISSION || responseType == ResponseType.PART_ADMISSION;
     }
+
+    public static boolean isFullDefenceDisputeAndNoMediation(Response response) {
+        return isFullDefenceAndNoMediation(response) && ((FullDefenceResponse) response)
+            .getDefenceType().equals(DefenceType.DISPUTE);
+    }
+
+    public static boolean isFullDefenceAndNoMediation(Response response) {
+        return response.getResponseType().equals(ResponseType.FULL_DEFENCE)
+            && response.getFreeMediation().filter(Predicate.isEqual(YesNoOption.NO)).isPresent();
+    }
 }
+

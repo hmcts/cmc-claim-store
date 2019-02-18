@@ -20,7 +20,7 @@ public class EmailTemplates {
     private String defendantClaimIssued;
 
     @NotEmpty
-    private String defendantResponseIssuedToIndividual;
+    private String defendantResponseIssued;
 
     @NotEmpty
     private String defendantResponseNeeded;

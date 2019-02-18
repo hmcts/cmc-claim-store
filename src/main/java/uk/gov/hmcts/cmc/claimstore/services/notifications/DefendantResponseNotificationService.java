@@ -14,23 +14,16 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.Notifications
 import uk.gov.hmcts.cmc.claimstore.services.FreeMediationDecisionDateCalculator;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.party.Company;
-import uk.gov.hmcts.cmc.domain.models.party.Individual;
-import uk.gov.hmcts.cmc.domain.models.party.Organisation;
-import uk.gov.hmcts.cmc.domain.models.party.Party;
-import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
-import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
-import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
-import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isFullDefenceAndNoMediation;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isFullDefenceDisputeAndNoMediation;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper.admissionResponse;
@@ -72,27 +65,13 @@ public class DefendantResponseNotificationService {
     }
 
     private String getDefendantResponseIssuedEmailTemplate(Claim claim) {
-        Party party = claim.getClaimData().getClaimant();
         Response response = claim.getResponse().orElseThrow(() -> new IllegalStateException("Response expected"));
 
-        if (isFullDefenceAndDispute(response)) {
+        if (isFullDefenceDisputeAndNoMediation(response)) {
             return getEmailTemplates().getDefendantResponseWithNoMediationIssued();
-        } else if (party instanceof Individual || party instanceof SoleTrader
-            || party instanceof Company || party instanceof Organisation) {
-            return getEmailTemplates().getDefendantResponseIssuedToIndividual();
         } else {
-            throw new NotificationException(("Unknown claimant type " + party));
+            return getEmailTemplates().getDefendantResponseIssued();
         }
-    }
-
-    private boolean isFullDefenceAndDispute(Response response) {
-        return isFullDefenceAndNoMediation(response) && ((FullDefenceResponse) response)
-            .getDefenceType().equals(DefenceType.DISPUTE);
-    }
-
-    private boolean isFullDefenceAndNoMediation(Response response) {
-        return response.getResponseType().equals(ResponseType.FULL_DEFENCE)
-            && response.getFreeMediation().filter(Predicate.isEqual(YesNoOption.NO)).isPresent();
     }
 
     public void notifyClaimant(
