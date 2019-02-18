@@ -4,8 +4,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.CoreCaseDataService;
@@ -32,7 +30,6 @@ import java.util.function.Predicate;
 import static uk.gov.hmcts.cmc.domain.models.response.DefenceType.ALREADY_PAID;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 
-@Async("threadPoolTaskExecutor")
 @Service
 public class MigratorHandler {
     private static final Logger logger = LoggerFactory.getLogger(MigratorHandler.class);
@@ -53,14 +50,15 @@ public class MigratorHandler {
         this.casesLotsSize = casesLotsSize;
     }
 
-    @EventListener
     @LogExecutionTime
-    public void savePrePayment(MigrationEvent event) {
-        AtomicInteger migratedClaims = event.getMigratedClaims();
-        AtomicInteger failedMigrations = event.getFailedMigrations();
-        AtomicInteger updatedClaims = event.getUpdatedClaims();
-        Claim claim = event.getClaim();
-        User user = event.getUser();
+    public void migrateClaim(
+        AtomicInteger migratedClaims,
+        AtomicInteger failedMigrations,
+        AtomicInteger updatedClaims,
+        Claim claim,
+        User user
+    ) {
+
         try {
             delayMigrationWhenMigratedCaseLotsReachedAllowed(migratedClaims);
 
