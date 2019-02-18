@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
-import java.net.URI;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -57,10 +56,6 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             toNullableLocalDateTimeFromUTC(result.getTimestamp("re_determination_requested_at")),
             toNullableEntity(result.getString("claim_document_store"), ClaimDocumentStore.class)
         );
-    }
-
-    private URI mapNullableUri(String uri) {
-        return uri != null ? URI.create(uri) : null;
     }
 
     private ClaimData toClaimData(String input) {

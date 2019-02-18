@@ -20,6 +20,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentStore;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
@@ -282,10 +283,13 @@ public class CoreCaseDataServiceTest {
     public void linkSealedClaimDocumentShouldReturnCaseDetails() {
 
         URI sealedClaimUri = URI.create("http://localhost/sealedClaim.pdf");
+        Claim claim = SampleClaim.getClaimWithSealedClaimLink(sealedClaimUri);
         when(jsonMapper.fromMap(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
-        when(caseMapper.from(any(CCDCase.class))).thenReturn(SampleClaim.getClaimWithSealedClaimLink(sealedClaimUri));
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
 
-        CaseDetails caseDetails = service.linkSealedClaimDocument(AUTHORISATION, SampleClaim.CLAIM_ID, sealedClaimUri);
+        CaseDetails caseDetails = service.linkClaimToDocument(AUTHORISATION,
+            SampleClaim.CLAIM_ID,
+            claim.getClaimDocumentStore().orElse(new ClaimDocumentStore()));
 
         assertNotNull(caseDetails);
     }

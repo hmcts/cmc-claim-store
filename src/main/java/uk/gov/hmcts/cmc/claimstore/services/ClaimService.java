@@ -35,7 +35,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
-import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -300,11 +299,6 @@ public class ClaimService {
     public void linkDefendantToClaim(String authorisation) {
         caseRepository.linkDefendant(authorisation);
         ccdEventProducer.linkDefendantCCDEvent(authorisation);
-    }
-
-    public void linkSealedClaimDocument(String authorisation, Claim claim, URI sealedClaimDocument) {
-        caseRepository.linkSealedClaimDocument(authorisation, claim, sealedClaimDocument);
-        ccdEventProducer.linkSealedClaimDocumentCCDEvent(authorisation, claim, sealedClaimDocument);
     }
 
     public void linkClaimToDocument(String authorisation, Long claimId, ClaimDocumentStore claimDocumentStore) {

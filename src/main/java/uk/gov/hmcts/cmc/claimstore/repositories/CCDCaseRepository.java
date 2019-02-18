@@ -17,7 +17,6 @@ import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
-import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -159,8 +158,8 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void linkSealedClaimDocument(String authorisation, Claim claim, URI documentURI) {
-        coreCaseDataService.linkSealedClaimDocument(authorisation, claim.getId(), documentURI);
+    public void linkClaimToDocument(String authorisation, Long claimId, ClaimDocumentStore claimDocumentStore) {
+        coreCaseDataService.linkClaimToDocument(authorisation, claimId, claimDocumentStore);
     }
 
     @Override
@@ -179,11 +178,6 @@ public class CCDCaseRepository implements CaseRepository {
     @Override
     public void saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent) {
         coreCaseDataService.saveCaseEvent(authorisation, claim.getId(), caseEvent);
-    }
-
-    @Override
-    public void linkClaimToDocument(String authorisation, Long claimId, ClaimDocumentStore claimDocumentStore) {
-        throw new UnsupportedOperationException("This operation is not yet supported for ccd");
     }
 
 }

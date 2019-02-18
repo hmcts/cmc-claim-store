@@ -11,7 +11,7 @@ public class ClaimDocument {
     private final URI documentManagementUrl;
     private final String documentName;
     private final ClaimDocumentType documentType;
-    private final LocalDateTime authoredDate;
+    private final LocalDateTime authoredDatetime;
     private final LocalDateTime createdDatetime;
     private final String createdBy;
 
@@ -20,14 +20,14 @@ public class ClaimDocument {
         URI documentManagementUrl,
         String documentName,
         ClaimDocumentType documentType,
-        LocalDateTime authoredDate,
+        LocalDateTime authoredDatetime,
         LocalDateTime createdDatetime,
         String createdBy
     ) {
         this.documentManagementUrl = documentManagementUrl;
         this.documentName = documentName;
         this.documentType = documentType;
-        this.authoredDate = authoredDate;
+        this.authoredDatetime = authoredDatetime;
         this.createdDatetime = createdDatetime;
         this.createdBy = createdBy;
     }

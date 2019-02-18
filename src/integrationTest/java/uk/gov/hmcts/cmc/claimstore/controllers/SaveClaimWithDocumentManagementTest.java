@@ -8,6 +8,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentStore;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 
@@ -28,6 +30,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementUploadResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.unsuccessfulDocumentManagementUploadResponse;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @TestPropertySource(
     properties = {
@@ -63,18 +66,10 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
         final ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
         InMemoryMultipartFile sealedClaimForm = new InMemoryMultipartFile(
             "files",
-            deserializeObjectFrom(result, Claim.class).getReferenceNumber() + "-claim-form.pdff",
+            deserializeObjectFrom(result, Claim.class).getReferenceNumber() + "-claim-form.pdf",
             MediaType.APPLICATION_PDF_VALUE,
             PDF_BYTES
         );
-
-        InMemoryMultipartFile defendantPinLetter = new InMemoryMultipartFile(
-            "files",
-            deserializeObjectFrom(result, Claim.class).getReferenceNumber() + "-defendant-pin-letter.pdff",
-            MediaType.APPLICATION_PDF_VALUE,
-            PDF_BYTES
-        );
-
         verify(documentUploadClient, atLeastOnce()).upload(
             eq(authorization),
             any(),
@@ -114,9 +109,16 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        assertThat(deserializeObjectFrom(resultWithDocument, Claim.class)
-            .getSealedClaimDocument())
-            .isEqualTo(Optional.of(URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4")));
+        Optional<ClaimDocumentStore> claimDocumentStore = deserializeObjectFrom(resultWithDocument, Claim.class)
+                                                            .getClaimDocumentStore();
+        ClaimDocument claimDocument = claimDocumentStore
+            .orElseThrow(AssertionError::new)
+            .getDocument(SEALED_CLAIM)
+            .orElseThrow(AssertionError::new);
+        assertThat(claimDocument.getDocumentManagementUrl()
+                .equals(URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4")));
+        assertThat(claimDocument.getDocumentName().equals("000MC001-claim-form.pdf"));
+        assertThat(claimDocument.getDocumentType().equals(SEALED_CLAIM));
     }
 
     @Test

@@ -20,7 +20,6 @@ import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
-import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -219,11 +218,6 @@ public class DBCaseRepository implements CaseRepository {
         return claimRepository
             .getClaimByExternalId(claim.getExternalId())
             .orElseThrow(() -> new NotFoundException("Claim not found by id " + claim.getExternalId()));
-    }
-
-    @Override
-    public void linkSealedClaimDocument(String authorisation, Claim claim, URI documentUri) {
-        claimRepository.linkSealedClaimDocument(claim.getId(), documentUri.toString());
     }
 
     @Override

@@ -48,7 +48,7 @@ public final class SampleClaim {
     public static final LocalDateTime NOT_RESPONDED = null;
     public static final String SUBMITTER_EMAIL = "claimant@mail.com";
     public static final String DEFENDANT_EMAIL = SampleTheirDetails.DEFENDANT_EMAIL;
-    public static final String DEFENDANT_EMAIL_VERIFIED =  "defendant@mail.com";
+    public static final String DEFENDANT_EMAIL_VERIFIED = "defendant@mail.com";
 
     private String submitterId = USER_ID;
     private String letterHolderId = LETTER_HOLDER_ID;
@@ -457,12 +457,13 @@ public final class SampleClaim {
     }
 
     public SampleClaim withSealedClaimDocument(URI sealedClaimDocument) {
-        ClaimDocument claimDocument = new ClaimDocument(sealedClaimDocument,
-            "001CLAIM-FORM",
-            ClaimDocumentType.SEALED_CLAIM,
-            LocalDateTimeFactory.nowInLocalZone(),
-            LocalDateTimeFactory.nowInLocalZone(),
-            null);
+        ClaimDocument claimDocument = ClaimDocument.builder()
+            .documentManagementUrl(sealedClaimDocument)
+            .documentName("001CLAIM-FORM")
+            .documentType(ClaimDocumentType.SEALED_CLAIM)
+            .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
+            .authoredDatetime(LocalDateTimeFactory.nowInLocalZone())
+            .build();
         this.claimDocumentStore.addClaimDocument(claimDocument);
         return this;
     }

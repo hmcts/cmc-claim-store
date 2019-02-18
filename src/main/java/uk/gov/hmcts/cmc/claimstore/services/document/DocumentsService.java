@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.document;
 
+import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 
 public interface DocumentsService {
     byte[] generateClaimIssueReceipt(String externalId, String authorisation);
@@ -14,9 +14,7 @@ public interface DocumentsService {
 
     byte[] generateSettlementAgreement(String externalId, String authorisation);
 
-    byte[] uploadToDocumentManagement(byte[] documentBytes,
-        String authorisation,
-        String baseFileName,
-        ClaimDocumentType claimDocumentType,
-        Claim claim);
+    void uploadToDocumentManagement(PDF document,
+                                    String authorisation,
+                                    Claim claim);
 }
