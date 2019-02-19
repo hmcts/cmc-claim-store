@@ -24,6 +24,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.function.Predicate;
 
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
+import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isReferredToJudge;
+import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isSettlePreJudgment;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
 
 @Service
@@ -81,6 +84,11 @@ public class ClaimantResponseService {
             || (isReferredToJudge(claimantResponse) && PartyUtils.isCompanyOrOrganisation(response.getDefendant())))) {
             eventProducer.createClaimantResponseEvent(updatedClaim);
         }
+
+        if (isSettlePreJudgment(claimantResponse)) {
+            caseRepository.saveCaseEvent(authorization, updatedClaim, SETTLED_PRE_JUDGMENT);
+        }
+
         ccdEventProducer.createCCDClaimantResponseEvent(claim, claimantResponse, authorization);
         appInsights.trackEvent(getAppInsightsEvent(claimantResponse), "referenceNumber", claim.getReferenceNumber());
     }
@@ -91,16 +99,6 @@ public class ClaimantResponseService {
         if (shouldFormaliseResponseAcceptance(response, claimantResponse)) {
             return ((ResponseAcceptation) claimantResponse).getFormaliseOption()
                 .filter(Predicate.isEqual(FormaliseOption.SETTLEMENT)).isPresent();
-        }
-        return false;
-    }
-
-    private boolean isReferredToJudge(ClaimantResponse response) {
-        if (response.getType().equals(ACCEPTATION)) {
-            ResponseAcceptation responseAcceptation = (ResponseAcceptation) response;
-            return responseAcceptation.getFormaliseOption()
-                .filter(Predicate.isEqual(FormaliseOption.REFER_TO_JUDGE))
-                .isPresent();
         }
         return false;
     }

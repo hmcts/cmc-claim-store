@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDCourtOrder;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDebt;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpense;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncome;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebt;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
@@ -71,7 +72,7 @@ public class StatementOfMeansAssert extends AbstractAssert<StatementOfMeansAsser
 
     private void assertPriorityDebt(
         PriorityDebt priorityDebt,
-        List<CCDCollectionElement<PriorityDebt>> ccdPriorityDebts
+        List<CCDCollectionElement<CCDPriorityDebt>> ccdPriorityDebts
     ) {
         ccdPriorityDebts.stream()
             .map(CCDCollectionElement::getValue)
