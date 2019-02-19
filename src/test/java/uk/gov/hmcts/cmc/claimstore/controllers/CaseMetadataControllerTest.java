@@ -140,6 +140,7 @@ public class CaseMetadataControllerTest {
         assertValid(sampleClaim, output.get(0));
     }
 
+
     private static void assertValid(Claim dto, CaseMetadata metadata) {
         assertEquals(dto.getId(), metadata.getId());
         assertEquals(dto.getSubmitterId(), metadata.getSubmitterId());
@@ -155,5 +156,6 @@ public class CaseMetadataControllerTest {
         assertEquals(dto.getSettlementReachedAt(), metadata.getSettlementReachedAt());
         assertEquals(dto.getSealedClaimDocument(), Optional.ofNullable(metadata.getSealedClaimDocument()));
         assertEquals(dto.getClaimData().getPayment().getReference(), metadata.getPaymentReference());
+        assertEquals(dto.getMoneyReceivedOn(), metadata.getMoneyReceivedOn());
     }
 }
