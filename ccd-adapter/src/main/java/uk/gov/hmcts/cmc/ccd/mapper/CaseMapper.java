@@ -5,7 +5,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
-import java.net.URI;
 import java.util.Arrays;
 
 @Component
@@ -58,9 +57,6 @@ public class CaseMapper {
             builder.features(Arrays.asList(ccdCase.getFeatures().split(",")));
         }
 
-        if (ccdCase.getSealedClaimDocument() != null) {
-            builder.sealedClaimDocument(URI.create(ccdCase.getSealedClaimDocument().getDocumentUrl()));
-        }
         return builder.build();
     }
 }

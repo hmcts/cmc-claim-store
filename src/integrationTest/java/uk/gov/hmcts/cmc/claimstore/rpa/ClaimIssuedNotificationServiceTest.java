@@ -22,6 +22,8 @@ import static uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssuedNotificationService.JSO
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildJsonClaimFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 public class ClaimIssuedNotificationServiceTest extends MockSpringTest {
 
@@ -44,8 +46,12 @@ public class ClaimIssuedNotificationServiceTest extends MockSpringTest {
     public void setUp() {
         claim = SampleClaim.getDefault();
 
-        PDF sealedClaimDoc = new PDF(buildSealedClaimFileBaseName(claim.getReferenceNumber()), PDF_CONTENT);
-        PDF defendantLetterDoc = new PDF(buildDefendantLetterFileBaseName(claim.getReferenceNumber()), PDF_CONTENT);
+        PDF sealedClaimDoc = new PDF(buildSealedClaimFileBaseName(claim.getReferenceNumber()),
+            PDF_CONTENT,
+            SEALED_CLAIM);
+        PDF defendantLetterDoc = new PDF(buildDefendantLetterFileBaseName(claim.getReferenceNumber()),
+            PDF_CONTENT,
+            DEFENDANT_PIN_LETTER);
 
         event = new DocumentGeneratedEvent(claim, "AUTH_CODE", defendantLetterDoc, sealedClaimDoc);
     }
