@@ -50,12 +50,27 @@ public class ClaimAuthorisationRuleTest {
             .doesNotThrowAnyException();
     }
 
+    @Test
+    public void shouldNotThrowExceptionWhenLetterHolderIdMatchesAuthorisation() {
+        Claim claim = SampleClaim.builder()
+            .withSubmitterId(FAILING_USER_ID)
+            .withDefendantId(FAILING_USER_ID)
+            .withLetterHolderId(MATCHING_USER_ID).build();
+        assertThatCode(() -> claimAuthorisationRule.assertClaimCanBeAccessed(claim, AUTHORISATION_TOKEN))
+            .doesNotThrowAnyException();
+    }
+
     @Test(expected = ForbiddenActionException.class)
     public void shouldThrowForbiddenActionExceptionWhenAuthorisationMatchesNoId() {
-        Claim claim = SampleClaim.builder().withSubmitterId(FAILING_USER_ID).withDefendantId(FAILING_USER_ID).build();
+        Claim claim = SampleClaim.builder()
+            .withSubmitterId(FAILING_USER_ID)
+            .withDefendantId(FAILING_USER_ID)
+            .withLetterHolderId(FAILING_USER_ID)
+            .build();
         claimAuthorisationRule.assertClaimCanBeAccessed(claim, AUTHORISATION_TOKEN);
     }
 
+    @Test
     public void shouldNotThrowExceptionWhenUserIdMatchesAuthorisation() {
         assertThatCode(() -> claimAuthorisationRule.assertSubmitterIdMatchesAuthorisation(MATCHING_USER_ID,
             AUTHORISATION_TOKEN)).doesNotThrowAnyException();
@@ -65,4 +80,5 @@ public class ClaimAuthorisationRuleTest {
     public void shouldThrowForbiddenActionExceptionWhenUserIdDoesNotMatchAuthorisation() {
         claimAuthorisationRule.assertSubmitterIdMatchesAuthorisation(FAILING_USER_ID, AUTHORISATION_TOKEN);
     }
+
 }
