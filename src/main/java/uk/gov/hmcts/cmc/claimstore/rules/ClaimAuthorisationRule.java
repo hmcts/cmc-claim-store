@@ -11,7 +11,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 public class ClaimAuthorisationRule {
 
     private static final String USER_NOT_LINKED_MESSAGE =
-        "User with id %s1 is not linked to claim with external id %s2";
+        "User id %s1 does not match linked ids on claim ";
 
     private static final String USER_ID_MISMATCH =
         "User with id %s1 does not match given user id %s2";
