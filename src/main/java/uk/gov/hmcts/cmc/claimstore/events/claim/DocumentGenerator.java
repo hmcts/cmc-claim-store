@@ -15,6 +15,8 @@ import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @Component
 public class DocumentGenerator {
@@ -42,13 +44,14 @@ public class DocumentGenerator {
         Document sealedClaimDoc = citizenServiceDocumentsService.sealedClaimDocument(event.getClaim());
 
         PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(event.getClaim().getReferenceNumber()),
-            sealedClaimPdfService.createPdf(event.getClaim()));
+            sealedClaimPdfService.createPdf(event.getClaim()), SEALED_CLAIM);
 
         Document defendantLetterDoc = citizenServiceDocumentsService.pinLetterDocument(event.getClaim(),
             event.getPin());
 
         PDF defendantLetter = new PDF(buildDefendantLetterFileBaseName(event.getClaim().getReferenceNumber()),
-            pdfServiceClient.generateFromHtml(defendantLetterDoc.template.getBytes(), defendantLetterDoc.values));
+            pdfServiceClient.generateFromHtml(defendantLetterDoc.template.getBytes(), defendantLetterDoc.values),
+            DEFENDANT_PIN_LETTER);
 
         publisher.publishEvent(new DocumentReadyToPrintEvent(event.getClaim(),
             defendantLetterDoc, sealedClaimDoc));
@@ -59,14 +62,14 @@ public class DocumentGenerator {
     @EventListener
     public void generateForRepresentedClaim(RepresentedClaimIssuedEvent event) {
         PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(event.getClaim().getReferenceNumber()),
-            sealedClaimPdfService.createPdf(event.getClaim()));
+            sealedClaimPdfService.createPdf(event.getClaim()), SEALED_CLAIM);
 
         publisher.publishEvent(new DocumentGeneratedEvent(event.getClaim(), event.getAuthorisation(), sealedClaim));
     }
 
     public void generateForCitizenRPA(CitizenClaimIssuedEvent event) {
         PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(event.getClaim().getReferenceNumber()),
-            sealedClaimPdfService.createPdf(event.getClaim()));
+            sealedClaimPdfService.createPdf(event.getClaim()), SEALED_CLAIM);
 
         publisher.publishEvent(new DocumentGeneratedEvent(event.getClaim(), event.getAuthorisation(),
             sealedClaim));

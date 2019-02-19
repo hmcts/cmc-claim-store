@@ -154,9 +154,4 @@ public class ClaimStore {
         return getClaimByExternalId(externalId);
     }
 
-    public Claim linkSealedClaimDocumentSelfPath(long claimId, String documentSelfPath) {
-        this.claimRepository.linkSealedClaimDocument(claimId, documentSelfPath);
-
-        return getClaim(claimId);
-    }
 }
