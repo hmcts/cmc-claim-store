@@ -26,6 +26,6 @@ dependencies {
   testCompile group: 'commons-io', name: 'commons-io', version: '2.6'
   testCompile group: 'com.icegreen', name: 'greenmail', version: '1.5.9'
 
-  testCompile group: 'org.mockito', name: 'mockito-core', version: '2.24.0'
+  testCompile group: 'org.mockito', name: 'mockito-core', version: '2.24.5'
 }
 
