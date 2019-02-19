@@ -29,7 +29,8 @@ public class ClaimAuthorisationRule {
             UserDetails userDetails = userService.getUserDetails(authorisation);
 
             if (!userDetails.getId().equals(claim.getDefendantId())
-                && !userDetails.getId().equals(claim.getSubmitterId())) {
+                && !userDetails.getId().equals(claim.getSubmitterId())
+                && !userDetails.getId().equals(claim.getLetterHolderId())) {
                 throw new ForbiddenActionException(String.format(USER_NOT_LINKED_MESSAGE,
                     userDetails.getId(),
                     claim.getExternalId()));

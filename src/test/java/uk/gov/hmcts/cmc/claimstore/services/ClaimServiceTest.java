@@ -150,6 +150,8 @@ public class ClaimServiceTest {
         Optional<Claim> result = Optional.of(claim);
 
         when(caseRepository.getByLetterHolderId(eq(LETTER_HOLDER_ID), any())).thenReturn(result);
+        when(userService.getUserDetails(AUTHORISATION))
+            .thenReturn(SampleUserDetails.builder().withUserId(LETTER_HOLDER_ID).build());
 
         Claim claimApplication = claimService.getClaimByLetterHolderId(LETTER_HOLDER_ID, AUTHORISATION);
         assertThat(claimApplication).isEqualTo(claim);
