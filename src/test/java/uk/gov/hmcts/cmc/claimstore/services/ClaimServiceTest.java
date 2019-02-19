@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
+import uk.gov.hmcts.cmc.claimstore.rules.ClaimAuthorisationRule;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimDeadlineService;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.rules.PaidInFullRule;
@@ -115,7 +116,8 @@ public class ClaimServiceTest {
             appInsights,
             ccdCaseDataToClaim,
             new PaidInFullRule(),
-            ccdEventProducer);
+            ccdEventProducer,
+            new ClaimAuthorisationRule(userService));
     }
 
     @Test

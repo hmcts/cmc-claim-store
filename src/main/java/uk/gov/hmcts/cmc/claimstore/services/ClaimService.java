@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
+import uk.gov.hmcts.cmc.claimstore.rules.ClaimAuthorisationRule;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.rules.PaidInFullRule;
 import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
@@ -66,6 +67,7 @@ public class ClaimService {
     private final AppInsights appInsights;
     private final CCDCaseDataToClaim ccdCaseDataToClaim;
     private final PaidInFullRule paidInFullRule;
+    private final ClaimAuthorisationRule claimAuthorisationRule;
     private CCDEventProducer ccdEventProducer;
 
     @SuppressWarnings("squid:S00107") //Constructor need all parameters
@@ -82,7 +84,8 @@ public class ClaimService {
         AppInsights appInsights,
         CCDCaseDataToClaim ccdCaseDataToClaim,
         PaidInFullRule paidInFullRule,
-        CCDEventProducer ccdEventProducer) {
+        CCDEventProducer ccdEventProducer,
+        ClaimAuthorisationRule claimAuthorisationRule) {
         this.claimRepository = claimRepository;
         this.userService = userService;
         this.issueDateCalculator = issueDateCalculator;
@@ -95,6 +98,7 @@ public class ClaimService {
         this.directionsQuestionnaireDeadlineCalculator = directionsQuestionnaireDeadlineCalculator;
         this.paidInFullRule = paidInFullRule;
         this.ccdEventProducer = ccdEventProducer;
+        this.claimAuthorisationRule = claimAuthorisationRule;
     }
 
     public Claim getClaimById(long claimId) {
@@ -104,24 +108,38 @@ public class ClaimService {
     }
 
     public List<Claim> getClaimBySubmitterId(String submitterId, String authorisation) {
+        claimAuthorisationRule.assertSubmitterIdMatchesAuthorisation(submitterId, authorisation);
         return caseRepository.getBySubmitterId(submitterId, authorisation);
     }
 
     public Claim getClaimByLetterHolderId(String id, String authorisation) {
-        return caseRepository
+        Claim claim = caseRepository
             .getByLetterHolderId(id, authorisation)
             .orElseThrow(() -> new NotFoundException("Claim not found for letter holder id " + id));
+
+        claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorisation);
+
+        return claim;
     }
 
     public Claim getClaimByExternalId(String externalId, String authorisation) {
-        return caseRepository
+        Claim claim = caseRepository
             .getClaimByExternalId(externalId, authorisation)
             .orElseThrow(() -> new NotFoundException("Claim not found by external id " + externalId));
+
+        claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorisation);
+
+        return claim;
+
     }
 
     public Optional<Claim> getClaimByReference(String reference, String authorisation) {
-        return caseRepository
+        Optional<Claim> claim = caseRepository
             .getByClaimReferenceNumber(reference, authorisation);
+
+        claim.ifPresent(c -> claimAuthorisationRule.assertClaimCanBeAccessed(c, authorisation));
+
+        return claim;
     }
 
     public Optional<Claim> getClaimByReferenceAnonymous(String reference) {
@@ -137,10 +155,13 @@ public class ClaimService {
 
     public List<Claim> getClaimByExternalReference(String externalReference, String authorisation) {
         String submitterId = userService.getUserDetails(authorisation).getId();
+
         return claimRepository.getByExternalReference(externalReference, submitterId);
     }
 
     public List<Claim> getClaimByDefendantId(String id, String authorisation) {
+        claimAuthorisationRule.assertSubmitterIdMatchesAuthorisation(id, authorisation);
+
         return caseRepository.getByDefendantId(id, authorisation);
     }
 
@@ -229,6 +250,8 @@ public class ClaimService {
     public Claim requestMoreTimeForResponse(String externalId, String authorisation) {
         Claim claim = getClaimByExternalId(externalId, authorisation);
 
+        claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorisation);
+
         this.moreTimeRequestRule.assertMoreTimeCanBeRequested(claim);
 
         LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
@@ -302,6 +325,7 @@ public class ClaimService {
     }
 
     public void linkSealedClaimDocument(String authorisation, Claim claim, URI sealedClaimDocument) {
+        claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorisation);
         caseRepository.linkSealedClaimDocument(authorisation, claim, sealedClaimDocument);
         ccdEventProducer.linkSealedClaimDocumentCCDEvent(authorisation, claim, sealedClaimDocument);
     }
@@ -315,6 +339,7 @@ public class ClaimService {
         Claim claim,
         CountyCourtJudgment countyCourtJudgment
     ) {
+        claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorisation);
         caseRepository.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
         ccdEventProducer.createCCDCountyCourtJudgmentEvent(claim, authorisation, countyCourtJudgment);
         appInsights.trackEvent(CCJ_REQUESTED, REFERENCE_NUMBER, claim.getReferenceNumber());
@@ -326,6 +351,7 @@ public class ClaimService {
         Response response,
         String authorization
     ) {
+        claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorization);
         caseRepository.saveDefendantResponse(claim, defendantEmail, response, authorization);
         if (isFullDefenceWithNoMediation(response)) {
             LocalDate deadline = directionsQuestionnaireDeadlineCalculator
@@ -336,6 +362,7 @@ public class ClaimService {
 
     public Claim paidInFull(String externalId, PaidInFull paidInFull, String authorisation) {
         Claim claim = getClaimByExternalId(externalId, authorisation);
+        claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorisation);
         String claimantId = userService.getUserDetails(authorisation).getId();
         this.paidInFullRule.assertPaidInFull(claim, claimantId);
         this.caseRepository.paidInFull(claim, paidInFull, authorisation);
@@ -356,6 +383,7 @@ public class ClaimService {
         Claim claim,
         ReDetermination redetermination
     ) {
+        claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorisation);
         caseRepository.saveReDetermination(authorisation, claim, redetermination);
         ccdEventProducer.createCCDReDetermination(claim, authorisation, redetermination);
 
