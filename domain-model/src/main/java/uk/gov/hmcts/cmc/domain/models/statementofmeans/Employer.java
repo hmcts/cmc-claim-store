@@ -4,12 +4,12 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
+import uk.gov.hmcts.cmc.domain.models.CollectionId;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-@Builder
-@EqualsAndHashCode
-public class Employer {
+@EqualsAndHashCode(callSuper = true)
+public class Employer extends CollectionId {
 
     @NotBlank
     private final String jobTitle;
@@ -17,7 +17,9 @@ public class Employer {
     @NotBlank
     private final String name;
 
-    public Employer(String jobTitle, String name) {
+    @Builder
+    public Employer(String id, String jobTitle, String name) {
+        super(id);
         this.jobTitle = jobTitle;
         this.name = name;
     }

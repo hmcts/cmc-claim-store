@@ -12,8 +12,8 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import java.time.LocalDate;
 import java.util.Optional;
 
-@ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 @Service("supportRepository")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
 public class CCDTestingSupportRepository implements SupportRepository {
 
     private final UserService userService;
@@ -33,7 +33,7 @@ public class CCDTestingSupportRepository implements SupportRepository {
 
     @Override
     public void updateResponseDeadline(String authorisation, Claim claim, LocalDate responseDeadline) {
-        this.coreCaseDataService.updateResponseDeadline(authorisation, claim, responseDeadline);
+        this.coreCaseDataService.updateResponseDeadline(authorisation, claim.getId(), responseDeadline);
     }
 
     @Override

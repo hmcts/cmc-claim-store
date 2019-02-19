@@ -75,14 +75,15 @@ public class DownloadRepresentedClaimCopyWithDocumentManagementTest extends Base
     }
 
     @Test
-    public void shouldReturnServerErrorWhenUploadToDocumentManagementStoreFailed() throws Exception {
+    public void shouldNotReturnServerErrorWhenUploadToDocumentManagementStoreFailed() throws Exception {
         given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
             .willReturn(unsuccessfulDocumentManagementUploadResponse());
 
         Claim claim = claimStore.saveClaim(SampleClaimData.submittedByLegalRepresentative());
 
         makeRequest(claim.getExternalId())
-            .andExpect(status().isInternalServerError());
+            .andExpect(status().isOk())
+            .andExpect(content().bytes(PDF_BYTES));
 
         assertThat(claimStore.getClaim(claim.getId()).getSealedClaimDocument())
             .isEqualTo(Optional.empty());

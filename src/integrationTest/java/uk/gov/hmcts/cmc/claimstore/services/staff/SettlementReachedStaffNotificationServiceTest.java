@@ -45,8 +45,8 @@ public class SettlementReachedStaffNotificationServiceTest extends MockSpringTes
     @Before
     public void setup() {
         Settlement settlement = new Settlement();
-        settlement.makeOffer(SampleOffer.validDefaults(), MadeBy.DEFENDANT);
-        settlement.accept(MadeBy.CLAIMANT);
+        settlement.makeOffer(SampleOffer.builder().build(), MadeBy.DEFENDANT, null);
+        settlement.accept(MadeBy.CLAIMANT, null);
 
         claim = SampleClaim
             .builder()

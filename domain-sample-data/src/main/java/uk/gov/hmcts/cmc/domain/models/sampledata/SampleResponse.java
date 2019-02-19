@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
@@ -28,7 +29,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         public FullAdmissionResponse build() {
             return FullAdmissionResponse.builder()
                 .moreTimeNeeded(YesNoOption.NO)
-                .defendant(SampleParty.builder().individual())
+                .defendant(SampleParty.builder().withCollectionId("acd82549-d279-4adc-b38c-d195dd0db0d6").individual())
                 .paymentIntention(SamplePaymentIntention.instalments())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
                 .build();
@@ -50,6 +51,22 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .paymentIntention(SamplePaymentIntention.immediately())
                 .build();
         }
+
+        public FullAdmissionResponse buildWithPaymentOptionInstalments() {
+            return FullAdmissionResponse.builder()
+                .moreTimeNeeded(YesNoOption.NO)
+                .defendant(SampleParty.builder().individual())
+                .paymentIntention(SamplePaymentIntention.instalments())
+                .build();
+        }
+
+        public FullAdmissionResponse buildWithPaymentIntentionAndParty(PaymentIntention paymentIntention, Party party) {
+            return FullAdmissionResponse.builder()
+                .moreTimeNeeded(YesNoOption.NO)
+                .defendant(party)
+                .paymentIntention(paymentIntention)
+                .build();
+        }
     }
 
     public static class PartAdmission extends SampleResponse<PartAdmission> {
@@ -62,7 +79,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .defendant(SampleParty.builder().individual())
                 .moreTimeNeeded(YesNoOption.NO)
                 .amount(BigDecimal.valueOf(120))
-                .paymentDeclaration(SamplePaymentDeclaration.validDefaults())
+                .paymentDeclaration(SamplePaymentDeclaration.builder().build())
                 .defence(USER_DEFENCE)
                 .timeline(SampleDefendantTimeline.validDefaults())
                 .evidence(SampleDefendantEvidence.validDefaults())
@@ -75,6 +92,19 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .moreTimeNeeded(YesNoOption.NO)
                 .amount(BigDecimal.valueOf(120))
                 .paymentIntention(SamplePaymentIntention.immediately())
+                .defence(USER_DEFENCE)
+                .timeline(SampleDefendantTimeline.validDefaults())
+                .evidence(SampleDefendantEvidence.validDefaults())
+                .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .build();
+        }
+
+        public PartAdmissionResponse buildWithPaymentIntentionAndParty(PaymentIntention paymentIntention, Party party) {
+            return PartAdmissionResponse.builder()
+                .defendant(party)
+                .moreTimeNeeded(YesNoOption.NO)
+                .amount(BigDecimal.valueOf(120))
+                .paymentIntention(paymentIntention)
                 .defence(USER_DEFENCE)
                 .timeline(SampleDefendantTimeline.validDefaults())
                 .evidence(SampleDefendantEvidence.validDefaults())
@@ -95,7 +125,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .build();
         }
 
-        public PartAdmissionResponse buildWithPaymentOptionInstallments() {
+        public PartAdmissionResponse buildWithPaymentOptionInstalments() {
             return PartAdmissionResponse.builder()
                 .defendant(SampleParty.builder().individual())
                 .moreTimeNeeded(YesNoOption.NO)
@@ -105,6 +135,28 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .timeline(SampleDefendantTimeline.validDefaults())
                 .evidence(SampleDefendantEvidence.validDefaults())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .build();
+        }
+
+        public PartAdmissionResponse buildWithPaymentOptionInstalmentsAndParty(Party party) {
+            return PartAdmissionResponse.builder()
+                .defendant(party)
+                .moreTimeNeeded(YesNoOption.NO)
+                .amount(BigDecimal.valueOf(120))
+                .paymentIntention(SamplePaymentIntention.instalments())
+                .defence(USER_DEFENCE)
+                .timeline(SampleDefendantTimeline.validDefaults())
+                .evidence(SampleDefendantEvidence.validDefaults())
+                .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .build();
+        }
+
+        public PartAdmissionResponse buildWithStatesPaid(Party party) {
+            return PartAdmissionResponse.builder()
+                .defendant(party)
+                .moreTimeNeeded(YesNoOption.NO)
+                .amount(BigDecimal.valueOf(120))
+                .paymentDeclaration(SamplePaymentDeclaration.builder().build())
                 .build();
         }
     }

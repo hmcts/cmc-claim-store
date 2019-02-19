@@ -28,6 +28,7 @@ public class StatementOfMeansContentProvider {
         requireNonNull(statementOfMeans);
 
         ImmutableMap.Builder<String, Object> contentBuilder = ImmutableMap.builder();
+        contentBuilder.put("statementOfMeans", statementOfMeans);
 
         Residence residence = statementOfMeans.getResidence();
         contentBuilder.put("residence", residence);
@@ -73,6 +74,18 @@ public class StatementOfMeansContentProvider {
                 .map(this::createIncome)
                 .collect(toList())
         );
+
+        statementOfMeans.getPartner()
+            .ifPresent(
+                partner -> contentBuilder.put("partner", partner)
+            );
+
+        statementOfMeans.getDisability()
+            .ifPresent(
+                disability -> contentBuilder.put("disability", disability.getDescription())
+            );
+
+        contentBuilder.put("carer", statementOfMeans.isCarer());
 
         return contentBuilder.build();
     }

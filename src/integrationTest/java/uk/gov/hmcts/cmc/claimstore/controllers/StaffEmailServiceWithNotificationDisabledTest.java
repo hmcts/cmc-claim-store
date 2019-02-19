@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUser;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -41,7 +42,7 @@ import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.RESPONSE_DEADLINE;
 @TestPropertySource(
     properties = {
         "document_management.url=false",
-        "core_case_data.api.url=false",
+        "feature_toggles.ccd_enabled=false",
         "feature_toggles.emailToStaff=false"
     }
 )
@@ -75,7 +76,7 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
 
     @Test
     public void shouldNotSendStaffNotificationsForCitizenClaimIssuedEvent() throws Exception {
-        makeIssueClaimRequest(SampleClaimData.submittedByClaimant())
+        makeIssueClaimRequest(SampleClaimData.submittedByClaimant(), AUTHORISATION_TOKEN)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -83,8 +84,11 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
     }
 
     @Test
-    public void shouldNotSendStaffNotificationWhenCCJRequestSubmitted() throws Exception {
-        CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment.builder().build();
+    public void shouldNotSendStaffNotificationWhenDefaultCCJRequestSubmitted() throws Exception {
+        CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment
+            .builder()
+            .ccjType(CountyCourtJudgmentType.DEFAULT)
+            .build();
 
         makeRequest(claim.getExternalId(), countyCourtJudgment).andExpect(status().isOk());
 
@@ -103,10 +107,10 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
     @Test
     public void shouldNotSendStaffNotificationWhenCounterSignRequestSubmitted() throws Exception {
         Settlement settlement = new Settlement();
-        settlement.makeOffer(SampleOffer.validDefaults(), MadeBy.DEFENDANT);
+        settlement.makeOffer(SampleOffer.builder().build(), MadeBy.DEFENDANT, null);
         claim = claimStore.makeOffer(claim.getExternalId(), settlement);
 
-        settlement.accept(MadeBy.CLAIMANT);
+        settlement.accept(MadeBy.CLAIMANT, null);
         claim = claimStore.acceptOffer(claim.getExternalId(), settlement);
 
         makeCounterOfferSignedRequest(claim.getExternalId()).andExpect(status().isCreated());

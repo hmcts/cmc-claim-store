@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.Timeline;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.models.evidence.Evidence;
+import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
 import java.math.BigDecimal;
@@ -22,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.math.BigDecimal.ZERO;
@@ -29,9 +31,13 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDateTime;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
+import static uk.gov.hmcts.cmc.claimstore.utils.ParagraphEnumerator.split;
 
 @Component
 public class ClaimDataContentProvider {
+
+    private static final Function<EvidenceRow, EvidenceContent> toEvidenceContent =
+        e -> new EvidenceContent(e.getType().getDescription(), e.getDescription().orElse(null));
 
     private final InterestContentProvider interestContentProvider;
 
@@ -49,7 +55,8 @@ public class ClaimDataContentProvider {
         totalAmountComponents.add(claim.getClaimData().getFeesPaidInPound());
 
         InterestContent interestContent = null;
-        if (!claim.getClaimData().getInterest().getType().equals(Interest.InterestType.NO_INTEREST)) {
+
+        if (!Objects.equals(claim.getClaimData().getInterest().getType(), Interest.InterestType.NO_INTEREST)) {
             interestContent = interestContentProvider.createContent(
                 claim.getClaimData().getInterest(),
                 claim.getClaimData().getInterest().getInterestDate(),
@@ -65,28 +72,21 @@ public class ClaimDataContentProvider {
         String signerName = optionalStatementOfTruth.map((StatementOfTruth::getSignerName)).orElse(null);
         String signerRole = optionalStatementOfTruth.map((StatementOfTruth::getSignerRole)).orElse(null);
 
-        List<TimelineEvent> events = null;
-        Optional<Timeline> timeline = claim.getClaimData().getTimeline();
-        if (timeline.isPresent()) {
-            events = timeline.get().getEvents();
-        }
+        List<TimelineEvent> events = claim.getClaimData().getTimeline().map(Timeline::getEvents).orElse(null);
 
-        List<EvidenceContent> evidences = null;
-        Optional<Evidence> evidence = claim.getClaimData().getEvidence();
-        if (evidence.isPresent()) {
-            evidences = Optional.ofNullable(evidence.get().getRows())
-                .orElseGet(Collections::emptyList)
-                .stream()
-                .filter(Objects::nonNull)
-                .map(e -> new EvidenceContent(e.getType().getDescription(), e.getDescription().orElse(null)))
-                .collect(Collectors.toList());
-        }
+        List<EvidenceContent> evidences = claim.getClaimData().getEvidence()
+            .map(Evidence::getRows)
+            .orElseGet(Collections::emptyList)
+            .stream()
+            .filter(Objects::nonNull)
+            .map(toEvidenceContent)
+            .collect(Collectors.toList());
 
         return new ClaimContent(
             claim.getReferenceNumber(),
             formatDateTime(claim.getCreatedAt()),
             formatDate(claim.getIssuedOn()),
-            claim.getClaimData().getReason(),
+            split(claim.getClaimData().getReason()),
             formatMoney(amountBreakDown.getTotalAmount()),
             formatMoney(claim.getClaimData().getFeesPaidInPound()),
             interestContent,
@@ -106,7 +106,8 @@ public class ClaimDataContentProvider {
     private static List<AmountRowContent> mapToAmountRowContent(List<AmountRow> rows) {
         return rows
             .stream()
-            .filter(row -> row != null && row.getAmount() != null)
+            .filter(Objects::nonNull)
+            .filter(row -> row.getAmount() != null)
             .map(AmountRowContent::new)
             .collect(Collectors.toList());
     }

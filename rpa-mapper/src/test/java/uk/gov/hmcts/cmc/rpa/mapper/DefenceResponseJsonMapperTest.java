@@ -11,15 +11,12 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAddress;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 import uk.gov.hmcts.cmc.rpa.config.ModuleConfiguration;
-
-import java.time.LocalDateTime;
 
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
@@ -28,7 +25,7 @@ import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 @ContextConfiguration(classes = ModuleConfiguration.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @SuppressWarnings({"LineLength"})
-public class DefenceResponseJsonMapperTest {
+public class DefenceResponseJsonMapperTest extends BaseResponseJsonMapper {
 
     private static final String INDIVIDUAL = "/defence/individual_rpa_case.json";
     private static final String INDIVIDUAL_MEDIATION_NOT_OPTED = "/defence/individual_mediation_not_opted_rpa_case.json";
@@ -37,7 +34,6 @@ public class DefenceResponseJsonMapperTest {
     private static final String COMPANY = "/defence/company_rpa_case.json";
     private static final String ORGANISATION = "/defence/organisation_rpa_case.json";
     private static final String ORGANISATION_ALREADY_PAID_RESPONSE = "/defence/organisation_rpa_case_alreadyPaid.json";
-    private static final String DEFENDANT_EMAIL = "j.smith@example.com";
 
     @Autowired
     private DefenceResponseJsonMapper mapper;
@@ -46,7 +42,7 @@ public class DefenceResponseJsonMapperTest {
     public void shouldMapIndividualDefenceResponseToRPA() throws JSONException {
         Claim claim = withCommonDefEmailAndRespondedAt()
             .withResponse(SampleResponse.FullDefence.builder().withDefendantDetails(SampleParty.builder()
-                .withCorrespondenceAddress(SampleAddress.builder().withLine1("102").build()).individual()).build())
+                .withCorrespondenceAddress(SampleAddress.builder().line1("102").build()).individual()).build())
             .withClaimData(SampleClaimData.builder()
                 .withDefendant(SampleTheirDetails.builder().individualDetails())
                 .build())
@@ -72,13 +68,12 @@ public class DefenceResponseJsonMapperTest {
         assertEquals(expected, mapper.map(claim).toString(), STRICT);
     }
 
-
     @Test
     public void shouldMapIndividualAddressModifiedDefenceResponseToRPA() throws JSONException {
         Claim claim = withCommonDefEmailAndRespondedAt()
             .withResponse(SampleResponse.FullDefence.builder()
                 .withDefendantDetails(SampleParty.builder().withAddress(SampleAddress.builder()
-                    .withPostcode("MK3 0AL").build()).withCorrespondenceAddress(null).individual()).build())
+                    .postcode("MK3 0AL").build()).withCorrespondenceAddress(null).individual()).build())
             .withClaimData(SampleClaimData.builder()
                 .withDefendant(SampleTheirDetails.builder().individualDetails())
                 .build())
@@ -147,12 +142,5 @@ public class DefenceResponseJsonMapperTest {
 
         assertEquals(expected, mapper.map(claim).toString(), STRICT);
     }
-
-    private SampleClaim withCommonDefEmailAndRespondedAt() {
-        return SampleClaim.builder()
-            .withDefendantEmail(DEFENDANT_EMAIL)
-            .withRespondedAt(LocalDateTime.of(2018, 4, 26, 1, 1));
-    }
-
 
 }

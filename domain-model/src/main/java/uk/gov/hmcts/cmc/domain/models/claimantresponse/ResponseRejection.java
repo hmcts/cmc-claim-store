@@ -5,9 +5,10 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.hibernate.validator.constraints.NotBlank;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
@@ -16,18 +17,29 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @EqualsAndHashCode(callSuper = true)
 public class ResponseRejection extends ClaimantResponse {
 
-    private final boolean freeMediation;
+    private final YesNoOption freeMediation;
 
-    @NotBlank
     @Size(max = 99000)
     private final String reason;
 
     @Builder
     @JsonCreator
-    public ResponseRejection(BigDecimal amountPaid, boolean freeMediation, String reason) {
-        super(amountPaid);
+    public ResponseRejection(BigDecimal amountPaid,
+                             YesNoOption paymentReceived,
+                             YesNoOption settleForAmount,
+                             YesNoOption freeMediation,
+                             String reason) {
+        super(ClaimantResponseType.REJECTION, amountPaid, paymentReceived, settleForAmount);
         this.freeMediation = freeMediation;
         this.reason = reason;
+    }
+
+    public Optional<YesNoOption> getFreeMediation() {
+        return Optional.ofNullable(freeMediation);
+    }
+
+    public Optional<String> getReason() {
+        return Optional.ofNullable(reason);
     }
 
     @Override

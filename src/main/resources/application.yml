@@ -11,8 +11,14 @@ management:
   endpoint:
     health:
       show-details: always
+async:
+  max:
+    threadPool:
+      size: 50
 
 spring:
+  main:
+    allow-bean-definition-overriding: true  # https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.1-Release-Notes#bean-overriding
   application:
     name: 'claim-store'
   mail:
@@ -61,6 +67,10 @@ idam:
 pdf-service:
   url: "${PDF_SERVICE_URL:}"
 
+document_management:
+  url: ${DOCUMENT_MANAGEMENT_URL}
+  caseWorkerRole: ${DOCUMENT_MANAGEMENT_CASEWORKERROLE}
+
 bankHolidays:
   api:
     url: "https://www.gov.uk"
@@ -81,8 +91,8 @@ notifications:
   respondToClaimUrl: "${RESPOND_TO_CLAIM_URL:}"
   templates:
     email:
-      claimantClaimIssued: "58e645b8-bcd6-4462-822c-f17da9dd3dc7"
-      defendantClaimIssued: "49027a97-412e-45ee-86df-bf2fa6df6d8c"
+      claimantClaimIssued: "f034e121-e9d4-441a-91b9-52d0c7d14d73"
+      defendantClaimIssued: "b261ef40-ca55-4f36-b8ff-7f1f34347058"
       defendantResponseIssuedToIndividual: "128bfa11-0b09-4162-bb1e-36fa167af191"
       defendantResponseIssuedToCompany: "611ee21b-0063-4fee-a344-393b73868486"
       defendantResponseNeeded: "15f9985a-1775-4f64-a6c7-7616bdbabb1c"
@@ -104,6 +114,17 @@ notifications:
       claimantResponseWithNoMediationIssued: "9c740162-7516-4954-a023-6c1e48ba02f6"
       defendantResponseWithNoMediationIssued: "613ca230-ab62-4370-bacd-ecc65b92132a"
       responseByClaimantEmailToDefendant: "7997b719-cfc3-44ac-8fb6-b70ec409c68f"
+      claimantSaysDefendantHasPaidInFull: "221e3923-1321-413a-a02e-ee8c94816cbf"
+      claimantRequestedInterlocutoryJudgement: "dda355a4-204c-4172-826a-86c6f4e91e74"
+      redeterminationEmailToClaimant: "6236ce5c-fc18-4a67-b495-57159f3936b4"
+      settlementRejectedEmailToClaimant: "44e8ed3e-b60c-4e5d-a5e5-1e2f4bf7637c"
+      settlementRejectedEmailToDefendant: "237c8d29-531e-4c23-8a13-1d5f2b2b55b7"
+      claimantSignedSettlementAgreementToDefendant: "d66f1f81-ac86-41ae-9497-3e96cdd35a4e"
+      claimantSignedSettlementAgreementToClaimant: "05d211d9-74d3-4fdb-b152-c4689828d170"
+      defendantSignedSettlementAgreementToDefendant: "ba0c20ee-810e-4fc1-874f-6bdb18d2259b"
+      defendantSignedSettlementAgreementToClaimant: "59f982a7-264e-4ce1-93bf-25a9fb354dc9"
+      defendantAdmissionResponseToClaimant: "fce1eaa7-baa9-4b82-b1bb-119f9a2ffae3"
+
 staff-notifications:
   sender:
   recipient:
@@ -111,6 +132,9 @@ staff-notifications:
 feature_toggles:
   watermark_pdf: false
   emailToStaff: true
+  reminderEmails: false
+  ccd_async_enabled: false
+  ccd_enabled: false
 
 feign:
   httpclient:

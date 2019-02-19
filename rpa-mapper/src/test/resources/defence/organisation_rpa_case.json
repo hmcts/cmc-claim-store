@@ -2,6 +2,7 @@
   "caseNumber": "000CM001",
   "responseSubmittedOn": "26-Apr-2018",
   "defenceResponse": "DISPUTE",
+  "amountAdmitted": null,
   "defendant": {
     "type": "Organisation",
     "name": "John Rambo",
@@ -20,5 +21,6 @@
     "dateOfBirth": null,
     "phoneNumber": "07873727165"
   },
+  "payment": null,
   "mediation": true
 }

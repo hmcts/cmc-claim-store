@@ -62,6 +62,9 @@ public interface ClaimRepository {
     List<Claim> getByExternalReference(@Bind("externalReference") String externalReference,
                                        @Bind("submitterId") String submitterId);
 
+    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim->'payment'->>'reference' = :payReference")
+    List<Claim> getByPaymentReference(@Bind("payReference") String payReference);
+
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.is_migrated = false")
     List<Claim> getAllNotMigratedClaims();
 
@@ -177,11 +180,20 @@ public interface ClaimRepository {
         "UPDATE CLAIM SET "
             + "claimant_response = :response::JSONB, "
             + "claimant_responded_at = now() AT TIME ZONE 'utc' "
-            + "WHERE id = :id"
+            + "WHERE external_id = :externalId"
     )
     void saveClaimantResponse(
-        @Bind("id") long id,
+        @Bind("externalId") String externalId,
         @Bind("response") String response
+    );
+
+    @SqlUpdate(
+        "UPDATE claim SET money_received_on = :moneyReceivedOn "
+            + "WHERE external_id = :externalId"
+    )
+    void updateMoneyReceivedOn(
+        @Bind("externalId") String externalId,
+        @Bind("moneyReceivedOn") LocalDate moneyReceivedOn
     );
 
     @SqlUpdate("UPDATE claim SET "
@@ -194,15 +206,21 @@ public interface ClaimRepository {
 
     @SqlUpdate("UPDATE claim SET "
         + " county_court_judgment = :countyCourtJudgmentData::JSONB,"
-        + " county_court_judgment_requested_at = :ccjRequestedAt,"
-        + " county_court_judgment_issued_at = :ccjIssuedAt"
+        + " county_court_judgment_requested_at = :ccjRequestedAt"
         + " WHERE external_id = :externalId")
     void saveCountyCourtJudgment(
         @Bind("externalId") String externalId,
         @Bind("countyCourtJudgmentData") String countyCourtJudgmentData,
-        @Bind("ccjRequestedAt") LocalDateTime ccjRequestedAt,
-        @Bind("ccjIssuedAt") LocalDateTime ccjIssuedAt
+        @Bind("ccjRequestedAt") LocalDateTime ccjRequestedAt
     );
+
+    @SqlUpdate("UPDATE claim SET "
+        + " re_determination = :reDetermination::JSONB,"
+        + " re_determination_requested_at = now() AT TIME ZONE 'utc' "
+        + " WHERE external_id = :externalId")
+    void saveReDetermination(
+        @Bind("externalId") String externalId,
+        @Bind("reDetermination") String reDetermination);
 
     @SqlUpdate(
         "UPDATE claim SET "

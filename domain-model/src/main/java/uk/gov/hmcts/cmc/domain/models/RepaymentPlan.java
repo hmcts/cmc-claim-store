@@ -1,7 +1,8 @@
 package uk.gov.hmcts.cmc.domain.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInThePast;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
@@ -14,13 +15,13 @@ import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@Getter
 @EqualsAndHashCode
-@JsonIgnoreProperties(value = {"firstPayment"})
 public class RepaymentPlan {
 
     @NotNull
     @Money
-    @DecimalMin(value = "0.01")
+    @DecimalMin(value = "1.00")
     private final BigDecimal instalmentAmount;
 
     @NotNull
@@ -30,26 +31,23 @@ public class RepaymentPlan {
     @NotNull
     private final PaymentSchedule paymentSchedule;
 
+    private final LocalDate completionDate;
+
+    private final String paymentLength;
+
+    @Builder
     public RepaymentPlan(
         BigDecimal instalmentAmount,
         LocalDate firstPaymentDate,
-        PaymentSchedule paymentSchedule
+        PaymentSchedule paymentSchedule,
+        LocalDate completionDate,
+        String paymentLength
     ) {
         this.instalmentAmount = instalmentAmount;
         this.firstPaymentDate = firstPaymentDate;
         this.paymentSchedule = paymentSchedule;
-    }
-
-    public BigDecimal getInstalmentAmount() {
-        return instalmentAmount;
-    }
-
-    public LocalDate getFirstPaymentDate() {
-        return firstPaymentDate;
-    }
-
-    public PaymentSchedule getPaymentSchedule() {
-        return paymentSchedule;
+        this.completionDate = completionDate;
+        this.paymentLength = paymentLength;
     }
 
     @Override

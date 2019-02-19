@@ -23,6 +23,7 @@ public class StatementOfMeansTest {
                 .incomes(Arrays.asList(IncomeTest.newSampleOfIncomeBuilder().build()))
                 .expenses(Arrays.asList(ExpenseTest.newSampleOfExpenseBuilder().build()))
                 .courtOrders(Arrays.asList(CourtOrderTest.newSampleOfCourtOrderBuilder().build()))
+                .disability(DisabilityStatus.NO)
                 .reason("Reason");
     }
 
@@ -44,7 +45,7 @@ public class StatementOfMeansTest {
         Set<String> errors = validate(statementOfMeans);
         //then
         assertThat(errors)
-                .hasSize(4);
+                .hasSize(3);
     }
 
     @Test
@@ -115,7 +116,7 @@ public class StatementOfMeansTest {
     }
 
     @Test
-    public void shouldBeInvalidForEmptyBankAccount() {
+    public void shouldBeValidForEmptyBankAccount() {
         //given
         StatementOfMeans statementOfMeans = newSampleOfStatementOfMeansBuilder()
                 .bankAccounts(Collections.EMPTY_LIST)
@@ -124,8 +125,7 @@ public class StatementOfMeansTest {
         Set<String> errors = validate(statementOfMeans);
         //then
         assertThat(errors)
-                .hasSize(1)
-                .contains("bankAccounts : may not be empty");
+                .hasSize(0);
     }
 
     @Test

@@ -7,12 +7,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
-import uk.gov.hmcts.cmc.ccd.domain.CCDClaim;
-import uk.gov.hmcts.cmc.ccd.util.SampleData;
-import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
-
-import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -22,45 +20,27 @@ public class ClaimMapperTest {
     @Autowired
     private ClaimMapper claimMapper;
 
-    @Test
-    public void shouldMapClaimToCCD() {
-        //given
-        ClaimData claimData = SampleClaimData.validDefaults();
-
-        //when
-        CCDClaim ccdClaim = claimMapper.to(claimData);
-
-        //then
-        assertThat(claimData).isEqualTo(ccdClaim);
-    }
-
     @Test(expected = NullPointerException.class)
     public void shouldThrowExceptionWhenMissingClaimantsFromCMCClaim() {
         //given
-        ClaimData claimData = SampleClaimData.builder().withClaimants(null).build();
+        Claim claim = SampleClaim.builder()
+            .withClaimData(SampleClaimData.builder().withClaimants(null).build())
+            .build();
+        CCDCase.CCDCaseBuilder builder = CCDCase.builder();
 
         //when
-        claimMapper.to(claimData);
+        claimMapper.to(claim, builder);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowExceptionWhenMissingDefendantsFromCMCClaim() {
         //given
-        ClaimData claimData = SampleClaimData.builder().withDefendants(null).build();
+        Claim claim = SampleClaim.builder()
+            .withClaimData(SampleClaimData.builder().withDefendants(null).build())
+            .build();
+        CCDCase.CCDCaseBuilder builder = CCDCase.builder();
 
         //when
-        claimMapper.to(claimData);
-    }
-
-    @Test
-    public void shouldMapClaimFromCCD() {
-        //given
-        CCDClaim ccdClaim = SampleData.getCCDLegalClaim();
-
-        //when
-        ClaimData claimData = claimMapper.from(ccdClaim);
-
-        //then
-        assertThat(claimData).isEqualTo(ccdClaim);
+        claimMapper.to(claim, builder);
     }
 }

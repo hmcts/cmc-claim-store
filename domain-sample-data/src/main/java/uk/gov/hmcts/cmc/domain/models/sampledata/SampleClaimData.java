@@ -26,8 +26,8 @@ public class SampleClaimData {
     private UUID externalId = UUID.randomUUID();
     private List<Party> claimants = singletonList(SampleParty.builder().individual());
     private List<TheirDetails> defendants = singletonList(SampleTheirDetails.builder().individualDetails());
-    private Payment payment = SamplePayment.validDefaults();
-    private Amount amount = SampleAmountBreakdown.validDefaults();
+    private Payment payment = SamplePayment.builder().build();
+    private Amount amount = SampleAmountBreakdown.builder().build();
     private Interest interest = SampleInterest.standard();
     private String reason = "reason";
     private BigInteger feeAmount = new BigInteger("4000");
@@ -129,6 +129,11 @@ public class SampleClaimData {
         return this;
     }
 
+    public SampleClaimData withReason(String reason) {
+        this.reason = reason;
+        return this;
+    }
+
     public SampleClaimData withStatementOfTruth(StatementOfTruth statementOfTruth) {
         this.statementOfTruth = statementOfTruth;
         return this;
@@ -222,7 +227,7 @@ public class SampleClaimData {
 
     public static SampleClaimData submittedByLegalRepresentativeBuilder() {
         return new SampleClaimData()
-            .withAmount(SampleAmountRange.validDefaults());
+            .withAmount(SampleAmountRange.builder().build());
     }
 
     public static ClaimData noInterest() {
@@ -235,7 +240,7 @@ public class SampleClaimData {
                             .withReason(null)
                             .build())
                     .build())
-            .withAmount(SampleAmountBreakdown.validDefaults())
+            .withAmount(SampleAmountBreakdown.builder().build())
             .build();
     }
 }

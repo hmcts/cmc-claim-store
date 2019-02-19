@@ -31,15 +31,15 @@ public class GenerateSettlementAgreementCopyTest extends BaseGetTest {
         claimStore.saveResponse(claim, SampleResponse.FullDefence.builder().build());
 
         Settlement settlement = new Settlement();
-        Offer offer = SampleOffer.validDefaults();
+        Offer offer = SampleOffer.builder().build();
 
-        settlement.makeOffer(offer, MadeBy.DEFENDANT);
+        settlement.makeOffer(offer, MadeBy.DEFENDANT, null);
 
         String claimExternalId = claim.getExternalId();
         claimStore.makeOffer(claimExternalId, settlement);
 
-        settlement.accept(MadeBy.CLAIMANT);
-        settlement.countersign(MadeBy.DEFENDANT);
+        settlement.accept(MadeBy.CLAIMANT, null);
+        settlement.countersign(MadeBy.DEFENDANT, null);
         claimStore.countersignAgreement(claimExternalId, settlement);
 
         given(pdfServiceClient.generateFromHtml(any(), any()))

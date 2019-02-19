@@ -110,6 +110,22 @@
       padding-top: 10rem;
     }
 
+    ol.enumerate {
+      margin-top: 0;
+      counter-reset: enumerated;
+      list-style: none;
+    }
+
+    ol.enumerate li::before {
+      content: counter(section) "." counter(enumerated) ". ";
+      counter-increment: enumerated;
+      color: #888;
+    }
+
+    ol.enumerate li {
+      margin-bottom: 5px;
+    }
+
     @media print {
       td {
         word-wrap: break-word;
@@ -165,7 +181,16 @@
   <div class="section-body">
     <table>
       <tr>
-        <td><strong>Name:</strong></td>
+        <td>
+          {% if claimant.partyType == 'on behalf of a company' %}
+          {% set claimantNameLabel = 'Company name' %}
+          {% elseif claimant.partyType == 'on behalf of an organisation' %}
+          {% set claimantNameLabel = 'Organisation name' %}
+          {% else %}
+          {% set claimantNameLabel = 'Name' %}
+          {% endif %}
+          <strong>{{ claimantNameLabel }}:</strong>
+        </td>
         <td>
           {{ claimant.fullName }}
         </td>
@@ -317,7 +342,11 @@
       <table>
         <tr>
           <td colspan="2" class="keep-white-space"><strong>Reason for claim:</strong><br/>
-            {{ claim.reason | trim }}
+            <ol class="enumerate">
+              {% for reasonLine in claim.reason %}
+                <li>{{ reasonLine }}</li>
+              {% endfor %}
+            </ol>
           </td>
         </tr>
         {% if claim.events is defined %}
@@ -507,46 +536,51 @@
           </td>
         {% endif %}
       </tr>
-
-      {% if claim.signerName is not defined or claim.signerName is empty %}
+      {% if claimant.partyType == 'on behalf of a company' %}
       <tr>
         <td></td>
         <td>
+          <strong>Company:</strong>
+          {% if claimant.fullName is defined and claimant.fullName is not empty %}
           {{ claimant.fullName }}
+          {% elseif claimant.businessName is defined and claimant.businessName is not empty %}
+          {{ claimant.businessName }}
+          {% endif %}
         </td>
       </tr>
+      {% endif %}
+      <tr>
+        <td></td>
+        <td>
+          {% if claim.signerName is defined %}
+          <strong>Name:</strong>
+          {% endif %}
+
+          {% if claim.signerName is not defined or claim.signerName is empty %}
+          {{ claimant.fullName }}
+          {% else %}
+          {{ claim.signerName }}
+          {% endif %}
+        </td>
+      </tr>
+      {% if claimant.partyType == 'as a sole trader or self-employed person' %}
+      <tr>
+        <td></td>
+        <td><strong>Trading as: </strong>{{ claimant.businessName }}</td>
+      </tr>
+      {% endif %}
+      {% if claimant.dateOfBirth is empty %}
+      <tr>
+        <td></td>
+        <td><strong>Job Title: </strong>{{ claim.signerRole }}</td>
+      </tr>
+      {% endif %}
       <tr>
         <td></td>
         <td>
           {{ claim.issuedOn }}
         </td>
       </tr>
-      {% endif %}
-      {% if claim.signerName is defined and claim.signerName is not empty %}
-      <tr>
-        <td>
-          <strong>Name:</strong>
-        </td>
-        <td>{{ claim.signerName }}</td>
-      </tr>
-      <tr>
-        <td>
-          <strong>Organisation:</strong>
-        </td>
-        {% if claimant.fullName is defined and claimant.fullName is not empty %}
-        <td>{{ claimant.fullName }}</td>
-        {% endif %}
-        {% if claimant.businessName is defined and claimant.businessName is not empty %}
-        <td>{{ claimant.businessName }}</td>
-        {% endif %}
-      </tr>
-      <tr>
-        <td>
-          <strong>Position held:</strong>
-        </td>
-        <td>{{ claim.signerRole }}</td>
-      </tr>
-      {% endif %}
     </table>
   </div>
 </div>

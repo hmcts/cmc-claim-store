@@ -1,7 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.PaidInFull;
+import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
@@ -24,15 +27,16 @@ public interface CaseRepository {
     void saveCountyCourtJudgment(
         String authorisation,
         Claim claim,
-        CountyCourtJudgment countyCourtJudgment,
-        boolean issue
+        CountyCourtJudgment countyCourtJudgment
     );
 
     void saveDefendantResponse(Claim claim, String defendantEmail, Response response, String authorization);
 
-    void saveClaimantResponse(long claimId, ClaimantResponse response, String authorization);
+    Claim saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization);
 
-    void updateDirectionsQuestionnaireDeadline(String externalId, LocalDate dqDeadline, String authorization);
+    void paidInFull(Claim claim, PaidInFull paidInFull, String authorisation);
+
+    void updateDirectionsQuestionnaireDeadline(Claim claim, LocalDate dqDeadline, String authorization);
 
     void linkDefendant(String authorisation);
 
@@ -42,18 +46,24 @@ public interface CaseRepository {
 
     List<Claim> getByDefendantEmail(String email, String authorisation);
 
+    List<Claim> getByPaymentReference(String payReference, String authorisation);
+
     Optional<Claim> getByLetterHolderId(String id, String authorisation);
 
     void requestMoreTimeForResponse(String authorisation, Claim claim, LocalDate newResponseDeadline);
 
-    void updateSettlement(Claim claim, Settlement settlement, String authorisation, String userAction);
+    void updateSettlement(Claim claim, Settlement settlement, String authorisation, CaseEvent caseEvent);
 
-    void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, String userAction);
+    void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, CaseEvent caseEvent);
 
     CaseReference savePrePaymentClaim(String externalId, String authorisation);
 
     Claim saveClaim(String authorisation, Claim claim);
 
     void linkSealedClaimDocument(String authorisation, Claim claim, URI documentURI);
+
+    void saveReDetermination(String authorisation, Claim claim, ReDetermination reDetermination);
+
+    void saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent);
 }
 

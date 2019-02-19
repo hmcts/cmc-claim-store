@@ -1,0 +1,2 @@
+Civil Money Claim {{ responseType }} submitted: {% if admissionPaymentIntention %}Pay {{ paymentOptionDescription }} {% endif %}{{ claim.referenceNumber }} - {{ claim.claimData.claimant.name }} v {{ claim.claimData.defendant.name }}
+

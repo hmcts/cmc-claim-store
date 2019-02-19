@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.party;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
@@ -17,7 +18,9 @@ public class SoleTrader extends Party implements TitledParty {
 
     private final String businessName;
 
+    @Builder
     public SoleTrader(
+        String id,
         String name,
         Address address,
         Address correspondenceAddress,
@@ -26,7 +29,7 @@ public class SoleTrader extends Party implements TitledParty {
         String title,
         String businessName
     ) {
-        super(name, address, correspondenceAddress, mobilePhone, representative);
+        super(id, name, address, correspondenceAddress, mobilePhone, representative);
         this.title = title;
         this.businessName = businessName;
     }

@@ -1,23 +1,13 @@
 ---
-database:
-  driverClassName: "org.postgresql.Driver"
-  username: ${CLAIM_STORE_DB_USERNAME:-}
-  password: ${CLAIM_STORE_DB_PASSWORD:-}
-  url: jdbc:postgresql://${CLAIM_STORE_DB_HOST:localhost}:${CLAIM_STORE_DB_PORT:5430}/${CLAIM_STORE_DB_NAME:claimstore}${CLAIM_STORE_DB_CONNECTION_OPTIONS:}
-  properties:
-    charSet: UTF-8
-  maxWaitForConnection: 1
-  minSize: 8
-  maxSize: 32
-  evictionInterval: 10
-  minIdleTime: 1 minute
-  checkConnectionWhileIdle: true
-  checkConnectionOnReturn: true
-  removeAbandoned: true
-  removeAbandonedTimeout: 60
-  abandonWhenPercentageFull: 0
-  testOnBorrow: true
-  validationQuery: SELECT 1
+spring:
+  main:
+    allow-bean-definition-overriding: true  # https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.1-Release-Notes#bean-overriding
+  datasource:
+    claimstore:
+      driverClassName: org.postgresql.Driver
+      username: ${CLAIM_STORE_DB_USERNAME:-}
+      password: ${CLAIM_STORE_DB_PASSWORD:-}
+      url: jdbc:postgresql://${CLAIM_STORE_DB_HOST:}:${CLAIM_STORE_DB_PORT:}/${CLAIM_STORE_DB_NAME:claimstore}${CLAIM_STORE_DB_CONNECTION_OPTIONS:}
 
 idam:
   api:
@@ -34,3 +24,16 @@ core_case_data:
 feign:
   httpclient:
     enabled: true
+
+oauth2:
+  client:
+    id: 'cmc_citizen'
+
+migration:
+  cases:
+    lots:
+      size: 0
+  delay:
+    between:
+      cases:
+        lots: 0

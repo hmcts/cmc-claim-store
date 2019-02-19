@@ -165,4 +165,39 @@ public class NotificationReferenceBuilder {
             return reference(TEMPLATE, DEFENDANT, otherParty.toLowerCase(), claimReferenceNumber);
         }
     }
+
+    public static class PaidInFull {
+
+        private PaidInFull() {
+            // do not instantiate
+        }
+
+        public static String referenceForDefendant(String claimReferenceNumber) {
+            return reference("%s-paid-in-full-notification-%s", CLAIMANT, claimReferenceNumber);
+        }
+    }
+
+    public static class RedeterminationRequested {
+        private RedeterminationRequested() {
+            // do not instantiate
+        }
+
+        public static String referenceForClaimant(String claimReferenceNumber) {
+            return reference("%s-requested-redetermination-%s", DEFENDANT, claimReferenceNumber);
+        }
+    }
+
+    public static class SettlementRejected {
+        private SettlementRejected() {
+            // do not instantiate
+        }
+
+        public static String referenceForClaimant(String claimReferenceNumber) {
+            return reference("settlement-rejected-%s", CLAIMANT, claimReferenceNumber);
+        }
+
+        public static String referenceForDefendant(String claimReferenceNumber) {
+            return reference("settlement-rejected-%s", DEFENDANT, claimReferenceNumber);
+        }
+    }
 }

@@ -1,41 +1,30 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata.offers;
 
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
-import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
+import uk.gov.hmcts.cmc.domain.models.offers.Offer.OfferBuilder;
+import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 
 import java.time.LocalDate;
 
 public class SampleOffer {
 
-    private String content = "I will fix the leaking roof";
-    private LocalDate completionDate = LocalDate.now().plusDays(14);
-    private PaymentIntention paymentIntention;
-
-    public static Offer validDefaults() {
-        return builder().build();
+    private SampleOffer() {
+        super();
     }
 
-    public static SampleOffer builder() {
-        return new SampleOffer();
+    public static OfferBuilder builder() {
+        return Offer.builder()
+            .content("I will fix the leaking roof")
+            .completionDate(LocalDate.now().plusDays(14));
     }
 
-    public Offer build() {
-        return new Offer(content, completionDate, paymentIntention);
+    public static OfferBuilder builderWithPaymentIntention() {
+        return builder()
+            .paymentIntention(SamplePaymentIntention.instalments());
     }
 
-    public SampleOffer withContent(String content) {
-        this.content = content;
-        return this;
+    public static OfferBuilder builderWithSetByDateInPast() {
+        return builder()
+            .paymentIntention(SamplePaymentIntention.bySetDateInPast());
     }
-
-    public SampleOffer withCompletionDate(LocalDate completionDate) {
-        this.completionDate = completionDate;
-        return this;
-    }
-
-    public SampleOffer withPaymentIntention(PaymentIntention paymentIntention) {
-        this.paymentIntention = paymentIntention;
-        return this;
-    }
-
 }

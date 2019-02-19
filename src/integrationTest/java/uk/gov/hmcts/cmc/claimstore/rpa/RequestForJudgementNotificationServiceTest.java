@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.rpa.config.EmailProperties;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
@@ -23,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssuedNotificationService.JSON_EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildJsonRequestForJudgementFileBaseName;
@@ -46,16 +48,30 @@ public class RequestForJudgementNotificationServiceTest extends MockSpringTest {
 
     private CountyCourtJudgmentEvent event;
 
+    private static final CountyCourtJudgment DEFAULT_CCJ = SampleCountyCourtJudgment
+        .builder()
+        .ccjType(CountyCourtJudgmentType.DEFAULT)
+        .build();
+
+    private static final CountyCourtJudgment CCJ_BY_ADMISSION = SampleCountyCourtJudgment
+        .builder()
+        .ccjType(CountyCourtJudgmentType.ADMISSIONS)
+        .build();
+
+    private static final CountyCourtJudgment CCJ_BY_DETERMINATION = SampleCountyCourtJudgment
+        .builder()
+        .ccjType(CountyCourtJudgmentType.DETERMINATION)
+        .build();
+
     @Before
     public void setUp() {
-        CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment.builder().build();
 
         claim = SampleClaim.builder()
             .withCountyCourtJudgmentRequestedAt(LocalDate.of(2018, 4, 26).atStartOfDay())
-            .withCountyCourtJudgment(countyCourtJudgment)
+            .withCountyCourtJudgment(DEFAULT_CCJ)
             .build();
 
-        event = new CountyCourtJudgmentEvent(claim, "AUTH_CODE", false);
+        event = new CountyCourtJudgmentEvent(claim, "AUTH_CODE");
 
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).willReturn(PDF_CONTENT);
 
@@ -106,5 +122,34 @@ public class RequestForJudgementNotificationServiceTest extends MockSpringTest {
 
         assertThat(ccjJsonAttachment.getContentType()).isEqualTo(MediaType.APPLICATION_JSON_VALUE);
         assertThat(ccjJsonAttachment.getFilename()).isEqualTo(expectedCcjJsonFilename);
+    }
+
+    @Test
+    public void shouldNotSendRoboticsEmailWhenCCJByAdmission() {
+        Claim claimWithCCJByAdmission = SampleClaim.builder()
+            .withCountyCourtJudgmentRequestedAt(LocalDate.of(2018, 4, 26).atStartOfDay())
+            .withCountyCourtJudgment(CCJ_BY_ADMISSION)
+            .build();
+
+        CountyCourtJudgmentEvent event = new CountyCourtJudgmentEvent(claimWithCCJByAdmission, "AUTH_CODE");
+
+        service.notifyRobotics(event);
+
+        verifyZeroInteractions(emailService);
+    }
+
+    @Test
+    public void shouldNotSendRoboticsEmailWhenCCJByDetermination() {
+        Claim claimWithCCJByDetermination = SampleClaim.builder()
+            .withCountyCourtJudgmentRequestedAt(LocalDate.of(2018, 4, 26).atStartOfDay())
+            .withCountyCourtJudgment(CCJ_BY_DETERMINATION)
+            .build();
+
+        CountyCourtJudgmentEvent event = new CountyCourtJudgmentEvent(claimWithCCJByDetermination,
+            "AUTH_CODE");
+
+        service.notifyRobotics(event);
+
+        verifyZeroInteractions(emailService);
     }
 }

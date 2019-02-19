@@ -1,0 +1,14 @@
+dependencies:
+  - name: postgresql
+    version: ~2.6.5
+    repository: '@stable'
+  - name: java
+    version: ~0.0.12
+    repository: '@hmcts'
+    alias: claim-store
+  - name: nodejs
+    version: 0.0.11
+    repository: '@hmcts'
+  - name: rpe-feature-toggle-api
+    version: 0.0.4
+    repository: '@hmcts'

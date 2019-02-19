@@ -2,11 +2,12 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CCDOrganisation;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.domain.models.party.Organisation;
 
 @Component
-public class OrganisationMapper implements Mapper<CCDOrganisation, Organisation> {
+public class OrganisationMapper {
 
     private final AddressMapper addressMapper;
     private final RepresentativeMapper representativeMapper;
@@ -17,35 +18,32 @@ public class OrganisationMapper implements Mapper<CCDOrganisation, Organisation>
         this.representativeMapper = representativeMapper;
     }
 
-    @Override
-    public CCDOrganisation to(Organisation organisation) {
+    public void to(Organisation organisation, CCDClaimant.CCDClaimantBuilder builder) {
 
-        CCDOrganisation.CCDOrganisationBuilder builder = CCDOrganisation.builder();
         organisation.getCorrespondenceAddress()
-            .ifPresent(address -> builder.correspondenceAddress(addressMapper.to(address)));
+            .ifPresent(address -> builder.partyCorrespondenceAddress(addressMapper.to(address)));
         organisation.getRepresentative()
-            .ifPresent(representative -> builder.representative(representativeMapper.to(representative)));
-        organisation.getMobilePhone().ifPresent(builder::phoneNumber);
-        organisation.getContactPerson().ifPresent(builder::contactPerson);
-        organisation.getCompaniesHouseNumber().ifPresent(builder::companiesHouseNumber);
+            .ifPresent(representative -> representativeMapper.to(representative, builder));
+        organisation.getMobilePhone().ifPresent(builder::partyPhone);
+        organisation.getContactPerson().ifPresent(builder::partyContactPerson);
+        organisation.getCompaniesHouseNumber().ifPresent(builder::partyCompaniesHouseNumber);
         builder
-            .name(organisation.getName())
-            .address(addressMapper.to(organisation.getAddress()));
+            .partyName(organisation.getName())
+            .partyAddress(addressMapper.to(organisation.getAddress()));
 
-        return builder.build();
     }
 
-    @Override
-    public Organisation from(CCDOrganisation ccdOrganisation) {
-
-        return new Organisation(
-            ccdOrganisation.getName(),
-            addressMapper.from(ccdOrganisation.getAddress()),
-            addressMapper.from(ccdOrganisation.getCorrespondenceAddress()),
-            ccdOrganisation.getPhoneNumber(),
-            representativeMapper.from(ccdOrganisation.getRepresentative()),
-            ccdOrganisation.getContactPerson(),
-            ccdOrganisation.getCompaniesHouseNumber()
-        );
+    public Organisation from(CCDCollectionElement<CCDClaimant> organisation) {
+        CCDClaimant value = organisation.getValue();
+        return Organisation.builder()
+            .id(organisation.getId())
+            .name(value.getPartyName())
+            .address(addressMapper.from(value.getPartyAddress()))
+            .correspondenceAddress(addressMapper.from(value.getPartyCorrespondenceAddress()))
+            .mobilePhone(value.getPartyPhone())
+            .representative(representativeMapper.from(value))
+            .contactPerson(value.getPartyContactPerson())
+            .companiesHouseNumber(value.getPartyCompaniesHouseNumber())
+            .build();
     }
 }

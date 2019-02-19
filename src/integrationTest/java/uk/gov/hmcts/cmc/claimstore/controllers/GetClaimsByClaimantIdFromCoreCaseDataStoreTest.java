@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
@@ -31,9 +32,11 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetails
 @TestPropertySource(
     properties = {
         "document_management.url=false",
-        "core_case_data.api.url=http://core-case-data-api"
+        "feature_toggles.ccd_async_enabled=false",
+        "feature_toggles.ccd_enabled=true"
     }
 )
+@Ignore
 public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest {
     private static final String SERVICE_TOKEN = "S2S token";
     private static final String USER_ID = "1";

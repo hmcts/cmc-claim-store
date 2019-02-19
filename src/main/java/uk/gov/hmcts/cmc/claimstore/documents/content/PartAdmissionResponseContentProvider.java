@@ -2,10 +2,13 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.EvidenceContent;
+import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
+import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,6 +21,7 @@ import java.util.stream.Collectors;
 import static uk.gov.hmcts.cmc.claimstore.documents.content.FullAdmissionResponseContentProvider.ADMISSIONS_FORM_NO;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
+import static uk.gov.hmcts.cmc.claimstore.utils.ParagraphEnumerator.split;
 
 @Component
 public class PartAdmissionResponseContentProvider {
@@ -42,11 +46,12 @@ public class PartAdmissionResponseContentProvider {
         String timelineComment = null;
         String evidenceComment = null;
 
-        content.put("responseDefence", partAdmissionResponse.getDefence());
-        content.put("responseTypeSelected", partAdmissionResponse.getResponseType().getDescription());
+        content.put("responseDefence", split(partAdmissionResponse.getDefence()));
+        content.put("responseTypeSelected", deriveResponseTypeSelected(partAdmissionResponse));
 
         content.put("amount", formatMoney(partAdmissionResponse.getAmount()));
 
+        content.put("paymentDeclarationIsPresent", partAdmissionResponse.getPaymentDeclaration().isPresent());
         partAdmissionResponse.getPaymentDeclaration()
             .ifPresent(paymentDeclaration -> {
                 content.put("paymentDate", formatDate(paymentDeclaration.getPaidDate()));
@@ -77,15 +82,21 @@ public class PartAdmissionResponseContentProvider {
         content.put("evidences", evidences);
         content.put("evidenceComment", evidenceComment);
 
+        content.put("paymentIntentionIsPresent", partAdmissionResponse.getPaymentIntention().isPresent());
         partAdmissionResponse.getPaymentIntention().ifPresent(
             paymentIntention ->
                 content.putAll(paymentIntentionContentProvider.createContent(
                     paymentIntention.getPaymentOption(),
                     paymentIntention.getRepaymentPlan().orElse(null),
                     paymentIntention.getPaymentDate().orElse(null),
-                    formatMoney(partAdmissionResponse.getAmount())
+                    formatMoney(partAdmissionResponse.getAmount()),
+                    ""
                     )
                 )
+        );
+
+        partAdmissionResponse.getFreeMediation().ifPresent(
+            freeMediation -> content.put("mediation", freeMediation.equals(YesNoOption.YES))
         );
 
         partAdmissionResponse.getStatementOfMeans().ifPresent(
@@ -95,5 +106,11 @@ public class PartAdmissionResponseContentProvider {
         content.put("formNumber", ADMISSIONS_FORM_NO);
 
         return content;
+    }
+
+    private String deriveResponseTypeSelected(PartAdmissionResponse response) {
+        return response.getPaymentDeclaration().map(PaymentDeclaration::getPaidDate).isPresent()
+            ? DefenceType.ALREADY_PAID.getDescription()
+            : response.getResponseType().getDescription();
     }
 }

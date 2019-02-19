@@ -38,7 +38,6 @@ public class MakeOfferTest extends BaseIntegrationTest {
 
     private static final String DEFENDANT_AUTH_TOKEN = "authDataString";
 
-
     private Claim claim;
 
     @Before
@@ -58,21 +57,21 @@ public class MakeOfferTest extends BaseIntegrationTest {
 
     @Test
     public void shouldAcceptValidOfferByDefendantAndReturnCreatedStatus() throws Exception {
-        makeOffer(DEFENDANT_AUTH_TOKEN, SampleOffer.validDefaults(), MadeBy.DEFENDANT.name())
+        makeOffer(DEFENDANT_AUTH_TOKEN, SampleOffer.builder().build(), MadeBy.DEFENDANT.name())
             .andExpect(status().isCreated())
             .andReturn();
     }
 
     @Test
     public void shouldReturnBadRequestIfPartyIsIncorrectlySpecified() throws Exception {
-        makeOffer(DEFENDANT_AUTH_TOKEN, SampleOffer.validDefaults(), "I'm not a valid enum value")
+        makeOffer(DEFENDANT_AUTH_TOKEN, SampleOffer.builder().build(), "I'm not a valid enum value")
             .andExpect(status().isBadRequest())
             .andReturn();
     }
 
     @Test
     public void shouldSendNotifications() throws Exception {
-        Offer offer = SampleOffer.validDefaults();
+        Offer offer = SampleOffer.builder().build();
         given(notificationClient.sendEmail(any(), any(), any(), any()))
             .willReturn(null);
 
@@ -88,7 +87,7 @@ public class MakeOfferTest extends BaseIntegrationTest {
 
     @Test
     public void shouldRetrySendNotifications() throws Exception {
-        Offer offer = SampleOffer.validDefaults();
+        Offer offer = SampleOffer.builder().build();
         given(notificationClient.sendEmail(any(), any(), any(), any()))
             .willThrow(new NotificationClientException(new RuntimeException("first attempt fails")))
             .willThrow(new NotificationClientException(new RuntimeException("1st email, 2nd attempt fails")))

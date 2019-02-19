@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.claimstore.repositories.mapping.JsonMapperFactory;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
+import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.document.domain.UploadResponse;
 
 import java.util.List;
@@ -37,10 +38,19 @@ public class ResourceLoader {
         return jsonMapper.fromJson(response, CaseDetails.class);
     }
 
+    public static CaseDetails successfulCoreCaseDataStoreSubmitRepresentativeResponse() {
+        String response = getResource("/core-case-data/submit-representative-response.success.json");
+        return jsonMapper.fromJson(response, CaseDetails.class);
+    }
+
+    public static CaseDetails successfulPrePaymentCoreCaseDataStoreSubmitResponse() {
+        String response = getResource("/core-case-data/search-prepayment-response.success.json");
+        return jsonMapper.fromJson(response, CaseDetails.class);
+    }
+
     private static String getResource(String resourceName) {
         return new ResourceReader().read(resourceName);
     }
-
 
     public static CaseDetails successfulCoreCaseDataStoreSubmitResponseWithMoreTimeExtension() {
         String response = getResource("/core-case-data/submit-response.success.json")
@@ -63,7 +73,7 @@ public class ResourceLoader {
 
     public static List<CaseDetails> listOfCaseDetailsWithMoreTimeExtension() {
         String response = new ResourceReader().read("/core-case-data/search-response.success.json")
-            .replace("2020-02-06", "2020-02-19");
+            .replace("2020-02-06", "2020-02-18");
 
         return ImmutableList.of(jsonMapper.fromJson(response, CaseDetails.class));
     }
@@ -87,5 +97,10 @@ public class ResourceLoader {
     public static List<CaseDetails> listOfCaseDetailsWithDefResponse() {
         String response = new ResourceReader().read("/core-case-data/search-response-with-def-res.success.json");
         return ImmutableList.of(jsonMapper.fromJson(response, CaseDetails.class));
+    }
+
+    public static Document successfulDocumentManagementDownloadResponse() {
+        String response = new ResourceReader().read("/document-management/download.success.json");
+        return jsonMapper.fromJson(response, Document.class);
     }
 }

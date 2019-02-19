@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -24,13 +25,16 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Preconditions.requireNonBlank;
 public class DefendantPinLetterContentProvider {
 
     private final NotificationsProperties notificationsProperties;
+    private final StaffEmailProperties staffEmailProperties;
     private final InterestContentProvider interestContentProvider;
 
     public DefendantPinLetterContentProvider(
         NotificationsProperties notificationsProperties,
+        StaffEmailProperties staffEmailProperties,
         InterestContentProvider interestContentProvider
     ) {
         this.notificationsProperties = notificationsProperties;
+        this.staffEmailProperties = staffEmailProperties;
         this.interestContentProvider = interestContentProvider;
     }
 
@@ -82,11 +86,11 @@ public class DefendantPinLetterContentProvider {
         content.put("claimReferenceNumber", claim.getReferenceNumber());
         content.put("defendantPin", defendantPin);
         content.put("responseDeadline", formatDate(claim.getResponseDeadline()));
-
         content.put("defendantAddress", claim.getClaimData()
             .getDefendant()
             .getAddress()
         );
+        content.put("hmctsEmail", staffEmailProperties.getRecipient());
 
         return content;
     }

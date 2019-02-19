@@ -15,29 +15,29 @@ public class AddressAssert extends AbstractAssert<AddressAssert, Address> {
     public AddressAssert isEqualTo(CCDAddress ccdAddress) {
         isNotNull();
 
-        if (!Objects.equals(actual.getLine1(), ccdAddress.getLine1())) {
+        if (!Objects.equals(actual.getLine1(), ccdAddress.getAddressLine1())) {
             failWithMessage("Expected Address.line1 to be <%s> but was <%s>",
-                ccdAddress.getLine1(), actual.getLine1());
+                ccdAddress.getAddressLine1(), actual.getLine1());
         }
 
-        if (!Objects.equals(actual.getLine2(), ccdAddress.getLine2())) {
+        if (!Objects.equals(actual.getLine2(), ccdAddress.getAddressLine2())) {
             failWithMessage("Expected Address.line2 to be <%s> but was <%s>",
-                ccdAddress.getLine2(), actual.getLine2());
+                ccdAddress.getAddressLine2(), actual.getLine2());
         }
 
-        if (!Objects.equals(actual.getLine3(), ccdAddress.getLine3())) {
+        if (!Objects.equals(actual.getLine3(), ccdAddress.getAddressLine3())) {
             failWithMessage("Expected Address.line3 to be <%s> but was <%s>",
-                ccdAddress.getLine3(), actual.getLine3());
+                ccdAddress.getAddressLine3(), actual.getLine3());
         }
 
-        if (!Objects.equals(actual.getCity(), ccdAddress.getCity())) {
+        if (!Objects.equals(actual.getCity(), ccdAddress.getPostTown())) {
             failWithMessage("Expected Address.city to be <%s> but was <%s>",
-                ccdAddress.getCity(), actual.getCity());
+                ccdAddress.getPostTown(), actual.getCity());
         }
 
-        if (!Objects.equals(actual.getPostcode(), ccdAddress.getPostcode())) {
+        if (!Objects.equals(actual.getPostcode(), ccdAddress.getPostCode())) {
             failWithMessage("Expected Address.postcode to be <%s> but was <%s>",
-                ccdAddress.getPostcode(), actual.getPostcode());
+                ccdAddress.getPostCode(), actual.getPostcode());
         }
 
         return this;

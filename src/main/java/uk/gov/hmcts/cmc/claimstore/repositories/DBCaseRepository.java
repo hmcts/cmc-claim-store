@@ -1,8 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
@@ -11,6 +12,8 @@ import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.PaidInFull;
+import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
@@ -18,7 +21,6 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.net.URI;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -26,7 +28,7 @@ import java.util.Optional;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service("caseRepository")
-@ConditionalOnProperty(prefix = "core_case_data", name = "api.url", havingValue = "false")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled", havingValue = "false")
 public class DBCaseRepository implements CaseRepository {
 
     private final ClaimRepository claimRepository;
@@ -109,15 +111,11 @@ public class DBCaseRepository implements CaseRepository {
     public void saveCountyCourtJudgment(
         String authorisation,
         Claim claim,
-        CountyCourtJudgment countyCourtJudgment,
-        boolean issue
+        CountyCourtJudgment countyCourtJudgment
     ) {
         final String externalId = claim.getExternalId();
-        LocalDateTime ccjIssuedDate = issue ? nowInUTC() : null;
 
-        claimRepository.saveCountyCourtJudgment(externalId,
-            jsonMapper.toJson(countyCourtJudgment), nowInUTC(), ccjIssuedDate
-        );
+        claimRepository.saveCountyCourtJudgment(externalId, jsonMapper.toJson(countyCourtJudgment), nowInUTC());
     }
 
     @Override
@@ -127,13 +125,21 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void saveClaimantResponse(long claimId, ClaimantResponse response, String authorization) {
-        claimRepository.saveClaimantResponse(claimId, jsonMapper.toJson(response));
+    public Claim saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization) {
+        claimRepository.saveClaimantResponse(claim.getExternalId(), jsonMapper.toJson(response));
+        return claimRepository
+            .getClaimByExternalId(claim.getExternalId())
+            .orElseThrow(() -> new NotFoundException("Claim not found by id " + claim.getExternalId()));
     }
 
     @Override
-    public void updateDirectionsQuestionnaireDeadline(String externalId, LocalDate dqDeadline, String authorization) {
-        claimRepository.updateDirectionsQuestionnaireDeadline(externalId, dqDeadline);
+    public void paidInFull(Claim claim, PaidInFull paidInFull, String authorization) {
+        claimRepository.updateMoneyReceivedOn(claim.getExternalId(), paidInFull.getMoneyReceivedOn());
+    }
+
+    @Override
+    public void updateDirectionsQuestionnaireDeadline(Claim claim, LocalDate dqDeadline, String authorization) {
+        claimRepository.updateDirectionsQuestionnaireDeadline(claim.getExternalId(), dqDeadline);
     }
 
     @Override
@@ -152,6 +158,11 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
+    public List<Claim> getByPaymentReference(String payReference, String authorisation) {
+        return claimRepository.getByPaymentReference(payReference);
+    }
+
+    @Override
     public Optional<Claim> getByLetterHolderId(String id, String authorisation) {
         return claimRepository.getByLetterHolderId(id);
     }
@@ -167,13 +178,14 @@ public class DBCaseRepository implements CaseRepository {
         Claim claim,
         Settlement settlement,
         String authorisation,
-        String userAction
+        CaseEvent userAction
     ) {
         offersRepository.updateSettlement(claim.getExternalId(), jsonMapper.toJson(settlement));
     }
 
     @Override
-    public void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, String userAction) {
+    public void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation,
+                                         CaseEvent caseEvent) {
         offersRepository.reachSettlement(
             claim.getExternalId(),
             jsonMapper.toJson(settlement),
@@ -197,7 +209,8 @@ public class DBCaseRepository implements CaseRepository {
             claimRepository.saveRepresented(claimDataString, claim.getSubmitterId(), claim.getIssuedOn(),
                 claim.getResponseDeadline(), claim.getExternalId(), claim.getSubmitterEmail(), features);
         } else {
-            claimRepository.saveSubmittedByClaimant(claimDataString, claim.getSubmitterId(), claim.getLetterHolderId(),
+            claimRepository.saveSubmittedByClaimant(claimDataString,
+                claim.getSubmitterId(), claim.getLetterHolderId(),
                 claim.getIssuedOn(), claim.getResponseDeadline(), claim.getExternalId(),
                 claim.getSubmitterEmail(), features);
         }
@@ -210,5 +223,19 @@ public class DBCaseRepository implements CaseRepository {
     @Override
     public void linkSealedClaimDocument(String authorisation, Claim claim, URI documentUri) {
         claimRepository.linkSealedClaimDocument(claim.getId(), documentUri.toString());
+    }
+
+    @Override
+    public void saveReDetermination(
+        String authorisation,
+        Claim claim,
+        ReDetermination reDetermination
+    ) {
+        claimRepository.saveReDetermination(claim.getExternalId(), jsonMapper.toJson(reDetermination));
+    }
+
+    @Override
+    public void saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent) {
+        // No implementation required for claim-store repository
     }
 }

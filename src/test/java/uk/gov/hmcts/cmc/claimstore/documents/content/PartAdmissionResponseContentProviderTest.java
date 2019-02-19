@@ -1,10 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.junit.Test;
+import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,17 +26,19 @@ public class PartAdmissionResponseContentProviderTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void shouldProvidePartAdmissionPaymentMadeDetails() {
         PartAdmissionResponse partAdmissionResponse = builder().build();
         Map<String, Object> content = provider.createContent(partAdmissionResponse);
 
+        assertThat(content).containsKey("paymentDeclarationIsPresent");
         assertThat(content).containsKey("paymentDate");
         assertThat(content).containsKey("paymentMethod")
             .containsValue("Paid cash");
 
         assertThat(content)
             .containsKey("responseTypeSelected")
-            .containsValue(ResponseType.PART_ADMISSION.getDescription());
+            .containsValue(DefenceType.ALREADY_PAID.getDescription());
 
         assertThat(content)
             .containsKey("amount")
@@ -46,9 +50,14 @@ public class PartAdmissionResponseContentProviderTest {
         assertThat(content).containsKey("timelineComment");
 
         assertThat(content)
-            .containsKey("responseDefence")
-            .containsValue(SampleResponse.USER_DEFENCE);
-
+            .containsKey("responseDefence");
+        assertThat(content.get("responseDefence"))
+            .isInstanceOf(List.class);
+        assertThat((List<String>) content.get("responseDefence"))
+            .contains(SampleResponse.USER_DEFENCE);
+        assertThat(content)
+            .containsKey("paymentIntentionIsPresent")
+            .containsValues(false);
     }
 
     @Test
@@ -57,15 +66,24 @@ public class PartAdmissionResponseContentProviderTest {
         Map<String, Object> content = provider.createContent(partAdmissionResponse);
 
         assertThat(content)
+            .containsKey("responseTypeSelected")
+            .containsValue(ResponseType.PART_ADMISSION.getDescription());
+        assertThat(content)
             .containsKeys("paymentOption")
             .containsValues("Immediately");
+        assertThat(content)
+            .containsKeys("paymentIntentionIsPresent")
+            .containsValues(true);
     }
 
     @Test
     public void shouldProvidePartAdmissionPaymentOptionInstalments() {
-        PartAdmissionResponse partAdmissionResponse = builder().buildWithPaymentOptionInstallments();
+        PartAdmissionResponse partAdmissionResponse = builder().buildWithPaymentOptionInstalments();
         Map<String, Object> content = provider.createContent(partAdmissionResponse);
 
+        assertThat(content)
+            .containsKey("responseTypeSelected")
+            .containsValue(ResponseType.PART_ADMISSION.getDescription());
         assertThat(content)
             .containsKeys("paymentOption")
             .containsValues("By instalments");
@@ -83,7 +101,7 @@ public class PartAdmissionResponseContentProviderTest {
 
     @Test
     public void shouldProvideCorrectFormNumber() {
-        PartAdmissionResponse partAdmissionResponse = builder().buildWithPaymentOptionInstallments();
+        PartAdmissionResponse partAdmissionResponse = builder().buildWithPaymentOptionInstalments();
         Map<String, Object> content = provider.createContent(partAdmissionResponse);
         assertThat(content).containsKey("formNumber");
         assertThat(content).containsValue("OCON9A");

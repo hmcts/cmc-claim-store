@@ -1,0 +1,22 @@
+{% if admissionPaymentIntention %}
+The defendant has offered to pay {{ paymentOptionDescription }} in response to the money claim made against them by {{ claim.claimData.claimant.name }}.
+
+{% if isCompanyOrOrganisation %}
+The claimant has been asked to send the defendant’s financial details across.
+{% endif %}
+
+{% else %}
+The defendant states they have already paid what is owed in response to the money claim made against them by {{ claim.claimData.claimant.name }}.
+{% endif %}
+
+Defendant's details can be found on the attached defence copy. Additional contact details are:
+
+Email: {{ defendantEmail }}
+
+{% if defendantMobilePhone is not empty %}
+Mobile number: {{ defendantMobilePhone }}
+{% else %}
+Mobile number: not given
+{% endif %}
+
+This email has been sent from the HMCTS Civil Money Claims online court.

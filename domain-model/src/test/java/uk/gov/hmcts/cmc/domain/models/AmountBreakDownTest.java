@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountBreakdown;
@@ -7,7 +8,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountBreakdown;
 import java.math.BigDecimal;
 import java.util.Set;
 
-import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 
@@ -16,10 +16,7 @@ public class AmountBreakDownTest {
     @Test
     public void shouldBeSuccessfulValidationForFullAmountDetails() {
         //given
-        AmountBreakDown amountBreakDown = SampleAmountBreakdown.builder()
-            .clearRows()
-            .addRow(new AmountRow("reason", new BigDecimal("40")))
-            .build();
+        AmountBreakDown amountBreakDown = SampleAmountBreakdown.builder().build();
         //when
         Set<String> validationMessages = validate(amountBreakDown);
         //then
@@ -30,7 +27,7 @@ public class AmountBreakDownTest {
     public void shouldReturnValidationMessageWhenAmountBreakDownHasNullRows() {
         //given
         AmountBreakDown amountBreakDown = SampleAmountBreakdown.builder()
-            .withRows(null)
+            .rows(null)
             .build();
         //when
         Set<String> validationMessages = validate(amountBreakDown);
@@ -44,9 +41,9 @@ public class AmountBreakDownTest {
     public void shouldReturnValidationMessageWhenHasInvalidAmountRow() {
         //given
         AmountBreakDown amountBreakDown = SampleAmountBreakdown.builder()
-            .clearRows()
-            .addRow(new AmountRow("reason", null))
-            .addRow(new AmountRow("reason", new BigDecimal("10")))
+            .rows(ImmutableList.of(
+                AmountRow.builder().reason("reason").amount(null).build(),
+                AmountRow.builder().reason("reason").amount(new BigDecimal("10")).build()))
             .build();
         //when
         Set<String> validationMessages = validate(amountBreakDown);
@@ -60,7 +57,7 @@ public class AmountBreakDownTest {
     public void shouldReturnValidationMessageWhenBreakdownHasEmptyRowsList() {
         //given
         AmountBreakDown amountBreakDown = SampleAmountBreakdown.builder()
-            .withRows(emptyList())
+            .rows(ImmutableList.of())
             .build();
         //when
         Set<String> validationMessages = validate(amountBreakDown);
@@ -74,8 +71,7 @@ public class AmountBreakDownTest {
     public void shouldReturnValidationMessagesWhenBreakdownHasRowWith0Amount() {
         //given
         AmountBreakDown amountBreakDown = SampleAmountBreakdown.builder()
-            .clearRows()
-            .addRow(new AmountRow("reason", new BigDecimal("0")))
+            .rows(ImmutableList.of(AmountRow.builder().reason("reason").amount(new BigDecimal("0")).build()))
             .build();
         //when
         Set<String> validationMessages = validate(amountBreakDown);

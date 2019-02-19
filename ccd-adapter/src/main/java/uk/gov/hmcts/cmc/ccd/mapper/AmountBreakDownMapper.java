@@ -1,16 +1,14 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CCDAmountBreakDown;
-import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRow;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
-public class AmountBreakDownMapper implements Mapper<CCDAmountBreakDown, AmountBreakDown> {
+public class AmountBreakDownMapper implements BuilderMapper<CCDCase, AmountBreakDown, CCDCase.CCDCaseBuilder> {
     private final AmountRowMapper amountRowMapper;
 
     public AmountBreakDownMapper(AmountRowMapper amountRowMapper) {
@@ -18,21 +16,18 @@ public class AmountBreakDownMapper implements Mapper<CCDAmountBreakDown, AmountB
     }
 
     @Override
-    public CCDAmountBreakDown to(AmountBreakDown amountBreakDown) {
-        CCDAmountBreakDown.CCDAmountBreakDownBuilder builder = CCDAmountBreakDown.builder();
-        builder.rows(amountBreakDown.getRows().stream().map(amountRowMapper::to)
+    public void to(AmountBreakDown amountBreakDown, CCDCase.CCDCaseBuilder builder) {
+        builder.amountBreakDown(amountBreakDown.getRows().stream()
+            .map(amountRowMapper::to)
             .filter(Objects::nonNull)
-            .map(row -> CCDCollectionElement.<CCDAmountRow>builder().value(row).build())
             .collect(Collectors.toList()));
 
-        return builder.build();
     }
 
     @Override
-    public AmountBreakDown from(CCDAmountBreakDown ccdAmountBreakDown) {
+    public AmountBreakDown from(CCDCase ccdCase) {
         return new AmountBreakDown(
-            ccdAmountBreakDown.getRows().stream()
-                .map(CCDCollectionElement::getValue)
+            ccdCase.getAmountBreakDown().stream()
                 .map(amountRowMapper::from)
                 .collect(Collectors.toList())
         );

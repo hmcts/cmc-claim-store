@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,13 +39,13 @@ public class PartyUtilsTest {
 
     @Test(expected = NotificationException.class)
     public void getTypeThrowsWhenPartyTypeUnknown() {
-        PartyUtils.getType(new Party(null, null, null, null, null) {
+        PartyUtils.getType(new Party(UUID.randomUUID().toString(), null, null, null, null, null) {
         });
     }
 
     @Test(expected = NotificationException.class)
     public void getTypeTheirDetailsThrowsWhenPartyTypeUnknown() {
-        PartyUtils.getType(new TheirDetails(null, null, null, null, null) {
+        PartyUtils.getType(new TheirDetails(UUID.randomUUID().toString(), null, null, null, null, null) {
         });
     }
 
@@ -135,4 +136,32 @@ public class PartyUtilsTest {
             .isEqualTo(Optional.of(claimant.getDateOfBirth()));
     }
 
+    @Test
+    public void shouldReturnFalseForPartyIsNull() {
+        assertThat(PartyUtils.isCompanyOrOrganisation(null)).isFalse();
+    }
+
+    @Test
+    public void shouldReturnFalseForPartyIndividual() {
+        Individual individual = SampleParty.builder().individual();
+        assertThat(PartyUtils.isCompanyOrOrganisation(individual)).isFalse();
+    }
+
+    @Test
+    public void shouldReturnFalseForPartySoleTrader() {
+        SoleTrader soleTrader = SampleParty.builder().soleTrader();
+        assertThat(PartyUtils.isCompanyOrOrganisation(soleTrader)).isFalse();
+    }
+
+    @Test
+    public void shouldReturnTrueForPartyCompany() {
+        Company company = SampleParty.builder().company();
+        assertThat(PartyUtils.isCompanyOrOrganisation(company)).isTrue();
+    }
+
+    @Test
+    public void shouldReturnTrueForPartyOrganisation() {
+        Organisation organisation = SampleParty.builder().organisation();
+        assertThat(PartyUtils.isCompanyOrOrganisation(organisation)).isTrue();
+    }
 }

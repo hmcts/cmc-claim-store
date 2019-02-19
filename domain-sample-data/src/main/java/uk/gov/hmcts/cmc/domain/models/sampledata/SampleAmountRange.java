@@ -1,33 +1,19 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
+import uk.gov.hmcts.cmc.domain.models.amount.AmountRange.AmountRangeBuilder;
 
 import java.math.BigDecimal;
 
 public class SampleAmountRange {
 
-    private BigDecimal lowerValue = BigDecimal.valueOf(100L);
-    private BigDecimal higherValue = BigDecimal.valueOf(99000L);
-
-    public SampleAmountRange withLowerValue(BigDecimal lowerValue) {
-        this.lowerValue = lowerValue;
-        return this;
+    private SampleAmountRange() {
+        super();
     }
 
-    public SampleAmountRange withHigherValue(BigDecimal higherValue) {
-        this.higherValue = higherValue;
-        return this;
-    }
-
-    public static SampleAmountRange builder() {
-        return new SampleAmountRange();
-    }
-
-    public AmountRange build() {
-        return new AmountRange(lowerValue, higherValue);
-    }
-
-    public static AmountRange validDefaults() {
-        return builder().build();
+    public static AmountRangeBuilder builder() {
+        return AmountRange.builder()
+            .lowerValue(BigDecimal.valueOf(100L))
+            .higherValue(BigDecimal.valueOf(99000L));
     }
 }

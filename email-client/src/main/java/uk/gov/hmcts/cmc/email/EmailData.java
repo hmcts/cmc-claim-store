@@ -1,8 +1,14 @@
 package uk.gov.hmcts.cmc.email;
 
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+
 import java.util.Collections;
 import java.util.List;
 
+@EqualsAndHashCode
+@Getter
 public class EmailData {
 
     private final String to;
@@ -13,6 +19,7 @@ public class EmailData {
 
     private final List<EmailAttachment> attachments;
 
+    @Builder
     public EmailData(String to,
                      String subject,
                      String message,
@@ -26,22 +33,6 @@ public class EmailData {
 
     public boolean hasAttachments() {
         return this.attachments != null && !this.attachments.isEmpty();
-    }
-
-    public String getTo() {
-        return to;
-    }
-
-    public String getSubject() {
-        return subject;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public List<EmailAttachment> getAttachments() {
-        return this.attachments;
     }
 
     @Override

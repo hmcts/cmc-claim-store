@@ -1,137 +1,73 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCompany;
-import uk.gov.hmcts.cmc.ccd.domain.CCDIndividual;
-import uk.gov.hmcts.cmc.ccd.domain.CCDOrganisation;
-import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
-import uk.gov.hmcts.cmc.ccd.domain.CCDSoleTrader;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
-import uk.gov.hmcts.cmc.ccd.mapper.defendant.CompanyDetailsMapper;
-import uk.gov.hmcts.cmc.ccd.mapper.defendant.IndividualDetailsMapper;
-import uk.gov.hmcts.cmc.ccd.mapper.defendant.OrganisationDetailsMapper;
-import uk.gov.hmcts.cmc.ccd.mapper.defendant.SoleTraderDetailsMapper;
 import uk.gov.hmcts.cmc.domain.models.otherparty.CompanyDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.OrganisationDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.SoleTraderDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 
-import java.time.LocalDate;
-
-import static java.time.format.DateTimeFormatter.ISO_DATE;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.COMPANY;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.ORGANISATION;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.SOLE_TRADER;
-
 @Component
-public class TheirDetailsMapper implements Mapper<CCDParty, TheirDetails> {
+public class TheirDetailsMapper {
 
     private final IndividualDetailsMapper individualDetailsMapper;
     private final CompanyDetailsMapper companyDetailsMapper;
     private final OrganisationDetailsMapper organisationDetailsMapper;
     private final SoleTraderDetailsMapper soleTraderDetailsMapper;
-    private final AddressMapper addressMapper;
-    private final RepresentativeMapper representativeMapper;
 
-    public TheirDetailsMapper(IndividualDetailsMapper individualDetailsMapper,
-                              CompanyDetailsMapper companyDetailsMapper,
-                              OrganisationDetailsMapper organisationDetailsMapper,
-                              SoleTraderDetailsMapper soleTraderDetailsMapper,
-                              AddressMapper addressMapper,
-                              RepresentativeMapper representativeMapper) {
+    @Autowired
+    public TheirDetailsMapper(
+        IndividualDetailsMapper individualDetailsMapper,
+        CompanyDetailsMapper companyDetailsMapper,
+        OrganisationDetailsMapper organisationDetailsMapper,
+        SoleTraderDetailsMapper soleTraderDetailsMapper
+    ) {
 
         this.individualDetailsMapper = individualDetailsMapper;
         this.companyDetailsMapper = companyDetailsMapper;
         this.organisationDetailsMapper = organisationDetailsMapper;
         this.soleTraderDetailsMapper = soleTraderDetailsMapper;
-        this.addressMapper = addressMapper;
-        this.representativeMapper = representativeMapper;
     }
 
-    @Override
-    public CCDParty to(TheirDetails theirDetails) {
-        CCDParty.CCDPartyBuilder builder = CCDParty.builder();
+    public void to(CCDDefendant.CCDDefendantBuilder builder, TheirDetails theirDetails) {
 
         if (theirDetails instanceof IndividualDetails) {
-            builder.type(INDIVIDUAL);
+            builder.claimantProvidedType(CCDPartyType.INDIVIDUAL);
             IndividualDetails individual = (IndividualDetails) theirDetails;
-            builder.individual(individualDetailsMapper.to(individual));
+            individualDetailsMapper.to(individual, builder);
         } else if (theirDetails instanceof CompanyDetails) {
-            builder.type(COMPANY);
+            builder.claimantProvidedType(CCDPartyType.COMPANY);
             CompanyDetails company = (CompanyDetails) theirDetails;
-            builder.company(companyDetailsMapper.to(company));
+            companyDetailsMapper.to(company, builder);
         } else if (theirDetails instanceof OrganisationDetails) {
-            builder.type(ORGANISATION);
+            builder.claimantProvidedType(CCDPartyType.ORGANISATION);
             OrganisationDetails organisation = (OrganisationDetails) theirDetails;
-            builder.organisation(organisationDetailsMapper.to(organisation));
+            organisationDetailsMapper.to(organisation, builder);
         } else if (theirDetails instanceof SoleTraderDetails) {
-            builder.type(SOLE_TRADER);
+            builder.claimantProvidedType(CCDPartyType.SOLE_TRADER);
             SoleTraderDetails soleTrader = (SoleTraderDetails) theirDetails;
-            builder.soleTrader(soleTraderDetailsMapper.to(soleTrader));
+            soleTraderDetailsMapper.to(soleTrader, builder);
         }
-
-        return builder.build();
     }
 
-    @Override
-    public TheirDetails from(CCDParty ccdParty) {
-        switch (ccdParty.getType()) {
+    public TheirDetails from(CCDCollectionElement<CCDDefendant> ccdDefendant) {
+        switch (ccdDefendant.getValue().getClaimantProvidedType()) {
             case COMPANY:
-                return getCompany(ccdParty);
+                return companyDetailsMapper.from(ccdDefendant);
             case INDIVIDUAL:
-                return getIndividual(ccdParty);
+                return individualDetailsMapper.from(ccdDefendant);
             case SOLE_TRADER:
-                return getSoleTrader(ccdParty);
+                return soleTraderDetailsMapper.from(ccdDefendant);
             case ORGANISATION:
-                return getOrganisation(ccdParty);
+                return organisationDetailsMapper.from(ccdDefendant);
             default:
-                throw new MappingException();
+                throw new MappingException("Invalid defendant type, "
+                    + ccdDefendant.getValue().getClaimantProvidedType());
         }
-    }
-
-    private TheirDetails getCompany(CCDParty ccdParty) {
-        CCDCompany ccdCompany = ccdParty.getCompany();
-        return new CompanyDetails(ccdCompany.getName(), addressMapper.from(ccdCompany.getAddress()),
-            ccdCompany.getEmail(), representativeMapper.from(ccdCompany.getRepresentative()),
-            addressMapper.from(ccdCompany.getCorrespondenceAddress()), ccdCompany.getContactPerson());
-    }
-
-    private TheirDetails getIndividual(CCDParty ccdParty) {
-        CCDIndividual ccdIndividual = ccdParty.getIndividual();
-        return new IndividualDetails(ccdIndividual.getName(),
-            addressMapper.from(ccdIndividual.getAddress()),
-            ccdIndividual.getEmail(),
-            representativeMapper.from(ccdIndividual.getRepresentative()),
-            addressMapper.from(ccdIndividual.getCorrespondenceAddress()),
-            parseDob(ccdIndividual.getDateOfBirth())
-        );
-    }
-
-    private LocalDate parseDob(String dateOfBirth) {
-        if (StringUtils.isBlank(dateOfBirth)) {
-            return null;
-        }
-
-        return LocalDate.parse(dateOfBirth, ISO_DATE);
-    }
-
-    private TheirDetails getSoleTrader(CCDParty ccdParty) {
-        CCDSoleTrader ccdSoleTrader = ccdParty.getSoleTrader();
-        return new SoleTraderDetails(ccdSoleTrader.getName(), addressMapper.from(ccdSoleTrader.getAddress()),
-            ccdSoleTrader.getEmail(), representativeMapper.from(ccdSoleTrader.getRepresentative()),
-            addressMapper.from(ccdSoleTrader.getCorrespondenceAddress()), ccdSoleTrader.getTitle(),
-            ccdSoleTrader.getBusinessName());
-    }
-
-    private TheirDetails getOrganisation(CCDParty ccdParty) {
-        CCDOrganisation ccdOrganisation = ccdParty.getOrganisation();
-        return new OrganisationDetails(ccdOrganisation.getName(),
-            addressMapper.from(ccdOrganisation.getAddress()), ccdOrganisation.getEmail(),
-            representativeMapper.from(ccdOrganisation.getRepresentative()),
-            addressMapper.from(ccdOrganisation.getCorrespondenceAddress()), ccdOrganisation.getContactPerson(),
-            ccdOrganisation.getCompaniesHouseNumber());
     }
 }

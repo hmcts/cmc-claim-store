@@ -9,17 +9,24 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
-import uk.gov.hmcts.cmc.ccd.domain.CCDRepaymentPlan;
-import uk.gov.hmcts.cmc.ccd.domain.CCDStatementOfTruth;
 import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
+import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgmentType;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepaymentPlan;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.function.Function;
 
 import static java.time.LocalDate.now;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 @SpringBootTest
@@ -30,29 +37,58 @@ public class CountyCourtJudgmentMapperTest {
     @Autowired
     private CountyCourtJudgmentMapper countyCourtJudgmentMapper;
 
+    private Function<CountyCourtJudgment, Claim> createClaimWithCCJ = ccj -> Claim.builder().countyCourtJudgment(ccj)
+        .countyCourtJudgmentRequestedAt(LocalDateTime.now())
+        .build();
+
+    @Test
+    public void mapEmptyCCJWillReturnNull() {
+        assertNull(countyCourtJudgmentMapper.to(null));
+        assertNull(countyCourtJudgmentMapper.to(Claim.builder().build()));
+    }
+
+    @Test
+    public void mapEmptyCCDCountyCourtJudgmentDontError() {
+        //Given
+        Claim.ClaimBuilder claimBuilder = Claim.builder();
+
+        //When
+        countyCourtJudgmentMapper.from(null, claimBuilder);
+        Claim finalClaim = claimBuilder.build();
+
+        //Then
+        assertNull(finalClaim.getCountyCourtJudgment());
+    }
+
     @Test
     public void shouldMapCountyCourtJudgmentToCCD() {
         //given
-        final CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment.builder().build();
+        CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment.builder()
+            .ccjType(CountyCourtJudgmentType.ADMISSIONS)
+            .build();
+        Claim claim = createClaimWithCCJ.apply(countyCourtJudgment);
 
         //when
-        CCDCountyCourtJudgment ccdCountyCourtJudgment = countyCourtJudgmentMapper.to(countyCourtJudgment);
+        CCDCountyCourtJudgment ccdCountyCourtJudgment = countyCourtJudgmentMapper.to(claim);
 
         //then
+        assertNotNull(ccdCountyCourtJudgment);
         assertThat(countyCourtJudgment).isEqualTo(ccdCountyCourtJudgment);
     }
 
     @Test
     public void shouldMapCountyCourtJudgmentWithPaymentOptionImmediatelyToCCD() {
         //given
-        final CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment.builder()
-            .withPaymentOptionImmediately()
-            .withPaidAmount(BigDecimal.TEN)
-            .withStatementOfTruth(new StatementOfTruth("Tester", "Unit Test"))
+        CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment.builder()
+            .ccjType(CountyCourtJudgmentType.ADMISSIONS)
+            .paymentOption(PaymentOption.IMMEDIATELY)
+            .paidAmount(BigDecimal.TEN)
+            .statementOfTruth(new StatementOfTruth("Tester", "Unit Test"))
             .build();
+        Claim claim = createClaimWithCCJ.apply(countyCourtJudgment);
 
         //when
-        CCDCountyCourtJudgment ccdCountyCourtJudgment = countyCourtJudgmentMapper.to(countyCourtJudgment);
+        CCDCountyCourtJudgment ccdCountyCourtJudgment = countyCourtJudgmentMapper.to(claim);
 
         //then
         assertThat(countyCourtJudgment).isEqualTo(ccdCountyCourtJudgment);
@@ -61,13 +97,16 @@ public class CountyCourtJudgmentMapperTest {
     @Test
     public void shouldMapCountyCourtJudgmentWithPaymentOptionSpecifiedDateToCCD() {
         //given
-        final CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment.builder()
-            .withPayBySetDate(now())
-            .withStatementOfTruth(new StatementOfTruth("Tester", "Unit Test"))
+        CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment.builder()
+            .ccjType(CountyCourtJudgmentType.ADMISSIONS)
+            .paymentOption(PaymentOption.BY_SPECIFIED_DATE)
+            .payBySetDate(now())
+            .statementOfTruth(new StatementOfTruth("Tester", "Unit Test"))
             .build();
+        Claim claim = createClaimWithCCJ.apply(countyCourtJudgment);
 
         //when
-        CCDCountyCourtJudgment ccdCountyCourtJudgment = countyCourtJudgmentMapper.to(countyCourtJudgment);
+        CCDCountyCourtJudgment ccdCountyCourtJudgment = countyCourtJudgmentMapper.to(claim);
 
         //then
         assertThat(countyCourtJudgment).isEqualTo(ccdCountyCourtJudgment);
@@ -76,73 +115,94 @@ public class CountyCourtJudgmentMapperTest {
     @Test
     public void shouldMapCountyCourtJudgmentWithPaymentOptionInstalmentsToCCD() {
         //given
-        final CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment.builder()
-            .withRepaymentPlan(SampleRepaymentPlan.builder().build())
-            .withStatementOfTruth(new StatementOfTruth("Tester", "Unit Test"))
+        CountyCourtJudgment countyCourtJudgment = SampleCountyCourtJudgment.builder()
+            .ccjType(CountyCourtJudgmentType.ADMISSIONS)
+            .paymentOption(PaymentOption.INSTALMENTS)
+            .repaymentPlan(SampleRepaymentPlan.builder().build())
+            .statementOfTruth(new StatementOfTruth("Tester", "Unit Test"))
             .build();
+        Claim claim = createClaimWithCCJ.apply(countyCourtJudgment);
 
         //when
-        CCDCountyCourtJudgment ccdCountyCourtJudgment = countyCourtJudgmentMapper.to(countyCourtJudgment);
+        CCDCountyCourtJudgment ccdCountyCourtJudgment = countyCourtJudgmentMapper.to(claim);
 
         //then
         assertThat(countyCourtJudgment).isEqualTo(ccdCountyCourtJudgment);
+        assertEquals(claim.getCountyCourtJudgmentRequestedAt(), ccdCountyCourtJudgment.getRequestedDate());
     }
 
     @Test
     public void shouldMapCountyCourtJudgmentFromCCD() {
         //given
-        final CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
+        CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
             .paymentOption(CCDPaymentOption.IMMEDIATELY)
             .paidAmount(BigDecimal.TEN)
-            .statementOfTruth(CCDStatementOfTruth.builder().signerName("Tester").signerRole("Unit Test").build())
+            .statementOfTruthSignerRole("PM")
+            .statementOfTruthSignerName("Mrs May")
+            .repaymentPlanPaymentSchedule(CCDPaymentSchedule.EVERY_MONTH)
+            .type(CCDCountyCourtJudgmentType.ADMISSIONS)
             .build();
+        Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         //when
-        CountyCourtJudgment countyCourtJudgment = countyCourtJudgmentMapper.from(ccdCountyCourtJudgment);
+        countyCourtJudgmentMapper.from(ccdCountyCourtJudgment, claimBuilder);
+        Claim claim = claimBuilder.build();
+        CountyCourtJudgment countyCourtJudgment = claim.getCountyCourtJudgment();
 
         //then
         assertThat(countyCourtJudgment).isEqualTo(ccdCountyCourtJudgment);
+        assertEquals(claim.getCountyCourtJudgmentRequestedAt(), ccdCountyCourtJudgment.getRequestedDate());
     }
 
     @Test
     public void shouldMapCountyCourtJudgmentWithRepaymentPlanFromCCD() {
         //given
 
-        final CCDRepaymentPlan ccdRepaymentPlan = CCDRepaymentPlan.builder()
-            .paymentSchedule(CCDPaymentSchedule.EVERY_TWO_WEEKS)
-            .instalmentAmount(BigDecimal.valueOf(100))
-            .firstPaymentDate(now())
-            .build();
-
-        final CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
+        CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
             .paymentOption(CCDPaymentOption.INSTALMENTS)
-            .repaymentPlan(ccdRepaymentPlan)
+            .repaymentPlanCompletionDate(now().plusMonths(5))
+            .repaymentPlanFirstPaymentDate(now())
+            .repaymentPlanPaymentLength("1 light years")
+            .repaymentPlanInstalmentAmount(BigDecimal.TEN)
+            .repaymentPlanPaymentSchedule(CCDPaymentSchedule.EACH_WEEK)
             .paidAmount(BigDecimal.TEN)
-            .statementOfTruth(CCDStatementOfTruth.builder().signerName("Tester").signerRole("Unit Test").build())
+            .statementOfTruthSignerName("Mrs May")
+            .statementOfTruthSignerRole("PM")
+            .type(CCDCountyCourtJudgmentType.ADMISSIONS)
             .build();
+        Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         //when
-        CountyCourtJudgment countyCourtJudgment = countyCourtJudgmentMapper.from(ccdCountyCourtJudgment);
+        countyCourtJudgmentMapper.from(ccdCountyCourtJudgment, claimBuilder);
+        Claim claim = claimBuilder.build();
+        CountyCourtJudgment countyCourtJudgment = claim.getCountyCourtJudgment();
 
         //then
         assertThat(countyCourtJudgment).isEqualTo(ccdCountyCourtJudgment);
+        assertEquals(claim.getCountyCourtJudgmentRequestedAt(), ccdCountyCourtJudgment.getRequestedDate());
     }
 
     @Test
     public void shouldMapCountyCourtJudgmentFullBySetDateFromCCD() {
         //given
-        final CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
+        CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
             .defendantDateOfBirth(now().minusYears(20))
             .paymentOption(CCDPaymentOption.BY_SPECIFIED_DATE)
             .payBySetDate(now())
             .paidAmount(BigDecimal.TEN)
-            .statementOfTruth(CCDStatementOfTruth.builder().signerName("Tester").signerRole("Unit Test").build())
+            .statementOfTruthSignerRole("PM")
+            .statementOfTruthSignerName("Mrs May")
+            .type(CCDCountyCourtJudgmentType.DETERMINATION)
             .build();
+        Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         //when
-        CountyCourtJudgment countyCourtJudgment = countyCourtJudgmentMapper.from(ccdCountyCourtJudgment);
+        countyCourtJudgmentMapper.from(ccdCountyCourtJudgment, claimBuilder);
+        Claim claim = claimBuilder.build();
+        CountyCourtJudgment countyCourtJudgment = claim.getCountyCourtJudgment();
 
         //then
         assertThat(countyCourtJudgment).isEqualTo(ccdCountyCourtJudgment);
+        assertEquals(claim.getCountyCourtJudgmentRequestedAt(), ccdCountyCourtJudgment.getRequestedDate());
     }
 }

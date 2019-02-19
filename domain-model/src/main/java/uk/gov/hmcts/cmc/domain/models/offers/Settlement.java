@@ -18,28 +18,49 @@ public class Settlement {
     private static final String NO_STATEMENTS_MADE = "No statements have yet been made during that settlement";
     private final List<PartyStatement> partyStatements = new ArrayList<>();
 
-    public void makeOffer(Offer offer, MadeBy party) {
+    public void makeOffer(Offer offer, MadeBy party, String partyStatementId) {
         assertOfferCanBeMadeBy(party);
-        partyStatements.add(new PartyStatement(StatementType.OFFER, party, offer));
+        addOffer(offer, party, partyStatementId);
     }
 
-    public void accept(MadeBy party) {
+    public void addOffer(Offer offer, MadeBy party, String partyStatementId) {
+        partyStatements.add(PartyStatement.builder().type(StatementType.OFFER)
+            .id(partyStatementId)
+            .madeBy(party)
+            .offer(offer)
+            .build());
+    }
+
+    public void accept(MadeBy party, String partyStatementId) {
         assertOfferCanBeResponded(party);
-        partyStatements.add(new PartyStatement(StatementType.ACCEPTATION, party));
+        partyStatements.add(PartyStatement.builder().type(StatementType.ACCEPTATION)
+            .id(partyStatementId)
+            .madeBy(party).build());
     }
 
-    public void reject(MadeBy party) {
-        assertOfferCanBeResponded(party);
-        partyStatements.add(new PartyStatement(StatementType.REJECTION, party));
+    public void acceptCourtDetermination(MadeBy party, String partyStatementId) {
+        assertOfferCanBeAccepted();
+        partyStatements.add(PartyStatement.builder().type(StatementType.ACCEPTATION)
+            .id(partyStatementId)
+            .madeBy(party).build());
     }
 
-    public void countersign(MadeBy party) {
+    public void reject(MadeBy party, String partyStatementId) {
+        assertOfferCanBeRejected(party);
+        partyStatements.add(PartyStatement.builder().type(StatementType.REJECTION)
+            .id(partyStatementId)
+            .madeBy(party).build());
+    }
+
+    public void countersign(MadeBy party, String partyStatementId) {
         assertOfferHasBeenAcceptedByOtherParty(party);
-        partyStatements.add(new PartyStatement(StatementType.COUNTERSIGNATURE, party));
+        partyStatements.add(PartyStatement.builder().type(StatementType.COUNTERSIGNATURE)
+            .id(partyStatementId)
+            .madeBy(party).build());
     }
 
     @JsonIgnore
-    PartyStatement getLastStatement() {
+    public PartyStatement getLastStatement() {
         if (partyStatements.isEmpty()) {
             throw new IllegalSettlementStatementException(NO_STATEMENTS_MADE);
         }
@@ -47,7 +68,7 @@ public class Settlement {
     }
 
     @JsonIgnore
-    public PartyStatement getLastOfferStatement() {
+    public PartyStatement getLastStatementOfType(StatementType statementType) {
         if (partyStatements.isEmpty()) {
             throw new IllegalSettlementStatementException(NO_STATEMENTS_MADE);
         }
@@ -56,7 +77,7 @@ public class Settlement {
         Collections.reverse(tmpList);
 
         return tmpList.stream()
-            .filter((partyStatement -> partyStatement.getType() == StatementType.OFFER))
+            .filter((partyStatement -> partyStatement.getType() == statementType))
             .findFirst()
             .orElseThrow(() -> new IllegalSettlementStatementException("No statements with an offer found"));
 
@@ -64,7 +85,7 @@ public class Settlement {
 
     @JsonIgnore
     public boolean isSettlementThroughAdmissions() {
-        return getLastOfferStatement().getOffer().orElseThrow(IllegalStateException::new)
+        return getLastStatementOfType(StatementType.OFFER).getOffer().orElseThrow(IllegalStateException::new)
             .getPaymentIntention().isPresent();
     }
 
@@ -81,6 +102,21 @@ public class Settlement {
     private void assertOfferCanBeResponded(MadeBy party) {
         assertOfferCanBeMadeBy(party);
 
+        assertOfferCanBeAccepted();
+    }
+
+    private void assertOfferCanBeRejected(MadeBy party) {
+        assertOfferCanBeMadeBy(party);
+
+        if (!lastStatementIsOffer() && !lastStatementIsAcceptationNotBy(party)) {
+            throw new IllegalSettlementStatementException(
+                format("Last statement was: %s, offer or acceptation expected.",
+                    getLastStatement().getType().name().toLowerCase())
+            );
+        }
+    }
+
+    private void assertOfferCanBeAccepted() {
         if (!lastStatementIsOffer()) {
             throw new IllegalSettlementStatementException(
                 format("Last statement was: %s , offer expected.", getLastStatement().getType().name().toLowerCase())

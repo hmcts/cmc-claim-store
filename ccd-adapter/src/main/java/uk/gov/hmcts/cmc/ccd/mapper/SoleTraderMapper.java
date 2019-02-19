@@ -2,11 +2,12 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CCDSoleTrader;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 
 @Component
-public class SoleTraderMapper implements Mapper<CCDSoleTrader, SoleTrader> {
+public class SoleTraderMapper {
 
     private final AddressMapper addressMapper;
     private final RepresentativeMapper representativeMapper;
@@ -17,34 +18,32 @@ public class SoleTraderMapper implements Mapper<CCDSoleTrader, SoleTrader> {
         this.representativeMapper = representativeMapper;
     }
 
-    @Override
-    public CCDSoleTrader to(SoleTrader soleTrader) {
+    public void to(SoleTrader soleTrader, CCDClaimant.CCDClaimantBuilder builder) {
 
-        CCDSoleTrader.CCDSoleTraderBuilder builder = CCDSoleTrader.builder();
-        soleTrader.getTitle().ifPresent(builder::title);
-        soleTrader.getMobilePhone().ifPresent(builder::phoneNumber);
-        soleTrader.getBusinessName().ifPresent(builder::businessName);
+        soleTrader.getTitle().ifPresent(builder::partyTitle);
+        soleTrader.getMobilePhone().ifPresent(builder::partyPhone);
+        soleTrader.getBusinessName().ifPresent(builder::partyBusinessName);
         soleTrader.getCorrespondenceAddress()
-            .ifPresent(address -> builder.correspondenceAddress(addressMapper.to(address)));
+            .ifPresent(address -> builder.partyCorrespondenceAddress(addressMapper.to(address)));
         soleTrader.getRepresentative()
-            .ifPresent(representative -> builder.representative(representativeMapper.to(representative)));
+            .ifPresent(representative -> representativeMapper.to(representative, builder));
         builder
-            .name(soleTrader.getName())
-            .address(addressMapper.to(soleTrader.getAddress()));
+            .partyName(soleTrader.getName())
+            .partyAddress(addressMapper.to(soleTrader.getAddress()));
 
-        return builder.build();
     }
 
-    @Override
-    public SoleTrader from(CCDSoleTrader ccdSoleTrader) {
-        return new SoleTrader(
-            ccdSoleTrader.getName(),
-            addressMapper.from(ccdSoleTrader.getAddress()),
-            addressMapper.from(ccdSoleTrader.getCorrespondenceAddress()),
-            ccdSoleTrader.getPhoneNumber(),
-            representativeMapper.from(ccdSoleTrader.getRepresentative()),
-            ccdSoleTrader.getTitle(),
-            ccdSoleTrader.getBusinessName()
-        );
+    public SoleTrader from(CCDCollectionElement<CCDClaimant> soletrader) {
+        CCDClaimant value = soletrader.getValue();
+        return SoleTrader.builder()
+            .id(soletrader.getId())
+            .name(value.getPartyName())
+            .address(addressMapper.from(value.getPartyAddress()))
+            .correspondenceAddress(addressMapper.from(value.getPartyCorrespondenceAddress()))
+            .mobilePhone(value.getPartyPhone())
+            .representative(representativeMapper.from(value))
+            .title(value.getPartyTitle())
+            .businessName(value.getPartyBusinessName())
+            .build();
     }
 }

@@ -33,7 +33,6 @@ public class StatementOfValueProvider {
     public static final String ALSO_HOUSING_DISREPAIR = "This is also a claim for housing disrepair which includes "
         + "an order for the landlord to carry out work. ";
 
-
     public StatementOfValueContent create(Claim claim) {
 
         StringBuilder personalInjuryContent = new StringBuilder();

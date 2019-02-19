@@ -20,9 +20,9 @@ public class SettlementMakeOfferTest {
 
     @Test
     public void shouldAllowDefendantToMakeAnInitialOffer() {
-        Offer offer = SampleOffer.validDefaults();
+        Offer offer = SampleOffer.builder().build();
 
-        settlement.makeOffer(offer, MadeBy.DEFENDANT);
+        settlement.makeOffer(offer, MadeBy.DEFENDANT, null);
 
         List<PartyStatement> partyStatements = settlement.getPartyStatements();
         assertThat(partyStatements).hasSize(1);
@@ -35,27 +35,27 @@ public class SettlementMakeOfferTest {
 
     @Test(expected = IllegalSettlementStatementException.class)
     public void shouldNotAllowDefendantToMakeTwoOffersInARow() {
-        Offer offer = SampleOffer.validDefaults();
+        Offer offer = SampleOffer.builder().build();
 
-        settlement.makeOffer(offer, MadeBy.DEFENDANT);
-        settlement.makeOffer(offer, MadeBy.DEFENDANT);
+        settlement.makeOffer(offer, MadeBy.DEFENDANT, null);
+        settlement.makeOffer(offer, MadeBy.DEFENDANT, null);
     }
 
     @Test(expected = IllegalSettlementStatementException.class)
     public void shouldNotAllowClaimantToMakeTwoOffersInARow() {
-        Offer offer = SampleOffer.validDefaults();
+        Offer offer = SampleOffer.builder().build();
 
-        settlement.makeOffer(offer, MadeBy.CLAIMANT);
-        settlement.makeOffer(offer, MadeBy.CLAIMANT);
+        settlement.makeOffer(offer, MadeBy.CLAIMANT, null);
+        settlement.makeOffer(offer, MadeBy.CLAIMANT, null);
     }
 
     @Test
     public void shouldAllowToMakeACounterOffers() {
-        Offer offer = SampleOffer.validDefaults();
+        Offer offer = SampleOffer.builder().build();
 
-        settlement.makeOffer(offer, MadeBy.CLAIMANT);
-        settlement.makeOffer(offer, MadeBy.DEFENDANT);
-        settlement.makeOffer(offer, MadeBy.CLAIMANT);
+        settlement.makeOffer(offer, MadeBy.CLAIMANT, null);
+        settlement.makeOffer(offer, MadeBy.DEFENDANT, null);
+        settlement.makeOffer(offer, MadeBy.CLAIMANT, null);
 
         assertThat(settlement.getPartyStatements()).hasSize(3);
     }

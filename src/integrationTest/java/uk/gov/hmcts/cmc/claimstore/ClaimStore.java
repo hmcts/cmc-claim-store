@@ -90,7 +90,6 @@ public class ClaimStore {
         return getClaimByExternalId(claim.getExternalId());
     }
 
-
     public void updateResponseDeadline(String externalId) {
         logger.debug("Updating response deadline for claim : {}", externalId);
 
@@ -109,8 +108,7 @@ public class ClaimStore {
         this.claimRepository.saveCountyCourtJudgment(
             externalId,
             jsonMapper.toJson(ccj),
-            LocalDateTimeFactory.nowInUTC(),
-            null
+            LocalDateTimeFactory.nowInUTC()
         );
 
         logger.debug("Saved county court judgement");

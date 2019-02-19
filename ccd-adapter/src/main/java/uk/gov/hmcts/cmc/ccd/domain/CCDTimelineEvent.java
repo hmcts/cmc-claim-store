@@ -9,5 +9,5 @@ public class CCDTimelineEvent {
 
     private String date;
     private String description;
-    
+
 }

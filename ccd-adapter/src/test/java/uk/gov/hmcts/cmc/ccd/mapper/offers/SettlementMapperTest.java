@@ -8,16 +8,24 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.offers.CCDSettlement;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
+import uk.gov.hmcts.cmc.ccd.util.SampleCCDDefendant;
+import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
+import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SamplePartyStatement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
+import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.isA;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -27,90 +35,101 @@ public class SettlementMapperTest {
     @Autowired
     private SettlementMapper settlementMapper;
 
-    @Autowired
-    private PartyStatementMapper partyStatementMapper;
-
     @Test
-    public void shouldMapSettlementToCCD() {
-        //given
-        Settlement settlement = SampleSettlement.validDefaults();
-
-        //when
-        CCDSettlement ccdSettlement = settlementMapper.to(settlement);
-
-        //then
-        assertThat(settlement).isEqualTo(ccdSettlement);
+    public void toCCDPartyStatementsReturnNullWhenSettlementIsNull() {
+        assertNull(
+            settlementMapper.toCCDPartyStatements(null)
+        );
     }
 
     @Test
-    public void shouldMapRejectionSettlementToCCD() {
-        //given
-        Settlement settlement = SampleSettlement.builder()
-            .withPartyStatements(SampleSettlement.offerPartyStatement, SampleSettlement.rejectPartyStatement)
-            .build();
+    public void toCCDPartyStatementsWithEmptySettlementReturnsNull() {
+        //Given
+        Settlement emptySettlement = new Settlement();
 
-        //when
-        CCDSettlement ccdSettlement = settlementMapper.to(settlement);
+        //When
+        List<CCDCollectionElement<CCDPartyStatement>> partystatements =
+            settlementMapper.toCCDPartyStatements(emptySettlement);
 
-        //then
-        assertThat(settlement).isEqualTo(ccdSettlement);
+        //Then
+        assertNull(partystatements);
     }
 
     @Test
-    public void shouldMapAcceptanceSettlementToCCD() {
-        //given
-        Settlement settlement = SampleSettlement.builder()
-            .withPartyStatements(SampleSettlement.offerPartyStatement, SampleSettlement.acceptPartyStatement).build();
+    public void toCCDPartyStatementMapsAllPartyStatement() {
+        //Given
+        Settlement settlement = new SampleSettlement().withPartyStatements(
+            SamplePartyStatement.offerPartyStatement,
+            SamplePartyStatement.acceptPartyStatement,
+            SamplePartyStatement.counterSignPartyStatement
+        ).build();
 
-        //when
-        CCDSettlement ccdSettlement = settlementMapper.to(settlement);
+        //When
+        List<CCDCollectionElement<CCDPartyStatement>> partyStatements =
+            settlementMapper.toCCDPartyStatements(settlement);
 
-        //then
-        assertThat(settlement).isEqualTo(ccdSettlement);
+        //Then
+        assertNotNull(partyStatements);
+        assertThat(partyStatements.size(), is(3));
+        assertThat(partyStatements.get(0), isA(CCDCollectionElement.class));
+
+        partyStatements.forEach(partyStatementListElement -> {
+            assertNotNull(partyStatementListElement.getValue());
+            assertThat(partyStatementListElement.getValue(), isA(CCDPartyStatement.class));
+        });
     }
 
     @Test
-    public void shouldMapCounterSignSettlementToCCD() {
-        //given
-        Settlement settlement = SampleSettlement.builder()
-            .withPartyStatements(SampleSettlement.offerPartyStatement, SampleSettlement.acceptPartyStatement,
-                SampleSettlement.counterSignPartyStatement)
-            .build();
-
-        //when
-        CCDSettlement ccdSettlement = settlementMapper.to(settlement);
-
-        //then
-        assertThat(settlement).isEqualTo(ccdSettlement);
+    public void fromCCDDefendantReturnNullWhenDefendantIsNull() {
+        assertNull(
+            settlementMapper.fromCCDDefendant(CCDDefendant.builder().build())
+        );
     }
 
     @Test
-    public void shouldMaintainTheOrderOfPartyStatements() {
-        //given
-        PartyStatement[] partyStatements = {
-            SampleSettlement.offerPartyStatement,
-            SampleSettlement.rejectPartyStatement,
-            SampleSettlement.offerPartyStatement,
-            SampleSettlement.rejectPartyStatement,
-            SampleSettlement.offerPartyStatement,
-            SampleSettlement.acceptPartyStatement
-        };
+    public void toCCDPartyStatementsWithDefendantHasNoSettlementReturnsNull() {
+        //Given
+        CCDDefendant ccdDefendant = CCDDefendant.builder().build();
 
-        Settlement settlement = SampleSettlement.builder()
-            .withPartyStatements(partyStatements).build();
+        //When
+        Settlement settlement =
+            settlementMapper.fromCCDDefendant(ccdDefendant);
 
-        //when
-        CCDSettlement ccdSettlement = settlementMapper.to(settlement);
+        //Then
+        assertNull(settlement);
+    }
 
-        //then
-        assertThat(settlement).isEqualTo(ccdSettlement);
+    @Test
+    public void toCCDPartyStatementsMapsSettlementFromCCDPartyStatement() {
+        //Given
+        CCDDefendant ccdDefendant = SampleCCDDefendant.withPartyStatements().build();
 
-        assertThat(Arrays.asList(partyStatements))
-            .isEqualTo(
-                ccdSettlement.getPartyStatements().stream()
-                    .map(CCDCollectionElement::getValue)
-                    .map(partyStatementMapper::from)
-                    .collect(Collectors.toList())
-            );
+        //When
+        Settlement settlement =
+            settlementMapper.fromCCDDefendant(ccdDefendant);
+
+        //Then
+        assertNotNull(settlement);
+        assertNotNull(settlement.getPartyStatements());
+        assertThat(settlement.getPartyStatements().size(), is(3));
+        assertThat(settlement.getPartyStatements().get(0), isA(PartyStatement.class));
+
+        assertTrue(settlement.getPartyStatements().stream().anyMatch(partyStatement ->
+                partyStatement.getMadeBy() == MadeBy.DEFENDANT
+                    && partyStatement.getType() == StatementType.OFFER
+            )
+        );
+
+        assertTrue(settlement.getPartyStatements().stream().anyMatch(partyStatement ->
+                partyStatement.getMadeBy() == MadeBy.CLAIMANT
+                    && partyStatement.getType() == StatementType.ACCEPTATION
+            )
+        );
+
+        assertTrue(settlement.getPartyStatements().stream().anyMatch(partyStatement ->
+                partyStatement.getMadeBy() == MadeBy.DEFENDANT
+                    && partyStatement.getType() == StatementType.COUNTERSIGNATURE
+            )
+        );
     }
 }

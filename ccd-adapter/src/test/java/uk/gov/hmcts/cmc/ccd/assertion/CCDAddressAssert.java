@@ -15,29 +15,29 @@ public class CCDAddressAssert extends AbstractAssert<CCDAddressAssert, CCDAddres
     public CCDAddressAssert isEqualTo(Address address) {
         isNotNull();
 
-        if (!Objects.equals(actual.getLine1(), address.getLine1())) {
+        if (!Objects.equals(actual.getAddressLine1(), address.getLine1())) {
             failWithMessage("Expected CCDAddress.line1 to be <%s> but was <%s>",
-                address.getLine1(), actual.getLine1());
+                address.getLine1(), actual.getAddressLine1());
         }
 
-        if (!Objects.equals(actual.getLine2(), address.getLine2())) {
+        if (!Objects.equals(actual.getAddressLine2(), address.getLine2())) {
             failWithMessage("Expected CCDAddress.line2 to be <%s> but was <%s>",
-                address.getLine2(), actual.getLine2());
+                address.getLine2(), actual.getAddressLine2());
         }
 
-        if (!Objects.equals(actual.getLine3(), address.getLine3())) {
+        if (!Objects.equals(actual.getAddressLine3(), address.getLine3())) {
             failWithMessage("Expected CCDAddress.line3 to be <%s> but was <%s>",
-                address.getLine3(), actual.getLine3());
+                address.getLine3(), actual.getAddressLine3());
         }
 
-        if (!Objects.equals(actual.getCity(), address.getCity())) {
+        if (!Objects.equals(actual.getPostTown(), address.getCity())) {
             failWithMessage("Expected CCDAddress.city to be <%s> but was <%s>",
-                address.getCity(), actual.getCity());
+                address.getCity(), actual.getPostTown());
         }
 
-        if (!Objects.equals(actual.getPostcode(), address.getPostcode())) {
+        if (!Objects.equals(actual.getPostCode(), address.getPostcode())) {
             failWithMessage("Expected CCDAddress.postcode to be <%s> but was <%s>",
-                address.getPostcode(), actual.getPostcode());
+                address.getPostcode(), actual.getPostCode());
         }
 
         return this;

@@ -1,12 +1,13 @@
 package uk.gov.hmcts.cmc.domain.models;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.amount.TotalAmountCalculator;
+import uk.gov.hmcts.cmc.domain.constraints.DateNotInTheFuture;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -22,11 +23,13 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 // Create these fields in JSON when serialize Java object, ignore them when deserialize.
 @JsonIgnoreProperties(
-    value = {"totalAmountTillToday", "totalAmountTillDateOfIssue", "totalInterest",
+    value = {"totalAmountTillToday", "totalAmountTillDateOfIssue",
+        "amountWithInterestUntilIssueDate", "totalInterest",
         "serviceDate", "amountWithInterest", "directionsQuestionnaireDeadline"},
     allowGetters = true
 )
-@Builder
+@Getter
+@Builder(toBuilder = true)
 @EqualsAndHashCode
 public class Claim {
 
@@ -54,11 +57,13 @@ public class Claim {
     private final List<String> features;
     private final LocalDateTime claimantRespondedAt;
     private final ClaimantResponse claimantResponse;
-    private final LocalDateTime countyCourtJudgmentIssuedAt;
     private final LocalDate directionsQuestionnaireDeadline;
+    @DateNotInTheFuture
+    private final LocalDate moneyReceivedOn;
+    private final ReDetermination reDetermination;
+    private final LocalDateTime reDeterminationRequestedAt;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
-    @JsonCreator
     public Claim(
         Long id,
         String submitterId,
@@ -83,8 +88,10 @@ public class Claim {
         List<String> features,
         LocalDateTime claimantRespondedAt,
         ClaimantResponse claimantResponse,
-        LocalDateTime countyCourtJudgmentIssuedAt,
-        LocalDate directionsQuestionnaireDeadline
+        LocalDate directionsQuestionnaireDeadline,
+        LocalDate moneyReceivedOn,
+        ReDetermination reDetermination,
+        LocalDateTime reDeterminationRequestedAt
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -109,84 +116,18 @@ public class Claim {
         this.features = features;
         this.claimantRespondedAt = claimantRespondedAt;
         this.claimantResponse = claimantResponse;
-        this.countyCourtJudgmentIssuedAt = countyCourtJudgmentIssuedAt;
         this.directionsQuestionnaireDeadline = directionsQuestionnaireDeadline;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getSubmitterId() {
-        return submitterId;
-    }
-
-    public String getLetterHolderId() {
-        return letterHolderId;
-    }
-
-    public String getDefendantId() {
-        return defendantId;
-    }
-
-    public String getExternalId() {
-        return externalId;
-    }
-
-    public ClaimData getClaimData() {
-        return claimData;
-    }
-
-    public String getReferenceNumber() {
-        return referenceNumber;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDate getIssuedOn() {
-        return issuedOn;
-    }
-
-    public LocalDate getResponseDeadline() {
-        return responseDeadline;
-    }
-
-    public boolean isMoreTimeRequested() {
-        return moreTimeRequested;
-    }
-
-    public String getSubmitterEmail() {
-        return submitterEmail;
-    }
-
-    public LocalDateTime getRespondedAt() {
-        return respondedAt;
+        this.moneyReceivedOn = moneyReceivedOn;
+        this.reDetermination = reDetermination;
+        this.reDeterminationRequestedAt = reDeterminationRequestedAt;
     }
 
     public Optional<Response> getResponse() {
         return Optional.ofNullable(response);
     }
 
-    public String getDefendantEmail() {
-        return defendantEmail;
-    }
-
-    public CountyCourtJudgment getCountyCourtJudgment() {
-        return countyCourtJudgment;
-    }
-
-    public LocalDateTime getCountyCourtJudgmentRequestedAt() {
-        return countyCourtJudgmentRequestedAt;
-    }
-
     public Optional<Settlement> getSettlement() {
         return Optional.ofNullable(settlement);
-    }
-
-    public LocalDateTime getSettlementReachedAt() {
-        return settlementReachedAt;
     }
 
     public Optional<URI> getSealedClaimDocument() {
@@ -199,6 +140,10 @@ public class Claim {
 
     public Optional<BigDecimal> getAmountWithInterest() {
         return TotalAmountCalculator.amountWithInterest(this);
+    }
+
+    public Optional<BigDecimal> getAmountWithInterestUntilIssueDate() {
+        return TotalAmountCalculator.amountWithInterestUntilIssueDate(this);
     }
 
     public Optional<BigDecimal> getTotalAmountTillToday() {
@@ -221,16 +166,16 @@ public class Claim {
         return Optional.ofNullable(claimantRespondedAt);
     }
 
-    public List<String> getFeatures() {
-        return features;
+    public Optional<LocalDate> getMoneyReceivedOn() {
+        return Optional.ofNullable(moneyReceivedOn);
     }
 
-    public Optional<LocalDateTime> getCountyCourtJudgmentIssuedAt() {
-        return Optional.ofNullable(countyCourtJudgmentIssuedAt);
+    public Optional<LocalDateTime> getReDeterminationRequestedAt() {
+        return Optional.ofNullable(reDeterminationRequestedAt);
     }
 
-    public LocalDate getDirectionsQuestionnaireDeadline() {
-        return directionsQuestionnaireDeadline;
+    public Optional<ReDetermination> getReDetermination() {
+        return Optional.ofNullable(reDetermination);
     }
 
     @Override

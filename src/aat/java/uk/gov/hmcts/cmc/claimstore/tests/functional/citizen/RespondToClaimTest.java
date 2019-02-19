@@ -36,7 +36,6 @@ public class RespondToClaimTest extends BaseTest {
         shouldBeAbleToSuccessfullySubmit(fullDefenceDisputeResponse);
     }
 
-
     @Test
     public void shouldBeAbleToSuccessfullySubmitFreeMediationRequestOnDefence() {
         Response fullDefenceDisputeResponse = SampleResponse.FullDefence
@@ -65,7 +64,7 @@ public class RespondToClaimTest extends BaseTest {
 
     @Test
     public void shouldBeAbleToSuccessfullySubmitPartAdmissionWithAlreadyPaidAmount() {
-        Response partAdmissionResponse = SampleResponse.PartAdmission.builder().build();
+        Response partAdmissionResponse = SampleResponse.PartAdmission.builder().buildWithPaymentOptionBySpecifiedDate();
         shouldBeAbleToSuccessfullySubmit(partAdmissionResponse);
     }
 

@@ -5,10 +5,12 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Debt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Dependant;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.DisabilityStatus;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employer;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.LivingPartner;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.OtherDependants;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence;
@@ -32,50 +34,68 @@ public class SampleStatementOfMeans {
                 .children(asList(Child.builder()
                     .ageGroupType(Child.AgeGroupType.BETWEEN_11_AND_15)
                     .numberOfChildren(2)
+                    .id("fa73da34-66c7-4909-8771-478f5bf1ffb7")
                     .build()))
                 .numberOfMaintainedChildren(2)
                 .otherDependants(OtherDependants.builder()
                     .numberOfPeople(3)
                     .details("Three other dependants")
+                    .anyDisabled(false)
                     .build())
+                .anyDisabledChildren(false)
                 .build())
             .employment(Employment.builder()
-                .employers(asList(Employer.builder().name("CMC").jobTitle("My sweet job").build()))
+                .employers(asList(Employer.builder()
+                    .id("0bf39079-eec1-4740-b14c-bd9427f9cc50")
+                    .name("CMC")
+                    .jobTitle("My sweet job")
+                    .build()))
                 .unemployment(null)
                 .selfEmployment(null)
                 .build()
             )
             .reason("My reason")
             .bankAccounts(asList(BankAccount.builder()
+                .id("5adfe417-0611-4e54-8751-4fb8ed600bf1")
                 .type(BankAccount.BankAccountType.SAVINGS_ACCOUNT)
                 .joint(true)
                 .balance(TEN)
                 .build()
             ))
             .debts(asList(Debt.builder()
+                .id("d354b56d-8ec1-49ef-9650-57bca975e283")
                 .totalOwed(TEN)
                 .description("Reference")
                 .monthlyPayments(BigDecimal.ONE)
                 .build()
             ))
             .courtOrders(asList(CourtOrder.builder()
+                .id("fffb3d88-6b67-4be3-a835-0df2db49f7f7")
                 .amountOwed(TEN)
                 .claimNumber("Reference")
                 .monthlyInstalmentAmount(BigDecimal.ONE)
                 .build()
             ))
             .expenses(asList(Expense.builder()
+                .id("60a0179b-7f14-4a8c-a7cc-170877eadc76")
                 .type(Expense.ExpenseType.COUNCIL_TAX)
                 .frequency(PaymentFrequency.MONTH)
                 .amount(TEN)
                 .build()
             ))
             .incomes(asList(Income.builder()
+                .id("c4fc229d-87db-43ff-8201-acafc136b7e8")
                 .type(Income.IncomeType.JOB)
                 .frequency(PaymentFrequency.MONTH)
                 .amount(TEN)
                 .build()
             ))
+            .partner(LivingPartner.builder()
+                .over18(true)
+                .disability(DisabilityStatus.NO)
+                .build())
+            .disability(DisabilityStatus.YES)
+            .carer(false)
             .build();
     }
 

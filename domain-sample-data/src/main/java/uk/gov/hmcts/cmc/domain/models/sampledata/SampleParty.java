@@ -17,14 +17,14 @@ public class SampleParty {
     private String name = "John Rambo";
     private String businessName = "Trading as name";
     private String contactPerson = "Steven Seagal";
-    private Address address = SampleAddress.validDefaults();
-    private Address correspondenceAddress = SampleAddress.validDefaults();
+    private Address address = SampleAddress.builder().build();
+    private Address correspondenceAddress = SampleAddress.builder().build();
     private String title = "Dr.";
     private String mobilePhone = "07873727165";
     private LocalDate dateOfBirth = LocalDate.of(1968, 1, 2);
-    private Representative representative = SampleRepresentative.builder()
-        .build();
+    private Representative representative = SampleRepresentative.builder().build();
     private String companiesHouseNumber;
+    private String collectionId = "acd82549-d279-4adc-b38c-d195dd0db0d6";
 
     public static SampleParty builder() {
         return new SampleParty();
@@ -80,35 +80,44 @@ public class SampleParty {
         return this;
     }
 
+    public SampleParty withCollectionId(String collectionId) {
+        this.collectionId = collectionId;
+        return this;
+    }
+
     public Party party() {
-        return new Individual(name, address, correspondenceAddress, mobilePhone, representative, dateOfBirth);
+        return new Individual(collectionId, name, address, correspondenceAddress, mobilePhone,
+            representative, dateOfBirth);
     }
 
     public Individual individual() {
-        return new Individual(name, address, correspondenceAddress, mobilePhone, representative, dateOfBirth);
+        return new Individual(collectionId, name, address, correspondenceAddress, mobilePhone,
+            representative, dateOfBirth);
     }
 
     public List<Party> individualDetails(int count) {
         List<Party> individualDetailsList = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             individualDetailsList.add(
-                new Individual(name, address, correspondenceAddress, mobilePhone, representative, dateOfBirth)
+                new Individual(collectionId, name, address, correspondenceAddress, mobilePhone,
+                    representative, dateOfBirth)
             );
         }
         return individualDetailsList;
     }
 
     public SoleTrader soleTrader() {
-        return new SoleTrader(name, address, correspondenceAddress, mobilePhone, representative, title, businessName);
+        return new SoleTrader(collectionId, name, address, correspondenceAddress, mobilePhone,
+            representative, title, businessName);
     }
 
     public Company company() {
-        return new Company(name, address, correspondenceAddress, mobilePhone, representative, contactPerson);
+        return new Company(collectionId, name, address, correspondenceAddress, mobilePhone,
+            representative, contactPerson);
     }
 
     public Organisation organisation() {
-        return new Organisation(name, address, correspondenceAddress, mobilePhone, representative, contactPerson,
-            companiesHouseNumber);
+        return new Organisation(collectionId, name, address, correspondenceAddress, mobilePhone,
+            representative, contactPerson, companiesHouseNumber);
     }
-
 }

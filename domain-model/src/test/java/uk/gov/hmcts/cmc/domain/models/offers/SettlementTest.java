@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SettlementTest {
 
     private static final String COUNTER_OFFER = "Get me a new roof instead";
-    private static final Offer offer = SampleOffer.validDefaults();
+    private static final Offer offer = SampleOffer.builder().build();
 
     @Mock
     private PartyStatement partyStatement;
@@ -44,125 +44,125 @@ public class SettlementTest {
     @Test
     public void getLastStatementShouldReturnLastStatement() {
         Offer counterOffer = SampleOffer.builder()
-            .withContent(COUNTER_OFFER)
+            .content(COUNTER_OFFER)
             .build();
 
-        settlement.makeOffer(offer, MadeBy.DEFENDANT);
-        settlement.makeOffer(counterOffer, MadeBy.CLAIMANT);
+        settlement.makeOffer(offer, MadeBy.DEFENDANT, null);
+        settlement.makeOffer(counterOffer, MadeBy.CLAIMANT, null);
 
         assertThat(settlement.getLastStatement().getOffer().get()).isEqualTo(counterOffer);
     }
 
     @Test
     public void claimantCanAcceptAnOffer() {
-        settlement.makeOffer(offer, MadeBy.DEFENDANT);
-        settlement.accept(MadeBy.CLAIMANT);
+        settlement.makeOffer(offer, MadeBy.DEFENDANT, null);
+        settlement.accept(MadeBy.CLAIMANT, null);
 
         assertThat(settlement.getLastStatement().getType()).isEqualTo(StatementType.ACCEPTATION);
     }
 
     @Test
     public void defendantCanAcceptAnOffer() {
-        settlement.makeOffer(offer, MadeBy.CLAIMANT);
-        settlement.accept(MadeBy.DEFENDANT);
+        settlement.makeOffer(offer, MadeBy.CLAIMANT, null);
+        settlement.accept(MadeBy.DEFENDANT, null);
 
         assertThat(settlement.getLastStatement().getType()).isEqualTo(StatementType.ACCEPTATION);
     }
 
     @Test(expected = IllegalSettlementStatementException.class)
     public void partyIsNotAllowedToAcceptOfferWhenOfferWasNotMade() {
-        settlement.accept(MadeBy.CLAIMANT);
+        settlement.accept(MadeBy.CLAIMANT, null);
     }
 
     @Test(expected = IllegalSettlementStatementException.class)
     public void partyIsNotAllowedToAcceptOfferWhenOfferWasAlreadyAccepted() {
-        settlement.makeOffer(offer, MadeBy.DEFENDANT);
-        settlement.accept(MadeBy.CLAIMANT);
+        settlement.makeOffer(offer, MadeBy.DEFENDANT, null);
+        settlement.accept(MadeBy.CLAIMANT, null);
 
-        settlement.accept(MadeBy.CLAIMANT);
+        settlement.accept(MadeBy.CLAIMANT, null);
     }
 
     @Test(expected = IllegalSettlementStatementException.class)
     public void partyIsNotAllowedToAcceptOfferWhenTheOnlyOfferWasMadeByThemselves() {
-        settlement.makeOffer(offer, MadeBy.CLAIMANT);
-        settlement.accept(MadeBy.CLAIMANT);
+        settlement.makeOffer(offer, MadeBy.CLAIMANT, null);
+        settlement.accept(MadeBy.CLAIMANT, null);
     }
 
     @Test
     public void claimantCanRejectAnOffer() {
-        settlement.makeOffer(offer, MadeBy.DEFENDANT);
-        settlement.reject(MadeBy.CLAIMANT);
+        settlement.makeOffer(offer, MadeBy.DEFENDANT, null);
+        settlement.reject(MadeBy.CLAIMANT, null);
 
         assertThat(settlement.getLastStatement().getType()).isEqualTo(StatementType.REJECTION);
     }
 
     @Test
     public void defendantCanRejectAnOffer() {
-        settlement.makeOffer(offer, MadeBy.CLAIMANT);
-        settlement.reject(MadeBy.DEFENDANT);
+        settlement.makeOffer(offer, MadeBy.CLAIMANT, null);
+        settlement.reject(MadeBy.DEFENDANT, null);
 
         assertThat(settlement.getLastStatement().getType()).isEqualTo(StatementType.REJECTION);
     }
 
     @Test(expected = IllegalSettlementStatementException.class)
     public void partyIsNotAllowedToRejectOfferWhenOfferWasNotMade() {
-        settlement.reject(MadeBy.CLAIMANT);
+        settlement.reject(MadeBy.CLAIMANT, null);
     }
 
     @Test(expected = IllegalSettlementStatementException.class)
     public void partyIsNotAllowedToRejectOfferWhenOfferWasAlreadyRejected() {
-        settlement.makeOffer(offer, MadeBy.DEFENDANT);
-        settlement.reject(MadeBy.CLAIMANT);
+        settlement.makeOffer(offer, MadeBy.DEFENDANT, null);
+        settlement.reject(MadeBy.CLAIMANT, null);
 
-        settlement.reject(MadeBy.CLAIMANT);
+        settlement.reject(MadeBy.CLAIMANT, null);
     }
 
     @Test(expected = IllegalSettlementStatementException.class)
     public void partyIsNotAllowedToRejectOfferWhenTheOnlyOfferWasMadeByThemselves() {
-        settlement.makeOffer(offer, MadeBy.CLAIMANT);
-        settlement.reject(MadeBy.CLAIMANT);
+        settlement.makeOffer(offer, MadeBy.CLAIMANT, null);
+        settlement.reject(MadeBy.CLAIMANT, null);
     }
 
     @Test
     public void partyCanCountersignAnAcceptedOffer() {
-        settlement.makeOffer(offer, MadeBy.DEFENDANT);
-        settlement.accept(MadeBy.CLAIMANT);
+        settlement.makeOffer(offer, MadeBy.DEFENDANT, null);
+        settlement.accept(MadeBy.CLAIMANT, null);
 
-        settlement.countersign(MadeBy.DEFENDANT);
+        settlement.countersign(MadeBy.DEFENDANT, null);
 
         assertThat(settlement.getLastStatement().getType()).isEqualTo(StatementType.COUNTERSIGNATURE);
     }
 
     @Test(expected = IllegalSettlementStatementException.class)
     public void partyIsNotAllowedToCountersignWhenOfferAlreadyCountersigned() {
-        settlement.makeOffer(offer, MadeBy.DEFENDANT);
-        settlement.accept(MadeBy.CLAIMANT);
-        settlement.countersign(MadeBy.DEFENDANT);
+        settlement.makeOffer(offer, MadeBy.DEFENDANT, null);
+        settlement.accept(MadeBy.CLAIMANT, null);
+        settlement.countersign(MadeBy.DEFENDANT, null);
 
-        settlement.countersign(MadeBy.DEFENDANT);
+        settlement.countersign(MadeBy.DEFENDANT, null);
     }
 
     @Test(expected = IllegalSettlementStatementException.class)
     public void partyIsNotAllowedToCountersignWhenOfferWasAcceptedByThemselves() {
-        settlement.makeOffer(offer, MadeBy.DEFENDANT);
-        settlement.accept(MadeBy.CLAIMANT);
+        settlement.makeOffer(offer, MadeBy.DEFENDANT, null);
+        settlement.accept(MadeBy.CLAIMANT, null);
 
-        settlement.countersign(MadeBy.CLAIMANT);
+        settlement.countersign(MadeBy.CLAIMANT, null);
     }
 
     @Test(expected = IllegalSettlementStatementException.class)
     public void partyIsNotAllowedToCountersignWhenOfferWasNotAccepted() {
-        settlement.makeOffer(offer, MadeBy.DEFENDANT);
+        settlement.makeOffer(offer, MadeBy.DEFENDANT, null);
 
-        settlement.countersign(MadeBy.DEFENDANT);
+        settlement.countersign(MadeBy.DEFENDANT, null);
     }
 
     @Test(expected = IllegalSettlementStatementException.class)
     public void partyIsNotAllowedToCountersignWhenOfferWasRejected() {
-        settlement.makeOffer(offer, MadeBy.DEFENDANT);
-        settlement.reject(MadeBy.CLAIMANT);
+        settlement.makeOffer(offer, MadeBy.DEFENDANT, null);
+        settlement.reject(MadeBy.CLAIMANT, null);
 
-        settlement.countersign(MadeBy.DEFENDANT);
+        settlement.countersign(MadeBy.DEFENDANT, null);
     }
 
     @Test(expected = IllegalSettlementStatementException.class)
@@ -172,17 +172,17 @@ public class SettlementTest {
 
     @Test
     public void getLastOfferStatementShouldGiveLastStatementThatIsAnOffer() {
-        settlement.makeOffer(offer, MadeBy.CLAIMANT);
-        settlement.reject(MadeBy.DEFENDANT);
+        settlement.makeOffer(offer, MadeBy.CLAIMANT, null);
+        settlement.reject(MadeBy.DEFENDANT, null);
 
         Offer counterOffer = SampleOffer.builder()
-            .withContent(COUNTER_OFFER)
+            .content(COUNTER_OFFER)
             .build();
 
-        settlement.makeOffer(counterOffer, MadeBy.DEFENDANT);
-        settlement.accept(MadeBy.CLAIMANT);
+        settlement.makeOffer(counterOffer, MadeBy.DEFENDANT, null);
+        settlement.accept(MadeBy.CLAIMANT, null);
 
-        assertThat(settlement.getLastOfferStatement().getOffer()
+        assertThat(settlement.getLastStatementOfType(StatementType.OFFER).getOffer()
             .orElseThrow(IllegalArgumentException::new)
             .getContent()
         )
@@ -191,7 +191,7 @@ public class SettlementTest {
 
     @Test(expected = IllegalSettlementStatementException.class)
     public void getLastOfferStatementShouldThrowWhenNoStatements() {
-        settlement.getLastOfferStatement();
+        settlement.getLastStatementOfType(StatementType.OFFER);
     }
 
     @Test
@@ -202,16 +202,16 @@ public class SettlementTest {
             .paymentIntention(PaymentIntention.builder().build())
             .build();
 
-        settlement.makeOffer(admissionOffer, MadeBy.DEFENDANT);
-        settlement.accept(MadeBy.CLAIMANT);
+        settlement.makeOffer(admissionOffer, MadeBy.DEFENDANT, null);
+        settlement.accept(MadeBy.CLAIMANT, null);
 
         assertThat(settlement.isSettlementThroughAdmissions()).isTrue();
     }
 
     @Test
     public void isSettlementThroughAdmissionsShouldShouldReturnFalseForOffersRoute() {
-        settlement.makeOffer(SampleOffer.validDefaults(), MadeBy.DEFENDANT);
-        settlement.accept(MadeBy.CLAIMANT);
+        settlement.makeOffer(SampleOffer.builder().build(), MadeBy.DEFENDANT, null);
+        settlement.accept(MadeBy.CLAIMANT, null);
 
         assertThat(settlement.isSettlementThroughAdmissions()).isFalse();
     }
