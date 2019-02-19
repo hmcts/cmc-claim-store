@@ -9,9 +9,11 @@ import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.BankAccountAsse
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.ChildAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.CourtOrderAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.DebtAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.EmployerAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.ExpenseAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.IncomeAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.LivingPartnerAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.PriorityDebtAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.StatementOfMeansAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
@@ -32,9 +34,11 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Debt;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employer;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.LivingPartner;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
 public class Assertions {
@@ -122,6 +126,10 @@ public class Assertions {
         return new ExpenseAssert(expense);
     }
 
+    public static PriorityDebtAssert assertThat(PriorityDebt priorityDebt) {
+        return new PriorityDebtAssert(priorityDebt);
+    }
+
     public static StatementOfMeansAssert assertThat(StatementOfMeans statementOfMeans) {
         return new StatementOfMeansAssert(statementOfMeans);
     }
@@ -133,4 +141,9 @@ public class Assertions {
     public static ResponseAssert assertThat(Response response) {
         return new ResponseAssert(response);
     }
+
+    public static EmployerAssert assertThat(Employer employer) {
+        return new EmployerAssert(employer);
+    }
+
 }

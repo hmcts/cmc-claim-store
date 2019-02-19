@@ -82,6 +82,7 @@ public class PartAdmissionResponseContentProvider {
         content.put("evidences", evidences);
         content.put("evidenceComment", evidenceComment);
 
+        content.put("paymentIntentionIsPresent", partAdmissionResponse.getPaymentIntention().isPresent());
         partAdmissionResponse.getPaymentIntention().ifPresent(
             paymentIntention ->
                 content.putAll(paymentIntentionContentProvider.createContent(

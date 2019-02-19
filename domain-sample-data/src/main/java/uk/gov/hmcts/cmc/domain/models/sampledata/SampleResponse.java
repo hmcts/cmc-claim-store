@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
@@ -58,6 +59,14 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .paymentIntention(SamplePaymentIntention.instalments())
                 .build();
         }
+
+        public FullAdmissionResponse buildWithPaymentIntentionAndParty(PaymentIntention paymentIntention, Party party) {
+            return FullAdmissionResponse.builder()
+                .moreTimeNeeded(YesNoOption.NO)
+                .defendant(party)
+                .paymentIntention(paymentIntention)
+                .build();
+        }
     }
 
     public static class PartAdmission extends SampleResponse<PartAdmission> {
@@ -83,6 +92,19 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .moreTimeNeeded(YesNoOption.NO)
                 .amount(BigDecimal.valueOf(120))
                 .paymentIntention(SamplePaymentIntention.immediately())
+                .defence(USER_DEFENCE)
+                .timeline(SampleDefendantTimeline.validDefaults())
+                .evidence(SampleDefendantEvidence.validDefaults())
+                .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .build();
+        }
+
+        public PartAdmissionResponse buildWithPaymentIntentionAndParty(PaymentIntention paymentIntention, Party party) {
+            return PartAdmissionResponse.builder()
+                .defendant(party)
+                .moreTimeNeeded(YesNoOption.NO)
+                .amount(BigDecimal.valueOf(120))
+                .paymentIntention(paymentIntention)
                 .defence(USER_DEFENCE)
                 .timeline(SampleDefendantTimeline.validDefaults())
                 .evidence(SampleDefendantEvidence.validDefaults())
@@ -129,9 +151,9 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .build();
         }
 
-        public PartAdmissionResponse buildWithStatesPaid() {
+        public PartAdmissionResponse buildWithStatesPaid(Party party) {
             return PartAdmissionResponse.builder()
-                .defendant(SampleParty.builder().individual())
+                .defendant(party)
                 .moreTimeNeeded(YesNoOption.NO)
                 .amount(BigDecimal.valueOf(120))
                 .paymentDeclaration(SamplePaymentDeclaration.builder().build())

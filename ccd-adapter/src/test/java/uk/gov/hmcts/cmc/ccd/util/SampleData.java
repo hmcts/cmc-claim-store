@@ -24,12 +24,12 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDebt;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpense;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncome;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDLivingPartner;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebt;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.DisabilityStatus;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
@@ -388,7 +388,7 @@ public class SampleData {
             .interestSpecificDailyAmount(BigDecimal.valueOf(10))
             .interestEndDateType(CCDInterestEndDateType.SUBMISSION)
             .paymentStatus("success")
-            .paymentDateCreated("2019-01-01")
+            .paymentDateCreated(LocalDate.of(2019, 01, 01))
             .paymentId("PaymentId")
             .paymentAmount(BigDecimal.valueOf(4000))
             .paymentReference("RC-1524-6488-1670-7520")
@@ -468,7 +468,7 @@ public class SampleData {
                 ).build()
             ))
             .priorityDebts(asList(
-                CCDCollectionElement.<PriorityDebt>builder().value(PriorityDebt.builder()
+                CCDCollectionElement.<CCDPriorityDebt>builder().value(CCDPriorityDebt.builder()
                     .frequency(MONTH)
                     .amount(BigDecimal.valueOf(132.89))
                     .type(ELECTRICITY)
