@@ -9,6 +9,27 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
+         We are not using STOMP: https://docs.spring.io/spring/docs/current/spring-framework-reference/web.html#websocket-stomp-enable
+        ]]></notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2018-1270</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+            Related to Windows and specifically serving static content, which we are not doing
+        ]]></notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2018-1271</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+            We are not chaining multipart requests to other servers
+        ]]></notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2018-1272</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
             Related to PostgreSQL server startup script, also up to 9.4 while we are using 9.6
         ]]></notes>
         <gav regex="true">^org\.postgresql:postgresql:.*$</gav>

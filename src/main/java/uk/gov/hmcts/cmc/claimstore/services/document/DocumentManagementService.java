@@ -85,11 +85,11 @@ public class DocumentManagementService {
                     new DocumentManagementException("Document management failed uploading file" + originalFileName));
 
             return URI.create(document.links.self.href);
-        } catch (Exception e) {
+        } catch (Exception ex) {
             appInsights.trackEvent(DOCUMENT_MANAGEMENT_UPLOAD_FAILURE, DOCUMENT_NAME, originalFileName);
-            throw e;
+            throw new DocumentManagementException(String.format("Unable to upload document %s to document management",
+                originalFileName), ex);
         }
-
     }
 
     public byte[] downloadDocument(String authorisation, URI documentSelf, String baseFileName) {
@@ -110,9 +110,10 @@ public class DocumentManagementService {
 
             ByteArrayResource resource = (ByteArrayResource) responseEntity.getBody();
             return resource.getByteArray();
-        } catch (Exception e) {
+        } catch (Exception ex) {
             appInsights.trackEvent(DOCUMENT_MANAGEMENT_DOWNLOAD_FAILURE, DOCUMENT_NAME, baseFileName + ".pdf");
-            throw e;
+            throw new DocumentManagementException(
+                String.format("Unable to download document %s from document management", baseFileName), ex);
         }
     }
 }

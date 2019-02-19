@@ -59,15 +59,19 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         Claim claim = getClaimByExternalId(externalId, authorisation);
         final String baseFileName = buildSealedClaimFileBaseName(claim.getReferenceNumber());
         Optional<URI> sealedClaimDocumentUri = claim.getSealedClaimDocument();
-        if (sealedClaimDocumentUri.isPresent()) {
-            URI documentSelfPath = sealedClaimDocumentUri.get();
-            return documentManagementService.downloadDocument(authorisation, documentSelfPath, baseFileName);
-        } else {
-            DocumentDetails documentDetails = uploadToDocumentManagement(sealedClaimPdfService.createPdf(claim),
-                authorisation,
-                baseFileName);
-            claimService.linkSealedClaimDocument(authorisation, claim, documentDetails.getDocumentSelfPath());
-            return documentDetails.getDocument().getBytes();
+        try {
+            if (sealedClaimDocumentUri.isPresent()) {
+                URI documentSelfPath = sealedClaimDocumentUri.get();
+                return documentManagementService.downloadDocument(authorisation, documentSelfPath, baseFileName);
+            } else {
+                DocumentDetails documentDetails = uploadToDocumentManagement(sealedClaimPdfService.createPdf(claim),
+                    authorisation,
+                    baseFileName);
+                claimService.linkSealedClaimDocument(authorisation, claim, documentDetails.getDocumentSelfPath());
+                return documentDetails.getDocument().getBytes();
+            }
+        } catch (Exception ex) {
+            return sealedClaimPdfService.createPdf(claim);
         }
     }
 
@@ -90,9 +94,10 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         return claimService.getClaimByExternalId(externalId, authorisation);
     }
 
-    private DocumentDetails uploadToDocumentManagement(byte[] documentBytes,
-                                         String authorisation,
-                                         String baseFileName) {
+    private DocumentDetails uploadToDocumentManagement(
+        byte[] documentBytes,
+        String authorisation,
+        String baseFileName) {
         PDF document = new PDF(baseFileName, documentBytes);
         URI documentSelfPath = documentManagementService.uploadDocument(authorisation, document);
         return new DocumentDetails() {

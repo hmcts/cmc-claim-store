@@ -19,7 +19,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementUploadResponse;
@@ -103,14 +103,15 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
     }
 
     @Test
-    public void shouldReturn500HttpStatusAndNotSendStaffEmailWhenDocumentUploadFailed() throws Exception {
+    public void shouldNotReturn500HttpStatusAndShouldSendStaffEmailWhenDocumentUploadFailed() throws Exception {
         given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
             .willReturn(unsuccessfulDocumentManagementUploadResponse());
 
         makeIssueClaimRequest(SampleClaimData.submittedByLegalRepresentativeBuilder().build(), AUTHORISATION_TOKEN)
-            .andExpect(status().isInternalServerError());
+            .andExpect(status().isOk())
+            .andReturn();
 
-        verify(emailService, never()).sendEmail(anyString(), any());
+        verify(emailService, times(1)).sendEmail(anyString(), any());
     }
 
 }
