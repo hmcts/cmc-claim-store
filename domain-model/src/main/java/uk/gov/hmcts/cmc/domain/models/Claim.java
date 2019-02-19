@@ -63,7 +63,7 @@ public class Claim {
     private final LocalDate moneyReceivedOn;
     private final ReDetermination reDetermination;
     private final LocalDateTime reDeterminationRequestedAt;
-    private final ClaimDocumentStore claimDocumentStore;
+    private final ClaimDocumentCollection claimDocumentCollection;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     public Claim(
@@ -93,7 +93,7 @@ public class Claim {
         LocalDate moneyReceivedOn,
         ReDetermination reDetermination,
         LocalDateTime reDeterminationRequestedAt,
-        ClaimDocumentStore claimDocumentStore
+        ClaimDocumentCollection claimDocumentCollection
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -121,7 +121,7 @@ public class Claim {
         this.moneyReceivedOn = moneyReceivedOn;
         this.reDetermination = reDetermination;
         this.reDeterminationRequestedAt = reDeterminationRequestedAt;
-        this.claimDocumentStore = claimDocumentStore;
+        this.claimDocumentCollection = claimDocumentCollection;
     }
 
     public Optional<Response> getResponse() {
@@ -133,10 +133,10 @@ public class Claim {
     }
 
     public Optional<URI> getSealedClaimDocument() {
-        if (claimDocumentStore == null) {
+        if (claimDocumentCollection == null) {
             return Optional.empty();
         } else {
-            Optional<ClaimDocument> claimDocument = claimDocumentStore.getDocument(SEALED_CLAIM);
+            Optional<ClaimDocument> claimDocument = claimDocumentCollection.getDocument(SEALED_CLAIM);
             if (claimDocument.isPresent()) {
                 return Optional.ofNullable(claimDocument.get().getDocumentManagementUrl());
             }
@@ -188,8 +188,8 @@ public class Claim {
         return Optional.ofNullable(reDetermination);
     }
 
-    public Optional<ClaimDocumentStore> getClaimDocumentStore() {
-        return Optional.ofNullable(claimDocumentStore);
+    public Optional<ClaimDocumentCollection> getClaimDocumentCollection() {
+        return Optional.ofNullable(claimDocumentCollection);
     }
 
     @Override

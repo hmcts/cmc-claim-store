@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.domain.models.sampledata;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentStore;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
@@ -69,7 +69,6 @@ public final class SampleClaim {
     private String defendantEmail;
     private Settlement settlement = null;
     private LocalDateTime settlementReachedAt = null;
-    private URI sealedClaimDocument = null;
     private List<String> features = Collections.singletonList("admissions");
     private LocalDateTime claimantRespondedAt;
     private ClaimantResponse claimantResponse;
@@ -77,7 +76,7 @@ public final class SampleClaim {
     private LocalDate moneyReceivedOn;
     private LocalDateTime reDeterminationRequestedAt;
     private ReDetermination reDetermination = new ReDetermination("I feel defendant can pay", CLAIMANT);
-    private ClaimDocumentStore claimDocumentStore = new ClaimDocumentStore();
+    private ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
 
     private SampleClaim() {
     }
@@ -347,7 +346,7 @@ public final class SampleClaim {
             moneyReceivedOn,
             reDetermination,
             reDeterminationRequestedAt,
-            claimDocumentStore
+            claimDocumentCollection
         );
     }
 
@@ -464,7 +463,7 @@ public final class SampleClaim {
             .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
             .authoredDatetime(LocalDateTimeFactory.nowInLocalZone())
             .build();
-        this.claimDocumentStore.addClaimDocument(claimDocument);
+        this.claimDocumentCollection.addClaimDocument(claimDocument);
         return this;
     }
 

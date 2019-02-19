@@ -12,7 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentStore;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.net.URI;
@@ -21,7 +21,7 @@ import java.util.Optional;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
-@Service("DocumentsService")
+@Service("documentsService")
 @ConditionalOnProperty(prefix = "document_management", name = "url")
 public class DocumentManagementBackedDocumentsService implements DocumentsService {
 
@@ -109,16 +109,19 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
             getClaimDocumentStore(claim.getExternalId(), document, documentSelfPath, authorisation));
     }
 
-    private ClaimDocumentStore getClaimDocumentStore(String externalId, PDF document, URI uri, String authorisation) {
+    private ClaimDocumentCollection getClaimDocumentStore(String externalId,
+                                                          PDF document, URI uri,
+                                                          String authorisation) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        ClaimDocumentStore claimDocumentStore = claim.getClaimDocumentStore().orElse(new ClaimDocumentStore());
-        claimDocumentStore.addClaimDocument(ClaimDocument.builder()
+        ClaimDocumentCollection claimDocumentCollection = claim.getClaimDocumentCollection()
+            .orElse(new ClaimDocumentCollection());
+        claimDocumentCollection.addClaimDocument(ClaimDocument.builder()
             .documentManagementUrl(uri)
             .documentName(document.getFilename())
             .documentType(document.getClaimDocumentType())
             .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
             .authoredDatetime(LocalDateTimeFactory.nowInLocalZone())
             .build());
-        return claimDocumentStore;
+        return claimDocumentCollection;
     }
 }

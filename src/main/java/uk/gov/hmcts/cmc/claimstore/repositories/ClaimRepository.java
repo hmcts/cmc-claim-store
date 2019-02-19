@@ -146,12 +146,12 @@ public interface ClaimRepository {
     );
 
     @SqlUpdate(
-        "UPDATE claim SET claim_document_store = :claimDocumentStore::JSONB"
+        "UPDATE claim SET claim_documents = :claimDocumentCollection::JSONB"
             + " WHERE id = :claimId"
     )
-    Integer linkClaimToDocument(
+    Integer saveClaimDocuments(
         @Bind("claimId") Long claimId,
-        @Bind("claimDocumentStore") String claimDocumentStore
+        @Bind("claimDocumentCollection") String claimDocumentCollection
     );
 
     @SqlUpdate(

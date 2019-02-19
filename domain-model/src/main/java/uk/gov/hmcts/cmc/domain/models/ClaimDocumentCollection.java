@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Getter
-public class ClaimDocumentStore {
+public class ClaimDocumentCollection {
 
     private final List<ClaimDocument> claimDocuments = new ArrayList<ClaimDocument>();
 

@@ -11,7 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentStore;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
@@ -235,7 +235,9 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void linkClaimToDocument(String authorisation, Long claimId, ClaimDocumentStore claimDocumentStore) {
-        claimRepository.linkClaimToDocument(claimId, jsonMapper.toJson(claimDocumentStore));
+    public void saveClaimDocuments(String authorisation,
+                                   Long claimId,
+                                   ClaimDocumentCollection claimDocumentCollection) {
+        claimRepository.saveClaimDocuments(claimId, jsonMapper.toJson(claimDocumentCollection));
     }
 }

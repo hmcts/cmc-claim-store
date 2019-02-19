@@ -19,7 +19,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentStore;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
@@ -270,9 +270,9 @@ public class CoreCaseDataServiceFailureTest {
         when(jsonMapper.fromMap(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
         when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
 
-        service.linkClaimToDocument(AUTHORISATION,
+        service.saveClaimDocuments(AUTHORISATION,
             SampleClaim.CLAIM_ID,
-            claim.getClaimDocumentStore().orElse(new ClaimDocumentStore()));
+            claim.getClaimDocumentCollection().orElse(new ClaimDocumentCollection()));
 
         verify(coreCaseDataApi).submitForCitizen(
             eq(AUTHORISATION),

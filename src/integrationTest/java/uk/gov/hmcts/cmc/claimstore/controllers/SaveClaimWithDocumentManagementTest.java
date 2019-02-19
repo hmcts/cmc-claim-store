@@ -9,7 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentStore;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 
@@ -109,14 +109,14 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        Optional<ClaimDocumentStore> claimDocumentStore = deserializeObjectFrom(resultWithDocument, Claim.class)
-                                                            .getClaimDocumentStore();
-        ClaimDocument claimDocument = claimDocumentStore
+        Optional<ClaimDocumentCollection> claimDocumentCollection = deserializeObjectFrom(resultWithDocument,
+                                                                Claim.class).getClaimDocumentCollection();
+        ClaimDocument claimDocument = claimDocumentCollection
             .orElseThrow(AssertionError::new)
             .getDocument(SEALED_CLAIM)
             .orElseThrow(AssertionError::new);
         assertThat(claimDocument.getDocumentManagementUrl()
-                .equals(URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4")));
+            .equals(URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4")));
         assertThat(claimDocument.getDocumentName().equals("000MC001-claim-form.pdf"));
         assertThat(claimDocument.getDocumentType().equals(SEALED_CLAIM));
     }

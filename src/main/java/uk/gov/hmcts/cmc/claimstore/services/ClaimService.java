@@ -21,7 +21,7 @@ import uk.gov.hmcts.cmc.claimstore.rules.PaidInFullRule;
 import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentStore;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
@@ -301,8 +301,10 @@ public class ClaimService {
         ccdEventProducer.linkDefendantCCDEvent(authorisation);
     }
 
-    public void linkClaimToDocument(String authorisation, Long claimId, ClaimDocumentStore claimDocumentStore) {
-        caseRepository.linkClaimToDocument(authorisation, claimId, claimDocumentStore);
+    public void linkClaimToDocument(String authorisation,
+                                    Long claimId,
+                                    ClaimDocumentCollection claimDocumentCollection) {
+        caseRepository.saveClaimDocuments(authorisation, claimId, claimDocumentCollection);
     }
 
     public void linkLetterHolder(Long claimId, String userId) {
