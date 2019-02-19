@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.otherparty;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
@@ -14,7 +15,9 @@ public class CompanyDetails extends TheirDetails implements HasContactPerson {
     @Size(max = 255, message = "may not be longer than {max} characters")
     private final String contactPerson;
 
+    @Builder
     public CompanyDetails(
+        String id,
         String name,
         Address address,
         String email,
@@ -22,7 +25,7 @@ public class CompanyDetails extends TheirDetails implements HasContactPerson {
         Address serviceAddress,
         String contactPerson
     ) {
-        super(name, address, email, representative, serviceAddress);
+        super(id, name, address, email, representative, serviceAddress);
         this.contactPerson = contactPerson;
     }
 

@@ -1,9 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRow;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 
 import java.util.Objects;
@@ -19,9 +17,9 @@ public class AmountBreakDownMapper implements BuilderMapper<CCDCase, AmountBreak
 
     @Override
     public void to(AmountBreakDown amountBreakDown, CCDCase.CCDCaseBuilder builder) {
-        builder.amountBreakDown(amountBreakDown.getRows().stream().map(amountRowMapper::to)
+        builder.amountBreakDown(amountBreakDown.getRows().stream()
+            .map(amountRowMapper::to)
             .filter(Objects::nonNull)
-            .map(row -> CCDCollectionElement.<CCDAmountRow>builder().value(row).build())
             .collect(Collectors.toList()));
 
     }
@@ -30,7 +28,6 @@ public class AmountBreakDownMapper implements BuilderMapper<CCDCase, AmountBreak
     public AmountBreakDown from(CCDCase ccdCase) {
         return new AmountBreakDown(
             ccdCase.getAmountBreakDown().stream()
-                .map(CCDCollectionElement::getValue)
                 .map(amountRowMapper::from)
                 .collect(Collectors.toList())
         );

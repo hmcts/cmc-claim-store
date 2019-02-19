@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,6 +26,7 @@ public class PartAdmissionResponseContentProviderTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void shouldProvidePartAdmissionPaymentMadeDetails() {
         PartAdmissionResponse partAdmissionResponse = builder().build();
         Map<String, Object> content = provider.createContent(partAdmissionResponse);
@@ -48,9 +50,14 @@ public class PartAdmissionResponseContentProviderTest {
         assertThat(content).containsKey("timelineComment");
 
         assertThat(content)
-            .containsKey("responseDefence")
-            .containsValue(SampleResponse.USER_DEFENCE);
-
+            .containsKey("responseDefence");
+        assertThat(content.get("responseDefence"))
+            .isInstanceOf(List.class);
+        assertThat((List<String>) content.get("responseDefence"))
+            .contains(SampleResponse.USER_DEFENCE);
+        assertThat(content)
+            .containsKey("paymentIntentionIsPresent")
+            .containsValues(false);
     }
 
     @Test
@@ -64,6 +71,9 @@ public class PartAdmissionResponseContentProviderTest {
         assertThat(content)
             .containsKeys("paymentOption")
             .containsValues("Immediately");
+        assertThat(content)
+            .containsKeys("paymentIntentionIsPresent")
+            .containsValues(true);
     }
 
     @Test
