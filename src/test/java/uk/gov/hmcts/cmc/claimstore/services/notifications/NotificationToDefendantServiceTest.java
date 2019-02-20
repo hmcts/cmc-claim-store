@@ -68,7 +68,8 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
             .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionImmediately())
             .build();
 
-        when(emailTemplates.getClaimantRejectedPartAdmitOrStatesPaidEmailToDefendant()).thenReturn(CLAIMANT_RESPONSE_TEMPLATE);
+        when(emailTemplates.getClaimantRejectedPartAdmitOrStatesPaidEmailToDefendant())
+            .thenReturn(CLAIMANT_RESPONSE_TEMPLATE);
         when(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
             .thenThrow(mock(NotificationClientException.class));
 
@@ -83,7 +84,8 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
             .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionImmediately())
             .build();
 
-        when(emailTemplates.getClaimantRejectedPartAdmitOrStatesPaidEmailToDefendant()).thenReturn(CLAIMANT_RESPONSE_TEMPLATE);
+        when(emailTemplates.getClaimantRejectedPartAdmitOrStatesPaidEmailToDefendant())
+            .thenReturn(CLAIMANT_RESPONSE_TEMPLATE);
         service.notifyDefendantOfRejection(claim);
 
         verify(notificationClient).sendEmail(
@@ -93,7 +95,6 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
             eq(REFERENCE)
         );
     }
-
 
     @Test
     public void shouldSendEmailUsingInterlocutoryCCJTemplate() throws Exception {
