@@ -74,7 +74,7 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
     }
 
     @Test
-    public void notifyDefendantShouldUseDefendantResponseFullDefenceDisputeNoMediationEmailTemplate()
+    public void notifyDefendantShouldUseDefendantResponseEmailTemplateFullDefenceDisputeNoMediation()
         throws Exception {
         service.notifyDefendant(SampleClaim.getClaimWithFullDefenceNoMediation(), USER_EMAIL, reference);
 
@@ -83,7 +83,7 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
     }
 
     @Test
-    public void notifyDefendantShouldUseDefendantResponseFullDefenceDisputeYesMediationEmailTemplate()
+    public void notifyDefendantShouldUseDefendantResponseEmailTemplateFullDefenceDisputeYesMediation()
         throws Exception {
         service.notifyDefendant(SampleClaim.getDefault(), USER_EMAIL, reference);
 
@@ -92,7 +92,7 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
     }
 
     @Test
-    public void notifyDefendantShouldUseDefendantResponseFullDefenceAlreadyPaidFullAmountEmailTemplate()
+    public void notifyDefendantShouldUseDefendantResponseEmailTemplateFullDefenceAlreadyPaidFullAmount()
         throws Exception {
         service.notifyDefendant(SampleClaim.getClaimWithFullDefenceAlreadyPaid(), USER_EMAIL, reference);
 
