@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.idam.services.UserService;
+import uk.gov.hmcts.cmc.ccd.migration.mappers.JsonMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
@@ -17,6 +18,8 @@ import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.client.model.UserId;
+
+import java.util.Map;
 
 import static uk.gov.hmcts.cmc.ccd.migration.ccd.services.CoreCaseDataService.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.ccd.migration.ccd.services.CoreCaseDataService.JURISDICTION_ID;
@@ -30,6 +33,7 @@ public class MigrateCoreCaseDataService {
     private final CaseAccessApi caseAccessApi;
     private final UserService userService;
     private final CaseMapper caseMapper;
+    private final JsonMapper jsonMapper;
 
     @Autowired
     public MigrateCoreCaseDataService(
@@ -37,13 +41,15 @@ public class MigrateCoreCaseDataService {
         AuthTokenGenerator authTokenGenerator,
         CaseAccessApi caseAccessApi,
         UserService userService,
-        CaseMapper caseMapper
+        CaseMapper caseMapper,
+        JsonMapper jsonMapper
     ) {
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;
         this.caseAccessApi = caseAccessApi;
         this.userService = userService;
         this.caseMapper = caseMapper;
+        this.jsonMapper = jsonMapper;
     }
 
     public void update(
@@ -72,7 +78,7 @@ public class MigrateCoreCaseDataService {
         grantAccessToCase(caseDetails.getId(), claim);
     }
 
-    public void save(
+    public CaseDetails save(
         String authorisation, EventRequestData eventRequestData, Claim claim
     ) {
         CCDCase ccdCase = caseMapper.to(claim);
@@ -94,6 +100,13 @@ public class MigrateCoreCaseDataService {
         CaseDetails caseDetails = submit(authorisation, eventRequestData, caseDataContent);
 
         grantAccessToCase(caseDetails.getId(), claim);
+        return caseDetails;
+    }
+
+    private CCDCase extractCase(CaseDetails caseDetails) {
+        Map<String, Object> caseData = caseDetails.getData();
+        caseData.put("id", caseDetails.getId());
+        return jsonMapper.fromMap(caseData, CCDCase.class);
     }
 
     private void grantAccessToCase(Long ccdId, Claim claim) {

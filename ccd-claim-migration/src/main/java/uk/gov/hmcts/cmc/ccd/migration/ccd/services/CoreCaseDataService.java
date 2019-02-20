@@ -10,6 +10,7 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.exceptions.CreateCaseException;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.exceptions.OverwriteCaseException;
@@ -66,7 +67,7 @@ public class CoreCaseDataService {
         this.authTokenGenerator = authTokenGenerator;
     }
 
-    public void create(User user, Claim claim, CaseEvent event) {
+    public CaseDetails create(User user, Claim claim, CaseEvent event) {
         logger.info("Create case in CCD, claim id = " + claim.getId() + ", event = " + event.getValue());
         try {
 
@@ -78,7 +79,7 @@ public class CoreCaseDataService {
                 .ignoreWarning(true)
                 .build();
 
-            migrateCoreCaseDataService.save(user.getAuthorisation(), eventRequestData, claim);
+            return migrateCoreCaseDataService.save(user.getAuthorisation(), eventRequestData, claim);
         } catch (Exception exception) {
             throw new CreateCaseException(
                 String.format("Failed storing claim in CCD store for claim on %s on event %s",
