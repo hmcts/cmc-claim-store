@@ -37,6 +37,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DOCUMENT_
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementDownloadResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementUploadResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.unsuccessfulDocumentManagementUploadResponse;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class DocumentManagementServiceTest {
@@ -59,7 +60,7 @@ public class DocumentManagementServiceTest {
     public ExpectedException expectedException = ExpectedException.none();
     @Mock
     private ResponseEntity<Resource> responseEntity;
-    private PDF document = new PDF("0000-claim", "test".getBytes());
+    private PDF document = new PDF("0000-claim", "test".getBytes(), SEALED_CLAIM);
 
     @Before
     public void setUp() {
