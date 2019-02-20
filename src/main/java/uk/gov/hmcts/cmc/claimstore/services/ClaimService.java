@@ -28,7 +28,6 @@ import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
-import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse.AboutToStartOrSubmitCallbackResponseBuilder;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
