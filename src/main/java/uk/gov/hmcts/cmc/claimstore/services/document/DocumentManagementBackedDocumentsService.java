@@ -11,13 +11,17 @@ import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.net.URI;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
-@Service
+@Service("documentsService")
 @ConditionalOnProperty(prefix = "document_management", name = "url")
 public class DocumentManagementBackedDocumentsService implements DocumentsService {
 
@@ -64,11 +68,11 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
                 URI documentSelfPath = sealedClaimDocumentUri.get();
                 return documentManagementService.downloadDocument(authorisation, documentSelfPath, baseFileName);
             } else {
-                DocumentDetails documentDetails = uploadToDocumentManagement(sealedClaimPdfService.createPdf(claim),
+                PDF document = new PDF(baseFileName, sealedClaimPdfService.createPdf(claim), SEALED_CLAIM);
+                uploadToDocumentManagement(document,
                     authorisation,
-                    baseFileName);
-                claimService.linkSealedClaimDocument(authorisation, claim, documentDetails.getDocumentSelfPath());
-                return documentDetails.getDocument().getBytes();
+                    claim);
+                return document.getBytes();
             }
         } catch (Exception ex) {
             return sealedClaimPdfService.createPdf(claim);
@@ -94,28 +98,30 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         return claimService.getClaimByExternalId(externalId, authorisation);
     }
 
-    private DocumentDetails uploadToDocumentManagement(
-        byte[] documentBytes,
+    @Override
+    public void uploadToDocumentManagement(
+        PDF document,
         String authorisation,
-        String baseFileName) {
-        PDF document = new PDF(baseFileName, documentBytes);
+        Claim claim) {
         URI documentSelfPath = documentManagementService.uploadDocument(authorisation, document);
-        return new DocumentDetails() {
-            @Override
-            public URI getDocumentSelfPath() {
-                return documentSelfPath;
-            }
-
-            @Override
-            public PDF getDocument() {
-                return document;
-            }
-        };
+        claimService.linkClaimToDocument(authorisation,
+            claim.getId(),
+            getClaimDocumentStore(claim.getExternalId(), document, documentSelfPath, authorisation));
     }
 
-    private interface DocumentDetails {
-        URI getDocumentSelfPath();
-
-        PDF getDocument();
+    private ClaimDocumentCollection getClaimDocumentStore(String externalId,
+                                                          PDF document, URI uri,
+                                                          String authorisation) {
+        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
+        ClaimDocumentCollection claimDocumentCollection = claim.getClaimDocumentCollection()
+            .orElse(new ClaimDocumentCollection());
+        claimDocumentCollection.addClaimDocument(ClaimDocument.builder()
+            .documentManagementUrl(uri)
+            .documentName(document.getFilename())
+            .documentType(document.getClaimDocumentType())
+            .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
+            .authoredDatetime(LocalDateTimeFactory.nowInLocalZone())
+            .build());
+        return claimDocumentCollection;
     }
 }

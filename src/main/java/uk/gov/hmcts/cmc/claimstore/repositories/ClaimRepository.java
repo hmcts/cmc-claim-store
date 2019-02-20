@@ -146,12 +146,12 @@ public interface ClaimRepository {
     );
 
     @SqlUpdate(
-        "UPDATE claim SET sealed_claim_document_management_self_path = :documentSelfPath"
+        "UPDATE claim SET claim_documents = :claimDocumentCollection::JSONB"
             + " WHERE id = :claimId"
     )
-    Integer linkSealedClaimDocument(
+    Integer saveClaimDocuments(
         @Bind("claimId") Long claimId,
-        @Bind("documentSelfPath") String documentSelfPath
+        @Bind("claimDocumentCollection") String claimDocumentCollection
     );
 
     @SqlUpdate(
