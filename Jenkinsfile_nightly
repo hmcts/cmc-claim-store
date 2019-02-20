@@ -16,12 +16,12 @@ def type = "java"
 def product = "cmc"
 def component = "claim-store"
 
-def channel = '#rpe-build-notices'
+def channel = '#cmc-tech-notification'
 
 withNightlyPipeline(type, product, component) {
     env.TEST_URL = params.URL_TO_TEST
 
     env.Rules = params.SecurityRules
-    enableSlackNotifications(#cmc-tech-notification)
+    enableSlackNotifications(channel)
     enableSecurityScan()
 }
