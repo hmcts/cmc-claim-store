@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
@@ -33,7 +34,6 @@ import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.client.model.UserId;
 
-import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -248,10 +248,10 @@ public class CoreCaseDataService {
         }
     }
 
-    public CaseDetails linkSealedClaimDocument(
+    public CaseDetails saveClaimDocuments(
         String authorisation,
         Long caseId,
-        URI sealedClaimDocument
+        ClaimDocumentCollection claimDocumentCollection
     ) {
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
@@ -266,7 +266,7 @@ public class CoreCaseDataService {
             );
 
             Claim updatedClaim = toClaimBuilder(startEventResponse)
-                .sealedClaimDocument(sealedClaimDocument)
+                .claimDocumentCollection(claimDocumentCollection)
                 .build();
 
             CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);
