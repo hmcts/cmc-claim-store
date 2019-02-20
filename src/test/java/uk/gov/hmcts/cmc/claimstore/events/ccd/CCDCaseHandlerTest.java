@@ -28,15 +28,15 @@ public class CCDCaseHandlerTest {
     @Mock
     private DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
     @Mock
-    AppInsights appInsights;
+    private AppInsights appInsights;
     @Mock
-    UserService userService;
+    private UserService userService;
     private static final String AUTHORISATION = "Bearer: aaa";
 
     private CCDCaseHandler caseHandler;
 
     @Before
-    public void setup() {
+    public void setUp() {
         caseHandler = new CCDCaseHandler(ccdCaseRepository, directionsQuestionnaireDeadlineCalculator,
             appInsights, userService);
     }
