@@ -217,7 +217,7 @@ public class DefendantMapperTest {
         CCDCollectionElement<CCDDefendant> defendant = mapper.to(theirDetails, claimWithCCJ);
         CCDDefendant ccdDefendant = defendant.getValue();
         //Then
-        CCDCountyCourtJudgment ccdCountyCourtJudgment = ccdDefendant.getCountyCourtJudgementRequest();
+        CCDCountyCourtJudgment ccdCountyCourtJudgment = ccdDefendant.getCountyCourtJudgmentRequest();
         assertNotNull(ccdCountyCourtJudgment);
         assertEquals(ccdCountyCourtJudgment.getType().name(), countyCourtJudgment.getCcjType().name());
         assertEquals(ccdCountyCourtJudgment.getRequestedDate(), claimWithCCJ.getCountyCourtJudgmentRequestedAt());
