@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.OnHoldClaimAccessAttemptException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -122,23 +120,6 @@ public class CCDCaseApi {
     public List<Claim> getByPaymentReference(String payReference, String authorisation) {
         User user = userService.getUser(authorisation);
         return getAllCasesBy(user, ImmutableMap.of("case.paymentReference", payReference));
-    }
-
-    public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
-        User user = userService.getUser(authorisation);
-        List<CaseDetails> result = searchAll(user, ImmutableMap.of("case.externalId", externalId));
-
-        if (result.size() == 0) {
-            throw new NotFoundException("Case " + externalId + " not found.");
-        }
-
-        CaseDetails ccd = result.get(0);
-
-        if (!isCaseOnHold(ccd)) {
-            throw new OnHoldClaimAccessAttemptException("Case " + externalId + " is not on hold.");
-        }
-
-        return ccd.getId();
     }
 
     /**

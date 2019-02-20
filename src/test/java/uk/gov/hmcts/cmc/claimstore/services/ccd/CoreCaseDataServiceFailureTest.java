@@ -149,32 +149,6 @@ public class CoreCaseDataServiceFailureTest {
     }
 
     @Test(expected = CoreCaseDataStoreException.class)
-    public void savePrePaymentShouldReturnReferenceNumber() {
-        when(coreCaseDataApi.submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
-        ))
-            .thenThrow(new RuntimeException("Any runtime exception"));
-
-        service.savePrePayment(EXTERNAL_ID, AUTHORISATION);
-
-        verify(coreCaseDataApi).submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
-        );
-    }
-
-    @Test(expected = CoreCaseDataStoreException.class)
     public void submitPostPaymentFailure() {
         Claim providedClaim = SampleClaim.getDefault();
         when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());

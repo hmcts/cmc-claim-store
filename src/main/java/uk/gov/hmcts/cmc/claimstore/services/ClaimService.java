@@ -157,9 +157,7 @@ public class ClaimService {
     }
 
     public CaseReference savePrePayment(String externalId, String authorisation) {
-        CaseReference caseReference = caseRepository.savePrePaymentClaim(externalId, authorisation);
-        ccdEventProducer.createCCDPrePaymentEvent(externalId, authorisation);
-        return caseReference;
+        return caseRepository.savePrePaymentClaim(externalId, authorisation);
     }
 
     @Transactional(transactionManager = "transactionManager")
@@ -179,17 +177,17 @@ public class ClaimService {
 
         Claim issuedClaim;
         try {
-            Long prePaymentClaimId = caseRepository.getOnHoldIdByExternalId(externalId, authorisation);
-
-            LocalDateTime now = LocalDateTimeFactory.nowInLocalZone();
+            caseRepository.getClaimByExternalId(externalId, authorisation).ifPresent(claim -> {
+                throw new ConflictException(
+                    String.format("Claim already exist with same external reference as %s", externalId));
+            });
 
             Optional<String> letterHolderId = pinResponse.map(GeneratePinResponse::getUserId);
-            LocalDate issuedOn = issueDateCalculator.calculateIssueDay(now);
+            LocalDate issuedOn = issueDateCalculator.calculateIssueDay(LocalDateTimeFactory.nowInLocalZone());
             LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
             String submitterEmail = userDetails.getEmail();
 
             Claim claim = Claim.builder()
-                .id(prePaymentClaimId)
                 .claimData(claimData)
                 .submitterId(submitterId)
                 .issuedOn(issuedOn)
@@ -205,7 +203,8 @@ public class ClaimService {
         } catch (ConflictException e) {
             appInsights.trackEvent(AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE, CLAIM_EXTERNAL_ID, externalId);
             issuedClaim = caseRepository.getClaimByExternalId(externalId, authorisation)
-                .orElseThrow(() -> new NotFoundException("Could not find claim with external ID '" + externalId + "'"));
+                .orElseThrow(() ->
+                    new NotFoundException("Could not find claim with external ID '" + externalId + "'"));
         }
 
         eventProducer.createClaimIssuedEvent(
