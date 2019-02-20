@@ -52,22 +52,15 @@ public class NotificationToDefendantService {
     }
 
     public void notifyDefendantOfRejection(Claim claim) {
-        Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
-
-        if (isResponseStatesPaid(response) || response.getResponseType() == ResponseType.PART_ADMISSION) {
-            Map<String, String> parameters = aggregateParams(claim);
-            parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
-            sendNotificationEmail(
-                claim.getDefendantEmail(),
-                notificationsProperties.getTemplates().getEmail()
-                    .getClaimantRejectedPartAdmitOrStatesPaidEmailToDefendant(),
-                parameters,
-                referenceForDefendant(claim.getReferenceNumber())
-            );
-        } else {
-            notifyDefendant(claim);
-        }
-
+        Map<String, String> parameters = aggregateParams(claim);
+        parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
+        sendNotificationEmail(
+            claim.getDefendantEmail(),
+            notificationsProperties.getTemplates().getEmail()
+                .getClaimantRejectedPartAdmitOrStatesPaidEmailToDefendant(),
+            parameters,
+            referenceForDefendant(claim.getReferenceNumber())
+        );
     }
 
     public void notifyDefendantWhenInterlocutoryJudgementRequested(Claim claim) {
