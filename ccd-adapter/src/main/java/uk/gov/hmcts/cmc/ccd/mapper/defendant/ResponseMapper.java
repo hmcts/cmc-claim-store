@@ -22,6 +22,7 @@ import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -208,11 +209,11 @@ public class ResponseMapper {
     private PaymentDeclaration extractPaymentDeclaration(CCDDefendant defendant) {
         LocalDate paidDate = defendant.getPaymentDeclarationPaidDate();
         String explanation = defendant.getPaymentDeclarationExplanation();
-        if (paidDate == null && explanation == null) {
+        BigDecimal paidAmount = defendant.getResponseAmount();
+        if (paidDate == null && paidAmount == null && explanation == null) {
             return null;
-        } else {
-            return new PaymentDeclaration(paidDate, explanation);
         }
+        return new PaymentDeclaration(paidDate, paidAmount, explanation);
     }
 
     private DefendantTimeline extractDefendantTimeline(CCDDefendant defendant) {
