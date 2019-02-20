@@ -57,15 +57,15 @@ public class SettlementMapper {
         }
 
         if (partyStatement.getType() == StatementType.REJECTION) {
-            settlement.reject(partyStatement.getMadeBy(), partyStatement.getId());
+            settlement.addRejection(partyStatement.getMadeBy(), partyStatement.getId());
         }
 
         if (partyStatement.getType() == StatementType.ACCEPTATION) {
-            settlement.accept(partyStatement.getMadeBy(), partyStatement.getId());
+            settlement.addAcceptation(partyStatement.getMadeBy(), partyStatement.getId());
         }
 
         if (partyStatement.getType() == StatementType.COUNTERSIGNATURE) {
-            settlement.countersign(partyStatement.getMadeBy(), partyStatement.getId());
+            settlement.addCounterSignature(partyStatement.getMadeBy(), partyStatement.getId());
         }
     }
 }
