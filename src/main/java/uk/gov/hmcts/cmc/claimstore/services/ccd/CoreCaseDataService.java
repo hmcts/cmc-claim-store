@@ -141,7 +141,7 @@ public class CoreCaseDataService {
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(
-                    CCD_UPDATE_FAILURE_MESSAGE,
+                    CCD_STORING_FAILURE_MESSAGE,
                     ccdCase.getReferenceNumber(),
                     CREATE_NEW_CASE
                 ), exception

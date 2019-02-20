@@ -49,7 +49,7 @@ public class SaveClaimAsynchronouslyAtCCDTest extends BaseSaveTest {
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(SUBMIT_PRE_PAYMENT)
+            eq(CREATE_NEW_CASE)
             )
         ).willReturn(successfulCoreCaseDataStoreStartResponse());
 

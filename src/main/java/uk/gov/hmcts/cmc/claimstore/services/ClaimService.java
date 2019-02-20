@@ -50,6 +50,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISS
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED_PAPER;
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Component
@@ -183,7 +184,7 @@ public class ClaimService {
             });
 
             Optional<String> letterHolderId = pinResponse.map(GeneratePinResponse::getUserId);
-            LocalDate issuedOn = issueDateCalculator.calculateIssueDay(LocalDateTimeFactory.nowInLocalZone());
+            LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
             LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
             String submitterEmail = userDetails.getEmail();
 
