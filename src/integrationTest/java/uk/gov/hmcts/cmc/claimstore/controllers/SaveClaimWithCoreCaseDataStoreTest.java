@@ -193,7 +193,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             .andReturn();
 
         assertThat(result.getResolvedException().getMessage())
-            .isEqualTo("Failed updating claim in CCD store for case id 000LR001 on event CREATE_NEW_CASE");
+            .isEqualTo("Failed storing claim in CCD store for case id 000LR001 on event CREATE_NEW_CASE");
     }
 
     @Test
@@ -239,6 +239,6 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             .andReturn();
 
         assertThat(result.getResolvedException().getMessage())
-            .isEqualTo("Failed updating claim in CCD store for case id 000LR001 on event CREATE_NEW_CASE");
+            .isEqualTo("Failed storing claim in CCD store for case id 000LR001 on event CREATE_NEW_CASE");
     }
 }
