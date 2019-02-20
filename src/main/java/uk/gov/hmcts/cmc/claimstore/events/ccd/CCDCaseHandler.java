@@ -152,14 +152,15 @@ public class CCDCaseHandler {
 
     //    @EventListener
     @LogExecutionTime
-    public void linkSealedClaimDocument(CCDLinkSealedClaimDocumentEvent event) {
+    public void saveClaimDocument(CCDLinkSealedClaimDocumentEvent event) {
         String authorization = event.getAuthorization();
         Claim claim = event.getClaim();
         try {
             Claim ccdClaim = ccdCaseRepository.getClaimByExternalId(claim.getExternalId(), authorization)
                 .orElseThrow(IllegalStateException::new);
 
-            ccdCaseRepository.linkSealedClaimDocument(authorization, ccdClaim, event.getSealedClaimDocument());
+            ccdCaseRepository.saveClaimDocuments(authorization, ccdClaim.getId(),
+                claim.getClaimDocumentCollection().orElseThrow(IllegalStateException::new));
         } catch (FeignException e) {
             appInsights.trackEvent(CCD_ASYNC_FAILURE, REFERENCE_NUMBER, claim.getReferenceNumber());
             throw e;

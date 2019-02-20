@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
-import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
@@ -20,6 +19,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
@@ -67,7 +67,6 @@ public class CoreCaseDataServiceFailureTest {
     private static final String AUTHORISATION = "Bearer: aaa";
     private static final String EXTERNAL_ID = UUID.randomUUID().toString();
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder().build();
-    private static final User ANONYMOUS_USER = new User(AUTHORISATION, USER_DETAILS);
     private static final String AUTH_TOKEN = "authorisation token";
     private static final LocalDate FUTURE_DATE = now().plusWeeks(4);
 
@@ -241,10 +240,13 @@ public class CoreCaseDataServiceFailureTest {
     public void linkSealedClaimDocumentFailure() {
 
         URI sealedClaimUri = URI.create("http://localhost/sealedClaim.pdf");
+        Claim claim = SampleClaim.getClaimWithSealedClaimLink(sealedClaimUri);
         when(jsonMapper.fromMap(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
-        when(caseMapper.from(any(CCDCase.class))).thenReturn(SampleClaim.getClaimWithSealedClaimLink(sealedClaimUri));
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
 
-        service.linkSealedClaimDocument(AUTHORISATION, SampleClaim.CLAIM_ID, sealedClaimUri);
+        service.saveClaimDocuments(AUTHORISATION,
+            SampleClaim.CLAIM_ID,
+            claim.getClaimDocumentCollection().orElse(new ClaimDocumentCollection()));
 
         verify(coreCaseDataApi).submitForCitizen(
             eq(AUTHORISATION),
