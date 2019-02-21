@@ -21,7 +21,7 @@ import java.util.List;
 
 @Value
 @Builder
-public class CCDDefendant {
+public class CCDRespondent {
     private String letterHolderId;
     private String defendantId;
     private LocalDate responseDeadline;

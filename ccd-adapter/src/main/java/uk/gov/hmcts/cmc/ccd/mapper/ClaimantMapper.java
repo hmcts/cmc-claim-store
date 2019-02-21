@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
+import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
@@ -31,8 +31,8 @@ public class ClaimantMapper {
         this.soleTraderMapper = soleTraderMapper;
     }
 
-    public CCDCollectionElement<CCDClaimant> to(Party party, Claim claim) {
-        CCDClaimant.CCDClaimantBuilder builder = CCDClaimant.builder();
+    public CCDCollectionElement<CCDApplicant> to(Party party, Claim claim) {
+        CCDApplicant.CCDApplicantBuilder builder = CCDApplicant.builder();
         builder.partyEmail(claim.getSubmitterEmail());
 
         if (party instanceof Individual) {
@@ -52,24 +52,24 @@ public class ClaimantMapper {
             SoleTrader soleTrader = (SoleTrader) party;
             soleTraderMapper.to(soleTrader, builder);
         }
-        return CCDCollectionElement.<CCDClaimant>builder()
+        return CCDCollectionElement.<CCDApplicant>builder()
             .value(builder.build())
             .id(party.getId())
             .build();
     }
 
-    public Party from(CCDCollectionElement<CCDClaimant> ccdClaimant) {
-        switch (ccdClaimant.getValue().getPartyType()) {
+    public Party from(CCDCollectionElement<CCDApplicant> applicant) {
+        switch (applicant.getValue().getPartyType()) {
             case COMPANY:
-                return companyMapper.from(ccdClaimant);
+                return companyMapper.from(applicant);
             case INDIVIDUAL:
-                return individualMapper.from(ccdClaimant);
+                return individualMapper.from(applicant);
             case SOLE_TRADER:
-                return soleTraderMapper.from(ccdClaimant);
+                return soleTraderMapper.from(applicant);
             case ORGANISATION:
-                return organisationMapper.from(ccdClaimant);
+                return organisationMapper.from(applicant);
             default:
-                throw new MappingException("Invalid claimant type, " + ccdClaimant.getValue().getPartyType());
+                throw new MappingException("Invalid applicant type, " + applicant.getValue().getPartyType());
         }
     }
 }

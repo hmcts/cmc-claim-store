@@ -12,7 +12,7 @@
     "reason": "sfdfg dssdgdsfgd",
     "feeCode": "X0008-1",
     "issuedOn": "2019-01-03",
-    "claimants": [
+    "applicants": [
       {
         "id": "7081d646-d07d-4d37-9bb4-571e8a28d769",
         "value": {
@@ -58,7 +58,7 @@
       }
     ],
     "amountType": "RANGE",
-    "defendants": [
+    "respondents": [
       {
         "id": "ed8fc64d-6daf-4318-9491-e1fbf0c33245",
         "value": {

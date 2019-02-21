@@ -43,7 +43,7 @@
           "reason": "I want to claim from this date because that's when that happened"
         }
       },
-      "claimants": [
+      "applicants": [
         {
           "id": "6d763dee-c018-41d7-944f-c4b0ac175320",
           "value": {
@@ -68,7 +68,7 @@
           }
         }
       ],
-      "defendants": [
+      "respondents": [
         {
           "id": "7ebb4899-6889-4d42-9706-7ba640d4e61e",
           "value": {
@@ -162,7 +162,7 @@
           },
           "classification": "PUBLIC"
         },
-        "claimants": {
+        "applicants": {
           "value": [
             {
               "value": {
@@ -198,7 +198,7 @@
           ],
           "classification": "PUBLIC"
         },
-        "defendants": {
+        "respondents": {
           "value": [
             {
               "value": {
@@ -300,7 +300,7 @@
           },
           "classification": "PUBLIC"
         },
-        "claimants": {
+        "applicants": {
           "value": [
             {
               "value": {
@@ -336,7 +336,7 @@
           ],
           "classification": "PUBLIC"
         },
-        "defendants": {
+        "respondents": {
           "value": [
             {
               "value": {

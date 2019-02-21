@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
 
 @Component
@@ -21,7 +21,7 @@ public class IndividualDetailsMapper {
         this.representativeMapper = defendantRepresentativeMapper;
     }
 
-    public void to(IndividualDetails individual, CCDDefendant.CCDDefendantBuilder builder) {
+    public void to(IndividualDetails individual, CCDRespondent.CCDRespondentBuilder builder) {
 
         individual.getServiceAddress()
             .ifPresent(address -> builder.claimantProvidedServiceAddress(addressMapper.to(address)));
@@ -38,11 +38,11 @@ public class IndividualDetailsMapper {
             .claimantProvidedAddress(addressMapper.to(individual.getAddress()));
     }
 
-    public IndividualDetails from(CCDCollectionElement<CCDDefendant> ccdDefendant) {
-        CCDDefendant value = ccdDefendant.getValue();
+    public IndividualDetails from(CCDCollectionElement<CCDRespondent> ccdRespondent) {
+        CCDRespondent value = ccdRespondent.getValue();
 
         return IndividualDetails.builder()
-            .id(ccdDefendant.getId())
+            .id(ccdRespondent.getId())
             .name(value.getClaimantProvidedName())
             .address(addressMapper.from(value.getClaimantProvidedAddress()))
             .email(value.getClaimantProvidedEmail())
