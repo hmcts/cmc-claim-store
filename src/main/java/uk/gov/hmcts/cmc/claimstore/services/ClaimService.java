@@ -22,6 +22,7 @@ import uk.gov.hmcts.cmc.claimstore.rules.PaidInFullRule;
 import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
@@ -35,7 +36,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
-import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -324,10 +324,11 @@ public class ClaimService {
         ccdEventProducer.linkDefendantCCDEvent(authorisation);
     }
 
-    public void linkSealedClaimDocument(String authorisation, Claim claim, URI sealedClaimDocument) {
+    public void linkClaimToDocument(String authorisation,
+                                    Long claimId,
+                                    ClaimDocumentCollection claimDocumentCollection) {
         claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorisation);
-        caseRepository.linkSealedClaimDocument(authorisation, claim, sealedClaimDocument);
-        ccdEventProducer.linkSealedClaimDocumentCCDEvent(authorisation, claim, sealedClaimDocument);
+        caseRepository.saveClaimDocuments(authorisation, claimId, claimDocumentCollection);
     }
 
     public void linkLetterHolder(Long claimId, String userId) {

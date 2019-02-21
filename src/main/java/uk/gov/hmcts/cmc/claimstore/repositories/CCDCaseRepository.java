@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
@@ -16,7 +17,6 @@ import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
-import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -158,8 +158,10 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void linkSealedClaimDocument(String authorisation, Claim claim, URI documentURI) {
-        coreCaseDataService.linkSealedClaimDocument(authorisation, claim.getId(), documentURI);
+    public void saveClaimDocuments(String authorisation,
+                                   Long claimId,
+                                   ClaimDocumentCollection claimDocumentCollection) {
+        coreCaseDataService.saveClaimDocuments(authorisation, claimId, claimDocumentCollection);
     }
 
     @Override

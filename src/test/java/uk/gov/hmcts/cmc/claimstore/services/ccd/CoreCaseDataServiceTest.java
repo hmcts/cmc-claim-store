@@ -20,6 +20,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
@@ -63,7 +64,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CLAIMANT_RESPONSE_ACCEPTATION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CLAIMANT_RESPONSE_REJECTION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCATORY_JUDGEMENT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCUTORY_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_CLAIMANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
@@ -282,10 +283,13 @@ public class CoreCaseDataServiceTest {
     public void linkSealedClaimDocumentShouldReturnCaseDetails() {
 
         URI sealedClaimUri = URI.create("http://localhost/sealedClaim.pdf");
+        Claim claim = SampleClaim.getClaimWithSealedClaimLink(sealedClaimUri);
         when(jsonMapper.fromMap(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
-        when(caseMapper.from(any(CCDCase.class))).thenReturn(SampleClaim.getClaimWithSealedClaimLink(sealedClaimUri));
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
 
-        CaseDetails caseDetails = service.linkSealedClaimDocument(AUTHORISATION, SampleClaim.CLAIM_ID, sealedClaimUri);
+        CaseDetails caseDetails = service.saveClaimDocuments(AUTHORISATION,
+            SampleClaim.CLAIM_ID,
+            claim.getClaimDocumentCollection().orElse(new ClaimDocumentCollection()));
 
         assertNotNull(caseDetails);
     }
@@ -500,10 +504,10 @@ public class CoreCaseDataServiceTest {
 
         when(jsonMapper.fromMap(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
 
-        service.saveCaseEvent(AUTHORISATION, claim.getId(), INTERLOCATORY_JUDGEMENT);
+        service.saveCaseEvent(AUTHORISATION, claim.getId(), INTERLOCUTORY_JUDGMENT);
 
         verify(coreCaseDataApi, atLeastOnce()).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
-            anyString(), anyString(), eq(INTERLOCATORY_JUDGEMENT.getValue()));
+            anyString(), anyString(), eq(INTERLOCUTORY_JUDGMENT.getValue()));
     }
 
     @Test
