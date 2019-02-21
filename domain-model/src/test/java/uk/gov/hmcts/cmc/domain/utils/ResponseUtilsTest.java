@@ -2,7 +2,13 @@ package uk.gov.hmcts.cmc.domain.utils;
 
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
-import uk.gov.hmcts.cmc.domain.models.response.*;
+import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
+import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
+import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SamplePaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
@@ -151,14 +157,16 @@ public class ResponseUtilsTest {
 
     @Test
     public void shouldReturnTrueWhenFullDefenceDisputeAndNoMediation() {
-        Response response = SampleResponse.FullDefence.builder().withDefenceType(DefenceType.DISPUTE).withMediation(YesNoOption.NO).build();
+        Response response = SampleResponse.FullDefence.builder().withDefenceType(DefenceType.DISPUTE)
+            .withMediation(YesNoOption.NO).build();
 
         assertThat(ResponseUtils.isFullDefenceDisputeAndNoMediation(response)).isTrue();
     }
 
     @Test
     public void shouldReturnFalseWhenFullDefenceAlreadyPaidAndYesMediation() {
-        Response response = SampleResponse.FullDefence.builder().withDefenceType(DefenceType.ALREADY_PAID).withMediation(YesNoOption.YES).build();
+        Response response = SampleResponse.FullDefence.builder().withDefenceType(DefenceType.ALREADY_PAID)
+            .withMediation(YesNoOption.YES).build();
 
         assertThat(ResponseUtils.isFullDefenceDisputeAndNoMediation(response)).isFalse();
     }
