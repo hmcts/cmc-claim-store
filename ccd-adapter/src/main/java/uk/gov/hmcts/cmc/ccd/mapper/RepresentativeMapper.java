@@ -33,20 +33,20 @@ public class RepresentativeMapper
     }
 
     @Override
-    public Representative from(CCDApplicant ccdClaimant) {
-        if (isBlank(ccdClaimant.getRepresentativeOrganisationName())
-            && ccdClaimant.getRepresentativeOrganisationAddress() == null
-            && isBlank(ccdClaimant.getRepresentativeOrganisationEmail())
-            && isBlank(ccdClaimant.getRepresentativeOrganisationPhone())
-            && isBlank(ccdClaimant.getRepresentativeOrganisationDxAddress())
+    public Representative from(CCDApplicant applicant) {
+        if (isBlank(applicant.getRepresentativeOrganisationName())
+            && applicant.getRepresentativeOrganisationAddress() == null
+            && isBlank(applicant.getRepresentativeOrganisationEmail())
+            && isBlank(applicant.getRepresentativeOrganisationPhone())
+            && isBlank(applicant.getRepresentativeOrganisationDxAddress())
         ) {
             return null;
         }
 
         return new Representative(
-            ccdClaimant.getRepresentativeOrganisationName(),
-            addressMapper.from(ccdClaimant.getRepresentativeOrganisationAddress()),
-            contactDetailsMapper.from(ccdClaimant)
+            applicant.getRepresentativeOrganisationName(),
+            addressMapper.from(applicant.getRepresentativeOrganisationAddress()),
+            contactDetailsMapper.from(applicant)
         );
 
     }

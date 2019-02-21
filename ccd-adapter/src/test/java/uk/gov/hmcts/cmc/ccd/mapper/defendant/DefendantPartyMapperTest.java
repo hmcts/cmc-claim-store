@@ -92,48 +92,48 @@ public class DefendantPartyMapperTest {
     @Test
     public void shouldMapIndividualFromCCD() {
         //given
-        CCDRespondent ccdDefendant = withPartyIndividual().build();
+        CCDRespondent ccdRespondent = withPartyIndividual().build();
 
         //when
-        Party party = mapper.from(ccdDefendant);
+        Party party = mapper.from(ccdRespondent);
 
         //then
-        assertThat(party).isEqualTo(ccdDefendant);
+        assertThat(party).isEqualTo(ccdRespondent);
     }
 
     @Test
     public void shouldMapCompanyFromCCD() {
         //given
-        CCDRespondent ccdDefendant = withPartyCompany().build();
+        CCDRespondent ccdRespondent = withPartyCompany().build();
 
         //when
-        Party party = mapper.from(ccdDefendant);
+        Party party = mapper.from(ccdRespondent);
 
         //then
-        assertThat(party).isEqualTo(ccdDefendant);
+        assertThat(party).isEqualTo(ccdRespondent);
     }
 
     @Test
     public void shouldMapSoleTraderFromCCD() {
         //given
-        CCDRespondent ccdDefendant = withPartySoleTrader().build();
+        CCDRespondent ccdRespondent = withPartySoleTrader().build();
 
         //when
-        Party party = mapper.from(ccdDefendant);
+        Party party = mapper.from(ccdRespondent);
 
         //then
-        assertThat(party).isEqualTo(ccdDefendant);
+        assertThat(party).isEqualTo(ccdRespondent);
     }
 
     @Test
     public void shouldMapOrganisationFromCCD() {
         //given
-        CCDRespondent ccdDefendant = withPartyOrganisation().build();
+        CCDRespondent ccdRespondent = withPartyOrganisation().build();
 
         //when
-        Party party = mapper.from(ccdDefendant);
+        Party party = mapper.from(ccdRespondent);
 
         //then
-        assertThat(party).isEqualTo(ccdDefendant);
+        assertThat(party).isEqualTo(ccdRespondent);
     }
 }

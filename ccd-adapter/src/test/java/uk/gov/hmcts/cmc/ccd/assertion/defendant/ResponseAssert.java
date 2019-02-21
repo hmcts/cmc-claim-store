@@ -119,29 +119,29 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
             .ifPresent(statementOfMeans -> assertThat(statementOfMeans).isEqualTo(ccdRespondent.getStatementOfMeans()));
     }
 
-    private void assertFullDefenceResponse(CCDRespondent ccdDefendant) {
-        assertResponse(ccdDefendant);
+    private void assertFullDefenceResponse(CCDRespondent respondent) {
+        assertResponse(respondent);
         FullDefenceResponse fullDefenceResponse = (FullDefenceResponse) actual;
 
         if (!Objects.equals(
             fullDefenceResponse.getDefenceType().name(),
-            ccdDefendant.getResponseDefenceType().name()
+            respondent.getResponseDefenceType().name()
         )) {
             failWithMessage("Expected CCDRespondent.responseDefenceType to be <%s> but was <%s>",
-                ccdDefendant.getResponseDefenceType(), fullDefenceResponse.getDefenceType());
+                respondent.getResponseDefenceType(), fullDefenceResponse.getDefenceType());
         }
 
-        if (!Objects.equals(fullDefenceResponse.getDefence().orElse(null), ccdDefendant.getResponseDefence())) {
+        if (!Objects.equals(fullDefenceResponse.getDefence().orElse(null), respondent.getResponseDefence())) {
             failWithMessage("Expected CCDRespondent.responseDefence to be <%s> but was <%s>",
-                ccdDefendant.getResponseDefence(), fullDefenceResponse.getDefence());
+                respondent.getResponseDefence(), fullDefenceResponse.getDefence());
         }
 
         fullDefenceResponse.getPaymentDeclaration()
-            .ifPresent(paymentDeclaration -> assertPaymentDeclaration(ccdDefendant, paymentDeclaration));
+            .ifPresent(paymentDeclaration -> assertPaymentDeclaration(respondent, paymentDeclaration));
 
-        fullDefenceResponse.getTimeline().ifPresent(assertDefendantTimelineConsumer(ccdDefendant));
+        fullDefenceResponse.getTimeline().ifPresent(assertDefendantTimelineConsumer(respondent));
 
-        fullDefenceResponse.getEvidence().ifPresent(assertDefendantEvidenceConsumer(ccdDefendant));
+        fullDefenceResponse.getEvidence().ifPresent(assertDefendantEvidenceConsumer(respondent));
     }
 
     private Consumer<DefendantEvidence> assertDefendantEvidenceConsumer(CCDRespondent ccdRespondent) {

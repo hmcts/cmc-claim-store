@@ -215,9 +215,9 @@ public class DefendantMapperTest {
 
         //When
         CCDCollectionElement<CCDRespondent> defendant = mapper.to(theirDetails, claimWithCCJ);
-        CCDRespondent ccdDefendant = defendant.getValue();
+        CCDRespondent respondent = defendant.getValue();
         //Then
-        CCDCountyCourtJudgment ccdCountyCourtJudgment = ccdDefendant.getCountyCourtJudgmentRequest();
+        CCDCountyCourtJudgment ccdCountyCourtJudgment = respondent.getCountyCourtJudgmentRequest();
         assertNotNull(ccdCountyCourtJudgment);
         assertEquals(ccdCountyCourtJudgment.getType().name(), countyCourtJudgment.getCcjType().name());
         assertEquals(ccdCountyCourtJudgment.getRequestedDate(), claimWithCCJ.getCountyCourtJudgmentRequestedAt());
@@ -231,8 +231,8 @@ public class DefendantMapperTest {
         Claim claimWithPaidInFull = SampleClaim.builder().withMoneyReceivedOn(moneyReceivedOn).build();
 
         //When
-        CCDCollectionElement<CCDRespondent> ccdDefendant = mapper.to(theirDetails, claimWithPaidInFull);
-        CCDRespondent value = ccdDefendant.getValue();
+        CCDCollectionElement<CCDRespondent> ccdRespondent = mapper.to(theirDetails, claimWithPaidInFull);
+        CCDRespondent value = ccdRespondent.getValue();
 
         //Then
         assertNotNull(value.getPaidInFullDate());
@@ -261,8 +261,8 @@ public class DefendantMapperTest {
         Claim claimWithCCJ = SampleClaim.getWithSettlement(null);
 
         //When
-        CCDCollectionElement<CCDRespondent> ccdDefendant = mapper.to(theirDetails, claimWithCCJ);
-        CCDRespondent value = ccdDefendant.getValue();
+        CCDCollectionElement<CCDRespondent> ccdRespondent = mapper.to(theirDetails, claimWithCCJ);
+        CCDRespondent value = ccdRespondent.getValue();
 
         //Then
         assertNull(value.getSettlementPartyStatements());
@@ -280,13 +280,13 @@ public class DefendantMapperTest {
 
         //When
         CCDCollectionElement<CCDRespondent> collectionElement = mapper.to(theirDetails, claimWithSettlement);
-        CCDRespondent ccdDefendant = collectionElement.getValue();
+        CCDRespondent ccdRespondent = collectionElement.getValue();
 
         //Then
-        assertNotNull(ccdDefendant.getSettlementPartyStatements());
-        assertNotNull(ccdDefendant.getSettlementReachedAt());
-        assertThat(ccdDefendant.getSettlementPartyStatements().size(), is(2));
-        assertEquals(settlementReachedAt, ccdDefendant.getSettlementReachedAt());
+        assertNotNull(ccdRespondent.getSettlementPartyStatements());
+        assertNotNull(ccdRespondent.getSettlementReachedAt());
+        assertThat(ccdRespondent.getSettlementPartyStatements().size(), is(2));
+        assertEquals(settlementReachedAt, ccdRespondent.getSettlementReachedAt());
     }
 
     @Test
