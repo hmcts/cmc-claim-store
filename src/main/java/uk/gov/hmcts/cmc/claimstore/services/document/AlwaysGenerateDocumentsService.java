@@ -8,10 +8,11 @@ import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
+import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
-@Service
+@Service("documentsService")
 @ConditionalOnProperty(prefix = "document_management", name = "url", havingValue = "false")
 public class AlwaysGenerateDocumentsService implements DocumentsService {
 
@@ -61,6 +62,14 @@ public class AlwaysGenerateDocumentsService implements DocumentsService {
     @Override
     public byte[] generateSettlementAgreement(String externalId, String authorisation) {
         return settlementAgreementCopyService.createPdf(getClaimByExternalId(externalId, authorisation));
+    }
+
+    @Override
+    public void uploadToDocumentManagement(PDF document,
+                                           String authorisation,
+                                           Claim claim) {
+        throw new UnsupportedOperationException(
+            "This method is not supported when Document Management is turned off");
     }
 
     private Claim getClaimByExternalId(String externalId, String authorisation) {
