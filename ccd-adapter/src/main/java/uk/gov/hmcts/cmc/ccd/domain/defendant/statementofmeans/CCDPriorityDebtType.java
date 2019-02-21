@@ -1,21 +1,11 @@
 package uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans;
 
 public enum CCDPriorityDebtType {
-    MORTGAGE("Mortgage"),
-    RENT("Rent"),
-    COUNCIL_TAX_COMMUNITY_CHARGE("Council Tax or Community Charge"),
-    GAS("Gas"),
-    ELECTRICITY("Electricity"),
-    WATER("Water"),
-    MAINTENANCE_PAYMENTS("Maintenance Payments");
-
-    String description;
-
-    CCDPriorityDebtType(String description) {
-        this.description = description;
-    }
-
-    public String getDescription() {
-        return this.description;
-    }
+    MORTGAGE,
+    RENT,
+    COUNCIL_TAX_COMMUNITY_CHARGE,
+    GAS,
+    ELECTRICITY,
+    WATER,
+    MAINTENANCE_PAYMENTS;
 }
