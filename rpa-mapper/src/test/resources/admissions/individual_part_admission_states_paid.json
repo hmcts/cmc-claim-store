@@ -1,7 +1,7 @@
 {
   "caseNumber": "000CM001",
   "responseSubmittedOn": "26-Apr-2018",
-  "defenceResponse": "PART_ADMISSION",
+  "defenceResponse": "ALREADY_PAID",
   "amountAdmitted": 120,
   "defendant": {
     "type": "Individual",
