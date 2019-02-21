@@ -82,7 +82,7 @@ public class ResponseNeededNotificationServiceTest extends BaseNotificationServi
 
     @Test
     public void recoveryShouldNotLogPII() {
-        JobDetail mockJobDetail = Mockito.mock(JobDetail.class);
+        JobDetail mockJobDetail = mock(JobDetail.class);
         when(mockJobDetail.getJobDataMap()).thenReturn(new JobDataMap(ImmutableMap.of("caseReference", "reference")));
         responseNeededNotificationService.logNotificationFailure(
             new NotificationException("expected exception"),
