@@ -420,7 +420,7 @@ public class ClaimServiceTest {
         when(userService.getUserDetails(AUTHORISATION))
             .thenReturn(SampleUserDetails.builder().withUserId("300").build());
 
-        claimService.paidInFull(claim.getExternalId(), new PaidInFull(LocalDate.now()), AUTHORISATION);
+        claimService.paidInFull(claim.getExternalId(), new PaidInFull(now()), AUTHORISATION);
     }
 
     @Test(expected = ForbiddenActionException.class)
