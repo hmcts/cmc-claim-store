@@ -63,6 +63,7 @@ public class ClaimMigrator {
         logger.info("Total Claims in database: " + notMigratedClaims.size());
         logger.info("Successfully migrated: " + migratedClaims.toString());
         logger.info("Successfully updated: " + updatedClaims.toString());
+        logger.info("Total ccd calls: " + (updatedClaims.intValue() + migratedClaims.intValue()));
         logger.info("Failed to migrate: " + failedMigrations.toString());
     }
 
