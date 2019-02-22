@@ -91,7 +91,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
 
     @Test
     public void shouldLinkSealedCopyOfNonRepresentedClaimAfterUpload() throws Exception {
-        assertSealedClaimIsLinked(SampleClaimData.submittedByClaimant(),
+        assertDocumentIsLinked(SampleClaimData.submittedByClaimant(),
             AUTHORISATION_TOKEN,
             SEALED_CLAIM,
             "000MC001-claim-form.pdf");
@@ -99,7 +99,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
 
     @Test
     public void shouldLinkDefendantPinLetterAfterUpload() throws Exception {
-        assertSealedClaimIsLinked(SampleClaimData.submittedByClaimant(),
+        assertDocumentIsLinked(SampleClaimData.submittedByClaimant(),
             AUTHORISATION_TOKEN,
             DEFENDANT_PIN_LETTER,
             "000MC001-defendant-pin-letter.pdf");
@@ -107,7 +107,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
 
     @Test
     public void shouldLinkClaimIssueReceiptClaimAfterUpload() throws Exception {
-        assertSealedClaimIsLinked(SampleClaimData.submittedByClaimant(),
+        assertDocumentIsLinked(SampleClaimData.submittedByClaimant(),
             AUTHORISATION_TOKEN,
             CLAIM_ISSUE_RECEIPT,
             "000MC001-claim-form-claimant-copy.pdf");
@@ -115,13 +115,13 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
 
     @Test
     public void shouldLinkSealedCopyOfRepresentedClaimAfterUpload() throws Exception {
-        assertSealedClaimIsLinked(SampleClaimData.submittedByLegalRepresentative(),
+        assertDocumentIsLinked(SampleClaimData.submittedByLegalRepresentative(),
             SOLICITOR_AUTHORISATION_TOKEN,
             SEALED_CLAIM,
             "000MC001-claim-form.pdf");
     }
 
-    private void assertSealedClaimIsLinked(ClaimData claimData,
+    private void assertDocumentIsLinked(ClaimData claimData,
                                            String authorization,
                                            ClaimDocumentType claimDocumentType,
                                            String fileName) throws Exception {
