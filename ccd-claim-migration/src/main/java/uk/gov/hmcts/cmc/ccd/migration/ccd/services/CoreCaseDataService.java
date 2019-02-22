@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.exceptions.CreateCaseException;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.exceptions.OverwriteCaseException;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
+import uk.gov.hmcts.cmc.ccd.migration.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
@@ -66,6 +67,7 @@ public class CoreCaseDataService {
         this.authTokenGenerator = authTokenGenerator;
     }
 
+    @LogExecutionTime
     public void create(User user, Claim claim, CaseEvent event) {
         logger.info("Create case in CCD, claim id = " + claim.getId() + ", event = " + event.getValue());
         try {
@@ -88,6 +90,7 @@ public class CoreCaseDataService {
         }
     }
 
+    @LogExecutionTime
     public void overwrite(User user, Long caseId, Claim claim, CaseEvent event) {
 
         logger.info("Overwrite " + caseId + ", claim reference number = " + claim.getReferenceNumber());
@@ -115,6 +118,7 @@ public class CoreCaseDataService {
     @Retryable(value = {SocketTimeoutException.class, FeignException.class, IOException.class},
         backoff = @Backoff(delay = 200, maxDelay = 500)
     )
+    @LogExecutionTime
     public Optional<CaseDetails> getCcdIdByReferenceNumber(User user, String referenceNumber) {
         logger.info("Get claim from CCD " + referenceNumber);
 
