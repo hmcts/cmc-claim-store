@@ -42,7 +42,6 @@ public class GetClaimsByClaimantIdTest extends BaseGetTest {
         when(userService.getUserDetails(AUTHORISATION_TOKEN)).thenReturn(
             SampleUserDetails.builder().withUserId(nonExistingSubmitterId).build());
 
-
         MvcResult result = makeRequest("/claims/claimant/" + nonExistingSubmitterId)
             .andExpect(status().isOk())
             .andReturn();
