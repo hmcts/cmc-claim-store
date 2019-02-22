@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
@@ -25,8 +26,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @JsonIgnoreProperties(
     value = {"totalAmountTillToday", "totalAmountTillDateOfIssue",
         "amountWithInterestUntilIssueDate", "totalInterest",
-        "serviceDate", "amountWithInterest", "directionsQuestionnaireDeadline",
-        "claimDocument"},
+        "serviceDate", "amountWithInterest", "directionsQuestionnaireDeadline"},
     allowGetters = true
 )
 @Getter
@@ -131,6 +131,7 @@ public class Claim {
         return Optional.ofNullable(settlement);
     }
 
+    @JsonIgnore
     public Optional<URI> getClaimDocument(ClaimDocumentType claimDocumentType) {
         if (claimDocumentCollection == null) {
             return Optional.empty();
