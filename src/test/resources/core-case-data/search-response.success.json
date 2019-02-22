@@ -58,6 +58,7 @@
         "id": "440ebab7-f812-4f89-9be1-9f67b80f8179",
         "value": {
           "letterHolderId": "75",
+          "defendantId": "100",
           "responseDeadline": "2020-02-06",
           "claimantProvidedName": "Mary Richards",
           "claimantProvidedType": "INDIVIDUAL",
