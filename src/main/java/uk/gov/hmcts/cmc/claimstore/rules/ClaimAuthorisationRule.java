@@ -7,15 +7,14 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
-
 @Component
 public class ClaimAuthorisationRule {
 
     private static final String USER_NOT_LINKED_MESSAGE =
-        "User id %s1 does not match linked ids on claim ";
+        "User id %s does not match linked ids on claim";
 
     private static final String USER_ID_MISMATCH =
-        "User with id %s1 does not match given user id %s2";
+        "Given user id %s does not match authorised id";
 
     private final UserService userService;
 
@@ -43,7 +42,7 @@ public class ClaimAuthorisationRule {
         UserDetails userDetails = userService.getUserDetails(authorisation);
 
         if (!userDetails.getId().equals(userId) && !userDetails.isCaseworker()) {
-            throw new ForbiddenActionException(String.format(USER_ID_MISMATCH, userDetails.getId(), userId));
+            throw new ForbiddenActionException(String.format(USER_ID_MISMATCH, userId));
         }
     }
 }
