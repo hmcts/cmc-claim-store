@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
+
 @Component
 public class ClaimAuthorisationRule {
 
@@ -28,12 +29,12 @@ public class ClaimAuthorisationRule {
         if (claim != null) {
             UserDetails userDetails = userService.getUserDetails(authorisation);
 
-            if (!userDetails.getId().equals(claim.getDefendantId())
+            if (!userDetails.isCaseworker()
+                && !userDetails.getId().equals(claim.getDefendantId())
                 && !userDetails.getId().equals(claim.getSubmitterId())
                 && !userDetails.getId().equals(claim.getLetterHolderId())) {
                 throw new ForbiddenActionException(String.format(USER_NOT_LINKED_MESSAGE,
-                    userDetails.getId(),
-                    claim.getExternalId()));
+                    userDetails.getId()));
             }
         }
     }
@@ -41,7 +42,7 @@ public class ClaimAuthorisationRule {
     public void assertSubmitterIdMatchesAuthorisation(String userId, String authorisation) {
         UserDetails userDetails = userService.getUserDetails(authorisation);
 
-        if (!userDetails.getId().equals(userId)) {
+        if (!userDetails.getId().equals(userId) && !userDetails.isCaseworker()) {
             throw new ForbiddenActionException(String.format(USER_ID_MISMATCH, userDetails.getId(), userId));
         }
     }

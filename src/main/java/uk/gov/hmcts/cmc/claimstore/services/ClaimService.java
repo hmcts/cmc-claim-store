@@ -327,7 +327,6 @@ public class ClaimService {
     public void linkClaimToDocument(String authorisation,
                                     Long claimId,
                                     ClaimDocumentCollection claimDocumentCollection) {
-        claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorisation);
         caseRepository.saveClaimDocuments(authorisation, claimId, claimDocumentCollection);
     }
 

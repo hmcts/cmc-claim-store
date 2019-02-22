@@ -414,14 +414,6 @@ public class ClaimServiceTest {
     }
 
     @Test(expected = ForbiddenActionException.class)
-    public void linkSealedClaimDocumentShouldThrowExceptionWhenCallerNotAuthorised() {
-        when(userService.getUserDetails(AUTHORISATION))
-            .thenReturn(SampleUserDetails.builder().withUserId("300").build());
-
-        claimService.linkSealedClaimDocument(AUTHORISATION, claim, URI.create(""));
-    }
-
-    @Test(expected = ForbiddenActionException.class)
     public void paidInFullShouldThrowExceptionWhenCallerNotAuthorised() {
         when(caseRepository.getClaimByExternalId(claim.getExternalId(), AUTHORISATION))
             .thenReturn(Optional.of(claim));
