@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 // Create these fields in JSON when serialize Java object, ignore them when deserialize.
@@ -132,11 +131,11 @@ public class Claim {
         return Optional.ofNullable(settlement);
     }
 
-    public Optional<URI> getSealedClaimDocument() {
+    public Optional<URI> getClaimDocument(ClaimDocumentType claimDocumentType) {
         if (claimDocumentCollection == null) {
             return Optional.empty();
         } else {
-            Optional<ClaimDocument> claimDocument = claimDocumentCollection.getDocument(SEALED_CLAIM);
+            Optional<ClaimDocument> claimDocument = claimDocumentCollection.getDocument(claimDocumentType);
             if (claimDocument.isPresent()) {
                 return Optional.ofNullable(claimDocument.get().getDocumentManagementUrl());
             }
