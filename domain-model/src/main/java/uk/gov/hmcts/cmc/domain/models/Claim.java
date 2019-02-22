@@ -26,7 +26,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
     value = {"totalAmountTillToday", "totalAmountTillDateOfIssue",
         "amountWithInterestUntilIssueDate", "totalInterest",
         "serviceDate", "amountWithInterest", "directionsQuestionnaireDeadline",
-        "sealedClaimDocument"},
+        "claimDocument"},
     allowGetters = true
 )
 @Getter
