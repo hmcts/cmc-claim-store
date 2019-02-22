@@ -59,16 +59,6 @@ public class DBCaseRepository implements CaseRepository {
         return claimRepository.getClaimByExternalId(externalId);
     }
 
-    @Override
-    public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
-        getClaimByExternalId(externalId, authorisation)
-            .ifPresent(claim -> {
-                throw new ConflictException("Duplicate claim for external id " + claim.getExternalId());
-            });
-
-        return null;
-    }
-
     public Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation) {
         if (authorisation != null) {
             String submitterId = userService.getUserDetails(authorisation).getId();
