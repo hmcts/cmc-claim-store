@@ -10,6 +10,7 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Getter
@@ -45,7 +46,7 @@ public class CaseMetadata {
             claim.isMoreTimeRequested(),
             claim.getCountyCourtJudgmentRequestedAt(),
             claim.getSettlementReachedAt(),
-            claim.getSealedClaimDocument().orElse(null),
+            claim.getClaimDocument(SEALED_CLAIM).orElse(null),
             claim.getClaimData().getPayment().getReference()
         );
     }
