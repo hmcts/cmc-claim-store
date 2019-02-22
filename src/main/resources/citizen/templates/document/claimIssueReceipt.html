@@ -517,8 +517,7 @@
         <td>
           I believe that the facts stated in this claim form are true.
         </td>
-        {% endif %}
-        {% if claim.statementOfTruth is defined and claim.statementOfTruth is not empty %}
+        {% else %}
         <td>
           The claimant believes that the facts stated in this claim are true.
         </td>
