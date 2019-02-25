@@ -68,8 +68,7 @@ public class CoreCaseDataService {
     }
 
     @LogExecutionTime
-    public void create(User user, Claim claim, CaseEvent event) {
-        logger.info("Create case in CCD, claim id = " + claim.getId() + ", event = " + event.getValue());
+    public void createCase(User user, Claim claim, CaseEvent event) {
         try {
 
             EventRequestData eventRequestData = EventRequestData.builder()
@@ -91,9 +90,8 @@ public class CoreCaseDataService {
     }
 
     @LogExecutionTime
-    public void overwrite(User user, Long caseId, Claim claim, CaseEvent event) {
+    public void updateCase(User user, Long caseId, Claim claim, CaseEvent event) {
 
-        logger.info("Overwrite " + caseId + ", claim reference number = " + claim.getReferenceNumber());
         try {
             EventRequestData eventRequestData = EventRequestData.builder()
                 .userId(user.getUserDetails().getId())
@@ -120,8 +118,6 @@ public class CoreCaseDataService {
     )
     @LogExecutionTime
     public Optional<CaseDetails> getCcdIdByReferenceNumber(User user, String referenceNumber) {
-        logger.info("Get claim from CCD " + referenceNumber);
-
         return search(user, ImmutableMap.of("case.referenceNumber", referenceNumber));
     }
 

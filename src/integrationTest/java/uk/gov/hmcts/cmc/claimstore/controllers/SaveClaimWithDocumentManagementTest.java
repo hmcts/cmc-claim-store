@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 
@@ -30,6 +31,8 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementUploadResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.unsuccessfulDocumentManagementUploadResponse;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @TestPropertySource(
@@ -76,7 +79,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
             any(),
             argument.capture()
         );
-        verify(documentUploadClient, atMost(2)).upload(
+        verify(documentUploadClient, atMost(3)).upload(
             eq(authorization),
             any(),
             any(),
@@ -88,15 +91,40 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
 
     @Test
     public void shouldLinkSealedCopyOfNonRepresentedClaimAfterUpload() throws Exception {
-        assertSealedClaimIsLinked(SampleClaimData.submittedByClaimant(), AUTHORISATION_TOKEN);
+        assertDocumentIsLinked(SampleClaimData.submittedByClaimant(),
+            AUTHORISATION_TOKEN,
+            SEALED_CLAIM,
+            "000MC001-claim-form.pdf");
+    }
+
+    @Test
+    public void shouldLinkDefendantPinLetterAfterUpload() throws Exception {
+        assertDocumentIsLinked(SampleClaimData.submittedByClaimant(),
+            AUTHORISATION_TOKEN,
+            DEFENDANT_PIN_LETTER,
+            "000MC001-defendant-pin-letter.pdf");
+    }
+
+    @Test
+    public void shouldLinkClaimIssueReceiptClaimAfterUpload() throws Exception {
+        assertDocumentIsLinked(SampleClaimData.submittedByClaimant(),
+            AUTHORISATION_TOKEN,
+            CLAIM_ISSUE_RECEIPT,
+            "000MC001-claim-form-claimant-copy.pdf");
     }
 
     @Test
     public void shouldLinkSealedCopyOfRepresentedClaimAfterUpload() throws Exception {
-        assertSealedClaimIsLinked(SampleClaimData.submittedByLegalRepresentative(), SOLICITOR_AUTHORISATION_TOKEN);
+        assertDocumentIsLinked(SampleClaimData.submittedByLegalRepresentative(),
+            SOLICITOR_AUTHORISATION_TOKEN,
+            SEALED_CLAIM,
+            "000MC001-claim-form.pdf");
     }
 
-    private void assertSealedClaimIsLinked(ClaimData claimData, String authorization) throws Exception {
+    private void assertDocumentIsLinked(ClaimData claimData,
+                                           String authorization,
+                                           ClaimDocumentType claimDocumentType,
+                                           String fileName) throws Exception {
         given(documentUploadClient.upload(eq(authorization), any(), any(), any()))
             .willReturn(successfulDocumentManagementUploadResponse());
 
@@ -110,15 +138,14 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
             .andReturn();
 
         Optional<ClaimDocumentCollection> claimDocumentCollection = deserializeObjectFrom(resultWithDocument,
-                                                                Claim.class).getClaimDocumentCollection();
+            Claim.class).getClaimDocumentCollection();
         ClaimDocument claimDocument = claimDocumentCollection
             .orElseThrow(AssertionError::new)
-            .getDocument(SEALED_CLAIM)
+            .getDocument(claimDocumentType)
             .orElseThrow(AssertionError::new);
         assertThat(claimDocument.getDocumentManagementUrl()
             .equals(URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4")));
-        assertThat(claimDocument.getDocumentName().equals("000MC001-claim-form.pdf"));
-        assertThat(claimDocument.getDocumentType().equals(SEALED_CLAIM));
+        assertThat(claimDocument.getDocumentName().equals(fileName));
     }
 
     @Test
