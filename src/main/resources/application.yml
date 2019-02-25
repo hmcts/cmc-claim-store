@@ -75,6 +75,9 @@ bankHolidays:
   api:
     url: "https://www.gov.uk"
 
+nonworking-days:
+  datafile: ${NONWORKINGDAYS_DATAFILE:/data/non-working_days.dat}
+
 dateCalculations:
   endOfBusinessDayHour: 16
   serviceDays: 5
