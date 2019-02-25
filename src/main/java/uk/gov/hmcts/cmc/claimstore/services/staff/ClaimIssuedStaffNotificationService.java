@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
@@ -53,6 +54,7 @@ public class ClaimIssuedStaffNotificationService {
         List<PDF> documents) {
         EmailContent content = provider.createContent(wrapInMap(claim));
         List<EmailAttachment> attachments = documents.stream()
+            .filter(document -> document.getClaimDocumentType() != CLAIM_ISSUE_RECEIPT)
             .map(document -> pdf(document.getBytes(), document.getFilename()))
             .collect(Collectors.toList());
 

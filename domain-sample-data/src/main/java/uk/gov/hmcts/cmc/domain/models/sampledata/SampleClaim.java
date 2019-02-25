@@ -2,6 +2,9 @@ package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.Interest;
@@ -14,6 +17,7 @@ import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
 import java.net.URI;
@@ -44,7 +48,7 @@ public final class SampleClaim {
     public static final LocalDateTime NOT_RESPONDED = null;
     public static final String SUBMITTER_EMAIL = "claimant@mail.com";
     public static final String DEFENDANT_EMAIL = SampleTheirDetails.DEFENDANT_EMAIL;
-    public static final String DEFENDANT_EMAIL_VERIFIED =  "defendant@mail.com";
+    public static final String DEFENDANT_EMAIL_VERIFIED = "defendant@mail.com";
 
     private String submitterId = USER_ID;
     private String letterHolderId = LETTER_HOLDER_ID;
@@ -65,7 +69,6 @@ public final class SampleClaim {
     private String defendantEmail;
     private Settlement settlement = null;
     private LocalDateTime settlementReachedAt = null;
-    private URI sealedClaimDocument = null;
     private List<String> features = Collections.singletonList("admissions");
     private LocalDateTime claimantRespondedAt;
     private ClaimantResponse claimantResponse;
@@ -73,6 +76,7 @@ public final class SampleClaim {
     private LocalDate moneyReceivedOn;
     private LocalDateTime reDeterminationRequestedAt;
     private ReDetermination reDetermination = new ReDetermination("I feel defendant can pay", CLAIMANT);
+    private ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
 
     private SampleClaim() {
     }
@@ -335,14 +339,14 @@ public final class SampleClaim {
             countyCourtJudgmentRequestedAt,
             settlement,
             settlementReachedAt,
-            sealedClaimDocument,
             features,
             claimantRespondedAt,
             claimantResponse,
             directionsQuestionnaireDeadline,
             moneyReceivedOn,
             reDetermination,
-            reDeterminationRequestedAt
+            reDeterminationRequestedAt,
+            claimDocumentCollection
         );
     }
 
@@ -452,7 +456,14 @@ public final class SampleClaim {
     }
 
     public SampleClaim withSealedClaimDocument(URI sealedClaimDocument) {
-        this.sealedClaimDocument = sealedClaimDocument;
+        ClaimDocument claimDocument = ClaimDocument.builder()
+            .documentManagementUrl(sealedClaimDocument)
+            .documentName("001CLAIM-FORM")
+            .documentType(ClaimDocumentType.SEALED_CLAIM)
+            .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
+            .createdBy("OCMC")
+            .build();
+        this.claimDocumentCollection.addClaimDocument(claimDocument);
         return this;
     }
 

@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.domain.models;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SamplePaymentDeclaration;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -19,7 +20,19 @@ public class PaymentDeclarationTest {
         //when
         Set<String> response = validate(paymentDeclaration);
         //then
-        assertThat(response).hasSize(0);
+        assertThat(response).isEmpty();
+    }
+
+    @Test
+    public void shouldHaveNoValidationMessageWhenInstanceIsValidWithoutPaidAmount() {
+        //given
+        PaymentDeclaration paymentDeclaration = SamplePaymentDeclaration.builder()
+            .paidAmount(null)
+            .build();
+        //when
+        Set<String> response = validate(paymentDeclaration);
+        //then
+        assertThat(response).isEmpty();
     }
 
     @Test
@@ -92,5 +105,19 @@ public class PaymentDeclarationTest {
         assertThat(errors)
             .hasSize(1)
             .contains("explanation : size must be between 0 and 99000");
+    }
+
+    @Test
+    public void shouldHaveValidationMessageWhenPaidAmountIsNonPositive() {
+        //given
+        PaymentDeclaration paymentDeclaration = SamplePaymentDeclaration.builder()
+            .paidAmount(BigDecimal.ZERO)
+            .build();
+        //when
+        Set<String> errors = validate(paymentDeclaration);
+        //then
+        assertThat(errors)
+            .hasSize(1)
+            .contains("paidAmount : must be greater than or equal to 0.01");
     }
 }
