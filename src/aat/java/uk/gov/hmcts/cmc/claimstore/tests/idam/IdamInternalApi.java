@@ -88,6 +88,7 @@ public interface IdamInternalApi {
                 .setSSLSocketFactory(connectionFactory)
                 .useSystemProperties()
                 .setDefaultRequestConfig(config)
+                .disableRedirectHandling()
                 .build();
         }
     }
