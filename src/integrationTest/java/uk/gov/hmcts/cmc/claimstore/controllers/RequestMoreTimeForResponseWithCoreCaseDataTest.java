@@ -33,8 +33,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED_ONLINE;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetails;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetailsWithMoreTimeExtension;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetailsWithLinkedDefendant;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreStartResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponseWithMoreTimeExtension;
 
@@ -75,7 +74,7 @@ public class RequestMoreTimeForResponseWithCoreCaseDataTest extends BaseIntegrat
             eq(CASE_TYPE_ID),
             eq(searchCriteria(claimData.getExternalId().toString()))
             )
-        ).thenReturn(listOfCaseDetails(), listOfCaseDetailsWithMoreTimeExtension());
+        ).thenReturn(listOfCaseDetailsWithLinkedDefendant());
 
         given(coreCaseDataApi.startEventForCitizen(
             eq(BEARER_TOKEN),
