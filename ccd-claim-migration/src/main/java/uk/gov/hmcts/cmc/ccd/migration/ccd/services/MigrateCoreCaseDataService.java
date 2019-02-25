@@ -1,7 +1,13 @@
 package uk.gov.hmcts.cmc.ccd.migration.ccd.services;
 
+import feign.FeignException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
@@ -18,12 +24,16 @@ import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.client.model.UserId;
 
+import java.io.IOException;
+import java.net.SocketTimeoutException;
+
 import static uk.gov.hmcts.cmc.ccd.migration.ccd.services.CoreCaseDataService.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.ccd.migration.ccd.services.CoreCaseDataService.JURISDICTION_ID;
 
 @Service
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class MigrateCoreCaseDataService {
+    private static final Logger logger = LoggerFactory.getLogger(MigrateCoreCaseDataService.class);
 
     private final CoreCaseDataApi coreCaseDataApi;
     private final AuthTokenGenerator authTokenGenerator;
@@ -46,6 +56,10 @@ public class MigrateCoreCaseDataService {
         this.caseMapper = caseMapper;
     }
 
+    @Retryable(value = {SocketTimeoutException.class, FeignException.class, IOException.class},
+        maxAttempts = 5,
+        backoff = @Backoff(delay = 400, maxDelay = 800)
+    )
     public void update(
         String authorisation,
         EventRequestData eventRequestData,
@@ -72,9 +86,27 @@ public class MigrateCoreCaseDataService {
         grantAccessToCase(caseDetails.getId(), claim);
     }
 
-    public void save(
-        String authorisation, EventRequestData eventRequestData, Claim claim
+    @Recover
+    public void recoverUpdateFailure(
+        SocketTimeoutException exception,
+        String authorisation,
+        EventRequestData eventRequestData,
+        Long ccdId,
+        Claim claim
     ) {
+        String errorMessage = String.format(
+            "Failure: failed update for reference number ( %s for event %s) due to %s",
+            claim.getReferenceNumber(), eventRequestData.getEventId(), exception.getMessage()
+        );
+
+        logger.info(errorMessage, exception);
+    }
+
+    @Retryable(value = {SocketTimeoutException.class, FeignException.class, IOException.class},
+        maxAttempts = 5,
+        backoff = @Backoff(delay = 400, maxDelay = 800)
+    )
+    public void save(String authorisation, EventRequestData eventRequestData, Claim claim) {
         CCDCase ccdCase = caseMapper.to(claim);
 
         StartEventResponse startEventResponse = start(authorisation, eventRequestData);
@@ -94,6 +126,21 @@ public class MigrateCoreCaseDataService {
         CaseDetails caseDetails = submit(authorisation, eventRequestData, caseDataContent);
 
         grantAccessToCase(caseDetails.getId(), claim);
+    }
+
+    @Recover
+    public void recoverSaveFailure(
+        SocketTimeoutException exception,
+        String authorisation,
+        EventRequestData eventRequestData,
+        Claim claim
+    ) {
+        String errorMessage = String.format(
+            "Failure: failed save for reference number ( %s for event %s) due to %s",
+            claim.getReferenceNumber(), eventRequestData.getEventId(), exception.getMessage()
+        );
+
+        logger.info(errorMessage, exception);
     }
 
     private void grantAccessToCase(Long ccdId, Claim claim) {
