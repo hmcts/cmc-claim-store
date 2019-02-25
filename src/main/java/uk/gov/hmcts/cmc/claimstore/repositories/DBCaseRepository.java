@@ -63,6 +63,7 @@ public class DBCaseRepository implements CaseRepository {
     public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
         getClaimByExternalId(externalId, authorisation)
             .ifPresent(claim -> {
+
                 throw new ConflictException("Duplicate claim for external id " + claim.getExternalId());
             });
 
