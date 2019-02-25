@@ -176,6 +176,7 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
                 .amountPaid(BigDecimal.TEN)
                 .freeMediation(YesNoOption.YES)
                 .mediationPhoneNumber("07999999999")
+                .mediationContactPerson("Mediation Contact Person")
                 .reason("Some valid reason")
                 .build();
         }

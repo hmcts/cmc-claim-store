@@ -38,6 +38,7 @@ public class FullDefenceResponse extends Response {
     public FullDefenceResponse(
         YesNoOption freeMediation,
         String mediationPhoneNumber,
+        String mediationContactPerson,
         YesNoOption moreTimeNeeded,
         Party defendant,
         StatementOfTruth statementOfTruth,
@@ -47,7 +48,7 @@ public class FullDefenceResponse extends Response {
         DefendantTimeline timeline,
         DefendantEvidence evidence
     ) {
-        super(FULL_DEFENCE, freeMediation, mediationPhoneNumber, moreTimeNeeded, defendant, statementOfTruth);
+        super(FULL_DEFENCE, freeMediation, mediationPhoneNumber, mediationContactPerson, moreTimeNeeded, defendant, statementOfTruth);
         this.defenceType = defenceType;
         this.defence = defence;
         this.paymentDeclaration = paymentDeclaration;
