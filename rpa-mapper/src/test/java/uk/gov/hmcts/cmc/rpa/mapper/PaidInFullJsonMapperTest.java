@@ -47,4 +47,4 @@ public class PaidInFullJsonMapperTest {
             .build().toString();
     }
 }
-    x
+
