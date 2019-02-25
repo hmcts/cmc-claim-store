@@ -7,7 +7,7 @@ import java.time.LocalDate;
 
 @Value
 @Builder
-public class CCDClaimant {
+public class CCDApplicant {
     private CCDPartyType partyType;
     private String partyEmail;
     private String partyName;

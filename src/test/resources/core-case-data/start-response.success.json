@@ -36,7 +36,7 @@
           }
         }
       ],
-      "claimants": [
+      "applicants": [
         {
           "id": "0da037e8-701c-405d-8d92-222b233d6026",
           "value": {
@@ -55,7 +55,7 @@
         }
       ],
       "amountType": "BREAK_DOWN",
-      "defendants": [
+      "respondents": [
         {
           "id": "440ebab7-f812-4f89-9be1-9f67b80f8179",
           "value": {

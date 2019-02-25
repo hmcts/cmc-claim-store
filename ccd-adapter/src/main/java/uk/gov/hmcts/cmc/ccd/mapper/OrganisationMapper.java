@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
+import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.domain.models.party.Organisation;
 
@@ -18,7 +18,7 @@ public class OrganisationMapper {
         this.representativeMapper = representativeMapper;
     }
 
-    public void to(Organisation organisation, CCDClaimant.CCDClaimantBuilder builder) {
+    public void to(Organisation organisation, CCDApplicant.CCDApplicantBuilder builder) {
 
         organisation.getCorrespondenceAddress()
             .ifPresent(address -> builder.partyCorrespondenceAddress(addressMapper.to(address)));
@@ -33,8 +33,8 @@ public class OrganisationMapper {
 
     }
 
-    public Organisation from(CCDCollectionElement<CCDClaimant> organisation) {
-        CCDClaimant value = organisation.getValue();
+    public Organisation from(CCDCollectionElement<CCDApplicant> organisation) {
+        CCDApplicant value = organisation.getValue();
         return Organisation.builder()
             .id(organisation.getId())
             .name(value.getPartyName())

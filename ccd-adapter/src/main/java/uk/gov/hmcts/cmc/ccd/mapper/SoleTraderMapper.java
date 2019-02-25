@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
+import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 
@@ -18,7 +18,7 @@ public class SoleTraderMapper {
         this.representativeMapper = representativeMapper;
     }
 
-    public void to(SoleTrader soleTrader, CCDClaimant.CCDClaimantBuilder builder) {
+    public void to(SoleTrader soleTrader, CCDApplicant.CCDApplicantBuilder builder) {
 
         soleTrader.getTitle().ifPresent(builder::partyTitle);
         soleTrader.getMobilePhone().ifPresent(builder::partyPhone);
@@ -33,8 +33,8 @@ public class SoleTraderMapper {
 
     }
 
-    public SoleTrader from(CCDCollectionElement<CCDClaimant> soletrader) {
-        CCDClaimant value = soletrader.getValue();
+    public SoleTrader from(CCDCollectionElement<CCDApplicant> soletrader) {
+        CCDApplicant value = soletrader.getValue();
         return SoleTrader.builder()
             .id(soletrader.getId())
             .name(value.getPartyName())

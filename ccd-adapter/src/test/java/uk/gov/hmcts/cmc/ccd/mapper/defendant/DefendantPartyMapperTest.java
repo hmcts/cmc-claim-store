@@ -8,7 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.DefendantPartyAssert;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 
@@ -36,7 +36,7 @@ public class DefendantPartyMapperTest {
 
     @Test(expected = NullPointerException.class)
     public void mapToShouldThrowExceptionWhenPartyIsNull() {
-        mapper.to(CCDDefendant.builder(), null);
+        mapper.to(CCDRespondent.builder(), null);
     }
 
     @Test
@@ -45,7 +45,7 @@ public class DefendantPartyMapperTest {
         Party party = SampleParty.builder().individual();
 
         //when
-        CCDDefendant.CCDDefendantBuilder builder = CCDDefendant.builder();
+        CCDRespondent.CCDRespondentBuilder builder = CCDRespondent.builder();
         mapper.to(builder, party);
 
         //then
@@ -58,7 +58,7 @@ public class DefendantPartyMapperTest {
         Party party = SampleParty.builder().company();
 
         //when
-        CCDDefendant.CCDDefendantBuilder builder = CCDDefendant.builder();
+        CCDRespondent.CCDRespondentBuilder builder = CCDRespondent.builder();
         mapper.to(builder, party);
 
         //then
@@ -70,7 +70,7 @@ public class DefendantPartyMapperTest {
         //given
         Party party = SampleParty.builder().organisation();
 
-        CCDDefendant.CCDDefendantBuilder builder = CCDDefendant.builder();
+        CCDRespondent.CCDRespondentBuilder builder = CCDRespondent.builder();
         mapper.to(builder, party);
 
         //then
@@ -82,7 +82,7 @@ public class DefendantPartyMapperTest {
         //given
         Party party = SampleParty.builder().soleTrader();
 
-        CCDDefendant.CCDDefendantBuilder builder = CCDDefendant.builder();
+        CCDRespondent.CCDRespondentBuilder builder = CCDRespondent.builder();
         mapper.to(builder, party);
 
         //then
@@ -92,48 +92,48 @@ public class DefendantPartyMapperTest {
     @Test
     public void shouldMapIndividualFromCCD() {
         //given
-        CCDDefendant ccdDefendant = withPartyIndividual().build();
+        CCDRespondent ccdRespondent = withPartyIndividual().build();
 
         //when
-        Party party = mapper.from(ccdDefendant);
+        Party party = mapper.from(ccdRespondent);
 
         //then
-        assertThat(party).isEqualTo(ccdDefendant);
+        assertThat(party).isEqualTo(ccdRespondent);
     }
 
     @Test
     public void shouldMapCompanyFromCCD() {
         //given
-        CCDDefendant ccdDefendant = withPartyCompany().build();
+        CCDRespondent ccdRespondent = withPartyCompany().build();
 
         //when
-        Party party = mapper.from(ccdDefendant);
+        Party party = mapper.from(ccdRespondent);
 
         //then
-        assertThat(party).isEqualTo(ccdDefendant);
+        assertThat(party).isEqualTo(ccdRespondent);
     }
 
     @Test
     public void shouldMapSoleTraderFromCCD() {
         //given
-        CCDDefendant ccdDefendant = withPartySoleTrader().build();
+        CCDRespondent ccdRespondent = withPartySoleTrader().build();
 
         //when
-        Party party = mapper.from(ccdDefendant);
+        Party party = mapper.from(ccdRespondent);
 
         //then
-        assertThat(party).isEqualTo(ccdDefendant);
+        assertThat(party).isEqualTo(ccdRespondent);
     }
 
     @Test
     public void shouldMapOrganisationFromCCD() {
         //given
-        CCDDefendant ccdDefendant = withPartyOrganisation().build();
+        CCDRespondent ccdRespondent = withPartyOrganisation().build();
 
         //when
-        Party party = mapper.from(ccdDefendant);
+        Party party = mapper.from(ccdRespondent);
 
         //then
-        assertThat(party).isEqualTo(ccdDefendant);
+        assertThat(party).isEqualTo(ccdRespondent);
     }
 }

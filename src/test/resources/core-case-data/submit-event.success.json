@@ -28,7 +28,7 @@
     "interest": {
       "type": "NO_INTEREST"
     },
-    "claimants": [{
+    "applicants": [{
       "id": "ebad17dd-726b-4ad3-93af-e024bf9fc893",
       "value": {
         "type": "INDIVIDUAL",
@@ -44,7 +44,7 @@
         }
       }
     }],
-    "defendants": [{
+    "respondents": [{
       "id": "8b27ff99-1ddc-4076-972f-8cd75644c6a8",
       "value": {
         "type": "INDIVIDUAL",

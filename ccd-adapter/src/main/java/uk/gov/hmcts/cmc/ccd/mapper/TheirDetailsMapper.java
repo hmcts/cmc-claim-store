@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.domain.models.otherparty.CompanyDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
@@ -34,7 +34,7 @@ public class TheirDetailsMapper {
         this.soleTraderDetailsMapper = soleTraderDetailsMapper;
     }
 
-    public void to(CCDDefendant.CCDDefendantBuilder builder, TheirDetails theirDetails) {
+    public void to(CCDRespondent.CCDRespondentBuilder builder, TheirDetails theirDetails) {
 
         if (theirDetails instanceof IndividualDetails) {
             builder.claimantProvidedType(CCDPartyType.INDIVIDUAL);
@@ -55,19 +55,19 @@ public class TheirDetailsMapper {
         }
     }
 
-    public TheirDetails from(CCDCollectionElement<CCDDefendant> ccdDefendant) {
-        switch (ccdDefendant.getValue().getClaimantProvidedType()) {
+    public TheirDetails from(CCDCollectionElement<CCDRespondent> ccdRespondent) {
+        switch (ccdRespondent.getValue().getClaimantProvidedType()) {
             case COMPANY:
-                return companyDetailsMapper.from(ccdDefendant);
+                return companyDetailsMapper.from(ccdRespondent);
             case INDIVIDUAL:
-                return individualDetailsMapper.from(ccdDefendant);
+                return individualDetailsMapper.from(ccdRespondent);
             case SOLE_TRADER:
-                return soleTraderDetailsMapper.from(ccdDefendant);
+                return soleTraderDetailsMapper.from(ccdRespondent);
             case ORGANISATION:
-                return organisationDetailsMapper.from(ccdDefendant);
+                return organisationDetailsMapper.from(ccdRespondent);
             default:
                 throw new MappingException("Invalid defendant type, "
-                    + ccdDefendant.getValue().getClaimantProvidedType());
+                    + ccdRespondent.getValue().getClaimantProvidedType());
         }
     }
 }
