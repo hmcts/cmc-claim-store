@@ -1,7 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -9,8 +11,11 @@ import uk.gov.hmcts.cmc.claimstore.controllers.support.SupportController;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedStaffNotificationHandler;
+import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseCitizenNotificationsHandler;
+import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedStaffNotificationHandler;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -59,6 +64,11 @@ public class SupportControllerTest {
     @Mock
     private AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler;
 
+    @Mock
+    private DefendantResponseCitizenNotificationsHandler defendantResponseCitizenNotificationsHandler;
+    @Rule
+    public ExpectedException exceptionRule = ExpectedException.none();
+
     private SupportController controller;
 
     private Claim sampleClaim;
@@ -67,7 +77,8 @@ public class SupportControllerTest {
     public void setUp() {
         controller = new SupportController(claimService, userService, documentGenerator,
             moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
-            ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler
+            ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
+            defendantResponseCitizenNotificationsHandler
         );
         sampleClaim = SampleClaim.getDefault();
     }
@@ -108,6 +119,23 @@ public class SupportControllerTest {
 
         // then
         verify(documentGenerator).generateForCitizenRPA(any());
+
+    }
+
+    @Test
+    public void shouldTriggerUploadDocumentWhenDefendantResponseSubmittedInvoked() {
+        when(claimService.getClaimByReferenceAnonymous(eq("000CM001"))).thenReturn(Optional.of(sampleClaim));
+        controller.resendStaffNotifications("000CM001", "response-submitted", AUTHORISATION);
+        verify(defendantResponseCitizenNotificationsHandler).uploadDocument(any(DefendantResponseEvent.class));
+    }
+
+    @Test
+    public void shouldThrowExceptionIfDefendantResponseSubmittedWhenNoDefendantResponse() {
+        exceptionRule.expect(ConflictException.class);
+        exceptionRule.expectMessage("Claim 000CM001 does not have associated response");
+        when(claimService.getClaimByReferenceAnonymous(eq("000CM001")))
+            .thenReturn(Optional.of(SampleClaim.withNoResponse()));
+        controller.resendStaffNotifications("000CM001", "response-submitted", AUTHORISATION);
 
     }
 

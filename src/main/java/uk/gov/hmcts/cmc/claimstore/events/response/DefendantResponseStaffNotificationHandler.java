@@ -24,7 +24,7 @@ public class DefendantResponseStaffNotificationHandler {
         Claim claim = event.getClaim();
         defendantResponseStaffNotificationService.notifyStaffDefenceSubmittedFor(
             claim,
-            event.getUserEmail()
+            claim.getDefendantEmail()
         );
     }
 }
