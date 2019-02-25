@@ -50,7 +50,7 @@ public class CoreCaseDataService {
     public static final String JURISDICTION_ID = "CMC";
     public static final String CASE_TYPE_ID = "MoneyClaimCase";
 
-    private static final Logger logger = LoggerFactory.getLogger(MigrateCoreCaseDataService.class);
+    private static final Logger logger = LoggerFactory.getLogger(CoreCaseDataService.class);
 
     private final CoreCaseDataApi coreCaseDataApi;
     private final AuthTokenGenerator authTokenGenerator;
@@ -114,7 +114,8 @@ public class CoreCaseDataService {
     }
 
     @Retryable(value = {SocketTimeoutException.class, FeignException.class, IOException.class},
-        backoff = @Backoff(delay = 200, maxDelay = 500)
+        maxAttempts = 5,
+        backoff = @Backoff(delay = 400, maxDelay = 800)
     )
     @LogExecutionTime
     public Optional<CaseDetails> getCcdIdByReferenceNumber(User user, String referenceNumber) {
