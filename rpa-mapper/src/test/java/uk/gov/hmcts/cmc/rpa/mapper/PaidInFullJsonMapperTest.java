@@ -43,7 +43,8 @@ public class PaidInFullJsonMapperTest {
         return new NullAwareJsonObjectBuilder()
             .add("caseNumber", REFERENCE_NUMBER)
             .add("paidInFullSubmittedOn", DateFormatter.format(LocalDateTime.now()))
-            .add("defendantPaidOn", "25-Feb-2019")
+            .add("claimantPaidOn", "25-Feb-2019")
             .build().toString();
     }
 }
+    x
