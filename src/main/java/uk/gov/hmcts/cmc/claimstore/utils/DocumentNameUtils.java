@@ -47,6 +47,11 @@ public class DocumentNameUtils {
         return format("%s-json-more-time-requested", number);
     }
 
+    public static String buildJsonPaidInFullFileBaseName(String number) {
+        requireNonBlank(number);
+
+        return format("%s-json-paid-in-full", number);
+    }
     public static String buildResponseFileBaseName(String caseRef) {
         requireNonBlank(caseRef);
 

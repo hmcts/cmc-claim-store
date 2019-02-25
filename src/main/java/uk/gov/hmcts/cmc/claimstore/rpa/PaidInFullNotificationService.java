@@ -46,16 +46,16 @@ public class PaidInFullNotificationService {
     }
 
     private EmailData prepareEmailData(Claim claim) {
-        return new EmailData(emailProperties.getMoreTimeRequestedRecipient(),
+        return new EmailData(emailProperties.getPaidInFullRecipient(),
             "J paid in full " + claim.getReferenceNumber(),
             "",
-            Collections.singletonList(createMoreTimeRequestedAttachment(claim))
+            Collections.singletonList(createPaidInFullAttachment(claim))
         );
     }
 
-    private EmailAttachment createMoreTimeRequestedAttachment(Claim claim) {
+    private EmailAttachment createPaidInFullAttachment(Claim claim) {
         return EmailAttachment.json(jsonMapper.map(claim).toString().getBytes(),
-            DocumentNameUtils.buildJsonMoreTimeRequestedFileBaseName(claim.getReferenceNumber()) + JSON_EXTENSION);
+            DocumentNameUtils.buildJsonPaidInFullFileBaseName(claim.getReferenceNumber()) + JSON_EXTENSION);
     }
 
 }
