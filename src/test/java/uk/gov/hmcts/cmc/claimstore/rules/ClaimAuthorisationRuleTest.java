@@ -82,10 +82,11 @@ public class ClaimAuthorisationRuleTest {
     }
 
     @Test
-    public void shouldNotThrowErectionWhenCaseworkerAccessesClaim() {
+    public void shouldNotThrowExceptionWhenCaseworkerAccessesClaim() {
         UserDetails details = SampleUserDetails.builder().withRoles("caseworker-cmc").build();
         when(userService.getUserDetails("2")).thenReturn(details);
-        claimAuthorisationRule.assertSubmitterIdMatchesAuthorisation(FAILING_USER_ID, "2");
+        assertThatCode(() -> claimAuthorisationRule.assertSubmitterIdMatchesAuthorisation(FAILING_USER_ID, "2"))
+            .doesNotThrowAnyException();
     }
 
 }
