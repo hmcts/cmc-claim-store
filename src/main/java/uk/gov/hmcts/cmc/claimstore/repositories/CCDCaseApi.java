@@ -25,13 +25,14 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.UserId;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
 
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
@@ -107,9 +108,7 @@ public class CCDCaseApi {
         User user = userService.getUser(authorisation);
         List<Claim> allCases = getAllCasesBy(user, ImmutableMap.of());
 
-        return allCases.isEmpty()
-            ? Collections.emptyList()
-            : allCases.stream()
+        return asStream(allCases)
             .filter(claim -> id.equals(claim.getDefendantId()))
             .collect(Collectors.toList());
     }
@@ -123,9 +122,7 @@ public class CCDCaseApi {
         User user = userService.getUser(authorisation);
         List<Claim> allCases = getAllCasesBy(user, ImmutableMap.of());
 
-        return allCases.isEmpty()
-            ? Collections.emptyList()
-            : allCases.stream()
+        return asStream(allCases)
             .filter(claim -> defendantEmail.equals(claim.getDefendantEmail()))
             .collect(Collectors.toList());
     }
