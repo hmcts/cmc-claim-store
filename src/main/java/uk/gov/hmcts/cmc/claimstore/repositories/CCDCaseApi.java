@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.UserId;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,9 +104,14 @@ public class CCDCaseApi {
     }
 
     public List<Claim> getByDefendantId(String id, String authorisation) {
-        LOGGER.debug("ccd search is by authorisation instead of defendant id {}", id);
         User user = userService.getUser(authorisation);
-        return getAllCasesBy(user, ImmutableMap.of());
+        List<Claim> allCases = getAllCasesBy(user, ImmutableMap.of());
+
+        return allCases.isEmpty()
+            ? Collections.emptyList()
+            : allCases.stream()
+            .filter(claim -> id.equals(claim.getDefendantId()))
+            .collect(Collectors.toList());
     }
 
     public List<Claim> getBySubmitterEmail(String submitterEmail, String authorisation) {
@@ -114,9 +120,14 @@ public class CCDCaseApi {
     }
 
     public List<Claim> getByDefendantEmail(String defendantEmail, String authorisation) {
-        LOGGER.debug("ccd search is by authorisation instead of defendant email {}", defendantEmail);
         User user = userService.getUser(authorisation);
-        return getAllCasesBy(user, ImmutableMap.of());
+        List<Claim> allCases = getAllCasesBy(user, ImmutableMap.of());
+
+        return allCases.isEmpty()
+            ? Collections.emptyList()
+            : allCases.stream()
+            .filter(claim -> defendantEmail.equals(claim.getDefendantEmail()))
+            .collect(Collectors.toList());
     }
 
     public List<Claim> getByPaymentReference(String payReference, String authorisation) {
