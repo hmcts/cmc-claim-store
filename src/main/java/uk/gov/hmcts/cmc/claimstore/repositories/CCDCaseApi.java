@@ -106,9 +106,8 @@ public class CCDCaseApi {
 
     public List<Claim> getByDefendantId(String id, String authorisation) {
         User user = userService.getUser(authorisation);
-        List<Claim> allCases = getAllCasesBy(user, ImmutableMap.of());
 
-        return asStream(allCases)
+        return asStream(getAllCasesBy(user, ImmutableMap.of()))
             .filter(claim -> id.equals(claim.getDefendantId()))
             .collect(Collectors.toList());
     }
@@ -120,9 +119,8 @@ public class CCDCaseApi {
 
     public List<Claim> getByDefendantEmail(String defendantEmail, String authorisation) {
         User user = userService.getUser(authorisation);
-        List<Claim> allCases = getAllCasesBy(user, ImmutableMap.of());
 
-        return asStream(allCases)
+        return asStream(getAllCasesBy(user, ImmutableMap.of()))
             .filter(claim -> defendantEmail.equals(claim.getDefendantEmail()))
             .collect(Collectors.toList());
     }
