@@ -37,6 +37,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails.getDefault;
+import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.RESPONSE_DEADLINE;
 
 @TestPropertySource(
     properties = {
@@ -156,7 +157,7 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
         given(userService.getUser(DEFENDANT_BEARER_TOKEN)).willReturn(new User(DEFENDANT_BEARER_TOKEN, userDetails));
         given(userService.getUserDetails(DEFENDANT_BEARER_TOKEN)).willReturn(userDetails);
 
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", RESPONSE_DEADLINE.plusDays(20));
         caseRepository.linkDefendant(DEFENDANT_BEARER_TOKEN);
 
         makeRequestForMoreTimeToRespond(claim.getExternalId(), claim)
