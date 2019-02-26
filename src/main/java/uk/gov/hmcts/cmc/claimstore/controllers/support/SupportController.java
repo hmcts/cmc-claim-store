@@ -52,6 +52,7 @@ public class SupportController {
     private final AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler;
     private final DefendantResponseCitizenNotificationsHandler defendantResponseCitizenNotificationsHandler;
 
+    @SuppressWarnings("squid:S00107")
     @Autowired
     public SupportController(
         ClaimService claimService,
