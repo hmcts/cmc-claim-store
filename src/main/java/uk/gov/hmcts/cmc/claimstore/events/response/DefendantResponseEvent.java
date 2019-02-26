@@ -5,8 +5,8 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 
 @Value
 public class DefendantResponseEvent {
-    Claim claim;
-    String authorization;
+    private final Claim claim;
+    private final String authorization;
 
     public DefendantResponseEvent(Claim claim, String authorization) {
         this.claim = claim;

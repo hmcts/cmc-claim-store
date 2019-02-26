@@ -10,9 +10,9 @@ import static com.google.common.collect.Lists.newArrayList;
 
 @Value
 public class DocumentUploadEvent {
-    Claim claim;
-    String authorization;
-    List<PDF> documents;
+    private final Claim claim;
+    private final String authorization;
+    private final List<PDF> documents;
 
     public DocumentUploadEvent(Claim claim, String authorization, PDF... documents) {
         this.claim = claim;
