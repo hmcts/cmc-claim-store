@@ -44,7 +44,7 @@ public class SettlementAgreementNotificationService {
     }
 
     public void notifyDefendant(Claim claim) {
-        HashMap<String, String> parameters = new HashMap<>();
+        Map<String, String> parameters = new HashMap<>();
         parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
@@ -94,8 +94,8 @@ public class SettlementAgreementNotificationService {
         String reference
     ) {
         String errorMessage = String.format(
-            "Failure: failed to send notification ( %s to %s ) due to %s",
-            reference, targetEmail, exception.getMessage()
+            "Failure: failed to send notification (%s) due to %s",
+            reference, exception.getMessage()
         );
 
         logger.warn(errorMessage, exception);
