@@ -29,7 +29,7 @@ public class TheirDetailsAssert extends AbstractAssert<TheirDetailsAssert, Their
 
         if (actual instanceof IndividualDetails) {
             if (!Objects.equals(INDIVIDUAL, ccdParty.getClaimantProvidedType())) {
-                failWithMessage("Expected CCDDefendant.claimantProvidedType to be <%s> but was <%s>",
+                failWithMessage("Expected CCDRespondent.claimantProvidedType to be <%s> but was <%s>",
                     ccdParty.getClaimantProvidedType(), INDIVIDUAL);
             }
 
@@ -38,7 +38,7 @@ public class TheirDetailsAssert extends AbstractAssert<TheirDetailsAssert, Their
 
         if (actual instanceof OrganisationDetails) {
             if (!Objects.equals(ORGANISATION, ccdParty.getClaimantProvidedType())) {
-                failWithMessage("Expected CCDDefendant.claimantProvidedType to be <%s> but was <%s>",
+                failWithMessage("Expected CCDRespondent.claimantProvidedType to be <%s> but was <%s>",
                     ccdParty.getClaimantProvidedType(), ORGANISATION);
             }
 
@@ -47,7 +47,7 @@ public class TheirDetailsAssert extends AbstractAssert<TheirDetailsAssert, Their
 
         if (actual instanceof CompanyDetails) {
             if (!Objects.equals(COMPANY, ccdParty.getClaimantProvidedType())) {
-                failWithMessage("Expected CCDDefendant.claimantProvidedType to be <%s> but was <%s>",
+                failWithMessage("Expected CCDRespondent.claimantProvidedType to be <%s> but was <%s>",
                     ccdParty.getClaimantProvidedType(), COMPANY);
             }
 
@@ -56,7 +56,7 @@ public class TheirDetailsAssert extends AbstractAssert<TheirDetailsAssert, Their
 
         if (actual instanceof SoleTraderDetails) {
             if (!Objects.equals(SOLE_TRADER, ccdParty.getClaimantProvidedType())) {
-                failWithMessage("Expected CCDDefendant.claimantProvidedType to be <%s> but was <%s>",
+                failWithMessage("Expected CCDRespondent.claimantProvidedType to be <%s> but was <%s>",
                     ccdParty.getClaimantProvidedType(), SOLE_TRADER);
             }
 
@@ -73,19 +73,19 @@ public class TheirDetailsAssert extends AbstractAssert<TheirDetailsAssert, Their
         actual.getTitle().ifPresent(title -> assertThat(ccdParty.getClaimantProvidedTitle()).isEqualTo(title));
 
         if (!Objects.equals(actual.getName(), ccdParty.getClaimantProvidedName())) {
-            failWithMessage("Expected CCDDefendant.claimantProvidedName to be <%s> but was <%s>",
+            failWithMessage("Expected CCDRespondent.claimantProvidedName to be <%s> but was <%s>",
                 ccdParty.getClaimantProvidedName(), this.actual.getName());
         }
 
         if (!Objects.equals(actual.getEmail().orElse(null), ccdParty.getClaimantProvidedEmail())) {
-            failWithMessage("Expected CCDDefendant.claimantProvidedEmail to be <%s> but was <%s>",
+            failWithMessage("Expected CCDRespondent.claimantProvidedEmail to be <%s> but was <%s>",
                 ccdParty.getClaimantProvidedEmail(), this.actual.getEmail().orElse(null));
         }
 
         if (!Objects.equals(actual.getBusinessName().orElse(null),
             ccdParty.getClaimantProvidedBusinessName())
         ) {
-            failWithMessage("Expected CCDDefendant.claimantProvideBusinessName to be <%s> but was <%s>",
+            failWithMessage("Expected CCDRespondent.claimantProvideBusinessName to be <%s> but was <%s>",
                 ccdParty.getClaimantProvidedBusinessName(), actual.getBusinessName().orElse(null));
         }
 
@@ -102,19 +102,19 @@ public class TheirDetailsAssert extends AbstractAssert<TheirDetailsAssert, Their
 
         assertThat(actual.getAddress()).isEqualTo(ccdParty.getClaimantProvidedAddress());
         if (!Objects.equals(actual.getName(), ccdParty.getClaimantProvidedName())) {
-            failWithMessage("Expected CCDDefendant.claimantProvidedName to be <%s> but was <%s>",
+            failWithMessage("Expected CCDRespondent.claimantProvidedName to be <%s> but was <%s>",
                 ccdParty.getClaimantProvidedName(), this.actual.getName());
         }
 
         if (!Objects.equals(actual.getEmail().orElse(null), ccdParty.getClaimantProvidedEmail())) {
-            failWithMessage("Expected CCDDefendant.claimantProvidedEmail to be <%s> but was <%s>",
+            failWithMessage("Expected CCDRespondent.claimantProvidedEmail to be <%s> but was <%s>",
                 ccdParty.getClaimantProvidedEmail(), actual.getEmail().orElse(null));
         }
 
         if (!Objects.equals(actual.getContactPerson().orElse(null),
             ccdParty.getClaimantProvidedContactPerson())
         ) {
-            failWithMessage("Expected CCDDefendant.claimantProvidedContactPerson to be <%s> but was <%s>",
+            failWithMessage("Expected CCDRespondent.claimantProvidedContactPerson to be <%s> but was <%s>",
                 ccdParty.getClaimantProvidedContactPerson(), actual.getContactPerson().orElse(null));
         }
 
@@ -131,18 +131,18 @@ public class TheirDetailsAssert extends AbstractAssert<TheirDetailsAssert, Their
 
         assertThat(actual.getAddress()).isEqualTo(ccdParty.getClaimantProvidedAddress());
         if (!Objects.equals(actual.getName(), ccdParty.getClaimantProvidedName())) {
-            failWithMessage("Expected CCDDefendant.claimantProvidedName to be <%s> but was <%s>",
+            failWithMessage("Expected CCDRespondent.claimantProvidedName to be <%s> but was <%s>",
                 ccdParty.getClaimantProvidedName(), this.actual.getName());
         }
 
         if (!Objects.equals(actual.getEmail().orElse(null), ccdParty.getClaimantProvidedEmail())) {
-            failWithMessage("Expected CCDDefendant.claimantProvidedEmail to be <%s> but was <%s>",
+            failWithMessage("Expected CCDRespondent.claimantProvidedEmail to be <%s> but was <%s>",
                 ccdParty.getClaimantProvidedEmail(), actual.getEmail().orElse(null));
         }
 
         String contactPerson = actual.getContactPerson().orElse(null);
         if (!Objects.equals(contactPerson, ccdParty.getClaimantProvidedContactPerson())) {
-            failWithMessage("Expected CCDDefendant.claimantProvidedContactPerson to be <%s> but was <%s>",
+            failWithMessage("Expected CCDRespondent.claimantProvidedContactPerson to be <%s> but was <%s>",
                 ccdParty.getClaimantProvidedContactPerson(), contactPerson);
         }
 
@@ -150,7 +150,7 @@ public class TheirDetailsAssert extends AbstractAssert<TheirDetailsAssert, Their
 
         if (!Objects.equals(companyHouseNumber, ccdParty.getClaimantProvidedCompaniesHouseNumber())) {
             failWithMessage(
-                "Expected CCDDefendant.claimantProvidedCompaniesHouseNumber to be <%s> but was <%s>",
+                "Expected CCDRespondent.claimantProvidedCompaniesHouseNumber to be <%s> but was <%s>",
                 ccdParty.getClaimantProvidedCompaniesHouseNumber(), companyHouseNumber);
         }
 
@@ -167,12 +167,12 @@ public class TheirDetailsAssert extends AbstractAssert<TheirDetailsAssert, Their
 
         assertThat(actual.getAddress()).isEqualTo(ccdParty.getClaimantProvidedAddress());
         if (!Objects.equals(actual.getName(), ccdParty.getClaimantProvidedName())) {
-            failWithMessage("Expected CCDDefendant.claimantProvidedName to be <%s> but was <%s>",
+            failWithMessage("Expected CCDRespondent.claimantProvidedName to be <%s> but was <%s>",
                 ccdParty.getClaimantProvidedName(), actual.getName());
         }
 
         if (!Objects.equals(actual.getEmail().orElse(null), ccdParty.getClaimantProvidedEmail())) {
-            failWithMessage("Expected CCDDefendant.claimantProvidedEmail to be <%s> but was <%s>",
+            failWithMessage("Expected CCDRespondent.claimantProvidedEmail to be <%s> but was <%s>",
                 ccdParty.getClaimantProvidedEmail(), actual.getEmail().orElse(null));
         }
         actual.getDateOfBirth().ifPresent(dob -> assertThat(dob).isEqualTo(ccdParty.getClaimantProvidedDateOfBirth()));

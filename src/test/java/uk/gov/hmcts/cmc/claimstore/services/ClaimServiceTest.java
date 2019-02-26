@@ -10,12 +10,14 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeRequestedAfterDeadlineException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
+import uk.gov.hmcts.cmc.claimstore.rules.ClaimAuthorisationRule;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimDeadlineService;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.rules.PaidInFullRule;
@@ -24,6 +26,8 @@ import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
+import uk.gov.hmcts.cmc.domain.models.ReDetermination;
+import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
@@ -115,7 +119,8 @@ public class ClaimServiceTest {
             appInsights,
             ccdCaseDataToClaim,
             new PaidInFullRule(),
-            ccdEventProducer);
+            ccdEventProducer,
+            new ClaimAuthorisationRule(userService));
     }
 
     @Test
@@ -144,6 +149,8 @@ public class ClaimServiceTest {
         Optional<Claim> result = Optional.of(claim);
 
         when(caseRepository.getByLetterHolderId(eq(LETTER_HOLDER_ID), any())).thenReturn(result);
+        when(userService.getUserDetails(AUTHORISATION))
+            .thenReturn(SampleUserDetails.builder().withUserId(LETTER_HOLDER_ID).build());
 
         Claim claimApplication = claimService.getClaimByLetterHolderId(LETTER_HOLDER_ID, AUTHORISATION);
         assertThat(claimApplication).isEqualTo(claim);
@@ -345,6 +352,83 @@ public class ClaimServiceTest {
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(empty());
 
         claimService.paidInFull(EXTERNAL_ID, new PaidInFull(now()), AUTHORISATION);
+    }
+
+    @Test(expected = ForbiddenActionException.class)
+    public void getBySubmitterIdShouldThrowExceptionWhenCallerNotAuthorised() {
+        when(userService.getUserDetails(AUTHORISATION))
+            .thenReturn(SampleUserDetails.builder().withUserId("300").build());
+
+        claimService.getClaimBySubmitterId(USER_ID, AUTHORISATION);
+    }
+
+    @Test(expected = ForbiddenActionException.class)
+    public void getByLetterHolderIdShouldThrowExceptionWhenCallerNotAuthorised() {
+        when(caseRepository
+            .getByLetterHolderId(claim.getLetterHolderId(), AUTHORISATION))
+            .thenReturn(Optional.of(claim));
+        when(userService.getUserDetails(AUTHORISATION))
+            .thenReturn(SampleUserDetails.builder().withUserId("300").build());
+
+        claimService.getClaimByLetterHolderId(LETTER_HOLDER_ID, AUTHORISATION);
+    }
+
+    @Test(expected = ForbiddenActionException.class)
+    public void getByExternalIdShouldThrowExceptionWhenCallerNotAuthorised() {
+        when(caseRepository.getClaimByExternalId(claim.getExternalId(), AUTHORISATION))
+            .thenReturn(Optional.of(claim));
+        when(userService.getUserDetails(AUTHORISATION))
+            .thenReturn(SampleUserDetails.builder().withUserId("300").build());
+
+        claimService.getClaimByExternalId(claim.getExternalId(), AUTHORISATION);
+    }
+
+    @Test(expected = ForbiddenActionException.class)
+    public void getByReferenceShouldThrowExceptionWhenCallerNotAuthorised() {
+        when(caseRepository.getByClaimReferenceNumber(claim.getReferenceNumber(), AUTHORISATION))
+            .thenReturn(Optional.of(claim));
+
+        when(userService.getUserDetails(AUTHORISATION))
+            .thenReturn(SampleUserDetails.builder().withUserId("300").build());
+
+        claimService.getClaimByReference(claim.getReferenceNumber(), AUTHORISATION);
+    }
+
+    @Test(expected = ForbiddenActionException.class)
+    public void requestMoreTimeShouldThrowExceptionWhenCallerNotAuthorised() {
+        when(caseRepository.getClaimByExternalId(claim.getExternalId(), AUTHORISATION))
+            .thenReturn(Optional.of(claim));
+        when(userService.getUserDetails(AUTHORISATION))
+            .thenReturn(SampleUserDetails.builder().withUserId("300").build());
+
+        claimService.requestMoreTimeForResponse(claim.getExternalId(), AUTHORISATION);
+    }
+
+    @Test(expected = ForbiddenActionException.class)
+    public void getByDefendantIdShouldThrowExceptionWhenCallerNotAuthorised() {
+        when(userService.getUserDetails(AUTHORISATION))
+            .thenReturn(SampleUserDetails.builder().withUserId("300").build());
+
+        claimService.getClaimByDefendantId(USER_ID, AUTHORISATION);
+    }
+
+    @Test(expected = ForbiddenActionException.class)
+    public void paidInFullShouldThrowExceptionWhenCallerNotAuthorised() {
+        when(caseRepository.getClaimByExternalId(claim.getExternalId(), AUTHORISATION))
+            .thenReturn(Optional.of(claim));
+
+        when(userService.getUserDetails(AUTHORISATION))
+            .thenReturn(SampleUserDetails.builder().withUserId("300").build());
+
+        claimService.paidInFull(claim.getExternalId(), new PaidInFull(now()), AUTHORISATION);
+    }
+
+    @Test(expected = ForbiddenActionException.class)
+    public void saveReDeterminationshouldThrowExceptionWhenCallerNotAuthorised() {
+        when(userService.getUserDetails(AUTHORISATION))
+            .thenReturn(SampleUserDetails.builder().withUserId("300").build());
+
+        claimService.saveReDetermination(AUTHORISATION, claim, new ReDetermination("", MadeBy.CLAIMANT));
     }
 
     private static Claim createClaimModel(ClaimData claimData, String letterHolderId) {
