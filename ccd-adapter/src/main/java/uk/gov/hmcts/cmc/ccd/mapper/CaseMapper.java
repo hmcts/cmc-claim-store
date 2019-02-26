@@ -7,6 +7,8 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.Arrays;
 
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
+
 @Component
 public class CaseMapper {
 
@@ -19,7 +21,7 @@ public class CaseMapper {
     public CCDCase to(Claim claim) {
         final CCDCase.CCDCaseBuilder builder = CCDCase.builder();
 
-        claim.getSealedClaimDocument().ifPresent(document -> builder
+        claim.getClaimDocument(SEALED_CLAIM).ifPresent(document -> builder
             .sealedClaimDocument(CCDDocument.builder()
                 .documentUrl(document.toString())
                 .build())
