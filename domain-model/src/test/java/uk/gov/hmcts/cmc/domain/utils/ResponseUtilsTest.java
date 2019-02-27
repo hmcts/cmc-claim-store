@@ -139,4 +139,23 @@ public class ResponseUtilsTest {
         Response response = FullDefenceResponse.builder().build();
         assertThat(ResponseUtils.isAdmissionResponse(response)).isFalse();
     }
+
+    @Test
+    public void shouldReturnFalseWhenFullAdmissionResponseForIsPartAdmission() {
+        Response response = FullAdmissionResponse.builder().build();
+        assertThat(ResponseUtils.isPartAdmission(response)).isFalse();
+    }
+
+    @Test
+    public void shouldReturnTrueWhenPartAdmissionResponseForIsPartAdmission() {
+        Response response = PartAdmissionResponse.builder().build();
+        assertThat(ResponseUtils.isPartAdmission(response)).isTrue();
+    }
+
+    @Test
+    public void shouldReturnFalseWhenNonAdmissionResponseForIsPartAdmission() {
+        Response response = FullDefenceResponse.builder().build();
+        assertThat(ResponseUtils.isPartAdmission(response)).isFalse();
+    }
 }
+

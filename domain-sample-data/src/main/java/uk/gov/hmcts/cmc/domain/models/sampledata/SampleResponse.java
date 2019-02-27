@@ -159,6 +159,19 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .paymentDeclaration(SamplePaymentDeclaration.builder().build())
                 .build();
         }
+
+        public PartAdmissionResponse buildWithFreeMediation(YesNoOption yesNoOption) {
+            return PartAdmissionResponse.builder()
+                .defendant(SampleParty.builder().individual())
+                .moreTimeNeeded(YesNoOption.NO)
+                .freeMediation(yesNoOption)
+                .amount(BigDecimal.valueOf(120))
+                .paymentDeclaration(SamplePaymentDeclaration.builder().build())
+                .defence(USER_DEFENCE)
+                .timeline(SampleDefendantTimeline.validDefaults())
+                .evidence(SampleDefendantEvidence.validDefaults())
+                .build();
+        }
     }
 
     public static class FullDefence extends SampleResponse<FullDefence> {

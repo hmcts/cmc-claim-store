@@ -1,0 +1,9 @@
+{{ claimantName }} has rejected a partial admission.
+
+{% if defendantFreeMediation == 'YES' and claimantFreeMediation == 'YES' %}
+Both parties have agreed for a mediation.
+{% else %}
+Both parties rejected mediation, and have requested for Direction Questionnaires to proceed.
+{% endif %}
+
+This email has been sent from the HMCTS Civil Money Claims online court.

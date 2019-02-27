@@ -165,6 +165,14 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
                 .settleForAmount(NO)
                 .build();
         }
+
+        public ClaimantResponse buildRejectionAgreeFreeMeditaion() {
+            return ResponseRejection.builder()
+                .amountPaid(TEN)
+                .freeMediation(YES)
+                .reason("Some valid reason")
+                .build();
+        }
     }
 
     public abstract ClaimantResponse build();

@@ -59,4 +59,9 @@ public class ResponseUtils {
         ResponseType responseType = response.getResponseType();
         return responseType == ResponseType.FULL_ADMISSION || responseType == ResponseType.PART_ADMISSION;
     }
+
+    public static boolean isPartAdmission(Response response) {
+        ResponseType responseType = response.getResponseType();
+        return responseType == ResponseType.PART_ADMISSION;
+    }
 }
