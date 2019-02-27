@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import static java.util.Objects.requireNonNull;
 
 @Service
-public class ClaimIssueReceiptService {
+public class ClaimIssueReceiptService implements PdfService {
 
     private final DocumentTemplates documentTemplates;
     private final PDFServiceClient pdfServiceClient;

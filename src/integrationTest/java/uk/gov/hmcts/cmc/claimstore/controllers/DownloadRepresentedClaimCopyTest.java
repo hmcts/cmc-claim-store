@@ -3,12 +3,14 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 import org.junit.Test;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.cmc.claimstore.controllers.base.BaseDownloadDocumentTest;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.reform.pdf.service.client.exception.PDFServiceClientException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -30,6 +32,9 @@ public class DownloadRepresentedClaimCopyTest extends BaseDownloadDocumentTest {
             .willReturn(PDF_BYTES);
 
         Claim claim = claimStore.saveClaim(SampleClaimData.submittedByLegalRepresentative());
+
+        when(userService.getUserDetails(AUTHORISATION_TOKEN)).thenReturn(
+            SampleUserDetails.builder().withUserId(claim.getSubmitterId()).build());
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isOk())
