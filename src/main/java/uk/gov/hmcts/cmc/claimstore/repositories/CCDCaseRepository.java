@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
@@ -50,8 +49,13 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
+    /*
+     * This method is changed to throw the UnsupportedOperationException as on hold status is removed from
+     * CCD. Once we move live with CCD as master then the CaseRepository should remove this method in interface
+     * and with the implementation.
+     */
     public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
-        return ccdCaseApi.getOnHoldIdByExternalId(externalId, authorisation);
+        throw new UnsupportedOperationException("The CCD on-hold status is removed. This should not be used");
     }
 
     @Override
@@ -145,11 +149,7 @@ public class CCDCaseRepository implements CaseRepository {
 
     @Override
     public CaseReference savePrePaymentClaim(String externalId, String authorisation) {
-        try {
-            return new CaseReference(getOnHoldIdByExternalId(externalId, authorisation).toString());
-        } catch (NotFoundException e) {
-            return coreCaseDataService.savePrePayment(externalId, authorisation);
-        }
+        return new CaseReference(externalId);
     }
 
     @Override
