@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.idam.services.UserService;
+import uk.gov.hmcts.cmc.ccd.migration.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
@@ -82,8 +83,6 @@ public class MigrateCoreCaseDataService {
             .build();
 
         CaseDetails caseDetails = submitEvent(authorisation, eventRequestData, caseDataContent, ccdId);
-
-        grantAccessToCase(caseDetails.getId(), claim);
     }
 
     @Recover
@@ -154,7 +153,8 @@ public class MigrateCoreCaseDataService {
 
     }
 
-    private void grantAccess(
+    @LogExecutionTime
+    public void grantAccess(
         String caseId, String userId
     ) {
         User user = userService.authenticateAnonymousCaseWorker();
@@ -170,7 +170,8 @@ public class MigrateCoreCaseDataService {
         );
     }
 
-    private CaseDetails submit(
+    @LogExecutionTime
+    public CaseDetails submit(
         String authorisation, EventRequestData eventRequestData, CaseDataContent caseDataContent
     ) {
         return coreCaseDataApi.submitForCaseworker(
@@ -184,7 +185,8 @@ public class MigrateCoreCaseDataService {
         );
     }
 
-    private StartEventResponse start(String authorisation, EventRequestData eventRequestData) {
+    @LogExecutionTime
+    public StartEventResponse start(String authorisation, EventRequestData eventRequestData) {
         return this.coreCaseDataApi.startForCaseworker(
             authorisation,
             this.authTokenGenerator.generate(),
@@ -195,7 +197,8 @@ public class MigrateCoreCaseDataService {
         );
     }
 
-    private StartEventResponse startEvent(String authorisation, EventRequestData eventRequestData, Long caseId) {
+    @LogExecutionTime
+    public StartEventResponse startEvent(String authorisation, EventRequestData eventRequestData, Long caseId) {
 
         return this.coreCaseDataApi.startEventForCaseWorker(
             authorisation,
@@ -208,7 +211,8 @@ public class MigrateCoreCaseDataService {
         );
     }
 
-    private CaseDetails submitEvent(
+    @LogExecutionTime
+    public CaseDetails submitEvent(
         String authorisation,
         EventRequestData eventRequestData,
         CaseDataContent caseDataContent,
