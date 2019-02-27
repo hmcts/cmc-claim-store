@@ -10,6 +10,7 @@ import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
+import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -76,5 +77,17 @@ public class ResponseNeededNotificationServiceTest extends BaseNotificationServi
             eq(claim.getDefendantEmail()),
             anyMap(),
             eq(claim.getReferenceNumber()));
+    }
+
+    @Test
+    public void recoveryShouldNotLogPII() {
+        JobDetail mockJobDetail = mock(JobDetail.class);
+        when(mockJobDetail.getJobDataMap()).thenReturn(new JobDataMap(ImmutableMap.of("caseReference", "reference")));
+        responseNeededNotificationService.logNotificationFailure(
+            new NotificationException("expected exception"),
+            mockJobDetail
+        );
+
+        assertWasLogged("Response needed notification cannot be sent (reference) due to expected exception");
     }
 }
