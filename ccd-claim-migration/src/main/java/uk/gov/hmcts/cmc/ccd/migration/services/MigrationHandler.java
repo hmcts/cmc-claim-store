@@ -58,21 +58,14 @@ public class MigrationHandler {
         Claim claim,
         User user
     ) {
-
         try {
             delayMigrationWhenMigratedCaseLotsReachedAllowed(migratedClaims);
 
-            Optional<CaseDetails> caseDetails
-                = coreCaseDataService.getCcdIdByReferenceNumber(user, claim.getReferenceNumber());
-
-            if (!caseDetails.isPresent()) {
-                CaseDetails details = createCase(user, migratedClaims, failedMigrations, claim);
-                if (Optional.ofNullable(details).isPresent()) {
-                    updateCase(user, updatedClaims, failedMigrations, claim, details);
-                }
-            } else {
-                updateCase(user, updatedClaims, failedMigrations, claim, caseDetails.get());
+            CaseDetails details = createCase(user, migratedClaims, failedMigrations, claim);
+            if (Optional.ofNullable(details).isPresent()) {
+                updateCase(user, updatedClaims, failedMigrations, claim, details);
             }
+
         } catch (Exception e) {
             logger.info("failed migrating for claim for reference {} for the migrated count {} due to {}",
                 claim.getReferenceNumber(),
