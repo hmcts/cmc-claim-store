@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.party.Company;
@@ -33,22 +33,19 @@ public class ClaimantMapper {
 
     public CCDCollectionElement<CCDApplicant> to(Party party, Claim claim) {
         CCDApplicant.CCDApplicantBuilder builder = CCDApplicant.builder();
-        builder.partyEmail(claim.getSubmitterEmail());
+        CCDParty.CCDPartyBuilder partyDetail = CCDParty.builder();
+        partyDetail.emailAddress(claim.getSubmitterEmail());
 
         if (party instanceof Individual) {
-            builder.partyType(CCDPartyType.INDIVIDUAL);
             Individual individual = (Individual) party;
             individualMapper.to(individual, builder);
         } else if (party instanceof Company) {
-            builder.partyType(CCDPartyType.COMPANY);
             Company company = (Company) party;
             companyMapper.to(company, builder);
         } else if (party instanceof Organisation) {
-            builder.partyType(CCDPartyType.ORGANISATION);
             Organisation organisation = (Organisation) party;
             organisationMapper.to(organisation, builder);
         } else if (party instanceof SoleTrader) {
-            builder.partyType(CCDPartyType.SOLE_TRADER);
             SoleTrader soleTrader = (SoleTrader) party;
             soleTraderMapper.to(soleTrader, builder);
         }
@@ -59,7 +56,7 @@ public class ClaimantMapper {
     }
 
     public Party from(CCDCollectionElement<CCDApplicant> applicant) {
-        switch (applicant.getValue().getPartyType()) {
+        switch (applicant.getValue().getPartyDetail().getType()) {
             case COMPANY:
                 return companyMapper.from(applicant);
             case INDIVIDUAL:
@@ -69,7 +66,8 @@ public class ClaimantMapper {
             case ORGANISATION:
                 return organisationMapper.from(applicant);
             default:
-                throw new MappingException("Invalid applicant type, " + applicant.getValue().getPartyType());
+                throw new MappingException("Invalid applicant type, "
+                    + applicant.getValue().getPartyDetail().getType());
         }
     }
 }

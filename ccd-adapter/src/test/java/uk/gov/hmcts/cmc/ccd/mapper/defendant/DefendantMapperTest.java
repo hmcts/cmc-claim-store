@@ -82,13 +82,13 @@ public class DefendantMapperTest {
             respondent.getDefendantId(), claim.getDefendantId());
 
         assertEquals("Claim defendant email is not mapped properly",
-            respondent.getPartyEmail(), claim.getDefendantEmail());
+            respondent.getPartyDetail().getEmailAddress(), claim.getDefendantEmail());
 
         assertEquals("Claim response more time requested is not mapped properly",
             respondent.getResponseMoreTimeNeededOption().toBoolean(), claim.isMoreTimeRequested());
 
         assertEquals("The claimantProvidedType should be of organization",
-            ORGANISATION, respondent.getClaimantProvidedType());
+            ORGANISATION, respondent.getPartyDetail().getType());
     }
 
     @Test
@@ -111,7 +111,7 @@ public class DefendantMapperTest {
             respondent.getDefendantId(), claim.getDefendantId());
 
         assertEquals("Claim defendant email is not mapped properly",
-            respondent.getPartyEmail(), claim.getDefendantEmail());
+            respondent.getPartyDetail().getEmailAddress(), claim.getDefendantEmail());
 
         assertEquals("Claim response more time requested is not mapped properly",
             respondent.getResponseMoreTimeNeededOption().toBoolean(), claim.isMoreTimeRequested());
@@ -119,10 +119,11 @@ public class DefendantMapperTest {
         //Verify if the TheirDetails mapper and response mapper are called by assert not null
         assertThat(respondent.getResponseSubmittedOn(), is(notNullValue()));
         assertThat(respondent.getResponseType(), is(notNullValue()));
-        assertThat(respondent.getClaimantProvidedType(), is(notNullValue()));
+        assertThat(respondent.getApplicantProvidedDetails(), is(notNullValue()));
+        assertThat(respondent.getApplicantProvidedDetails().getType(), is(notNullValue()));
 
         assertEquals("The mapping for theirDetailsMapper is not done properly",
-            INDIVIDUAL, respondent.getClaimantProvidedType());
+            INDIVIDUAL, respondent.getPartyDetail().getType());
 
         assertEquals("The claim response submitted is not mapped properly when response is present",
             respondent.getResponseSubmittedOn(), claim.getRespondedAt());
@@ -152,7 +153,7 @@ public class DefendantMapperTest {
             finalClaim.getDefendantId(), ccdRespondent.getDefendantId());
 
         assertEquals("Claim defendant email is not mapped properly",
-            finalClaim.getDefendantEmail(), ccdRespondent.getPartyEmail());
+            finalClaim.getDefendantEmail(), ccdRespondent.getPartyDetail().getEmailAddress());
 
         assertEquals("Claim response more time requested is not mapped properly",
             finalClaim.isMoreTimeRequested(), ccdRespondent.getResponseMoreTimeNeededOption().toBoolean());
@@ -200,7 +201,7 @@ public class DefendantMapperTest {
             finalClaim.getDefendantId(), ccdRespondent.getDefendantId());
 
         assertEquals("Claim defendant email is not mapped properly",
-            finalClaim.getDefendantEmail(), ccdRespondent.getPartyEmail());
+            finalClaim.getDefendantEmail(), ccdRespondent.getPartyDetail().getEmailAddress());
 
         assertEquals("Claim response more time requested is not mapped properly",
             finalClaim.isMoreTimeRequested(), ccdRespondent.getResponseMoreTimeNeededOption().toBoolean());

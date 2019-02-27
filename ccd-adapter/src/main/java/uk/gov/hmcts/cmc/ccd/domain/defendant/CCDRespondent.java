@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentIntention;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
@@ -22,27 +22,19 @@ import java.util.List;
 @Value
 @Builder
 public class CCDRespondent {
+    private String partyName;
     private String letterHolderId;
     private String defendantId;
     private LocalDate responseDeadline;
 
-    private CCDPartyType claimantProvidedType;
-    private String claimantProvidedEmail;
-    private CCDAddress claimantProvidedServiceAddress;
-    private String claimantProvidedName;
-    private CCDAddress claimantProvidedAddress;
-    private CCDAddress claimantProvidedCorrespondenceAddress;
-    private LocalDate claimantProvidedDateOfBirth;
-    private String claimantProvidedContactPerson;
-    private String claimantProvidedCompaniesHouseNumber;
-    private String claimantProvidedTitle;
-    private String claimantProvidedBusinessName;
+    private CCDParty applicantProvidedDetails;
+    private String applicantProvidedPartyName;
 
-    private String claimantProvidedRepresentativeOrganisationName;
-    private CCDAddress claimantProvidedRepresentativeOrganisationAddress;
-    private String claimantProvidedRepresentativeOrganisationPhone;
-    private String claimantProvidedRepresentativeOrganisationEmail;
-    private String claimantProvidedRepresentativeOrganisationDxAddress;
+    private String applicantProvidedRepresentativeOrganisationName;
+    private CCDAddress applicantProvidedRepresentativeOrganisationAddress;
+    private String applicantProvidedRepresentativeOrganisationPhone;
+    private String applicantProvidedRepresentativeOrganisationEmail;
+    private String applicantProvidedRepresentativeOrganisationDxAddress;
 
     private String representativeOrganisationName;
     private CCDAddress representativeOrganisationAddress;
@@ -50,18 +42,7 @@ public class CCDRespondent {
     private String representativeOrganisationEmail;
     private String representativeOrganisationDxAddress;
 
-    private CCDPartyType partyType;
-    private String partyTitle;
-    private String partyName;
-    private LocalDate partyDateOfBirth;
-    private String partyPhone;
-    private String partyEmail;
-    private CCDAddress partyAddress;
-    private CCDAddress partyCorrespondenceAddress;
-    private String partyBusinessName;
-    private String partyContactPerson;
-    private String partyCompaniesHouseNumber;
-
+    private CCDParty partyDetail;
     private LocalDateTime responseSubmittedOn;
     private CCDResponseType responseType;
     private BigDecimal responseAmount;

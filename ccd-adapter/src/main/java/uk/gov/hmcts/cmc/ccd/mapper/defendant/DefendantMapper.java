@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.ccd.mapper.defendant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.mapper.TheirDetailsMapper;
@@ -49,11 +50,13 @@ public class DefendantMapper {
         requireNonNull(theirDetails, "theirDetails must not be null");
         requireNonNull(claim, "claim must not be null");
 
-        CCDRespondent.CCDRespondentBuilder builder = CCDRespondent.builder();
+        CCDParty.CCDPartyBuilder partyDetail = CCDParty.builder();
+        partyDetail.emailAddress(claim.getDefendantEmail());
+        CCDRespondent.CCDRespondentBuilder builder = CCDRespondent.builder().partyDetail(partyDetail.build());
         builder.responseDeadline(claim.getResponseDeadline());
         builder.letterHolderId(claim.getLetterHolderId());
         builder.defendantId(claim.getDefendantId());
-        builder.partyEmail(claim.getDefendantEmail());
+
         builder.responseMoreTimeNeededOption(CCDYesNoOption.valueOf(claim.isMoreTimeRequested()));
         builder.directionsQuestionnaireDeadline(claim.getDirectionsQuestionnaireDeadline());
         builder.countyCourtJudgmentRequest(countyCourtJudgmentMapper.to(claim));
@@ -86,7 +89,7 @@ public class DefendantMapper {
         builder
             .letterHolderId(ccdRespondent.getLetterHolderId())
             .responseDeadline(ccdRespondent.getResponseDeadline())
-            .defendantEmail(ccdRespondent.getPartyEmail())
+            .defendantEmail(ccdRespondent.getPartyDetail().getEmailAddress())
             .directionsQuestionnaireDeadline(ccdRespondent.getDirectionsQuestionnaireDeadline())
             .defendantId(ccdRespondent.getDefendantId());
 

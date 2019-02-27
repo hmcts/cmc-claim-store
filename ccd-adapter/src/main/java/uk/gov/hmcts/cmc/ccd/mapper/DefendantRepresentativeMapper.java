@@ -30,27 +30,27 @@ public class DefendantRepresentativeMapper
             defendantContactDetailsMapper.to(organisationContactDetails, builder));
 
         builder
-            .claimantProvidedRepresentativeOrganisationName(representative.getOrganisationName())
-            .claimantProvidedRepresentativeOrganisationAddress(
+            .applicantProvidedRepresentativeOrganisationName(representative.getOrganisationName())
+            .applicantProvidedRepresentativeOrganisationAddress(
                 addressMapper.to(representative.getOrganisationAddress())
             );
     }
 
     @Override
     public Representative from(CCDRespondent ccdRespondent) {
-        if (isBlank(ccdRespondent.getClaimantProvidedRepresentativeOrganisationName())
-            && ccdRespondent.getClaimantProvidedRepresentativeOrganisationAddress() == null
-            && isBlank(ccdRespondent.getClaimantProvidedRepresentativeOrganisationPhone())
-            && isBlank(ccdRespondent.getClaimantProvidedRepresentativeOrganisationDxAddress())
-            && isBlank(ccdRespondent.getClaimantProvidedRepresentativeOrganisationEmail())
+        if (isBlank(ccdRespondent.getApplicantProvidedRepresentativeOrganisationName())
+            && ccdRespondent.getApplicantProvidedRepresentativeOrganisationAddress() == null
+            && isBlank(ccdRespondent.getApplicantProvidedRepresentativeOrganisationPhone())
+            && isBlank(ccdRespondent.getApplicantProvidedRepresentativeOrganisationDxAddress())
+            && isBlank(ccdRespondent.getApplicantProvidedRepresentativeOrganisationEmail())
         ) {
             return null;
         }
 
         return Representative.builder()
-            .organisationName(ccdRespondent.getClaimantProvidedRepresentativeOrganisationName())
+            .organisationName(ccdRespondent.getApplicantProvidedRepresentativeOrganisationName())
             .organisationAddress(
-                addressMapper.from(ccdRespondent.getClaimantProvidedRepresentativeOrganisationAddress())
+                addressMapper.from(ccdRespondent.getApplicantProvidedRepresentativeOrganisationAddress())
             )
             .organisationContactDetails(defendantContactDetailsMapper.from(ccdRespondent))
             .build();

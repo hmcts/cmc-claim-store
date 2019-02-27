@@ -13,24 +13,24 @@ public class DefendantContactDetailsMapper
     @Override
     public void to(ContactDetails contactDetails, CCDRespondent.CCDRespondentBuilder builder) {
 
-        contactDetails.getEmail().ifPresent(builder::claimantProvidedRepresentativeOrganisationEmail);
-        contactDetails.getPhone().ifPresent(builder::claimantProvidedRepresentativeOrganisationPhone);
-        contactDetails.getDxAddress().ifPresent(builder::claimantProvidedRepresentativeOrganisationDxAddress);
+        contactDetails.getEmail().ifPresent(builder::applicantProvidedRepresentativeOrganisationEmail);
+        contactDetails.getPhone().ifPresent(builder::applicantProvidedRepresentativeOrganisationPhone);
+        contactDetails.getDxAddress().ifPresent(builder::applicantProvidedRepresentativeOrganisationDxAddress);
     }
 
     @Override
     public ContactDetails from(CCDRespondent ccdRespondent) {
-        if (isBlank(ccdRespondent.getClaimantProvidedRepresentativeOrganisationPhone())
-            && isBlank(ccdRespondent.getClaimantProvidedRepresentativeOrganisationEmail())
-            && ccdRespondent.getClaimantProvidedRepresentativeOrganisationDxAddress() == null
+        if (isBlank(ccdRespondent.getApplicantProvidedRepresentativeOrganisationPhone())
+            && isBlank(ccdRespondent.getApplicantProvidedRepresentativeOrganisationEmail())
+            && ccdRespondent.getApplicantProvidedRepresentativeOrganisationDxAddress() == null
         ) {
             return null;
         }
 
         return ContactDetails.builder()
-            .phone(ccdRespondent.getClaimantProvidedRepresentativeOrganisationPhone())
-            .email(ccdRespondent.getClaimantProvidedRepresentativeOrganisationEmail())
-            .dxAddress(ccdRespondent.getClaimantProvidedRepresentativeOrganisationDxAddress())
+            .phone(ccdRespondent.getApplicantProvidedRepresentativeOrganisationPhone())
+            .email(ccdRespondent.getApplicantProvidedRepresentativeOrganisationEmail())
+            .dxAddress(ccdRespondent.getApplicantProvidedRepresentativeOrganisationDxAddress())
             .build();
     }
 }

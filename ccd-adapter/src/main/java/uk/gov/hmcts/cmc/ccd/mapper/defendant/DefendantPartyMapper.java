@@ -3,9 +3,11 @@ package uk.gov.hmcts.cmc.ccd.mapper.defendant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
+import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.ccd.mapper.AddressMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.TelephoneMapper;
 import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.domain.models.party.Company;
@@ -25,10 +27,12 @@ import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.SOLE_TRADER;
 public class DefendantPartyMapper {
 
     private final AddressMapper addressMapper;
+    private final TelephoneMapper telephoneMapper;
 
     @Autowired
-    public DefendantPartyMapper(AddressMapper addressMapper) {
+    public DefendantPartyMapper(AddressMapper addressMapper, TelephoneMapper telephoneMapper) {
         this.addressMapper = addressMapper;
+        this.telephoneMapper = telephoneMapper;
     }
 
     public void to(CCDRespondent.CCDRespondentBuilder builder, Party party) {
@@ -36,27 +40,29 @@ public class DefendantPartyMapper {
         requireNonNull(party, "party must not be null");
 
         builder.partyName(party.getName());
-        builder.partyAddress(addressMapper.to(party.getAddress()));
+        CCDParty.CCDPartyBuilder respondentDetail = CCDParty.builder();
+        respondentDetail.primaryAddress(addressMapper.to(party.getAddress()));
         party.getCorrespondenceAddress().ifPresent(
-            address -> builder.partyCorrespondenceAddress(addressMapper.to(address))
+            address -> respondentDetail.correspondenceAddress(addressMapper.to(address))
         );
-        party.getMobilePhone().ifPresent(builder::partyPhone);
+        party.getMobilePhone()
+            .ifPresent(telephoneNo -> respondentDetail.telephoneNumber(telephoneMapper.to(telephoneNo)));
         party.getRepresentative().ifPresent(representative -> toRepresentative(builder, representative));
 
         if (party instanceof Individual) {
-            toIndividual(builder, (Individual) party);
+            toIndividual(respondentDetail, (Individual) party);
         } else if (party instanceof Company) {
-            toCompany(builder, (Company) party);
+            toCompany(respondentDetail, (Company) party);
         } else if (party instanceof Organisation) {
-            toOrganisation(builder, (Organisation) party);
+            toOrganisation(respondentDetail, (Organisation) party);
         } else if (party instanceof SoleTrader) {
-            toSoleTrader(builder, (SoleTrader) party);
+            toSoleTrader(respondentDetail, (SoleTrader) party);
         }
     }
 
-    private void toIndividual(CCDRespondent.CCDRespondentBuilder builder, Individual individual) {
-        builder.partyType(INDIVIDUAL);
-        builder.partyDateOfBirth(individual.getDateOfBirth());
+    private void toIndividual(CCDParty.CCDPartyBuilder partyBuilder, Individual individual) {
+        partyBuilder.type(INDIVIDUAL);
+        partyBuilder.dateOfBirth(individual.getDateOfBirth());
     }
 
     private void toRepresentative(CCDRespondent.CCDRespondentBuilder builder, Representative representative) {
@@ -70,28 +76,28 @@ public class DefendantPartyMapper {
             });
     }
 
-    private void toSoleTrader(CCDRespondent.CCDRespondentBuilder builder, SoleTrader soleTrader) {
-        builder.partyType(SOLE_TRADER);
-        soleTrader.getTitle().ifPresent(builder::partyTitle);
-        soleTrader.getBusinessName().ifPresent(builder::partyBusinessName);
+    private void toSoleTrader(CCDParty.CCDPartyBuilder partyBuilder, SoleTrader soleTrader) {
+        partyBuilder.type(SOLE_TRADER);
+        soleTrader.getTitle().ifPresent(partyBuilder::title);
+        soleTrader.getBusinessName().ifPresent(partyBuilder::businessName);
     }
 
-    private void toOrganisation(CCDRespondent.CCDRespondentBuilder builder, Organisation organisation) {
-        builder.partyType(ORGANISATION);
-        organisation.getContactPerson().ifPresent(builder::partyContactPerson);
-        organisation.getCompaniesHouseNumber().ifPresent(builder::partyCompaniesHouseNumber);
+    private void toOrganisation(CCDParty.CCDPartyBuilder partyBuilder, Organisation organisation) {
+        partyBuilder.type(ORGANISATION);
+        organisation.getContactPerson().ifPresent(partyBuilder::contactPerson);
+        organisation.getCompaniesHouseNumber().ifPresent(partyBuilder::companiesHouseNumber);
     }
 
-    private void toCompany(CCDRespondent.CCDRespondentBuilder builder, Company company) {
-        builder.partyType(COMPANY);
-        company.getContactPerson().ifPresent(builder::partyContactPerson);
+    private void toCompany(CCDParty.CCDPartyBuilder partyBuilder, Company company) {
+        partyBuilder.type(COMPANY);
+        company.getContactPerson().ifPresent(partyBuilder::contactPerson);
     }
 
     public Party from(CCDRespondent respondent) {
         requireNonNull(respondent, "respondent must not be null");
-        requireNonNull(respondent.getPartyType(), "respondent.getPartyType() must not be null");
+        requireNonNull(respondent.getPartyDetail(), "respondent.getPartyDetail() must not be null");
 
-        switch (respondent.getPartyType()) {
+        switch (respondent.getPartyDetail().getType()) {
             case INDIVIDUAL:
                 return extractIndividual(respondent);
             case COMPANY:
@@ -101,52 +107,56 @@ public class DefendantPartyMapper {
             case ORGANISATION:
                 return extractOrganisation(respondent);
             default:
-                throw new MappingException("Invalid partyType " + respondent.getPartyType());
+                throw new MappingException("Invalid partyType " + respondent.getPartyDetail().getType());
         }
     }
 
     private Organisation extractOrganisation(CCDRespondent respondent) {
+        CCDParty partyDetail = respondent.getPartyDetail();
         return Organisation.builder()
             .name(respondent.getPartyName())
-            .address(addressMapper.from(respondent.getPartyAddress()))
-            .correspondenceAddress(addressMapper.from(respondent.getPartyCorrespondenceAddress()))
-            .mobilePhone(respondent.getPartyPhone())
+            .address(addressMapper.from(partyDetail.getPrimaryAddress()))
+            .correspondenceAddress(addressMapper.from(partyDetail.getCorrespondenceAddress()))
+            .mobilePhone(telephoneMapper.from(partyDetail.getTelephoneNumber()))
             .representative(extractRepresentative(respondent))
-            .contactPerson(respondent.getPartyContactPerson())
-            .companiesHouseNumber(respondent.getPartyCompaniesHouseNumber())
+            .contactPerson(partyDetail.getContactPerson())
+            .companiesHouseNumber(partyDetail.getCompaniesHouseNumber())
             .build();
     }
 
     private SoleTrader extractSoleTrader(CCDRespondent respondent) {
+        CCDParty partyDetail = respondent.getPartyDetail();
         return SoleTrader.builder()
             .name(respondent.getPartyName())
-            .address(addressMapper.from(respondent.getPartyAddress()))
-            .correspondenceAddress(addressMapper.from(respondent.getPartyCorrespondenceAddress()))
-            .mobilePhone(respondent.getPartyPhone())
+            .address(addressMapper.from(partyDetail.getPrimaryAddress()))
+            .correspondenceAddress(addressMapper.from(partyDetail.getCorrespondenceAddress()))
+            .mobilePhone(telephoneMapper.from(partyDetail.getTelephoneNumber()))
             .representative(extractRepresentative(respondent))
-            .title(respondent.getPartyTitle())
-            .businessName(respondent.getPartyBusinessName())
+            .title(partyDetail.getTitle())
+            .businessName(partyDetail.getBusinessName())
             .build();
     }
 
     private Company extractCompany(CCDRespondent respondent) {
+        CCDParty partyDetail = respondent.getPartyDetail();
         return Company.builder()
             .name(respondent.getPartyName())
-            .address(addressMapper.from(respondent.getPartyAddress()))
-            .correspondenceAddress(addressMapper.from(respondent.getPartyCorrespondenceAddress()))
-            .mobilePhone(respondent.getPartyPhone())
+            .address(addressMapper.from(partyDetail.getPrimaryAddress()))
+            .correspondenceAddress(addressMapper.from(partyDetail.getCorrespondenceAddress()))
+            .mobilePhone(telephoneMapper.from(partyDetail.getTelephoneNumber()))
             .representative(extractRepresentative(respondent))
-            .contactPerson(respondent.getPartyContactPerson())
+            .contactPerson(partyDetail.getContactPerson())
             .build();
     }
 
     private Individual extractIndividual(CCDRespondent respondent) {
+        CCDParty partyDetail = respondent.getPartyDetail();
         return Individual.builder()
             .name(respondent.getPartyName())
-            .address(addressMapper.from(respondent.getPartyAddress()))
-            .correspondenceAddress(addressMapper.from(respondent.getPartyCorrespondenceAddress()))
-            .mobilePhone(respondent.getPartyPhone())
-            .dateOfBirth(respondent.getPartyDateOfBirth())
+            .address(addressMapper.from(partyDetail.getPrimaryAddress()))
+            .correspondenceAddress(addressMapper.from(partyDetail.getCorrespondenceAddress()))
+            .mobilePhone(telephoneMapper.from(partyDetail.getTelephoneNumber()))
+            .dateOfBirth(partyDetail.getDateOfBirth())
             .representative(extractRepresentative(respondent))
             .build();
     }

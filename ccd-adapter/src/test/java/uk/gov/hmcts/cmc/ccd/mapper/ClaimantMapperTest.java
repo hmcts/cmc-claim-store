@@ -43,7 +43,7 @@ public class ClaimantMapperTest {
 
         //then
         assertThat(party).isEqualTo(applicant);
-        assertThat(applicant.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
+        assertThat(applicant.getPartyDetail().getEmailAddress()).isEqualTo(claim.getSubmitterEmail());
     }
 
     @Test
@@ -57,7 +57,7 @@ public class ClaimantMapperTest {
 
         //then
         assertThat(party).isEqualTo(applicant);
-        assertThat(applicant.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
+        assertThat(applicant.getPartyDetail().getEmailAddress()).isEqualTo(claim.getSubmitterEmail());
     }
 
     @Test
@@ -71,7 +71,7 @@ public class ClaimantMapperTest {
 
         //then
         assertThat(party).isEqualTo(applicant);
-        assertThat(applicant.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
+        assertThat(applicant.getPartyDetail().getEmailAddress()).isEqualTo(claim.getSubmitterEmail());
     }
 
     @Test
@@ -85,7 +85,7 @@ public class ClaimantMapperTest {
 
         //then
         assertThat(party).isEqualTo(applicant);
-        assertThat(applicant.getPartyEmail()).isEqualTo(claim.getSubmitterEmail());
+        assertThat(applicant.getPartyDetail().getEmailAddress()).isEqualTo(claim.getSubmitterEmail());
     }
 
     @Test
