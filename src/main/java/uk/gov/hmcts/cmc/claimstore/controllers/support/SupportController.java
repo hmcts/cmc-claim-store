@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.cmc.claimstore.events.DocumentUploadHandler;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedStaffNotificationHandler;
-import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseCitizenNotificationsHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
@@ -50,7 +50,7 @@ public class SupportController {
     private final DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler;
     private final CCJStaffNotificationHandler ccjStaffNotificationHandler;
     private final AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler;
-    private final DefendantResponseCitizenNotificationsHandler defendantResponseCitizenNotificationsHandler;
+    private final DocumentUploadHandler documentUploadHandler;
 
     @SuppressWarnings("squid:S00107")
     @Autowired
@@ -62,7 +62,7 @@ public class SupportController {
         DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler,
         CCJStaffNotificationHandler ccjStaffNotificationHandler,
         AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler,
-        DefendantResponseCitizenNotificationsHandler defendantResponseCitizenNotificationsHandler
+        DocumentUploadHandler documentUploadHandler
     ) {
         this.claimService = claimService;
         this.userService = userService;
@@ -71,7 +71,7 @@ public class SupportController {
         this.defendantResponseStaffNotificationHandler = defendantResponseStaffNotificationHandler;
         this.ccjStaffNotificationHandler = ccjStaffNotificationHandler;
         this.agreementCountersignedStaffNotificationHandler = agreementCountersignedStaffNotificationHandler;
-        this.defendantResponseCitizenNotificationsHandler = defendantResponseCitizenNotificationsHandler;
+        this.documentUploadHandler = documentUploadHandler;
     }
 
     @PutMapping("/claim/{referenceNumber}/event/{event}/resend-staff-notifications")
@@ -168,7 +168,7 @@ public class SupportController {
         DefendantResponseEvent event = new DefendantResponseEvent(claim, authorization);
         defendantResponseStaffNotificationHandler.onDefendantResponseSubmitted(event);
         if (!claim.getClaimDocument(DEFENDANT_RESPONSE_RECEIPT).isPresent()) {
-            defendantResponseCitizenNotificationsHandler.uploadDocument(event);
+            documentUploadHandler.uploadDocument(event);
         }
     }
 

@@ -89,7 +89,7 @@ public class DocumentGeneratorTest {
     }
 
     @Test
-    public void shouldTriggerDocumentUploadEventForNonRepresentedClaim() {
+    public void shouldTriggerDocumentUploadEventForCitizenClaim() {
         Document sealedClaimDocument = new Document(sealedClaimTemplate, claimContents);
         Claim claim = SampleClaim.getDefault();
         when(citizenDocumentService.sealedClaimDocument(claim)).thenReturn(sealedClaimDocument);
