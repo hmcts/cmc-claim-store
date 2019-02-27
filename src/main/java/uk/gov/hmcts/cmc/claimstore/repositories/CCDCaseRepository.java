@@ -49,16 +49,6 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    /*
-     * This method is changed to throw the UnsupportedOperationException as on hold status is removed from
-     * CCD. Once we move live with CCD as master then the CaseRepository should remove this method in interface
-     * and with the implementation.
-     */
-    public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
-        throw new UnsupportedOperationException("The CCD on-hold status is removed. This should not be used");
-    }
-
-    @Override
     public Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation) {
         return ccdCaseApi.getByReferenceNumber(claimReferenceNumber, authorisation);
     }
@@ -107,7 +97,8 @@ public class CCDCaseRepository implements CaseRepository {
         Claim claim,
         String defendantEmail,
         Response response,
-        String authorization) {
+        String authorization
+    ) {
         coreCaseDataService.saveDefendantResponse(claim.getId(), defendantEmail, response, authorization);
     }
 
@@ -136,13 +127,18 @@ public class CCDCaseRepository implements CaseRepository {
         Claim claim,
         Settlement settlement,
         String authorisation,
-        CaseEvent caseEvent) {
+        CaseEvent caseEvent
+    ) {
         coreCaseDataService.saveSettlement(claim.getId(), settlement, authorisation, caseEvent);
     }
 
     @Override
-    public void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation,
-                                         CaseEvent caseEvent) {
+    public void reachSettlementAgreement(
+        Claim claim,
+        Settlement settlement,
+        String authorisation,
+        CaseEvent caseEvent
+    ) {
         coreCaseDataService.reachSettlementAgreement(claim.getId(), settlement, nowInUTC(), authorisation,
             caseEvent);
     }
@@ -158,9 +154,11 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void saveClaimDocuments(String authorisation,
-                                   Long claimId,
-                                   ClaimDocumentCollection claimDocumentCollection) {
+    public void saveClaimDocuments(
+        String authorisation,
+        Long claimId,
+        ClaimDocumentCollection claimDocumentCollection
+    ) {
         coreCaseDataService.saveClaimDocuments(authorisation, claimId, claimDocumentCollection);
     }
 

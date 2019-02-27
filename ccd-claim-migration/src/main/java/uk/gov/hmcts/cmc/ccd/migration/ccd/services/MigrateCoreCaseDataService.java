@@ -82,7 +82,7 @@ public class MigrateCoreCaseDataService {
             ).data(ccdCase)
             .build();
 
-        CaseDetails caseDetails = submitEvent(authorisation, eventRequestData, caseDataContent, ccdId);
+        submitEvent(authorisation, eventRequestData, caseDataContent, ccdId);
     }
 
     @Recover
@@ -105,7 +105,7 @@ public class MigrateCoreCaseDataService {
         maxAttempts = 5,
         backoff = @Backoff(delay = 400, maxDelay = 800)
     )
-    public void save(String authorisation, EventRequestData eventRequestData, Claim claim) {
+    public CaseDetails save(String authorisation, EventRequestData eventRequestData, Claim claim) {
         CCDCase ccdCase = caseMapper.to(claim);
 
         StartEventResponse startEventResponse = start(authorisation, eventRequestData);
@@ -125,6 +125,7 @@ public class MigrateCoreCaseDataService {
         CaseDetails caseDetails = submit(authorisation, eventRequestData, caseDataContent);
 
         grantAccessToCase(caseDetails.getId(), claim);
+        return caseDetails;
     }
 
     @Recover
