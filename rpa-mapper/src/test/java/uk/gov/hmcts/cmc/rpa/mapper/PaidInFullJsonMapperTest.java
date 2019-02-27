@@ -30,7 +30,7 @@ public class PaidInFullJsonMapperTest {
     private PaidInFullJsonMapper mapper;
 
     @Test
-    public void shouldMapPartyForMoreTimeRequested() throws JSONException {
+    public void shouldMapForPaidInFull() throws JSONException {
         Claim claim = SampleClaim.builder()
             .withReferenceNumber(REFERENCE_NUMBER)
             .withMoneyReceivedOn(LocalDate.of(2019, 2, 25))
