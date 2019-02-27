@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.exceptions.MigrationModelMappingException;
 
 import java.io.IOException;
-import java.util.Map;
 
 @Service
 public class JsonMapper {
@@ -17,10 +16,6 @@ public class JsonMapper {
 
     public JsonMapper(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
-    }
-
-    public <T> T fromMap(Map<String, Object> input, Class<T> clazz) {
-        return objectMapper.convertValue(input, clazz);
     }
 
     public <T> T fromJson(String value, Class<T> clazz) {

@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.idam.services.UserService;
-import uk.gov.hmcts.cmc.ccd.migration.mappers.JsonMapper;
 import uk.gov.hmcts.cmc.ccd.migration.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -28,7 +27,6 @@ import uk.gov.hmcts.reform.ccd.client.model.UserId;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
-import java.util.Map;
 
 import static uk.gov.hmcts.cmc.ccd.migration.ccd.services.CoreCaseDataService.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.ccd.migration.ccd.services.CoreCaseDataService.JURISDICTION_ID;
@@ -43,7 +41,6 @@ public class MigrateCoreCaseDataService {
     private final CaseAccessApi caseAccessApi;
     private final UserService userService;
     private final CaseMapper caseMapper;
-    private final JsonMapper jsonMapper;
 
     @Autowired
     public MigrateCoreCaseDataService(
@@ -51,15 +48,13 @@ public class MigrateCoreCaseDataService {
         AuthTokenGenerator authTokenGenerator,
         CaseAccessApi caseAccessApi,
         UserService userService,
-        CaseMapper caseMapper,
-        JsonMapper jsonMapper
+        CaseMapper caseMapper
     ) {
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;
         this.caseAccessApi = caseAccessApi;
         this.userService = userService;
         this.caseMapper = caseMapper;
-        this.jsonMapper = jsonMapper;
     }
 
     @Retryable(value = {SocketTimeoutException.class, FeignException.class, IOException.class},
@@ -131,12 +126,6 @@ public class MigrateCoreCaseDataService {
 
         grantAccessToCase(caseDetails.getId(), claim);
         return caseDetails;
-    }
-
-    private CCDCase extractCase(CaseDetails caseDetails) {
-        Map<String, Object> caseData = caseDetails.getData();
-        caseData.put("id", caseDetails.getId());
-        return jsonMapper.fromMap(caseData, CCDCase.class);
     }
 
     @Recover
