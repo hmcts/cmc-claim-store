@@ -30,7 +30,6 @@ import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
-import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse.AboutToStartOrSubmitCallbackResponseBuilder;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
@@ -51,6 +50,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISS
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED_PAPER;
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Component
@@ -178,9 +178,7 @@ public class ClaimService {
     }
 
     public CaseReference savePrePayment(String externalId, String authorisation) {
-        CaseReference caseReference = caseRepository.savePrePaymentClaim(externalId, authorisation);
-        ccdEventProducer.createCCDPrePaymentEvent(externalId, authorisation);
-        return caseReference;
+        return caseRepository.savePrePaymentClaim(externalId, authorisation);
     }
 
     @Transactional(transactionManager = "transactionManager")
@@ -200,17 +198,17 @@ public class ClaimService {
 
         Claim issuedClaim;
         try {
-            Long prePaymentClaimId = caseRepository.getOnHoldIdByExternalId(externalId, authorisation);
-
-            LocalDateTime now = LocalDateTimeFactory.nowInLocalZone();
+            caseRepository.getClaimByExternalId(externalId, authorisation).ifPresent(claim -> {
+                throw new ConflictException(
+                    String.format("Claim already exist with same external reference as %s", externalId));
+            });
 
             Optional<String> letterHolderId = pinResponse.map(GeneratePinResponse::getUserId);
-            LocalDate issuedOn = issueDateCalculator.calculateIssueDay(now);
+            LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
             LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
             String submitterEmail = userDetails.getEmail();
 
             Claim claim = Claim.builder()
-                .id(prePaymentClaimId)
                 .claimData(claimData)
                 .submitterId(submitterId)
                 .issuedOn(issuedOn)
@@ -226,7 +224,8 @@ public class ClaimService {
         } catch (ConflictException e) {
             appInsights.trackEvent(AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE, CLAIM_EXTERNAL_ID, externalId);
             issuedClaim = caseRepository.getClaimByExternalId(externalId, authorisation)
-                .orElseThrow(() -> new NotFoundException("Could not find claim with external ID '" + externalId + "'"));
+                .orElseThrow(() ->
+                    new NotFoundException("Could not find claim with external ID '" + externalId + "'"));
         }
 
         eventProducer.createClaimIssuedEvent(
