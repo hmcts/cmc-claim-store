@@ -142,8 +142,8 @@ public class DefendantResponseNotificationService {
         String reference
     ) {
         String errorMessage = String.format(
-            "Failure: failed to send notification ( %s to %s ) due to %s",
-            reference, targetEmail, exception.getMessage()
+            "Failure: failed to send notification (%s) due to %s",
+            reference, exception.getMessage()
         );
 
         logger.info(errorMessage, exception);
