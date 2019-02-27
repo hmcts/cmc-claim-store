@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.ccd.domain;
 
 public enum CaseEvent {
 
+    CREATE_NEW_CASE("IssueClaim"),
     MORE_TIME_REQUESTED_PAPER("MoreTimeRequestedPaper"),
     TEST_SUPPORT_UPDATE("TestSupportUpdate"),
     LINK_SEALED_CLAIM("LinkSealedClaimDocument"),

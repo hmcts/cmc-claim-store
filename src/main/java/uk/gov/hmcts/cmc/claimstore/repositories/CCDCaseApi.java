@@ -30,6 +30,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
+
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
 public class CCDCaseApi {
@@ -101,9 +103,11 @@ public class CCDCaseApi {
     }
 
     public List<Claim> getByDefendantId(String id, String authorisation) {
-        LOGGER.debug("ccd search is by authorisation instead of defendant id {}", id);
         User user = userService.getUser(authorisation);
-        return getAllCasesBy(user, ImmutableMap.of());
+
+        return asStream(getAllCasesBy(user, ImmutableMap.of()))
+            .filter(claim -> id.equals(claim.getDefendantId()))
+            .collect(Collectors.toList());
     }
 
     public List<Claim> getBySubmitterEmail(String submitterEmail, String authorisation) {
@@ -112,9 +116,11 @@ public class CCDCaseApi {
     }
 
     public List<Claim> getByDefendantEmail(String defendantEmail, String authorisation) {
-        LOGGER.debug("ccd search is by authorisation instead of defendant email {}", defendantEmail);
         User user = userService.getUser(authorisation);
-        return getAllCasesBy(user, ImmutableMap.of());
+
+        return asStream(getAllCasesBy(user, ImmutableMap.of()))
+            .filter(claim -> defendantEmail.equals(claim.getDefendantEmail()))
+            .collect(Collectors.toList());
     }
 
     public List<Claim> getByPaymentReference(String payReference, String authorisation) {
