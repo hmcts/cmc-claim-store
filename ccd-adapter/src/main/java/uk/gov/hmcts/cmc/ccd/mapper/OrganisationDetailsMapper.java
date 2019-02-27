@@ -37,7 +37,7 @@ public class OrganisationDetailsMapper {
 
     public OrganisationDetails from(CCDCollectionElement<CCDRespondent> ccdOrganisation) {
         CCDRespondent respondent = ccdOrganisation.getValue();
-        CCDParty applicantProvidedDetails = respondent.getApplicantProvidedDetails();
+        CCDParty applicantProvidedDetails = respondent.getApplicantProvidedDetail();
         return OrganisationDetails.builder()
             .id(ccdOrganisation.getId())
             .name(respondent.getApplicantProvidedPartyName())

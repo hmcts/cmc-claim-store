@@ -39,12 +39,12 @@ public class IndividualDetailsMapper {
 
         builder
             .applicantProvidedPartyName(individual.getName())
-            .applicantProvidedDetails(applicantProvidedDetails.build());
+            .applicantProvidedDetail(applicantProvidedDetails.build());
     }
 
     public IndividualDetails from(CCDCollectionElement<CCDRespondent> ccdRespondent) {
         CCDRespondent respondent = ccdRespondent.getValue();
-        CCDParty applicantProvidedPartyDetail = respondent.getApplicantProvidedDetails();
+        CCDParty applicantProvidedPartyDetail = respondent.getApplicantProvidedDetail();
 
         return IndividualDetails.builder()
             .id(ccdRespondent.getId())

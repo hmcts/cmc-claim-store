@@ -34,13 +34,13 @@ public class CompanyDetailsMapper {
 
         builder
             .applicantProvidedPartyName(company.getName())
-            .applicantProvidedDetails(applicantProvidedPartyDetail.build());
+            .applicantProvidedDetail(applicantProvidedPartyDetail.build());
 
     }
 
     public CompanyDetails from(CCDCollectionElement<CCDRespondent> collectionElement) {
         CCDRespondent ccdRespondent = collectionElement.getValue();
-        CCDParty applicantProvidedPartyDetail = ccdRespondent.getApplicantProvidedDetails();
+        CCDParty applicantProvidedPartyDetail = ccdRespondent.getApplicantProvidedDetail();
         return CompanyDetails.builder()
             .id(collectionElement.getId())
             .name(ccdRespondent.getApplicantProvidedPartyName())

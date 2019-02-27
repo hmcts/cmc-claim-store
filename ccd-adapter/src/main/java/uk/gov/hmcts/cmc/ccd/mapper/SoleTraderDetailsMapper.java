@@ -36,13 +36,13 @@ public class SoleTraderDetailsMapper {
         builder
             .partyName(soleTrader.getName())
             .partyDetail(partyBuilder.build())
-            .applicantProvidedDetails(applicantProvidedPartyDetail.build());
+            .applicantProvidedDetail(applicantProvidedPartyDetail.build());
     }
 
     public SoleTraderDetails from(CCDCollectionElement<CCDRespondent> ccdSoleTrader) {
         CCDRespondent respondent = ccdSoleTrader.getValue();
         CCDParty partyDetails = respondent.getPartyDetail();
-        CCDParty applicantProvidedPartyDetails = respondent.getApplicantProvidedDetails();
+        CCDParty applicantProvidedPartyDetails = respondent.getApplicantProvidedDetail();
 
         return SoleTraderDetails.builder()
             .id(ccdSoleTrader.getId())

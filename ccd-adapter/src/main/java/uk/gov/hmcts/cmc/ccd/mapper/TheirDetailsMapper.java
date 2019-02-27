@@ -53,7 +53,7 @@ public class TheirDetailsMapper {
     }
 
     public TheirDetails from(CCDCollectionElement<CCDRespondent> ccdRespondent) {
-        switch (ccdRespondent.getValue().getApplicantProvidedDetails().getType()) {
+        switch (ccdRespondent.getValue().getApplicantProvidedDetail().getType()) {
             case COMPANY:
                 return companyDetailsMapper.from(ccdRespondent);
             case INDIVIDUAL:
@@ -64,7 +64,7 @@ public class TheirDetailsMapper {
                 return organisationDetailsMapper.from(ccdRespondent);
             default:
                 throw new MappingException("Invalid defendant type, "
-                    + ccdRespondent.getValue().getApplicantProvidedDetails().getType());
+                    + ccdRespondent.getValue().getApplicantProvidedDetail().getType());
         }
     }
 }
