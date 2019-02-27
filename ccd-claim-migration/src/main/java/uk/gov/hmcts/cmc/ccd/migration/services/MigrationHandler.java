@@ -114,8 +114,7 @@ public class MigrationHandler {
                     + " for event: "
                     + CaseEvent.SUBMIT_POST_PAYMENT);
 
-                coreCaseDataService.overwrite(user, ccdCase.getId(), claim, CaseEvent.SUBMIT_POST_PAYMENT);
-                logger.info("claim exists - overwrite");
+                coreCaseDataService.updateCase(user, ccdCase.getId(), claim, CaseEvent.SUBMIT_POST_PAYMENT);
                 updatedClaims.incrementAndGet();
             }
 
@@ -138,29 +137,30 @@ public class MigrationHandler {
         CaseDetails ccdCase = coreCaseDataService.getCcdIdByReferenceNumber(user, claim.getReferenceNumber())
             .orElseThrow(() -> new IllegalStateException("ccd case not found for " + claim.getReferenceNumber()));
 
-        try {
-            Arrays.stream(CaseEvent.values())
-                .forEach(event -> {
+        Arrays.stream(CaseEvent.values())
+            .forEach(event -> {
+                try {
                     if (eventNeedToBePerformedOnClaim(event, claim, ccdCase.getState())) {
                         logger.info("start migrating claim: "
                             + claim.getReferenceNumber()
                             + " for event: "
                             + event.getValue());
 
-                        coreCaseDataService.overwrite(user, ccdCase.getId(), claim, event);
-                        logger.info("claim exists - overwrite");
+                        coreCaseDataService.updateCase(user, ccdCase.getId(), claim, event);
                         updatedClaims.incrementAndGet();
                     }
-                });
-            //Enable below line for final run on prod
-            //claimRepository.markAsMigrated(claim.getId());
-        } catch (Exception e) {
-            logger.info("Claim Migration failed for Claim reference "
-                    + claim.getReferenceNumber()
-                    + " due to " + e.getMessage(),
-                e);
-            failedMigrations.incrementAndGet();
-        }
+                } catch (Exception e) {
+                    logger.info("Claim Migration failed for Claim reference "
+                            + claim.getReferenceNumber()
+                            + " due to " + e.getMessage(),
+                        e);
+                    failedMigrations.incrementAndGet();
+                }
+
+            });
+        //Enable below line for final run on prod
+        //claimRepository.markAsMigrated(claim.getId());
+
     }
 
     private void createCase(
@@ -175,11 +175,13 @@ public class MigrationHandler {
                 + " for event: "
                 + CaseEvent.SUBMIT_PRE_PAYMENT.getValue());
 
-            coreCaseDataService.create(user, claim, CaseEvent.SUBMIT_PRE_PAYMENT);
-            logger.info("claim created in ccd");
+            coreCaseDataService.createCase(user, claim, CaseEvent.SUBMIT_PRE_PAYMENT);
             migratedClaims.incrementAndGet();
         } catch (Exception e) {
-            logger.info(e.getMessage(), e);
+            logger.info("Claim Migration failed for Claim reference "
+                    + claim.getReferenceNumber()
+                    + " due to " + e.getMessage(),
+                e);
             failedMigrations.incrementAndGet();
         }
     }
