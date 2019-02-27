@@ -120,4 +120,18 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
         verifyZeroInteractions(emailTemplates, notificationClient);
     }
 
+    @Test
+    public void recoveryShouldNotLogPII() {
+        service.logNotificationFailure(
+            new NotificationException("expected exception"),
+            null,
+            "hidden@email.com",
+            null,
+            "reference"
+        );
+
+        assertWasLogged("Failure: failed to send notification (reference) due to expected exception");
+        assertWasNotLogged("hidden@email.com");
+    }
+
 }

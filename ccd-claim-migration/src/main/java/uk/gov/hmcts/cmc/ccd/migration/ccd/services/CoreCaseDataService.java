@@ -10,11 +10,11 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.exceptions.CreateCaseException;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.exceptions.OverwriteCaseException;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
+import uk.gov.hmcts.cmc.ccd.migration.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
@@ -50,7 +50,7 @@ public class CoreCaseDataService {
     public static final String JURISDICTION_ID = "CMC";
     public static final String CASE_TYPE_ID = "MoneyClaimCase";
 
-    private static final Logger logger = LoggerFactory.getLogger(MigrateCoreCaseDataService.class);
+    private static final Logger logger = LoggerFactory.getLogger(CoreCaseDataService.class);
 
     private final CoreCaseDataApi coreCaseDataApi;
     private final AuthTokenGenerator authTokenGenerator;
@@ -67,8 +67,8 @@ public class CoreCaseDataService {
         this.authTokenGenerator = authTokenGenerator;
     }
 
-    public CaseDetails create(User user, Claim claim, CaseEvent event) {
-        logger.info("Create case in CCD, claim id = " + claim.getId() + ", event = " + event.getValue());
+    @LogExecutionTime
+    public CaseDetails createCase(User user, Claim claim, CaseEvent event) {
         try {
 
             EventRequestData eventRequestData = EventRequestData.builder()
@@ -89,9 +89,9 @@ public class CoreCaseDataService {
         }
     }
 
-    public void overwrite(User user, Long caseId, Claim claim, CaseEvent event) {
+    @LogExecutionTime
+    public void updateCase(User user, Long caseId, Claim claim, CaseEvent event) {
 
-        logger.info("Overwrite " + caseId + ", claim reference number = " + claim.getReferenceNumber());
         try {
             EventRequestData eventRequestData = EventRequestData.builder()
                 .userId(user.getUserDetails().getId())
@@ -114,11 +114,11 @@ public class CoreCaseDataService {
     }
 
     @Retryable(value = {SocketTimeoutException.class, FeignException.class, IOException.class},
-        backoff = @Backoff(delay = 200, maxDelay = 500)
+        maxAttempts = 5,
+        backoff = @Backoff(delay = 400, maxDelay = 800)
     )
+    @LogExecutionTime
     public Optional<CaseDetails> getCcdIdByReferenceNumber(User user, String referenceNumber) {
-        logger.info("Get claim from CCD " + referenceNumber);
-
         return search(user, ImmutableMap.of("case.referenceNumber", referenceNumber));
     }
 

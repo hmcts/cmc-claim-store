@@ -19,6 +19,10 @@ public class JsonMapper {
         this.objectMapper = objectMapper;
     }
 
+    public <T> T fromMap(Map<String, Object> input, Class<T> clazz) {
+        return objectMapper.convertValue(input, clazz);
+    }
+
     public <T> T fromJson(String value, Class<T> clazz) {
         try {
             return objectMapper.readValue(value, clazz);
@@ -27,10 +31,6 @@ public class JsonMapper {
                 String.format(DESERIALIZATION_ERROR_MESSAGE, clazz.getSimpleName()), e
             );
         }
-    }
-
-    public <T> T fromMap(Map<String, Object> input, Class<T> clazz) {
-        return objectMapper.convertValue(input, clazz);
     }
 
     public <T> T fromJson(String value, TypeReference<T> typeReference) {
