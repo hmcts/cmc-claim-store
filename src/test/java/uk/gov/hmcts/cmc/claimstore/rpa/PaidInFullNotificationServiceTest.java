@@ -60,10 +60,9 @@ public class PaidInFullNotificationServiceTest {
             emailDataArgumentCaptor.capture()
         );
 
-        assertEquals(emailDataArgumentCaptor.getValue().getTo(), PAID_IN_FULL_EMAIL_ADDRESS);
-        assertEquals(emailDataArgumentCaptor.getValue().getSubject(),
-            "J paid in full " + claim.getReferenceNumber());
-        assertEquals(emailDataArgumentCaptor.getValue().getMessage(), "");
+        assertEquals(PAID_IN_FULL_EMAIL_ADDRESS, emailDataArgumentCaptor.getValue().getTo());
+        assertEquals("J paid in full " + claim.getReferenceNumber(), emailDataArgumentCaptor.getValue().getSubject());
+        assertEquals("", emailDataArgumentCaptor.getValue().getMessage());
         assertFalse(emailDataArgumentCaptor.getValue().getAttachments().isEmpty());
     }
 }
