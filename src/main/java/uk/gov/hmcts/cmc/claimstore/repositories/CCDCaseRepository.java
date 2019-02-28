@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
@@ -47,11 +46,6 @@ public class CCDCaseRepository implements CaseRepository {
     @Override
     public Optional<Claim> getClaimByExternalId(String externalId, String authorisation) {
         return ccdCaseApi.getByExternalId(externalId, authorisation);
-    }
-
-    @Override
-    public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
-        return ccdCaseApi.getOnHoldIdByExternalId(externalId, authorisation);
     }
 
     @Override
@@ -103,7 +97,8 @@ public class CCDCaseRepository implements CaseRepository {
         Claim claim,
         String defendantEmail,
         Response response,
-        String authorization) {
+        String authorization
+    ) {
         coreCaseDataService.saveDefendantResponse(claim.getId(), defendantEmail, response, authorization);
     }
 
@@ -132,24 +127,25 @@ public class CCDCaseRepository implements CaseRepository {
         Claim claim,
         Settlement settlement,
         String authorisation,
-        CaseEvent caseEvent) {
+        CaseEvent caseEvent
+    ) {
         coreCaseDataService.saveSettlement(claim.getId(), settlement, authorisation, caseEvent);
     }
 
     @Override
-    public void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation,
-                                         CaseEvent caseEvent) {
+    public void reachSettlementAgreement(
+        Claim claim,
+        Settlement settlement,
+        String authorisation,
+        CaseEvent caseEvent
+    ) {
         coreCaseDataService.reachSettlementAgreement(claim.getId(), settlement, nowInUTC(), authorisation,
             caseEvent);
     }
 
     @Override
     public CaseReference savePrePaymentClaim(String externalId, String authorisation) {
-        try {
-            return new CaseReference(getOnHoldIdByExternalId(externalId, authorisation).toString());
-        } catch (NotFoundException e) {
-            return coreCaseDataService.savePrePayment(externalId, authorisation);
-        }
+        return new CaseReference(externalId);
     }
 
     @Override
@@ -158,9 +154,11 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void saveClaimDocuments(String authorisation,
-                                   Long claimId,
-                                   ClaimDocumentCollection claimDocumentCollection) {
+    public void saveClaimDocuments(
+        String authorisation,
+        Long claimId,
+        ClaimDocumentCollection claimDocumentCollection
+    ) {
         coreCaseDataService.saveClaimDocuments(authorisation, claimId, claimDocumentCollection);
     }
 
