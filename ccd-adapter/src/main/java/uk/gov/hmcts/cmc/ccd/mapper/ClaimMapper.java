@@ -92,7 +92,8 @@ public class ClaimMapper {
 
         claim.getTotalAmountTillDateOfIssue().ifPresent(builder::totalAmount);
 
-        claim.getClaimDocumentCollection().ifPresent(claimDocumentCollection -> claimDocumentCollectionMapper.to(claimDocumentCollection, builder));
+        claim.getClaimDocumentCollection()
+            .ifPresent(claimDocumentCollection -> claimDocumentCollectionMapper.to(claimDocumentCollection, builder));
 
         builder
             .reason(claimData.getReason())

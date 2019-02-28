@@ -21,8 +21,10 @@ public class ClaimDocumentMapper {
             .createdBy(claimDocument.getCreatedBy()) // TODO Should this be "ocmc"?
             .build();
 
-        return CCDCollectionElement.<CCDClaimDocument>builder().value(builder.build()).id(claimDocument.getDocumentName()).build();
-
+        return CCDCollectionElement.<CCDClaimDocument>builder()
+            .value(builder.build())
+            .id(claimDocument.getDocumentName())
+            .build();
     }
 
     public ClaimDocument from(CCDCollectionElement<CCDClaimDocument> collectionElement) {

@@ -8,7 +8,8 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import java.util.stream.Collectors;
 
 @Component
-public class ClaimDocumentCollectionMapper implements BuilderMapper<CCDCase, ClaimDocumentCollection, CCDCase.CCDCaseBuilder>  {
+public class ClaimDocumentCollectionMapper
+    implements BuilderMapper<CCDCase, ClaimDocumentCollection, CCDCase.CCDCaseBuilder>  {
 
     private final ClaimDocumentMapper claimDocumentMapper;
 
@@ -19,7 +20,9 @@ public class ClaimDocumentCollectionMapper implements BuilderMapper<CCDCase, Cla
 
     @Override
     public void to(ClaimDocumentCollection claimDocumentCollection, CCDCase.CCDCaseBuilder builder) {
-        if (claimDocumentCollection == null || claimDocumentCollection.getClaimDocuments() == null || claimDocumentCollection.getClaimDocuments().isEmpty()) {
+        if (claimDocumentCollection == null
+            || claimDocumentCollection.getClaimDocuments() == null
+            || claimDocumentCollection.getClaimDocuments().isEmpty()) {
             return;
         }
 
@@ -34,7 +37,7 @@ public class ClaimDocumentCollectionMapper implements BuilderMapper<CCDCase, Cla
 
     @Override
     public ClaimDocumentCollection from(CCDCase ccdCase) {
-        if (ccdCase.getCaseDocuments() == null || ccdCase.getCaseDocuments().isEmpty()){
+        if (ccdCase.getCaseDocuments() == null || ccdCase.getCaseDocuments().isEmpty()) {
             return null;
         }
 

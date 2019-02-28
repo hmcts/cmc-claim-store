@@ -9,17 +9,14 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
-import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 
 import java.net.URI;
 import java.time.LocalDateTime;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -59,7 +56,8 @@ public class ClaimDocumentMapperTest {
 
         assertEquals(claimDocument.getDocumentName(), ccdCollectionElement.getValue().getDocumentName());
         assertEquals(claimDocument.getDocumentManagementUrl(), ccdCollectionElement.getValue().getDocumentLink());
-        assertEquals(claimDocument.getDocumentType().toString(), ccdCollectionElement.getValue().getDocumentType().toString());
+        assertEquals(claimDocument.getDocumentType().toString(),
+            ccdCollectionElement.getValue().getDocumentType().toString());
         assertEquals(claimDocument.getAuthoredDatetime(), ccdCollectionElement.getValue().getAuthoredDate());
         assertEquals(claimDocument.getCreatedDatetime(), ccdCollectionElement.getValue().getCreatedDatetime());
         assertEquals(claimDocument.getCreatedBy(), ccdCollectionElement.getValue().getCreatedBy());
