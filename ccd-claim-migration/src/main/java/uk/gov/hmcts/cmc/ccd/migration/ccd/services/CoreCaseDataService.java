@@ -68,7 +68,7 @@ public class CoreCaseDataService {
     }
 
     @LogExecutionTime
-    public void createCase(User user, Claim claim, CaseEvent event) {
+    public CaseDetails createCase(User user, Claim claim, CaseEvent event) {
         try {
 
             EventRequestData eventRequestData = EventRequestData.builder()
@@ -79,7 +79,7 @@ public class CoreCaseDataService {
                 .ignoreWarning(true)
                 .build();
 
-            migrateCoreCaseDataService.save(user.getAuthorisation(), eventRequestData, claim);
+            return migrateCoreCaseDataService.save(user.getAuthorisation(), eventRequestData, claim);
         } catch (Exception exception) {
             throw new CreateCaseException(
                 String.format("Failed storing claim in CCD store for claim on %s on event %s",
