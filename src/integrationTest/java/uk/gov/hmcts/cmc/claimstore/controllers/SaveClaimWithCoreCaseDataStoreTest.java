@@ -47,24 +47,22 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
         ).willReturn(ImmutableList.of(prepaymentCaseDetails))
             .willReturn(ImmutableList.of(successfulCoreCaseDataStoreSubmitResponse()));
 
-        given(coreCaseDataApi.startEventForCaseWorker(
+        given(coreCaseDataApi.startForCaseworker(
             eq(SOLICITOR_AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(prepaymentCaseDetails.getId().toString()),
-            eq(SUBMIT_POST_PAYMENT)
+            eq(CREATE_NEW_CASE)
             )
         ).willReturn(successfulCoreCaseDataStoreStartResponse());
 
-        given(coreCaseDataApi.submitEventForCaseWorker(
+        given(coreCaseDataApi.submitForCaseworker(
             eq(SOLICITOR_AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(prepaymentCaseDetails.getId().toString()),
             eq(IGNORE_WARNING),
             any()
             )
@@ -77,24 +75,22 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             .andReturn();
 
         verify(coreCaseDataApi)
-            .startEventForCaseWorker(
+            .startForCaseworker(
                 eq(SOLICITOR_AUTHORISATION_TOKEN),
                 eq(SERVICE_TOKEN),
                 eq(USER_ID),
                 eq(JURISDICTION_ID),
                 eq(CASE_TYPE_ID),
-                eq(prepaymentCaseDetails.getId().toString()),
-                eq(SUBMIT_POST_PAYMENT)
+                eq(CREATE_NEW_CASE)
             );
 
         verify(coreCaseDataApi)
-            .submitEventForCaseWorker(
+            .submitForCaseworker(
                 eq(SOLICITOR_AUTHORISATION_TOKEN),
                 eq(SERVICE_TOKEN),
                 eq(USER_ID),
                 eq(JURISDICTION_ID),
                 eq(CASE_TYPE_ID),
-                eq(prepaymentCaseDetails.getId().toString()),
                 eq(IGNORE_WARNING),
                 any()
             );
@@ -116,24 +112,22 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
         ).willReturn(ImmutableList.of(prepaymentCaseDetails))
             .willReturn(ImmutableList.of(successfulCoreCaseDataStoreSubmitResponse()));
 
-        given(coreCaseDataApi.startEventForCitizen(
+        given(coreCaseDataApi.startForCitizen(
             eq(AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(prepaymentCaseDetails.getId().toString()),
-            eq(SUBMIT_POST_PAYMENT)
+            eq(CREATE_NEW_CASE)
             )
         ).willReturn(successfulCoreCaseDataStoreStartResponse());
 
-        given(coreCaseDataApi.submitEventForCitizen(
+        given(coreCaseDataApi.submitForCitizen(
             eq(AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(prepaymentCaseDetails.getId().toString()),
             eq(IGNORE_WARNING),
             any()
             )
@@ -146,24 +140,22 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             .andReturn();
 
         verify(coreCaseDataApi)
-            .startEventForCitizen(
+            .startForCitizen(
                 eq(AUTHORISATION_TOKEN),
                 eq(SERVICE_TOKEN),
                 eq(USER_ID),
                 eq(JURISDICTION_ID),
                 eq(CASE_TYPE_ID),
-                eq(prepaymentCaseDetails.getId().toString()),
-                eq(SUBMIT_POST_PAYMENT)
+                eq(CREATE_NEW_CASE)
             );
 
         verify(coreCaseDataApi)
-            .submitEventForCitizen(
+            .submitForCitizen(
                 eq(AUTHORISATION_TOKEN),
                 eq(SERVICE_TOKEN),
                 eq(USER_ID),
                 eq(JURISDICTION_ID),
                 eq(CASE_TYPE_ID),
-                eq(prepaymentCaseDetails.getId().toString()),
                 eq(IGNORE_WARNING),
                 any()
             );
@@ -184,14 +176,13 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             )
         ).willReturn(ImmutableList.of(prepaymentCaseDetails));
 
-        given(coreCaseDataApi.startEventForCaseWorker(
+        given(coreCaseDataApi.startForCaseworker(
             eq(SOLICITOR_AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(prepaymentCaseDetails.getId().toString()),
-            eq(SUBMIT_POST_PAYMENT)
+            eq(CREATE_NEW_CASE)
             )
         ).willThrow(FeignException.class);
 
@@ -202,7 +193,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             .andReturn();
 
         assertThat(result.getResolvedException().getMessage())
-            .isEqualTo("Failed updating claim in CCD store for case id 000LR001 on event SUBMIT_POST_PAYMENT");
+            .isEqualTo("Failed storing claim in CCD store for case id 000LR001 on event CREATE_NEW_CASE");
     }
 
     @Test
@@ -220,24 +211,22 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             )
         ).willReturn(ImmutableList.of(prepaymentCaseDetails));
 
-        given(coreCaseDataApi.startEventForCaseWorker(
+        given(coreCaseDataApi.startForCaseworker(
             eq(SOLICITOR_AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(prepaymentCaseDetails.getId().toString()),
-            eq(SUBMIT_CLAIM_EVENT)
+            eq(CREATE_NEW_CASE)
             )
         ).willReturn(successfulCoreCaseDataStoreStartResponse());
 
-        given(coreCaseDataApi.submitEventForCaseWorker(
+        given(coreCaseDataApi.submitForCaseworker(
             eq(SOLICITOR_AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(prepaymentCaseDetails.getId().toString()),
             eq(IGNORE_WARNING),
             any()
             )
@@ -250,21 +239,6 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             .andReturn();
 
         assertThat(result.getResolvedException().getMessage())
-            .isEqualTo("Failed updating claim in CCD store for case id 000LR001 on event SUBMIT_POST_PAYMENT");
-    }
-
-    @Test
-    public void shouldIssueClaimEvenWhenS2STokenGenerationFails() throws Exception {
-        ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
-
-        given(serviceAuthorisationApi.serviceToken(anyMap())).willThrow(FeignException.class);
-
-        MvcResult result = makeIssueClaimRequest(claimData, SOLICITOR_AUTHORISATION_TOKEN)
-            .andExpect(status().isNotFound())
-            .andReturn();
-
-        assertThat(result.getResolvedException().getMessage())
-            .isEqualTo(String.format("Case %s not found.", claimData.getExternalId().toString()));
-
+            .isEqualTo("Failed storing claim in CCD store for case id 000LR001 on event CREATE_NEW_CASE");
     }
 }
