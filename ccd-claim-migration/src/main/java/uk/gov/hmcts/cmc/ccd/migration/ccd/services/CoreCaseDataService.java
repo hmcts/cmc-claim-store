@@ -50,7 +50,7 @@ public class CoreCaseDataService {
     public static final String JURISDICTION_ID = "CMC";
     public static final String CASE_TYPE_ID = "MoneyClaimCase";
 
-    private static final Logger logger = LoggerFactory.getLogger(MigrateCoreCaseDataService.class);
+    private static final Logger logger = LoggerFactory.getLogger(CoreCaseDataService.class);
 
     private final CoreCaseDataApi coreCaseDataApi;
     private final AuthTokenGenerator authTokenGenerator;
@@ -68,7 +68,7 @@ public class CoreCaseDataService {
     }
 
     @LogExecutionTime
-    public void createCase(User user, Claim claim, CaseEvent event) {
+    public CaseDetails createCase(User user, Claim claim, CaseEvent event) {
         try {
 
             EventRequestData eventRequestData = EventRequestData.builder()
@@ -79,7 +79,7 @@ public class CoreCaseDataService {
                 .ignoreWarning(true)
                 .build();
 
-            migrateCoreCaseDataService.save(user.getAuthorisation(), eventRequestData, claim);
+            return migrateCoreCaseDataService.save(user.getAuthorisation(), eventRequestData, claim);
         } catch (Exception exception) {
             throw new CreateCaseException(
                 String.format("Failed storing claim in CCD store for claim on %s on event %s",
@@ -114,7 +114,8 @@ public class CoreCaseDataService {
     }
 
     @Retryable(value = {SocketTimeoutException.class, FeignException.class, IOException.class},
-        backoff = @Backoff(delay = 200, maxDelay = 500)
+        maxAttempts = 5,
+        backoff = @Backoff(delay = 400, maxDelay = 800)
     )
     @LogExecutionTime
     public Optional<CaseDetails> getCcdIdByReferenceNumber(User user, String referenceNumber) {

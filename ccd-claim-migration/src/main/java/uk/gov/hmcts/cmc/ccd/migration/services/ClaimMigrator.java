@@ -48,23 +48,23 @@ public class ClaimMigrator {
         AtomicInteger updatedClaims = new AtomicInteger(0);
         AtomicInteger failedMigrations = new AtomicInteger(0);
 
-        ForkJoinPool forkJoinPool = new ForkJoinPool(50);
+        ForkJoinPool forkJoinPool = new ForkJoinPool(25);
 
         try {
             forkJoinPool
                 .submit(() -> migrateClaims(user, notMigratedClaims, migratedClaims, updatedClaims, failedMigrations))
                 .get();
         } catch (InterruptedException | ExecutionException e) {
-            // handle exceptions
+            logger.info("failed migration due to fork join pool interruption");
         } finally {
             forkJoinPool.shutdown();
         }
 
         logger.info("Total Claims in database: " + notMigratedClaims.size());
-        logger.info("Successfully migrated: " + migratedClaims.toString());
-        logger.info("Successfully updated: " + updatedClaims.toString());
+        logger.info("Successful creates: " + migratedClaims.toString());
+        logger.info("Successful updates: " + updatedClaims.toString());
         logger.info("Total ccd calls: " + (updatedClaims.intValue() + migratedClaims.intValue()));
-        logger.info("Failed to migrate: " + failedMigrations.toString());
+        logger.info("Failed ccd calls: " + failedMigrations.toString());
     }
 
     private void migrateClaims(

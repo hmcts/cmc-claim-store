@@ -33,7 +33,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 
 @Service
 public class ResponseNeededNotificationService {
-    private static final String LOG_TEMPLATE = "Response needed notification cannot be send ({}) due to {}";
+    private static final String LOG_TEMPLATE = "Response needed notification cannot be sent ({}) due to {}";
 
     private final Logger logger = LoggerFactory.getLogger(ResponseNeededNotificationService.class);
 
