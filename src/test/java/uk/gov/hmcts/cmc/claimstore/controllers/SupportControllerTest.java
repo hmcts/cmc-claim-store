@@ -1,16 +1,21 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.controllers.support.SupportController;
+import uk.gov.hmcts.cmc.claimstore.events.DocumentUploadHandler;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedStaffNotificationHandler;
+import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedStaffNotificationHandler;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -36,6 +41,8 @@ import static org.mockito.Mockito.when;
 public class SupportControllerTest {
 
     private static final String AUTHORISATION = "Bearer: aaa";
+    private static final String CLAIMREFERENCENUMBER = "000CM001";
+    private static final String RESPONSESUBMITTED = "response-submitted";
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder().build();
 
     @Mock
@@ -59,6 +66,11 @@ public class SupportControllerTest {
     @Mock
     private AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler;
 
+    @Mock
+    private DocumentUploadHandler documentUploadHandler;
+    @Rule
+    public ExpectedException exceptionRule = ExpectedException.none();
+
     private SupportController controller;
 
     private Claim sampleClaim;
@@ -67,7 +79,8 @@ public class SupportControllerTest {
     public void setUp() {
         controller = new SupportController(claimService, userService, documentGenerator,
             moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
-            ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler
+            ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
+            documentUploadHandler
         );
         sampleClaim = SampleClaim.getDefault();
     }
@@ -82,9 +95,9 @@ public class SupportControllerTest {
     public void shouldNotResendRPANotificationsWhenRequestBodyClaimsDoesNotExistForMultipleClaims() {
         // given
         List<String> sendList = new ArrayList<>();
-        sendList.add("000CM001");
+        sendList.add(CLAIMREFERENCENUMBER);
         sendList.add("000CM003");
-        when(claimService.getClaimByReferenceAnonymous(eq("000CM001"))).thenReturn(Optional.of(sampleClaim));
+        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER))).thenReturn(Optional.of(sampleClaim));
 
         // when
         controller.resendRPANotifications(AUTHORISATION, sendList);
@@ -97,17 +110,34 @@ public class SupportControllerTest {
     public void shouldResendRPANotifications() {
         // given
         List<String> sendList = new ArrayList<>();
-        sendList.add("000CM001");
+        sendList.add(CLAIMREFERENCENUMBER);
         GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", "333");
         given(userService.generatePin(anyString(), eq(AUTHORISATION))).willReturn(pinResponse);
 
         // when
-        when(claimService.getClaimByReferenceAnonymous(eq("000CM001"))).thenReturn(Optional.of(sampleClaim));
+        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER))).thenReturn(Optional.of(sampleClaim));
         when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(USER_DETAILS);
         controller.resendRPANotifications(AUTHORISATION, sendList);
 
         // then
         verify(documentGenerator).generateForCitizenRPA(any());
+
+    }
+
+    @Test
+    public void shouldTriggerUploadDocumentWhenDefendantResponseSubmittedInvoked() {
+        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER))).thenReturn(Optional.of(sampleClaim));
+        controller.resendStaffNotifications(CLAIMREFERENCENUMBER, RESPONSESUBMITTED, AUTHORISATION);
+        verify(documentUploadHandler).uploadDocument(any(DefendantResponseEvent.class));
+    }
+
+    @Test
+    public void shouldThrowExceptionIfDefendantResponseSubmittedWhenNoDefendantResponse() {
+        exceptionRule.expect(ConflictException.class);
+        exceptionRule.expectMessage("Claim " + CLAIMREFERENCENUMBER + " does not have associated response");
+        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
+            .thenReturn(Optional.of(SampleClaim.withNoResponse()));
+        controller.resendStaffNotifications(CLAIMREFERENCENUMBER, RESPONSESUBMITTED, AUTHORISATION);
 
     }
 
