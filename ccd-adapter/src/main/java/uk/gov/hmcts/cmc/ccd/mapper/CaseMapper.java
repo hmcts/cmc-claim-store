@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
@@ -43,7 +44,6 @@ public class CaseMapper {
 
     public Claim from(CCDCase ccdCase) {
         Claim.ClaimBuilder builder = Claim.builder();
-
         claimMapper.from(ccdCase, builder);
 
         builder

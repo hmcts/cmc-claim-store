@@ -119,8 +119,8 @@ public class DefendantMapperTest {
         //Verify if the TheirDetails mapper and response mapper are called by assert not null
         assertThat(respondent.getResponseSubmittedOn(), is(notNullValue()));
         assertThat(respondent.getResponseType(), is(notNullValue()));
-        assertThat(respondent.getApplicantProvidedDetails(), is(notNullValue()));
-        assertThat(respondent.getApplicantProvidedDetails().getType(), is(notNullValue()));
+        assertThat(respondent.getApplicantProvidedDetail(), is(notNullValue()));
+        assertThat(respondent.getApplicantProvidedDetail().getType(), is(notNullValue()));
 
         assertEquals("The mapping for theirDetailsMapper is not done properly",
             INDIVIDUAL, respondent.getPartyDetail().getType());

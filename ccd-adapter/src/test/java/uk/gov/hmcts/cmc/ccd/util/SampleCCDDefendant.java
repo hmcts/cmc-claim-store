@@ -36,7 +36,7 @@ public class SampleCCDDefendant {
 
     public static CCDRespondent.CCDRespondentBuilder withDefault() {
         return CCDRespondent.builder()
-            .applicantProvidedDetails(CCDParty.builder()
+            .applicantProvidedDetail(CCDParty.builder()
                 .type(INDIVIDUAL)
                 .emailAddress("defendant@Ididabadjob.com")
                 .build())
@@ -192,7 +192,7 @@ public class SampleCCDDefendant {
                     .value(SampleCCDPartyStatement.counterSignPartyStatement()).build()
             );
         return withPartAdmissionResponse()
-            .applicantProvidedDetails(CCDParty.builder().type(COMPANY).build())
+            .applicantProvidedDetail(CCDParty.builder().type(COMPANY).build())
             .settlementReachedAt(LocalDateTime.now())
             .settlementPartyStatements(partyStatements);
     }

@@ -181,7 +181,7 @@ public class SampleData {
     public static CCDRespondent getCCDRespondentIndividual() {
         CCDAddress ccdAddress = getCCDAddress();
         return CCDRespondent.builder()
-            .applicantProvidedDetails(
+            .applicantProvidedDetail(
                 CCDParty.builder()
                     .type(INDIVIDUAL)
                     .primaryAddress(ccdAddress)
@@ -200,7 +200,7 @@ public class SampleData {
     public static CCDRespondent getCCDRespondentOrganisation() {
         CCDAddress ccdAddress = getCCDAddress();
         return CCDRespondent.builder()
-            .applicantProvidedDetails(CCDParty.builder()
+            .applicantProvidedDetail(CCDParty.builder()
                 .type(ORGANISATION)
                 .primaryAddress(ccdAddress)
                 .correspondenceAddress(ccdAddress)
@@ -220,7 +220,7 @@ public class SampleData {
     public static CCDRespondent getCCDRespondentCompany() {
         CCDAddress ccdAddress = getCCDAddress();
         return CCDRespondent.builder()
-            .applicantProvidedDetails(CCDParty.builder()
+            .applicantProvidedDetail(CCDParty.builder()
                 .type(COMPANY)
                 .primaryAddress(ccdAddress)
                 .correspondenceAddress(ccdAddress)
@@ -238,7 +238,7 @@ public class SampleData {
     public static CCDRespondent getCCDRespondentSoleTrader() {
         CCDAddress ccdAddress = getCCDAddress();
         return CCDRespondent.builder()
-            .applicantProvidedDetails(CCDParty.builder()
+            .applicantProvidedDetail(CCDParty.builder()
                 .type(SOLE_TRADER)
                 .primaryAddress(ccdAddress)
                 .title("Mr.")

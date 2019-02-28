@@ -38,16 +38,16 @@ public class ClaimantMapper {
 
         if (party instanceof Individual) {
             Individual individual = (Individual) party;
-            individualMapper.to(individual, builder);
+            individualMapper.to(individual, builder, partyDetail);
         } else if (party instanceof Company) {
             Company company = (Company) party;
-            companyMapper.to(company, builder);
+            companyMapper.to(company, builder, partyDetail);
         } else if (party instanceof Organisation) {
             Organisation organisation = (Organisation) party;
-            organisationMapper.to(organisation, builder);
+            organisationMapper.to(organisation, builder, partyDetail);
         } else if (party instanceof SoleTrader) {
             SoleTrader soleTrader = (SoleTrader) party;
-            soleTraderMapper.to(soleTrader, builder);
+            soleTraderMapper.to(soleTrader, builder, partyDetail);
         }
         return CCDCollectionElement.<CCDApplicant>builder()
             .value(builder.build())

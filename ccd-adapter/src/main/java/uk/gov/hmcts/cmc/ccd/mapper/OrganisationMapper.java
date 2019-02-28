@@ -23,20 +23,21 @@ public class OrganisationMapper {
         this.telephoneMapper = telephoneMapper;
     }
 
-    public void to(Organisation organisation, CCDApplicant.CCDApplicantBuilder builder) {
-        CCDParty.CCDPartyBuilder partyDetail = CCDParty.builder().type(CCDPartyType.ORGANISATION);
+    public void to(Organisation organisation, CCDApplicant.CCDApplicantBuilder builder,
+                   CCDParty.CCDPartyBuilder applicantPartyDetail) {
+        applicantPartyDetail.type(CCDPartyType.ORGANISATION);
         organisation.getCorrespondenceAddress()
-            .ifPresent(address -> partyDetail.correspondenceAddress(addressMapper.to(address)));
+            .ifPresent(address -> applicantPartyDetail.correspondenceAddress(addressMapper.to(address)));
         organisation.getRepresentative()
             .ifPresent(representative -> representativeMapper.to(representative, builder));
-        organisation.getMobilePhone().ifPresent(telephoneNo -> partyDetail.telephoneNumber(
+        organisation.getMobilePhone().ifPresent(telephoneNo -> applicantPartyDetail.telephoneNumber(
             telephoneMapper.to(telephoneNo)));
-        organisation.getContactPerson().ifPresent(partyDetail::contactPerson);
-        organisation.getCompaniesHouseNumber().ifPresent(partyDetail::companiesHouseNumber);
-        partyDetail.primaryAddress(addressMapper.to(organisation.getAddress()));
+        organisation.getContactPerson().ifPresent(applicantPartyDetail::contactPerson);
+        organisation.getCompaniesHouseNumber().ifPresent(applicantPartyDetail::companiesHouseNumber);
+        applicantPartyDetail.primaryAddress(addressMapper.to(organisation.getAddress()));
         builder
             .partyName(organisation.getName())
-            .partyDetail(partyDetail.build());
+            .partyDetail(applicantPartyDetail.build());
 
     }
 

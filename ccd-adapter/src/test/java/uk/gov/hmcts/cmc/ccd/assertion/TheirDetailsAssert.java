@@ -28,7 +28,7 @@ public class TheirDetailsAssert extends AbstractAssert<TheirDetailsAssert, Their
     public TheirDetailsAssert isEqualTo(CCDRespondent respondent) {
         isNotNull();
 
-        CCDParty partyDetails = respondent.getApplicantProvidedDetails();
+        CCDParty partyDetails = respondent.getApplicantProvidedDetail();
         if (actual instanceof IndividualDetails) {
             if (!Objects.equals(INDIVIDUAL, partyDetails.getType())) {
                 failWithMessage("Expected CCDRespondent.applicantProvidedType to be <%s> but was <%s>",
@@ -68,7 +68,7 @@ public class TheirDetailsAssert extends AbstractAssert<TheirDetailsAssert, Their
 
     private void assertSoleTraderDetails(CCDRespondent respondent) {
         SoleTraderDetails actual = (SoleTraderDetails) this.actual;
-        CCDParty applicantProvidedPartyDetail = respondent.getApplicantProvidedDetails();
+        CCDParty applicantProvidedPartyDetail = respondent.getApplicantProvidedDetail();
         assertThat(actual.getAddress()).isEqualTo(applicantProvidedPartyDetail.getPrimaryAddress());
 
         actual.getTitle().ifPresent(title -> assertThat(applicantProvidedPartyDetail.getTitle()).isEqualTo(title));
@@ -100,7 +100,7 @@ public class TheirDetailsAssert extends AbstractAssert<TheirDetailsAssert, Their
 
     private void assertCompanyDetails(CCDRespondent respondent) {
         CompanyDetails actual = (CompanyDetails) this.actual;
-        CCDParty applicantProvidedPartyDetail = respondent.getApplicantProvidedDetails();
+        CCDParty applicantProvidedPartyDetail = respondent.getApplicantProvidedDetail();
 
         assertThat(actual.getAddress()).isEqualTo(applicantProvidedPartyDetail.getPrimaryAddress());
         if (!Objects.equals(actual.getName(), respondent.getApplicantProvidedPartyName())) {
@@ -130,7 +130,7 @@ public class TheirDetailsAssert extends AbstractAssert<TheirDetailsAssert, Their
 
     private void assertOrganisationDetails(CCDRespondent respondent) {
         OrganisationDetails actual = (OrganisationDetails) this.actual;
-        CCDParty applicantProvidedPartyDetail = respondent.getApplicantProvidedDetails();
+        CCDParty applicantProvidedPartyDetail = respondent.getApplicantProvidedDetail();
 
         assertThat(actual.getAddress()).isEqualTo(applicantProvidedPartyDetail.getPrimaryAddress());
         if (!Objects.equals(actual.getName(), respondent.getApplicantProvidedPartyName())) {
@@ -167,7 +167,7 @@ public class TheirDetailsAssert extends AbstractAssert<TheirDetailsAssert, Their
 
     private void assertIndividualDetails(CCDRespondent respondent) {
         IndividualDetails actual = (IndividualDetails) this.actual;
-        CCDParty applicantProvidedPartyDetail = respondent.getApplicantProvidedDetails();
+        CCDParty applicantProvidedPartyDetail = respondent.getApplicantProvidedDetail();
 
         assertThat(actual.getAddress()).isEqualTo(applicantProvidedPartyDetail.getPrimaryAddress());
         if (!Objects.equals(actual.getName(), respondent.getApplicantProvidedPartyName())) {

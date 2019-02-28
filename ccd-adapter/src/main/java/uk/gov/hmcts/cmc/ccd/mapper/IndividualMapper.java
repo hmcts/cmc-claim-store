@@ -25,23 +25,24 @@ public class IndividualMapper {
         this.telephoneMapper = telephoneMapper;
     }
 
-    public void to(Individual individual, CCDApplicant.CCDApplicantBuilder builder) {
-        CCDParty.CCDPartyBuilder partyDetail = CCDParty.builder().type(CCDPartyType.INDIVIDUAL);
+    public void to(Individual individual, CCDApplicant.CCDApplicantBuilder builder,
+                   CCDParty.CCDPartyBuilder applicantPartyDetail) {
+        applicantPartyDetail.type(CCDPartyType.INDIVIDUAL);
         individual.getMobilePhone()
-            .ifPresent(telephoneNo -> partyDetail.telephoneNumber(telephoneMapper.to(telephoneNo)));
+            .ifPresent(telephoneNo -> applicantPartyDetail.telephoneNumber(telephoneMapper.to(telephoneNo)));
 
         individual.getCorrespondenceAddress()
-            .ifPresent(address -> partyDetail.correspondenceAddress(addressMapper.to(address)));
+            .ifPresent(address -> applicantPartyDetail.correspondenceAddress(addressMapper.to(address)));
 
         individual.getRepresentative()
             .ifPresent(representative -> representativeMapper.to(representative, builder));
 
-        Optional.ofNullable(individual.getDateOfBirth()).ifPresent(partyDetail::dateOfBirth);
-        partyDetail.primaryAddress(addressMapper.to(individual.getAddress()));
+        Optional.ofNullable(individual.getDateOfBirth()).ifPresent(applicantPartyDetail::dateOfBirth);
+        applicantPartyDetail.primaryAddress(addressMapper.to(individual.getAddress()));
 
         builder
             .partyName(individual.getName())
-            .partyDetail(partyDetail.build());
+            .partyDetail(applicantPartyDetail.build());
     }
 
     public Individual from(CCDCollectionElement<CCDApplicant> individual) {

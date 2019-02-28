@@ -23,24 +23,24 @@ public class CompanyMapper {
         this.telephoneMapper = telephoneMapper;
     }
 
-    public void to(Company company, CCDApplicant.CCDApplicantBuilder builder) {
+    public void to(Company company, CCDApplicant.CCDApplicantBuilder builder,
+                   CCDParty.CCDPartyBuilder applicantPartyDetail) {
 
-        CCDParty.CCDPartyBuilder partyDetail = CCDParty.builder();
-        partyDetail.type(CCDPartyType.COMPANY);
-        company.getMobilePhone().ifPresent(mobileNo -> partyDetail.telephoneNumber(telephoneMapper.to(mobileNo)));
-        company.getContactPerson().ifPresent(partyDetail::contactPerson);
+        applicantPartyDetail.type(CCDPartyType.COMPANY);
+        company.getMobilePhone().ifPresent(mobileNo -> applicantPartyDetail.telephoneNumber(telephoneMapper.to(mobileNo)));
+        company.getContactPerson().ifPresent(applicantPartyDetail::contactPerson);
 
         company.getCorrespondenceAddress()
-            .ifPresent(address -> partyDetail.correspondenceAddress(addressMapper.to(address)));
+            .ifPresent(address -> applicantPartyDetail.correspondenceAddress(addressMapper.to(address)));
 
         company.getRepresentative()
             .ifPresent(representative -> representativeMapper.to(representative, builder));
 
-        partyDetail.primaryAddress(addressMapper.to(company.getAddress()));
+        applicantPartyDetail.primaryAddress(addressMapper.to(company.getAddress()));
 
         builder
             .partyName(company.getName())
-            .partyDetail(partyDetail.build());
+            .partyDetail(applicantPartyDetail.build());
 
     }
 

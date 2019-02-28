@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 
 @Component
@@ -22,20 +23,21 @@ public class SoleTraderMapper {
         this.telephoneMapper = telephoneMapper;
     }
 
-    public void to(SoleTrader soleTrader, CCDApplicant.CCDApplicantBuilder builder) {
-        CCDParty.CCDPartyBuilder partyDetails = CCDParty.builder();
-        soleTrader.getTitle().ifPresent(partyDetails::title);
+    public void to(SoleTrader soleTrader, CCDApplicant.CCDApplicantBuilder builder,
+                   CCDParty.CCDPartyBuilder applicantPartyDetail) {
+        applicantPartyDetail.type(CCDPartyType.SOLE_TRADER);
+        soleTrader.getTitle().ifPresent(applicantPartyDetail::title);
         soleTrader.getMobilePhone()
-            .ifPresent(telephoneNo -> partyDetails.telephoneNumber(telephoneMapper.to(telephoneNo)));
-        soleTrader.getBusinessName().ifPresent(partyDetails::businessName);
+            .ifPresent(telephoneNo -> applicantPartyDetail.telephoneNumber(telephoneMapper.to(telephoneNo)));
+        soleTrader.getBusinessName().ifPresent(applicantPartyDetail::businessName);
         soleTrader.getCorrespondenceAddress()
-            .ifPresent(address -> partyDetails.correspondenceAddress(addressMapper.to(address)));
+            .ifPresent(address -> applicantPartyDetail.correspondenceAddress(addressMapper.to(address)));
         soleTrader.getRepresentative()
             .ifPresent(representative -> representativeMapper.to(representative, builder));
-        partyDetails.primaryAddress(addressMapper.to(soleTrader.getAddress()));
+        applicantPartyDetail.primaryAddress(addressMapper.to(soleTrader.getAddress()));
         builder
             .partyName(soleTrader.getName())
-            .partyDetail(partyDetails.build());
+            .partyDetail(applicantPartyDetail.build());
     }
 
     public SoleTrader from(CCDCollectionElement<CCDApplicant> soletrader) {

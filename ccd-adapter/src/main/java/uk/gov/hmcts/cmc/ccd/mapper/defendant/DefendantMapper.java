@@ -85,11 +85,13 @@ public class DefendantMapper {
     public TheirDetails from(Claim.ClaimBuilder builder, CCDCollectionElement<CCDRespondent> respondentElement) {
 
         CCDRespondent ccdRespondent = respondentElement.getValue();
+        CCDParty partyDetail = ccdRespondent.getPartyDetail();
 
         builder
             .letterHolderId(ccdRespondent.getLetterHolderId())
             .responseDeadline(ccdRespondent.getResponseDeadline())
-            .defendantEmail(ccdRespondent.getPartyDetail().getEmailAddress())
+            .defendantEmail(Optional.ofNullable(partyDetail)
+                .map(CCDParty::getEmailAddress).orElse(null))
             .directionsQuestionnaireDeadline(ccdRespondent.getDirectionsQuestionnaireDeadline())
             .defendantId(ccdRespondent.getDefendantId());
 
