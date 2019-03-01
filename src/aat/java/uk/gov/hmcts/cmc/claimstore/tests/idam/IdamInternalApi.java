@@ -4,12 +4,8 @@ import feign.Client;
 import feign.Response;
 import feign.httpclient.ApacheHttpClient;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.ssl.SSLContextBuilder;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
@@ -17,12 +13,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 
 @FeignClient(
     name = "idam-internal-api",
@@ -61,22 +51,7 @@ public interface IdamInternalApi {
         }
 
         private CloseableHttpClient getHttpClient() {
-
             int timeout = 10000;
-
-            // use the TrustSelfSignedStrategy to allow Self Signed Certificates
-            SSLConnectionSocketFactory connectionFactory = null;
-            try {
-                SSLContext sslContext = SSLContextBuilder
-                    .create()
-                    .loadTrustMaterial(new TrustSelfSignedStrategy())
-                    .build();
-                HostnameVerifier allowAllHosts = new NoopHostnameVerifier();
-                connectionFactory = new SSLConnectionSocketFactory(sslContext, allowAllHosts);
-            } catch(KeyStoreException | NoSuchAlgorithmException | KeyManagementException ex) {
-                ex.printStackTrace();
-            }
-
             RequestConfig config = RequestConfig.custom()
                 .setConnectTimeout(timeout)
                 .setConnectionRequestTimeout(timeout)
@@ -85,10 +60,9 @@ public interface IdamInternalApi {
 
             return HttpClientBuilder
                 .create()
-                .setSSLSocketFactory(connectionFactory)
                 .useSystemProperties()
-                .setDefaultRequestConfig(config)
                 .disableRedirectHandling()
+                .setDefaultRequestConfig(config)
                 .build();
         }
     }
