@@ -30,7 +30,6 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMB
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCD_ASYNC_FAILURE;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isSettlePreJudgment;
 
-@Async("threadPoolTaskExecutor")
 public class CCDCaseHandler {
 
     private final CCDCaseRepository ccdCaseRepository;

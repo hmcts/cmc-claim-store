@@ -9,6 +9,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
@@ -56,8 +57,8 @@ public class ClaimDocumentMapperTest {
 
         assertEquals(claimDocument.getDocumentName(), ccdCollectionElement.getValue().getDocumentName());
         assertEquals(claimDocument.getDocumentManagementUrl(), ccdCollectionElement.getValue().getDocumentLink());
-        assertEquals(claimDocument.getDocumentType().toString(),
-            ccdCollectionElement.getValue().getDocumentType().toString());
+        assertEquals(CCDClaimDocumentType.CLAIM_ISSUE_RECEIPT.getTypeName(),
+            ccdCollectionElement.getValue().getDocumentType());
         assertEquals(claimDocument.getAuthoredDatetime(), ccdCollectionElement.getValue().getAuthoredDatetime());
         assertEquals(claimDocument.getCreatedDatetime(), ccdCollectionElement.getValue().getCreatedDatetime());
         assertEquals(claimDocument.getCreatedBy(), ccdCollectionElement.getValue().getCreatedBy());
@@ -71,7 +72,7 @@ public class ClaimDocumentMapperTest {
 
         assertEquals(ccdClaimDocument.getDocumentName(), claimDocument.getDocumentName());
         assertEquals(ccdClaimDocument.getDocumentLink(), claimDocument.getDocumentManagementUrl());
-        assertEquals(ccdClaimDocument.getDocumentType().toString(), claimDocument.getDocumentType().toString());
+        assertEquals(ClaimDocumentType.CLAIM_ISSUE_RECEIPT, claimDocument.getDocumentType());
         assertEquals(ccdClaimDocument.getAuthoredDatetime(), ccdClaimDocument.getAuthoredDatetime());
         assertEquals(ccdClaimDocument.getCreatedDatetime(), ccdClaimDocument.getCreatedDatetime());
         assertEquals(ccdClaimDocument.getCreatedBy(), ccdClaimDocument.getCreatedBy());

@@ -228,6 +228,8 @@ public class ClaimService {
                     new NotFoundException("Could not find claim with external ID '" + externalId + "'"));
         }
 
+        ccdEventProducer.createCCDClaimIssuedEvent(issuedClaim, authorisation);
+
         eventProducer.createClaimIssuedEvent(
             issuedClaim,
             pinResponse.map(GeneratePinResponse::getPin).orElse(null),
@@ -236,7 +238,6 @@ public class ClaimService {
         );
 
         trackClaimIssued(issuedClaim.getReferenceNumber(), issuedClaim.getClaimData().isClaimantRepresented());
-        ccdEventProducer.createCCDClaimIssuedEvent(issuedClaim, authorisation);
 
         return issuedClaim;
     }
