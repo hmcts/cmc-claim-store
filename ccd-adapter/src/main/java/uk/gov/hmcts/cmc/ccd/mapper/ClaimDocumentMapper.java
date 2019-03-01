@@ -16,7 +16,7 @@ public class ClaimDocumentMapper {
         builder.documentName(claimDocument.getDocumentName())
             .documentLink(claimDocument.getDocumentManagementUrl())
             .documentType(CCDClaimDocumentType.CLAIM_ISSUE_RECEIPT) // TODO Need to somehow pass or map the event
-            .authoredDate(claimDocument.getAuthoredDatetime())
+            .authoredDatetime(claimDocument.getAuthoredDatetime())
             .createdDatetime(claimDocument.getCreatedDatetime())
             .createdBy(claimDocument.getCreatedBy()) // TODO Should this be "ocmc"?
             .build();
@@ -39,7 +39,7 @@ public class ClaimDocumentMapper {
             .documentName(ccdClaimDocument.getDocumentName())
             .documentManagementUrl(ccdClaimDocument.getDocumentLink())
             .documentType(ClaimDocumentType.valueOf(ccdClaimDocument.getDocumentType().toString()))
-            .authoredDatetime(ccdClaimDocument.getAuthoredDate())
+            .authoredDatetime(ccdClaimDocument.getAuthoredDatetime())
             .createdDatetime(ccdClaimDocument.getCreatedDatetime())
             .createdBy(ccdClaimDocument.getCreatedBy())
             .build();
