@@ -39,7 +39,7 @@ public class PaidInFullNotificationServiceTest {
         .withMoneyReceivedOn(LocalDate.now()).build();
 
     @Before
-    public void setup() {
+    public void setUp() {
         when(emailProperties.getPaidInFullRecipient()).thenReturn(PAID_IN_FULL_EMAIL_ADDRESS);
         when(emailProperties.getSender()).thenReturn(SENDER_EMAIL);
 
