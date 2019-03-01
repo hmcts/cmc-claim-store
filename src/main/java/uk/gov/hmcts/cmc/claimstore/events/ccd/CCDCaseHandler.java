@@ -32,6 +32,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isSettleP
 
 @Async("threadPoolTaskExecutor")
 public class CCDCaseHandler {
+
     private final CCDCaseRepository ccdCaseRepository;
     private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
     private AppInsights appInsights;
@@ -49,41 +50,13 @@ public class CCDCaseHandler {
         this.userService = userService;
     }
 
-    @EventListener
-    @LogExecutionTime
-    public void savePrePayment(CCDPrePaymentEvent event) {
-        try {
-            ccdCaseRepository.savePrePaymentClaim(event.getExternalId(), event.getAuthorisation());
-        } catch (FeignException e) {
-            appInsights.trackEvent(CCD_ASYNC_FAILURE, CLAIM_EXTERNAL_ID, event.getExternalId());
-            throw e;
-        }
-    }
-
     @TransactionalEventListener
     @LogExecutionTime
     public void saveClaim(CCDClaimIssuedEvent event) {
         Claim claim = event.getClaim();
         try {
             String authorization = event.getAuthorization();
-
-            Long prePaymentClaimId = ccdCaseRepository.getOnHoldIdByExternalId(claim.getExternalId(), authorization);
-
-            Claim ccdClaim = Claim.builder()
-                .id(prePaymentClaimId)
-                .claimData(claim.getClaimData())
-                .submitterId(claim.getSubmitterId())
-                .issuedOn(claim.getIssuedOn())
-                .responseDeadline(claim.getResponseDeadline())
-                .externalId(claim.getExternalId())
-                .submitterEmail(claim.getSubmitterEmail())
-                .createdAt(claim.getCreatedAt())
-                .letterHolderId(claim.getLetterHolderId())
-                .features(claim.getFeatures())
-                .referenceNumber(claim.getReferenceNumber())
-                .build();
-
-            ccdCaseRepository.saveClaim(authorization, ccdClaim);
+            ccdCaseRepository.saveClaim(authorization, claim);
         } catch (FeignException e) {
             appInsights.trackEvent(CCD_ASYNC_FAILURE, REFERENCE_NUMBER, claim.getReferenceNumber());
             throw e;

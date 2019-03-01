@@ -124,7 +124,7 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
 
     @Test
     public void newFeatureFlagShouldBeFalseIfClaimHasNoFeatures() throws Exception {
-        Claim claim  = SampleClaim.builder().withFeatures(Collections.emptyList()).build();
+        Claim claim = SampleClaim.builder().withFeatures(Collections.emptyList()).build();
         service.sendMail(claim, USER_EMAIL, null, CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference, USER_FULLNAME);
 
         verify(notificationClient).sendEmail(anyString(), anyString(), templateParameters.capture(), anyString());
@@ -132,4 +132,19 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
         assertThat(templateParameters.getValue()).containsEntry(NotificationTemplateParameters.NEW_FEATURES, "false");
     }
 
+    @Test
+    public void recoveryShouldNotLogPII() {
+        service.logNotificationFailure(
+            new NotificationException("expected exception"),
+            null,
+            "hidden@email.com",
+            null,
+            null,
+            "reference",
+            null
+        );
+
+        assertWasLogged("Failure: failed to send notification (reference) due to expected exception");
+        assertWasNotLogged("hidden@email.com");
+    }
 }

@@ -9,7 +9,10 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 
 import java.time.Clock;
 import java.util.Map;
@@ -69,6 +72,21 @@ public class DefendantPinLetterContentProviderTest {
         Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
 
         assertThat(content).containsEntry("claimantFullName", "John Rambo");
+    }
+
+    @Test
+    public void shouldProvideClaimantNameWithTradingAsWhenSoleTrader() {
+        SoleTrader claimant = SampleParty.builder().withRepresentative(null).soleTrader();
+        Claim claim = SampleClaim.builder().withClaimData(
+            SampleClaimData.builder().withClaimant(claimant).build()).build();
+
+        Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
+
+        String expected = String.format("%s T/A %s", claimant.getName(),
+            claimant.getBusinessName().orElseThrow(IllegalStateException::new));
+
+        assertThat(content).containsEntry("claimantFullName", expected);
+
     }
 
     @Test
