@@ -95,7 +95,7 @@ public class DefendantResponseServiceTest {
 
         //then
         verify(eventProducer, once())
-            .createDefendantResponseEvent(eq(claim), anyString());
+            .createDefendantResponseEvent(eq(claim));
         verify(appInsights, once()).trackEvent(eq(RESPONSE_FULL_DEFENCE_SUBMITTED),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
 

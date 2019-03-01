@@ -10,7 +10,6 @@ import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
-import uk.gov.hmcts.cmc.claimstore.events.DocumentUploadEvent;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
@@ -67,8 +66,6 @@ public class DocumentGenerator {
             defendantLetterDoc, sealedClaimDoc));
         publisher.publishEvent(new DocumentGeneratedEvent(event.getClaim(), event.getAuthorisation(),
             sealedClaim, defendantLetter, claimIssueReceipt));
-        publisher.publishEvent(new DocumentUploadEvent(event.getClaim(), event.getAuthorisation(),
-            sealedClaim, defendantLetter, claimIssueReceipt));
     }
 
     @EventListener
@@ -77,7 +74,6 @@ public class DocumentGenerator {
             sealedClaimPdfService.createPdf(event.getClaim()), SEALED_CLAIM);
 
         publisher.publishEvent(new DocumentGeneratedEvent(event.getClaim(), event.getAuthorisation(), sealedClaim));
-        publisher.publishEvent(new DocumentUploadEvent(event.getClaim(), event.getAuthorisation(), sealedClaim));
     }
 
     public void generateForCitizenRPA(CitizenClaimIssuedEvent event) {

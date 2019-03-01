@@ -9,10 +9,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import uk.gov.hmcts.cmc.claimstore.documents.CitizenServiceDocumentsService;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
-import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
-import uk.gov.hmcts.cmc.claimstore.events.DocumentUploadEvent;
-import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
@@ -21,7 +18,6 @@ import uk.gov.hmcts.reform.sendletter.api.Document;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -32,19 +28,10 @@ public class DocumentGeneratorTest {
 
     private DocumentGenerator documentGenerator;
 
-    private String authorisation = "AuthValue";
-    private String submitterName = "Dr. John Smith";
-    private String pin = "123456";
-    private Map<String, Object> pinContents = new HashMap<>();
-    private String pinTemplate = "pinTemplate";
-    private Document defendantLetterDocument = new Document(pinTemplate, pinContents);
-    private Map<String, Object> claimContents = new HashMap<>();
-    private String sealedClaimTemplate = "sealedClaimTemplate";
-
     @Mock
     private CitizenServiceDocumentsService citizenDocumentService;
     @Mock
-    private SealedClaimPdfService sealedClaimPdfService;
+    private SealedClaimPdfService claimPdfService;
     @Mock
     private ApplicationEventPublisher publisher;
     @Mock
@@ -55,7 +42,7 @@ public class DocumentGeneratorTest {
     @Before
     public void before() {
         documentGenerator = new DocumentGenerator(citizenDocumentService,
-            sealedClaimPdfService,
+            claimPdfService,
             publisher,
             pdfServiceClient,
             claimIssueReceiptService);
@@ -64,13 +51,20 @@ public class DocumentGeneratorTest {
     @Test
     public void shouldPublishDocumentReadyToPrintEventHavingLetterDocumentBeforeClaimDocument() {
         //given
-
+        String authorisation = "AuthValue";
+        String pin = "123456";
+        String submitterName = "Dr. John Smith";
+        Map<String, Object> pinContents = new HashMap<>();
+        String pinTemplate = "pinTemplate";
+        Document defendantLetterDocument = new Document(pinTemplate, pinContents);
+        Map<String, Object> claimContents = new HashMap<>();
+        String sealedClaimTemplate = "sealedClaimTemplate";
         Document sealedClaimDocument = new Document(sealedClaimTemplate, claimContents);
         Claim claim = SampleClaim.getDefault();
         when(citizenDocumentService.sealedClaimDocument(claim)).thenReturn(sealedClaimDocument);
         when(citizenDocumentService.pinLetterDocument(claim, pin)).thenReturn(defendantLetterDocument);
 
-        when(sealedClaimPdfService.createPdf(claim))
+        when(claimPdfService.createPdf(claim))
             .thenReturn(PDF_CONTENT);
 
         when(pdfServiceClient.generateFromHtml(pinTemplate.getBytes(), defendantLetterDocument.values))
@@ -86,29 +80,5 @@ public class DocumentGeneratorTest {
 
         verify(publisher)
             .publishEvent(new DocumentReadyToPrintEvent(claim, defendantLetterDocument, sealedClaimDocument));
-    }
-
-    @Test
-    public void shouldTriggerDocumentUploadEventForCitizenClaim() {
-        Document sealedClaimDocument = new Document(sealedClaimTemplate, claimContents);
-        Claim claim = SampleClaim.getDefault();
-        when(citizenDocumentService.sealedClaimDocument(claim)).thenReturn(sealedClaimDocument);
-        when(citizenDocumentService.pinLetterDocument(claim, pin)).thenReturn(defendantLetterDocument);
-        CitizenClaimIssuedEvent event = new CitizenClaimIssuedEvent(claim, pin, submitterName, authorisation);
-        documentGenerator.generateForNonRepresentedClaim(event);
-        verify(publisher)
-            .publishEvent(new DocumentReadyToPrintEvent(claim, defendantLetterDocument, sealedClaimDocument));
-        verify(publisher).publishEvent(any(DocumentGeneratedEvent.class));
-        verify(publisher).publishEvent(any(DocumentUploadEvent.class));
-    }
-
-    @Test
-    public void shouldTriggerDocumentUploadEventForForRepresentedClaim() {
-        Claim claim = SampleClaim.getDefault();
-        when(sealedClaimPdfService.createPdf(claim)).thenReturn(PDF_CONTENT);
-        RepresentedClaimIssuedEvent event = new RepresentedClaimIssuedEvent(claim, submitterName, authorisation);
-        documentGenerator.generateForRepresentedClaim(event);
-        verify(publisher).publishEvent(any(DocumentGeneratedEvent.class));
-        verify(publisher).publishEvent(any(DocumentUploadEvent.class));
     }
 }

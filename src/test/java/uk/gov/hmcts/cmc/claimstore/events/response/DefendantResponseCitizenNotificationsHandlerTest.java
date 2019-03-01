@@ -14,16 +14,12 @@ import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefendantResponseCitizenNotificationsHandlerTest {
-
-    private static final String AUTHORISATION = "Bearer: aaa";
     private static final DefendantResponseEvent RESPONSE_EVENT = new DefendantResponseEvent(
-        SampleClaimIssuedEvent.CLAIM_WITH_RESPONSE,
-        AUTHORISATION
+        SampleClaimIssuedEvent.CLAIM_WITH_RESPONSE
     );
 
     private static final DefendantResponseEvent RESPONSE_EVENT_WITHOUT_RESPONSE = new DefendantResponseEvent(
-        SampleClaimIssuedEvent.CLAIM_NO_RESPONSE,
-        AUTHORISATION
+        SampleClaimIssuedEvent.CLAIM_NO_RESPONSE
     );
 
     private DefendantResponseCitizenNotificationsHandler defendantResponseCitizenNotificationsHandler;
@@ -70,7 +66,7 @@ public class DefendantResponseCitizenNotificationsHandlerTest {
     @Test(expected = NullPointerException.class)
     public void throwExceptionResponseEventIsGeneratedWithNullClaim() {
 
-        DefendantResponseEvent responseEventWithNullClaim = new DefendantResponseEvent(null, AUTHORISATION);
+        DefendantResponseEvent responseEventWithNullClaim = new DefendantResponseEvent(null);
 
         defendantResponseCitizenNotificationsHandler.notifyClaimantResponse(responseEventWithNullClaim);
     }

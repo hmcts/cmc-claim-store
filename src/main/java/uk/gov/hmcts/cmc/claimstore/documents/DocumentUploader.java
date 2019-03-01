@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.events.DocumentUploadEvent;
+import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 
 @Component
@@ -19,11 +19,11 @@ public class DocumentUploader {
     }
 
     @EventListener
-    public void uploadIntoDocumentManagementStore(DocumentUploadEvent event) {
+    public void uploadIntoDocumentManagementStore(DocumentGeneratedEvent event) {
         event.getDocuments().forEach(document -> {
             try {
                 documentService.uploadToDocumentManagement(document,
-                    event.getAuthorization(),
+                    event.getAuthorisation(),
                     event.getClaim());
             } catch (Exception ex) {
                 logger.warn(String.format("unable to upload document %s into document management",

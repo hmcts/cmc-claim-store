@@ -84,10 +84,10 @@ public class EventProducerTest {
     public void shouldCreateDefendantResponseEvent() throws Exception {
         //given
         DefendantResponseEvent expectedEvent
-            = new DefendantResponseEvent(CLAIM, AUTHORISATION);
+            = new DefendantResponseEvent(CLAIM);
 
         //when
-        eventProducer.createDefendantResponseEvent(CLAIM, AUTHORISATION);
+        eventProducer.createDefendantResponseEvent(CLAIM);
 
         //then
         verify(publisher).publishEvent(eq(expectedEvent));

@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.cmc.claimstore.events.DocumentUploadHandler;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
@@ -35,8 +34,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
-
 @RestController
 @RequestMapping("/support")
 @ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff")
@@ -50,9 +47,7 @@ public class SupportController {
     private final DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler;
     private final CCJStaffNotificationHandler ccjStaffNotificationHandler;
     private final AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler;
-    private final DocumentUploadHandler documentUploadHandler;
 
-    @SuppressWarnings("squid:S00107")
     @Autowired
     public SupportController(
         ClaimService claimService,
@@ -61,8 +56,7 @@ public class SupportController {
         MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler,
         DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler,
         CCJStaffNotificationHandler ccjStaffNotificationHandler,
-        AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler,
-        DocumentUploadHandler documentUploadHandler
+        AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler
     ) {
         this.claimService = claimService;
         this.userService = userService;
@@ -71,7 +65,6 @@ public class SupportController {
         this.defendantResponseStaffNotificationHandler = defendantResponseStaffNotificationHandler;
         this.ccjStaffNotificationHandler = ccjStaffNotificationHandler;
         this.agreementCountersignedStaffNotificationHandler = agreementCountersignedStaffNotificationHandler;
-        this.documentUploadHandler = documentUploadHandler;
     }
 
     @PutMapping("/claim/{referenceNumber}/event/{event}/resend-staff-notifications")
@@ -92,7 +85,7 @@ public class SupportController {
                 resendStaffNotificationOnMoreTimeRequested(claim);
                 break;
             case "response-submitted":
-                resendStaffNotificationOnDefendantResponseSubmitted(claim, authorisation);
+                resendStaffNotificationOnDefendantResponseSubmitted(claim);
                 break;
             case "ccj-request-submitted":
                 resendStaffNotificationCCJRequestSubmitted(claim, authorisation);
@@ -161,15 +154,12 @@ public class SupportController {
         moreTimeRequestedStaffNotificationHandler.sendNotifications(event);
     }
 
-    private void resendStaffNotificationOnDefendantResponseSubmitted(Claim claim, String authorization) {
+    private void resendStaffNotificationOnDefendantResponseSubmitted(Claim claim) {
         if (!claim.getResponse().isPresent()) {
-            throw new ConflictException(CLAIM + claim.getReferenceNumber() + " does not have associated response");
+            throw new ConflictException(CLAIM + claim.getId() + " does not have associated response");
         }
-        DefendantResponseEvent event = new DefendantResponseEvent(claim, authorization);
+        DefendantResponseEvent event = new DefendantResponseEvent(claim);
         defendantResponseStaffNotificationHandler.onDefendantResponseSubmitted(event);
-        if (!claim.getClaimDocument(DEFENDANT_RESPONSE_RECEIPT).isPresent()) {
-            documentUploadHandler.uploadDocument(event);
-        }
     }
 
     private void resendStaffNotificationOnAgreementCountersigned(Claim claim) {
@@ -185,7 +175,7 @@ public class SupportController {
             throw new BadRequestException("Authorisation is required");
         }
 
-        for (Claim claim : claims) {
+        for (Claim claim: claims) {
             GeneratePinResponse pinResponse = userService
                 .generatePin(claim.getClaimData().getDefendant().getName(), authorisation);
 
@@ -198,8 +188,8 @@ public class SupportController {
     }
 
     private List<Claim> checkClaimsExist(List<String> referenceNumbers) {
-        List<Claim> claims = new ArrayList<>();
-        for (String referenceNumber : referenceNumbers) {
+        List<Claim> claims  = new ArrayList<>();
+        for (String referenceNumber: referenceNumbers) {
             Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
                 .orElseThrow(() -> new NotFoundException(CLAIM + referenceNumber + " does not exist"));
 

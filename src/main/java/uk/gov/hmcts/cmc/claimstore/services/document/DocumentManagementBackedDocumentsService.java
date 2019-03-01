@@ -21,10 +21,8 @@ import java.net.URI;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimIssueReceiptFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @Service("documentsService")
@@ -82,12 +80,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
 
     @Override
     public byte[] generateDefendantResponseReceipt(String externalId, String authorisation) {
-        Claim claim = getClaimByExternalId(externalId, authorisation);
-        return processRequest(claim,
-            authorisation,
-            DEFENDANT_RESPONSE_RECEIPT,
-            defendantResponseReceiptService,
-            buildResponseFileBaseName(claim.getReferenceNumber()));
+        return defendantResponseReceiptService.createPdf(getClaimByExternalId(externalId, authorisation));
     }
 
     @Override
