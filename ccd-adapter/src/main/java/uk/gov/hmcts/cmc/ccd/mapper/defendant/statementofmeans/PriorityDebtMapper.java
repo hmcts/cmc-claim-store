@@ -2,7 +2,10 @@ package uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPaymentFrequency;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebt;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebtType;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt;
 
 @Component
@@ -16,8 +19,8 @@ public class PriorityDebtMapper {
         return CCDCollectionElement.<CCDPriorityDebt>builder()
             .value(CCDPriorityDebt.builder()
                 .amount(priorityDebt.getAmount())
-                .type(priorityDebt.getType())
-                .frequency(priorityDebt.getFrequency())
+                .type(CCDPriorityDebtType.valueOf(priorityDebt.getType().name()))
+                .frequency(CCDPaymentFrequency.valueOf(priorityDebt.getFrequency().name()))
                 .build())
             .id(priorityDebt.getId())
             .build();
@@ -33,8 +36,8 @@ public class PriorityDebtMapper {
         return PriorityDebt.builder()
             .id(collectionElement.getId())
             .amount(ccdPriorityDebt.getAmount())
-            .frequency(ccdPriorityDebt.getFrequency())
-            .type(ccdPriorityDebt.getType())
+            .frequency(PaymentFrequency.valueOf(ccdPriorityDebt.getFrequency().name()))
+            .type(PriorityDebt.PriorityDebtType.valueOf(ccdPriorityDebt.getType().name()))
             .build();
     }
 }
