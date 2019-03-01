@@ -8,11 +8,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDisabilityStatus;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDLivingPartner;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.DisabilityStatus;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.LivingPartner;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.domain.models.statementofmeans.DisabilityStatus.NO;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -25,7 +26,7 @@ public class LivingPartnerMapperTest {
     public void shouldMapLivingPartnerToCCD() {
         //given
         LivingPartner livingPartner = LivingPartner.builder()
-            .disability(DisabilityStatus.NO)
+            .disability(NO)
             .over18(true)
             .pensioner(false)
             .build();
@@ -41,7 +42,7 @@ public class LivingPartnerMapperTest {
     public void shouldMapLivingPartnerFromCCD() {
         //given
         CCDLivingPartner ccdLivingPartner = CCDLivingPartner.builder()
-            .disability(DisabilityStatus.NO)
+            .disability(CCDDisabilityStatus.NO)
             .over18(CCDYesNoOption.YES)
             .pensioner(CCDYesNoOption.NO)
             .build();
