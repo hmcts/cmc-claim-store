@@ -8,6 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPaymentFrequency;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt;
 
@@ -16,8 +17,8 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebtType.COUNCIL_TAX_COMMUNITY_CHARGE;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency.MONTH;
-import static uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt.PriorityDebtType.COUNCIL_TAX_COMMUNITY_CHARGE;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt.PriorityDebtType.ELECTRICITY;
 
 @SpringBootTest
@@ -50,7 +51,7 @@ public class PriorityDebtMapperTest {
         //given
         CCDPriorityDebt ccdPriorityDebt = CCDPriorityDebt.builder()
             .type(COUNCIL_TAX_COMMUNITY_CHARGE)
-            .frequency(MONTH)
+            .frequency(CCDPaymentFrequency.MONTH)
             .amount(BigDecimal.TEN)
             .build();
 

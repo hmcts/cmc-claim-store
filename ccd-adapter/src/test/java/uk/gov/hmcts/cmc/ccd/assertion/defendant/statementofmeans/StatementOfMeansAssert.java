@@ -61,7 +61,8 @@ public class StatementOfMeansAssert extends AbstractAssert<StatementOfMeansAsser
         assertThat(actual.isCarer()).isEqualTo(ccdStatementOfMeans.getCarer().toBoolean());
 
         actual.getDisability()
-            .ifPresent(disability -> assertThat(disability).isEqualTo(ccdStatementOfMeans.getDisabilityStatus()));
+            .ifPresent(disability -> assertThat(disability.name())
+                .isEqualTo(ccdStatementOfMeans.getDisabilityStatus().name()));
 
         actual.getPartner().ifPresent(
             livingPartner -> assertThat(livingPartner).isEqualTo(ccdStatementOfMeans.getLivingPartner())
@@ -76,7 +77,7 @@ public class StatementOfMeansAssert extends AbstractAssert<StatementOfMeansAsser
     ) {
         ccdPriorityDebts.stream()
             .map(CCDCollectionElement::getValue)
-            .filter(ccdPriorityDebt -> priorityDebt.getType().equals(ccdPriorityDebt.getType()))
+            .filter(ccdPriorityDebt -> priorityDebt.getType().name().equals(ccdPriorityDebt.getType().name()))
             .findFirst()
             .ifPresent(ccdPriorityDebt -> assertThat(priorityDebt).isEqualTo(ccdPriorityDebt));
     }
@@ -84,7 +85,7 @@ public class StatementOfMeansAssert extends AbstractAssert<StatementOfMeansAsser
     private void assertExpense(Expense expense, List<CCDCollectionElement<CCDExpense>> ccdExpenses) {
         ccdExpenses.stream()
             .map(CCDCollectionElement::getValue)
-            .filter(ccdExpense -> expense.getType().equals(ccdExpense.getType()))
+            .filter(ccdExpense -> expense.getType().name().equals(ccdExpense.getType().name()))
             .findFirst()
             .ifPresent(ccdExpense -> assertThat(expense).isEqualTo(ccdExpense));
     }
@@ -92,7 +93,7 @@ public class StatementOfMeansAssert extends AbstractAssert<StatementOfMeansAsser
     private void assertIncome(Income income, List<CCDCollectionElement<CCDIncome>> ccdIncomes) {
         ccdIncomes.stream()
             .map(CCDCollectionElement::getValue)
-            .filter(ccdIncome -> income.getType().equals(ccdIncome.getType()))
+            .filter(ccdIncome -> income.getType().name().equals(ccdIncome.getType().name()))
             .findFirst()
             .ifPresent(ccdIncome -> assertThat(income).isEqualTo(ccdIncome));
     }
