@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDChildCategory;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDisabilityStatus;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDResidenceType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.ccd.mapper.Mapper;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
@@ -12,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Debt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Dependant;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.DisabilityStatus;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employer;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
@@ -79,7 +82,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
         CCDStatementOfMeans.CCDStatementOfMeansBuilder builder = CCDStatementOfMeans.builder();
 
         builder.reason(statementOfMeans.getReason());
-        builder.residenceType(statementOfMeans.getResidence().getType());
+        builder.residenceType(CCDResidenceType.valueOf(statementOfMeans.getResidence().getType().name()));
         statementOfMeans.getResidence().getOtherDetail().ifPresent(builder::residenceOtherDetail);
 
         statementOfMeans.getDependant().ifPresent(toDependantConsumer(builder));
@@ -132,7 +135,8 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
         );
 
         builder.carer(CCDYesNoOption.valueOf(statementOfMeans.isCarer()));
-        statementOfMeans.getDisability().ifPresent(builder::disabilityStatus);
+        statementOfMeans.getDisability()
+            .ifPresent(disability -> builder.disabilityStatus(CCDDisabilityStatus.valueOf(disability.name())));
 
         statementOfMeans.getPartner().ifPresent(partner -> builder.livingPartner(livingPartnerMapper.to(partner)));
 
@@ -244,7 +248,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
             .courtOrders(courtOrders)
             .priorityDebts(priorityDebts)
             .partner(livingPartnerMapper.from(ccdStatementOfMeans.getLivingPartner()))
-            .disability(ccdStatementOfMeans.getDisabilityStatus())
+            .disability(DisabilityStatus.valueOf(ccdStatementOfMeans.getDisabilityStatus().name()))
             .carer(ccdStatementOfMeans.getCarer() != null && ccdStatementOfMeans.getCarer().toBoolean())
             .build();
     }
@@ -352,7 +356,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
 
     private Residence extractResidence(CCDStatementOfMeans ccdStatementOfMeans) {
         return Residence.builder()
-            .type(ccdStatementOfMeans.getResidenceType())
+            .type(Residence.ResidenceType.valueOf(ccdStatementOfMeans.getResidenceType().name()))
             .otherDetail(ccdStatementOfMeans.getResidenceOtherDetail())
             .build();
     }

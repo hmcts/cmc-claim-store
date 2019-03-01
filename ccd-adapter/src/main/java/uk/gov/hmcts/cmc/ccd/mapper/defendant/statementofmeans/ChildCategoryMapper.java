@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDAgeGroupType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDChildCategory;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 
@@ -11,7 +12,7 @@ public class ChildCategoryMapper {
     public CCDCollectionElement<CCDChildCategory> to(Child child) {
         return CCDCollectionElement.<CCDChildCategory>builder()
             .value(CCDChildCategory.builder()
-                .ageGroupType(child.getAgeGroupType())
+                .ageGroupType(CCDAgeGroupType.valueOf(child.getAgeGroupType().name()))
                 .numberOfChildren(child.getNumberOfChildren())
                 .numberOfResidentChildren(child.getNumberOfChildrenLivingWithYou().orElse(null))
                 .build())
@@ -27,7 +28,7 @@ public class ChildCategoryMapper {
 
         return Child.builder()
             .id(ccdChildCategory.getId())
-            .ageGroupType(childCategory.getAgeGroupType())
+            .ageGroupType(Child.AgeGroupType.valueOf(childCategory.getAgeGroupType().name()))
             .numberOfChildren(childCategory.getNumberOfChildren())
             .numberOfChildrenLivingWithYou(childCategory.getNumberOfResidentChildren())
             .build();
