@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.notifications;
 
+import org.junit.After;
+import org.junit.Before;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -10,7 +12,11 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.service.notify.NotificationClient;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class BaseNotificationServiceTest {
     protected static final String CLAIMANT_CLAIM_ISSUED_TEMPLATE = "claimantClaimIssued";
@@ -25,6 +31,10 @@ public abstract class BaseNotificationServiceTest {
     protected static final String RESPOND_TO_CLAIM_URL = "http://some.host.dot.com/first-contact/start";
     protected static final String USER_EMAIL = "user@example.com";
     protected static final String USER_FULLNAME = "Steven Patrick";
+
+    private PrintStream systemOut;
+    private ByteArrayOutputStream outContent;
+
     protected final Claim claim = SampleClaim.getDefault();
 
     @Mock
@@ -38,4 +48,26 @@ public abstract class BaseNotificationServiceTest {
 
     @Captor
     protected ArgumentCaptor<Map<String, String>> templateParameters;
+
+    @Before
+    public void setUp() {
+        outContent = new ByteArrayOutputStream();
+        systemOut = System.out;
+        System.setOut(new PrintStream(outContent));
+    }
+
+    @After
+    public void tearDown() {
+        System.setOut(systemOut);
+    }
+
+    protected void assertWasLogged(CharSequence text) {
+        String logContent = outContent.toString();
+        assertThat(logContent).contains(text);
+    }
+
+    protected void assertWasNotLogged(CharSequence text) {
+        String logContent = outContent.toString();
+        assertThat(logContent).doesNotContain(text);
+    }
 }
