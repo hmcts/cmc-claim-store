@@ -6,7 +6,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.ccd.migration.ccd.services.CoreCaseDataService;
+import uk.gov.hmcts.cmc.ccd.migration.ccd.services.CreateCCDCaseService;
+import uk.gov.hmcts.cmc.ccd.migration.ccd.services.SearchCCDCaseService;
+import uk.gov.hmcts.cmc.ccd.migration.ccd.services.UpdateCCDCaseService;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -36,16 +38,22 @@ public class MigrationHandler {
     public static final String ON_HOLD_STATE = "onhold";
     public static final String OPEN_STATE = "open";
 
-    private final CoreCaseDataService coreCaseDataService;
+    private final SearchCCDCaseService searchCCDCaseService;
+    private final CreateCCDCaseService createCCDCaseService;
+    private final UpdateCCDCaseService updateCCDCaseService;
     private final long delayBetweenCasesLots;
     private final int casesLotsSize;
 
     public MigrationHandler(
-        CoreCaseDataService coreCaseDataService,
+        SearchCCDCaseService searchCCDCaseService,
+        CreateCCDCaseService createCCDCaseService,
+        UpdateCCDCaseService updateCCDCaseService,
         @Value("${migration.delay.between.cases.lots}") long delayBetweenCasesLots,
         @Value("${migration.cases.lots.size}") int casesLotsSize
     ) {
-        this.coreCaseDataService = coreCaseDataService;
+        this.searchCCDCaseService = searchCCDCaseService;
+        this.createCCDCaseService = createCCDCaseService;
+        this.updateCCDCaseService = updateCCDCaseService;
         this.delayBetweenCasesLots = delayBetweenCasesLots;
         this.casesLotsSize = casesLotsSize;
     }
@@ -67,7 +75,7 @@ public class MigrationHandler {
             }
 
         } catch (Exception e) {
-            logger.info("failed migrating for claim for reference {} for the migrated count {} due to {}",
+            logger.info("Migration failed for claim for reference {} for the migrated count {} due to {}",
                 claim.getReferenceNumber(),
                 migratedClaims.get(),
                 e.getMessage()
@@ -106,12 +114,12 @@ public class MigrationHandler {
                             + " for event: "
                             + event.getValue());
 
-                        coreCaseDataService.updateCase(user, caseDetails.getId(), claim, event);
+                        updateCCDCaseService.updateCase(user, caseDetails.getId(), claim, event);
                         updatedClaims.incrementAndGet();
                     }
                 });
         } catch (Exception e) {
-            logger.info("Claim Migration failed for Claim reference "
+            logger.info("Claim update for events failed for Claim reference "
                     + claim.getReferenceNumber()
                     + " due to " + e.getMessage(),
                 e);
@@ -135,10 +143,10 @@ public class MigrationHandler {
                 + " for event: "
                 + CaseEvent.CREATE_NEW_CASE.getValue());
 
-            caseDetails = coreCaseDataService.createCase(user, claim, CaseEvent.CREATE_NEW_CASE);
+            caseDetails = createCCDCaseService.createCase(user, claim, CaseEvent.CREATE_NEW_CASE);
             migratedClaims.incrementAndGet();
         } catch (Exception e) {
-            logger.info("Claim Migration failed for Claim reference "
+            logger.info("Claim issue create failed for Claim reference "
                     + claim.getReferenceNumber()
                     + " due to " + e.getMessage(),
                 e);
