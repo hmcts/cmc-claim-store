@@ -39,16 +39,21 @@
         "id": "db10f60f-30b7-43a4-bfd4-25fd157e7bc9",
         "value": {
           "partyName": "Jan Clark",
-          "partyType": "INDIVIDUAL",
-          "partyPhone": "07873727165",
-          "partyAddress": {
-            "PostCode": "SW1A 9AA",
-            "PostTown": "London",
-            "AddressLine1": "Street 1",
-            "AddressLine2": "Street 2",
-            "AddressLine3": "Street 3"
-          },
-          "partyDateOfBirth": "2000-01-01"
+          "partyDetail": {
+            "type": "INDIVIDUAL",
+            "emailAddress": "j.smith@example.com",
+            "primaryAddress": {
+              "PostCode": "SW1A 9AA",
+              "PostTown": "London",
+              "AddressLine1": "Street 1",
+              "AddressLine2": "Street 2",
+              "AddressLine3": "Street 3"
+            },
+            "dateOfBirth": "1970-01-01",
+            "telephoneNumber":{
+              "telephoneNumber":"07873727165"
+            }
+          }
         }
       }
     ],
@@ -76,7 +81,6 @@
           "defendantId": "62",
           "responseType": "FULL_ADMISSION",
           "letterHolderId": "83",
-          "partyDateOfBirth": "1970-01-01",
           "responseDeadline": "2019-02-05",
           "statementOfMeans": {
             "carer": "NO",

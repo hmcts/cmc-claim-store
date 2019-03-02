@@ -19,8 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -87,7 +86,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
             argument.capture()
         );
         List<List> capturedArgument = argument.getAllValues();
-        assertTrue(capturedArgument.contains(Collections.singleton(sealedClaimForm)));
+        assertThat(capturedArgument.contains(Collections.singleton(sealedClaimForm)));
     }
 
     @Test
@@ -144,9 +143,9 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
             .orElseThrow(AssertionError::new)
             .getDocument(claimDocumentType)
             .orElseThrow(AssertionError::new);
-        assertEquals(claimDocument.getDocumentManagementUrl(),
-            URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4"));
-        assertEquals(claimDocument.getDocumentName(), fileName);
+        assertThat(claimDocument.getDocumentManagementUrl()
+            .equals(URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4")));
+        assertThat(claimDocument.getDocumentName().equals(fileName));
     }
 
     @Test
