@@ -41,16 +41,20 @@
           "id": "0da037e8-701c-405d-8d92-222b233d6026",
           "value": {
             "partyName": "Jan Clark",
-            "partyType": "INDIVIDUAL",
-            "partyPhone": "07873727165",
-            "partyAddress": {
-              "PostCode": "SW1A 9AA",
-              "PostTown": "London",
-              "AddressLine1": "Street 1",
-              "AddressLine2": "Street 2",
-              "AddressLine3": "Street 3"
-            },
-            "partyDateOfBirth": "2000-01-01"
+            "partyDetail": {
+              "type": "INDIVIDUAL",
+              "primaryAddress": {
+                "AddressLine1": "Street 1",
+                "AddressLine2": "Street 2",
+                "AddressLine3": "Street 3",
+                "PostCode": "SW1A 9AA",
+                "PostTown": "London"
+              },
+              "telephoneNumber":{
+                "telephoneNumber":"07873727165"
+              },
+              "dateOfBirth":"2000-01-01"
+            }
           }
         }
       ],
@@ -61,15 +65,17 @@
           "value": {
             "letterHolderId": "75",
             "responseDeadline": "2020-02-06",
-            "claimantProvidedName": "Mary Richards",
-            "claimantProvidedType": "INDIVIDUAL",
-            "claimantProvidedEmail": "j.smith@example.com",
-            "claimantProvidedAddress": {
-              "PostCode": "SW1A 9AA",
-              "PostTown": "London",
-              "AddressLine1": "Flat 3A",
-              "AddressLine2": "Street 1",
-              "AddressLine3": "Middle Road"
+            "applicantProvidedPartyName": "Mary Richards",
+            "applicantProvidedDetail": {
+              "type": "INDIVIDUAL",
+              "emailAddress": "j.smith@example.com",
+              "primaryAddress": {
+                "PostCode": "SW1A 9AA",
+                "PostTown": "London",
+                "AddressLine1": "Flat 3A",
+                "AddressLine2": "Street 1",
+                "AddressLine3": "Middle Road"
+              }
             }
           }
         }

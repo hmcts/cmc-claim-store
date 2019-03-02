@@ -58,17 +58,22 @@
         "id": "cef4f044-e2fc-4cec-8d76-64f1dd381e01",
         "value": {
           "partyName": "Mary Richards",
-          "partyType": "INDIVIDUAL",
-          "partyEmail": "j.smith@example.com",
-          "partyPhone": "07873727165",
-          "defendantId": "62",
-          "partyAddress": {
-            "PostCode": "SW1A 9AA",
-            "PostTown": "London",
-            "AddressLine1": "Flat 3A",
-            "AddressLine2": "Street 1",
-            "AddressLine3": "Middle Road"
+          "partyDetail": {
+            "type": "INDIVIDUAL",
+            "emailAddress": "j.smith@example.com",
+            "primaryAddress": {
+              "PostCode": "SW1A 9AA",
+              "PostTown": "London",
+              "AddressLine1": "Flat 3A",
+              "AddressLine2": "Street 1",
+              "AddressLine3": "Middle Road"
+            },
+            "dateOfBirth": "1970-01-01",
+            "telephoneNumber":{
+              "telephoneNumber":"07873727165"
+            }
           },
+          "defendantId": "62",
           "responseType": "FULL_ADMISSION",
           "letterHolderId": "83",
           "partyDateOfBirth": "1970-01-01",
@@ -135,16 +140,18 @@
             "noOfMaintainedChildren": 0
           },
           "responseSubmittedOn": "2019-01-03T10:07:07.888",
-          "claimantProvidedName": "Mary Richards",
-          "claimantProvidedType": "INDIVIDUAL",
-          "claimantProvidedEmail": "j.smith@example.com",
-          "claimantProvidedAddress": {
-            "PostCode": "SW1A 9AA",
-            "PostTown": "London",
-            "AddressLine1": "Flat 3A",
-            "AddressLine2": "Street 1",
-            "AddressLine3": "Middle Road"
+          "applicantProvidedDetail":{
+            "type": "INDIVIDUAL",
+            "emailAddress": "j.smith@example.com",
+            "primaryAddress": {
+              "PostCode": "SW1A 9AA",
+              "PostTown": "London",
+              "AddressLine1": "Flat 3A",
+              "AddressLine2": "Street 1",
+              "AddressLine3": "Middle Road"
+            }
           },
+          "applicantProvidedPartyName": "Mary Richards",
           "defendantPaymentIntention": {
             "paymentLength": "3 months",
             "paymentOption": "INSTALMENTS",
