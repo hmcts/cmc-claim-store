@@ -58,6 +58,7 @@ public class DefendantPartyMapper {
         } else if (party instanceof SoleTrader) {
             toSoleTrader(respondentDetail, (SoleTrader) party);
         }
+        builder.partyDetail(respondentDetail.build());
     }
 
     private void toIndividual(CCDParty.CCDPartyBuilder partyBuilder, Individual individual) {

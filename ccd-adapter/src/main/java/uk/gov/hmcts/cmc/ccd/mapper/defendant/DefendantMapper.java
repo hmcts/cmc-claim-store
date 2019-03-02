@@ -52,7 +52,7 @@ public class DefendantMapper {
 
         CCDParty.CCDPartyBuilder partyDetail = CCDParty.builder();
         partyDetail.emailAddress(claim.getDefendantEmail());
-        CCDRespondent.CCDRespondentBuilder builder = CCDRespondent.builder().partyDetail(partyDetail.build());
+        CCDRespondent.CCDRespondentBuilder builder = CCDRespondent.builder();
         builder.responseDeadline(claim.getResponseDeadline());
         builder.letterHolderId(claim.getLetterHolderId());
         builder.defendantId(claim.getDefendantId());

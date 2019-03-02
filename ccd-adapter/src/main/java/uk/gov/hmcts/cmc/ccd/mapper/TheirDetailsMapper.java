@@ -42,11 +42,9 @@ public class TheirDetailsMapper {
             CompanyDetails company = (CompanyDetails) theirDetails;
             companyDetailsMapper.to(company, builder);
         } else if (theirDetails instanceof OrganisationDetails) {
-
             OrganisationDetails organisation = (OrganisationDetails) theirDetails;
             organisationDetailsMapper.to(organisation, builder);
         } else if (theirDetails instanceof SoleTraderDetails) {
-
             SoleTraderDetails soleTrader = (SoleTraderDetails) theirDetails;
             soleTraderDetailsMapper.to(soleTrader, builder);
         }
