@@ -23,15 +23,13 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDBankAccount;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDChildCategory;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDCourtOrder;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDebt;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDisabilityStatus;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpense;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncome;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDLivingPartner;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebt;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.DisabilityStatus;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
@@ -43,7 +41,6 @@ import java.util.UUID;
 
 import static java.math.BigDecimal.ONE;
 import static java.math.BigDecimal.TEN;
-import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.BREAK_DOWN;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.RANGE;
@@ -53,16 +50,19 @@ import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.ORGANISATION;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.SOLE_TRADER;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
+import static uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDDecisionType.COURT;
 import static uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption.SETTLEMENT;
+import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDAgeGroupType.UNDER_11;
+import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDBankAccountType.SAVINGS_ACCOUNT;
+import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDisabilityStatus.SEVERE;
+import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpenseType.COUNCIL_TAX;
+import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncomeType.JOB;
+import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPaymentFrequency.MONTH;
+import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebtType.ELECTRICITY;
+import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDResidenceType.JOINT_OWN_HOME;
 import static uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceType.EXPERT_WITNESS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
-import static uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount.BankAccountType.SAVINGS_ACCOUNT;
-import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense.ExpenseType.COUNCIL_TAX;
-import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Income.IncomeType.JOB;
-import static uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency.MONTH;
-import static uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt.PriorityDebtType.ELECTRICITY;
-import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence.ResidenceType.JOINT_OWN_HOME;
 
 public class SampleData {
 
@@ -112,7 +112,7 @@ public class SampleData {
             .courtIntention(getCCDPaymentIntention())
             .courtDecision(getCCDPaymentIntention())
             .disposableIncome(BigDecimal.valueOf(300))
-            .decisionType(DecisionType.COURT)
+            .decisionType(COURT)
             .build();
     }
 
@@ -122,7 +122,7 @@ public class SampleData {
             .courtIntention(getCCDPaymentIntentionImmediately())
             .courtDecision(getCCDPaymentIntention())
             .disposableIncome(BigDecimal.valueOf(300))
-            .decisionType(DecisionType.COURT)
+            .decisionType(COURT)
             .build();
     }
 
@@ -132,7 +132,7 @@ public class SampleData {
             .courtIntention(getCCDPaymentIntentionPayBySetDate())
             .courtDecision(getCCDPaymentIntentionPayBySetDate())
             .disposableIncome(BigDecimal.valueOf(300))
-            .decisionType(DecisionType.COURT)
+            .decisionType(COURT)
             .build();
     }
 
@@ -442,15 +442,15 @@ public class SampleData {
             .unEmployedNoOfMonths(2)
             .employmentDetails("Details")
             .unEmployedNoOfYears(0)
-            .dependantChildren(asList(
+            .dependantChildren(singletonList(
                 CCDCollectionElement.<CCDChildCategory>builder().value(CCDChildCategory.builder()
-                    .ageGroupType(Child.AgeGroupType.UNDER_11)
+                    .ageGroupType(UNDER_11)
                     .numberOfChildren(2)
                     .numberOfResidentChildren(2)
                     .build()
                 ).build()
             ))
-            .incomes(asList(
+            .incomes(singletonList(
                 CCDCollectionElement.<CCDIncome>builder().value(CCDIncome.builder()
                     .type(JOB)
                     .frequency(MONTH)
@@ -458,7 +458,7 @@ public class SampleData {
                     .build()
                 ).build()
             ))
-            .expenses(asList(
+            .expenses(singletonList(
                 CCDCollectionElement.<CCDExpense>builder().value(CCDExpense.builder()
                     .type(COUNCIL_TAX)
                     .frequency(MONTH)
@@ -466,7 +466,7 @@ public class SampleData {
                     .build()
                 ).build()
             ))
-            .debts(asList(
+            .debts(singletonList(
                 CCDCollectionElement.<CCDDebt>builder().value(CCDDebt.builder()
                     .totalOwed(TEN)
                     .description("Reference")
@@ -474,7 +474,7 @@ public class SampleData {
                     .build()
                 ).build()
             ))
-            .bankAccounts(asList(
+            .bankAccounts(singletonList(
                 CCDCollectionElement.<CCDBankAccount>builder().value(CCDBankAccount.builder()
                     .balance(BigDecimal.valueOf(100))
                     .joint(NO)
@@ -482,7 +482,7 @@ public class SampleData {
                     .build()
                 ).build()
             ))
-            .courtOrders(asList(
+            .courtOrders(singletonList(
                 CCDCollectionElement.<CCDCourtOrder>builder().value(CCDCourtOrder.builder()
                     .amountOwed(TEN)
                     .claimNumber("Reference")
@@ -490,7 +490,7 @@ public class SampleData {
                     .build()
                 ).build()
             ))
-            .priorityDebts(asList(
+            .priorityDebts(singletonList(
                 CCDCollectionElement.<CCDPriorityDebt>builder().value(CCDPriorityDebt.builder()
                     .frequency(MONTH)
                     .amount(BigDecimal.valueOf(132.89))
@@ -500,12 +500,12 @@ public class SampleData {
             ))
             .carer(YES)
             .livingPartner(CCDLivingPartner.builder()
-                .disability(DisabilityStatus.SEVERE)
+                .disability(SEVERE)
                 .over18(YES)
                 .pensioner(YES)
                 .build()
             )
-            .disabilityStatus(DisabilityStatus.YES)
+            .disabilityStatus(CCDDisabilityStatus.YES)
             .retired(NO)
             .build();
     }

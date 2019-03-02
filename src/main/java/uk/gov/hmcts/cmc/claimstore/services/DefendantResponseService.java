@@ -81,7 +81,7 @@ public class DefendantResponseService {
 
         Claim claimAfterSavingResponse = claimService.getClaimByExternalId(externalId, authorization);
 
-        eventProducer.createDefendantResponseEvent(claimAfterSavingResponse);
+        eventProducer.createDefendantResponseEvent(claimAfterSavingResponse, authorization);
         ccdEventProducer.createCCDDefendantResponseEvent(claimAfterSavingResponse, authorization);
 
         appInsights.trackEvent(getAppInsightsEventName(response), REFERENCE_NUMBER, claim.getReferenceNumber());
