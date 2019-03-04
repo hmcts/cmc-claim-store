@@ -43,6 +43,9 @@ public class GetClaimsByDefendantIdTest extends BaseGetTest {
     public void shouldReturn200HttpStatusAndEmptyClaimListWhenClaimsDoNotExist() throws Exception {
         String nonExistingDefendantId = "900";
 
+        when(userService.getUserDetails(AUTHORISATION_TOKEN))
+            .thenReturn(SampleUserDetails.builder().withUserId(nonExistingDefendantId).build());
+
         MvcResult result = makeRequest("/claims/defendant/" + nonExistingDefendantId)
             .andExpect(status().isOk())
             .andReturn();

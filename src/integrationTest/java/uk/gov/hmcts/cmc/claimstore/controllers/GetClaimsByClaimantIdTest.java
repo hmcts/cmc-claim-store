@@ -4,12 +4,14 @@ import org.junit.Test;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseGetTest;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @TestPropertySource(
@@ -36,6 +38,9 @@ public class GetClaimsByClaimantIdTest extends BaseGetTest {
     @Test
     public void shouldReturn200HttpStatusAndEmptyClaimListWhenClaimsDoNotExist() throws Exception {
         String nonExistingSubmitterId = "900";
+
+        when(userService.getUserDetails(AUTHORISATION_TOKEN)).thenReturn(
+            SampleUserDetails.builder().withUserId(nonExistingSubmitterId).build());
 
         MvcResult result = makeRequest("/claims/claimant/" + nonExistingSubmitterId)
             .andExpect(status().isOk())

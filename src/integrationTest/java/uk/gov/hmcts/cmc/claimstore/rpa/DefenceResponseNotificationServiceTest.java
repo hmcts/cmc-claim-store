@@ -53,7 +53,7 @@ public class DefenceResponseNotificationServiceTest extends MockSpringTest {
             .withRespondedAt(LocalDateTime.of(2018, 4, 26, 1, 1))
             .build();
 
-        event = new DefendantResponseEvent(claim);
+        event = new DefendantResponseEvent(claim, "AUTH_CODE");
 
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).willReturn(PDF_CONTENT);
     }
