@@ -8,7 +8,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
@@ -33,11 +32,10 @@ public class TheirDetailsMapperTest {
     public void shouldMapIndividualToCCD() {
         //given
         TheirDetails party = SampleTheirDetails.builder().individualDetails();
-        CCDParty.CCDPartyBuilder partyBuilder = CCDParty.builder();
 
         //when
         CCDRespondent.CCDRespondentBuilder builder = CCDRespondent.builder();
-        theirDetailsMapper.to(builder, party, partyBuilder);
+        theirDetailsMapper.to(builder, party);
 
         //then
         assertThat(party).isEqualTo(builder.build());
@@ -47,11 +45,10 @@ public class TheirDetailsMapperTest {
     public void shouldMapCompanyToCCD() {
         //given
         TheirDetails party = SampleTheirDetails.builder().companyDetails();
-        CCDParty.CCDPartyBuilder partyBuilder = CCDParty.builder();
 
         //when
         CCDRespondent.CCDRespondentBuilder builder = CCDRespondent.builder();
-        theirDetailsMapper.to(builder, party, partyBuilder);
+        theirDetailsMapper.to(builder, party);
 
         //then
         assertThat(party).isEqualTo(builder.build());
@@ -61,11 +58,10 @@ public class TheirDetailsMapperTest {
     public void shouldMapOrganisationToCCD() {
         //given
         TheirDetails party = SampleTheirDetails.builder().organisationDetails();
-        CCDParty.CCDPartyBuilder partyBuilder = CCDParty.builder();
 
         //when
         CCDRespondent.CCDRespondentBuilder builder = CCDRespondent.builder();
-        theirDetailsMapper.to(builder, party, partyBuilder);
+        theirDetailsMapper.to(builder, party);
 
         //then
         assertThat(party).isEqualTo(builder.build());
@@ -75,11 +71,10 @@ public class TheirDetailsMapperTest {
     public void shouldMapSoleTraderToCCD() {
         //given
         TheirDetails party = SampleTheirDetails.builder().soleTraderDetails();
-        CCDParty.CCDPartyBuilder partyBuilder = CCDParty.builder();
 
         //when
         CCDRespondent.CCDRespondentBuilder builder = CCDRespondent.builder();
-        theirDetailsMapper.to(builder, party, partyBuilder);
+        theirDetailsMapper.to(builder, party);
 
         //then
         assertThat(party).isEqualTo(builder.build());

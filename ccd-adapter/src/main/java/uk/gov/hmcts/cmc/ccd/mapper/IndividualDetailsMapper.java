@@ -24,10 +24,9 @@ public class IndividualDetailsMapper {
     }
 
     public void to(IndividualDetails individual,
-                   CCDRespondent.CCDRespondentBuilder builder,
-                   CCDParty.CCDPartyBuilder claimantProvidedDetails) {
+                   CCDRespondent.CCDRespondentBuilder builder) {
 
-        claimantProvidedDetails.type(CCDPartyType.INDIVIDUAL);
+        CCDParty.CCDPartyBuilder claimantProvidedDetails = CCDParty.builder().type(CCDPartyType.INDIVIDUAL);
         individual.getServiceAddress()
             .ifPresent(address -> claimantProvidedDetails.correspondenceAddress(addressMapper.to(address)));
 

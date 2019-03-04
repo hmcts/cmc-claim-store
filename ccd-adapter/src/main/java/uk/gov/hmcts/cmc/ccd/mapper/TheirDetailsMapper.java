@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.domain.models.otherparty.CompanyDetails;
@@ -35,21 +34,20 @@ public class TheirDetailsMapper {
     }
 
     public void to(CCDRespondent.CCDRespondentBuilder builder,
-                   TheirDetails theirDetails,
-                   CCDParty.CCDPartyBuilder ccdPartyBuilder) {
+                   TheirDetails theirDetails) {
 
         if (theirDetails instanceof IndividualDetails) {
             IndividualDetails individual = (IndividualDetails) theirDetails;
-            individualDetailsMapper.to(individual, builder, ccdPartyBuilder);
+            individualDetailsMapper.to(individual, builder);
         } else if (theirDetails instanceof CompanyDetails) {
             CompanyDetails company = (CompanyDetails) theirDetails;
-            companyDetailsMapper.to(company, builder, ccdPartyBuilder);
+            companyDetailsMapper.to(company, builder);
         } else if (theirDetails instanceof OrganisationDetails) {
             OrganisationDetails organisation = (OrganisationDetails) theirDetails;
-            organisationDetailsMapper.to(organisation, builder, ccdPartyBuilder);
+            organisationDetailsMapper.to(organisation, builder);
         } else if (theirDetails instanceof SoleTraderDetails) {
             SoleTraderDetails soleTrader = (SoleTraderDetails) theirDetails;
-            soleTraderDetailsMapper.to(soleTrader, builder, ccdPartyBuilder);
+            soleTraderDetailsMapper.to(soleTrader, builder);
         }
     }
 

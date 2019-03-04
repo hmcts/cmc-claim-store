@@ -50,12 +50,14 @@ public class DefendantMapper {
         requireNonNull(theirDetails, "theirDetails must not be null");
         requireNonNull(claim, "claim must not be null");
 
-        CCDParty.CCDPartyBuilder partyDetail = CCDParty.builder();
-        partyDetail.emailAddress(claim.getDefendantEmail());
         CCDRespondent.CCDRespondentBuilder respondentBuilder = CCDRespondent.builder();
         respondentBuilder.responseDeadline(claim.getResponseDeadline());
         respondentBuilder.letterHolderId(claim.getLetterHolderId());
         respondentBuilder.defendantId(claim.getDefendantId());
+
+        CCDParty.CCDPartyBuilder partyDetail = CCDParty.builder();
+        partyDetail.emailAddress(claim.getDefendantEmail());
+        respondentBuilder.partyDetail(partyDetail.build());
 
         respondentBuilder.responseMoreTimeNeededOption(CCDYesNoOption.valueOf(claim.isMoreTimeRequested()));
         respondentBuilder.directionsQuestionnaireDeadline(claim.getDirectionsQuestionnaireDeadline());
@@ -69,7 +71,7 @@ public class DefendantMapper {
         respondentBuilder.settlementReachedAt(claim.getSettlementReachedAt());
 
         claim.getResponse().ifPresent(toResponse(claim, respondentBuilder));
-        theirDetailsMapper.to(respondentBuilder, theirDetails, partyDetail);
+        theirDetailsMapper.to(respondentBuilder, theirDetails);
 
         respondentBuilder.claimantResponse(claimantResponseMapper.to(claim));
         claim.getMoneyReceivedOn().ifPresent(respondentBuilder::paidInFullDate);

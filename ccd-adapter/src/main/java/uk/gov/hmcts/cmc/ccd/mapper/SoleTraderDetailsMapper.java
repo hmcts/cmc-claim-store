@@ -21,10 +21,9 @@ public class SoleTraderDetailsMapper {
     }
 
     public void to(SoleTraderDetails soleTrader,
-                   CCDRespondent.CCDRespondentBuilder builder,
-                   CCDParty.CCDPartyBuilder claimantProvidedPartyDetail) {
+                   CCDRespondent.CCDRespondentBuilder builder) {
 
-        claimantProvidedPartyDetail.type(CCDPartyType.SOLE_TRADER);
+        CCDParty.CCDPartyBuilder claimantProvidedPartyDetail = CCDParty.builder().type(CCDPartyType.SOLE_TRADER);
         soleTrader.getTitle().ifPresent(claimantProvidedPartyDetail::title);
         soleTrader.getBusinessName().ifPresent(claimantProvidedPartyDetail::businessName);
         soleTrader.getRepresentative()
@@ -34,7 +33,7 @@ public class SoleTraderDetailsMapper {
         claimantProvidedPartyDetail.primaryAddress(addressMapper.to(soleTrader.getAddress()));
 
         builder
-            .partyName(soleTrader.getName())
+            .claimantProvidedPartyName(soleTrader.getName())
             .claimantProvidedDetail(claimantProvidedPartyDetail.build());
     }
 
@@ -44,7 +43,7 @@ public class SoleTraderDetailsMapper {
 
         return SoleTraderDetails.builder()
             .id(ccdSoleTrader.getId())
-            .name(respondent.getPartyName())
+            .name(respondent.getClaimantProvidedPartyName())
             .email(claimantProvidedPartyDetails.getEmailAddress())
             .address(addressMapper.from(claimantProvidedPartyDetails.getPrimaryAddress()))
             .representative(representativeMapper.from(respondent))

@@ -21,9 +21,8 @@ public class CompanyDetailsMapper {
     }
 
     public void to(CompanyDetails company,
-                   CCDRespondent.CCDRespondentBuilder builder,
-                   CCDParty.CCDPartyBuilder claimantProvidedPartyDetail) {
-        claimantProvidedPartyDetail.type(CCDPartyType.COMPANY);
+                   CCDRespondent.CCDRespondentBuilder builder) {
+        CCDParty.CCDPartyBuilder claimantProvidedPartyDetail = CCDParty.builder().type(CCDPartyType.COMPANY);
         company.getEmail().ifPresent(claimantProvidedPartyDetail::emailAddress);
         company.getContactPerson().ifPresent(claimantProvidedPartyDetail::contactPerson);
 

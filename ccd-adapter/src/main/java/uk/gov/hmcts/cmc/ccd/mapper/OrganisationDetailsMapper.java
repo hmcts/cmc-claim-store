@@ -21,10 +21,9 @@ public class OrganisationDetailsMapper {
     }
 
     public void to(OrganisationDetails organisation,
-                   CCDRespondent.CCDRespondentBuilder builder,
-                   CCDParty.CCDPartyBuilder claimantProvidedPartyDetail) {
+                   CCDRespondent.CCDRespondentBuilder builder) {
 
-        claimantProvidedPartyDetail.type(CCDPartyType.ORGANISATION);
+        CCDParty.CCDPartyBuilder claimantProvidedPartyDetail = CCDParty.builder().type(CCDPartyType.ORGANISATION);
         organisation.getServiceAddress()
             .ifPresent(address -> claimantProvidedPartyDetail.correspondenceAddress(addressMapper.to(address)));
         organisation.getRepresentative()
@@ -35,7 +34,7 @@ public class OrganisationDetailsMapper {
         claimantProvidedPartyDetail.primaryAddress(addressMapper.to(organisation.getAddress()));
         builder
             .claimantProvidedPartyName(organisation.getName())
-            .partyDetail(claimantProvidedPartyDetail.build());
+            .claimantProvidedDetail(claimantProvidedPartyDetail.build());
     }
 
     public OrganisationDetails from(CCDCollectionElement<CCDRespondent> ccdOrganisation) {
