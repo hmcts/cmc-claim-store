@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.domain.models.otherparty.CompanyDetails;
@@ -33,25 +34,27 @@ public class TheirDetailsMapper {
         this.soleTraderDetailsMapper = soleTraderDetailsMapper;
     }
 
-    public void to(CCDRespondent.CCDRespondentBuilder builder, TheirDetails theirDetails) {
+    public void to(CCDRespondent.CCDRespondentBuilder builder,
+                   TheirDetails theirDetails,
+                   CCDParty.CCDPartyBuilder ccdPartyBuilder) {
 
         if (theirDetails instanceof IndividualDetails) {
             IndividualDetails individual = (IndividualDetails) theirDetails;
-            individualDetailsMapper.to(individual, builder);
+            individualDetailsMapper.to(individual, builder, ccdPartyBuilder);
         } else if (theirDetails instanceof CompanyDetails) {
             CompanyDetails company = (CompanyDetails) theirDetails;
-            companyDetailsMapper.to(company, builder);
+            companyDetailsMapper.to(company, builder, ccdPartyBuilder);
         } else if (theirDetails instanceof OrganisationDetails) {
             OrganisationDetails organisation = (OrganisationDetails) theirDetails;
-            organisationDetailsMapper.to(organisation, builder);
+            organisationDetailsMapper.to(organisation, builder, ccdPartyBuilder);
         } else if (theirDetails instanceof SoleTraderDetails) {
             SoleTraderDetails soleTrader = (SoleTraderDetails) theirDetails;
-            soleTraderDetailsMapper.to(soleTrader, builder);
+            soleTraderDetailsMapper.to(soleTrader, builder, ccdPartyBuilder);
         }
     }
 
     public TheirDetails from(CCDCollectionElement<CCDRespondent> ccdRespondent) {
-        switch (ccdRespondent.getValue().getApplicantProvidedDetail().getType()) {
+        switch (ccdRespondent.getValue().getClaimantProvidedDetail().getType()) {
             case COMPANY:
                 return companyDetailsMapper.from(ccdRespondent);
             case INDIVIDUAL:
@@ -62,7 +65,7 @@ public class TheirDetailsMapper {
                 return organisationDetailsMapper.from(ccdRespondent);
             default:
                 throw new MappingException("Invalid defendant type, "
-                    + ccdRespondent.getValue().getApplicantProvidedDetail().getType());
+                    + ccdRespondent.getValue().getClaimantProvidedDetail().getType());
         }
     }
 }

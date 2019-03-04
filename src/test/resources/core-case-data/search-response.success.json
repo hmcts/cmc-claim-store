@@ -63,8 +63,8 @@
         "value": {
           "letterHolderId": "75",
           "responseDeadline": "2020-02-06",
-          "applicantProvidedPartyName": "Mary Richards",
-          "applicantProvidedDetail": {
+          "claimantProvidedPartyName": "Mary Richards",
+          "claimantProvidedDetail": {
             "type": "INDIVIDUAL",
             "emailAddress": "j.smith@example.com",
             "primaryAddress": {

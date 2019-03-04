@@ -82,8 +82,8 @@
           "responseDeadline": "2019-02-21",
           "responseMoreTimeNeededOption": "YES",
           "responseSubmittedOn": "2019-01-02T16:02:30.834",
-          "applicantProvidedPartyName": "Mary Richards",
-          "applicantProvidedDetail": {
+          "claimantProvidedPartyName": "Mary Richards",
+          "claimantProvidedDetail": {
             "type": "INDIVIDUAL",
             "emailAddress": "j.smith@example.com",
             "primaryAddress": {

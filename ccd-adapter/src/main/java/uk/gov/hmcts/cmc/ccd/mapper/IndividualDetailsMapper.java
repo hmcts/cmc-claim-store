@@ -23,37 +23,39 @@ public class IndividualDetailsMapper {
         this.representativeMapper = defendantRepresentativeMapper;
     }
 
-    public void to(IndividualDetails individual, CCDRespondent.CCDRespondentBuilder builder) {
+    public void to(IndividualDetails individual,
+                   CCDRespondent.CCDRespondentBuilder builder,
+                   CCDParty.CCDPartyBuilder claimantProvidedDetails) {
 
-        CCDParty.CCDPartyBuilder applicantProvidedDetails = CCDParty.builder().type(CCDPartyType.INDIVIDUAL);
+        claimantProvidedDetails.type(CCDPartyType.INDIVIDUAL);
         individual.getServiceAddress()
-            .ifPresent(address -> applicantProvidedDetails.correspondenceAddress(addressMapper.to(address)));
+            .ifPresent(address -> claimantProvidedDetails.correspondenceAddress(addressMapper.to(address)));
 
         individual.getRepresentative()
             .ifPresent(representative -> representativeMapper.to(representative, builder));
 
-        individual.getDateOfBirth().ifPresent(applicantProvidedDetails::dateOfBirth);
+        individual.getDateOfBirth().ifPresent(claimantProvidedDetails::dateOfBirth);
 
-        individual.getEmail().ifPresent(applicantProvidedDetails::emailAddress);
-        applicantProvidedDetails.primaryAddress(addressMapper.to(individual.getAddress()));
+        individual.getEmail().ifPresent(claimantProvidedDetails::emailAddress);
+        claimantProvidedDetails.primaryAddress(addressMapper.to(individual.getAddress()));
 
         builder
-            .applicantProvidedPartyName(individual.getName())
-            .applicantProvidedDetail(applicantProvidedDetails.build());
+            .claimantProvidedPartyName(individual.getName())
+            .claimantProvidedDetail(claimantProvidedDetails.build());
     }
 
     public IndividualDetails from(CCDCollectionElement<CCDRespondent> ccdRespondent) {
         CCDRespondent respondent = ccdRespondent.getValue();
-        CCDParty applicantProvidedPartyDetail = respondent.getApplicantProvidedDetail();
+        CCDParty claimantProvidedPartyDetail = respondent.getClaimantProvidedDetail();
 
         return IndividualDetails.builder()
             .id(ccdRespondent.getId())
-            .name(respondent.getApplicantProvidedPartyName())
-            .address(addressMapper.from(applicantProvidedPartyDetail.getPrimaryAddress()))
-            .email(applicantProvidedPartyDetail.getEmailAddress())
+            .name(respondent.getClaimantProvidedPartyName())
+            .address(addressMapper.from(claimantProvidedPartyDetail.getPrimaryAddress()))
+            .email(claimantProvidedPartyDetail.getEmailAddress())
             .representative(representativeMapper.from(respondent))
-            .serviceAddress(addressMapper.from(applicantProvidedPartyDetail.getCorrespondenceAddress()))
-            .dateOfBirth(applicantProvidedPartyDetail.getDateOfBirth())
+            .serviceAddress(addressMapper.from(claimantProvidedPartyDetail.getCorrespondenceAddress()))
+            .dateOfBirth(claimantProvidedPartyDetail.getDateOfBirth())
             .build();
     }
 }

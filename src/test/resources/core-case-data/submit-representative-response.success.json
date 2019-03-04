@@ -7,6 +7,7 @@
   "state": "open",
   "locked_by_user_id": null,
   "security_level": null,
+  "security_classification": "PUBLIC",
   "case_data": {
     "id": 1546455160649708,
     "reason": "sfdfg dssdgdsfgd",
@@ -70,7 +71,7 @@
       {
         "id": "ed8fc64d-6daf-4318-9491-e1fbf0c33245",
         "value": {
-          "applicantProvidedDetail":{
+          "claimantProvidedDetail":{
             "type": "INDIVIDUAL",
             "emailAddress": "j.smith@example.com",
             "primaryAddress": {
@@ -82,7 +83,7 @@
             },
             "companiesHouseNumber": "1213"
           },
-          "applicantProvidedPartyName": "zczcasdfs",
+          "claimantProvidedPartyName": "zczcasdfs",
           "representativeOrganisationName": "ewr wrwerwr",
           "representativeOrganisationAddress": {
             "PostCode": "SE28 0JE",
@@ -94,7 +95,7 @@
       {
         "id": "1163e93c-f871-4a52-a7f1-02ed2da4fdd4",
         "value": {
-          "applicantProvidedDetail":{
+          "claimantProvidedDetail":{
             "type": "SOLE_TRADER",
             "emailAddress": "j.smith@example.com",
             "primaryAddress": {
@@ -117,8 +118,8 @@
       {
         "id": "b9ce761d-5612-4b9c-8482-ce1c53f8b278",
         "value": {
-          "applicantProvidedPartyName": "sdfsfddf sdf ",
-          "applicantProvidedDetail":{
+          "claimantProvidedPartyName": "sdfsfddf sdf ",
+          "claimantProvidedDetail":{
             "type": "INDIVIDUAL",
             "emailAddress": "j.smith@example.com",
             "primaryAddress": {
@@ -156,7 +157,6 @@
     "housingDisrepairOtherDamages": "MORE_THAN_THOUSAND_POUNDS",
     "personalInjuryGeneralDamages": "MORE_THAN_THOUSAND_POUNDS",
     "housingDisrepairCostOfRepairDamages": "MORE_THAN_THOUSAND_POUNDS"
-  },
-  "security_classification": "PUBLIC"
+  }
 }
 

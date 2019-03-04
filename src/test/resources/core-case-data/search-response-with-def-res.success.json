@@ -144,7 +144,7 @@
             "noOfMaintainedChildren": 0
           },
           "responseSubmittedOn": "2019-01-03T10:07:07.888",
-          "applicantProvidedDetail":{
+          "claimantProvidedDetail":{
             "type": "INDIVIDUAL",
             "emailAddress": "j.smith@example.com",
             "primaryAddress": {
@@ -155,7 +155,7 @@
               "AddressLine3": "Middle Road"
             }
           },
-          "applicantProvidedPartyName": "Mary Richards",
+          "claimantProvidedPartyName": "Mary Richards",
           "defendantPaymentIntention": {
             "paymentLength": "3 months",
             "paymentOption": "INSTALMENTS",

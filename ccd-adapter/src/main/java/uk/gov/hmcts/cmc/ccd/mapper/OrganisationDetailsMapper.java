@@ -20,33 +20,36 @@ public class OrganisationDetailsMapper {
         this.representativeMapper = representativeMapper;
     }
 
-    public void to(OrganisationDetails organisation, CCDRespondent.CCDRespondentBuilder builder) {
-        CCDParty.CCDPartyBuilder applicantProvidedPartyDetail = CCDParty.builder().type(CCDPartyType.ORGANISATION);
+    public void to(OrganisationDetails organisation,
+                   CCDRespondent.CCDRespondentBuilder builder,
+                   CCDParty.CCDPartyBuilder claimantProvidedPartyDetail) {
+
+        claimantProvidedPartyDetail.type(CCDPartyType.ORGANISATION);
         organisation.getServiceAddress()
-            .ifPresent(address -> applicantProvidedPartyDetail.correspondenceAddress(addressMapper.to(address)));
+            .ifPresent(address -> claimantProvidedPartyDetail.correspondenceAddress(addressMapper.to(address)));
         organisation.getRepresentative()
             .ifPresent(representative -> representativeMapper.to(representative, builder));
-        organisation.getContactPerson().ifPresent(applicantProvidedPartyDetail::contactPerson);
-        organisation.getCompaniesHouseNumber().ifPresent(applicantProvidedPartyDetail::companiesHouseNumber);
-        organisation.getEmail().ifPresent(applicantProvidedPartyDetail::emailAddress);
-        applicantProvidedPartyDetail.primaryAddress(addressMapper.to(organisation.getAddress()));
+        organisation.getContactPerson().ifPresent(claimantProvidedPartyDetail::contactPerson);
+        organisation.getCompaniesHouseNumber().ifPresent(claimantProvidedPartyDetail::companiesHouseNumber);
+        organisation.getEmail().ifPresent(claimantProvidedPartyDetail::emailAddress);
+        claimantProvidedPartyDetail.primaryAddress(addressMapper.to(organisation.getAddress()));
         builder
-            .applicantProvidedPartyName(organisation.getName())
-            .partyDetail(applicantProvidedPartyDetail.build());
+            .claimantProvidedPartyName(organisation.getName())
+            .partyDetail(claimantProvidedPartyDetail.build());
     }
 
     public OrganisationDetails from(CCDCollectionElement<CCDRespondent> ccdOrganisation) {
         CCDRespondent respondent = ccdOrganisation.getValue();
-        CCDParty applicantProvidedDetails = respondent.getApplicantProvidedDetail();
+        CCDParty claimantProvidedDetails = respondent.getClaimantProvidedDetail();
         return OrganisationDetails.builder()
             .id(ccdOrganisation.getId())
-            .name(respondent.getApplicantProvidedPartyName())
-            .address(addressMapper.from(applicantProvidedDetails.getPrimaryAddress()))
-            .email(applicantProvidedDetails.getEmailAddress())
+            .name(respondent.getClaimantProvidedPartyName())
+            .address(addressMapper.from(claimantProvidedDetails.getPrimaryAddress()))
+            .email(claimantProvidedDetails.getEmailAddress())
             .representative(representativeMapper.from(respondent))
-            .serviceAddress(addressMapper.from(applicantProvidedDetails.getCorrespondenceAddress()))
-            .contactPerson(applicantProvidedDetails.getContactPerson())
-            .companiesHouseNumber(applicantProvidedDetails.getCompaniesHouseNumber())
+            .serviceAddress(addressMapper.from(claimantProvidedDetails.getCorrespondenceAddress()))
+            .contactPerson(claimantProvidedDetails.getContactPerson())
+            .companiesHouseNumber(claimantProvidedDetails.getCompaniesHouseNumber())
             .build();
     }
 }

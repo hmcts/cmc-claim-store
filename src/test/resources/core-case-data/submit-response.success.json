@@ -80,8 +80,8 @@
           "responseDeadline": "2020-02-06",
           "responseDefenceType": "ALREADY_PAID",
           "responseSubmittedOn": "2019-01-02T16:02:30.834",
-          "applicantProvidedPartyName": "Mary Richards",
-          "applicantProvidedDetail": {
+          "claimantProvidedPartyName": "Mary Richards",
+          "claimantProvidedDetail": {
             "type": "INDIVIDUAL",
             "emailAddress": "j.smith@example.com",
             "primaryAddress": {

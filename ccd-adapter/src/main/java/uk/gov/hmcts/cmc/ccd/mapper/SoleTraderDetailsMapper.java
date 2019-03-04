@@ -20,9 +20,11 @@ public class SoleTraderDetailsMapper {
         this.representativeMapper = representativeMapper;
     }
 
-    public void to(SoleTraderDetails soleTrader, CCDRespondent.CCDRespondentBuilder builder) {
+    public void to(SoleTraderDetails soleTrader,
+                   CCDRespondent.CCDRespondentBuilder builder,
+                   CCDParty.CCDPartyBuilder partyBuilder) {
 
-        CCDParty.CCDPartyBuilder partyBuilder =  CCDParty.builder().type(CCDPartyType.SOLE_TRADER);
+        partyBuilder.type(CCDPartyType.SOLE_TRADER);
         soleTrader.getTitle().ifPresent(partyBuilder::title);
         soleTrader.getBusinessName().ifPresent(partyBuilder::businessName);
         soleTrader.getRepresentative()
@@ -30,19 +32,19 @@ public class SoleTraderDetailsMapper {
         soleTrader.getEmail().ifPresent(partyBuilder::emailAddress);
         soleTrader.getServiceAddress().ifPresent(address -> partyBuilder.primaryAddress(addressMapper.to(address)));
 
-        CCDParty.CCDPartyBuilder applicantProvidedPartyDetail = CCDParty.builder();
-        applicantProvidedPartyDetail.primaryAddress(addressMapper.to(soleTrader.getAddress()));
+        CCDParty.CCDPartyBuilder claimantProvidedPartyDetail = CCDParty.builder();
+        claimantProvidedPartyDetail.primaryAddress(addressMapper.to(soleTrader.getAddress()));
 
         builder
             .partyName(soleTrader.getName())
             .partyDetail(partyBuilder.build())
-            .applicantProvidedDetail(applicantProvidedPartyDetail.build());
+            .claimantProvidedDetail(claimantProvidedPartyDetail.build());
     }
 
     public SoleTraderDetails from(CCDCollectionElement<CCDRespondent> ccdSoleTrader) {
         CCDRespondent respondent = ccdSoleTrader.getValue();
         CCDParty partyDetails = respondent.getPartyDetail();
-        CCDParty applicantProvidedPartyDetails = respondent.getApplicantProvidedDetail();
+        CCDParty claimantProvidedPartyDetails = respondent.getClaimantProvidedDetail();
 
         return SoleTraderDetails.builder()
             .id(ccdSoleTrader.getId())
@@ -50,7 +52,7 @@ public class SoleTraderDetailsMapper {
             .address(addressMapper.from(partyDetails.getPrimaryAddress()))
             .email(partyDetails.getEmailAddress())
             .representative(representativeMapper.from(respondent))
-            .serviceAddress(addressMapper.from(applicantProvidedPartyDetails.getPrimaryAddress()))
+            .serviceAddress(addressMapper.from(claimantProvidedPartyDetails.getPrimaryAddress()))
             .title(partyDetails.getTitle())
             .businessName(partyDetails.getBusinessName())
             .build();

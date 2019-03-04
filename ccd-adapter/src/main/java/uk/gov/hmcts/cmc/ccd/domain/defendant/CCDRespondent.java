@@ -27,14 +27,14 @@ public class CCDRespondent {
     private String defendantId;
     private LocalDate responseDeadline;
 
-    private CCDParty applicantProvidedDetail;
-    private String applicantProvidedPartyName;
+    private CCDParty claimantProvidedDetail;
+    private String claimantProvidedPartyName;
 
-    private String applicantProvidedRepresentativeOrganisationName;
-    private CCDAddress applicantProvidedRepresentativeOrganisationAddress;
-    private String applicantProvidedRepresentativeOrganisationPhone;
-    private String applicantProvidedRepresentativeOrganisationEmail;
-    private String applicantProvidedRepresentativeOrganisationDxAddress;
+    private String claimantProvidedRepresentativeOrganisationName;
+    private CCDAddress claimantProvidedRepresentativeOrganisationAddress;
+    private String claimantProvidedRepresentativeOrganisationPhone;
+    private String claimantProvidedRepresentativeOrganisationEmail;
+    private String claimantProvidedRepresentativeOrganisationDxAddress;
 
     private String representativeOrganisationName;
     private CCDAddress representativeOrganisationAddress;

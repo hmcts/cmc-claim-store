@@ -13,24 +13,24 @@ public class DefendantContactDetailsMapper
     @Override
     public void to(ContactDetails contactDetails, CCDRespondent.CCDRespondentBuilder builder) {
 
-        contactDetails.getEmail().ifPresent(builder::applicantProvidedRepresentativeOrganisationEmail);
-        contactDetails.getPhone().ifPresent(builder::applicantProvidedRepresentativeOrganisationPhone);
-        contactDetails.getDxAddress().ifPresent(builder::applicantProvidedRepresentativeOrganisationDxAddress);
+        contactDetails.getEmail().ifPresent(builder::claimantProvidedRepresentativeOrganisationPhone);
+        contactDetails.getPhone().ifPresent(builder::claimantProvidedRepresentativeOrganisationPhone);
+        contactDetails.getDxAddress().ifPresent(builder::claimantProvidedRepresentativeOrganisationDxAddress);
     }
 
     @Override
     public ContactDetails from(CCDRespondent ccdRespondent) {
-        if (isBlank(ccdRespondent.getApplicantProvidedRepresentativeOrganisationPhone())
-            && isBlank(ccdRespondent.getApplicantProvidedRepresentativeOrganisationEmail())
-            && ccdRespondent.getApplicantProvidedRepresentativeOrganisationDxAddress() == null
+        if (isBlank(ccdRespondent.getClaimantProvidedRepresentativeOrganisationPhone())
+            && isBlank(ccdRespondent.getClaimantProvidedRepresentativeOrganisationEmail())
+            && ccdRespondent.getClaimantProvidedRepresentativeOrganisationDxAddress() == null
         ) {
             return null;
         }
 
         return ContactDetails.builder()
-            .phone(ccdRespondent.getApplicantProvidedRepresentativeOrganisationPhone())
-            .email(ccdRespondent.getApplicantProvidedRepresentativeOrganisationEmail())
-            .dxAddress(ccdRespondent.getApplicantProvidedRepresentativeOrganisationDxAddress())
+            .phone(ccdRespondent.getClaimantProvidedRepresentativeOrganisationPhone())
+            .email(ccdRespondent.getClaimantProvidedRepresentativeOrganisationEmail())
+            .dxAddress(ccdRespondent.getClaimantProvidedRepresentativeOrganisationDxAddress())
             .build();
     }
 }

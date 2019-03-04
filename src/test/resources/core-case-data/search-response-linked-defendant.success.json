@@ -64,7 +64,7 @@
           "letterHolderId": "75",
           "defendantId": "100",
           "responseDeadline": "2020-02-06",
-          "applicantProvidedDetail":{
+          "claimantProvidedDetail":{
             "type": "INDIVIDUAL",
             "emailAddress": "j.smith@example.com",
             "primaryAddress": {
@@ -75,7 +75,7 @@
               "AddressLine3": "Middle Road"
             }
           },
-          "applicantProvidedPartyName": "Mary Richards"
+          "claimantProvidedPartyName": "Mary Richards"
         }
       }
     ],
