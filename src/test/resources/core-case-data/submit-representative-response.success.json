@@ -95,6 +95,7 @@
       {
         "id": "1163e93c-f871-4a52-a7f1-02ed2da4fdd4",
         "value": {
+
           "claimantProvidedDetail":{
             "type": "SOLE_TRADER",
             "emailAddress": "j.smith@example.com",

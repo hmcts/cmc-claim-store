@@ -22,39 +22,34 @@ public class SoleTraderDetailsMapper {
 
     public void to(SoleTraderDetails soleTrader,
                    CCDRespondent.CCDRespondentBuilder builder,
-                   CCDParty.CCDPartyBuilder partyBuilder) {
+                   CCDParty.CCDPartyBuilder claimantProvidedPartyDetail) {
 
-        partyBuilder.type(CCDPartyType.SOLE_TRADER);
-        soleTrader.getTitle().ifPresent(partyBuilder::title);
-        soleTrader.getBusinessName().ifPresent(partyBuilder::businessName);
+        claimantProvidedPartyDetail.type(CCDPartyType.SOLE_TRADER);
+        soleTrader.getTitle().ifPresent(claimantProvidedPartyDetail::title);
+        soleTrader.getBusinessName().ifPresent(claimantProvidedPartyDetail::businessName);
         soleTrader.getRepresentative()
             .ifPresent(representative -> representativeMapper.to(representative, builder));
-        soleTrader.getEmail().ifPresent(partyBuilder::emailAddress);
-        soleTrader.getServiceAddress().ifPresent(address -> partyBuilder.primaryAddress(addressMapper.to(address)));
+        soleTrader.getEmail().ifPresent(claimantProvidedPartyDetail::emailAddress);
 
-        CCDParty.CCDPartyBuilder claimantProvidedPartyDetail = CCDParty.builder();
         claimantProvidedPartyDetail.primaryAddress(addressMapper.to(soleTrader.getAddress()));
 
         builder
             .partyName(soleTrader.getName())
-            .partyDetail(partyBuilder.build())
             .claimantProvidedDetail(claimantProvidedPartyDetail.build());
     }
 
     public SoleTraderDetails from(CCDCollectionElement<CCDRespondent> ccdSoleTrader) {
         CCDRespondent respondent = ccdSoleTrader.getValue();
-        CCDParty partyDetails = respondent.getPartyDetail();
         CCDParty claimantProvidedPartyDetails = respondent.getClaimantProvidedDetail();
 
         return SoleTraderDetails.builder()
             .id(ccdSoleTrader.getId())
             .name(respondent.getPartyName())
-            .address(addressMapper.from(partyDetails.getPrimaryAddress()))
-            .email(partyDetails.getEmailAddress())
+            .email(claimantProvidedPartyDetails.getEmailAddress())
+            .address(addressMapper.from(claimantProvidedPartyDetails.getPrimaryAddress()))
             .representative(representativeMapper.from(respondent))
-            .serviceAddress(addressMapper.from(claimantProvidedPartyDetails.getPrimaryAddress()))
-            .title(partyDetails.getTitle())
-            .businessName(partyDetails.getBusinessName())
+            .title(claimantProvidedPartyDetails.getTitle())
+            .businessName(claimantProvidedPartyDetails.getBusinessName())
             .build();
     }
 }
