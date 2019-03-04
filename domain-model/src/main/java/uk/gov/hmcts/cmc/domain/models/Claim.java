@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
@@ -53,7 +54,6 @@ public class Claim {
     private final LocalDateTime countyCourtJudgmentRequestedAt;
     private final Settlement settlement;
     private final LocalDateTime settlementReachedAt;
-    private final URI sealedClaimDocument;
     private final List<String> features;
     private final LocalDateTime claimantRespondedAt;
     private final ClaimantResponse claimantResponse;
@@ -62,6 +62,7 @@ public class Claim {
     private final LocalDate moneyReceivedOn;
     private final ReDetermination reDetermination;
     private final LocalDateTime reDeterminationRequestedAt;
+    private final ClaimDocumentCollection claimDocumentCollection;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     public Claim(
@@ -84,14 +85,14 @@ public class Claim {
         LocalDateTime countyCourtJudgmentRequestedAt,
         Settlement settlement,
         LocalDateTime settlementReachedAt,
-        URI sealedClaimDocument,
         List<String> features,
         LocalDateTime claimantRespondedAt,
         ClaimantResponse claimantResponse,
         LocalDate directionsQuestionnaireDeadline,
         LocalDate moneyReceivedOn,
         ReDetermination reDetermination,
-        LocalDateTime reDeterminationRequestedAt
+        LocalDateTime reDeterminationRequestedAt,
+        ClaimDocumentCollection claimDocumentCollection
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -112,7 +113,6 @@ public class Claim {
         this.countyCourtJudgmentRequestedAt = countyCourtJudgmentRequestedAt;
         this.settlement = settlement;
         this.settlementReachedAt = settlementReachedAt;
-        this.sealedClaimDocument = sealedClaimDocument;
         this.features = features;
         this.claimantRespondedAt = claimantRespondedAt;
         this.claimantResponse = claimantResponse;
@@ -120,6 +120,7 @@ public class Claim {
         this.moneyReceivedOn = moneyReceivedOn;
         this.reDetermination = reDetermination;
         this.reDeterminationRequestedAt = reDeterminationRequestedAt;
+        this.claimDocumentCollection = claimDocumentCollection;
     }
 
     public Optional<Response> getResponse() {
@@ -130,8 +131,17 @@ public class Claim {
         return Optional.ofNullable(settlement);
     }
 
-    public Optional<URI> getSealedClaimDocument() {
-        return Optional.ofNullable(sealedClaimDocument);
+    @JsonIgnore
+    public Optional<URI> getClaimDocument(ClaimDocumentType claimDocumentType) {
+        if (claimDocumentCollection == null) {
+            return Optional.empty();
+        } else {
+            Optional<ClaimDocument> claimDocument = claimDocumentCollection.getDocument(claimDocumentType);
+            if (claimDocument.isPresent()) {
+                return Optional.ofNullable(claimDocument.get().getDocumentManagementUrl());
+            }
+        }
+        return Optional.empty();
     }
 
     public LocalDate getServiceDate() {
@@ -176,6 +186,10 @@ public class Claim {
 
     public Optional<ReDetermination> getReDetermination() {
         return Optional.ofNullable(reDetermination);
+    }
+
+    public Optional<ClaimDocumentCollection> getClaimDocumentCollection() {
+        return Optional.ofNullable(claimDocumentCollection);
     }
 
     @Override

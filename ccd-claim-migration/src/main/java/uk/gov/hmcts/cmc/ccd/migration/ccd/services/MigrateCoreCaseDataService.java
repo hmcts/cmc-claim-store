@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.migration.ccd.services;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -18,12 +20,13 @@ import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.ccd.client.model.UserId;
 
-import static uk.gov.hmcts.cmc.ccd.migration.ccd.services.CoreCaseDataService.CASE_TYPE_ID;
-import static uk.gov.hmcts.cmc.ccd.migration.ccd.services.CoreCaseDataService.JURISDICTION_ID;
+import static uk.gov.hmcts.cmc.ccd.migration.ccd.services.SearchCCDCaseService.CASE_TYPE_ID;
+import static uk.gov.hmcts.cmc.ccd.migration.ccd.services.SearchCCDCaseService.JURISDICTION_ID;
 
 @Service
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class MigrateCoreCaseDataService {
+    private static final Logger logger = LoggerFactory.getLogger(MigrateCoreCaseDataService.class);
 
     private final CoreCaseDataApi coreCaseDataApi;
     private final AuthTokenGenerator authTokenGenerator;
@@ -67,14 +70,10 @@ public class MigrateCoreCaseDataService {
             ).data(ccdCase)
             .build();
 
-        CaseDetails caseDetails = submitEvent(authorisation, eventRequestData, caseDataContent, ccdId);
-
-        grantAccessToCase(caseDetails.getId(), claim);
+        submitEvent(authorisation, eventRequestData, caseDataContent, ccdId);
     }
 
-    public void save(
-        String authorisation, EventRequestData eventRequestData, Claim claim
-    ) {
+    public CaseDetails save(String authorisation, EventRequestData eventRequestData, Claim claim) {
         CCDCase ccdCase = caseMapper.to(claim);
 
         StartEventResponse startEventResponse = start(authorisation, eventRequestData);
@@ -94,6 +93,7 @@ public class MigrateCoreCaseDataService {
         CaseDetails caseDetails = submit(authorisation, eventRequestData, caseDataContent);
 
         grantAccessToCase(caseDetails.getId(), claim);
+        return caseDetails;
     }
 
     private void grantAccessToCase(Long ccdId, Claim claim) {
@@ -107,7 +107,7 @@ public class MigrateCoreCaseDataService {
 
     }
 
-    private void grantAccess(
+    public void grantAccess(
         String caseId, String userId
     ) {
         User user = userService.authenticateAnonymousCaseWorker();
@@ -123,7 +123,7 @@ public class MigrateCoreCaseDataService {
         );
     }
 
-    private CaseDetails submit(
+    public CaseDetails submit(
         String authorisation, EventRequestData eventRequestData, CaseDataContent caseDataContent
     ) {
         return coreCaseDataApi.submitForCaseworker(
@@ -137,7 +137,7 @@ public class MigrateCoreCaseDataService {
         );
     }
 
-    private StartEventResponse start(String authorisation, EventRequestData eventRequestData) {
+    public StartEventResponse start(String authorisation, EventRequestData eventRequestData) {
         return this.coreCaseDataApi.startForCaseworker(
             authorisation,
             this.authTokenGenerator.generate(),
@@ -148,7 +148,7 @@ public class MigrateCoreCaseDataService {
         );
     }
 
-    private StartEventResponse startEvent(String authorisation, EventRequestData eventRequestData, Long caseId) {
+    public StartEventResponse startEvent(String authorisation, EventRequestData eventRequestData, Long caseId) {
 
         return this.coreCaseDataApi.startEventForCaseWorker(
             authorisation,
@@ -161,7 +161,7 @@ public class MigrateCoreCaseDataService {
         );
     }
 
-    private CaseDetails submitEvent(
+    public CaseDetails submitEvent(
         String authorisation,
         EventRequestData eventRequestData,
         CaseDataContent caseDataContent,

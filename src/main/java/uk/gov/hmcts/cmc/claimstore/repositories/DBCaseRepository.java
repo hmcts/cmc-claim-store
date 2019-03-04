@@ -4,13 +4,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
@@ -19,7 +19,6 @@ import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
-import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -57,16 +56,6 @@ public class DBCaseRepository implements CaseRepository {
 
     public Optional<Claim> getClaimByExternalId(String externalId, String authorisation) {
         return claimRepository.getClaimByExternalId(externalId);
-    }
-
-    @Override
-    public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
-        getClaimByExternalId(externalId, authorisation)
-            .ifPresent(claim -> {
-                throw new ConflictException("Duplicate claim for external id " + claim.getExternalId());
-            });
-
-        return null;
     }
 
     public Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation) {
@@ -221,11 +210,6 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void linkSealedClaimDocument(String authorisation, Claim claim, URI documentUri) {
-        claimRepository.linkSealedClaimDocument(claim.getId(), documentUri.toString());
-    }
-
-    @Override
     public void saveReDetermination(
         String authorisation,
         Claim claim,
@@ -237,5 +221,12 @@ public class DBCaseRepository implements CaseRepository {
     @Override
     public void saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent) {
         // No implementation required for claim-store repository
+    }
+
+    @Override
+    public void saveClaimDocuments(String authorisation,
+                                   Long claimId,
+                                   ClaimDocumentCollection claimDocumentCollection) {
+        claimRepository.saveClaimDocuments(claimId, jsonMapper.toJson(claimDocumentCollection));
     }
 }

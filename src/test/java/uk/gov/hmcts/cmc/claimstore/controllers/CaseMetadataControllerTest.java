@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseMetadataControllerTest {
@@ -153,7 +154,7 @@ public class CaseMetadataControllerTest {
         assertEquals(dto.isMoreTimeRequested(), metadata.isMoreTimeRequested());
         assertEquals(dto.getCountyCourtJudgmentRequestedAt(), metadata.getCountyCourtJudgmentRequestedAt());
         assertEquals(dto.getSettlementReachedAt(), metadata.getSettlementReachedAt());
-        assertEquals(dto.getSealedClaimDocument(), Optional.ofNullable(metadata.getSealedClaimDocument()));
+        assertEquals(dto.getClaimDocument(SEALED_CLAIM), Optional.ofNullable(metadata.getSealedClaimDocument()));
         assertEquals(dto.getClaimData().getPayment().getReference(), metadata.getPaymentReference());
     }
 }
