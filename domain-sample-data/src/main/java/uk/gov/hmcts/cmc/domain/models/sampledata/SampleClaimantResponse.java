@@ -174,7 +174,7 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
         public ClaimantResponse buildRejectionWithFreeMediation() {
             return ResponseRejection.builder()
                 .amountPaid(TEN)
-                .freeMediation(YesNoOption.YES)
+                .freeMediation(YES)
                 .mediationPhoneNumber("07999999999")
                 .mediationContactPerson("Mediation Contact Person")
                 .reason("Some valid reason")
