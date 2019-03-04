@@ -192,7 +192,7 @@ public class CoreCaseDataServiceTest {
     }
 
     @Test
-    public void linkDefendantShouldbeSuccessful() {
+    public void linkDefendantShouldBeSuccessful() {
         Claim providedClaim = SampleClaim.getDefault();
         when(jsonMapper.fromMap(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
         when(caseMapper.from(any(CCDCase.class))).thenReturn(providedClaim);
