@@ -15,7 +15,7 @@ public class IncomeAssert extends AbstractAssert<IncomeAssert, Income> {
     public IncomeAssert isEqualTo(CCDIncome ccdIncome) {
         isNotNull();
 
-        if (!Objects.equals(actual.getType(), ccdIncome.getType())) {
+        if (!Objects.equals(actual.getType().name(), ccdIncome.getType().name())) {
             failWithMessage("Expected Income.type to be <%s> but was <%s>",
                 ccdIncome.getType(), actual.getType());
         }

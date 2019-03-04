@@ -15,7 +15,7 @@ public class PriorityDebtAssert extends AbstractAssert<PriorityDebtAssert, Prior
     public PriorityDebtAssert isEqualTo(CCDPriorityDebt ccdPriorityDebt) {
         isNotNull();
 
-        if (!Objects.equals(actual.getType(), ccdPriorityDebt.getType())) {
+        if (!Objects.equals(actual.getType().name(), ccdPriorityDebt.getType().name())) {
             failWithMessage("Expected PriorityDebt.type to be <%s> but was <%s>",
                 ccdPriorityDebt.getType(), actual.getType());
         }
