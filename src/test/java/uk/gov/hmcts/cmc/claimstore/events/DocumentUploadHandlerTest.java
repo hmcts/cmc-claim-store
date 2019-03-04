@@ -8,7 +8,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.context.ApplicationEventPublisher;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantPinLetterPdfService;
@@ -54,8 +53,6 @@ public class DocumentUploadHandlerTest {
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
     @Mock
-    private ApplicationEventPublisher publisher;
-    @Mock
     private DefendantResponseReceiptService defendantResponseReceiptService;
     @Mock
     private CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
@@ -95,8 +92,7 @@ public class DocumentUploadHandlerTest {
 
     @Before
     public void setUp() {
-        documentUploadHandler = new DocumentUploadHandler(publisher,
-            defendantResponseReceiptService,
+        documentUploadHandler = new DocumentUploadHandler(defendantResponseReceiptService,
             countyCourtJudgmentPdfService,
             settlementAgreementCopyService,
             sealedClaimPdfService,

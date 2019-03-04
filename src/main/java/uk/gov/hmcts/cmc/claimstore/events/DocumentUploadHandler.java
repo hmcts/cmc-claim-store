@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
@@ -45,9 +44,9 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEM
 public class DocumentUploadHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(DocumentUploadHandler.class);
+    private static final String CLAIM_MUST_NOT_BE_NULL = "Claim must not be null";
 
     private final DocumentsService documentService;
-    private final ApplicationEventPublisher publisher;
     private final DefendantResponseReceiptService defendantResponseReceiptService;
     private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
     private final SettlementAgreementCopyService settlementAgreementCopyService;
@@ -55,17 +54,14 @@ public class DocumentUploadHandler {
     private final ClaimIssueReceiptService claimIssueReceiptService;
     private final DefendantPinLetterPdfService defendantPinLetterPdfService;
 
-    @SuppressWarnings("squid:S00107")
     @Autowired
-    public DocumentUploadHandler(ApplicationEventPublisher publisher,
-                                 DefendantResponseReceiptService defendantResponseReceiptService,
+    public DocumentUploadHandler(DefendantResponseReceiptService defendantResponseReceiptService,
                                  CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
                                  SettlementAgreementCopyService settlementAgreementCopyService,
                                  SealedClaimPdfService sealedClaimPdfService,
                                  ClaimIssueReceiptService claimIssueReceiptService,
                                  DefendantPinLetterPdfService defendantPinLetterPdfService,
                                  DocumentsService documentService) {
-        this.publisher = publisher;
         this.defendantResponseReceiptService = defendantResponseReceiptService;
         this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
         this.settlementAgreementCopyService = settlementAgreementCopyService;
@@ -78,7 +74,7 @@ public class DocumentUploadHandler {
     @EventListener
     public void uploadDocument(CitizenClaimIssuedEvent event) {
         Claim claim = event.getClaim();
-        requireNonNull(claim, "Claim must not be null");
+        requireNonNull(claim, CLAIM_MUST_NOT_BE_NULL);
         PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(event.getClaim().getReferenceNumber()),
             sealedClaimPdfService.createPdf(event.getClaim()),
             SEALED_CLAIM);
@@ -98,7 +94,7 @@ public class DocumentUploadHandler {
     @EventListener
     public void uploadDocument(RepresentedClaimIssuedEvent event) {
         Claim claim = event.getClaim();
-        requireNonNull(claim, "Claim must not be null");
+        requireNonNull(claim, CLAIM_MUST_NOT_BE_NULL);
         PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(event.getClaim().getReferenceNumber()),
             sealedClaimPdfService.createPdf(event.getClaim()),
             SEALED_CLAIM);
@@ -110,7 +106,7 @@ public class DocumentUploadHandler {
     @EventListener
     public void uploadDocument(DefendantResponseEvent event) {
         Claim claim = event.getClaim();
-        requireNonNull(claim, "Claim must not be null");
+        requireNonNull(claim, CLAIM_MUST_NOT_BE_NULL);
         if (!claim.getResponse().isPresent()) {
             throw new IllegalArgumentException("Response must be present");
         }
@@ -123,7 +119,7 @@ public class DocumentUploadHandler {
     @EventListener
     public void uploadDocument(CountyCourtJudgmentEvent event) {
         Claim claim = event.getClaim();
-        requireNonNull(claim, "Claim must not be null");
+        requireNonNull(claim, CLAIM_MUST_NOT_BE_NULL);
         PDF document = new PDF(buildRequestForJudgementFileBaseName(claim.getReferenceNumber(),
             claim.getClaimData().getDefendant().getName()),
             countyCourtJudgmentPdfService.createPdf(claim),
@@ -134,7 +130,7 @@ public class DocumentUploadHandler {
     @EventListener
     public void uploadDocument(AgreementCountersignedEvent event) {
         Claim claim = event.getClaim();
-        requireNonNull(claim, "Claim must not be null");
+        requireNonNull(claim, CLAIM_MUST_NOT_BE_NULL);
         PDF document = new PDF(buildSettlementReachedFileBaseName(claim.getReferenceNumber()),
             settlementAgreementCopyService.createPdf(claim),
             SETTLEMENT_AGREEMENT);
@@ -144,7 +140,7 @@ public class DocumentUploadHandler {
     @EventListener
     public void uploadDocument(CountersignSettlementAgreementEvent event) {
         Claim claim = event.getClaim();
-        requireNonNull(claim, "Claim must not be null");
+        requireNonNull(claim, CLAIM_MUST_NOT_BE_NULL);
         PDF document = new PDF(buildSettlementReachedFileBaseName(claim.getReferenceNumber()),
             settlementAgreementCopyService.createPdf(claim),
             SETTLEMENT_AGREEMENT);
