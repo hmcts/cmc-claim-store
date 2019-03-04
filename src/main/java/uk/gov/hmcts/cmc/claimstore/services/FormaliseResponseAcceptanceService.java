@@ -28,7 +28,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCATORY_JUDGEMENT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCUTORY_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REJECT_ORGANISATION_PAYMENT_PLAN;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
@@ -83,7 +83,7 @@ public class FormaliseResponseAcceptanceService {
             ccdEventProducer.createCCDRejectOrganisationPaymentPlanEvent(claim, authorisation);
         } else {
             eventProducer.createInterlocutoryJudgmentEvent(claim);
-            caseEvent = INTERLOCATORY_JUDGEMENT;
+            caseEvent = INTERLOCUTORY_JUDGMENT;
             ccdEventProducer.createCCDInterlocutoryJudgmentEvent(claim, authorisation);
         }
         caseRepository.saveCaseEvent(authorisation, claim, caseEvent);
@@ -96,20 +96,23 @@ public class FormaliseResponseAcceptanceService {
         BigDecimal claimAmountTillDate = claim.getTotalAmountTillToday().orElse(BigDecimal.ZERO);
         switch (getDecisionType(responseAcceptation)) {
             case DEFENDANT:
-                settlement.makeOffer(prepareOffer(response, paymentIntention, claimAmountTillDate), MadeBy.DEFENDANT);
+                settlement
+                    .makeOffer(prepareOffer(response, paymentIntention, claimAmountTillDate), MadeBy.DEFENDANT, null);
                 break;
             case CLAIMANT:
             case CLAIMANT_IN_FAVOUR_OF_DEFENDANT:
-                settlement.makeOffer(prepareOffer(response, paymentIntention, claimAmountTillDate), MadeBy.CLAIMANT);
+                settlement
+                    .makeOffer(prepareOffer(response, paymentIntention, claimAmountTillDate), MadeBy.CLAIMANT, null);
                 break;
             case COURT:
-                settlement.makeOffer(prepareOffer(response, paymentIntention, claimAmountTillDate), MadeBy.COURT);
+                settlement
+                    .makeOffer(prepareOffer(response, paymentIntention, claimAmountTillDate), MadeBy.COURT, null);
                 break;
             default:
                 throw new IllegalStateException("Invalid decision type in the Claim");
 
         }
-        settlement.acceptCourtDetermination(MadeBy.CLAIMANT);
+        settlement.acceptCourtDetermination(MadeBy.CLAIMANT, null);
         settlementAgreementService.signSettlementAgreement(claim.getExternalId(), settlement, authorisation);
     }
 

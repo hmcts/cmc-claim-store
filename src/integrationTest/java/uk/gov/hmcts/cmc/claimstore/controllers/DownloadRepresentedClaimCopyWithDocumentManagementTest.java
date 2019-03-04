@@ -22,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementUploadResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.unsuccessfulDocumentManagementUploadResponse;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @TestPropertySource(
     properties = {
@@ -55,7 +56,7 @@ public class DownloadRepresentedClaimCopyWithDocumentManagementTest extends Base
 
         verify(documentUploadClient).upload(eq(AUTHORISATION_TOKEN), any(), any(),
             eq(newArrayList(new InMemoryMultipartFile("files",
-            claim.getReferenceNumber() + "-claim-form.pdf", "application/pdf", PDF_BYTES)))
+                claim.getReferenceNumber() + "-claim-form.pdf", "application/pdf", PDF_BYTES)))
         );
     }
 
@@ -70,21 +71,22 @@ public class DownloadRepresentedClaimCopyWithDocumentManagementTest extends Base
             .andExpect(status().isOk())
             .andExpect(content().bytes(PDF_BYTES));
 
-        assertThat(claimStore.getClaim(claim.getId()).getSealedClaimDocument())
+        assertThat(claimStore.getClaim(claim.getId()).getClaimDocument(SEALED_CLAIM))
             .isEqualTo(Optional.of(URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4")));
     }
 
     @Test
-    public void shouldReturnServerErrorWhenUploadToDocumentManagementStoreFailed() throws Exception {
+    public void shouldNotReturnServerErrorWhenUploadToDocumentManagementStoreFailed() throws Exception {
         given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
             .willReturn(unsuccessfulDocumentManagementUploadResponse());
 
         Claim claim = claimStore.saveClaim(SampleClaimData.submittedByLegalRepresentative());
 
         makeRequest(claim.getExternalId())
-            .andExpect(status().isInternalServerError());
+            .andExpect(status().isOk())
+            .andExpect(content().bytes(PDF_BYTES));
 
-        assertThat(claimStore.getClaim(claim.getId()).getSealedClaimDocument())
+        assertThat(claimStore.getClaim(claim.getId()).getClaimDocument(SEALED_CLAIM))
             .isEqualTo(Optional.empty());
 
     }

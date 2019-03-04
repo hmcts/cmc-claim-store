@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,13 +39,13 @@ public class PartyUtilsTest {
 
     @Test(expected = NotificationException.class)
     public void getTypeThrowsWhenPartyTypeUnknown() {
-        PartyUtils.getType(new Party(null, null, null, null, null) {
+        PartyUtils.getType(new Party(UUID.randomUUID().toString(), null, null, null, null, null) {
         });
     }
 
     @Test(expected = NotificationException.class)
     public void getTypeTheirDetailsThrowsWhenPartyTypeUnknown() {
-        PartyUtils.getType(new TheirDetails(null, null, null, null, null) {
+        PartyUtils.getType(new TheirDetails(UUID.randomUUID().toString(), null, null, null, null, null) {
         });
     }
 

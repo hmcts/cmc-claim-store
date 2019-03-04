@@ -13,18 +13,20 @@ import java.time.LocalDateTime;
 public class CCDResponseRejection extends CCDClaimantResponse {
 
     private CCDYesNoOption freeMediationOption;
-
     private String mediationPhoneNumber;
-
     private String reason;
 
     @Builder
-    public CCDResponseRejection(BigDecimal amountPaid,
-                                LocalDateTime submittedOn,
-                                CCDYesNoOption freeMediationOption,
-                                String mediationPhoneNumber,
-                                String reason) {
-        super(amountPaid, submittedOn);
+    public CCDResponseRejection(
+        BigDecimal amountPaid,
+        LocalDateTime submittedOn,
+        CCDYesNoOption freeMediationOption,
+        String mediationPhoneNumber,
+        String reason,
+        CCDYesNoOption paymentReceived,
+        CCDYesNoOption settleForAmount
+    ) {
+        super(amountPaid, submittedOn, paymentReceived, settleForAmount);
         this.freeMediationOption = freeMediationOption;
         this.mediationPhoneNumber = mediationPhoneNumber;
         this.reason = reason;

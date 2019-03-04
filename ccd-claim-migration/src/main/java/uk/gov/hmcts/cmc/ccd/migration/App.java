@@ -7,6 +7,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.retry.annotation.EnableRetry;
 import uk.gov.hmcts.cmc.ccd.migration.services.ClaimMigrator;
 
 /**
@@ -15,7 +16,7 @@ import uk.gov.hmcts.cmc.ccd.migration.services.ClaimMigrator;
 @SpringBootApplication(scanBasePackages = {
     "uk.gov.hmcts.reform.authorisation",
     "uk.gov.hmcts.cmc.ccd.migration",
-    "uk.gov.hmcts.cmc.ccd.deprecated.mapper"
+    "uk.gov.hmcts.cmc.ccd.mapper"
 })
 @SuppressWarnings({"HideUtilityClassConstructor", "squid:S1118"}) // Spring needs a constructor, its not a utility class
 @EnableFeignClients(basePackages =
@@ -25,6 +26,7 @@ import uk.gov.hmcts.cmc.ccd.migration.services.ClaimMigrator;
         "uk.gov.hmcts.reform.ccd.client"
     }
 )
+@EnableRetry
 public class App implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(App.class);

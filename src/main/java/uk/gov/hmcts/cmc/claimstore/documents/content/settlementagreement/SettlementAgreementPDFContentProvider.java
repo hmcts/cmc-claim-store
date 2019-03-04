@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.content.PartyDetailsContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
+import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +31,7 @@ public class SettlementAgreementPDFContentProvider {
         requireNonNull(claim);
 
         Offer acceptedOffer = claim.getSettlement().orElseThrow(IllegalArgumentException::new)
-            .getLastOfferStatement().getOffer().orElseThrow(IllegalArgumentException::new);
+            .getLastStatementOfType(StatementType.OFFER).getOffer().orElseThrow(IllegalArgumentException::new);
         Map<String, Object> content = new HashMap<>();
         content.put("settlementReachedAt", formatDateTime(claim.getSettlementReachedAt()));
         content.put("acceptedOffer", acceptedOffer.getContent());

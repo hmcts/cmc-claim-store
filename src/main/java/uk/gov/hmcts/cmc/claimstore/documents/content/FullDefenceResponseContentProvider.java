@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
+import static uk.gov.hmcts.cmc.claimstore.utils.ParagraphEnumerator.split;
 
 @Component
 public class FullDefenceResponseContentProvider {
@@ -35,7 +36,7 @@ public class FullDefenceResponseContentProvider {
         String timelineComment = null;
         String evidenceComment = null;
 
-        content.put("responseDefence", fullDefenceResponse.getDefence().orElse(null));
+        content.put("responseDefence", split(fullDefenceResponse.getDefence().orElse("")));
         content.put("responseTypeSelected", fullDefenceResponse.getDefenceType().getDescription());
         if (fullDefenceResponse.getDefenceType().equals(DefenceType.ALREADY_PAID)) {
             content.put("hasDefendantAlreadyPaid", true);

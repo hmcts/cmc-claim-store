@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
@@ -35,7 +36,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCATORY_JUDGEMENT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCUTORY_JUDGMENT;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType.CLAIMANT;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType.COURT;
@@ -379,7 +380,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         PaymentIntention paymentIntentionWithinOffer = settlementArgumentCaptor
             .getValue()
-            .getLastOfferStatement()
+            .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
             .orElseThrow(IllegalStateException::new)
             .getPaymentIntention()
@@ -413,7 +414,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         PaymentIntention paymentIntentionWithinOffer = settlementArgumentCaptor
             .getValue()
-            .getLastOfferStatement()
+            .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
             .orElseThrow(IllegalStateException::new)
             .getPaymentIntention()
@@ -450,7 +451,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         PaymentIntention paymentIntentionWithinOffer = settlementArgumentCaptor
             .getValue()
-            .getLastOfferStatement()
+            .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
             .orElseThrow(IllegalStateException::new)
             .getPaymentIntention()
@@ -488,7 +489,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         PaymentIntention paymentIntentionWithinOffer = settlementArgumentCaptor
             .getValue()
-            .getLastOfferStatement()
+            .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
             .orElseThrow(IllegalStateException::new)
             .getPaymentIntention()
@@ -519,7 +520,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         Offer offer = settlementArgumentCaptor
             .getValue()
-            .getLastOfferStatement()
+            .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
             .orElseThrow(IllegalStateException::new);
 
@@ -559,7 +560,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         Offer offer = settlementArgumentCaptor
             .getValue()
-            .getLastOfferStatement()
+            .getLastStatementOfType(StatementType.OFFER)
             .getOffer()
             .orElseThrow(IllegalStateException::new);
 
@@ -586,7 +587,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         verify(eventProducer, once()).createInterlocutoryJudgmentEvent(eq(claim));
         verify(ccdEventProducer, once()).createCCDInterlocutoryJudgmentEvent(eq(claim), anyString());
-        verify(caseRepository, once()).saveCaseEvent(anyString(), eq(claim), eq(INTERLOCATORY_JUDGEMENT));
+        verify(caseRepository, once()).saveCaseEvent(anyString(), eq(claim), eq(INTERLOCUTORY_JUDGMENT));
         verifyZeroInteractions(countyCourtJudgmentService);
         verifyZeroInteractions(settlementAgreementService);
     }

@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import static java.util.Objects.requireNonNull;
 
 @Service
-public class SettlementAgreementCopyService {
+public class SettlementAgreementCopyService implements PdfService {
 
     private final SettlementAgreementPDFContentProvider contentProvider;
     private final DocumentTemplates documentTemplates;

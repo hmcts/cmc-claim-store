@@ -42,8 +42,8 @@ public class EventProducer {
         }
     }
 
-    public void createDefendantResponseEvent(Claim claim) {
-        publisher.publishEvent(new DefendantResponseEvent(claim));
+    public void createDefendantResponseEvent(Claim claim, String authorization) {
+        publisher.publishEvent(new DefendantResponseEvent(claim, authorization));
     }
 
     public void createMoreTimeForResponseRequestedEvent(

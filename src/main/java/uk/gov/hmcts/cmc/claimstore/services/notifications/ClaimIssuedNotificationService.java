@@ -77,10 +77,11 @@ public class ClaimIssuedNotificationService {
         String reference,
         String submitterName
     ) {
-        String errorMessage = "Failure: "
-            + " failed to send notification (" + reference
-            + " to " + targetEmail + ") "
-            + " due to " + exception.getMessage();
+        String errorMessage = String.format(
+            "Failure: failed to send notification (%s) due to %s",
+            reference,
+            exception.getMessage()
+        );
 
         logger.info(errorMessage, exception);
     }

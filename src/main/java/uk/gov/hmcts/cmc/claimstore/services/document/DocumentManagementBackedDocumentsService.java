@@ -6,21 +6,32 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
+import uk.gov.hmcts.cmc.claimstore.documents.PdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.net.URI;
-import java.util.function.Supplier;
+import java.util.Optional;
 
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimIssueReceiptFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
-@Service
+@Service("documentsService")
 @ConditionalOnProperty(prefix = "document_management", name = "url")
 public class DocumentManagementBackedDocumentsService implements DocumentsService {
 
+    private static final String OCMC = "OCMC";
     private final ClaimService claimService;
     private final DocumentManagementService documentManagementService;
     private final SealedClaimPdfService sealedClaimPdfService;
@@ -51,18 +62,32 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
 
     @Override
     public byte[] generateClaimIssueReceipt(String externalId, String authorisation) {
-        return claimIssueReceiptService.createPdf(getClaimByExternalId(externalId, authorisation));
+        Claim claim = getClaimByExternalId(externalId, authorisation);
+        return processRequest(claim,
+            authorisation,
+            CLAIM_ISSUE_RECEIPT,
+            claimIssueReceiptService,
+            buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber()));
     }
 
     @Override
     public byte[] getSealedClaim(String externalId, String authorisation) {
         Claim claim = getClaimByExternalId(externalId, authorisation);
-        return downloadOrGenerateAndUpload(claim, () -> sealedClaimPdfService.createPdf(claim), authorisation);
+        return processRequest(claim,
+            authorisation,
+            SEALED_CLAIM,
+            sealedClaimPdfService,
+            buildSealedClaimFileBaseName(claim.getReferenceNumber()));
     }
 
     @Override
     public byte[] generateDefendantResponseReceipt(String externalId, String authorisation) {
-        return defendantResponseReceiptService.createPdf(getClaimByExternalId(externalId, authorisation));
+        Claim claim = getClaimByExternalId(externalId, authorisation);
+        return processRequest(claim,
+            authorisation,
+            DEFENDANT_RESPONSE_RECEIPT,
+            defendantResponseReceiptService,
+            buildResponseFileBaseName(claim.getReferenceNumber()));
     }
 
     @Override
@@ -79,18 +104,52 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         return claimService.getClaimByExternalId(externalId, authorisation);
     }
 
-    @SuppressWarnings("squid:S3655")
-    private byte[] downloadOrGenerateAndUpload(Claim claim, Supplier<byte[]> documentSupplier, String authorisation) {
-        if (claim.getSealedClaimDocument().isPresent()) {
-            URI documentSelfPath = claim.getSealedClaimDocument().get();
-            return documentManagementService.downloadDocument(authorisation, documentSelfPath);
-        } else {
-            PDF document = new PDF(buildSealedClaimFileBaseName(claim.getReferenceNumber()), documentSupplier.get());
-
-            URI documentSelfPath = documentManagementService.uploadDocument(authorisation, document);
-            claimService.linkSealedClaimDocument(authorisation, claim, documentSelfPath);
-
-            return document.getBytes();
+    private byte[] processRequest(Claim claim,
+                                  String authorisation,
+                                  ClaimDocumentType claimDocumentType,
+                                  PdfService pdfService,
+                                  String baseFileName) {
+        Optional<URI> claimDocument = claim.getClaimDocument(claimDocumentType);
+        try {
+            if (claimDocument.isPresent()) {
+                URI documentSelfPath = claimDocument.get();
+                return documentManagementService.downloadDocument(authorisation, documentSelfPath, baseFileName);
+            } else {
+                PDF document = new PDF(baseFileName, pdfService.createPdf(claim), claimDocumentType);
+                uploadToDocumentManagement(document,
+                    authorisation,
+                    claim);
+                return document.getBytes();
+            }
+        } catch (Exception ex) {
+            return pdfService.createPdf(claim);
         }
+    }
+
+    @Override
+    public void uploadToDocumentManagement(
+        PDF document,
+        String authorisation,
+        Claim claim) {
+        URI documentSelfPath = documentManagementService.uploadDocument(authorisation, document);
+        claimService.linkClaimToDocument(authorisation,
+            claim.getId(),
+            getClaimDocumentStore(claim.getExternalId(), document, documentSelfPath, authorisation));
+    }
+
+    private ClaimDocumentCollection getClaimDocumentStore(String externalId,
+                                                          PDF document, URI uri,
+                                                          String authorisation) {
+        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
+        ClaimDocumentCollection claimDocumentCollection = claim.getClaimDocumentCollection()
+            .orElse(new ClaimDocumentCollection());
+        claimDocumentCollection.addClaimDocument(ClaimDocument.builder()
+            .documentManagementUrl(uri)
+            .documentName(document.getFilename())
+            .documentType(document.getClaimDocumentType())
+            .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
+            .createdBy(OCMC)
+            .build());
+        return claimDocumentCollection;
     }
 }

@@ -21,15 +21,18 @@ import java.time.LocalDateTime;
 import java.util.function.Predicate;
 
 import static org.springframework.transaction.event.TransactionPhase.BEFORE_COMMIT;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCATORY_JUDGEMENT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCUTORY_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REJECT_ORGANISATION_PAYMENT_PLAN;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.CCD_LINK_DEFENDANT_ID;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.CLAIM_EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCD_ASYNC_FAILURE;
+import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isSettlePreJudgment;
 
 @Async("threadPoolTaskExecutor")
 public class CCDCaseHandler {
+
     private final CCDCaseRepository ccdCaseRepository;
     private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
     private AppInsights appInsights;
@@ -47,41 +50,13 @@ public class CCDCaseHandler {
         this.userService = userService;
     }
 
-    @EventListener
-    @LogExecutionTime
-    public void savePrePayment(CCDPrePaymentEvent event) {
-        try {
-            ccdCaseRepository.savePrePaymentClaim(event.getExternalId(), event.getAuthorisation());
-        } catch (FeignException e) {
-            appInsights.trackEvent(CCD_ASYNC_FAILURE, CLAIM_EXTERNAL_ID, event.getExternalId());
-            throw e;
-        }
-    }
-
     @TransactionalEventListener
     @LogExecutionTime
     public void saveClaim(CCDClaimIssuedEvent event) {
         Claim claim = event.getClaim();
         try {
             String authorization = event.getAuthorization();
-
-            Long prePaymentClaimId = ccdCaseRepository.getOnHoldIdByExternalId(claim.getExternalId(), authorization);
-
-            Claim ccdClaim = Claim.builder()
-                .id(prePaymentClaimId)
-                .claimData(claim.getClaimData())
-                .submitterId(claim.getSubmitterId())
-                .issuedOn(claim.getIssuedOn())
-                .responseDeadline(claim.getResponseDeadline())
-                .externalId(claim.getExternalId())
-                .submitterEmail(claim.getSubmitterEmail())
-                .createdAt(claim.getCreatedAt())
-                .letterHolderId(claim.getLetterHolderId())
-                .features(claim.getFeatures())
-                .referenceNumber(claim.getReferenceNumber())
-                .build();
-
-            ccdCaseRepository.saveClaim(authorization, ccdClaim);
+            ccdCaseRepository.saveClaim(authorization, claim);
         } catch (FeignException e) {
             appInsights.trackEvent(CCD_ASYNC_FAILURE, REFERENCE_NUMBER, claim.getReferenceNumber());
             throw e;
@@ -152,7 +127,10 @@ public class CCDCaseHandler {
             Claim ccdClaim = ccdCaseRepository.getClaimByExternalId(claim.getExternalId(), authorization)
                 .orElseThrow(IllegalStateException::new);
 
-            ccdCaseRepository.saveClaimantResponse(ccdClaim, event.getResponse(), authorization);
+            Claim updatedClaim = ccdCaseRepository.saveClaimantResponse(ccdClaim, event.getResponse(), authorization);
+            if (isSettlePreJudgment(event.getResponse())) {
+                ccdCaseRepository.saveCaseEvent(authorization, updatedClaim, SETTLED_PRE_JUDGMENT);
+            }
         } catch (FeignException e) {
             appInsights.trackEvent(CCD_ASYNC_FAILURE, REFERENCE_NUMBER, claim.getReferenceNumber());
             throw e;
@@ -174,14 +152,15 @@ public class CCDCaseHandler {
 
     //    @EventListener
     @LogExecutionTime
-    public void linkSealedClaimDocument(CCDLinkSealedClaimDocumentEvent event) {
+    public void saveClaimDocument(CCDLinkSealedClaimDocumentEvent event) {
         String authorization = event.getAuthorization();
         Claim claim = event.getClaim();
         try {
             Claim ccdClaim = ccdCaseRepository.getClaimByExternalId(claim.getExternalId(), authorization)
                 .orElseThrow(IllegalStateException::new);
 
-            ccdCaseRepository.linkSealedClaimDocument(authorization, ccdClaim, event.getSealedClaimDocument());
+            ccdCaseRepository.saveClaimDocuments(authorization, ccdClaim.getId(),
+                claim.getClaimDocumentCollection().orElseThrow(IllegalStateException::new));
         } catch (FeignException e) {
             appInsights.trackEvent(CCD_ASYNC_FAILURE, REFERENCE_NUMBER, claim.getReferenceNumber());
             throw e;
@@ -222,7 +201,7 @@ public class CCDCaseHandler {
     @TransactionalEventListener
     @LogExecutionTime
     public void saveInterlocutoryJudgment(CCDInterlocutoryJudgmentEvent event) {
-        saveCaseEvent(event.getClaim(), event.getAuthorization(), INTERLOCATORY_JUDGEMENT);
+        saveCaseEvent(event.getClaim(), event.getAuthorization(), INTERLOCUTORY_JUDGMENT);
     }
 
     @TransactionalEventListener

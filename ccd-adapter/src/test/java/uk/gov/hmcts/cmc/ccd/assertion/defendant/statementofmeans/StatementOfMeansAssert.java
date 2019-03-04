@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDCourtOrder;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDebt;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpense;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncome;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebt;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
@@ -60,7 +61,8 @@ public class StatementOfMeansAssert extends AbstractAssert<StatementOfMeansAsser
         assertThat(actual.isCarer()).isEqualTo(ccdStatementOfMeans.getCarer().toBoolean());
 
         actual.getDisability()
-            .ifPresent(disability -> assertThat(disability).isEqualTo(ccdStatementOfMeans.getDisabilityStatus()));
+            .ifPresent(disability -> assertThat(disability.name())
+                .isEqualTo(ccdStatementOfMeans.getDisabilityStatus().name()));
 
         actual.getPartner().ifPresent(
             livingPartner -> assertThat(livingPartner).isEqualTo(ccdStatementOfMeans.getLivingPartner())
@@ -71,11 +73,11 @@ public class StatementOfMeansAssert extends AbstractAssert<StatementOfMeansAsser
 
     private void assertPriorityDebt(
         PriorityDebt priorityDebt,
-        List<CCDCollectionElement<PriorityDebt>> ccdPriorityDebts
+        List<CCDCollectionElement<CCDPriorityDebt>> ccdPriorityDebts
     ) {
         ccdPriorityDebts.stream()
             .map(CCDCollectionElement::getValue)
-            .filter(ccdPriorityDebt -> priorityDebt.getType().equals(ccdPriorityDebt.getType()))
+            .filter(ccdPriorityDebt -> priorityDebt.getType().name().equals(ccdPriorityDebt.getType().name()))
             .findFirst()
             .ifPresent(ccdPriorityDebt -> assertThat(priorityDebt).isEqualTo(ccdPriorityDebt));
     }
@@ -83,7 +85,7 @@ public class StatementOfMeansAssert extends AbstractAssert<StatementOfMeansAsser
     private void assertExpense(Expense expense, List<CCDCollectionElement<CCDExpense>> ccdExpenses) {
         ccdExpenses.stream()
             .map(CCDCollectionElement::getValue)
-            .filter(ccdExpense -> expense.getType().equals(ccdExpense.getType()))
+            .filter(ccdExpense -> expense.getType().name().equals(ccdExpense.getType().name()))
             .findFirst()
             .ifPresent(ccdExpense -> assertThat(expense).isEqualTo(ccdExpense));
     }
@@ -91,7 +93,7 @@ public class StatementOfMeansAssert extends AbstractAssert<StatementOfMeansAsser
     private void assertIncome(Income income, List<CCDCollectionElement<CCDIncome>> ccdIncomes) {
         ccdIncomes.stream()
             .map(CCDCollectionElement::getValue)
-            .filter(ccdIncome -> income.getType().equals(ccdIncome.getType()))
+            .filter(ccdIncome -> income.getType().name().equals(ccdIncome.getType().name()))
             .findFirst()
             .ifPresent(ccdIncome -> assertThat(income).isEqualTo(ccdIncome));
     }

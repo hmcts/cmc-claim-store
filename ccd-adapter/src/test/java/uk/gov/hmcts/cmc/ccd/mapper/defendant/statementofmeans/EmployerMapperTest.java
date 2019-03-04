@@ -7,10 +7,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDEmployer;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Employer;
 
-import static uk.gov.hmcts.cmc.ccd.deprecated.assertion.Assertions.assertThat;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -29,11 +33,11 @@ public class EmployerMapperTest {
             .build();
 
         //when
-        CCDEmployer ccdEmployer = mapper.to(employer);
+        CCDCollectionElement<CCDEmployer> ccdEmployer = mapper.to(employer);
 
         //then
-        assertThat(employer).isEqualTo(ccdEmployer);
-
+        assertThat(employer).isEqualTo(ccdEmployer.getValue());
+        assertThat(employer.getId()).isEqualTo(ccdEmployer.getId());
     }
 
     @Test
@@ -44,10 +48,15 @@ public class EmployerMapperTest {
             .employerName("CCD")
             .build();
 
+        String collectionId = UUID.randomUUID().toString();
+
         //when
-        Employer employer = mapper.from(ccdEmployer);
+        Employer employer = mapper.from(CCDCollectionElement.<CCDEmployer>builder()
+            .id(collectionId)
+            .value(ccdEmployer).build());
 
         //then
         assertThat(employer).isEqualTo(ccdEmployer);
+        assertThat(employer.getId()).isEqualTo(collectionId);
     }
 }

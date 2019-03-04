@@ -81,9 +81,9 @@ public class RejectSettlementAgreementActionsHandlerTest {
 
     private Claim buildClaimWithSettlementAgreementRejected() {
         Settlement settlement = new Settlement();
-        settlement.makeOffer(SampleOffer.builder().build(), MadeBy.CLAIMANT);
-        settlement.acceptCourtDetermination(MadeBy.CLAIMANT);
-        settlement.reject(MadeBy.DEFENDANT);
+        settlement.makeOffer(SampleOffer.builder().build(), MadeBy.CLAIMANT, null);
+        settlement.acceptCourtDetermination(MadeBy.CLAIMANT, null);
+        settlement.reject(MadeBy.DEFENDANT, null);
 
         return SampleClaim.builder()
             .withDefendantEmail(SampleTheirDetails.DEFENDANT_EMAIL)

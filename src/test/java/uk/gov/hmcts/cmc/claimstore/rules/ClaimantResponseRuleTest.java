@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
@@ -167,7 +168,7 @@ public class ClaimantResponseRuleTest {
         Response response = SampleResponse
             .PartAdmission
             .builder()
-            .buildWithStatesPaid();
+            .buildWithStatesPaid(SampleParty.builder().individual());
         assertThat(ClaimantResponseRule.isFormaliseOptionExpectedForResponse(response)).isFalse();
     }
 }

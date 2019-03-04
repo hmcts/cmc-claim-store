@@ -62,6 +62,14 @@ public class ClaimantResponseMapper {
             .ifPresent(rejection::freeMediationOption);
         responseRejection.getAmountPaid().ifPresent(rejection::amountPaid);
         responseRejection.getReason().ifPresent(rejection::reason);
+        responseRejection.getPaymentReceived()
+            .map(YesNoOption::name)
+            .map(CCDYesNoOption::valueOf)
+            .ifPresent(rejection::paymentReceived);
+        responseRejection.getSettleForAmount()
+            .map(YesNoOption::name)
+            .map(CCDYesNoOption::valueOf)
+            .ifPresent(rejection::settleForAmount);
         claim.getClaimantRespondedAt().ifPresent(rejection::submittedOn);
         return rejection.build();
     }
@@ -78,6 +86,15 @@ public class ClaimantResponseMapper {
         );
         responseAcceptation.getCourtDetermination().ifPresent(courtDetermination ->
             builder.courtDetermination(courtDeterminationMapper.to(courtDetermination)));
+
+        responseAcceptation.getPaymentReceived()
+            .map(YesNoOption::name)
+            .map(CCDYesNoOption::valueOf)
+            .ifPresent(builder::paymentReceived);
+        responseAcceptation.getSettleForAmount()
+            .map(YesNoOption::name)
+            .map(CCDYesNoOption::valueOf)
+            .ifPresent(builder::settleForAmount);
 
         claim.getClaimantRespondedAt().ifPresent(builder::submittedOn);
         return builder.build();
@@ -109,6 +126,15 @@ public class ClaimantResponseMapper {
             builder.freeMediation(YesNoOption.valueOf(ccdResponseRejection.getFreeMediationOption().name()));
             builder.mediationPhoneNumber(ccdResponseRejection.getMediationPhoneNumber());
         }
+
+        if (ccdResponseRejection.getPaymentReceived() != null) {
+            builder.paymentReceived(YesNoOption.valueOf(ccdResponseRejection.getPaymentReceived().name()));
+        }
+
+        if (ccdResponseRejection.getSettleForAmount() != null) {
+            builder.settleForAmount(YesNoOption.valueOf(ccdResponseRejection.getSettleForAmount().name()));
+        }
+
         claimBuilder.claimantResponse(builder.build())
             .claimantRespondedAt(ccdClaimantResponse.getSubmittedOn());
     }
@@ -125,6 +151,18 @@ public class ClaimantResponseMapper {
         if (ccdResponseAcceptation.getFormaliseOption() != null) {
             responseAcceptationBuilder.formaliseOption(FormaliseOption.valueOf(ccdResponseAcceptation
                 .getFormaliseOption().name()));
+        }
+
+        if (ccdResponseAcceptation.getPaymentReceived() != null) {
+            responseAcceptationBuilder.paymentReceived(
+                YesNoOption.valueOf(ccdResponseAcceptation.getPaymentReceived().name())
+            );
+        }
+
+        if (ccdResponseAcceptation.getSettleForAmount() != null) {
+            responseAcceptationBuilder.settleForAmount(
+                YesNoOption.valueOf(ccdResponseAcceptation.getSettleForAmount().name())
+            );
         }
 
         claimBuilder

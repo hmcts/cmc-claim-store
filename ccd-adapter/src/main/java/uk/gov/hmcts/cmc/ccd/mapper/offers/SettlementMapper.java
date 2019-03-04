@@ -29,8 +29,7 @@ public class SettlementMapper {
             return null;
         }
         return settlement.getPartyStatements().stream()
-            .map(partyStatement -> partyStatementMapper.to(partyStatement))
-            .map(partyStatement -> CCDCollectionElement.<CCDPartyStatement>builder().value(partyStatement).build())
+            .map(partyStatementMapper::to)
             .collect(Collectors.toList());
 
     }
@@ -39,32 +38,34 @@ public class SettlementMapper {
         if (CollectionUtils.isEmpty(ccdDefendant.getSettlementPartyStatements())) {
             return null;
         }
-        List<PartyStatement> partyStatements = ccdDefendant.getSettlementPartyStatements().stream()
-            .map(CCDCollectionElement::getValue)
-            .map(partyStatement -> partyStatementMapper.from(partyStatement))
-            .collect(Collectors.toList());
 
         Settlement settlement = new Settlement();
-        partyStatements.forEach(partyStatement -> addPartyStatement(partyStatement, settlement));
+        ccdDefendant.getSettlementPartyStatements().stream()
+            .map(partyStatementMapper::from)
+            .forEach(partyStatement -> addPartyStatement(partyStatement, settlement));
 
         return settlement;
     }
 
     private void addPartyStatement(PartyStatement partyStatement, Settlement settlement) {
-        if (partyStatement.getType().equals(StatementType.OFFER)) {
-            settlement.makeOffer(partyStatement.getOffer().orElse(null), partyStatement.getMadeBy());
+        if (partyStatement.getType() == StatementType.OFFER) {
+            settlement.addOffer(
+                partyStatement.getOffer().orElse(null),
+                partyStatement.getMadeBy(),
+                partyStatement.getId()
+            );
         }
 
-        if (partyStatement.getType().equals(StatementType.REJECTION)) {
-            settlement.reject(partyStatement.getMadeBy());
+        if (partyStatement.getType() == StatementType.REJECTION) {
+            settlement.addRejection(partyStatement.getMadeBy(), partyStatement.getId());
         }
 
-        if (partyStatement.getType().equals(StatementType.ACCEPTATION)) {
-            settlement.accept(partyStatement.getMadeBy());
+        if (partyStatement.getType() == StatementType.ACCEPTATION) {
+            settlement.addAcceptation(partyStatement.getMadeBy(), partyStatement.getId());
         }
 
-        if (partyStatement.getType().equals(StatementType.COUNTERSIGNATURE)) {
-            settlement.countersign(partyStatement.getMadeBy());
+        if (partyStatement.getType() == StatementType.COUNTERSIGNATURE) {
+            settlement.addCounterSignature(partyStatement.getMadeBy(), partyStatement.getId());
         }
     }
 }

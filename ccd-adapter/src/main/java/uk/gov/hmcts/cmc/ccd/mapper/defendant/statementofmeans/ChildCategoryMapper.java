@@ -1,32 +1,36 @@
 package uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.deprecated.mapper.Mapper;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDAgeGroupType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDChildCategory;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 
 @Component
-public class ChildCategoryMapper implements Mapper<CCDChildCategory, Child> {
+public class ChildCategoryMapper {
 
-    @Override
-    public CCDChildCategory to(Child child) {
-        return CCDChildCategory.builder()
-            .ageGroupType(child.getAgeGroupType())
-            .numberOfChildren(child.getNumberOfChildren())
-            .numberOfResidentChildren(child.getNumberOfChildrenLivingWithYou().orElse(null))
+    public CCDCollectionElement<CCDChildCategory> to(Child child) {
+        return CCDCollectionElement.<CCDChildCategory>builder()
+            .value(CCDChildCategory.builder()
+                .ageGroupType(CCDAgeGroupType.valueOf(child.getAgeGroupType().name()))
+                .numberOfChildren(child.getNumberOfChildren())
+                .numberOfResidentChildren(child.getNumberOfChildrenLivingWithYou().orElse(null))
+                .build())
+            .id(child.getId())
             .build();
     }
 
-    @Override
-    public Child from(CCDChildCategory ccdChildCategory) {
-        if (ccdChildCategory == null) {
+    public Child from(CCDCollectionElement<CCDChildCategory> ccdChildCategory) {
+        CCDChildCategory childCategory = ccdChildCategory.getValue();
+        if (childCategory == null) {
             return null;
         }
 
         return Child.builder()
-            .ageGroupType(ccdChildCategory.getAgeGroupType())
-            .numberOfChildren(ccdChildCategory.getNumberOfChildren())
-            .numberOfChildrenLivingWithYou(ccdChildCategory.getNumberOfResidentChildren())
+            .id(ccdChildCategory.getId())
+            .ageGroupType(Child.AgeGroupType.valueOf(childCategory.getAgeGroupType().name()))
+            .numberOfChildren(childCategory.getNumberOfChildren())
+            .numberOfChildrenLivingWithYou(childCategory.getNumberOfResidentChildren())
             .build();
     }
 }

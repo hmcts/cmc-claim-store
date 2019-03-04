@@ -11,7 +11,7 @@ public class ClaimContent {
     private final String referenceNumber;
     private final String submittedOn;
     private final String issuedOn;
-    private final String reason;
+    private final List<String> reason;
     private final String claimAmount;
     private final String feeAmount;
     private final InterestContent interest;
@@ -27,7 +27,7 @@ public class ClaimContent {
         String referenceNumber,
         String submittedOn,
         String issuedOn,
-        String reason,
+        List<String> reason,
         String claimAmount,
         String feeAmount,
         InterestContent interest,
@@ -65,7 +65,7 @@ public class ClaimContent {
         return issuedOn;
     }
 
-    public String getReason() {
+    public List<String> getReason() {
         return reason;
     }
 

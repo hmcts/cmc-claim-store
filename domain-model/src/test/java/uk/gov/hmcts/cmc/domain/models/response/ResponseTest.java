@@ -99,4 +99,22 @@ public class ResponseTest {
                 "mediationPhoneNumber : may not be longer than 30 characters"
             );
     }
+
+    @Test
+    public void shouldHaveValidationErrorWhenMediationContactPersonExceedSizeLimit() {
+        //given
+        Response response = SampleResponse.FullDefence.builder()
+            .withMediationContactPerson(RandomStringUtils.randomAlphabetic(31))
+            .build();
+
+        //when
+        Set<String> errors = validate(response);
+
+        //then
+        assertThat(errors)
+            .hasSize(1)
+            .contains(
+                "mediationContactPerson : may not be longer than 30 characters"
+            );
+    }
 }

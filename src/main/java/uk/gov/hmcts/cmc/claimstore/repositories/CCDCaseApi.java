@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.OnHoldClaimAccessAttemptException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -31,6 +29,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
 
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
@@ -103,9 +103,11 @@ public class CCDCaseApi {
     }
 
     public List<Claim> getByDefendantId(String id, String authorisation) {
-        LOGGER.debug("ccd search is by authorisation instead of defendant id {}", id);
         User user = userService.getUser(authorisation);
-        return getAllCasesBy(user, ImmutableMap.of());
+
+        return asStream(getAllCasesBy(user, ImmutableMap.of()))
+            .filter(claim -> id.equals(claim.getDefendantId()))
+            .collect(Collectors.toList());
     }
 
     public List<Claim> getBySubmitterEmail(String submitterEmail, String authorisation) {
@@ -114,31 +116,16 @@ public class CCDCaseApi {
     }
 
     public List<Claim> getByDefendantEmail(String defendantEmail, String authorisation) {
-        LOGGER.debug("ccd search is by authorisation instead of defendant email {}", defendantEmail);
         User user = userService.getUser(authorisation);
-        return getAllCasesBy(user, ImmutableMap.of());
+
+        return asStream(getAllCasesBy(user, ImmutableMap.of()))
+            .filter(claim -> defendantEmail.equals(claim.getDefendantEmail()))
+            .collect(Collectors.toList());
     }
 
     public List<Claim> getByPaymentReference(String payReference, String authorisation) {
         User user = userService.getUser(authorisation);
         return getAllCasesBy(user, ImmutableMap.of("case.paymentReference", payReference));
-    }
-
-    public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
-        User user = userService.getUser(authorisation);
-        List<CaseDetails> result = searchAll(user, ImmutableMap.of("case.externalId", externalId));
-
-        if (result.size() == 0) {
-            throw new NotFoundException("Case " + externalId + " not found.");
-        }
-
-        CaseDetails ccd = result.get(0);
-
-        if (!isCaseOnHold(ccd)) {
-            throw new OnHoldClaimAccessAttemptException("Case " + externalId + " is not on hold.");
-        }
-
-        return ccd.getId();
     }
 
     /**

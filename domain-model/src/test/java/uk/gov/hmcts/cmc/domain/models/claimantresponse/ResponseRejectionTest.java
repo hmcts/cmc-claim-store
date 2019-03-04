@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.domain.models.claimantresponse;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 
@@ -43,7 +42,19 @@ public class ResponseRejectionTest {
     public void shouldBeInvalidWhenMediationPhoneNumberIsTooLong() {
         ClaimantResponse claimantResponse = ResponseRejection
             .builder()
-            .mediationPhoneNumber(RandomStringUtils.randomAlphabetic(31)).build();
+            .mediationPhoneNumber(randomAlphabetic(31)).build();
+
+        Set<String> response = validate(claimantResponse);
+
+        assertThat(response).hasSize(1);
+    }
+
+    @Test
+    public void shouldBeInvalidWhenMediationContactPersonIsTooLong() {
+        ClaimantResponse claimantResponse = ResponseRejection
+            .builder()
+            .mediationContactPerson(randomAlphabetic(31))
+            .build();
 
         Set<String> response = validate(claimantResponse);
 
