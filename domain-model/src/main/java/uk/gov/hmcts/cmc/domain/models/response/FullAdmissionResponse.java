@@ -35,7 +35,15 @@ public class FullAdmissionResponse extends Response {
         PaymentIntention paymentIntention,
         StatementOfMeans statementOfMeans
     ) {
-        super(FULL_ADMISSION, freeMediation, mediationPhoneNumber, mediationContactPerson, moreTimeNeeded, defendant, statementOfTruth);
+        super(
+            FULL_ADMISSION,
+            freeMediation,
+            mediationPhoneNumber,
+            mediationContactPerson,
+            moreTimeNeeded,
+            defendant,
+            statementOfTruth
+        );
         this.paymentIntention = paymentIntention;
         this.statementOfMeans = statementOfMeans;
     }
