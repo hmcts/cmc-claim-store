@@ -19,10 +19,10 @@ public class ResponseRejection extends ClaimantResponse {
 
     private final YesNoOption freeMediation;
 
-    @Size(max = 30, message = "may not be longer than {max} characters")
+    @Size(max = 30, message = "Mediation Phone Number may not be longer than {max} characters")
     private final String mediationPhoneNumber;
 
-    @Size(max = 30, message = "may not be longer than {max} characters")
+    @Size(max = 30, message = "Mediation Contact Person may not be longer than {max} characters")
     private final String mediationContactPerson;
 
     @Size(max = 99000)
