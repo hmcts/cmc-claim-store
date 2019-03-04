@@ -55,7 +55,9 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 public class CoreCaseDataService {
 
     public static final String CMC_CASE_UPDATE_SUMMARY = "CMC case update";
+    public static final String CMC_CASE_CREATE_SUMMARY = "CMC case issue";
     public static final String SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION = "Submitting CMC case update";
+    public static final String SUBMITTING_CMC_CASE_ISSUE_DESCRIPTION = "Submitting CMC case issue";
 
     public static final String CCD_UPDATE_FAILURE_MESSAGE
         = "Failed updating claim in CCD store for case id %s on event %s";
@@ -119,8 +121,8 @@ public class CoreCaseDataService {
                 .eventToken(startEventResponse.getToken())
                 .event(Event.builder()
                     .id(startEventResponse.getEventId())
-                    .summary(CMC_CASE_UPDATE_SUMMARY)
-                    .description(SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION)
+                    .summary(CMC_CASE_CREATE_SUMMARY)
+                    .description(SUBMITTING_CMC_CASE_ISSUE_DESCRIPTION)
                     .build())
                 .data(ccdCase)
                 .build();
