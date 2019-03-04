@@ -16,18 +16,21 @@ public class CompanyMapper {
     private final TelephoneMapper telephoneMapper;
 
     @Autowired
-    public CompanyMapper(AddressMapper addressMapper, RepresentativeMapper representativeMapper,
+    public CompanyMapper(AddressMapper addressMapper,
+                         RepresentativeMapper representativeMapper,
                          TelephoneMapper telephoneMapper) {
         this.addressMapper = addressMapper;
         this.representativeMapper = representativeMapper;
         this.telephoneMapper = telephoneMapper;
     }
 
-    public void to(Company company, CCDApplicant.CCDApplicantBuilder builder,
+    public void to(Company company,
+                   CCDApplicant.CCDApplicantBuilder builder,
                    CCDParty.CCDPartyBuilder applicantPartyDetail) {
 
         applicantPartyDetail.type(CCDPartyType.COMPANY);
-        company.getMobilePhone().ifPresent(mobileNo -> applicantPartyDetail.telephoneNumber(telephoneMapper.to(mobileNo)));
+        company.getMobilePhone()
+            .ifPresent(mobileNo -> applicantPartyDetail.telephoneNumber(telephoneMapper.to(mobileNo)));
         company.getContactPerson().ifPresent(applicantPartyDetail::contactPerson);
 
         company.getCorrespondenceAddress()
