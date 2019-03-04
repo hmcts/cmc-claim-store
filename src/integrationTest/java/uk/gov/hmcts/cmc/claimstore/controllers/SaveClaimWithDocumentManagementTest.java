@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -86,7 +87,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
             argument.capture()
         );
         List<List> capturedArgument = argument.getAllValues();
-        assertThat(capturedArgument.contains(Collections.singleton(sealedClaimForm)));
+        assertTrue(capturedArgument.contains(Collections.singleton(sealedClaimForm)));
     }
 
     @Test
@@ -102,7 +103,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
         assertDocumentIsLinked(SampleClaimData.submittedByClaimant(),
             AUTHORISATION_TOKEN,
             DEFENDANT_PIN_LETTER,
-            "000MC001-defendant-pin-letter.pdf");
+            "000MC003-defendant-pin-letter.pdf");
     }
 
     @Test
@@ -110,7 +111,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
         assertDocumentIsLinked(SampleClaimData.submittedByClaimant(),
             AUTHORISATION_TOKEN,
             CLAIM_ISSUE_RECEIPT,
-            "000MC001-claim-form-claimant-copy.pdf");
+            "000MC004-claim-form-claimant-copy.pdf");
     }
 
     @Test
@@ -118,7 +119,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
         assertDocumentIsLinked(SampleClaimData.submittedByLegalRepresentative(),
             SOLICITOR_AUTHORISATION_TOKEN,
             SEALED_CLAIM,
-            "000MC001-claim-form.pdf");
+            "000LR001-claim-form.pdf");
     }
 
     private void assertDocumentIsLinked(ClaimData claimData,
@@ -145,7 +146,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
             .orElseThrow(AssertionError::new);
         assertThat(claimDocument.getDocumentManagementUrl()
             .equals(URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4")));
-        assertThat(claimDocument.getDocumentName().equals(fileName));
+        assertThat(claimDocument.getDocumentName()).isEqualTo(fileName);
     }
 
     @Test
