@@ -75,6 +75,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .moreTimeNeeded(YesNoOption.NO)
                 .freeMediation(YesNoOption.YES)
                 .mediationPhoneNumber(MEDIATION_PHONE_NUMBER)
+                .mediationContactPerson(MEDIATION_CONTACT_PERSON)
                 .defendant(SampleParty.builder().individual())
                 .paymentIntention(SamplePaymentIntention.instalments())
                 .build();
