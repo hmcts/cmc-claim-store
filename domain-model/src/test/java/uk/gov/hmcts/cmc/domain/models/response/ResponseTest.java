@@ -96,7 +96,7 @@ public class ResponseTest {
         assertThat(errors)
             .hasSize(1)
             .contains(
-                "mediationPhoneNumber : may not be longer than 30 characters"
+                "mediationPhoneNumber : Mediation phone number may not be longer than 30 characters"
             );
     }
 
@@ -114,7 +114,7 @@ public class ResponseTest {
         assertThat(errors)
             .hasSize(1)
             .contains(
-                "mediationContactPerson : may not be longer than 30 characters"
+                "mediationContactPerson : Mediation contact person may not be longer than 30 characters"
             );
     }
 }

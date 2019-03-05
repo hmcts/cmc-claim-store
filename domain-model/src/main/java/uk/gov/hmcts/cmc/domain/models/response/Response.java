@@ -34,10 +34,10 @@ public abstract class Response {
 
     private final YesNoOption freeMediation;
 
-    @Size(max = 30, message = "may not be longer than {max} characters")
+    @Size(max = 30, message = "Mediation phone number may not be longer than {max} characters")
     private final String mediationPhoneNumber;
 
-    @Size(max = 30, message = "may not be longer than {max} characters")
+    @Size(max = 30, message = "Mediation contact person may not be longer than {max} characters")
     private final String mediationContactPerson;
 
     @JsonUnwrapped
