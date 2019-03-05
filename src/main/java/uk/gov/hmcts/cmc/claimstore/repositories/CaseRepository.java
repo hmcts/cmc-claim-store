@@ -20,8 +20,6 @@ public interface CaseRepository {
 
     Optional<Claim> getClaimByExternalId(String externalId, String authorisation);
 
-    Long getOnHoldIdByExternalId(String externalId, String authorisation);
-
     Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation);
 
     void saveCountyCourtJudgment(

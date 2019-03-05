@@ -2,11 +2,10 @@ package uk.gov.hmcts.cmc.ccd.domain;
 
 public enum CaseEvent {
 
+    CREATE_NEW_CASE("IssueClaim"),
     MORE_TIME_REQUESTED_PAPER("MoreTimeRequestedPaper"),
     TEST_SUPPORT_UPDATE("TestSupportUpdate"),
     LINK_SEALED_CLAIM("LinkSealedClaimDocument"),
-    SUBMIT_PRE_PAYMENT("SubmitPrePayment"),
-    SUBMIT_POST_PAYMENT("SubmitPostPayment"),
     LINK_DEFENDANT("LinkDefendant"),
     MORE_TIME_REQUESTED_ONLINE("MoreTimeRequestedOnline"),
     DEFAULT_CCJ_REQUESTED("DefaultCCJRequested"),
@@ -28,7 +27,7 @@ public enum CaseEvent {
     AGREEMENT_REJECTED_BY_DEFENDANT("AgreementRejectedByDefendant"),
     SETTLED_PRE_JUDGMENT("SettledPreJudgment"),
     CCJ_REQUESTED("CCJRequested"),
-    INTERLOCATORY_JUDGEMENT("InterlocatoryJudgement"),
+    INTERLOCUTORY_JUDGMENT("InterlocutoryJudgment"),
     REJECT_ORGANISATION_PAYMENT_PLAN("RejectOrganisationPaymentPlan"),
     REFER_TO_JUDGE_BY_CLAIMANT("ReferToJudgeByClaimant"),
     REFER_TO_JUDGE_BY_DEFENDANT("ReferToJudgeByDefendant");
