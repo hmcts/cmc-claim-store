@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -51,5 +52,15 @@ public class ClaimantResponseStaffNotificationHandlerTest {
 
         verify(claimantRejectionStaffNotificationService, once())
             .notifyStaffClaimantRejectPartAdmission(eq(event.getClaim()));
+    }
+
+    @Test (expected = IllegalArgumentException.class)
+    public void throwExceptionWhenResponseNotPresent() {
+        ClaimantResponseEvent event = new ClaimantResponseEvent(
+            SampleClaim.builder().build()
+        );
+        handler.onClaimantResponse(event);
+
+        verifyZeroInteractions(statesPaidStaffNotificationService, claimantRejectionStaffNotificationService);
     }
 }
