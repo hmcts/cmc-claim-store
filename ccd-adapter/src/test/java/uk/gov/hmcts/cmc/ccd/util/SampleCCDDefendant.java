@@ -119,7 +119,8 @@ public class SampleCCDDefendant {
     public static CCDDefendant.CCDDefendantBuilder withFullDefenceResponseAndFreeMediation() {
         return withFullDefenceResponse()
             .responseFreeMediationOption(YES)
-            .responseMediationPhoneNumber("07999999999");
+            .responseMediationPhoneNumber("07999999999")
+            .responseMediationContactPerson("Mediation Contact Person");
     }
 
     public static CCDDefendant.CCDDefendantBuilder withFullAdmissionResponse() {

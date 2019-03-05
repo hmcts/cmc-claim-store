@@ -230,6 +230,17 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
             }
         });
 
+        actual.getMediationContactPerson().ifPresent(mediationContactPerson -> {
+            if (!Objects.equals(
+                mediationContactPerson,
+                ccdDefendant.getResponseMediationContactPerson())) {
+                failWithMessage("Expected CCDDefendant.responseMediationContactPerson to be "
+                        + "<%s> but was <%s>",
+                    ccdDefendant.getResponseMediationContactPerson(),
+                    actual.getMediationContactPerson());
+            }
+        });
+
         if (!Objects.equals(actual.getMoreTimeNeeded().name(), ccdDefendant.getResponseMoreTimeNeededOption().name())) {
             failWithMessage("Expected CCDDefendant.responseMoreTimeNeededOption to be <%s> but was <%s>",
                 ccdDefendant.getResponseMoreTimeNeededOption(), actual.getMoreTimeNeeded());

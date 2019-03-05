@@ -101,6 +101,7 @@ public class SampleData {
             .submittedOn(LocalDateTimeFactory.nowInLocalZone())
             .freeMediationOption(YES)
             .mediationPhoneNumber("07999999999")
+            .mediationContactPerson("Mediation Contact Person")
             .reason("Rejection Reason")
             .build();
     }

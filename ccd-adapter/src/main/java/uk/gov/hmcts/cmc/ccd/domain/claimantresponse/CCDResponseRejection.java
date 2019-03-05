@@ -14,6 +14,7 @@ public class CCDResponseRejection extends CCDClaimantResponse {
 
     private CCDYesNoOption freeMediationOption;
     private String mediationPhoneNumber;
+    private String mediationContactPerson;
     private String reason;
 
     @Builder
@@ -22,6 +23,7 @@ public class CCDResponseRejection extends CCDClaimantResponse {
         LocalDateTime submittedOn,
         CCDYesNoOption freeMediationOption,
         String mediationPhoneNumber,
+        String mediationContactPerson,
         String reason,
         CCDYesNoOption paymentReceived,
         CCDYesNoOption settleForAmount
@@ -29,6 +31,7 @@ public class CCDResponseRejection extends CCDClaimantResponse {
         super(amountPaid, submittedOn, paymentReceived, settleForAmount);
         this.freeMediationOption = freeMediationOption;
         this.mediationPhoneNumber = mediationPhoneNumber;
+        this.mediationContactPerson = mediationContactPerson;
         this.reason = reason;
     }
 
