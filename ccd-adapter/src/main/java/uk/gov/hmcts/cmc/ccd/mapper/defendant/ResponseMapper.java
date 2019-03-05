@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.mapper.defendant;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
@@ -54,7 +55,8 @@ public class ResponseMapper {
         this.statementOfMeansMapper = statementOfMeansMapper;
     }
 
-    public void to(CCDRespondent.CCDRespondentBuilder builder, Response response) {
+    public void to(CCDRespondent.CCDRespondentBuilder builder, Response response,
+                   CCDParty.CCDPartyBuilder partyDetail) {
         requireNonNull(builder, "builder must not be null");
         requireNonNull(response, "response must not be null");
 
@@ -75,7 +77,7 @@ public class ResponseMapper {
                 builder.responseDefendantSOTSignerRole(statementOfTruth.getSignerRole());
             }
         );
-        defendantPartyMapper.to(builder, response.getDefendant());
+        defendantPartyMapper.to(builder, response.getDefendant(), partyDetail);
 
         switch (response.getResponseType()) {
             case FULL_DEFENCE:

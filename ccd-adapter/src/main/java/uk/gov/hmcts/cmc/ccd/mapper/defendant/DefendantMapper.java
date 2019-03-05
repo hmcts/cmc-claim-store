@@ -57,7 +57,6 @@ public class DefendantMapper {
 
         CCDParty.CCDPartyBuilder partyDetail = CCDParty.builder();
         partyDetail.emailAddress(claim.getDefendantEmail());
-        respondentBuilder.partyDetail(partyDetail.build());
 
         respondentBuilder.responseMoreTimeNeededOption(CCDYesNoOption.valueOf(claim.isMoreTimeRequested()));
         respondentBuilder.directionsQuestionnaireDeadline(claim.getDirectionsQuestionnaireDeadline());
@@ -70,7 +69,10 @@ public class DefendantMapper {
         );
         respondentBuilder.settlementReachedAt(claim.getSettlementReachedAt());
 
-        claim.getResponse().ifPresent(toResponse(claim, respondentBuilder));
+        claim.getResponse().ifPresent(toResponse(claim, respondentBuilder, partyDetail));
+        if (!claim.getResponse().isPresent()) {
+            respondentBuilder.partyDetail(partyDetail.build());
+        }
         theirDetailsMapper.to(respondentBuilder, theirDetails);
 
         respondentBuilder.claimantResponse(claimantResponseMapper.to(claim));
@@ -117,9 +119,11 @@ public class DefendantMapper {
         return theirDetailsMapper.from(respondentElement);
     }
 
-    private Consumer<Response> toResponse(Claim claim, CCDRespondent.CCDRespondentBuilder builder) {
+    private Consumer<Response> toResponse(Claim claim,
+                                          CCDRespondent.CCDRespondentBuilder builder,
+                                          CCDParty.CCDPartyBuilder partyDetail) {
         return response -> {
-            responseMapper.to(builder, response);
+            responseMapper.to(builder, response, partyDetail);
             builder.responseSubmittedOn(claim.getRespondedAt());
         };
     }

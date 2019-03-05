@@ -46,7 +46,9 @@ public class SampleCCDDefendant {
     }
 
     public static CCDRespondent.CCDRespondentBuilder withResponseMoreTimeNeededOption() {
-        return withDefault().responseMoreTimeNeededOption(NO);
+        return withDefault()
+            .partyDetail(CCDParty.builder().emailAddress("defendant@Ididabadjob.com").build())
+            .responseMoreTimeNeededOption(NO);
     }
 
     private static CCDParty.CCDPartyBuilder withPartyDetails() {

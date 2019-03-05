@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
+import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.util.SampleCCDDefendant;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -25,12 +26,12 @@ public class ResponseMapperTest {
 
     @Test(expected = NullPointerException.class)
     public void mapToShouldThrowExceptionWhenBuildersIsNull() {
-        mapper.to(null, SampleResponse.FullDefence.validDefaults());
+        mapper.to(null, SampleResponse.FullDefence.validDefaults(), CCDParty.builder());
     }
 
     @Test(expected = NullPointerException.class)
     public void mapToShouldThrowExceptionWhenResponseIsNull() {
-        mapper.to(CCDRespondent.builder(), null);
+        mapper.to(CCDRespondent.builder(), null, CCDParty.builder());
     }
 
     @Test
@@ -40,7 +41,7 @@ public class ResponseMapperTest {
 
         //when
         CCDRespondent.CCDRespondentBuilder builder = CCDRespondent.builder();
-        mapper.to(builder, response);
+        mapper.to(builder, response, CCDParty.builder());
 
         //then
         assertThat(response).isEqualTo(builder.build());
@@ -53,7 +54,7 @@ public class ResponseMapperTest {
 
         //when
         CCDRespondent.CCDRespondentBuilder builder = CCDRespondent.builder();
-        mapper.to(builder, response);
+        mapper.to(builder, response, CCDParty.builder());
 
         //then
         assertThat(response).isEqualTo(builder.build());
@@ -66,7 +67,7 @@ public class ResponseMapperTest {
 
         //when
         CCDRespondent.CCDRespondentBuilder builder = CCDRespondent.builder();
-        mapper.to(builder, response);
+        mapper.to(builder, response, CCDParty.builder());
 
         //then
         assertThat(response).isEqualTo(builder.build());

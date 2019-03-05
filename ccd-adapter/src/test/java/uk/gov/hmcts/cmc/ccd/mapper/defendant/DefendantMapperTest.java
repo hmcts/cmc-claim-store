@@ -88,7 +88,7 @@ public class DefendantMapperTest {
             respondent.getResponseMoreTimeNeededOption().toBoolean(), claim.isMoreTimeRequested());
 
         assertEquals("The claimantProvidedType should be of organization",
-            ORGANISATION, respondent.getPartyDetail().getType());
+            ORGANISATION, respondent.getClaimantProvidedDetail().getType());
     }
 
     @Test

@@ -35,30 +35,30 @@ public class DefendantPartyMapper {
         this.telephoneMapper = telephoneMapper;
     }
 
-    public void to(CCDRespondent.CCDRespondentBuilder builder, Party party) {
+    public void to(CCDRespondent.CCDRespondentBuilder builder, Party party,
+                   CCDParty.CCDPartyBuilder defendantDetail) {
         requireNonNull(builder, "builder must not be null");
         requireNonNull(party, "party must not be null");
 
         builder.partyName(party.getName());
-        CCDParty.CCDPartyBuilder respondentDetail = CCDParty.builder();
-        respondentDetail.primaryAddress(addressMapper.to(party.getAddress()));
+        defendantDetail.primaryAddress(addressMapper.to(party.getAddress()));
         party.getCorrespondenceAddress().ifPresent(
-            address -> respondentDetail.correspondenceAddress(addressMapper.to(address))
+            address -> defendantDetail.correspondenceAddress(addressMapper.to(address))
         );
         party.getMobilePhone()
-            .ifPresent(telephoneNo -> respondentDetail.telephoneNumber(telephoneMapper.to(telephoneNo)));
+            .ifPresent(telephoneNo -> defendantDetail.telephoneNumber(telephoneMapper.to(telephoneNo)));
         party.getRepresentative().ifPresent(representative -> toRepresentative(builder, representative));
 
         if (party instanceof Individual) {
-            toIndividual(respondentDetail, (Individual) party);
+            toIndividual(defendantDetail, (Individual) party);
         } else if (party instanceof Company) {
-            toCompany(respondentDetail, (Company) party);
+            toCompany(defendantDetail, (Company) party);
         } else if (party instanceof Organisation) {
-            toOrganisation(respondentDetail, (Organisation) party);
+            toOrganisation(defendantDetail, (Organisation) party);
         } else if (party instanceof SoleTrader) {
-            toSoleTrader(respondentDetail, (SoleTrader) party);
+            toSoleTrader(defendantDetail, (SoleTrader) party);
         }
-        builder.partyDetail(respondentDetail.build());
+        builder.partyDetail(defendantDetail.build());
     }
 
     private void toIndividual(CCDParty.CCDPartyBuilder partyBuilder, Individual individual) {
