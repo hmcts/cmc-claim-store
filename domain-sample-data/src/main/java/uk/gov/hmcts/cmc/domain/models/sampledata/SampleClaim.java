@@ -199,14 +199,14 @@ public final class SampleClaim {
                 SampleResponse
                     .PartAdmission
                     .builder()
-                    .buildWithFreeMediation(YesNoOption.YES))
+                    .buildWithFreeMediation())
             .withRespondedAt(LocalDateTime.now())
             .withDefendantEmail(DEFENDANT_EMAIL)
             .withClaimantRespondedAt(LocalDateTime.now())
             .withClaimantResponse(SampleClaimantResponse
                 .ClaimantResponseRejection
                 .builder()
-                .buildRejectionAgreeFreeMeditaion())
+                .buildRejectionWithFreeMediation())
             .build();
     }
 
@@ -217,7 +217,7 @@ public final class SampleClaim {
                 SampleResponse
                     .PartAdmission
                     .builder()
-                    .buildWithFreeMediation(YesNoOption.YES))
+                    .buildWithFreeMediation())
             .withRespondedAt(LocalDateTime.now())
             .withDefendantEmail(DEFENDANT_EMAIL)
             .withClaimantRespondedAt(LocalDateTime.now())
