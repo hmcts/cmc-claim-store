@@ -2,10 +2,12 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
-import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
+
+import java.net.URI;
 
 @Component
 public class ClaimDocumentMapper {
@@ -14,8 +16,8 @@ public class ClaimDocumentMapper {
         CCDClaimDocument.CCDClaimDocumentBuilder builder =  CCDClaimDocument.builder();
 
         builder.documentName(claimDocument.getDocumentName())
-            .documentLink(claimDocument.getDocumentManagementUrl())
-            .documentType(CCDClaimDocumentType.CLAIM_ISSUE_RECEIPT.getTypeName()) // TODO Need to somehow pass or map the event
+            .documentLink(new CCDDocument(claimDocument.getDocumentManagementUrl().toString()))
+            .documentType("CLAIM_ISSUE_RECEIPT") // TODO Need to somehow pass or map the event
             .authoredDatetime(claimDocument.getAuthoredDatetime())
             .createdDatetime(claimDocument.getCreatedDatetime())
             .createdBy(claimDocument.getCreatedBy()) // TODO Should this be "ocmc"?
@@ -37,7 +39,7 @@ public class ClaimDocumentMapper {
 
         return ClaimDocument.builder()
             .documentName(ccdClaimDocument.getDocumentName())
-            .documentManagementUrl(ccdClaimDocument.getDocumentLink())
+            .documentManagementUrl(URI.create(ccdClaimDocument.getDocumentLink().getDocumentUrl()))
             .documentType(ClaimDocumentType.CLAIM_ISSUE_RECEIPT)
             .authoredDatetime(ccdClaimDocument.getAuthoredDatetime())
             .createdDatetime(ccdClaimDocument.getCreatedDatetime())

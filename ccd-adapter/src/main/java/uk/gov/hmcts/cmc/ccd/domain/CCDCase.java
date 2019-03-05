@@ -58,7 +58,6 @@ public class CCDCase {
     private List<CCDCollectionElement<CCDDefendant>> defendants;
     private List<CCDCollectionElement<CCDTimelineEvent>> timeline;
     private List<CCDCollectionElement<CCDEvidenceRow>> evidence;
-    private CCDDocument sealedClaimDocument;
     private String features;
     private List<CCDCollectionElement<CCDClaimDocument>> caseDocuments;
 }

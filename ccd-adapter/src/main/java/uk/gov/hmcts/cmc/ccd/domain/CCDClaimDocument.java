@@ -3,14 +3,13 @@ package uk.gov.hmcts.cmc.ccd.domain;
 import lombok.Builder;
 import lombok.Value;
 
-import java.net.URI;
 import java.time.LocalDateTime;
 
 @Value
 @Builder
 public class CCDClaimDocument {
 
-    private URI documentLink;
+    private CCDDocument documentLink;
     private String documentName;
     private String documentType;
     private LocalDateTime authoredDatetime;

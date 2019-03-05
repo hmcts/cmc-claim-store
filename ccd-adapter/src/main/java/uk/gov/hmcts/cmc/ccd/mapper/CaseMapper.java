@@ -21,12 +21,6 @@ public class CaseMapper {
     public CCDCase to(Claim claim) {
         final CCDCase.CCDCaseBuilder builder = CCDCase.builder();
 
-        claim.getClaimDocument(SEALED_CLAIM).ifPresent(document -> builder
-            .sealedClaimDocument(CCDDocument.builder()
-                .documentUrl(document.toString())
-                .build())
-        );
-
         claimMapper.to(claim, builder);
 
         return builder
