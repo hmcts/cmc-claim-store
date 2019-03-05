@@ -62,9 +62,6 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
     @Captor
     private ArgumentCaptor<DefendantResponseEvent> defendantResponseEventArgument;
 
-    @Mock
-    private DocumentUploadHandler documentUploadHandler;
-
     private Claim claim;
 
     @Before
