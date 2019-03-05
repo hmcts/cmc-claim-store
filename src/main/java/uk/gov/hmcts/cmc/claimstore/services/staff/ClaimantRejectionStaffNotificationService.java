@@ -61,8 +61,7 @@ public class ClaimantRejectionStaffNotificationService {
         Map<String, Object> map = new HashMap<>();
         Response defendantResponse = claim.getResponse().orElseThrow(IllegalStateException::new);
         ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
-        System.out.println(defendantResponse.getFreeMediation().get());
-        System.out.println(((ResponseRejection) claimantResponse).getFreeMediation());
+
         map.put("claimReferenceNumber", claim.getReferenceNumber());
         map.put("claimantName", claim.getClaimData().getClaimant().getName());
         map.put("defendantName", claim.getClaimData().getDefendant().getName());
