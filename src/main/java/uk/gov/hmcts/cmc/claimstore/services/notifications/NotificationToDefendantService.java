@@ -48,6 +48,18 @@ public class NotificationToDefendantService {
         );
     }
 
+    public void notifyDefendantOfRejection(Claim claim) {
+        Map<String, String> parameters = aggregateParams(claim);
+        parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
+        sendNotificationEmail(
+            claim.getDefendantEmail(),
+            notificationsProperties.getTemplates().getEmail()
+                .getClaimantRejectedPartAdmitOrStatesPaidEmailToDefendant(),
+            parameters,
+            referenceForDefendant(claim.getReferenceNumber())
+        );
+    }
+
     public void notifyDefendantWhenInterlocutoryJudgementRequested(Claim claim) {
         Map<String, String> parameters = aggregateParams(claim);
         parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());

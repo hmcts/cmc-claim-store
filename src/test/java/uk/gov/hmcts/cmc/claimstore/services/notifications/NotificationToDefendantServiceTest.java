@@ -7,6 +7,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.service.notify.NotificationClientException;
 
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -51,6 +52,41 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
     public void shouldSendEmailUsingPredefinedTemplate() throws Exception {
         when(emailTemplates.getResponseByClaimantEmailToDefendant()).thenReturn(CLAIMANT_RESPONSE_TEMPLATE);
         service.notifyDefendant(claim);
+
+        verify(notificationClient).sendEmail(
+            eq(CLAIMANT_RESPONSE_TEMPLATE),
+            eq(DEFENDANT_EMAIL),
+            anyMap(),
+            eq(REFERENCE)
+        );
+    }
+
+    @Test(expected = NotificationException.class)
+    public void shouldThrowNotificationExceptionWhenRejectionThrowsNotificationClientException() throws Exception {
+        Claim claim = SampleClaim.builder()
+            .withDefendantEmail(DEFENDANT_EMAIL)
+            .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionImmediately())
+            .build();
+
+        when(emailTemplates.getClaimantRejectedPartAdmitOrStatesPaidEmailToDefendant())
+            .thenReturn(CLAIMANT_RESPONSE_TEMPLATE);
+        when(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
+            .thenThrow(mock(NotificationClientException.class));
+
+        service.notifyDefendantOfRejection(claim);
+    }
+
+    @Test
+    public void shouldSendRejectionEmailUsingPredefinedTemplate() throws Exception {
+
+        Claim claim = SampleClaim.builder()
+            .withDefendantEmail(DEFENDANT_EMAIL)
+            .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionImmediately())
+            .build();
+
+        when(emailTemplates.getClaimantRejectedPartAdmitOrStatesPaidEmailToDefendant())
+            .thenReturn(CLAIMANT_RESPONSE_TEMPLATE);
+        service.notifyDefendantOfRejection(claim);
 
         verify(notificationClient).sendEmail(
             eq(CLAIMANT_RESPONSE_TEMPLATE),
