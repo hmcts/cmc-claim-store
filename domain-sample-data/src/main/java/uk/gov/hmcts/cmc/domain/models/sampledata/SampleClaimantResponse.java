@@ -27,6 +27,10 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
         return ClaimantResponseRejection.builder().build();
     }
 
+    public static ClaimantResponse validRejectionWithFreeMediation() {
+        return ClaimantResponseRejection.builder().buildRejectionWithFreeMediation();
+    }
+
     public static class ClaimantResponseAcceptation extends SampleClaimantResponse<ClaimantResponseAcceptation> {
 
         private BigDecimal amountPaid = TEN;
@@ -163,6 +167,16 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
             return ResponseAcceptation.builder()
                 .paymentReceived(YES)
                 .settleForAmount(NO)
+                .build();
+        }
+
+        public ClaimantResponse buildRejectionWithFreeMediation() {
+            return ResponseRejection.builder()
+                .amountPaid(TEN)
+                .freeMediation(YES)
+                .mediationPhoneNumber("07999999999")
+                .mediationContactPerson("Mediation Contact Person")
+                .reason("Some valid reason")
                 .build();
         }
     }

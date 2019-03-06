@@ -83,8 +83,8 @@ public class MigrateCoreCaseDataService {
             .event(
                 Event.builder()
                     .id(startEventResponse.getEventId())
-                    .summary("CMC case submission event")
-                    .description("Submitting CMC pre-payment case")
+                    .summary("CMC case issue - Migrated")
+                    .description("Submitting CMC case issue")
                     .build()
             )
             .data(ccdCase)
