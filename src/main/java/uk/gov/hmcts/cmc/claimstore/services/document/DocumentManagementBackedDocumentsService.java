@@ -75,7 +75,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     }
 
     @Override
-    public byte[] getSealedClaim(String externalId, String authorisation) {
+    public byte[] generateSealedClaim(String externalId, String authorisation) {
         Claim claim = getClaimByExternalId(externalId, authorisation);
         return processRequest(claim,
             authorisation,

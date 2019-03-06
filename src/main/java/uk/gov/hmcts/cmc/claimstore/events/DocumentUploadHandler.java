@@ -6,12 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
-import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantPinLetterPdfService;
-import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
-import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
-import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
@@ -22,22 +17,12 @@ import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
-import java.util.List;
+import java.net.URI;
+import java.util.Optional;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimIssueReceiptFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForJudgementFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSettlementReachedFileBaseName;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
 
 @Component
 @ConditionalOnProperty(prefix = "document_management", name = "url")
@@ -47,26 +32,11 @@ public class DocumentUploadHandler {
     private static final String CLAIM_MUST_NOT_BE_NULL = "Claim must not be null";
 
     private final DocumentsService documentService;
-    private final DefendantResponseReceiptService defendantResponseReceiptService;
-    private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
-    private final SettlementAgreementCopyService settlementAgreementCopyService;
-    private final SealedClaimPdfService sealedClaimPdfService;
-    private final ClaimIssueReceiptService claimIssueReceiptService;
     private final DefendantPinLetterPdfService defendantPinLetterPdfService;
 
     @Autowired
-    public DocumentUploadHandler(DefendantResponseReceiptService defendantResponseReceiptService,
-                                 CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
-                                 SettlementAgreementCopyService settlementAgreementCopyService,
-                                 SealedClaimPdfService sealedClaimPdfService,
-                                 ClaimIssueReceiptService claimIssueReceiptService,
-                                 DefendantPinLetterPdfService defendantPinLetterPdfService,
+    public DocumentUploadHandler(DefendantPinLetterPdfService defendantPinLetterPdfService,
                                  DocumentsService documentService) {
-        this.defendantResponseReceiptService = defendantResponseReceiptService;
-        this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
-        this.settlementAgreementCopyService = settlementAgreementCopyService;
-        this.sealedClaimPdfService = sealedClaimPdfService;
-        this.claimIssueReceiptService = claimIssueReceiptService;
         this.defendantPinLetterPdfService = defendantPinLetterPdfService;
         this.documentService = documentService;
     }
@@ -75,32 +45,17 @@ public class DocumentUploadHandler {
     public void uploadDocument(CitizenClaimIssuedEvent event) {
         Claim claim = event.getClaim();
         requireNonNull(claim, CLAIM_MUST_NOT_BE_NULL);
-        PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(event.getClaim().getReferenceNumber()),
-            sealedClaimPdfService.createPdf(event.getClaim()),
-            SEALED_CLAIM);
-        PDF defendantLetter = new PDF(buildDefendantLetterFileBaseName(event.getClaim().getReferenceNumber()),
-            defendantPinLetterPdfService.createPdf(event.getClaim(), event.getPin()),
-            DEFENDANT_PIN_LETTER);
-        PDF claimIssueReceipt = new PDF(buildClaimIssueReceiptFileBaseName(event.getClaim().getReferenceNumber()),
-            claimIssueReceiptService.createPdf(event.getClaim()),
-            CLAIM_ISSUE_RECEIPT);
-        uploadToDocumentManagement(event.getClaim(),
-            event.getAuthorisation(),
-            sealedClaim,
-            defendantLetter,
-            claimIssueReceipt);
+        documentService.generateSealedClaim(claim.getExternalId(), event.getAuthorisation());
+        documentService.generateClaimIssueReceipt(claim.getExternalId(), event.getAuthorisation());
+        generateDefendantPinLetter(claim, event.getPin(), event.getAuthorisation());
+
     }
 
     @EventListener
     public void uploadDocument(RepresentedClaimIssuedEvent event) {
         Claim claim = event.getClaim();
         requireNonNull(claim, CLAIM_MUST_NOT_BE_NULL);
-        PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(event.getClaim().getReferenceNumber()),
-            sealedClaimPdfService.createPdf(event.getClaim()),
-            SEALED_CLAIM);
-        uploadToDocumentManagement(event.getClaim(),
-            event.getAuthorisation(),
-            sealedClaim);
+        documentService.generateSealedClaim(claim.getExternalId(), event.getAuthorisation());
     }
 
     @EventListener
@@ -110,54 +65,44 @@ public class DocumentUploadHandler {
         if (!claim.getResponse().isPresent()) {
             throw new IllegalArgumentException("Response must be present");
         }
-        PDF defendantResponseDocument = new PDF(buildResponseFileBaseName(claim.getReferenceNumber()),
-            defendantResponseReceiptService.createPdf(claim),
-            DEFENDANT_RESPONSE_RECEIPT);
-        uploadToDocumentManagement(claim, event.getAuthorization(), defendantResponseDocument);
+        documentService.generateDefendantResponseReceipt(claim.getExternalId(), event.getAuthorization());
     }
 
     @EventListener
     public void uploadDocument(CountyCourtJudgmentEvent event) {
         Claim claim = event.getClaim();
         requireNonNull(claim, CLAIM_MUST_NOT_BE_NULL);
-        PDF document = new PDF(buildRequestForJudgementFileBaseName(claim.getReferenceNumber(),
-            claim.getClaimData().getDefendant().getName()),
-            countyCourtJudgmentPdfService.createPdf(claim),
-            CCJ_REQUEST);
-        uploadToDocumentManagement(claim, event.getAuthorisation(), document);
+        documentService.generateCountyCourtJudgement(claim.getExternalId(), event.getAuthorisation());
     }
 
     @EventListener
     public void uploadDocument(AgreementCountersignedEvent event) {
         Claim claim = event.getClaim();
         requireNonNull(claim, CLAIM_MUST_NOT_BE_NULL);
-        PDF document = new PDF(buildSettlementReachedFileBaseName(claim.getReferenceNumber()),
-            settlementAgreementCopyService.createPdf(claim),
-            SETTLEMENT_AGREEMENT);
-        uploadToDocumentManagement(claim, event.getAuthorisation(), document);
+        documentService.generateSettlementAgreement(claim.getExternalId(), event.getAuthorisation());
     }
 
     @EventListener
     public void uploadDocument(CountersignSettlementAgreementEvent event) {
         Claim claim = event.getClaim();
         requireNonNull(claim, CLAIM_MUST_NOT_BE_NULL);
-        PDF document = new PDF(buildSettlementReachedFileBaseName(claim.getReferenceNumber()),
-            settlementAgreementCopyService.createPdf(claim),
-            SETTLEMENT_AGREEMENT);
-        uploadToDocumentManagement(claim, event.getAuthorisation(), document);
+        documentService.generateSettlementAgreement(claim.getExternalId(), event.getAuthorisation());
     }
 
-    private void uploadToDocumentManagement(Claim claim, String authorisation, PDF... documents) {
-        final List<PDF> documentList = newArrayList(documents);
-        documentList.forEach(document -> {
+    private void generateDefendantPinLetter(Claim claim, String pin, String authorisation) {
+        final String fileName = buildDefendantLetterFileBaseName(claim.getReferenceNumber());
+        Optional<URI> claimDocument = claim.getClaimDocument(DEFENDANT_PIN_LETTER);
+        if (!claimDocument.isPresent()) {
             try {
-                documentService.uploadToDocumentManagement(document,
-                    authorisation,
-                    claim);
+                PDF defendantLetter = new PDF(buildDefendantLetterFileBaseName(claim.getReferenceNumber()),
+                    defendantPinLetterPdfService.createPdf(claim, pin),
+                    DEFENDANT_PIN_LETTER);
+                documentService.uploadToDocumentManagement(defendantLetter, authorisation, claim);
             } catch (Exception ex) {
                 logger.warn(String.format("unable to upload document %s into document management",
-                    document.getFilename()), ex);
+                    fileName), ex);
             }
-        });
+        }
     }
+
 }

@@ -8,12 +8,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
-import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantPinLetterPdfService;
-import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
-import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
-import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
@@ -22,28 +17,21 @@ import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.settlement.CountersignSettlementAgreementEvent;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent;
+import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
-import java.util.Arrays;
-import java.util.List;
-
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DocumentUploadHandlerTest {
@@ -53,20 +41,11 @@ public class DocumentUploadHandlerTest {
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
     @Mock
-    private DefendantResponseReceiptService defendantResponseReceiptService;
-    @Mock
-    private CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
-    @Mock
-    private SettlementAgreementCopyService settlementAgreementCopyService;
-    @Mock
-    private SealedClaimPdfService sealedClaimPdfService;
-    @Mock
-    private ClaimIssueReceiptService claimIssueReceiptService;
-    @Mock
     private DefendantPinLetterPdfService defendantPinLetterPdfService;
     @Mock
+    private DocumentManagementService documentManagementService;
+    @Mock
     private DocumentsService documentService;
-
     private DocumentUploadHandler documentUploadHandler;
 
     private final ArgumentCaptor<PDF> argumentCaptor = ArgumentCaptor.forClass(PDF.class);
@@ -92,12 +71,7 @@ public class DocumentUploadHandlerTest {
 
     @Before
     public void setUp() {
-        documentUploadHandler = new DocumentUploadHandler(defendantResponseReceiptService,
-            countyCourtJudgmentPdfService,
-            settlementAgreementCopyService,
-            sealedClaimPdfService,
-            claimIssueReceiptService,
-            defendantPinLetterPdfService,
+        documentUploadHandler = new DocumentUploadHandler(defendantPinLetterPdfService,
             documentService);
     }
 
@@ -106,14 +80,12 @@ public class DocumentUploadHandlerTest {
         Claim claim = SampleClaim.getDefault();
         CitizenClaimIssuedEvent event = new CitizenClaimIssuedEvent(claim, pin, submitterName, AUTHORISATION);
         documentUploadHandler.uploadDocument(event);
-        verify(documentService, times(3))
+        verify(documentService).generateSealedClaim(claim.getExternalId(), AUTHORISATION);
+        verify(documentService).generateClaimIssueReceipt(claim.getExternalId(), AUTHORISATION);
+        verify(documentService, times(1))
             .uploadToDocumentManagement(argumentCaptor.capture(), anyString(), any(Claim.class));
-        List<PDF> capturedDocuments = argumentCaptor.getAllValues();
-        List<ClaimDocumentType> expectedClaimDocumentTypes = Arrays.asList(SEALED_CLAIM,
-            DEFENDANT_PIN_LETTER,
-            CLAIM_ISSUE_RECEIPT);
-        capturedDocuments.forEach(document ->
-            assertTrue(expectedClaimDocumentTypes.contains(document.getClaimDocumentType())));
+        PDF document = argumentCaptor.getValue();
+        assertTrue(document.getClaimDocumentType() == DEFENDANT_PIN_LETTER);
     }
 
     @Test
@@ -128,7 +100,7 @@ public class DocumentUploadHandlerTest {
         Claim claim = SampleClaim.getDefault();
         RepresentedClaimIssuedEvent event = new RepresentedClaimIssuedEvent(claim, submitterName, AUTHORISATION);
         documentUploadHandler.uploadDocument(event);
-        assertCommon(SEALED_CLAIM);
+        verify(documentService).generateSealedClaim(eq(claim.getExternalId()), eq(AUTHORISATION));
     }
 
     @Test
@@ -141,7 +113,9 @@ public class DocumentUploadHandlerTest {
     @Test
     public void defendantResponseEventTriggersDocumentUpload() {
         documentUploadHandler.uploadDocument(defendantResponseEvent);
-        assertCommon(DEFENDANT_RESPONSE_RECEIPT);
+        verify(documentService).generateDefendantResponseReceipt(
+            defendantResponseEvent.getClaim().getExternalId(),
+            AUTHORISATION);
     }
 
     @Test
@@ -161,7 +135,9 @@ public class DocumentUploadHandlerTest {
     @Test
     public void countyCourtJudgmentEventTriggersDocumentUpload() {
         documentUploadHandler.uploadDocument(ccjWithoutAdmission);
-        assertCommon(CCJ_REQUEST);
+        verify(documentService).generateCountyCourtJudgement(
+            ccjWithoutAdmission.getClaim().getExternalId(),
+            AUTHORISATION);
     }
 
     @Test
@@ -174,7 +150,9 @@ public class DocumentUploadHandlerTest {
     @Test
     public void agreementCountersignedEventShouldTriggersDocumentUpload() {
         documentUploadHandler.uploadDocument(offerMadeByClaimant);
-        assertCommon(SETTLEMENT_AGREEMENT);
+        verify(documentService).generateSettlementAgreement(
+            offerMadeByClaimant.getClaim().getExternalId(),
+            AUTHORISATION);
     }
 
     @Test
@@ -187,7 +165,9 @@ public class DocumentUploadHandlerTest {
     @Test
     public void countersignSettlementAgreementEventShouldTriggersDocumentUpload() {
         documentUploadHandler.uploadDocument(countersignSettlementAgreementEvent);
-        assertCommon(SETTLEMENT_AGREEMENT);
+        verify(documentService).generateSettlementAgreement(
+            offerMadeByClaimant.getClaim().getExternalId(),
+            AUTHORISATION);
     }
 
     @Test
@@ -197,9 +177,4 @@ public class DocumentUploadHandlerTest {
         documentUploadHandler.uploadDocument(new CountersignSettlementAgreementEvent(null, AUTHORISATION));
     }
 
-    private void assertCommon(ClaimDocumentType claimDocumentType) {
-        verify(documentService, times(1))
-            .uploadToDocumentManagement(argumentCaptor.capture(), anyString(), any(Claim.class));
-        assertTrue(argumentCaptor.getValue().getClaimDocumentType() == claimDocumentType);
-    }
 }
