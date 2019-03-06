@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
@@ -7,15 +8,19 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.Arrays;
 
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @Component
 public class CaseMapper {
 
     private final ClaimMapper claimMapper;
+    private final boolean isMigrated;
 
-    public CaseMapper(ClaimMapper claimMapper) {
+    public CaseMapper(ClaimMapper claimMapper, @Value("migration.cases.flag:false") boolean isMigrated) {
         this.claimMapper = claimMapper;
+        this.isMigrated = isMigrated;
     }
 
     public CCDCase to(Claim claim) {
@@ -38,6 +43,7 @@ public class CaseMapper {
             .issuedOn(claim.getIssuedOn())
             .submittedOn(claim.getCreatedAt())
             .features(claim.getFeatures() != null ? String.join(",", claim.getFeatures()) : null)
+            .migrated(isMigrated ? YES : NO)
             .build();
     }
 

@@ -60,4 +60,5 @@ public class CCDCase {
     private List<CCDCollectionElement<CCDEvidenceRow>> evidence;
     private CCDDocument sealedClaimDocument;
     private String features;
+    private CCDYesNoOption migrated;
 }
