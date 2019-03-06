@@ -17,7 +17,6 @@ import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.settlement.CountersignSettlementAgreementEvent;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent;
-import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
@@ -42,8 +41,6 @@ public class DocumentUploadHandlerTest {
     public ExpectedException exceptionRule = ExpectedException.none();
     @Mock
     private DefendantPinLetterPdfService defendantPinLetterPdfService;
-    @Mock
-    private DocumentManagementService documentManagementService;
     @Mock
     private DocumentsService documentService;
     private DocumentUploadHandler documentUploadHandler;
