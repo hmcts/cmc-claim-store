@@ -18,7 +18,7 @@ public class CaseMapper {
     private final ClaimMapper claimMapper;
     private final boolean isMigrated;
 
-    public CaseMapper(ClaimMapper claimMapper, @Value("migration.cases.flag:false") boolean isMigrated) {
+    public CaseMapper(ClaimMapper claimMapper, @Value("${migration.cases.flag:false}") boolean isMigrated) {
         this.claimMapper = claimMapper;
         this.isMigrated = isMigrated;
     }
