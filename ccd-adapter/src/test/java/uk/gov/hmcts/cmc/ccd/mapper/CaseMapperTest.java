@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.util.SampleData.getAmountBreakDown;
 
 @SpringBootTest
@@ -33,6 +35,7 @@ public class CaseMapperTest {
 
         //then
         assertThat(claim).isEqualTo(ccdCase);
+        Assertions.assertThat(ccdCase.getMigrated()).isEqualTo(NO);
     }
 
     @Test
@@ -45,6 +48,7 @@ public class CaseMapperTest {
 
         //then
         assertThat(claim).isEqualTo(ccdCase);
+        Assertions.assertThat(ccdCase.getMigrated()).isEqualTo(NO);
     }
 
     @Test(expected = NullPointerException.class)
