@@ -108,4 +108,7 @@ public class EmailTemplates {
 
     @NotEmpty
     private String defendantAdmissionResponseToClaimant;
+
+    @NotEmpty
+    private String claimantRejectedPartAdmitOrStatesPaidEmailToDefendant;
 }
