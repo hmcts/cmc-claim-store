@@ -93,8 +93,7 @@ notifications:
     email:
       claimantClaimIssued: "f034e121-e9d4-441a-91b9-52d0c7d14d73"
       defendantClaimIssued: "b261ef40-ca55-4f36-b8ff-7f1f34347058"
-      defendantResponseIssuedToIndividual: "128bfa11-0b09-4162-bb1e-36fa167af191"
-      defendantResponseIssuedToCompany: "611ee21b-0063-4fee-a344-393b73868486"
+      defendantResponseIssued: "128bfa11-0b09-4162-bb1e-36fa167af191"
       defendantResponseNeeded: "15f9985a-1775-4f64-a6c7-7616bdbabb1c"
       claimantResponseIssued: "c82ab455-4786-4199-a0f3-e9e159b345f1"
       staffMoreTimeRequested: "23db60df-1dbb-405a-ab95-988b635455d1"
