@@ -47,7 +47,7 @@ env.S2S_URL = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.int
 String notificationsChannel = '#cmc-tech-notification'
 
 withPipeline("java", product, component) {
-  afterCheckout {
+  after('checkout') {
     onMaster {
       withCredentials([usernamePassword(credentialsId: 'jenkins-github-hmcts-api-token', passwordVariable: 'BEARER_TOKEN', usernameVariable: 'USERNAME')]) {
         try {
