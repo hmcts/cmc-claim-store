@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.cmc.claimstore.events.DocumentUploadHandler;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
@@ -35,8 +34,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
-
 @RestController
 @RequestMapping("/support")
 @ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff")
@@ -50,9 +47,7 @@ public class SupportController {
     private final DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler;
     private final CCJStaffNotificationHandler ccjStaffNotificationHandler;
     private final AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler;
-    private final DocumentUploadHandler documentUploadHandler;
 
-    @SuppressWarnings("squid:S00107")
     @Autowired
     public SupportController(
         ClaimService claimService,
@@ -61,8 +56,7 @@ public class SupportController {
         MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler,
         DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler,
         CCJStaffNotificationHandler ccjStaffNotificationHandler,
-        AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler,
-        DocumentUploadHandler documentUploadHandler
+        AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler
     ) {
         this.claimService = claimService;
         this.userService = userService;
@@ -71,7 +65,6 @@ public class SupportController {
         this.defendantResponseStaffNotificationHandler = defendantResponseStaffNotificationHandler;
         this.ccjStaffNotificationHandler = ccjStaffNotificationHandler;
         this.agreementCountersignedStaffNotificationHandler = agreementCountersignedStaffNotificationHandler;
-        this.documentUploadHandler = documentUploadHandler;
     }
 
     @PutMapping("/claim/{referenceNumber}/event/{event}/resend-staff-notifications")
@@ -98,7 +91,7 @@ public class SupportController {
                 resendStaffNotificationCCJRequestSubmitted(claim, authorisation);
                 break;
             case "offer-accepted":
-                resendStaffNotificationOnAgreementCountersigned(claim);
+                resendStaffNotificationOnAgreementCountersigned(claim, authorisation);
                 break;
             default:
                 throw new NotFoundException("Event " + event + " is not supported");
@@ -167,16 +160,13 @@ public class SupportController {
         }
         DefendantResponseEvent event = new DefendantResponseEvent(claim, authorization);
         defendantResponseStaffNotificationHandler.onDefendantResponseSubmitted(event);
-        if (!claim.getClaimDocument(DEFENDANT_RESPONSE_RECEIPT).isPresent()) {
-            documentUploadHandler.uploadDocument(event);
-        }
     }
 
-    private void resendStaffNotificationOnAgreementCountersigned(Claim claim) {
+    private void resendStaffNotificationOnAgreementCountersigned(Claim claim, String authorisation) {
         if (claim.getSettlementReachedAt() == null) {
             throw new ConflictException(CLAIM + claim.getId() + " does not have a settlement");
         }
-        AgreementCountersignedEvent event = new AgreementCountersignedEvent(claim, null);
+        AgreementCountersignedEvent event = new AgreementCountersignedEvent(claim, null, authorisation);
         agreementCountersignedStaffNotificationHandler.onAgreementCountersigned(event);
     }
 
