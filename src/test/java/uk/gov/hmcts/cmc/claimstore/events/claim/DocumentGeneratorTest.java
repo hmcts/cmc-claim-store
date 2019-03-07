@@ -11,7 +11,6 @@ import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
-import uk.gov.hmcts.cmc.claimstore.events.DocumentUploadEvent;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -57,8 +56,7 @@ public class DocumentGeneratorTest {
         documentGenerator = new DocumentGenerator(citizenDocumentService,
             sealedClaimPdfService,
             publisher,
-            pdfServiceClient,
-            claimIssueReceiptService);
+            pdfServiceClient);
     }
 
     @Test
@@ -89,7 +87,7 @@ public class DocumentGeneratorTest {
     }
 
     @Test
-    public void shouldTriggerDocumentUploadEventForCitizenClaim() {
+    public void shouldTriggerDocumentGeneratedEventForCitizenClaim() {
         Document sealedClaimDocument = new Document(sealedClaimTemplate, claimContents);
         Claim claim = SampleClaim.getDefault();
         when(citizenDocumentService.sealedClaimDocument(claim)).thenReturn(sealedClaimDocument);
@@ -99,16 +97,14 @@ public class DocumentGeneratorTest {
         verify(publisher)
             .publishEvent(new DocumentReadyToPrintEvent(claim, defendantLetterDocument, sealedClaimDocument));
         verify(publisher).publishEvent(any(DocumentGeneratedEvent.class));
-        verify(publisher).publishEvent(any(DocumentUploadEvent.class));
     }
 
     @Test
-    public void shouldTriggerDocumentUploadEventForForRepresentedClaim() {
+    public void shouldTriggerDocumentGeneratedEventForForRepresentedClaim() {
         Claim claim = SampleClaim.getDefault();
         when(sealedClaimPdfService.createPdf(claim)).thenReturn(PDF_CONTENT);
         RepresentedClaimIssuedEvent event = new RepresentedClaimIssuedEvent(claim, submitterName, authorisation);
         documentGenerator.generateForRepresentedClaim(event);
         verify(publisher).publishEvent(any(DocumentGeneratedEvent.class));
-        verify(publisher).publishEvent(any(DocumentUploadEvent.class));
     }
 }

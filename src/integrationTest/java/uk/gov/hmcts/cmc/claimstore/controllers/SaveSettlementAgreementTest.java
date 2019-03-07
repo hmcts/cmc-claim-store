@@ -2,9 +2,12 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -16,26 +19,36 @@ import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.AGREEMENT_REJECTED_BY_DEFENDANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.AGREEMENT_SIGNED_BY_CLAIMANT;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSettlementReachedFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementUploadResponse;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.unsuccessfulDocumentManagementUploadResponse;
 
 @TestPropertySource(
     properties = {
         "core_case_data.api.url=false"
     }
 )
-public class RejectSettlementAgreementTest extends BaseIntegrationTest {
+public class SaveSettlementAgreementTest extends BaseIntegrationTest {
 
     private Claim claim;
 
@@ -43,6 +56,8 @@ public class RejectSettlementAgreementTest extends BaseIntegrationTest {
     public void setUp() {
         claim = claimStore.saveClaim(SampleClaimData.builder()
             .withExternalId(UUID.randomUUID()).build(), SUBMITTER_ID, LocalDate.now());
+
+        claimStore.saveResponse(claim, SampleResponse.FullAdmission.builder().build());
 
         UserDetails defendantDetails = SampleUserDetails.builder()
             .withUserId(DEFENDANT_ID)
@@ -90,6 +105,44 @@ public class RejectSettlementAgreementTest extends BaseIntegrationTest {
 
         Settlement settlement = claimWithSettlementAgreement.getSettlement().orElseThrow(AssertionError::new);
 
+        assertThat(settlement.getLastStatement().getType()).isEqualTo(StatementType.COUNTERSIGNATURE);
+        assertThat(settlement.getLastStatement().getMadeBy()).isEqualTo(MadeBy.DEFENDANT);
+    }
+
+    @Test
+    public void shouldUploadDocumentToDocumentManagementAfterCountersignSettlementAgreement() throws Exception {
+        final ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
+        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
+            .willReturn(successfulDocumentManagementUploadResponse());
+        given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
+        makeRequest(claim.getExternalId(), "countersign").andExpect(status().isCreated());
+        Claim claimWithSettlementAgreement = claimStore.getClaimByExternalId(claim.getExternalId());
+        InMemoryMultipartFile settlementAgreement = new InMemoryMultipartFile(
+            "files",
+            buildSettlementReachedFileBaseName(claimWithSettlementAgreement.getReferenceNumber()) + ".pdf",
+            MediaType.APPLICATION_PDF_VALUE,
+            PDF_BYTES
+        );
+        Settlement settlement = claimWithSettlementAgreement.getSettlement().orElseThrow(AssertionError::new);
+        verify(documentUploadClient).upload(anyString(),
+            anyString(),
+            anyString(),
+            argument.capture());
+        List<MultipartFile> files = argument.getValue();
+        assertTrue(files.contains(settlementAgreement));
+        assertThat(settlement.getLastStatement().getType()).isEqualTo(StatementType.COUNTERSIGNATURE);
+        assertThat(settlement.getLastStatement().getMadeBy()).isEqualTo(MadeBy.DEFENDANT);
+    }
+
+    @Test
+    public void shouldNotReturn500HttpStatusAfterCountersignSettlementAgreementWhenUploadDocumentFails()
+        throws Exception {
+        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
+            .willReturn(unsuccessfulDocumentManagementUploadResponse());
+        given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
+        makeRequest(claim.getExternalId(), "countersign").andExpect(status().isCreated());
+        Claim claimWithSettlementAgreement = claimStore.getClaimByExternalId(claim.getExternalId());
+        Settlement settlement = claimWithSettlementAgreement.getSettlement().orElseThrow(AssertionError::new);
         assertThat(settlement.getLastStatement().getType()).isEqualTo(StatementType.COUNTERSIGNATURE);
         assertThat(settlement.getLastStatement().getMadeBy()).isEqualTo(MadeBy.DEFENDANT);
     }
