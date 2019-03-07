@@ -134,8 +134,14 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
                                                           PDF document, URI uri,
                                                           String authorisation) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        ClaimDocumentCollection claimDocumentCollection = claim.getClaimDocumentCollection()
-            .orElse(new ClaimDocumentCollection());
+
+        ClaimDocumentCollection claimDocumentCollection;
+        if (claim.getClaimData().getDocumentCollection().isPresent()) {
+             claimDocumentCollection = claim.getClaimData().getDocumentCollection().get();
+        } else {
+            claimDocumentCollection = new ClaimDocumentCollection();
+        }
+
         claimDocumentCollection.addClaimDocument(ClaimDocument.builder()
             .documentManagementUrl(uri)
             .documentName(document.getFilename())
