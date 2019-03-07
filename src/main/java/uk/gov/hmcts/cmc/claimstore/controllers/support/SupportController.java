@@ -85,13 +85,13 @@ public class SupportController {
                 resendStaffNotificationOnMoreTimeRequested(claim);
                 break;
             case "response-submitted":
-                resendStaffNotificationOnDefendantResponseSubmitted(claim);
+                resendStaffNotificationOnDefendantResponseSubmitted(claim, authorisation);
                 break;
             case "ccj-request-submitted":
                 resendStaffNotificationCCJRequestSubmitted(claim, authorisation);
                 break;
             case "offer-accepted":
-                resendStaffNotificationOnAgreementCountersigned(claim);
+                resendStaffNotificationOnAgreementCountersigned(claim, authorisation);
                 break;
             default:
                 throw new NotFoundException("Event " + event + " is not supported");
@@ -154,19 +154,19 @@ public class SupportController {
         moreTimeRequestedStaffNotificationHandler.sendNotifications(event);
     }
 
-    private void resendStaffNotificationOnDefendantResponseSubmitted(Claim claim) {
+    private void resendStaffNotificationOnDefendantResponseSubmitted(Claim claim, String authorization) {
         if (!claim.getResponse().isPresent()) {
-            throw new ConflictException(CLAIM + claim.getId() + " does not have associated response");
+            throw new ConflictException(CLAIM + claim.getReferenceNumber() + " does not have associated response");
         }
-        DefendantResponseEvent event = new DefendantResponseEvent(claim);
+        DefendantResponseEvent event = new DefendantResponseEvent(claim, authorization);
         defendantResponseStaffNotificationHandler.onDefendantResponseSubmitted(event);
     }
 
-    private void resendStaffNotificationOnAgreementCountersigned(Claim claim) {
+    private void resendStaffNotificationOnAgreementCountersigned(Claim claim, String authorisation) {
         if (claim.getSettlementReachedAt() == null) {
             throw new ConflictException(CLAIM + claim.getId() + " does not have a settlement");
         }
-        AgreementCountersignedEvent event = new AgreementCountersignedEvent(claim, null);
+        AgreementCountersignedEvent event = new AgreementCountersignedEvent(claim, null, authorisation);
         agreementCountersignedStaffNotificationHandler.onAgreementCountersigned(event);
     }
 
@@ -175,7 +175,7 @@ public class SupportController {
             throw new BadRequestException("Authorisation is required");
         }
 
-        for (Claim claim: claims) {
+        for (Claim claim : claims) {
             GeneratePinResponse pinResponse = userService
                 .generatePin(claim.getClaimData().getDefendant().getName(), authorisation);
 
@@ -188,8 +188,8 @@ public class SupportController {
     }
 
     private List<Claim> checkClaimsExist(List<String> referenceNumbers) {
-        List<Claim> claims  = new ArrayList<>();
-        for (String referenceNumber: referenceNumbers) {
+        List<Claim> claims = new ArrayList<>();
+        for (String referenceNumber : referenceNumbers) {
             Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
                 .orElseThrow(() -> new NotFoundException(CLAIM + referenceNumber + " does not exist"));
 

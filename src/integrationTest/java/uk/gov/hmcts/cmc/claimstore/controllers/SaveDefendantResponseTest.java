@@ -6,9 +6,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseStaffNotificationHandler;
@@ -19,15 +21,19 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -35,6 +41,9 @@ import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementUploadResponse;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.unsuccessfulDocumentManagementUploadResponse;
 
 @TestPropertySource(
     properties = {
@@ -95,6 +104,44 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
 
         Claim updatedClaim = claimRepository.getById(claim.getId()).orElseThrow(RuntimeException::new);
         assertThat(defendantResponseEventArgument.getValue().getClaim()).isEqualTo(updatedClaim);
+    }
+
+    @Test
+    public void shouldUploadDocumentToDocumentManagementAfterSuccessfulSave() throws Exception {
+        final ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
+        Response response = SampleResponse.validDefaults();
+        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
+            .willReturn(successfulDocumentManagementUploadResponse());
+        given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
+        InMemoryMultipartFile defendantResponseReceipt = new InMemoryMultipartFile(
+            "files",
+            buildResponseFileBaseName(claim.getReferenceNumber()) + ".pdf",
+            MediaType.APPLICATION_PDF_VALUE,
+            PDF_BYTES
+        );
+        makeRequest(claim.getExternalId(), DEFENDANT_ID, response)
+            .andExpect(status().isOk());
+        verify(documentUploadClient).upload(anyString(),
+            anyString(),
+            anyString(),
+            argument.capture());
+        List<MultipartFile> files = argument.getValue();
+        assertTrue(files.contains(defendantResponseReceipt));
+    }
+
+    @Test
+    public void shouldNotReturn500WhenUploadToDocumentManagementFails() throws Exception {
+        Response response = SampleResponse.validDefaults();
+        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
+            .willReturn(unsuccessfulDocumentManagementUploadResponse());
+        given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
+        MvcResult result = makeRequest(claim.getExternalId(), DEFENDANT_ID, response)
+            .andExpect(status().isOk())
+            .andReturn();
+        assertThat(deserializeObjectFrom(result, Claim.class))
+            .extracting(Claim::getResponse, Claim::getRespondedAt)
+            .doesNotContainNull()
+            .contains(Optional.of(response));
     }
 
     @Test

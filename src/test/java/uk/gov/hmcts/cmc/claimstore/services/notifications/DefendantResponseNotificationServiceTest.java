@@ -36,7 +36,7 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
         when(properties.getFrontendBaseUrl()).thenReturn(FRONTEND_BASE_URL);
         when(templates.getEmail()).thenReturn(emailTemplates);
         when(properties.getTemplates()).thenReturn(templates);
-        when(emailTemplates.getDefendantResponseIssuedToIndividual()).thenReturn(DEFENDANT_RESPONSE_TEMPLATE);
+        when(emailTemplates.getDefendantResponseIssued()).thenReturn(DEFENDANT_RESPONSE_TEMPLATE);
         when(emailTemplates.getDefendantResponseWithNoMediationIssued())
             .thenReturn(DEFENDANT_RESPONSE_NO_MEDIATION_TEMPLATE);
     }
@@ -74,11 +74,30 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
     }
 
     @Test
-    public void notifyDefendantShouldUseDefendantResponseIssuedToIndividualEmailTemplate() throws Exception {
+    public void notifyDefendantShouldUseDefendantResponseEmailTemplateFullDefenceDisputeNoMediation()
+        throws Exception {
         service.notifyDefendant(SampleClaim.getClaimWithFullDefenceNoMediation(), USER_EMAIL, reference);
 
         verify(notificationClient)
             .sendEmail(eq(DEFENDANT_RESPONSE_NO_MEDIATION_TEMPLATE), eq(USER_EMAIL), anyMap(), eq(reference));
+    }
+
+    @Test
+    public void notifyDefendantShouldUseDefendantResponseEmailTemplateFullDefenceDisputeYesMediation()
+        throws Exception {
+        service.notifyDefendant(SampleClaim.getDefault(), USER_EMAIL, reference);
+
+        verify(notificationClient)
+            .sendEmail(eq(DEFENDANT_RESPONSE_TEMPLATE), eq(USER_EMAIL), anyMap(), eq(reference));
+    }
+
+    @Test
+    public void notifyDefendantShouldUseDefendantResponseEmailTemplateFullDefenceAlreadyPaidFullAmount()
+        throws Exception {
+        service.notifyDefendant(SampleClaim.getClaimWithFullDefenceAlreadyPaid(), USER_EMAIL, reference);
+
+        verify(notificationClient)
+            .sendEmail(eq(DEFENDANT_RESPONSE_TEMPLATE), eq(USER_EMAIL), anyMap(), eq(reference));
     }
 
     @Test
