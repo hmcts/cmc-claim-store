@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
-import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
@@ -65,9 +64,7 @@ public class AlwaysGenerateDocumentsService implements DocumentsService {
     }
 
     @Override
-    public void uploadToDocumentManagement(PDF document,
-                                           String authorisation,
-                                           Claim claim) {
+    public void generateDefendantPinLetter(String externalId, String pin, String authorisation) {
         throw new UnsupportedOperationException(
             "This method is not supported when Document Management is turned off");
     }

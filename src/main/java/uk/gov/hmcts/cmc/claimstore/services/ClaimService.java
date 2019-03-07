@@ -321,7 +321,7 @@ public class ClaimService {
         ccdEventProducer.linkDefendantCCDEvent(authorisation);
     }
 
-    public void linkClaimToDocument(String authorisation,
+    public void saveClaimDocuments(String authorisation,
                                     Long claimId,
                                     ClaimDocumentCollection claimDocumentCollection) {
         caseRepository.saveClaimDocuments(authorisation, claimId, claimDocumentCollection);

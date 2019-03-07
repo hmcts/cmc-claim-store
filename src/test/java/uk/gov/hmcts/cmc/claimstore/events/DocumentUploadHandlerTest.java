@@ -23,14 +23,9 @@ import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DocumentUploadHandlerTest {
@@ -68,8 +63,7 @@ public class DocumentUploadHandlerTest {
 
     @Before
     public void setUp() {
-        documentUploadHandler = new DocumentUploadHandler(defendantPinLetterPdfService,
-            documentService);
+        documentUploadHandler = new DocumentUploadHandler(documentService);
     }
 
     @Test
@@ -79,10 +73,7 @@ public class DocumentUploadHandlerTest {
         documentUploadHandler.uploadDocument(event);
         verify(documentService).generateSealedClaim(claim.getExternalId(), AUTHORISATION);
         verify(documentService).generateClaimIssueReceipt(claim.getExternalId(), AUTHORISATION);
-        verify(documentService, times(1))
-            .uploadToDocumentManagement(argumentCaptor.capture(), anyString(), any(Claim.class));
-        PDF document = argumentCaptor.getValue();
-        assertTrue(document.getClaimDocumentType() == DEFENDANT_PIN_LETTER);
+        verify(documentService).generateDefendantPinLetter(claim.getExternalId(), pin, AUTHORISATION);
     }
 
     @Test

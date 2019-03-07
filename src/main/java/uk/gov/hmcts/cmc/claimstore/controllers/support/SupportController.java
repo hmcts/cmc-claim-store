@@ -28,8 +28,10 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +49,7 @@ public class SupportController {
     private final DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler;
     private final CCJStaffNotificationHandler ccjStaffNotificationHandler;
     private final AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler;
+    private final DocumentsService documentsService;
 
     @Autowired
     public SupportController(
@@ -56,7 +59,8 @@ public class SupportController {
         MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler,
         DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler,
         CCJStaffNotificationHandler ccjStaffNotificationHandler,
-        AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler
+        AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler,
+        DocumentsService documentsService
     ) {
         this.claimService = claimService;
         this.userService = userService;
@@ -65,6 +69,7 @@ public class SupportController {
         this.defendantResponseStaffNotificationHandler = defendantResponseStaffNotificationHandler;
         this.ccjStaffNotificationHandler = ccjStaffNotificationHandler;
         this.agreementCountersignedStaffNotificationHandler = agreementCountersignedStaffNotificationHandler;
+        this.documentsService = documentsService;
     }
 
     @PutMapping("/claim/{referenceNumber}/event/{event}/resend-staff-notifications")
@@ -96,6 +101,42 @@ public class SupportController {
             default:
                 throw new NotFoundException("Event " + event + " is not supported");
         }
+    }
+
+    @PutMapping("/claim/{referenceNumber}/claimDocumentType/{claimDocumentType}/uploadDocumentToDocumentManagement")
+    @ApiOperation("Upload document to document Management")
+    public void uploadDocumentToDocumentManagement(
+        @PathVariable("referenceNumber") String referenceNumber,
+        @PathVariable("claimDocumentType") ClaimDocumentType claimDocumentType,
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation) {
+
+        Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
+            .orElseThrow(() -> new NotFoundException(CLAIM + referenceNumber + " does not exist"));
+        if (StringUtils.isBlank(authorisation)) {
+            throw new BadRequestException("Authorisation is required");
+        }
+        switch (claimDocumentType) {
+            case SEALED_CLAIM:
+                documentsService.generateSealedClaim(claim.getExternalId(), authorisation);
+                break;
+            case CLAIM_ISSUE_RECEIPT:
+                documentsService.generateClaimIssueReceipt(claim.getExternalId(), authorisation);
+                break;
+            case DEFENDANT_RESPONSE_RECEIPT:
+                documentsService.generateDefendantResponseReceipt(claim.getExternalId(), authorisation);
+                break;
+            case CCJ_REQUEST:
+                documentsService.generateCountyCourtJudgement(claim.getExternalId(), authorisation);
+                break;
+            case SETTLEMENT_AGREEMENT:
+                documentsService.generateSettlementAgreement(claim.getExternalId(), authorisation);
+                break;
+            default:
+                throw new BadRequestException("ClaimDocumentType " + claimDocumentType + " is not supported");
+        }
+        claimService.getClaimByReferenceAnonymous(referenceNumber)
+            .ifPresent(updatedClaim -> updatedClaim.getClaimDocument(claimDocumentType)
+                .orElseThrow(() -> new NotFoundException("Unable to upload the document. Please try again later")));
     }
 
     @PutMapping("/claim/resend-rpa-notifications")
