@@ -30,6 +30,38 @@ public class ResponseRejectionTest {
     }
 
     @Test
+    public void shouldBeValidWithFreeMediationResponse() {
+        ClaimantResponse claimantResponse = SampleClaimantResponse.validRejectionWithFreeMediation();
+
+        Set<String> response = validate(claimantResponse);
+
+        assertThat(response).hasSize(0);
+    }
+
+    @Test
+    public void shouldBeInvalidWhenMediationPhoneNumberIsTooLong() {
+        ClaimantResponse claimantResponse = ResponseRejection
+            .builder()
+            .mediationPhoneNumber(randomAlphabetic(31)).build();
+
+        Set<String> response = validate(claimantResponse);
+
+        assertThat(response).hasSize(1);
+    }
+
+    @Test
+    public void shouldBeInvalidWhenMediationContactPersonIsTooLong() {
+        ClaimantResponse claimantResponse = ResponseRejection
+            .builder()
+            .mediationContactPerson(randomAlphabetic(31))
+            .build();
+
+        Set<String> response = validate(claimantResponse);
+
+        assertThat(response).hasSize(1);
+    }
+
+    @Test
     public void shouldBeInvalidWhenReasonTooLong() {
         ClaimantResponse claimantResponse = ResponseRejection.builder().reason(randomAlphabetic(99001)).build();
 
