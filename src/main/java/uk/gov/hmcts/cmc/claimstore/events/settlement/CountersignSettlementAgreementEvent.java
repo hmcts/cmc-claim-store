@@ -5,8 +5,15 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 
 public class CountersignSettlementAgreementEvent extends OfferRespondedEvent {
-    public CountersignSettlementAgreementEvent(Claim claim) {
+    private final String authorisation;
+
+    public CountersignSettlementAgreementEvent(Claim claim, String authorisation) {
         this.claim = claim;
         this.party = MadeBy.DEFENDANT;
+        this.authorisation = authorisation;
+    }
+
+    public String getAuthorisation() {
+        return this.authorisation;
     }
 }

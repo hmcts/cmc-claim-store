@@ -8,7 +8,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 
-import java.util.Objects;
+import static java.util.Objects.requireNonNull;
 
 @Component
 public class CCJCitizenActionsHandler {
@@ -17,6 +17,7 @@ public class CCJCitizenActionsHandler {
     @Autowired
     public CCJCitizenActionsHandler(CCJNotificationService ccjNotificationService) {
         this.ccjNotificationService = ccjNotificationService;
+
     }
 
     @EventListener
@@ -42,9 +43,10 @@ public class CCJCitizenActionsHandler {
 
     @EventListener
     public void onRedetermination(ReDeterminationEvent event) {
-        Objects.requireNonNull(event);
+        requireNonNull(event);
         if (event.getPartyType() == MadeBy.DEFENDANT) {
             ccjNotificationService.notifyClaimantForRedeterminationRequest(event.getClaim());
         }
     }
+
 }
