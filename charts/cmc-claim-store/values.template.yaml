@@ -153,6 +153,7 @@ ccd:
     enabled: true
   importer:
     image: hmcts.azurecr.io/hmcts/cmc-ccd-definition-importer
+    definitionFilename: cmc-ccd.xlsx
     userRoles:
       - citizen
       - caseworker-cmc
