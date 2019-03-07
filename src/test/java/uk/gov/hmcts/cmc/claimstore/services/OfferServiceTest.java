@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -145,7 +146,7 @@ public class OfferServiceTest {
             .reachSettlementAgreement(eq(claimWithAcceptedOffer), any(Settlement.class), eq(AUTHORISATION),
                 eq(OFFER_COUNTER_SIGNED_BY_DEFENDANT));
 
-        verify(eventProducer).createAgreementCountersignedEvent(eq(settledClaim), eq(madeBy));
+        verify(eventProducer).createAgreementCountersignedEvent(eq(settledClaim), eq(madeBy), anyString());
     }
 
     private static Settlement buildSettlement() {
