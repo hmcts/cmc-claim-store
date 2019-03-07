@@ -152,8 +152,7 @@ ccd:
   caseManagementWeb:
     enabled: true
   importer:
-    definitions:
-      - https://raw.githubusercontent.com/hmcts/cmc-ccd-definitions/master/helm-testing.xlsx
+    image: hmcts.azurecr.io/hmcts/cmc-ccd-definition-importer
     userRoles:
       - citizen
       - caseworker-cmc
