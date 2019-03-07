@@ -124,6 +124,8 @@ public class ClaimantResponseMapper {
             .reason(ccdResponseRejection.getReason());
         if (ccdResponseRejection.getFreeMediationOption() != null) {
             builder.freeMediation(YesNoOption.valueOf(ccdResponseRejection.getFreeMediationOption().name()));
+            builder.mediationPhoneNumber(ccdResponseRejection.getMediationPhoneNumber());
+            builder.mediationContactPerson(ccdResponseRejection.getMediationContactPerson());
         }
 
         if (ccdResponseRejection.getPaymentReceived() != null) {

@@ -211,7 +211,7 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
 
         actual.getFreeMediation().ifPresent(freeMediation -> {
             if (!Objects.equals(
-                actual.getFreeMediation().orElse(YesNoOption.NO).name(),
+                actual.getFreeMediation().orElse(YesNoOption.YES).name(),
                 ccdRespondent.getResponseFreeMediationOption().name())
             ) {
                 failWithMessage(
@@ -221,6 +221,31 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
             }
         });
 
+        actual.getMediationPhoneNumber().ifPresent(mediationPhoneNumber -> {
+            if (!Objects.equals(
+                mediationPhoneNumber,
+                ccdDefendant.getResponseMediationPhoneNumber())) {
+                failWithMessage("Expected CCDDefendant.responseMediationPhoneNumber to be "
+                        + "<%s> but was <%s>",
+                    ccdDefendant.getResponseMediationPhoneNumber(),
+                    actual.getMediationPhoneNumber());
+            }
+        });
+
+        actual.getMediationContactPerson().ifPresent(mediationContactPerson -> {
+            if (!Objects.equals(
+                mediationContactPerson,
+                ccdDefendant.getResponseMediationContactPerson())) {
+                failWithMessage("Expected CCDDefendant.responseMediationContactPerson to be "
+                        + "<%s> but was <%s>",
+                    ccdDefendant.getResponseMediationContactPerson(),
+                    actual.getMediationContactPerson());
+            }
+        });
+
+        if (!Objects.equals(actual.getMoreTimeNeeded().name(), ccdDefendant.getResponseMoreTimeNeededOption().name())) {
+            failWithMessage("Expected CCDDefendant.responseMoreTimeNeededOption to be <%s> but was <%s>",
+                ccdDefendant.getResponseMoreTimeNeededOption(), actual.getMoreTimeNeeded());
         if (!Objects.equals(actual.getMoreTimeNeeded().name(),
             ccdRespondent.getResponseMoreTimeNeededOption().name()
         )) {

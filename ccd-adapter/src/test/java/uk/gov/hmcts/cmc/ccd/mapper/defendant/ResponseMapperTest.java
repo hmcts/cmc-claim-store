@@ -87,6 +87,19 @@ public class ResponseMapperTest {
     }
 
     @Test
+    public void shouldMapFullDefenceResponseWithFreeMediationFromCCD() {
+        //given
+        CCDDefendant ccdDefendant = SampleCCDDefendant.withFullDefenceResponseAndFreeMediation().build();
+        Claim.ClaimBuilder builder = Claim.builder();
+
+        //when
+        mapper.from(builder, ccdDefendant);
+
+        //then
+        assertThat(builder.build().getResponse().orElse(null)).isEqualTo(ccdDefendant);
+    }
+
+    @Test
     public void shouldMapFullAdmissionResponseFromCCD() {
         //given
         CCDRespondent ccdRespondent = SampleCCDDefendant.withFullAdmissionResponse().build();
