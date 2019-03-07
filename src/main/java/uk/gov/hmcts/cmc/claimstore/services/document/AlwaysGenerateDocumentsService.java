@@ -45,7 +45,7 @@ public class AlwaysGenerateDocumentsService implements DocumentsService {
     }
 
     @Override
-    public byte[] getSealedClaim(String externalId, String authorisation) {
+    public byte[] generateSealedClaim(String externalId, String authorisation) {
         return sealedClaimPdfService.createPdf(getClaimByExternalId(externalId, authorisation));
     }
 

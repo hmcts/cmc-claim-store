@@ -6,7 +6,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 public interface DocumentsService {
     byte[] generateClaimIssueReceipt(String externalId, String authorisation);
 
-    byte[] getSealedClaim(String externalId, String authorisation);
+    byte[] generateSealedClaim(String externalId, String authorisation);
 
     byte[] generateDefendantResponseReceipt(String externalId, String authorisation);
 
