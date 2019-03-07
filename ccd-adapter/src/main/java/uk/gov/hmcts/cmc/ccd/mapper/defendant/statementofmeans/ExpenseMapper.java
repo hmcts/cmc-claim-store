@@ -3,7 +3,10 @@ package uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpense;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpenseType;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPaymentFrequency;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency;
 
 @Component
 public class ExpenseMapper {
@@ -14,9 +17,9 @@ public class ExpenseMapper {
         }
         return CCDCollectionElement.<CCDExpense>builder()
             .value(CCDExpense.builder()
-                .type(expense.getType())
+                .type(CCDExpenseType.valueOf(expense.getType().name()))
                 .amountPaid(expense.getAmount())
-                .frequency(expense.getFrequency())
+                .frequency(CCDPaymentFrequency.valueOf(expense.getFrequency().name()))
                 .description(expense.getOtherName().orElse(null))
                 .build())
             .id(expense.getId())
@@ -31,8 +34,8 @@ public class ExpenseMapper {
         return Expense.builder()
             .id(ccdExpense.getId())
             .amount(value.getAmountPaid())
-            .type(value.getType())
-            .frequency(value.getFrequency())
+            .type(Expense.ExpenseType.valueOf(value.getType().name()))
+            .frequency(PaymentFrequency.valueOf(value.getFrequency().name()))
             .otherName(value.getDescription())
             .build();
     }

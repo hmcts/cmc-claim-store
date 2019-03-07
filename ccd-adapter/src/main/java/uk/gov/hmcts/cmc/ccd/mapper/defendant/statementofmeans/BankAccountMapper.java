@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDBankAccount;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDBankAccountType;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.valueOf;
@@ -17,7 +18,7 @@ public class BankAccountMapper {
 
         return CCDCollectionElement.<CCDBankAccount>builder()
             .value(CCDBankAccount.builder()
-                .type(bankAccount.getType())
+                .type(CCDBankAccountType.valueOf(bankAccount.getType().name()))
                 .joint(valueOf(bankAccount.isJoint()))
                 .balance(bankAccount.getBalance())
                 .build())
@@ -34,7 +35,7 @@ public class BankAccountMapper {
 
         return BankAccount.builder()
             .id(collectionElement.getId())
-            .type(ccdBankAccount.getType())
+            .type(BankAccount.BankAccountType.valueOf(ccdBankAccount.getType().name()))
             .joint(ccdBankAccount.getJoint() != null && ccdBankAccount.getJoint().toBoolean())
             .balance(ccdBankAccount.getBalance())
             .build();

@@ -36,9 +36,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 )
 public class GetMetadataTest extends BaseGetTest {
 
+    private static final String ANONYMOUS_CASEWORKER_ID = "100";
+    private static final String CASEWORKER_ROLE = "caseworker-cmc";
+
     @Before
     public void init() {
-        UserDetails userDetails = SampleUserDetails.getDefault();
+        UserDetails userDetails = SampleUserDetails.builder()
+            .withUserId(ANONYMOUS_CASEWORKER_ID)
+            .withRoles(CASEWORKER_ROLE).build();
         User user = new User(BEARER_TOKEN, userDetails);
         given(userService.getUserDetails(BEARER_TOKEN)).willReturn(userDetails);
         given(userService.authenticateAnonymousCaseWorker()).willReturn(user);

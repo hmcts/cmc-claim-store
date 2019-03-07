@@ -28,7 +28,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCATORY_JUDGEMENT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCUTORY_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REJECT_ORGANISATION_PAYMENT_PLAN;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
@@ -83,7 +83,7 @@ public class FormaliseResponseAcceptanceService {
             ccdEventProducer.createCCDRejectOrganisationPaymentPlanEvent(claim, authorisation);
         } else {
             eventProducer.createInterlocutoryJudgmentEvent(claim);
-            caseEvent = INTERLOCATORY_JUDGEMENT;
+            caseEvent = INTERLOCUTORY_JUDGMENT;
             ccdEventProducer.createCCDInterlocutoryJudgmentEvent(claim, authorisation);
         }
         caseRepository.saveCaseEvent(authorisation, claim, caseEvent);

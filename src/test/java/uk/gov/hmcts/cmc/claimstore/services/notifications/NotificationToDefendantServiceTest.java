@@ -7,6 +7,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.service.notify.NotificationClientException;
 
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -60,6 +61,41 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
         );
     }
 
+    @Test(expected = NotificationException.class)
+    public void shouldThrowNotificationExceptionWhenRejectionThrowsNotificationClientException() throws Exception {
+        Claim claim = SampleClaim.builder()
+            .withDefendantEmail(DEFENDANT_EMAIL)
+            .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionImmediately())
+            .build();
+
+        when(emailTemplates.getClaimantRejectedPartAdmitOrStatesPaidEmailToDefendant())
+            .thenReturn(CLAIMANT_RESPONSE_TEMPLATE);
+        when(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
+            .thenThrow(mock(NotificationClientException.class));
+
+        service.notifyDefendantOfRejection(claim);
+    }
+
+    @Test
+    public void shouldSendRejectionEmailUsingPredefinedTemplate() throws Exception {
+
+        Claim claim = SampleClaim.builder()
+            .withDefendantEmail(DEFENDANT_EMAIL)
+            .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionImmediately())
+            .build();
+
+        when(emailTemplates.getClaimantRejectedPartAdmitOrStatesPaidEmailToDefendant())
+            .thenReturn(CLAIMANT_RESPONSE_TEMPLATE);
+        service.notifyDefendantOfRejection(claim);
+
+        verify(notificationClient).sendEmail(
+            eq(CLAIMANT_RESPONSE_TEMPLATE),
+            eq(DEFENDANT_EMAIL),
+            anyMap(),
+            eq(REFERENCE)
+        );
+    }
+
     @Test
     public void shouldSendEmailUsingInterlocutoryCCJTemplate() throws Exception {
         when(emailTemplates.getClaimantRequestedInterlocutoryJudgement()).thenReturn(INTERLOCUTORY_JUDGEMENT_TEMPLATE);
@@ -71,5 +107,19 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
             anyMap(),
             eq(REFERENCE)
         );
+    }
+
+    @Test
+    public void recoveryShouldNotLogPII() {
+        service.logNotificationFailure(
+            new NotificationException("expected exception"),
+            null,
+            "hidden@email.com",
+            null,
+            "reference"
+        );
+
+        assertWasLogged("Failure: failed to send notification (reference) due to expected exception");
+        assertWasNotLogged("hidden@email.com");
     }
 }

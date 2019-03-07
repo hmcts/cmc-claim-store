@@ -20,6 +20,10 @@ public class Settlement {
 
     public void makeOffer(Offer offer, MadeBy party, String partyStatementId) {
         assertOfferCanBeMadeBy(party);
+        addOffer(offer, party, partyStatementId);
+    }
+
+    public void addOffer(Offer offer, MadeBy party, String partyStatementId) {
         partyStatements.add(PartyStatement.builder().type(StatementType.OFFER)
             .id(partyStatementId)
             .madeBy(party)
@@ -29,6 +33,10 @@ public class Settlement {
 
     public void accept(MadeBy party, String partyStatementId) {
         assertOfferCanBeResponded(party);
+        addAcceptation(party, partyStatementId);
+    }
+
+    public void addAcceptation(MadeBy party, String partyStatementId) {
         partyStatements.add(PartyStatement.builder().type(StatementType.ACCEPTATION)
             .id(partyStatementId)
             .madeBy(party).build());
@@ -43,6 +51,10 @@ public class Settlement {
 
     public void reject(MadeBy party, String partyStatementId) {
         assertOfferCanBeRejected(party);
+        addRejection(party, partyStatementId);
+    }
+
+    public void addRejection(MadeBy party, String partyStatementId) {
         partyStatements.add(PartyStatement.builder().type(StatementType.REJECTION)
             .id(partyStatementId)
             .madeBy(party).build());
@@ -50,6 +62,10 @@ public class Settlement {
 
     public void countersign(MadeBy party, String partyStatementId) {
         assertOfferHasBeenAcceptedByOtherParty(party);
+        addCounterSignature(party, partyStatementId);
+    }
+
+    public void addCounterSignature(MadeBy party, String partyStatementId) {
         partyStatements.add(PartyStatement.builder().type(StatementType.COUNTERSIGNATURE)
             .id(partyStatementId)
             .madeBy(party).build());

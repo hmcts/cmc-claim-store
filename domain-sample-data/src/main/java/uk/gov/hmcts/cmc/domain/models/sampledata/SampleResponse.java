@@ -20,6 +20,8 @@ import java.math.BigDecimal;
 public abstract class SampleResponse<T extends SampleResponse<T>> {
 
     public static final String USER_DEFENCE = "defence string";
+    public static final String MEDIATION_PHONE_NUMBER = "07999999999";
+    public static final String MEDIATION_CONTACT_PERSON = "Mediation Contact Person";
 
     public static class FullAdmission extends SampleResponse<FullAdmission> {
         public static FullAdmission builder() {
@@ -65,6 +67,17 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .moreTimeNeeded(YesNoOption.NO)
                 .defendant(party)
                 .paymentIntention(paymentIntention)
+                .build();
+        }
+
+        public FullAdmissionResponse buildWithFreeMediation() {
+            return FullAdmissionResponse.builder()
+                .moreTimeNeeded(YesNoOption.NO)
+                .freeMediation(YesNoOption.YES)
+                .mediationPhoneNumber(MEDIATION_PHONE_NUMBER)
+                .mediationContactPerson(MEDIATION_CONTACT_PERSON)
+                .defendant(SampleParty.builder().individual())
+                .paymentIntention(SamplePaymentIntention.instalments())
                 .build();
         }
     }
@@ -159,6 +172,18 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .paymentDeclaration(SamplePaymentDeclaration.builder().build())
                 .build();
         }
+
+        public PartAdmissionResponse buildWithFreeMediation() {
+            return PartAdmissionResponse.builder()
+                .defendant(SampleParty.builder().individual())
+                .freeMediation(YesNoOption.YES)
+                .mediationPhoneNumber(MEDIATION_PHONE_NUMBER)
+                .mediationContactPerson(MEDIATION_CONTACT_PERSON)
+                .moreTimeNeeded(YesNoOption.NO)
+                .amount(BigDecimal.valueOf(120))
+                .paymentDeclaration(SamplePaymentDeclaration.builder().build())
+                .build();
+        }
     }
 
     public static class FullDefence extends SampleResponse<FullDefence> {
@@ -167,6 +192,8 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         private PaymentDeclaration paymentDeclaration = SamplePaymentDeclaration.builder().build();
         private DefendantTimeline timeline = SampleDefendantTimeline.validDefaults();
         private DefendantEvidence evidence = SampleDefendantEvidence.validDefaults();
+        private String mediationPhoneNumber = MEDIATION_PHONE_NUMBER;
+        private String mediationContectPerson = MEDIATION_CONTACT_PERSON;
 
         public static FullDefence builder() {
             return new FullDefence();
@@ -197,9 +224,20 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
             return this;
         }
 
+        public FullDefence withMediationPhoneNumber(String mediationPhoneNumber) {
+            this.mediationPhoneNumber = mediationPhoneNumber;
+            return this;
+        }
+
+        public FullDefence withMediationContactPerson(String mediationContactPerson) {
+            this.mediationContectPerson = mediationContactPerson;
+            return this;
+        }
+
         public FullDefenceResponse build() {
             return new FullDefenceResponse(
-                freeMediationOption, moreTimeNeededOption, defendantDetails, statementOfTruth,
+                freeMediationOption, mediationPhoneNumber, mediationContectPerson,
+                moreTimeNeededOption, defendantDetails, statementOfTruth,
                 defenceType, defence, paymentDeclaration, timeline, evidence
             );
         }
