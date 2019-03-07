@@ -43,7 +43,7 @@ public class CaseMapper {
             .issuedOn(claim.getIssuedOn())
             .submittedOn(claim.getCreatedAt())
             .features(claim.getFeatures() != null ? String.join(",", claim.getFeatures()) : null)
-            .migrated(isMigrated ? YES : NO)
+            .migratedFromClaimStore(isMigrated ? YES : NO)
             .build();
     }
 

@@ -35,7 +35,7 @@ public class CaseMapperTest {
 
         //then
         assertThat(claim).isEqualTo(ccdCase);
-        Assertions.assertThat(ccdCase.getMigrated()).isEqualTo(NO);
+        Assertions.assertThat(ccdCase.getMigratedFromClaimStore()).isEqualTo(NO);
     }
 
     @Test
@@ -48,7 +48,7 @@ public class CaseMapperTest {
 
         //then
         assertThat(claim).isEqualTo(ccdCase);
-        Assertions.assertThat(ccdCase.getMigrated()).isEqualTo(NO);
+        Assertions.assertThat(ccdCase.getMigratedFromClaimStore()).isEqualTo(NO);
     }
 
     @Test(expected = NullPointerException.class)
