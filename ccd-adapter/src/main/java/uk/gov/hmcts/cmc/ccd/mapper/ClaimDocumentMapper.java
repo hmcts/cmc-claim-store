@@ -20,7 +20,7 @@ public class ClaimDocumentMapper {
             .documentType("CLAIM_ISSUE_RECEIPT") // TODO Need to somehow pass or map the event
             .authoredDatetime(claimDocument.getAuthoredDatetime())
             .createdDatetime(claimDocument.getCreatedDatetime())
-            .createdBy(claimDocument.getCreatedBy()) // TODO Should this be "ocmc"?
+            .createdBy(claimDocument.getCreatedBy())
             .build();
 
         return CCDCollectionElement.<CCDClaimDocument>builder()

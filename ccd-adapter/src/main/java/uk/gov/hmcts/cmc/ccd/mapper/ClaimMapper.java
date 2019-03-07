@@ -134,7 +134,8 @@ public class ClaimMapper {
                 ccdCase.getPreferredCourt(),
                 ccdCase.getFeeCode(),
                 timelineMapper.from(ccdCase),
-                evidenceMapper.from(ccdCase)
+                evidenceMapper.from(ccdCase),
+                claimDocumentCollectionMapper.from(ccdCase)
             )
         );
     }

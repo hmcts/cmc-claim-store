@@ -33,16 +33,9 @@ public class ClaimDocumentCollectionMapper
             return;
         }
 
-        /**
-         * TODO claimDocumentCollection contains duplicate items
-         */
-        Collection<ClaimDocument> claimDocumentCollection2 = claimDocumentCollection
-            .getClaimDocuments()
-            .stream()
-            .collect(toMap(ClaimDocument::getDocumentName, p -> p, (p, q) -> p)).values();
-
         builder.caseDocuments(
-            claimDocumentCollection2
+            claimDocumentCollection
+                .getClaimDocuments()
                 .stream()
                 .map(claimDocumentMapper::to)
                 .collect(Collectors.toList())
@@ -62,10 +55,5 @@ public class ClaimDocumentCollectionMapper
             .forEach(claimDocumentCollection::addClaimDocument);
 
         return claimDocumentCollection;
-    }
-
-    private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
-        Set<Object> seen = ConcurrentHashMap.newKeySet();
-        return t -> seen.add(keyExtractor.apply(t));
     }
 }
