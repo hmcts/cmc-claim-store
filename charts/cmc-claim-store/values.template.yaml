@@ -154,6 +154,8 @@ ccd:
   importer:
     image: hmcts.azurecr.io/hmcts/cmc-ccd-definition-importer
     definitionFilename: cmc-ccd.xlsx
+    definitions:
+      - NOT_APPLICABLE
     userRoles:
       - citizen
       - caseworker-cmc
