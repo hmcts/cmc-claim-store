@@ -8,11 +8,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.controllers.support.SupportController;
-import uk.gov.hmcts.cmc.claimstore.events.DocumentUploadHandler;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedStaffNotificationHandler;
-import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
@@ -66,8 +64,6 @@ public class SupportControllerTest {
     @Mock
     private AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler;
 
-    @Mock
-    private DocumentUploadHandler documentUploadHandler;
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
 
@@ -79,8 +75,7 @@ public class SupportControllerTest {
     public void setUp() {
         controller = new SupportController(claimService, userService, documentGenerator,
             moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
-            ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
-            documentUploadHandler
+            ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler
         );
         sampleClaim = SampleClaim.getDefault();
     }
@@ -125,20 +120,12 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldTriggerUploadDocumentWhenDefendantResponseSubmittedInvoked() {
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER))).thenReturn(Optional.of(sampleClaim));
-        controller.resendStaffNotifications(CLAIMREFERENCENUMBER, RESPONSESUBMITTED, AUTHORISATION);
-        verify(documentUploadHandler).uploadDocument(any(DefendantResponseEvent.class));
-    }
-
-    @Test
     public void shouldThrowExceptionIfDefendantResponseSubmittedWhenNoDefendantResponse() {
         exceptionRule.expect(ConflictException.class);
         exceptionRule.expectMessage("Claim " + CLAIMREFERENCENUMBER + " does not have associated response");
         when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
             .thenReturn(Optional.of(SampleClaim.withNoResponse()));
         controller.resendStaffNotifications(CLAIMREFERENCENUMBER, RESPONSESUBMITTED, AUTHORISATION);
-
     }
 
 }
