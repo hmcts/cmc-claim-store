@@ -124,7 +124,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
         assertDocumentIsLinked(SampleClaimData.submittedByClaimant(),
             AUTHORISATION_TOKEN,
             SEALED_CLAIM,
-            "000MC001-claim-form.pdf");
+            "claim-form.pdf");
     }
 
     @Test
@@ -132,7 +132,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
         assertDocumentIsLinked(SampleClaimData.submittedByClaimant(),
             AUTHORISATION_TOKEN,
             DEFENDANT_PIN_LETTER,
-            "000MC003-defendant-pin-letter.pdf");
+            "defendant-pin-letter.pdf");
     }
 
     @Test
@@ -140,7 +140,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
         assertDocumentIsLinked(SampleClaimData.submittedByClaimant(),
             AUTHORISATION_TOKEN,
             CLAIM_ISSUE_RECEIPT,
-            "000MC004-claim-form-claimant-copy.pdf");
+            "claim-form-claimant-copy.pdf");
     }
 
     @Test
@@ -148,7 +148,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
         assertDocumentIsLinked(SampleClaimData.submittedByLegalRepresentative(),
             SOLICITOR_AUTHORISATION_TOKEN,
             SEALED_CLAIM,
-            "000LR001-claim-form.pdf");
+            "claim-form.pdf");
     }
 
     private void assertDocumentIsLinked(ClaimData claimData,
@@ -175,7 +175,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
             .orElseThrow(AssertionError::new);
         assertThat(claimDocument.getDocumentManagementUrl()
             .equals(URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4")));
-        assertThat(claimDocument.getDocumentName()).isEqualTo(fileName);
+        assertThat(claimDocument.getDocumentName()).endsWith(fileName);
     }
 
     @Test
