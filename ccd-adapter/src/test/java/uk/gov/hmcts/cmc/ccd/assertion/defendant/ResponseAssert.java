@@ -224,10 +224,10 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
         actual.getMediationPhoneNumber().ifPresent(mediationPhoneNumber -> {
             if (!Objects.equals(
                 mediationPhoneNumber,
-                ccdDefendant.getResponseMediationPhoneNumber())) {
+                ccdRespondent.getResponseMediationPhoneNumber().getTelephoneNumber())) {
                 failWithMessage("Expected CCDDefendant.responseMediationPhoneNumber to be "
                         + "<%s> but was <%s>",
-                    ccdDefendant.getResponseMediationPhoneNumber(),
+                    ccdRespondent.getResponseMediationPhoneNumber(),
                     actual.getMediationPhoneNumber());
             }
         });
@@ -235,20 +235,16 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
         actual.getMediationContactPerson().ifPresent(mediationContactPerson -> {
             if (!Objects.equals(
                 mediationContactPerson,
-                ccdDefendant.getResponseMediationContactPerson())) {
+                ccdRespondent.getResponseMediationContactPerson())) {
                 failWithMessage("Expected CCDDefendant.responseMediationContactPerson to be "
                         + "<%s> but was <%s>",
-                    ccdDefendant.getResponseMediationContactPerson(),
+                    ccdRespondent.getResponseMediationContactPerson(),
                     actual.getMediationContactPerson());
             }
         });
 
-        if (!Objects.equals(actual.getMoreTimeNeeded().name(), ccdDefendant.getResponseMoreTimeNeededOption().name())) {
-            failWithMessage("Expected CCDDefendant.responseMoreTimeNeededOption to be <%s> but was <%s>",
-                ccdDefendant.getResponseMoreTimeNeededOption(), actual.getMoreTimeNeeded());
         if (!Objects.equals(actual.getMoreTimeNeeded().name(),
-            ccdRespondent.getResponseMoreTimeNeededOption().name()
-        )) {
+            ccdRespondent.getResponseMoreTimeNeededOption().name())) {
             failWithMessage("Expected CCDRespondent.responseMoreTimeNeededOption to be <%s> but was <%s>",
                 ccdRespondent.getResponseMoreTimeNeededOption(), actual.getMoreTimeNeeded());
         }

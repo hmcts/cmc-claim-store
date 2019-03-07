@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.ccd.domain.claimantresponse;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
+import uk.gov.hmcts.cmc.ccd.domain.CCDTelephone;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 
 import java.math.BigDecimal;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 public class CCDResponseRejection extends CCDClaimantResponse {
 
     private CCDYesNoOption freeMediationOption;
-    private String mediationPhoneNumber;
+    private CCDTelephone mediationPhoneNumber;
     private String mediationContactPerson;
     private String reason;
 
@@ -22,7 +23,7 @@ public class CCDResponseRejection extends CCDClaimantResponse {
         BigDecimal amountPaid,
         LocalDateTime submittedOn,
         CCDYesNoOption freeMediationOption,
-        String mediationPhoneNumber,
+        CCDTelephone mediationPhoneNumber,
         String mediationContactPerson,
         String reason,
         CCDYesNoOption paymentReceived,

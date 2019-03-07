@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseAcceptation;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.ccd.mapper.PaymentIntentionMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.TelephoneMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
@@ -24,15 +25,18 @@ import static java.util.Objects.requireNonNull;
 public class ClaimantResponseMapper {
 
     private final PaymentIntentionMapper paymentIntentionMapper;
-    private CourtDeterminationMapper courtDeterminationMapper;
+    private final CourtDeterminationMapper courtDeterminationMapper;
+    private final TelephoneMapper telephoneMapper;
 
     @Autowired
     public ClaimantResponseMapper(
         PaymentIntentionMapper paymentIntentionMapper,
-        CourtDeterminationMapper courtDeterminationMapper
+        CourtDeterminationMapper courtDeterminationMapper,
+        TelephoneMapper telephoneMapper
     ) {
         this.paymentIntentionMapper = paymentIntentionMapper;
         this.courtDeterminationMapper = courtDeterminationMapper;
+        this.telephoneMapper = telephoneMapper;
     }
 
     public CCDClaimantResponse to(Claim claim) {
@@ -60,6 +64,9 @@ public class ClaimantResponseMapper {
             .map(YesNoOption::name)
             .map(CCDYesNoOption::valueOf)
             .ifPresent(rejection::freeMediationOption);
+        responseRejection.getMediationContactPerson().ifPresent(rejection::mediationContactPerson);
+        responseRejection.getMediationPhoneNumber()
+            .ifPresent(phoneNo -> rejection.mediationPhoneNumber(telephoneMapper.to(phoneNo)));
         responseRejection.getAmountPaid().ifPresent(rejection::amountPaid);
         responseRejection.getReason().ifPresent(rejection::reason);
         responseRejection.getPaymentReceived()
@@ -124,7 +131,7 @@ public class ClaimantResponseMapper {
             .reason(ccdResponseRejection.getReason());
         if (ccdResponseRejection.getFreeMediationOption() != null) {
             builder.freeMediation(YesNoOption.valueOf(ccdResponseRejection.getFreeMediationOption().name()));
-            builder.mediationPhoneNumber(ccdResponseRejection.getMediationPhoneNumber());
+            builder.mediationPhoneNumber(telephoneMapper.from(ccdResponseRejection.getMediationPhoneNumber()));
             builder.mediationContactPerson(ccdResponseRejection.getMediationContactPerson());
         }
 

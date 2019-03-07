@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.ccd.mapper.EvidenceRowMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.PaymentIntentionMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.TelephoneMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.TimelineEventMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans.StatementOfMeansMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -40,19 +41,22 @@ public class ResponseMapper {
     private final DefendantPartyMapper defendantPartyMapper;
     private final PaymentIntentionMapper paymentIntentionMapper;
     private final StatementOfMeansMapper statementOfMeansMapper;
+    private final TelephoneMapper telephoneMapper;
 
     public ResponseMapper(
         EvidenceRowMapper evidenceRowMapper,
         TimelineEventMapper timelineEventMapper,
         DefendantPartyMapper defendantPartyMapper,
         PaymentIntentionMapper paymentIntentionMapper,
-        StatementOfMeansMapper statementOfMeansMapper
+        StatementOfMeansMapper statementOfMeansMapper,
+        TelephoneMapper telephoneMapper
     ) {
         this.evidenceRowMapper = evidenceRowMapper;
         this.timelineEventMapper = timelineEventMapper;
         this.defendantPartyMapper = defendantPartyMapper;
         this.paymentIntentionMapper = paymentIntentionMapper;
         this.statementOfMeansMapper = statementOfMeansMapper;
+        this.telephoneMapper = telephoneMapper;
     }
 
     public void to(CCDRespondent.CCDRespondentBuilder builder, Response response,
@@ -67,7 +71,8 @@ public class ResponseMapper {
         response.getFreeMediation().ifPresent(freeMediation ->
             builder.responseFreeMediationOption(CCDYesNoOption.valueOf(freeMediation.name())));
 
-        response.getMediationPhoneNumber().ifPresent(builder::responseMediationPhoneNumber);
+        response.getMediationPhoneNumber().ifPresent(phoneNo ->
+            builder.responseMediationPhoneNumber(telephoneMapper.to(phoneNo)));
         response.getMediationContactPerson().ifPresent(builder::responseMediationContactPerson);
 
         if (response.getMoreTimeNeeded() != null) {
@@ -94,6 +99,28 @@ public class ResponseMapper {
                 break;
             default:
                 throw new MappingException("Invalid response type " + response.getResponseType());
+        }
+    }
+
+    public void from(Claim.ClaimBuilder claimBuilder, CCDRespondent respondent) {
+        requireNonNull(claimBuilder, "claimBuilder must not be null");
+        requireNonNull(respondent, "respondent must not be null");
+        if (respondent.getResponseType() == null) {
+            return;
+        }
+
+        switch (respondent.getResponseType()) {
+            case FULL_DEFENCE:
+                claimBuilder.response(extractFullDefence(respondent));
+                break;
+            case FULL_ADMISSION:
+                claimBuilder.response(extractFullAdmission(respondent));
+                break;
+            case PART_ADMISSION:
+                claimBuilder.response(extractPartAdmission(respondent));
+                break;
+            default:
+                throw new MappingException("Invalid responseType");
         }
     }
 
@@ -164,28 +191,6 @@ public class ResponseMapper {
         };
     }
 
-    public void from(Claim.ClaimBuilder claimBuilder, CCDRespondent respondent) {
-        requireNonNull(claimBuilder, "claimBuilder must not be null");
-        requireNonNull(respondent, "respondent must not be null");
-        if (respondent.getResponseType() == null) {
-            return;
-        }
-
-        switch (respondent.getResponseType()) {
-            case FULL_DEFENCE:
-                claimBuilder.response(extractFullDefence(respondent));
-                break;
-            case FULL_ADMISSION:
-                claimBuilder.response(extractFullAdmission(respondent));
-                break;
-            case PART_ADMISSION:
-                claimBuilder.response(extractPartAdmission(respondent));
-                break;
-            default:
-                throw new MappingException("Invalid responseType");
-        }
-    }
-
     private FullDefenceResponse extractFullDefence(CCDRespondent respondent) {
 
         return FullDefenceResponse.builder()
@@ -193,6 +198,9 @@ public class ResponseMapper {
             .statementOfTruth(extractStatementOfTruth(respondent))
             .moreTimeNeeded(getMoreTimeNeeded(respondent))
             .freeMediation(getFreeMediation(respondent))
+            .mediationPhoneNumber(telephoneMapper.from(
+                respondent.getResponseMediationPhoneNumber()))
+            .mediationContactPerson(respondent.getResponseMediationContactPerson())
             .defenceType(DefenceType.valueOf(respondent.getResponseDefenceType().name()))
             .defence(respondent.getResponseDefence())
             .evidence(extractDefendantEvidence(respondent))
@@ -245,6 +253,9 @@ public class ResponseMapper {
             .statementOfTruth(extractStatementOfTruth(respondent))
             .moreTimeNeeded(getMoreTimeNeeded(respondent))
             .freeMediation(getFreeMediation(respondent))
+            .mediationPhoneNumber(telephoneMapper.from(
+                respondent.getResponseMediationPhoneNumber()))
+            .mediationContactPerson(respondent.getResponseMediationContactPerson())
             .amount(respondent.getResponseAmount())
             .paymentDeclaration(extractPaymentDeclaration(respondent))
             .paymentIntention(paymentIntentionMapper.from(respondent.getDefendantPaymentIntention()))
@@ -267,6 +278,9 @@ public class ResponseMapper {
             .statementOfTruth(extractStatementOfTruth(respondent))
             .moreTimeNeeded(getMoreTimeNeeded(respondent))
             .freeMediation(getFreeMediation(respondent))
+            .mediationPhoneNumber(telephoneMapper.from(
+                respondent.getResponseMediationPhoneNumber()))
+            .mediationContactPerson(respondent.getResponseMediationContactPerson())
             .paymentIntention(paymentIntentionMapper.from(respondent.getDefendantPaymentIntention()))
             .statementOfMeans(statementOfMeansMapper.from(respondent.getStatementOfMeans()))
             .build();

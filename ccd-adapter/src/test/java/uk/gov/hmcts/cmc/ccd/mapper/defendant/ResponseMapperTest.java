@@ -89,7 +89,7 @@ public class ResponseMapperTest {
     @Test
     public void shouldMapFullDefenceResponseWithFreeMediationFromCCD() {
         //given
-        CCDDefendant ccdDefendant = SampleCCDDefendant.withFullDefenceResponseAndFreeMediation().build();
+        CCDRespondent ccdDefendant = SampleCCDDefendant.withFullDefenceResponseAndFreeMediation().build();
         Claim.ClaimBuilder builder = Claim.builder();
 
         //when

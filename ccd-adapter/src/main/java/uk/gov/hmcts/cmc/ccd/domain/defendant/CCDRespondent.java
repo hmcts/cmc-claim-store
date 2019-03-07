@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentIntention;
+import uk.gov.hmcts.cmc.ccd.domain.CCDTelephone;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
@@ -55,7 +56,7 @@ public class CCDRespondent {
     private CCDDefenceType responseDefenceType;
     private String responseDefence;
     private CCDYesNoOption responseFreeMediationOption;
-    private String responseMediationPhoneNumber;
+    private CCDTelephone responseMediationPhoneNumber;
     private String responseMediationContactPerson;
     private CCDYesNoOption responseMoreTimeNeededOption;
     private String responseDefendantSOTSignerName;

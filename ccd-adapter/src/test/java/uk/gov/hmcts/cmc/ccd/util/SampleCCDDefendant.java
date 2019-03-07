@@ -138,10 +138,10 @@ public class SampleCCDDefendant {
                 ));
     }
 
-    public static CCDDefendant.CCDDefendantBuilder withFullDefenceResponseAndFreeMediation() {
+    public static CCDRespondent.CCDRespondentBuilder withFullDefenceResponseAndFreeMediation() {
         return withFullDefenceResponse()
             .responseFreeMediationOption(YES)
-            .responseMediationPhoneNumber("07999999999")
+            .responseMediationPhoneNumber(CCDTelephone.builder().telephoneNumber("07999999999").build())
             .responseMediationContactPerson("Mediation Contact Person");
     }
 

@@ -30,7 +30,7 @@ public class ResponseRejectionAssert extends AbstractAssert<ResponseRejectionAss
         actual.getMediationPhoneNumber().ifPresent(mediationPhoneNumber -> {
             if (!Objects.equals(
                 mediationPhoneNumber,
-                ccdResponseRejection.getMediationPhoneNumber())) {
+                ccdResponseRejection.getMediationPhoneNumber().getTelephoneNumber())) {
                 failWithMessage("Expected ResponseRejection.mediationPhoneNumber to be <%s> but was <%s>",
                     ccdResponseRejection.getMediationPhoneNumber(), mediationPhoneNumber);
             }

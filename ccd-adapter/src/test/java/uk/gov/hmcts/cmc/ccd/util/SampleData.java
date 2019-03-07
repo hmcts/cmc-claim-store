@@ -102,7 +102,7 @@ public class SampleData {
             .amountPaid(BigDecimal.valueOf(123.98))
             .submittedOn(LocalDateTimeFactory.nowInLocalZone())
             .freeMediationOption(YES)
-            .mediationPhoneNumber("07999999999")
+            .mediationPhoneNumber(CCDTelephone.builder().telephoneNumber("07999999999").build())
             .mediationContactPerson("Mediation Contact Person")
             .reason("Rejection Reason")
             .build();
