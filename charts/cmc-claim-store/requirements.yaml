@@ -3,7 +3,7 @@ dependencies:
     version: ~2.6.5
     repository: '@stable'
   - name: java
-    version: '>1.0.0'
+    version: ~1.0.7
     repository: '@hmcts'
     alias: claim-store
   - name: nodejs

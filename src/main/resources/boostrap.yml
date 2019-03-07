@@ -2,44 +2,17 @@ spring:
   cloud:
     propertiesvolume:
       paths: /mnt/secrets/cmc
-
-
-
-        - AppInsightsInstrumentationKey
-        - smoke-test-citizen-username
-        - smoke-test-solicitor-username
-        - smoke-test-user-password
-        - generated-user-email-pattern
-        - claim-store-db-password
-        - citizen-oauth-client-secret
-        - claim-store-s2s-secret
-        - anonymous-caseworker-username
-        - anonymous-caseworker-password
-        - system-update-username
-        - system-update-password
-        - notify-api-key
-        - staff-email
-
-
-
       aliases:
-        cmc.smoke-test-user-password: smoke-test-solicitor.password
-        cmc.smoke-test-user-password: smoke-test-citizen.password
-
         cmc.claim-store-s2s-secret: idam.s2s-auth.totp_secret
         cmc.notify-api-key: notifications.govNotifyApiKey
         cmc.citizen-oauth-client-secret: oauth2.client.secret
+        cmc.anonymous-caseworker-username: idam.caseworker.anonymous.username
+        cmc.anonymous-caseworker-password: idam.caseworker.anonymous.password
+        cmc.system-update-username: idam.caseworker.system.username
+        cmc.system-update-password: idam.caseworker.system.password
+#        RPA_NOTIFICATIONS_SEALEDCLAIMRECIPIENT: ${STAFF_EMAIL}
+#        RPA_NOTIFICATIONS_MORETIMEREQUESTEDRECIPIENT: ${STAFF_EMAIL}
+#        RPA_NOTIFICATIONS_RESPONSERECIPIENT: ${STAFF_EMAIL}
+#        RPA_NOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT: ${STAFF_EMAIL}
+#        STAFF_NOTIFICATIONS_RECIPIENT: ${STAFF_EMAIL}
 
-        IDAM_CASEWORKER_ANONYMOUS_USERNAME: ${IDAM_CASEWORKER_ANONYMOUS_USERNAME}
-        IDAM_CASEWORKER_ANONYMOUS_PASSWORD: ${IDAM_CASEWORKER_ANONYMOUS_PASSWORD}
-        IDAM_CASEWORKER_SYSTEM_USERNAME: ${IDAM_CASEWORKER_SYSTEM_USERNAME}
-        IDAM_CASEWORKER_SYSTEM_PASSWORD: ${IDAM_CASEWORKER_SYSTEM_PASSWORD}
-
-        RPA_NOTIFICATIONS_SEALEDCLAIMRECIPIENT: ${STAFF_EMAIL}
-        RPA_NOTIFICATIONS_MORETIMEREQUESTEDRECIPIENT: ${STAFF_EMAIL}
-        RPA_NOTIFICATIONS_RESPONSERECIPIENT: ${STAFF_EMAIL}
-        RPA_NOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT: ${STAFF_EMAIL}
-        STAFF_NOTIFICATIONS_RECIPIENT: ${STAFF_EMAIL}
-
-        SMOKE_TEST_USER_PASSWORD: ${SMOKE_TEST_USER_PASSWORD}
-        GENERATED_USER_EMAIL_PATTERN: ${GENERATED_USER_EMAIL_PATTERN}

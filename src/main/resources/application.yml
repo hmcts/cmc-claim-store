@@ -152,5 +152,7 @@ spring:
   profiles: 'aat'
 
 test-instance-uri: "${TEST_URL:}"
-smoke-test:
+smoke-test-citizen:
+  password: "${SMOKE_TEST_USER_PASSWORD:}"
+smoke-test-solicitor:
   password: "${SMOKE_TEST_USER_PASSWORD:}"
