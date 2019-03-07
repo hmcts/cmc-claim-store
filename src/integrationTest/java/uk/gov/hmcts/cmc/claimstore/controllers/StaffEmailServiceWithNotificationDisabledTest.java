@@ -105,6 +105,7 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
 
     @Test
     public void shouldNotSendStaffNotificationWhenCounterSignRequestSubmitted() throws Exception {
+        claimStore.saveResponse(claim, SampleResponse.FullDefence.builder().build());
         Settlement settlement = new Settlement();
         settlement.makeOffer(SampleOffer.builder().build(), MadeBy.DEFENDANT, null);
         claim = claimStore.makeOffer(claim.getExternalId(), settlement);
@@ -155,7 +156,6 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
 
         given(userService.getUser(DEFENDANT_BEARER_TOKEN)).willReturn(new User(DEFENDANT_BEARER_TOKEN, userDetails));
         given(userService.getUserDetails(DEFENDANT_BEARER_TOKEN)).willReturn(userDetails);
-
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now().plusDays(1));
         caseRepository.linkDefendant(DEFENDANT_BEARER_TOKEN);
 

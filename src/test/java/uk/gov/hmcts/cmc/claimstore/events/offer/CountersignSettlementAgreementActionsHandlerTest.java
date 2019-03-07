@@ -30,6 +30,7 @@ public class CountersignSettlementAgreementActionsHandlerTest {
     private static final String SETTLEMENT_SIGNED_TO_DEFENDANT = "settlement agreement signed, email to defendant";
     private static final String SETTLEMENT_SIGNED_TO_CLAIMANT = "settlement agreement signed, email to claimant";
     private static final Claim claim = SampleClaim.builder().withSettlement(mock(Settlement.class)).build();
+    private static final String AUTHORISATION = "Bearer: aaa";
 
     private CountersignSettlementAgreementActionsHandler handler;
 
@@ -59,7 +60,7 @@ public class CountersignSettlementAgreementActionsHandlerTest {
 
     @Test
     public void shouldSendNotificationsToClaimantWhenOfferAccepted() throws NotificationClientException {
-        CountersignSettlementAgreementEvent event = new CountersignSettlementAgreementEvent(claim);
+        CountersignSettlementAgreementEvent event = new CountersignSettlementAgreementEvent(claim, AUTHORISATION);
 
         handler.sendNotificationToClaimant(event);
 
@@ -73,7 +74,7 @@ public class CountersignSettlementAgreementActionsHandlerTest {
 
     @Test
     public void shouldSendNotificationsToDefendantWhenOfferAccepted() throws NotificationClientException {
-        CountersignSettlementAgreementEvent event = new CountersignSettlementAgreementEvent(claim);
+        CountersignSettlementAgreementEvent event = new CountersignSettlementAgreementEvent(claim, AUTHORISATION);
 
         handler.sendNotificationToDefendant(event);
 

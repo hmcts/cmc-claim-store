@@ -7,6 +7,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.retry.annotation.EnableRetry;
 import uk.gov.hmcts.cmc.ccd.migration.services.ClaimMigrator;
 
 /**
@@ -25,6 +26,7 @@ import uk.gov.hmcts.cmc.ccd.migration.services.ClaimMigrator;
         "uk.gov.hmcts.reform.ccd.client"
     }
 )
+@EnableRetry
 public class App implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(App.class);

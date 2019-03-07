@@ -42,8 +42,8 @@ public class EventProducer {
         }
     }
 
-    public void createDefendantResponseEvent(Claim claim) {
-        publisher.publishEvent(new DefendantResponseEvent(claim));
+    public void createDefendantResponseEvent(Claim claim, String authorization) {
+        publisher.publishEvent(new DefendantResponseEvent(claim, authorization));
     }
 
     public void createMoreTimeForResponseRequestedEvent(
@@ -73,12 +73,12 @@ public class EventProducer {
         publisher.publishEvent(new RejectSettlementAgreementEvent(claim));
     }
 
-    public void createSettlementAgreementCountersignedEvent(Claim claim) {
-        publisher.publishEvent(new CountersignSettlementAgreementEvent(claim));
+    public void createSettlementAgreementCountersignedEvent(Claim claim, String authorisation) {
+        publisher.publishEvent(new CountersignSettlementAgreementEvent(claim, authorisation));
     }
 
-    public void createAgreementCountersignedEvent(Claim claim, MadeBy party) {
-        publisher.publishEvent(new AgreementCountersignedEvent(claim, party));
+    public void createAgreementCountersignedEvent(Claim claim, MadeBy party, String authorisation) {
+        publisher.publishEvent(new AgreementCountersignedEvent(claim, party, authorisation));
     }
 
     public void createSignSettlementAgreementEvent(Claim claim) {
