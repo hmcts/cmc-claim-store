@@ -166,12 +166,8 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
                                                           String authorisation) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
 
-        ClaimDocumentCollection claimDocumentCollection;
-        if (claim.getClaimData().getDocumentCollection().isPresent()) {
-            claimDocumentCollection = claim.getClaimData().getDocumentCollection().get();
-        } else {
-            claimDocumentCollection = new ClaimDocumentCollection();
-        }
+        ClaimDocumentCollection claimDocumentCollection = claim.getClaimDocumentCollection()
+            .orElse(new ClaimDocumentCollection());
 
         claimDocumentCollection.addClaimDocument(ClaimDocument.builder()
             .documentManagementUrl(uri)
