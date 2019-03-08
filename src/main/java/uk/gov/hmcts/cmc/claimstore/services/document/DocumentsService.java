@@ -14,7 +14,5 @@ public interface DocumentsService {
 
     byte[] generateSettlementAgreement(String externalId, String authorisation);
 
-    void uploadToDocumentManagement(PDF document,
-                                    String authorisation,
-                                    Claim claim);
+    void uploadToDocumentManagement(PDF document, String authorisation, Claim claim);
 }

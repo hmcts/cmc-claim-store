@@ -1,22 +1,17 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toMap;
-
 @Component
-public class ClaimDocumentCollectionMapper
-    implements BuilderMapper<CCDCase, ClaimDocumentCollection, CCDCase.CCDCaseBuilder>  {
+public class ClaimDocumentCollectionMapper {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClaimDocumentCollectionMapper.class);
 
     private final ClaimDocumentMapper claimDocumentMapper;
 
@@ -25,7 +20,6 @@ public class ClaimDocumentCollectionMapper
         this.claimDocumentMapper = claimDocumentMapper;
     }
 
-    @Override
     public void to(ClaimDocumentCollection claimDocumentCollection, CCDCase.CCDCaseBuilder builder) {
         if (claimDocumentCollection == null
             || claimDocumentCollection.getClaimDocuments() == null
@@ -42,13 +36,13 @@ public class ClaimDocumentCollectionMapper
         );
     }
 
-    @Override
     public ClaimDocumentCollection from(CCDCase ccdCase) {
         if (ccdCase.getCaseDocuments() == null || ccdCase.getCaseDocuments().isEmpty()) {
             return null;
         }
 
         ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
+
         ccdCase.getCaseDocuments()
             .stream()
             .map(claimDocumentMapper::from)

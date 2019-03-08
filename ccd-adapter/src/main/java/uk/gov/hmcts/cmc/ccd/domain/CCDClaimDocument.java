@@ -11,7 +11,7 @@ public class CCDClaimDocument {
 
     private CCDDocument documentLink;
     private String documentName;
-    private String documentType;
+    private CCDClaimDocumentType documentType;
     private LocalDateTime authoredDatetime;
     private LocalDateTime createdDatetime;
     private String createdBy;

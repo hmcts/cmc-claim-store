@@ -54,7 +54,8 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         ClaimIssueReceiptService claimIssueReceiptService,
         DefendantResponseReceiptService defendantResponseReceiptService,
         CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
-        SettlementAgreementCopyService settlementAgreementCopyService) {
+        SettlementAgreementCopyService settlementAgreementCopyService
+    ) {
         this.claimService = claimService;
         this.documentManagementService = documentManagementService;
         this.sealedClaimPdfService = sealedClaimPdfService;
@@ -71,7 +72,8 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
             authorisation,
             CLAIM_ISSUE_RECEIPT,
             claimIssueReceiptService,
-            buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber()));
+            buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber())
+        );
     }
 
     @Override
@@ -81,7 +83,8 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
             authorisation,
             SEALED_CLAIM,
             sealedClaimPdfService,
-            buildSealedClaimFileBaseName(claim.getReferenceNumber()));
+            buildSealedClaimFileBaseName(claim.getReferenceNumber())
+        );
     }
 
     @Override
@@ -91,7 +94,8 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
             authorisation,
             DEFENDANT_RESPONSE_RECEIPT,
             defendantResponseReceiptService,
-            buildResponseFileBaseName(claim.getReferenceNumber()));
+            buildResponseFileBaseName(claim.getReferenceNumber())
+        );
     }
 
     @Override
@@ -102,7 +106,8 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
             CCJ_REQUEST,
             countyCourtJudgmentPdfService,
             buildRequestForJudgementFileBaseName(claim.getReferenceNumber(),
-                claim.getClaimData().getDefendant().getName()));
+                claim.getClaimData().getDefendant().getName())
+        );
     }
 
     @Override
@@ -112,18 +117,21 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
             authorisation,
             SETTLEMENT_AGREEMENT,
             settlementAgreementCopyService,
-            buildSettlementReachedFileBaseName(claim.getReferenceNumber()));
+            buildSettlementReachedFileBaseName(claim.getReferenceNumber())
+        );
     }
 
     private Claim getClaimByExternalId(String externalId, String authorisation) {
         return claimService.getClaimByExternalId(externalId, authorisation);
     }
 
-    private byte[] processRequest(Claim claim,
-                                  String authorisation,
-                                  ClaimDocumentType claimDocumentType,
-                                  PdfService pdfService,
-                                  String baseFileName) {
+    private byte[] processRequest(
+        Claim claim,
+        String authorisation,
+        ClaimDocumentType claimDocumentType,
+        PdfService pdfService,
+        String baseFileName
+    ) {
         Optional<URI> claimDocument = claim.getClaimDocument(claimDocumentType);
         try {
             if (claimDocument.isPresent()) {
@@ -145,7 +153,8 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     public void uploadToDocumentManagement(
         PDF document,
         String authorisation,
-        Claim claim) {
+        Claim claim
+    ) {
         URI documentSelfPath = documentManagementService.uploadDocument(authorisation, document);
         claimService.linkClaimToDocument(authorisation,
             claim.getId(),
@@ -159,7 +168,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
 
         ClaimDocumentCollection claimDocumentCollection;
         if (claim.getClaimData().getDocumentCollection().isPresent()) {
-             claimDocumentCollection = claim.getClaimData().getDocumentCollection().get();
+            claimDocumentCollection = claim.getClaimData().getDocumentCollection().get();
         } else {
             claimDocumentCollection = new ClaimDocumentCollection();
         }

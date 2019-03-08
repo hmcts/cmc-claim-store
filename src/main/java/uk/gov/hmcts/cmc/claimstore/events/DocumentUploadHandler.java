@@ -35,8 +35,10 @@ public class DocumentUploadHandler {
     private final DefendantPinLetterPdfService defendantPinLetterPdfService;
 
     @Autowired
-    public DocumentUploadHandler(DefendantPinLetterPdfService defendantPinLetterPdfService,
-                                 DocumentsService documentService) {
+    public DocumentUploadHandler(
+        DefendantPinLetterPdfService defendantPinLetterPdfService,
+        DocumentsService documentService
+    ) {
         this.defendantPinLetterPdfService = defendantPinLetterPdfService;
         this.documentService = documentService;
     }
@@ -48,7 +50,6 @@ public class DocumentUploadHandler {
         documentService.generateSealedClaim(claim.getExternalId(), event.getAuthorisation());
         documentService.generateClaimIssueReceipt(claim.getExternalId(), event.getAuthorisation());
         generateDefendantPinLetter(claim, event.getPin(), event.getAuthorisation());
-
     }
 
     @EventListener
@@ -62,9 +63,7 @@ public class DocumentUploadHandler {
     public void uploadDocument(DefendantResponseEvent event) {
         Claim claim = event.getClaim();
         requireNonNull(claim, CLAIM_MUST_NOT_BE_NULL);
-        if (!claim.getResponse().isPresent()) {
-            throw new IllegalArgumentException("Response must be present");
-        }
+        claim.getResponse().orElseThrow(() -> new IllegalArgumentException("Response must be present"));
         documentService.generateDefendantResponseReceipt(claim.getExternalId(), event.getAuthorization());
     }
 
@@ -96,7 +95,9 @@ public class DocumentUploadHandler {
             try {
                 PDF defendantLetter = new PDF(buildDefendantLetterFileBaseName(claim.getReferenceNumber()),
                     defendantPinLetterPdfService.createPdf(claim, pin),
-                    DEFENDANT_PIN_LETTER);
+                    DEFENDANT_PIN_LETTER
+                );
+
                 documentService.uploadToDocumentManagement(defendantLetter, authorisation, claim);
             } catch (Exception ex) {
                 logger.warn(String.format("unable to upload document %s into document management",
