@@ -57,6 +57,7 @@ public class DefendantMapper {
 
         CCDParty.CCDPartyBuilder partyDetail = CCDParty.builder();
         partyDetail.emailAddress(claim.getDefendantEmail());
+        partyDetail.idamId(claim.getDefendantId());
 
         respondentBuilder.responseMoreTimeNeededOption(CCDYesNoOption.valueOf(claim.isMoreTimeRequested()));
         respondentBuilder.directionsQuestionnaireDeadline(claim.getDirectionsQuestionnaireDeadline());

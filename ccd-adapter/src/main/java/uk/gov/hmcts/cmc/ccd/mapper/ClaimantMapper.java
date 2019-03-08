@@ -34,6 +34,7 @@ public class ClaimantMapper {
     public CCDCollectionElement<CCDApplicant> to(Party party, Claim claim) {
         CCDApplicant.CCDApplicantBuilder builder = CCDApplicant.builder();
         CCDParty.CCDPartyBuilder partyDetail = CCDParty.builder();
+        partyDetail.idamId(claim.getSubmitterId());
         partyDetail.emailAddress(claim.getSubmitterEmail());
 
         if (party instanceof Individual) {
