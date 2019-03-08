@@ -358,6 +358,7 @@ public final class SampleClaim {
     public static Claim getWithCCJRequestDocument() {
         return builder().withCountyCourtJudgment(
             SampleCountyCourtJudgment.builder().ccjType(DEFAULT).build())
+            .withCountyCourtJudgmentRequestedAt(LocalDateTimeFactory.nowInLocalZone())
             .withCCJRequestDocument(DOCUMENT_URI)
             .build();
     }

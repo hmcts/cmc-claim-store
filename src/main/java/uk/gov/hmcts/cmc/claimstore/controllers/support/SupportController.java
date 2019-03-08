@@ -42,6 +42,8 @@ import java.util.List;
 public class SupportController {
 
     private static final String CLAIM = "Claim ";
+    private static final String CLAIM_DOES_NOT_EXIST = "Claim %s does not exist";
+    private static final String AUTHORISATION_IS_REQUIRED = "Authorisation is required";
     private final ClaimService claimService;
     private final UserService userService;
     private final DocumentGenerator documentGenerator;
@@ -51,6 +53,7 @@ public class SupportController {
     private final AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler;
     private final DocumentsService documentsService;
 
+    @SuppressWarnings("squid:S00107")
     @Autowired
     public SupportController(
         ClaimService claimService,
@@ -80,7 +83,7 @@ public class SupportController {
         @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation) {
 
         Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
-            .orElseThrow(() -> new NotFoundException(CLAIM + referenceNumber + " does not exist"));
+            .orElseThrow(() -> new NotFoundException(String.format(CLAIM_DOES_NOT_EXIST, referenceNumber)));
 
         switch (event) {
             case "claim-issued":
@@ -111,9 +114,9 @@ public class SupportController {
         @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation) {
 
         Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
-            .orElseThrow(() -> new NotFoundException(CLAIM + referenceNumber + " does not exist"));
+            .orElseThrow(() -> new NotFoundException(String.format(CLAIM_DOES_NOT_EXIST, referenceNumber)));
         if (StringUtils.isBlank(authorisation)) {
-            throw new BadRequestException("Authorisation is required");
+            throw new BadRequestException(AUTHORISATION_IS_REQUIRED);
         }
         switch (claimDocumentType) {
             case SEALED_CLAIM:
@@ -159,7 +162,7 @@ public class SupportController {
 
     private void resendStaffNotificationsOnClaimIssued(Claim claim, String authorisation) {
         if (StringUtils.isBlank(authorisation)) {
-            throw new BadRequestException("Authorisation is required");
+            throw new BadRequestException(AUTHORISATION_IS_REQUIRED);
         }
 
         if (claim.getDefendantId() != null) {
@@ -213,7 +216,7 @@ public class SupportController {
 
     private void resendClaimsToRPA(List<Claim> claims, String authorisation) {
         if (StringUtils.isBlank(authorisation)) {
-            throw new BadRequestException("Authorisation is required");
+            throw new BadRequestException(AUTHORISATION_IS_REQUIRED);
         }
 
         for (Claim claim : claims) {
@@ -232,7 +235,7 @@ public class SupportController {
         List<Claim> claims = new ArrayList<>();
         for (String referenceNumber : referenceNumbers) {
             Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
-                .orElseThrow(() -> new NotFoundException(CLAIM + referenceNumber + " does not exist"));
+                .orElseThrow(() -> new NotFoundException(String.format(CLAIM_DOES_NOT_EXIST, referenceNumber)));
 
             claims.add(claim);
         }

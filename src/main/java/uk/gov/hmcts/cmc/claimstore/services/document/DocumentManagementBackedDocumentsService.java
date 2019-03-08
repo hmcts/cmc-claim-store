@@ -98,8 +98,9 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     @Override
     public byte[] generateDefendantResponseReceipt(String externalId, String authorisation) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        claim.getResponse().orElseThrow(() ->
-            new NotFoundException("Defendant response does not exist for this claim"));
+        if (!claim.getResponse().isPresent() && null == claim.getRespondedAt()) {
+            throw new NotFoundException("Defendant response does not exist for this claim");
+        }
         return processRequest(claim,
             authorisation,
             DEFENDANT_RESPONSE_RECEIPT,
@@ -124,8 +125,9 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     @Override
     public byte[] generateSettlementAgreement(String externalId, String authorisation) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        claim.getSettlement().orElseThrow(() ->
-            new NotFoundException("Settlement Agreement does not exist for this claim"));
+        if (!claim.getSettlement().isPresent() && null == claim.getSettlementReachedAt()) {
+            throw new NotFoundException("Settlement Agreement does not exist for this claim");
+        }
         return processRequest(claim,
             authorisation,
             SETTLEMENT_AGREEMENT,
