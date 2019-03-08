@@ -22,7 +22,6 @@ import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
-import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -37,17 +36,15 @@ import uk.gov.hmcts.reform.ccd.client.model.UserId;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_REQUESTED;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_NEW_CASE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED_ONLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_POST_PAYMENT;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUBMIT_PRE_PAYMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
@@ -58,7 +55,9 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 public class CoreCaseDataService {
 
     public static final String CMC_CASE_UPDATE_SUMMARY = "CMC case update";
+    public static final String CMC_CASE_CREATE_SUMMARY = "CMC case issue";
     public static final String SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION = "Submitting CMC case update";
+    public static final String SUBMITTING_CMC_CASE_ISSUE_DESCRIPTION = "Submitting CMC case issue";
 
     public static final String CCD_UPDATE_FAILURE_MESSAGE
         = "Failed updating claim in CCD store for case id %s on event %s";
@@ -97,42 +96,6 @@ public class CoreCaseDataService {
         this.jobSchedulerService = jobSchedulerService;
     }
 
-    public CaseReference savePrePayment(String externalId, String authorisation) {
-        UserDetails user = userService.getUserDetails(authorisation);
-
-        try {
-            Map<String, Object> data = new HashMap<>();
-            data.put("externalId", externalId);
-            EventRequestData eventRequestData = eventRequest(SUBMIT_PRE_PAYMENT, user.getId());
-
-            StartEventResponse startEventResponse = startCreate(authorisation, eventRequestData,
-                user.isSolicitor() || user.isCaseworker());
-
-            CaseDataContent caseDataContent = CaseDataContent.builder()
-                .eventToken(startEventResponse.getToken())
-                .event(
-                    Event.builder()
-                        .id(startEventResponse.getEventId())
-                        .summary("CMC case submission event")
-                        .description("Submitting CMC pre-payment case")
-                        .build()
-                ).data(data)
-                .build();
-
-            return new CaseReference(
-                submitCreate(authorisation, eventRequestData, caseDataContent,
-                    user.isSolicitor() || user.isCaseworker()).getId().toString()
-            );
-        } catch (Exception exception) {
-            throw new CoreCaseDataStoreException(
-                String.format(CCD_STORING_FAILURE_MESSAGE,
-                    externalId,
-                    SUBMIT_PRE_PAYMENT
-                ), exception
-            );
-        }
-    }
-
     public Claim submitPostPayment(String authorisation, Claim claim) {
         UserDetails userDetails = userService.getUserDetails(authorisation);
         boolean isRepresented = userDetails.isSolicitor() || userDetails.isCaseworker();
@@ -143,37 +106,31 @@ public class CoreCaseDataService {
         }
 
         try {
-            Long caseId = ccdCase.getId();
             EventRequestData eventRequestData = EventRequestData.builder()
                 .userId(userDetails.getId())
                 .jurisdictionId(JURISDICTION_ID)
                 .caseTypeId(CASE_TYPE_ID)
-                .eventId(SUBMIT_POST_PAYMENT.getValue())
+                .eventId(CREATE_NEW_CASE.getValue())
                 .ignoreWarning(true)
                 .build();
 
-            StartEventResponse startEventResponse = startUpdate(
-                authorisation,
-                eventRequestData,
-                caseId,
-                isRepresented
-            );
+            StartEventResponse startEventResponse = startCreate(authorisation, eventRequestData,
+                userDetails.isSolicitor() || userDetails.isCaseworker());
 
             CaseDataContent caseDataContent = CaseDataContent.builder()
                 .eventToken(startEventResponse.getToken())
                 .event(Event.builder()
                     .id(startEventResponse.getEventId())
-                    .summary(CMC_CASE_UPDATE_SUMMARY)
-                    .description(SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION)
+                    .summary(CMC_CASE_CREATE_SUMMARY)
+                    .description(SUBMITTING_CMC_CASE_ISSUE_DESCRIPTION)
                     .build())
                 .data(ccdCase)
                 .build();
 
-            CaseDetails caseDetails = submitUpdate(
+            CaseDetails caseDetails = submitCreate(
                 authorisation,
                 eventRequestData,
                 caseDataContent,
-                caseId,
                 isRepresented
             );
 
@@ -186,9 +143,9 @@ public class CoreCaseDataService {
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(
-                    CCD_UPDATE_FAILURE_MESSAGE,
+                    CCD_STORING_FAILURE_MESSAGE,
                     ccdCase.getReferenceNumber(),
-                    SUBMIT_POST_PAYMENT
+                    CREATE_NEW_CASE
                 ), exception
             );
         }

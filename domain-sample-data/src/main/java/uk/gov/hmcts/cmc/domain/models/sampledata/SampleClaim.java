@@ -130,6 +130,21 @@ public final class SampleClaim {
             .build();
     }
 
+    public static Claim getClaimWithFullDefenceAlreadyPaid() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .paymentOption(PaymentOption.IMMEDIATELY)
+                    .build()
+            ).withResponse(SampleResponse.FullDefence
+                .builder()
+                .withDefenceType(DefenceType.ALREADY_PAID)
+                .build()
+            )
+            .build();
+    }
+
     public static Claim getWithDefaultResponse() {
         return getWithResponse(SampleResponse.validDefaults());
     }
@@ -461,7 +476,7 @@ public final class SampleClaim {
             .documentName("001CLAIM-FORM")
             .documentType(ClaimDocumentType.SEALED_CLAIM)
             .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
-            .authoredDatetime(LocalDateTimeFactory.nowInLocalZone())
+            .createdBy("OCMC")
             .build();
         this.claimDocumentCollection.addClaimDocument(claimDocument);
         return this;

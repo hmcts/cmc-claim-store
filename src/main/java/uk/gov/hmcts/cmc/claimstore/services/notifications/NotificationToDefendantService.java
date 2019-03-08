@@ -48,6 +48,18 @@ public class NotificationToDefendantService {
         );
     }
 
+    public void notifyDefendantOfRejection(Claim claim) {
+        Map<String, String> parameters = aggregateParams(claim);
+        parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
+        sendNotificationEmail(
+            claim.getDefendantEmail(),
+            notificationsProperties.getTemplates().getEmail()
+                .getClaimantRejectedPartAdmitOrStatesPaidEmailToDefendant(),
+            parameters,
+            referenceForDefendant(claim.getReferenceNumber())
+        );
+    }
+
     public void notifyDefendantWhenInterlocutoryJudgementRequested(Claim claim) {
         Map<String, String> parameters = aggregateParams(claim);
         parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
@@ -83,8 +95,8 @@ public class NotificationToDefendantService {
         String reference
     ) {
         String errorMessage = String.format(
-            "Failure: failed to send notification ( %s to %s ) due to %s",
-            reference, targetEmail, exception.getMessage()
+            "Failure: failed to send notification (%s) due to %s",
+            reference, exception.getMessage()
         );
 
         logger.info(errorMessage, exception);
