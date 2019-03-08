@@ -92,8 +92,6 @@ public class ClaimMapper {
 
         claim.getTotalAmountTillDateOfIssue().ifPresent(builder::totalAmount);
 
-        claim.getClaimDocumentCollection()
-            .ifPresent(claimDocumentCollection -> claimDocumentCollectionMapper.to(claimDocumentCollection, builder));
 
         builder
             .reason(claimData.getReason())
@@ -134,8 +132,7 @@ public class ClaimMapper {
                 ccdCase.getPreferredCourt(),
                 ccdCase.getFeeCode(),
                 timelineMapper.from(ccdCase),
-                evidenceMapper.from(ccdCase),
-                claimDocumentCollectionMapper.from(ccdCase)
+                evidenceMapper.from(ccdCase)
             )
         );
     }
