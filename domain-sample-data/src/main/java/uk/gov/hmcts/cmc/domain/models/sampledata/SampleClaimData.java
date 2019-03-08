@@ -192,8 +192,7 @@ public class SampleClaimData {
             preferredCourt,
             feeCode,
             timeline,
-            evidence,
-            null);
+            evidence);
     }
 
     public static ClaimData validDefaults() {
