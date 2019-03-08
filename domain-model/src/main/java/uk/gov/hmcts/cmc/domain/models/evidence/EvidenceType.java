@@ -13,7 +13,6 @@ public enum EvidenceType {
     STATEMENT_OF_ACCOUNT("Statements of account"),
     OTHER("Other");
 
-    private static final Map<String, EvidenceType> ENUM_MAP;
     String description;
 
     EvidenceType(String description) {
@@ -22,17 +21,5 @@ public enum EvidenceType {
 
     public String getDescription() {
         return description;
-    }
-
-    static {
-        Map<String, EvidenceType> map = new ConcurrentHashMap<String, EvidenceType>();
-        for (EvidenceType instance : EvidenceType.values()) {
-            map.put(instance.name(), instance);
-        }
-        ENUM_MAP = Collections.unmodifiableMap(map);
-    }
-
-    public static EvidenceType get(String name) {
-        return ENUM_MAP.get(name);
     }
 }

@@ -57,6 +57,7 @@ public class CommonOperations {
     }
 
     private Response saveClaim(ClaimData claimData, String userAuthentication, String userId) {
+
         return RestAssured
             .given()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)

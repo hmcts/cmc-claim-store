@@ -14,12 +14,7 @@ import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
-import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
-import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
-import uk.gov.hmcts.cmc.domain.models.PaidInFull;
-import uk.gov.hmcts.cmc.domain.models.ReDetermination;
+import uk.gov.hmcts.cmc.domain.models.*;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
@@ -250,6 +245,26 @@ public class CoreCaseDataService {
         }
     }
 
+    private CaseEvent map(ClaimDocumentCollection claimDocumentCollection) {
+
+        ClaimDocumentType type = claimDocumentCollection.getClaimDocuments().get(claimDocumentCollection.getClaimDocuments().size()-1).getDocumentType();
+        if (type == ClaimDocumentType.SEALED_CLAIM) {
+            return CaseEvent.SEALED_CLAIM_UPLOAD;
+        } else if (type == ClaimDocumentType.CLAIM_ISSUE_RECEIPT) {
+           return CaseEvent.CLAIM_ISSUE_RECEIPT_UPLOAD;
+        } else if (type == ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT) {
+            return CaseEvent.DEFENDANT_RESPONSE_UPLOAD;
+        } else if (type == ClaimDocumentType.CCJ_REQUEST) {
+            return CaseEvent.CCJ_REQUEST_UPLOAD;
+        } else if (type == ClaimDocumentType.SETTLEMENT_AGREEMENT) {
+            return CaseEvent.SETTLEMENT_AGREEMENT_UPLOAD;
+        } else if (type == ClaimDocumentType.DEFENDANT_PIN_LETTER) {
+            return CaseEvent.DEFENDANT_PIN_LETTER_UPLOAD;
+        }
+
+        return LINK_SEALED_CLAIM;
+    }
+
     public CaseDetails saveClaimDocuments(
         String authorisation,
         Long caseId,
@@ -258,7 +273,7 @@ public class CoreCaseDataService {
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
 
-            EventRequestData eventRequestData = eventRequest(LINK_SEALED_CLAIM, userDetails.getId());
+            EventRequestData eventRequestData = eventRequest(map(claimDocumentCollection), userDetails.getId());
 
             StartEventResponse startEventResponse = startUpdate(
                 authorisation,

@@ -30,7 +30,13 @@ public enum CaseEvent {
     INTERLOCUTORY_JUDGMENT("InterlocutoryJudgment"),
     REJECT_ORGANISATION_PAYMENT_PLAN("RejectOrganisationPaymentPlan"),
     REFER_TO_JUDGE_BY_CLAIMANT("ReferToJudgeByClaimant"),
-    REFER_TO_JUDGE_BY_DEFENDANT("ReferToJudgeByDefendant");
+    REFER_TO_JUDGE_BY_DEFENDANT("ReferToJudgeByDefendant"),
+    SEALED_CLAIM_UPLOAD("SealedClaimUpload"),
+    CLAIM_ISSUE_RECEIPT_UPLOAD("ClaimIssueReceiptUpload"),
+    DEFENDANT_RESPONSE_UPLOAD("DefendantResponseReceiptUpload"),
+    CCJ_REQUEST_UPLOAD("CCJRequestUpload"),
+    SETTLEMENT_AGREEMENT_UPLOAD("SettlementAgreementUpload"),
+    DEFENDANT_PIN_LETTER_UPLOAD("DefendantPinLetterUpload");
 
     private String value;
 
