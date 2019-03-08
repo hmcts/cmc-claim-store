@@ -5,8 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
@@ -36,9 +38,11 @@ public class ClaimDocumentCollectionMapper {
         );
     }
 
-    public ClaimDocumentCollection from(CCDCase ccdCase) {
+    public void from(CCDCase ccdCase, Claim.ClaimBuilder builder) {
+        Objects.requireNonNull(ccdCase, "ccdCase must not be null");
+
         if (ccdCase.getCaseDocuments() == null || ccdCase.getCaseDocuments().isEmpty()) {
-            return null;
+            return;
         }
 
         ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
@@ -48,6 +52,6 @@ public class ClaimDocumentCollectionMapper {
             .map(claimDocumentMapper::from)
             .forEach(claimDocumentCollection::addClaimDocument);
 
-        return claimDocumentCollection;
+         builder.claimDocumentCollection(claimDocumentCollection);
     }
 }
