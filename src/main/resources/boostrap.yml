@@ -2,6 +2,7 @@ spring:
   cloud:
     propertiesvolume:
       paths: /mnt/secrets/cmc
+      prefixed: false
       aliases:
         cmc.claim-store-s2s-secret: idam.s2s-auth.totp_secret
         cmc.notify-api-key: notifications.govNotifyApiKey
