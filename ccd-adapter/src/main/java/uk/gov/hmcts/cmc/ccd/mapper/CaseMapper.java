@@ -2,26 +2,29 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.Arrays;
-
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @Component
 public class CaseMapper {
 
     private final ClaimMapper claimMapper;
 
-    public CaseMapper(ClaimMapper claimMapper) {
+    private final ClaimDocumentCollectionMapper claimDocumentCollectionMapper;
+
+    public CaseMapper(ClaimMapper claimMapper, ClaimDocumentCollectionMapper claimDocumentCollectionMapper) {
         this.claimMapper = claimMapper;
+        this.claimDocumentCollectionMapper = claimDocumentCollectionMapper;
     }
 
     public CCDCase to(Claim claim) {
         final CCDCase.CCDCaseBuilder builder = CCDCase.builder();
 
         claimMapper.to(claim, builder);
+
+        claim.getClaimDocumentCollection()
+            .ifPresent(claimDocumentCollection -> claimDocumentCollectionMapper.to(claimDocumentCollection, builder));
 
         return builder
             .id(claim.getId())
@@ -38,7 +41,10 @@ public class CaseMapper {
     public Claim from(CCDCase ccdCase) {
         Claim.ClaimBuilder builder = Claim.builder();
 
+
         claimMapper.from(ccdCase, builder);
+
+        claimDocumentCollectionMapper.from(ccdCase, builder);
 
         builder
             .id(ccdCase.getId())
