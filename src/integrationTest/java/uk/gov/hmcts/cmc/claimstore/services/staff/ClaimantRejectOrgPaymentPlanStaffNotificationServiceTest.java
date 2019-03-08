@@ -65,20 +65,24 @@ public class ClaimantRejectOrgPaymentPlanStaffNotificationServiceTest extends Mo
         service.notifyStaffClaimantRejectOrganisationPaymentPlan(claim);
 
         verify(emailService).sendEmail(anyString(), emailDataArgument.capture());
-        String subject = String.format("Redetermination request %s %s v %s",
+        String subject = String.format("Non-individual determination request %s %s v %s",
             claim.getReferenceNumber(),
             claim.getClaimData().getClaimant().getName(),
             claim.getClaimData().getDefendant().getName()
         );
 
-        assertThat(emailDataArgument.getValue()
-            .getSubject()).isEqualTo(subject);
-        assertThat(emailDataArgument.getValue()
-            .getMessage()).startsWith(
-                String.format("%s has requested a redetermination, please refer the attached to a District Judge.",
+        assertThat(emailDataArgument.getValue().getSubject()).isEqualTo(subject);
+
+        String emailBodyContent = emailDataArgument.getValue().getMessage();
+
+        assertThat(emailBodyContent).startsWith(
+                String.format("%s has requested a determination against a non individual, "
+                        + "please enter judgement by determination.",
                     claim.getClaimData().getClaimant().getName()
                 )
         );
+        assertThat(emailBodyContent).endsWith("This email has been sent from the "
+            + "HMCTS Civil Money Claims online court.");
     }
 
     @Test

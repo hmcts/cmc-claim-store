@@ -57,7 +57,7 @@ public class DocumentsController {
         @PathVariable("externalId") @NotBlank String externalId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        byte[] pdfDocument = documentsService.getSealedClaim(externalId, authorisation);
+        byte[] pdfDocument = documentsService.generateSealedClaim(externalId, authorisation);
 
         return ResponseEntity
             .ok()
@@ -147,7 +147,7 @@ public class DocumentsController {
         @PathVariable("externalId") @NotBlank String externalId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        byte[] pdfDocument = documentsService.getSealedClaim(externalId, authorisation);
+        byte[] pdfDocument = documentsService.generateSealedClaim(externalId, authorisation);
 
         return ResponseEntity
             .ok()
