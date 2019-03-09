@@ -5,7 +5,7 @@ spring:
       prefixed: false
       aliases:
         claim-store-s2s-secret: idam.s2s-auth.totp_secret
-        notify-api-key: notifications.govNotifyApiKey
+        notify-api-key: GOV_NOTIFY_API_KEY
         citizen-oauth-client-secret: oauth2.client.secret
         anonymous-caseworker-username: idam.caseworker.anonymous.username
         anonymous-caseworker-password: idam.caseworker.anonymous.password
