@@ -293,6 +293,10 @@ test.shouldRunAfter(checkstyleTest)
 apiTest.shouldRunAfter(checkstyleIntegrationTest)
 apiTest.shouldRunAfter(test)
 
+apiTest.doFirst {
+  if (true) { throw new StopExecutionException() }
+}
+
 def listFiles(String pattern) {
   return new FileNameFinder()
     .getFileNames("${project.rootDir}", pattern)

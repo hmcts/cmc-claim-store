@@ -4,17 +4,17 @@ spring:
       paths: /mnt/secrets/cmc
       prefixed: false
       aliases:
-        claim-store-s2s-secret: idam.s2s-auth.totp_secret
+        claim-store-s2s-secret: IDAM_S2S_AUTH_TOTP_SECRET
         notify-api-key: GOV_NOTIFY_API_KEY
-        citizen-oauth-client-secret: oauth2.client.secret
-        anonymous-caseworker-username: idam.caseworker.anonymous.username
-        anonymous-caseworker-password: idam.caseworker.anonymous.password
-        system-update-username: idam.caseworker.system.username
-        system-update-password: idam.caseworker.system.password
+        citizen-oauth-client-secret: OAUTH2_CLIENT_SECRET
+        anonymous-caseworker-username: IDAM_CASEWORKER_ANONYMOUS_USERNAME
+        anonymous-caseworker-password: IDAM_CASEWORKER_ANONYMOUS_PASSWORD
+        system-update-username: IDAM_CASEWORKER_SYSTEM_USERNAME
+        system-update-password: IDAM_CASEWORKER_SYSTEM_PASSWORD
+        staff-email: STAFF_NOTIFICATIONS_RECIPIENT
+
 #        RPA_NOTIFICATIONS_SEALEDCLAIMRECIPIENT: ${STAFF_EMAIL}
 #        RPA_NOTIFICATIONS_MORETIMEREQUESTEDRECIPIENT: ${STAFF_EMAIL}
 #        RPA_NOTIFICATIONS_RESPONSERECIPIENT: ${STAFF_EMAIL}
 #        RPA_NOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT: ${STAFF_EMAIL}
 #        RPA_NOTIFICATIONS_PAIDINFULLRECIPIENT: ${STAFF_EMAIL}
-#        STAFF_NOTIFICATIONS_RECIPIENT: ${STAFF_EMAIL}
-
