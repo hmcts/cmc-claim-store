@@ -29,7 +29,6 @@ claim-store:
         - system-update-username
         - system-update-password
         - notify-api-key
-        - staff-email
   environment:
     REFORM_TEAM: cmc
     REFORM_SERVICE_NAME: claim-store
@@ -50,8 +49,6 @@ claim-store:
     SPRING_MAIL_TEST_CONNECTION: false
     SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: true
     SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: mta.reform.hmcts.net
-    STAFF_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
-    RPA_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
     CLAIM_STORE_TEST_SUPPORT_ENABLED: true
     FEATURE_TOGGLES_EMAILTOSTAFF: true
     FEATURE_TOGGLES_CCD_ENABLED: false
@@ -60,6 +57,14 @@ claim-store:
     CORE_CASE_DATA_API_URL: false
     FRONTEND_BASE_URL: https://www-${SERVICE_FQDN}
     RESPOND_TO_CLAIM_URL: https://www-${SERVICE_FQDN}/first-contact/start
+    STAFF_NOTIFICATIONS_RECIPIENT: civilmoneyclaims+staff-int-tests@gmail.com
+    STAFF_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
+    RPA_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
+    RPA_NOTIFICATIONS_SEALEDCLAIMRECIPIENT: civilmoneyclaims+rpa-claim-issued@gmail.com
+    RPA_NOTIFICATIONS_MORETIMEREQUESTEDRECIPIENT: civilmoneyclaims+rpa-more-time-requested@gmail.com
+    RPA_NOTIFICATIONS_RESPONSERECIPIENT: civilmoneyclaims+rpa-defence-response@gmail.com
+    RPA_NOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT: civilmoneyclaims+rpa-county-court-judgement@gmail.com
+    RPA_NOTIFICATIONS_PAIDINFULLRECIPIENT: civilmoneyclaims+rpa-paid-in-full@gmail.com
 
 rpe-feature-toggle-api:
   releaseNameOverride: ${SERVICE_NAME}-ftr-tgl-api
