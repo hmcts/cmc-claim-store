@@ -22,11 +22,6 @@ claim-store:
       resourceGroup: cmc
       secrets:
         - AppInsightsInstrumentationKey
-        - smoke-test-citizen-username
-        - smoke-test-solicitor-username
-        - smoke-test-user-password
-        - generated-user-email-pattern
-        - claim-store-db-password
         - citizen-oauth-client-secret
         - claim-store-s2s-secret
         - anonymous-caseworker-username
