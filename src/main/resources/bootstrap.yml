@@ -11,7 +11,7 @@ spring:
         anonymous-caseworker-password: IDAM_CASEWORKER_ANONYMOUS_PASSWORD
         system-update-username: IDAM_CASEWORKER_SYSTEM_USERNAME
         system-update-password: IDAM_CASEWORKER_SYSTEM_PASSWORD
-        staff-email: STAFF_NOTIFICATIONS_RECIPIENT
+        staff-email: staff-notifications.recipient
         AppInsightsInstrumentationKey: APPINSIGHTS_INSTRUMENTATIONKEY
 
 #        RPA_NOTIFICATIONS_SEALEDCLAIMRECIPIENT: ${STAFF_EMAIL}
