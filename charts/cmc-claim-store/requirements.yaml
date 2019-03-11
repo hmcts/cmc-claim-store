@@ -8,13 +8,8 @@ dependencies:
     repository: '@stable'
     tags:
       - postgresql-pod
-  - name: nodejs
-    version: 0.2.0
-    repository: '@hmcts'
-    tags:
-      - citizen-frontend-pod
-  - name: rpe-feature-toggle-api
+  - name: cmc-citizen-frontend
     version: 0.0.4
     repository: '@hmcts'
     tags:
-      - feature-toggle-api-pod
+      - rpe-feature-toggle-api-pod
