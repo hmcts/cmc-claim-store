@@ -1,3 +1,7 @@
+tags:
+  - postgresql-pod
+  - feature-toggle-api-pod
+
 postgresql:
   resources:
     requests:
@@ -8,6 +12,8 @@ postgresql:
       CREATE DATABASE claimstore WITH OWNER = claimstore ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE USER cmc WITH PASSWORD 'cmc';
       CREATE DATABASE cmc WITH OWNER = cmc ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+      CREATE USER features WITH PASSWORD 'features';
+      CREATE DATABASE features WITH OWNER = features ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
   nameOverride: claim-store-postgres
   persistence:
     enabled: false
@@ -81,16 +87,13 @@ rpe-feature-toggle-api:
   java:
     releaseNameOverride: ${SERVICE_NAME}-ftr-tgl-api
     environment:
-      FEATURES_DB_HOST: ${SERVICE_NAME}-ft-db
+      FEATURES_DB_HOST: ${SERVICE_NAME}-claim-store-postgres
       ADMIN_USERNAME_TEST: admin@example.com
       ADMIN_PASSWORD_TEST: Password12
       EDITOR_USERNAME_TEST: editor@example.com
       EDITOR_PASSWORD_TEST: Password12
-  postgresql:
-    resources:
-      requests:
-        cpu: 25m
-    postgresqlDatabase: hmcts
+  tags:
+    postgresql-pod: false
 
 nodejs:
   ingressIP: ${INGRESS_IP}
