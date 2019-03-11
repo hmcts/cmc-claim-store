@@ -3,17 +3,16 @@ dependencies:
     version: ~1.1.0
     repository: '@hmcts'
     alias: claim-store
-
   - name: postgresql
     version: ~2.6.5
     repository: '@stable'
     tags:
       - postgresql-pod
-
   - name: nodejs
     version: 0.2.0
     repository: '@hmcts'
-
+    tags:
+      - citizen-frontend-pod
   - name: rpe-feature-toggle-api
     version: 0.0.4
     repository: '@hmcts'

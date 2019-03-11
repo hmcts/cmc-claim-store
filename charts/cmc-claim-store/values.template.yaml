@@ -1,6 +1,7 @@
 tags:
   - postgresql-pod
   - feature-toggle-api-pod
+  - citizen-frontend-pod
 
 postgresql:
   resources:
