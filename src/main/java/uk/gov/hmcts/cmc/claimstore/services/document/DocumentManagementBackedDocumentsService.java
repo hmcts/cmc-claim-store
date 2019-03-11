@@ -175,12 +175,12 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         }
     }
 
-    private void uploadToDocumentManagement(
+    public Claim uploadToDocumentManagement(
         PDF document,
         String authorisation,
         Claim claim) {
         URI documentSelfPath = documentManagementService.uploadDocument(authorisation, document);
-        claimService.saveClaimDocuments(authorisation,
+        return claimService.saveClaimDocuments(authorisation,
             claim.getId(),
             getClaimDocumentCollection(claim, document, documentSelfPath));
     }
