@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.ccd.mapper.CaseEventMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
@@ -245,26 +246,6 @@ public class CoreCaseDataService {
         }
     }
 
-    private CaseEvent map(ClaimDocumentCollection claimDocumentCollection) {
-
-        ClaimDocumentType type = claimDocumentCollection.getClaimDocuments().get(claimDocumentCollection.getClaimDocuments().size()-1).getDocumentType();
-        if (type == ClaimDocumentType.SEALED_CLAIM) {
-            return CaseEvent.SEALED_CLAIM_UPLOAD;
-        } else if (type == ClaimDocumentType.CLAIM_ISSUE_RECEIPT) {
-           return CaseEvent.CLAIM_ISSUE_RECEIPT_UPLOAD;
-        } else if (type == ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT) {
-            return CaseEvent.DEFENDANT_RESPONSE_UPLOAD;
-        } else if (type == ClaimDocumentType.CCJ_REQUEST) {
-            return CaseEvent.CCJ_REQUEST_UPLOAD;
-        } else if (type == ClaimDocumentType.SETTLEMENT_AGREEMENT) {
-            return CaseEvent.SETTLEMENT_AGREEMENT_UPLOAD;
-        } else if (type == ClaimDocumentType.DEFENDANT_PIN_LETTER) {
-            return CaseEvent.DEFENDANT_PIN_LETTER_UPLOAD;
-        }
-
-        return LINK_SEALED_CLAIM;
-    }
-
     public CaseDetails saveClaimDocuments(
         String authorisation,
         Long caseId,
@@ -272,8 +253,9 @@ public class CoreCaseDataService {
     ) {
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
+            ClaimDocumentType claimDocumentType = claimDocumentCollection.getClaimDocuments().get(claimDocumentCollection.getClaimDocuments().size()-1).getDocumentType();
 
-            EventRequestData eventRequestData = eventRequest(map(claimDocumentCollection), userDetails.getId());
+            EventRequestData eventRequestData = eventRequest(CaseEventMapper.map(claimDocumentType), userDetails.getId());
 
             StartEventResponse startEventResponse = startUpdate(
                 authorisation,

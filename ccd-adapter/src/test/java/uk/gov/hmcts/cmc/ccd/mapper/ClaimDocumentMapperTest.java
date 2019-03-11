@@ -56,9 +56,9 @@ public class ClaimDocumentMapperTest {
         CCDCollectionElement<CCDClaimDocument> ccdCollectionElement = claimDocumentMapper.to(claimDocument);
 
         assertEquals(claimDocument.getDocumentName(), ccdCollectionElement.getValue().getDocumentName());
-        assertEquals(claimDocument.getDocumentManagementUrl(), ccdCollectionElement.getValue().getDocumentLink());
-        assertEquals(CCDClaimDocumentType.CLAIM_ISSUE_RECEIPT.getTypeName(),
-            ccdCollectionElement.getValue().getDocumentType());
+        assertEquals(claimDocument.getDocumentManagementUrl(),
+            URI.create(ccdCollectionElement.getValue().getDocumentLink().getDocumentUrl()));
+        assertEquals(CCDClaimDocumentType.CLAIM_ISSUE_RECEIPT, ccdCollectionElement.getValue().getDocumentType());
         assertEquals(claimDocument.getAuthoredDatetime(), ccdCollectionElement.getValue().getAuthoredDatetime());
         assertEquals(claimDocument.getCreatedDatetime(), ccdCollectionElement.getValue().getCreatedDatetime());
         assertEquals(claimDocument.getCreatedBy(), ccdCollectionElement.getValue().getCreatedBy());
@@ -71,7 +71,8 @@ public class ClaimDocumentMapperTest {
         CCDClaimDocument ccdClaimDocument = ccdCollectionElement.getValue();
 
         assertEquals(ccdClaimDocument.getDocumentName(), claimDocument.getDocumentName());
-        assertEquals(ccdClaimDocument.getDocumentLink(), claimDocument.getDocumentManagementUrl());
+        assertEquals(URI.create(ccdClaimDocument.getDocumentLink().getDocumentUrl()),
+            claimDocument.getDocumentManagementUrl());
         assertEquals(ClaimDocumentType.CLAIM_ISSUE_RECEIPT, claimDocument.getDocumentType());
         assertEquals(ccdClaimDocument.getAuthoredDatetime(), ccdClaimDocument.getAuthoredDatetime());
         assertEquals(ccdClaimDocument.getCreatedDatetime(), ccdClaimDocument.getCreatedDatetime());
