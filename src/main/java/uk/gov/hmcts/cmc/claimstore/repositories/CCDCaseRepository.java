@@ -5,11 +5,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
-import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
-import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.PaidInFull;
-import uk.gov.hmcts.cmc.domain.models.ReDetermination;
+import uk.gov.hmcts.cmc.domain.models.*;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
@@ -157,9 +153,10 @@ public class CCDCaseRepository implements CaseRepository {
     public void saveClaimDocuments(
         String authorisation,
         Long claimId,
-        ClaimDocumentCollection claimDocumentCollection
+        ClaimDocumentCollection claimDocumentCollection,
+        ClaimDocumentType claimDocumentType
     ) {
-        coreCaseDataService.saveClaimDocuments(authorisation, claimId, claimDocumentCollection);
+        coreCaseDataService.saveClaimDocuments(authorisation, claimId, claimDocumentCollection, claimDocumentType);
     }
 
     @Override

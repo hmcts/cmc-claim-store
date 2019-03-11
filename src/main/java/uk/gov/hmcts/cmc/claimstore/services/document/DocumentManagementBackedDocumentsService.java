@@ -158,7 +158,8 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         URI documentSelfPath = documentManagementService.uploadDocument(authorisation, document);
         claimService.linkClaimToDocument(authorisation,
             claim.getId(),
-            getClaimDocumentStore(claim.getExternalId(), document, documentSelfPath, authorisation));
+            getClaimDocumentStore(claim.getExternalId(), document, documentSelfPath, authorisation),
+            document.getClaimDocumentType());
     }
 
     private ClaimDocumentCollection getClaimDocumentStore(String externalId,

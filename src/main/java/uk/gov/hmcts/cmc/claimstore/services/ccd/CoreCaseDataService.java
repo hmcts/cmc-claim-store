@@ -249,11 +249,11 @@ public class CoreCaseDataService {
     public CaseDetails saveClaimDocuments(
         String authorisation,
         Long caseId,
-        ClaimDocumentCollection claimDocumentCollection
+        ClaimDocumentCollection claimDocumentCollection,
+        ClaimDocumentType claimDocumentType
     ) {
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
-            ClaimDocumentType claimDocumentType = claimDocumentCollection.getClaimDocuments().get(claimDocumentCollection.getClaimDocuments().size()-1).getDocumentType();
 
             EventRequestData eventRequestData = eventRequest(CaseEventMapper.map(claimDocumentType), userDetails.getId());
 

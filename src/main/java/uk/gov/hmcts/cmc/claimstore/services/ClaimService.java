@@ -20,12 +20,7 @@ import uk.gov.hmcts.cmc.claimstore.rules.ClaimAuthorisationRule;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.rules.PaidInFullRule;
 import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
-import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
-import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.PaidInFull;
-import uk.gov.hmcts.cmc.domain.models.ReDetermination;
+import uk.gov.hmcts.cmc.domain.models.*;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
@@ -325,9 +320,10 @@ public class ClaimService {
     public void linkClaimToDocument(
         String authorisation,
         Long claimId,
-        ClaimDocumentCollection claimDocumentCollection
+        ClaimDocumentCollection claimDocumentCollection,
+        ClaimDocumentType claimDocumentType
     ) {
-        caseRepository.saveClaimDocuments(authorisation, claimId, claimDocumentCollection);
+        caseRepository.saveClaimDocuments(authorisation, claimId, claimDocumentCollection, claimDocumentType);
     }
 
     public void linkLetterHolder(Long claimId, String userId) {

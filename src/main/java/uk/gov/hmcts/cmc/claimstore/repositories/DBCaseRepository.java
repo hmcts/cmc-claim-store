@@ -9,11 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
-import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
-import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.PaidInFull;
-import uk.gov.hmcts.cmc.domain.models.ReDetermination;
+import uk.gov.hmcts.cmc.domain.models.*;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
@@ -226,7 +222,9 @@ public class DBCaseRepository implements CaseRepository {
     @Override
     public void saveClaimDocuments(String authorisation,
                                    Long claimId,
-                                   ClaimDocumentCollection claimDocumentCollection) {
+                                   ClaimDocumentCollection claimDocumentCollection,
+                                   ClaimDocumentType claimDocumentType
+    ) {
         claimRepository.saveClaimDocuments(claimId, jsonMapper.toJson(claimDocumentCollection));
     }
 }
