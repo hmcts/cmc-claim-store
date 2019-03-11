@@ -26,7 +26,6 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
-import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
@@ -175,10 +174,6 @@ public class ClaimService {
 
     public List<Claim> getClaimByPaymentReference(String payReference, String authorisation) {
         return caseRepository.getByPaymentReference(payReference, authorisation);
-    }
-
-    public CaseReference savePrePayment(String externalId, String authorisation) {
-        return caseRepository.savePrePaymentClaim(externalId, authorisation);
     }
 
     @Transactional(transactionManager = "transactionManager")
