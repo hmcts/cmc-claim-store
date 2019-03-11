@@ -33,7 +33,6 @@ public abstract class BasePdfTest extends BaseTest {
 
     protected Claim createCase() {
         ClaimData claimData = getSampleClaimDataBuilder().get().build();
-        commonOperations.submitPrePaymentClaim(claimData.getExternalId().toString(), user.getAuthorisation());
 
         return submitClaim(claimData)
             .then()
