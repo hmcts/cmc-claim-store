@@ -11,4 +11,3 @@ spring:
         anonymous-caseworker-password: IDAM_CASEWORKER_ANONYMOUS_PASSWORD
         system-update-username: IDAM_CASEWORKER_SYSTEM_USERNAME
         system-update-password: IDAM_CASEWORKER_SYSTEM_PASSWORD
-        AppInsightsInstrumentationKey: APPINSIGHTS_INSTRUMENTATIONKEY
