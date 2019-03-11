@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -13,7 +11,6 @@ import java.util.stream.Collectors;
 
 @Component
 public class ClaimDocumentCollectionMapper {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClaimDocumentCollectionMapper.class);
 
     private final ClaimDocumentMapper claimDocumentMapper;
 

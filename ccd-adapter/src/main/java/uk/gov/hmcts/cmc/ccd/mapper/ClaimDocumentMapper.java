@@ -18,7 +18,7 @@ public class ClaimDocumentMapper {
 
         builder.documentName(claimDocument.getDocumentName())
             .documentLink(new CCDDocument(claimDocument.getDocumentManagementUrl().toString()))
-            .documentType(CCDClaimDocumentType.valueOf(claimDocument.getDocumentType().name())) // TODO Need to somehow pass or map the event
+            .documentType(CCDClaimDocumentType.valueOf(claimDocument.getDocumentType().name()))
             .authoredDatetime(claimDocument.getAuthoredDatetime())
             .createdDatetime(claimDocument.getCreatedDatetime())
             .createdBy(claimDocument.getCreatedBy())

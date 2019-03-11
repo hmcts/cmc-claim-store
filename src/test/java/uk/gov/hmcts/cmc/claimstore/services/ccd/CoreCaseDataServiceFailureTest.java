@@ -18,12 +18,7 @@ import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
-import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
-import uk.gov.hmcts.cmc.domain.models.PaidInFull;
-import uk.gov.hmcts.cmc.domain.models.ReDetermination;
+import uk.gov.hmcts.cmc.domain.models.*;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
@@ -246,7 +241,8 @@ public class CoreCaseDataServiceFailureTest {
 
         service.saveClaimDocuments(AUTHORISATION,
             SampleClaim.CLAIM_ID,
-            claim.getClaimDocumentCollection().orElse(new ClaimDocumentCollection()));
+            claim.getClaimDocumentCollection().orElse(new ClaimDocumentCollection()),
+            ClaimDocumentType.CLAIM_ISSUE_RECEIPT);
 
         verify(coreCaseDataApi).submitForCitizen(
             eq(AUTHORISATION),
