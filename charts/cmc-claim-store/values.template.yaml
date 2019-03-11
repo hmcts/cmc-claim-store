@@ -151,6 +151,10 @@ ccd:
     s2sAuthorisedServices: ccd_data,cmc_claim_store,ccd_gw
   caseManagementWeb:
     enabled: true
+  adminWeb:
+    enabled: true
+    s2sKey: ${ADMIN_S2S_KEY}
+    idamClientSecret: ${ADMIN_WEB_IDAM_SECRET}
   importer:
     image: hmcts.azurecr.io/hmcts/cmc-ccd-definition-importer
     definitionFilename: cmc-ccd.xlsx

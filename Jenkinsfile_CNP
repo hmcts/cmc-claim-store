@@ -34,7 +34,8 @@ def secrets = [
     secret('microservicekey-ccd-data', 'DATA_STORE_S2S_KEY'),
     secret('microservicekey-ccd-definition', 'DEFINITION_STORE_S2S_KEY'),
     secret('microservicekey-ccd-gw', 'API_GATEWAY_S2S_KEY'),
-    secret('microservicekey-ccd-ps', 'PRINT_S2S_KEY')
+    secret('microservicekey-ccd-admin', 'PRINT_S2S_KEY'),
+    secret('microservicekey-ccd-ps', 'ADMIN_S2S_KEY')
   ],
   'ccd-${env}': [
     secret('ccd-api-gateway-oauth2-client-secret', 'API_GATEWAY_IDAM_SECRET'),
