@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.appinsights;
 
 import com.microsoft.applicationinsights.TelemetryClient;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.logging.appinsights.AbstractAppInsights;
 
 import static java.util.Collections.singletonMap;
 
