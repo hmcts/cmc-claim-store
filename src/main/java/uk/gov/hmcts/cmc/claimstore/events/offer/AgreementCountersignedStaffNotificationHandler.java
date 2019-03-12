@@ -24,4 +24,5 @@ public class AgreementCountersignedStaffNotificationHandler {
             event.getClaim()
         );
     }
+
 }

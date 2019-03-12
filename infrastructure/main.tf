@@ -67,6 +67,11 @@ data "azurerm_key_vault_secret" "rpa_email_ccj" {
   vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
 }
 
+data "azurerm_key_vault_secret" "rpa_email_paid_in_full" {
+  name = "rpa-email-paid-in-full"
+  vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
+}
+
 data "azurerm_key_vault_secret" "anonymous_caseworker_username" {
   name = "anonymous-caseworker-username"
   vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
@@ -181,6 +186,7 @@ module "claim-store-api" {
     RPA_NOTIFICATIONS_MORETIMEREQUESTEDRECIPIENT = "${ data.azurerm_key_vault_secret.rpa_email_more_time_requested.value}"
     RPA_NOTIFICATIONS_RESPONSERECIPIENT = "${data.azurerm_key_vault_secret.rpa_email_defence_response.value}"
     RPA_NOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT = "${data.azurerm_key_vault_secret.rpa_email_ccj.value}"
+    RPA_NOTIFICATIONS_PAIDINFULLRECIPIENT = "${data.azurerm_key_vault_secret.rpa_email_paid_in_full.value}"
 
     // feature toggles
     CLAIM_STORE_TEST_SUPPORT_ENABLED = "${var.env == "prod" ? "false" : "true"}"

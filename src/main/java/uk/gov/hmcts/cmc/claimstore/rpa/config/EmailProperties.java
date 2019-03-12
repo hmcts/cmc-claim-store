@@ -26,6 +26,9 @@ public class EmailProperties {
     @NotBlank
     private String moreTimeRequestedRecipient;
 
+    @NotBlank
+    private String paidInFullRecipient;
+
     public String getSender() {
         return sender;
     }
@@ -64,5 +67,13 @@ public class EmailProperties {
 
     public void setMoreTimeRequestedRecipient(String moreTimeRequestedRecipient) {
         this.moreTimeRequestedRecipient = moreTimeRequestedRecipient;
+    }
+
+    public String getPaidInFullRecipient() {
+        return paidInFullRecipient;
+    }
+
+    public void setPaidInFullRecipient(String paidInFullRecipient) {
+        this.paidInFullRecipient = paidInFullRecipient;
     }
 }
