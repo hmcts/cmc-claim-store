@@ -100,12 +100,24 @@ nodejs:
     enabled: true
     primaryIngressHost: ${SERVICE_FQDN}
     prefix: www
-  image: hmcts/cmc-citizen-frontend:latest  # master
+  image: hmcts.azurecr.io/hmcts/cmc-citizen-frontend:latest  # master
   applicationPort: 3000
   memoryRequests: 256Mi
   cpuRequests: 25m
   memoryLimits: 512Mi
   cpuLimits: 1
+  keyVaults:
+    cmc:
+      resourceGroup: cmc
+      secrets:
+        - os-postcode-lookup-api-key
+        - AppInsightsInstrumentationKey
+        - citizen-oauth-client-secret
+        - cmc-s2s-secret
+        - citizen-draft-store-primary
+        - citizen-draft-store-secondary
+        - citizen-cookie-encryption-key
+        - staff-email
   environment:
     CLAIM_STORE_URL: http://${SERVICE_NAME}-claim-store
     REFORM_TEAM: cmc
