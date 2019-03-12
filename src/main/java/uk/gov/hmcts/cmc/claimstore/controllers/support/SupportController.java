@@ -28,10 +28,8 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
-import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,8 +40,6 @@ import java.util.List;
 public class SupportController {
 
     private static final String CLAIM = "Claim ";
-    private static final String CLAIM_DOES_NOT_EXIST = "Claim %s does not exist";
-    private static final String AUTHORISATION_IS_REQUIRED = "Authorisation is required";
     private final ClaimService claimService;
     private final UserService userService;
     private final DocumentGenerator documentGenerator;
@@ -51,9 +47,7 @@ public class SupportController {
     private final DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler;
     private final CCJStaffNotificationHandler ccjStaffNotificationHandler;
     private final AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler;
-    private final DocumentsService documentsService;
 
-    @SuppressWarnings("squid:S00107")
     @Autowired
     public SupportController(
         ClaimService claimService,
@@ -62,8 +56,7 @@ public class SupportController {
         MoreTimeRequestedStaffNotificationHandler moreTimeRequestedStaffNotificationHandler,
         DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler,
         CCJStaffNotificationHandler ccjStaffNotificationHandler,
-        AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler,
-        DocumentsService documentsService
+        AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler
     ) {
         this.claimService = claimService;
         this.userService = userService;
@@ -72,7 +65,6 @@ public class SupportController {
         this.defendantResponseStaffNotificationHandler = defendantResponseStaffNotificationHandler;
         this.ccjStaffNotificationHandler = ccjStaffNotificationHandler;
         this.agreementCountersignedStaffNotificationHandler = agreementCountersignedStaffNotificationHandler;
-        this.documentsService = documentsService;
     }
 
     @PutMapping("/claim/{referenceNumber}/event/{event}/resend-staff-notifications")
@@ -83,7 +75,7 @@ public class SupportController {
         @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation) {
 
         Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
-            .orElseThrow(() -> new NotFoundException(String.format(CLAIM_DOES_NOT_EXIST, referenceNumber)));
+            .orElseThrow(() -> new NotFoundException(CLAIM + referenceNumber + " does not exist"));
 
         switch (event) {
             case "claim-issued":
@@ -106,42 +98,6 @@ public class SupportController {
         }
     }
 
-    @PutMapping("/claim/{referenceNumber}/claimDocumentType/{claimDocumentType}/uploadDocumentToDocumentManagement")
-    @ApiOperation("Upload document to document Management")
-    public void uploadDocumentToDocumentManagement(
-        @PathVariable("referenceNumber") String referenceNumber,
-        @PathVariable("claimDocumentType") ClaimDocumentType claimDocumentType,
-        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation) {
-
-        Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
-            .orElseThrow(() -> new NotFoundException(String.format(CLAIM_DOES_NOT_EXIST, referenceNumber)));
-        if (StringUtils.isBlank(authorisation)) {
-            throw new BadRequestException(AUTHORISATION_IS_REQUIRED);
-        }
-        switch (claimDocumentType) {
-            case SEALED_CLAIM:
-                documentsService.generateSealedClaim(claim.getExternalId(), authorisation);
-                break;
-            case CLAIM_ISSUE_RECEIPT:
-                documentsService.generateClaimIssueReceipt(claim.getExternalId(), authorisation);
-                break;
-            case DEFENDANT_RESPONSE_RECEIPT:
-                documentsService.generateDefendantResponseReceipt(claim.getExternalId(), authorisation);
-                break;
-            case CCJ_REQUEST:
-                documentsService.generateCountyCourtJudgement(claim.getExternalId(), authorisation);
-                break;
-            case SETTLEMENT_AGREEMENT:
-                documentsService.generateSettlementAgreement(claim.getExternalId(), authorisation);
-                break;
-            default:
-                throw new BadRequestException("ClaimDocumentType " + claimDocumentType + " is not supported");
-        }
-        claimService.getClaimByReferenceAnonymous(referenceNumber)
-            .ifPresent(updatedClaim -> updatedClaim.getClaimDocument(claimDocumentType)
-                .orElseThrow(() -> new NotFoundException("Unable to upload the document. Please try again later")));
-    }
-
     @PutMapping("/claim/resend-rpa-notifications")
     @ApiOperation("Resend notifications for multiple citizen claims")
     public void resendRPANotifications(
@@ -162,7 +118,7 @@ public class SupportController {
 
     private void resendStaffNotificationsOnClaimIssued(Claim claim, String authorisation) {
         if (StringUtils.isBlank(authorisation)) {
-            throw new BadRequestException(AUTHORISATION_IS_REQUIRED);
+            throw new BadRequestException("Authorisation is required");
         }
 
         if (claim.getDefendantId() != null) {
@@ -216,7 +172,7 @@ public class SupportController {
 
     private void resendClaimsToRPA(List<Claim> claims, String authorisation) {
         if (StringUtils.isBlank(authorisation)) {
-            throw new BadRequestException(AUTHORISATION_IS_REQUIRED);
+            throw new BadRequestException("Authorisation is required");
         }
 
         for (Claim claim : claims) {
@@ -235,7 +191,7 @@ public class SupportController {
         List<Claim> claims = new ArrayList<>();
         for (String referenceNumber : referenceNumbers) {
             Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
-                .orElseThrow(() -> new NotFoundException(String.format(CLAIM_DOES_NOT_EXIST, referenceNumber)));
+                .orElseThrow(() -> new NotFoundException(CLAIM + referenceNumber + " does not exist"));
 
             claims.add(claim);
         }
