@@ -87,8 +87,12 @@ citizen-frontend:
       enabled: true
       primaryIngressHost: ${SERVICE_FQDN}
       prefix: www
+    environment:
+      FEATURE_TOGGLES_API_URL: http://${SERVICE_NAME}-ftr-tgl-api
   rpe-feature-toggle-api:
+    releaseNameOverride: ${SERVICE_NAME}-ftr-tgl-api
     java:
+      releaseNameOverride: ${SERVICE_NAME}-ftr-tgl-api
       environment:
         FEATURES_DB_HOST: ${SERVICE_NAME}-claim-store-postgres
     tags:
