@@ -154,13 +154,13 @@ ccd:
     s2sKey: ${API_GATEWAY_S2S_KEY}
     idamClientSecret: ${API_GATEWAY_IDAM_SECRET}
   userProfileApi:
-    authorisedServices: ccd_data,ccd_definition,cmc_claim_store
+    authorisedServices: ccd_admin,ccd_data,ccd_definition,cmc_claim_store
   dataStoreApi:
     s2sKey: ${DATA_STORE_S2S_KEY}
     s2sAuthorisedServices: cmc_claim_store,ccd_gw
   definitionStoreApi:
     s2sKey: ${DEFINITION_STORE_S2S_KEY}
-    s2sAuthorisedServices: ccd_data,cmc_claim_store,ccd_gw
+    s2sAuthorisedServices: ccd_admin,ccd_data,cmc_claim_store,ccd_gw
   caseManagementWeb:
     enabled: true
     environment:
@@ -171,6 +171,10 @@ ccd:
     idamClientSecret: ${ADMIN_WEB_IDAM_SECRET}
     environment:
       NODE_TLS_REJECT_UNAUTHORIZED: 0
+      ADMINWEB_USER_ROLE_URL: https://definition-store-api-${SERVICE_FQDN}/api/user-role
+      ADMINWEB_DELETE_DEFINITION_URL: https://definition-store-api-${SERVICE_FQDN}/api/draft
+      ADMINWEB_ROLES_WHITELIST: 'ccd-import,ccd-import-validate'
+
   importer:
     image: hmcts.azurecr.io/hmcts/cmc-ccd-definition-importer
     definitionFilename: cmc-ccd.xlsx
