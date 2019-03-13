@@ -9,6 +9,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncome;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPaymentFrequency;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
 
 import java.math.BigDecimal;
@@ -16,8 +17,8 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncomeType.OTHER;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Income.IncomeType.JOB;
-import static uk.gov.hmcts.cmc.domain.models.statementofmeans.Income.IncomeType.OTHER;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.PaymentFrequency.MONTH;
 
 @SpringBootTest
@@ -50,7 +51,7 @@ public class IncomeMapperTest {
         //given
         CCDIncome ccdIncome = CCDIncome.builder()
             .type(OTHER)
-            .frequency(MONTH)
+            .frequency(CCDPaymentFrequency.MONTH)
             .amountReceived(BigDecimal.TEN)
             .otherSource("Trading")
             .build();

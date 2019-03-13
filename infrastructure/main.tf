@@ -3,7 +3,7 @@ provider "azurerm" {
 }
 
 locals {
-  aseName = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
+  aseName = "core-compute-${var.env}"
 
   local_env = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "aat" : "saat" : var.env}"
   local_ase = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "core-compute-aat" : "core-compute-saat" : local.aseName}"
@@ -64,6 +64,11 @@ data "azurerm_key_vault_secret" "rpa_email_defence_response" {
 
 data "azurerm_key_vault_secret" "rpa_email_ccj" {
   name = "rpa-email-ccj"
+  vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
+}
+
+data "azurerm_key_vault_secret" "rpa_email_paid_in_full" {
+  name = "rpa-email-paid-in-full"
   vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
 }
 
@@ -181,6 +186,7 @@ module "claim-store-api" {
     RPA_NOTIFICATIONS_MORETIMEREQUESTEDRECIPIENT = "${ data.azurerm_key_vault_secret.rpa_email_more_time_requested.value}"
     RPA_NOTIFICATIONS_RESPONSERECIPIENT = "${data.azurerm_key_vault_secret.rpa_email_defence_response.value}"
     RPA_NOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT = "${data.azurerm_key_vault_secret.rpa_email_ccj.value}"
+    RPA_NOTIFICATIONS_PAIDINFULLRECIPIENT = "${data.azurerm_key_vault_secret.rpa_email_paid_in_full.value}"
 
     // feature toggles
     CLAIM_STORE_TEST_SUPPORT_ENABLED = "${var.env == "prod" ? "false" : "true"}"

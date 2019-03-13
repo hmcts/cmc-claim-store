@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.sendletter.api.Document;
 import static java.util.Objects.requireNonNull;
 
 @Service
-public class SealedClaimPdfService {
+public class SealedClaimPdfService implements PdfService {
 
     private final DocumentTemplates documentTemplates;
     private final PDFServiceClient pdfServiceClient;
