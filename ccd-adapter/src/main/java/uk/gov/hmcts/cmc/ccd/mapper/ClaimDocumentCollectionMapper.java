@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
@@ -38,7 +39,7 @@ public class ClaimDocumentCollectionMapper {
     public void from(CCDCase ccdCase, Claim.ClaimBuilder builder) {
         Objects.requireNonNull(ccdCase, "ccdCase must not be null");
 
-        if (ccdCase.getCaseDocuments() == null || ccdCase.getCaseDocuments().isEmpty()) {
+        if (CollectionUtils.isEmpty(ccdCase.getCaseDocuments())) {
             return;
         }
 
