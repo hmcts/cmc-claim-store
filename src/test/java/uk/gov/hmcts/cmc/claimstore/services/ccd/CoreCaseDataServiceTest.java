@@ -184,7 +184,7 @@ public class CoreCaseDataServiceTest {
         when(jsonMapper.fromMap(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
         when(caseMapper.from(any(CCDCase.class))).thenReturn(expectedClaim);
 
-        Claim returnedClaim = service.submitPostPayment(AUTHORISATION, providedClaim);
+        Claim returnedClaim = service.createNewCase(AUTHORISATION, providedClaim);
 
         assertEquals(expectedClaim, returnedClaim);
         verify(jsonMapper).fromMap(caseDataCaptor.capture(), eq(CCDCase.class));
@@ -251,11 +251,11 @@ public class CoreCaseDataServiceTest {
         when(jsonMapper.fromMap(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
         when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
 
-        CaseDetails caseDetails = service.saveClaimDocuments(AUTHORISATION,
+        Claim updatedClaim = service.saveClaimDocuments(AUTHORISATION,
             SampleClaim.CLAIM_ID,
             claim.getClaimDocumentCollection().orElse(new ClaimDocumentCollection()));
 
-        assertNotNull(caseDetails);
+        assertNotNull(updatedClaim);
     }
 
     @Test
