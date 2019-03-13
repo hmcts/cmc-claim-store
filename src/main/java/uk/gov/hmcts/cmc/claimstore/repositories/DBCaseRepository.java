@@ -230,6 +230,6 @@ public class DBCaseRepository implements CaseRepository {
         claimRepository.saveClaimDocuments(claimId, jsonMapper.toJson(claimDocumentCollection));
         return claimRepository.getById(claimId).orElseThrow(() ->
             new NotFoundException(
-                String.format("Claim not found by primary key %s. This should never happen", claimId)));
+                String.format("Claim not found by primary key %s.", claimId)));
     }
 }

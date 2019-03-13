@@ -7,7 +7,6 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.Interest;
-import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
@@ -34,6 +33,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONS
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
 import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.DEFAULT;
+import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.CLAIMANT;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.standardInterestBuilder;
@@ -56,6 +56,7 @@ public final class SampleClaim {
     public static final String DEFENDANT_EMAIL = SampleTheirDetails.DEFENDANT_EMAIL;
     public static final String DEFENDANT_EMAIL_VERIFIED = "defendant@mail.com";
     private static final URI DOCUMENT_URI = URI.create("http://localhost/doc.pdf");
+    private static final String OCMC = "OCMC";
 
     private String submitterId = USER_ID;
     private String letterHolderId = LETTER_HOLDER_ID;
@@ -94,7 +95,7 @@ public final class SampleClaim {
             .withCountyCourtJudgment(
                 SampleCountyCourtJudgment.builder()
                     .ccjType(CountyCourtJudgmentType.ADMISSIONS)
-                    .paymentOption(PaymentOption.IMMEDIATELY)
+                    .paymentOption(IMMEDIATELY)
                     .build()
             ).withResponse(SampleResponse.FullDefence
                 .builder()
@@ -123,7 +124,7 @@ public final class SampleClaim {
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withCountyCourtJudgment(
                 SampleCountyCourtJudgment.builder()
-                    .paymentOption(PaymentOption.IMMEDIATELY)
+                    .paymentOption(IMMEDIATELY)
                     .build()
             ).withResponse(SampleResponse.FullDefence
                 .builder()
@@ -142,7 +143,7 @@ public final class SampleClaim {
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withCountyCourtJudgment(
                 SampleCountyCourtJudgment.builder()
-                    .paymentOption(PaymentOption.IMMEDIATELY)
+                    .paymentOption(IMMEDIATELY)
                     .build()
             ).withResponse(SampleResponse.FullDefence
                 .builder()
@@ -185,7 +186,7 @@ public final class SampleClaim {
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withCountyCourtJudgment(
                 SampleCountyCourtJudgment.builder()
-                    .paymentOption(PaymentOption.IMMEDIATELY)
+                    .paymentOption(IMMEDIATELY)
                     .ccjType(DEFAULT)
                     .build()
             ).withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
@@ -301,7 +302,7 @@ public final class SampleClaim {
             .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
             .withCountyCourtJudgment(
                 SampleCountyCourtJudgment.builder()
-                    .paymentOption(PaymentOption.IMMEDIATELY)
+                    .paymentOption(IMMEDIATELY)
                     .ccjType(DEFAULT)
                     .build()
             ).withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
@@ -517,7 +518,7 @@ public final class SampleClaim {
             .documentName("001CLAIM-FORM")
             .documentType(SEALED_CLAIM)
             .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
-            .createdBy("OCMC")
+            .createdBy(OCMC)
             .build();
         this.claimDocumentCollection.addClaimDocument(claimDocument);
         return this;
@@ -529,7 +530,7 @@ public final class SampleClaim {
             .documentName("claim-form-claimant-copy.pdf")
             .documentType(CLAIM_ISSUE_RECEIPT)
             .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
-            .createdBy("OCMC")
+            .createdBy(OCMC)
             .build();
         this.claimDocumentCollection.addClaimDocument(claimDocument);
         return this;
@@ -541,7 +542,7 @@ public final class SampleClaim {
             .documentName("claim-response.pdf")
             .documentType(DEFENDANT_RESPONSE_RECEIPT)
             .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
-            .createdBy("OCMC")
+            .createdBy(OCMC)
             .build();
         this.claimDocumentCollection.addClaimDocument(claimDocument);
         return this;
@@ -553,7 +554,7 @@ public final class SampleClaim {
             .documentName("county-court-judgment-details.pdf")
             .documentType(CCJ_REQUEST)
             .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
-            .createdBy("OCMC")
+            .createdBy(OCMC)
             .build();
         this.claimDocumentCollection.addClaimDocument(claimDocument);
         return this;
@@ -565,7 +566,7 @@ public final class SampleClaim {
             .documentName("settlement-agreement.pdf")
             .documentType(SETTLEMENT_AGREEMENT)
             .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
-            .createdBy("OCMC")
+            .createdBy(OCMC)
             .build();
         this.claimDocumentCollection.addClaimDocument(claimDocument);
         return this;
