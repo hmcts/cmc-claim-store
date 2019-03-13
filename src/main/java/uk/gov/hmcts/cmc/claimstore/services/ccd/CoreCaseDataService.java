@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -96,7 +97,7 @@ public class CoreCaseDataService {
         this.jobSchedulerService = jobSchedulerService;
     }
 
-    public Claim submitPostPayment(String authorisation, Claim claim) {
+    public Claim createNewCase(String authorisation, Claim claim) {
         UserDetails userDetails = userService.getUserDetails(authorisation);
         boolean isRepresented = userDetails.isSolicitor() || userDetails.isCaseworker();
         CCDCase ccdCase = caseMapper.to(claim);
@@ -694,6 +695,7 @@ public class CoreCaseDataService {
         }
     }
 
+    @LogExecutionTime
     private void grantAccessToCase(CaseDetails caseDetails, String letterHolderId) {
         User user = userService.authenticateAnonymousCaseWorker();
         caseAccessApi.grantAccessToCase(
@@ -707,6 +709,7 @@ public class CoreCaseDataService {
         );
     }
 
+    @LogExecutionTime
     private CaseDetails submitCreate(
         String authorisation,
         EventRequestData eventRequestData,
@@ -736,6 +739,7 @@ public class CoreCaseDataService {
         );
     }
 
+    @LogExecutionTime
     private StartEventResponse startCreate(
         String authorisation, EventRequestData eventRequestData, boolean isRepresented
     ) {

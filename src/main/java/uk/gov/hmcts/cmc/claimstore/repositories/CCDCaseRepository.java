@@ -150,7 +150,7 @@ public class CCDCaseRepository implements CaseRepository {
 
     @Override
     public Claim saveClaim(String authorisation, Claim claim) {
-        return coreCaseDataService.submitPostPayment(authorisation, claim);
+        return coreCaseDataService.createNewCase(authorisation, claim);
     }
 
     @Override
