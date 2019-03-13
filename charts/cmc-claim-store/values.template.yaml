@@ -163,10 +163,14 @@ ccd:
     s2sAuthorisedServices: ccd_data,cmc_claim_store,ccd_gw
   caseManagementWeb:
     enabled: true
+    environment:
+      NODE_TLS_REJECT_UNAUTHORIZED: 0
   adminWeb:
     enabled: true
     s2sKey: ${ADMIN_S2S_KEY}
     idamClientSecret: ${ADMIN_WEB_IDAM_SECRET}
+    environment:
+      NODE_TLS_REJECT_UNAUTHORIZED: 0
   importer:
     image: hmcts.azurecr.io/hmcts/cmc-ccd-definition-importer
     definitionFilename: cmc-ccd.xlsx
