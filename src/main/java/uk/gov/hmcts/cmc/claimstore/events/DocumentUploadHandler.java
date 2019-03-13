@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.settlement.CountersignSettlementAgreementEvent;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
+import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
@@ -108,8 +109,8 @@ public class DocumentUploadHandler {
     public void uploadDocument(DefendantResponseEvent event) {
         Claim claim = event.getClaim();
         requireNonNull(claim, CLAIM_MUST_NOT_BE_NULL);
-        if (!claim.getResponse().isPresent()) {
-            throw new IllegalArgumentException("Response must be present");
+        if (!claim.getResponse().isPresent() && null == claim.getRespondedAt()) {
+            throw new NotFoundException("Defendant response does not exist for this claim");
         }
         PDF defendantResponseDocument = new PDF(buildResponseFileBaseName(claim.getReferenceNumber()),
             defendantResponseReceiptService.createPdf(claim),
@@ -121,6 +122,9 @@ public class DocumentUploadHandler {
     public void uploadDocument(CountyCourtJudgmentEvent event) {
         Claim claim = event.getClaim();
         requireNonNull(claim, CLAIM_MUST_NOT_BE_NULL);
+        if (null == claim.getCountyCourtJudgment() && null == claim.getCountyCourtJudgmentRequestedAt()) {
+            throw new NotFoundException("County Court Judgment does not exist for this claim");
+        }
         PDF document = new PDF(buildRequestForJudgementFileBaseName(claim.getReferenceNumber(),
             claim.getClaimData().getDefendant().getName()),
             countyCourtJudgmentPdfService.createPdf(claim),
@@ -130,22 +134,23 @@ public class DocumentUploadHandler {
 
     @EventListener
     public void uploadDocument(AgreementCountersignedEvent event) {
-        Claim claim = event.getClaim();
-        requireNonNull(claim, CLAIM_MUST_NOT_BE_NULL);
-        PDF document = new PDF(buildSettlementReachedFileBaseName(claim.getReferenceNumber()),
-            settlementAgreementCopyService.createPdf(claim),
-            SETTLEMENT_AGREEMENT);
-        uploadToDocumentManagement(claim, event.getAuthorisation(), document);
+        processSettlementAgreementUpload(event.getClaim(), event.getAuthorisation());
     }
 
     @EventListener
     public void uploadDocument(CountersignSettlementAgreementEvent event) {
-        Claim claim = event.getClaim();
+        processSettlementAgreementUpload(event.getClaim(), event.getAuthorisation());
+    }
+
+    private void processSettlementAgreementUpload(Claim claim, String authorisation) {
         requireNonNull(claim, CLAIM_MUST_NOT_BE_NULL);
+        if (!claim.getSettlement().isPresent() && null == claim.getSettlementReachedAt()) {
+            throw new NotFoundException("Settlement Agreement does not exist for this claim");
+        }
         PDF document = new PDF(buildSettlementReachedFileBaseName(claim.getReferenceNumber()),
             settlementAgreementCopyService.createPdf(claim),
             SETTLEMENT_AGREEMENT);
-        uploadToDocumentManagement(claim, event.getAuthorisation(), document);
+        uploadToDocumentManagement(claim, authorisation, document);
     }
 
     private void uploadToDocumentManagement(Claim claim, String authorisation, PDF... documents) {

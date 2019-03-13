@@ -22,12 +22,14 @@ import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.settlement.CountersignSettlementAgreementEvent;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent;
+import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 
 import java.util.Arrays;
 import java.util.List;
@@ -85,7 +87,7 @@ public class DocumentUploadHandlerTest {
         AUTHORISATION
     );
     private final AgreementCountersignedEvent offerMadeByClaimant =
-        new AgreementCountersignedEvent(SampleClaim.getDefault(),
+        new AgreementCountersignedEvent(SampleClaim.getWithSettlement(SampleSettlement.validDefaults()),
             MadeBy.CLAIMANT,
             AUTHORISATION);
     private final CountersignSettlementAgreementEvent countersignSettlementAgreementEvent =
@@ -151,8 +153,8 @@ public class DocumentUploadHandlerTest {
 
     @Test
     public void defendantResponseEventForDocumentUploadThrowsExceptionWhenResponseNotPresent() {
-        exceptionRule.expect(IllegalArgumentException.class);
-        exceptionRule.expectMessage("Response must be present");
+        exceptionRule.expect(NotFoundException.class);
+        exceptionRule.expectMessage("Defendant response does not exist for this claim");
         documentUploadHandler.uploadDocument(defendantResponseEventWithoutResponse);
     }
 
@@ -177,6 +179,14 @@ public class DocumentUploadHandlerTest {
     }
 
     @Test
+    public void countyCourtJudgmentEventForDocumentUploadThrowsNotFoundExceptionWhenCCJNotPresent() {
+        exceptionRule.expect(NotFoundException.class);
+        exceptionRule.expectMessage("County Court Judgment does not exist for this claim");
+        documentUploadHandler.uploadDocument(new CountyCourtJudgmentEvent(SampleClaim.withFullClaimData(),
+            AUTHORISATION));
+    }
+
+    @Test
     public void agreementCountersignedEventShouldTriggersDocumentUpload() {
         documentUploadHandler.uploadDocument(offerMadeByClaimant);
         assertCommon(SETTLEMENT_AGREEMENT);
@@ -187,6 +197,15 @@ public class DocumentUploadHandlerTest {
         exceptionRule.expect(NullPointerException.class);
         exceptionRule.expectMessage(CLAIM_MUST_NOT_BE_NULL);
         documentUploadHandler.uploadDocument(new AgreementCountersignedEvent(null, null, AUTHORISATION));
+    }
+
+    @Test
+    public void agreementCountersignedEventForDocumentUploadThrowsNotFoundExceptionWhenSettlementNotPresent() {
+        exceptionRule.expect(NotFoundException.class);
+        exceptionRule.expectMessage("Settlement Agreement does not exist for this claim");
+        documentUploadHandler.uploadDocument(new AgreementCountersignedEvent(SampleClaim.getDefault(),
+            null,
+            AUTHORISATION));
     }
 
     @Test
