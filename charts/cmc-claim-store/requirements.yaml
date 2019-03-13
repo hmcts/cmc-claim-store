@@ -11,5 +11,6 @@ dependencies:
   - name: cmc-citizen-frontend
     version: 0.0.4
     repository: '@hmcts'
+    alias: citizen-frontend
     tags:
-      - rpe-feature-toggle-api-pod
+      - cmc-citizen-frontend-pod
