@@ -11,17 +11,14 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.*;
 
 public class CaseEventMapper {
 
-    private static final Map<ClaimDocumentType, CaseEvent> claimDocumentTypeMap;
-
-    static {
-        claimDocumentTypeMap = new HashMap<>();
-        claimDocumentTypeMap.put(SEALED_CLAIM, SEALED_CLAIM_UPLOAD);
-        claimDocumentTypeMap.put(CLAIM_ISSUE_RECEIPT, CLAIM_ISSUE_RECEIPT_UPLOAD);
-        claimDocumentTypeMap.put(DEFENDANT_RESPONSE_RECEIPT, DEFENDANT_RESPONSE_UPLOAD);
-        claimDocumentTypeMap.put(CCJ_REQUEST, CCJ_REQUEST_UPLOAD);
-        claimDocumentTypeMap.put(SETTLEMENT_AGREEMENT, SETTLEMENT_AGREEMENT_UPLOAD);
-        claimDocumentTypeMap.put(DEFENDANT_PIN_LETTER, DEFENDANT_PIN_LETTER_UPLOAD);
-    }
+    private static final Map<ClaimDocumentType, CaseEvent> claimDocumentTypeMap = new HashMap<ClaimDocumentType, CaseEvent>(){{
+        put(SEALED_CLAIM, SEALED_CLAIM_UPLOAD);
+        put(CLAIM_ISSUE_RECEIPT, CLAIM_ISSUE_RECEIPT_UPLOAD);
+        put(DEFENDANT_RESPONSE_RECEIPT, DEFENDANT_RESPONSE_UPLOAD);
+        put(CCJ_REQUEST, CCJ_REQUEST_UPLOAD);
+        put(SETTLEMENT_AGREEMENT, SETTLEMENT_AGREEMENT_UPLOAD);
+        put(DEFENDANT_PIN_LETTER, DEFENDANT_PIN_LETTER_UPLOAD);
+    }};
 
     public static CaseEvent map(ClaimDocumentType type) {
 
