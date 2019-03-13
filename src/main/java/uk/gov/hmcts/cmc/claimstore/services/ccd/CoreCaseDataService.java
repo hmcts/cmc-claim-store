@@ -250,7 +250,7 @@ public class CoreCaseDataService {
         }
     }
 
-    public CaseDetails saveClaimDocuments(
+    public Claim saveClaimDocuments(
         String authorisation,
         Long caseId,
         ClaimDocumentCollection claimDocumentCollection
@@ -273,12 +273,13 @@ public class CoreCaseDataService {
 
             CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);
 
-            return submitUpdate(authorisation,
+            CaseDetails caseDetails = submitUpdate(authorisation,
                 eventRequestData,
                 caseDataContent,
                 caseId,
                 userDetails.isSolicitor() || userDetails.isCaseworker()
             );
+            return extractClaim(caseDetails);
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(
