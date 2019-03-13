@@ -20,6 +20,8 @@ import java.time.LocalDateTime;
 import java.util.function.Predicate;
 
 import static org.springframework.transaction.event.TransactionPhase.BEFORE_COMMIT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCUTORY_JUDGMENT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REJECT_ORGANISATION_PAYMENT_PLAN;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.*;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCD_ASYNC_FAILURE;
