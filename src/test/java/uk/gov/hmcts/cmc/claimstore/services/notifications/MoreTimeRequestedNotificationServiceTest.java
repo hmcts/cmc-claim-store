@@ -28,7 +28,7 @@ public class MoreTimeRequestedNotificationServiceTest extends BaseNotificationSe
 
     @Before
     public void beforeEachTest() {
-        service = new MoreTimeRequestedNotificationService(notificationClient);
+        service = new MoreTimeRequestedNotificationService(notificationClient, appInsights);
     }
 
     @Test(expected = NotificationException.class)

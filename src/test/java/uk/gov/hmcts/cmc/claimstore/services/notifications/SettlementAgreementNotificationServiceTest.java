@@ -14,7 +14,7 @@ public class SettlementAgreementNotificationServiceTest extends BaseNotification
     @Before
     public void setUp() {
         super.setUp();
-        service = new SettlementAgreementNotificationService(notificationClient, properties);
+        service = new SettlementAgreementNotificationService(notificationClient, properties, appInsights);
     }
 
     @Test

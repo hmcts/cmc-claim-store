@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -26,13 +27,17 @@ public class CCJNotificationServiceTest extends BaseNotificationServiceTest {
     @Mock
     private NotificationClient notificationClient;
 
+    @Mock
+    private AppInsights appInsights;
+
     private CCJNotificationService ccjNotificationService;
 
     @Before
     public void setup() {
         ccjNotificationService = new CCJNotificationService(
             notificationClient,
-            properties
+            properties,
+            appInsights
         );
 
         when(templates.getEmail()).thenReturn(emailTemplates);

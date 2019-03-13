@@ -28,7 +28,7 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
 
     @Before
     public void beforeEachTest() {
-        service = new ClaimIssuedNotificationService(notificationClient, properties);
+        service = new ClaimIssuedNotificationService(notificationClient, properties, appInsights);
         when(properties.getFrontendBaseUrl()).thenReturn(FRONTEND_BASE_URL);
         when(properties.getRespondToClaimUrl()).thenReturn(RESPOND_TO_CLAIM_URL);
     }

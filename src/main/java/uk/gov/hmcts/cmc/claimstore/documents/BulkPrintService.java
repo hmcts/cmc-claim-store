@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BULK_PRINT_FAILED;
 
 @Service
@@ -74,7 +75,7 @@ public class BulkPrintService {
             event.getSealedClaimDocument(),
             event.getClaim()
         );
-        appInsights.trackEvent(BULK_PRINT_FAILED, "referenceNumber", event.getClaim().getReferenceNumber());
+        appInsights.trackEvent(BULK_PRINT_FAILED, REFERENCE_NUMBER, event.getClaim().getReferenceNumber());
     }
 
     private static Map<String, Object> wrapInMap(Claim claim) {

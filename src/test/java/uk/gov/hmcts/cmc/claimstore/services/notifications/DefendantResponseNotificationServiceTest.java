@@ -30,8 +30,8 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
     @Before
     public void beforeEachTest() {
         service = new DefendantResponseNotificationService(
-            notificationClient, new FreeMediationDecisionDateCalculator(28), properties
-        );
+            notificationClient, new FreeMediationDecisionDateCalculator(28), properties,
+            appInsights);
 
         when(properties.getFrontendBaseUrl()).thenReturn(FRONTEND_BASE_URL);
         when(templates.getEmail()).thenReturn(emailTemplates);

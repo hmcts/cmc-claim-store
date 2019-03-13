@@ -30,7 +30,7 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
 
     @Before
     public void beforeEachTest() {
-        service = new NotificationToDefendantService(notificationClient, properties);
+        service = new NotificationToDefendantService(notificationClient, properties, appInsights);
         claim = SampleClaim.builder()
             .withDefendantEmail(DEFENDANT_EMAIL)
             .build();

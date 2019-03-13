@@ -32,8 +32,12 @@ public class EventProducer {
         this.publisher = publisher;
     }
 
-    public void createClaimIssuedEvent(Claim claim, String pin,
-                                       String submitterName, String authorisation) {
+    public void createClaimIssuedEvent(
+        Claim claim,
+        String pin,
+        String submitterName,
+        String authorisation
+    ) {
 
         if (claim.getClaimData().isClaimantRepresented()) {
             publisher.publishEvent(new RepresentedClaimIssuedEvent(claim, submitterName, authorisation));
@@ -53,7 +57,8 @@ public class EventProducer {
 
     public void createCountyCourtJudgmentEvent(
         Claim claim,
-        String authorisation) {
+        String authorisation
+    ) {
         publisher.publishEvent(new CountyCourtJudgmentEvent(claim, authorisation));
     }
 

@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -45,6 +46,9 @@ public abstract class BaseNotificationServiceTest {
     protected NotificationTemplates templates;
     @Mock
     protected EmailTemplates emailTemplates;
+
+    @Mock
+    protected AppInsights appInsights;
 
     @Captor
     protected ArgumentCaptor<Map<String, String>> templateParameters;

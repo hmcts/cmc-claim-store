@@ -200,35 +200,6 @@ public class ClaimServiceTest {
     }
 
     @Test
-    public void saveClaimShouldProceedWhenDuplicated() {
-        ClaimData claimData = SampleClaimData.validDefaults();
-        when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(claimantDetails);
-        when(caseRepository.getClaimByExternalId(anyString(), eq(AUTHORISATION)))
-            .thenReturn(Optional.of(claim));
-
-        Claim createdClaim = claimService.saveClaim(USER_ID, claimData, AUTHORISATION, singletonList("admissions"));
-
-        assertThat(createdClaim.getClaimData()).isEqualTo(claim.getClaimData());
-
-        verify(appInsights).trackEvent(
-            AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE,
-            AppInsights.CLAIM_EXTERNAL_ID,
-            claimData.getExternalId().toString()
-        );
-        verify(eventProducer).createClaimIssuedEvent(
-            eq(createdClaim),
-            eq(null),
-            anyString(),
-            eq(AUTHORISATION)
-        );
-        verify(appInsights).trackEvent(
-            AppInsightsEvent.CLAIM_ISSUED_CITIZEN,
-            AppInsights.REFERENCE_NUMBER,
-            claim.getReferenceNumber()
-        );
-    }
-
-    @Test
     public void requestMoreTimeToRespondShouldFinishSuccessfully() {
 
         LocalDate newDeadline = RESPONSE_DEADLINE.plusDays(20);
