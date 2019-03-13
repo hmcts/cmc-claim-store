@@ -39,6 +39,8 @@ public class ClaimDocumentMapperTest {
 
     private static final String CREATED_BY = "bar";
 
+    private CCDCollectionElement<CCDClaimDocument> ccdCollectionElement;
+
     @Before
     public void setUp() {
         claimDocument = ClaimDocument.builder()
@@ -49,12 +51,12 @@ public class ClaimDocumentMapperTest {
             .createdDatetime(yesterday)
             .createdBy(CREATED_BY)
             .build();
+
+        ccdCollectionElement = claimDocumentMapper.to(claimDocument);
     }
 
     @Test
     public void mapTo() {
-        CCDCollectionElement<CCDClaimDocument> ccdCollectionElement = claimDocumentMapper.to(claimDocument);
-
         assertEquals(claimDocument.getDocumentName(), ccdCollectionElement.getValue().getDocumentName());
         assertEquals(claimDocument.getDocumentManagementUrl(),
             URI.create(ccdCollectionElement.getValue().getDocumentLink().getDocumentUrl()));
@@ -66,7 +68,6 @@ public class ClaimDocumentMapperTest {
 
     @Test
     public void mapFrom() {
-        CCDCollectionElement<CCDClaimDocument> ccdCollectionElement = claimDocumentMapper.to(claimDocument);
         ClaimDocument claimDocument = claimDocumentMapper.from(ccdCollectionElement);
         CCDClaimDocument ccdClaimDocument = ccdCollectionElement.getValue();
 
