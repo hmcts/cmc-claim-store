@@ -70,10 +70,9 @@ public class DefendantMapper {
         );
         respondentBuilder.settlementReachedAt(claim.getSettlementReachedAt());
 
+        respondentBuilder.partyDetail(partyDetail.build());
         claim.getResponse().ifPresent(toResponse(claim, respondentBuilder, partyDetail));
-        if (!claim.getResponse().isPresent()) {
-            respondentBuilder.partyDetail(partyDetail.build());
-        }
+
         theirDetailsMapper.to(respondentBuilder, theirDetails);
 
         respondentBuilder.claimantResponse(claimantResponseMapper.to(claim));
