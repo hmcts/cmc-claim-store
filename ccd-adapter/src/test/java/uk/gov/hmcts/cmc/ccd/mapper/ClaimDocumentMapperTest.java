@@ -29,27 +29,21 @@ public class ClaimDocumentMapperTest {
 
     private ClaimDocument claimDocument;
 
-    private static final String NAME = "foo";
-
-    private static final String URL = "www.google.com";
-
     private LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
 
     private LocalDateTime now = LocalDateTime.now();
-
-    private static final String CREATED_BY = "bar";
 
     private CCDCollectionElement<CCDClaimDocument> ccdCollectionElement;
 
     @Before
     public void setUp() {
         claimDocument = ClaimDocument.builder()
-            .documentName(NAME)
-            .documentManagementUrl(URI.create(URL))
+            .documentName("foo")
+            .documentManagementUrl(URI.create("www.google.com"))
             .documentType(ClaimDocumentType.CLAIM_ISSUE_RECEIPT)
             .authoredDatetime(now)
             .createdDatetime(yesterday)
-            .createdBy(CREATED_BY)
+            .createdBy("bar")
             .build();
 
         ccdCollectionElement = claimDocumentMapper.to(claimDocument);
