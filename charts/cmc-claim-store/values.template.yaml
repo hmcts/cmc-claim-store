@@ -86,8 +86,9 @@ cmc-citizen-frontend:
       primaryIngressHost: ${SERVICE_FQDN}
       prefix: www
     environment:
+      LOG_LEVEL: DEBUG
       FEATURE_TOGGLES_API_URL: http://${SERVICE_NAME}-ftr-tgl-api
-      CLAIM_STORE_URL: http://${SERVICE_NAME}-claim-store
+      CLAIM_STORE_URL: http://${SERVICE_NAME}-java
       ADMIN_USERNAME_TEST: ${ADMIN_USERNAME_TEST}
   rpe-feature-toggle-api:
     releaseNameOverride: ${SERVICE_NAME}-ftr-tgl-api
