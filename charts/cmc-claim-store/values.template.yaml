@@ -48,12 +48,10 @@ java:
     CLAIM_STORE_DB_HOST: ${SERVICE_NAME}-claim-store-postgres
     CLAIM_STORE_DB_PORT: 5432
     CLAIM_STORE_DB_USERNAME: claimstore
-    CLAIM_STORE_DB_PASSWORD: claimstore
     CLAIM_STORE_DB_NAME: claimstore
     CMC_DB_HOST: ${SERVICE_NAME}-claim-store-postgres
     CMC_DB_PORT: 5432
     CMC_DB_USERNAME: cmc
-    CMC_DB_PASSWORD: cmc
     CMC_DB_NAME: cmc
     SPRING_MAIL_HOST: mta.reform.hmcts.net
     SPRING_MAIL_PORT: 25
