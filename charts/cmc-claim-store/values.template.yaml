@@ -88,6 +88,7 @@ cmc-citizen-frontend:
     environment:
       FEATURE_TOGGLES_API_URL: http://${SERVICE_NAME}-ftr-tgl-api
       CLAIM_STORE_URL: http://${SERVICE_NAME}-claim-store
+      ADMIN_USERNAME_TEST: ${ADMIN_USERNAME_TEST}
   rpe-feature-toggle-api:
     releaseNameOverride: ${SERVICE_NAME}-ftr-tgl-api
     importer:
