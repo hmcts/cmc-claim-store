@@ -321,10 +321,10 @@ public class ClaimService {
         ccdEventProducer.linkDefendantCCDEvent(authorisation);
     }
 
-    public void linkClaimToDocument(String authorisation,
+    public Claim saveClaimDocuments(String authorisation,
                                     Long claimId,
                                     ClaimDocumentCollection claimDocumentCollection) {
-        caseRepository.saveClaimDocuments(authorisation, claimId, claimDocumentCollection);
+        return caseRepository.saveClaimDocuments(authorisation, claimId, claimDocumentCollection);
     }
 
     public void linkLetterHolder(Long claimId, String userId) {
