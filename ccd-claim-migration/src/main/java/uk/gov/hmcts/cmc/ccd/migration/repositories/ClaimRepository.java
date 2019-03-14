@@ -13,7 +13,8 @@ import java.util.List;
 @SuppressWarnings("squid:S1214") // Pointless to create class for string statement
 public interface ClaimRepository {
 
-    @SqlQuery("SELECT * FROM claim WHERE is_migrated = false order by id asc limit 5000 offset 41000")
+    @SqlQuery("SELECT * FROM claim WHERE id between (SELECT id FROM claim where reference_number ='048MC334')"
+        + " and (SELECT id FROM claim where reference_number ='049MC361') order by id asc")
     List<Claim> getAllNotMigratedClaims();
 
     @SqlUpdate("UPDATE claim SET is_migrated=true WHERE id=:claimId")
