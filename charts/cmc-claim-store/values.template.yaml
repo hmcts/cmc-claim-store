@@ -18,7 +18,7 @@ postgresql:
   persistence:
     enabled: false
 
-claim-store:
+java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   applicationPort: 4400
@@ -77,7 +77,7 @@ claim-store:
     RPA_NOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT: civilmoneyclaims+rpa-county-court-judgement@gmail.com
     RPA_NOTIFICATIONS_PAIDINFULLRECIPIENT: civilmoneyclaims+rpa-paid-in-full@gmail.com
 
-citizen-frontend:
+cmc-citizen-frontend:
   nodejs:
     image: hmcts/cmc-citizen-frontend:latest  # master
     ingressIP: ${INGRESS_IP}
@@ -90,13 +90,13 @@ citizen-frontend:
     environment:
       FEATURE_TOGGLES_API_URL: http://${SERVICE_NAME}-ftr-tgl-api
       CLAIM_STORE_URL: http://${SERVICE_NAME}-claim-store
-      CONTACT_EMAIL: ${CONTACT_EMAIL}
   rpe-feature-toggle-api:
     releaseNameOverride: ${SERVICE_NAME}-ftr-tgl-api
-    oneoff:
-      command: /scripts/add-weighted-toggle.sh cmc_admissions 'CMC admissions' '1.0'
-        ${ADMIN_USERNAME_TEST} ${ADMIN_PASSWORD_TEST} && /scripts/add-toggle.sh cmc_defence_reminders
-        'CMC defence reminders' false ${ADMIN_USERNAME_TEST} ${ADMIN_PASSWORD_TEST}
+    importer:
+      oneoff:
+        command: /scripts/add-weighted-toggle.sh cmc_admissions 'CMC admissions' '1.0'
+          ${ADMIN_USERNAME_TEST} ${ADMIN_PASSWORD_TEST} && /scripts/add-toggle.sh cmc_defence_reminders
+          'CMC defence reminders' false ${ADMIN_USERNAME_TEST} ${ADMIN_PASSWORD_TEST}
     java:
       releaseNameOverride: ${SERVICE_NAME}-ftr-tgl-api
       environment:
