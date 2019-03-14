@@ -153,7 +153,7 @@ public class CoreCaseDataServiceFailureTest {
         Claim providedClaim = SampleClaim.getDefault();
         when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
 
-        service.submitPostPayment(AUTHORISATION, providedClaim);
+        service.createNewCase(AUTHORISATION, providedClaim);
 
         verify(coreCaseDataApi).submitForCitizen(
             eq(AUTHORISATION),
