@@ -74,6 +74,7 @@ public class CoreCaseDataService {
     private final AuthTokenGenerator authTokenGenerator;
     private final CaseAccessApi caseAccessApi;
     private final JobSchedulerService jobSchedulerService;
+    private final CCDCreateCaseService ccdCreateCaseService;
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     @Autowired
@@ -85,7 +86,8 @@ public class CoreCaseDataService {
         CoreCaseDataApi coreCaseDataApi,
         AuthTokenGenerator authTokenGenerator,
         CaseAccessApi caseAccessApi,
-        JobSchedulerService jobSchedulerService
+        JobSchedulerService jobSchedulerService,
+        CCDCreateCaseService ccdCreateCaseService
     ) {
         this.caseMapper = caseMapper;
         this.userService = userService;
@@ -95,8 +97,10 @@ public class CoreCaseDataService {
         this.authTokenGenerator = authTokenGenerator;
         this.caseAccessApi = caseAccessApi;
         this.jobSchedulerService = jobSchedulerService;
+        this.ccdCreateCaseService = ccdCreateCaseService;
     }
 
+    @LogExecutionTime
     public Claim createNewCase(String authorisation, Claim claim) {
         UserDetails userDetails = userService.getUserDetails(authorisation);
         boolean isRepresented = userDetails.isSolicitor() || userDetails.isCaseworker();
@@ -115,7 +119,7 @@ public class CoreCaseDataService {
                 .ignoreWarning(true)
                 .build();
 
-            StartEventResponse startEventResponse = startCreate(authorisation, eventRequestData,
+            StartEventResponse startEventResponse = ccdCreateCaseService.startCreate(authorisation, eventRequestData,
                 userDetails.isSolicitor() || userDetails.isCaseworker());
 
             CaseDataContent caseDataContent = CaseDataContent.builder()
@@ -128,7 +132,7 @@ public class CoreCaseDataService {
                 .data(ccdCase)
                 .build();
 
-            CaseDetails caseDetails = submitCreate(
+            CaseDetails caseDetails = ccdCreateCaseService.submitCreate(
                 authorisation,
                 eventRequestData,
                 caseDataContent,
@@ -697,7 +701,7 @@ public class CoreCaseDataService {
     }
 
     @LogExecutionTime
-    private void grantAccessToCase(CaseDetails caseDetails, String letterHolderId) {
+    public void grantAccessToCase(CaseDetails caseDetails, String letterHolderId) {
         User user = userService.authenticateAnonymousCaseWorker();
         caseAccessApi.grantAccessToCase(
             user.getAuthorisation(),
@@ -707,61 +711,6 @@ public class CoreCaseDataService {
             CASE_TYPE_ID,
             caseDetails.getId().toString(),
             new UserId(letterHolderId)
-        );
-    }
-
-    @LogExecutionTime
-    private CaseDetails submitCreate(
-        String authorisation,
-        EventRequestData eventRequestData,
-        CaseDataContent caseDataContent,
-        boolean represented
-    ) {
-        if (represented) {
-            return coreCaseDataApi.submitForCaseworker(
-                authorisation,
-                this.authTokenGenerator.generate(),
-                eventRequestData.getUserId(),
-                eventRequestData.getJurisdictionId(),
-                eventRequestData.getCaseTypeId(),
-                eventRequestData.isIgnoreWarning(),
-                caseDataContent
-            );
-        }
-
-        return coreCaseDataApi.submitForCitizen(
-            authorisation,
-            this.authTokenGenerator.generate(),
-            eventRequestData.getUserId(),
-            eventRequestData.getJurisdictionId(),
-            eventRequestData.getCaseTypeId(),
-            eventRequestData.isIgnoreWarning(),
-            caseDataContent
-        );
-    }
-
-    @LogExecutionTime
-    private StartEventResponse startCreate(
-        String authorisation, EventRequestData eventRequestData, boolean isRepresented
-    ) {
-        if (isRepresented) {
-            return coreCaseDataApi.startForCaseworker(
-                authorisation,
-                authTokenGenerator.generate(),
-                eventRequestData.getUserId(),
-                eventRequestData.getJurisdictionId(),
-                eventRequestData.getCaseTypeId(),
-                eventRequestData.getEventId()
-            );
-        }
-
-        return coreCaseDataApi.startForCitizen(
-            authorisation,
-            authTokenGenerator.generate(),
-            eventRequestData.getUserId(),
-            eventRequestData.getJurisdictionId(),
-            eventRequestData.getCaseTypeId(),
-            eventRequestData.getEventId()
         );
     }
 
