@@ -20,8 +20,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -181,13 +179,12 @@ public class MoreTimeRequestedCallbackTest extends MockSpringTest {
             caseDetailsTemp.getData().put("respondedAt", LocalDateTimeFactory.nowInUTC());
         }
 
-        Map<String, Object> caseDetails = new HashMap<>();
-        caseDetails.put("id", caseDetailsTemp.getId());
-        caseDetails.put("case_data", caseDetailsTemp.getData());
-
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .eventId(CaseEvent.MORE_TIME_REQUESTED_PAPER.getValue())
-            .caseDetails(caseDetails)
+            .caseDetails(CaseDetails.builder()
+                .id(caseDetailsTemp.getId())
+                .data(caseDetailsTemp.getData())
+                .build())
             .build();
 
         return webClient

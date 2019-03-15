@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.SettlementAgreementNotificationService;
 
 @Component
-public class    SignSettlementAgreementActionsHandler {
+public class SignSettlementAgreementActionsHandler {
 
     private final SettlementAgreementNotificationService settlementAgreementNotificationService;
 
