@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.Oauth2;
 import uk.gov.hmcts.cmc.claimstore.idam.models.TokenExchangeResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 
 import java.util.Base64;
 
@@ -38,6 +39,7 @@ public class UserService {
         this.oauth2 = oauth2;
     }
 
+    @LogExecutionTime
     public UserDetails getUserDetails(String authorisation) {
         return idamApi.retrieveUserDetails(authorisation);
     }
