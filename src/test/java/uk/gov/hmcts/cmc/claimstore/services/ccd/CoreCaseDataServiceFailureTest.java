@@ -564,4 +564,3 @@ public class CoreCaseDataServiceFailureTest {
         service.savePaidInFull(claim.getId(), paidInFull, AUTHORISATION);
     }
 }
-ClaimDocumentMapperTest.java:
