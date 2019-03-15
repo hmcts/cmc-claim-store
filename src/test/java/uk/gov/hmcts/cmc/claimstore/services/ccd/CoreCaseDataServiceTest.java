@@ -38,6 +38,7 @@ import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 
 import java.net.URI;
@@ -94,6 +95,8 @@ public class CoreCaseDataServiceTest {
     @Mock
     private CaseAccessApi caseAccessApi;
     @Mock
+    private CCDCreateCaseService ccdCreateCaseService;
+    @Mock
     private JobSchedulerService jobSchedulerService;
     @Captor
     private ArgumentCaptor<Map<String, Object>> caseDataCaptor;
@@ -104,20 +107,6 @@ public class CoreCaseDataServiceTest {
     public void before() {
         when(authTokenGenerator.generate()).thenReturn(AUTH_TOKEN);
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(USER_DETAILS);
-        when(userService.authenticateAnonymousCaseWorker()).thenReturn(ANONYMOUS_USER);
-        when(coreCaseDataApi.startForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            anyString()
-        ))
-            .thenReturn(StartEventResponse.builder()
-                .caseDetails(CaseDetails.builder().build())
-                .eventId("eventId")
-                .token("token")
-                .build());
 
         when(coreCaseDataApi.startEventForCitizen(
             eq(AUTHORISATION),
@@ -156,24 +145,32 @@ public class CoreCaseDataServiceTest {
             referenceNumberService,
             coreCaseDataApi,
             authTokenGenerator,
-            caseAccessApi,
-            jobSchedulerService
+            jobSchedulerService,
+            ccdCreateCaseService
         );
     }
 
     @Test
-    public void submitPostPaymentShouldReturnClaim() {
+    public void submitClaimShouldReturnClaim() {
         Claim providedClaim = SampleClaim.getDefault();
         Claim expectedClaim = SampleClaim.claim(providedClaim.getClaimData(), "000MC001");
 
-        when(coreCaseDataApi.submitForCitizen(
+        when(ccdCreateCaseService.startCreate(
             eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
+            any(EventRequestData.class),
+            eq(false)
+        ))
+            .thenReturn(StartEventResponse.builder()
+                .caseDetails(CaseDetails.builder().build())
+                .eventId("eventId")
+                .token("token")
+                .build());
+
+        when(ccdCreateCaseService.submitCreate(
+            eq(AUTHORISATION),
+            any(EventRequestData.class),
+            any(CaseDataContent.class),
+            eq(false)
         ))
             .thenReturn(CaseDetails.builder()
                 .id(SampleClaim.CLAIM_ID)

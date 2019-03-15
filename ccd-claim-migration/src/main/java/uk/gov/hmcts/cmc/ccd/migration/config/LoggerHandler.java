@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.ccd.migration.config;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
@@ -15,11 +14,7 @@ public class LoggerHandler {
     private static final String LOG_MESSAGE_FORMAT = "%s.%s execution time : %d ms";
     private static final Logger logger = LoggerFactory.getLogger(LoggerHandler.class);
 
-    @Pointcut("execution(@uk.gov.hmcts.cmc.ccd.migration.stereotypes.LogExecutionTime * *(..))")
-    public void isAnnotated() {
-    }
-
-    @Around("isAnnotated()")
+    @Around("@annotation(uk.gov.hmcts.cmc.ccd.migration.stereotypes.LogExecutionTime)")
     public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
