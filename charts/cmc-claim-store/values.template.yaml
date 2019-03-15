@@ -77,12 +77,12 @@ java:
 
 cmc-citizen-frontend:
   nodejs:
-    image: hmcts/cmc-citizen-frontend:latest  # master
+    image: hmcts.azurecr.io/hmcts/cmc-citizen-frontend:latest  # master
     ingressIP: ${INGRESS_IP}
     consulIP: ${CONSUL_LB_IP}
     releaseNameOverride: ${SERVICE_NAME}-nodejs
-    readinessDelay: 90  # claim-store will start much slower
-    livenessDelay: 90  # claim-store will start much slower
+    readinessDelay: 90                        # claim-store will start much slower
+    livenessDelay: 90                         # claim-store will start much slower
     registerAdditionalDns:
       enabled: true
       primaryIngressHost: ${SERVICE_FQDN}
@@ -91,7 +91,6 @@ cmc-citizen-frontend:
       LOG_LEVEL: DEBUG
       FEATURE_TOGGLES_API_URL: http://${SERVICE_NAME}-ftr-tgl-api
       CLAIM_STORE_URL: http://${SERVICE_NAME}-java
-      ADMIN_USERNAME_TEST: ${ADMIN_USERNAME_TEST}
   rpe-feature-toggle-api:
     releaseNameOverride: ${SERVICE_NAME}-ftr-tgl-api
     importer:
