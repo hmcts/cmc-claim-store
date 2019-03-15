@@ -28,10 +28,11 @@ public class CCDCreateCaseService {
     private final UserService userService;
 
     @Autowired
-    public CCDCreateCaseService(CoreCaseDataApi coreCaseDataApi,
-                                AuthTokenGenerator authTokenGenerator,
-                                CaseAccessApi caseAccessApi,
-                                UserService userService
+    public CCDCreateCaseService(
+        CoreCaseDataApi coreCaseDataApi,
+        AuthTokenGenerator authTokenGenerator,
+        CaseAccessApi caseAccessApi,
+        UserService userService
     ) {
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;
