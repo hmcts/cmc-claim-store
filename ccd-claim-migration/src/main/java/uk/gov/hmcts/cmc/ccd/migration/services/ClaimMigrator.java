@@ -48,7 +48,7 @@ public class ClaimMigrator {
         AtomicInteger updatedClaims = new AtomicInteger(0);
         AtomicInteger failedMigrations = new AtomicInteger(0);
 
-        ForkJoinPool forkJoinPool = new ForkJoinPool(25);
+        ForkJoinPool forkJoinPool = new ForkJoinPool(10);
 
         try {
             forkJoinPool
