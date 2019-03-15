@@ -1,6 +1,6 @@
 tags:
-  - postgresql-pod
-  - cmc-citizen-frontend-pod
+  postgresql-pod: true
+  cmc-citizen-frontend-pod: true
 
 postgresql:
   resources:
