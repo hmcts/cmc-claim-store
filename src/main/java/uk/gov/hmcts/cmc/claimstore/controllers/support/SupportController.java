@@ -111,7 +111,7 @@ public class SupportController {
     public void uploadDocumentToDocumentManagement(
         @PathVariable("referenceNumber") String referenceNumber,
         @PathVariable("claimDocumentType") ClaimDocumentType claimDocumentType,
-        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation) {
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation) {
 
         Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
             .orElseThrow(() -> new NotFoundException(String.format(CLAIM_DOES_NOT_EXIST, referenceNumber)));
