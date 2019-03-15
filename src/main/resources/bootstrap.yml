@@ -1,0 +1,13 @@
+spring:
+  cloud:
+    propertiesvolume:
+      paths: /mnt/secrets/cmc
+      prefixed: false
+      aliases:
+        claim-store-s2s-secret: IDAM_S2S_AUTH_TOTP_SECRET
+        notify-api-key: GOV_NOTIFY_API_KEY
+        citizen-oauth-client-secret: oauth2.client.secret
+        anonymous-caseworker-username: IDAM_CASEWORKER_ANONYMOUS_USERNAME
+        anonymous-caseworker-password: IDAM_CASEWORKER_ANONYMOUS_PASSWORD
+        system-update-username: IDAM_CASEWORKER_SYSTEM_USERNAME
+        system-update-password: IDAM_CASEWORKER_SYSTEM_PASSWORD

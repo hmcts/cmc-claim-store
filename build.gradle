@@ -117,7 +117,7 @@ def versions = [
   logback          : '1.2.3',
   springBoot       : springBootVersion,
   springfoxSwagger : '2.9.2',
-  reformJavaLogging: '3.0.2'
+  reformJavaLogging: '5.0.1'
 ]
 
 configurations {
@@ -168,7 +168,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.2.0'
   compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.2.0'
   compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.3'
-
+  compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version:'0.0.4'
 
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
 
