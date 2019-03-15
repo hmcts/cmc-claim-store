@@ -97,6 +97,12 @@ data "azurerm_key_vault_secret" "oauth_client_secret" {
   vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
 }
 
+resource "azurerm_key_vault_secret" "cmc-db-password" {
+  name      = "cmc-db-password"
+  value     = "${module.database.postgresql_password}"
+  vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
+}
+
 module "database" {
   source = "git@github.com:hmcts/moj-module-postgres?ref=master"
   product = "${var.product}"
