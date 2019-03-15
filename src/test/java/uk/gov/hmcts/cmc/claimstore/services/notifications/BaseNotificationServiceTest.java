@@ -21,6 +21,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class BaseNotificationServiceTest {
     protected static final String CLAIMANT_CLAIM_ISSUED_TEMPLATE = "claimantClaimIssued";
+
+    protected static final String CLAIMANT_SIGNED_SETTLEMENT_AGREEMENT_TO_CLAIMANT_TEMPLATE
+        = "claimantSignedSettlementAgreementToClaimant";
+
     protected static final String RESPONSE_BY_CLAIMANT_EMAIL_TO_DEFENDANT = "responseByClaimantEmailToDefendant";
     protected static final String DEFENDANT_RESPONSE_TEMPLATE = "fullDefence";
     protected static final String DEFENDANT_RESPONSE_NO_MEDIATION_TEMPLATE = "fullDefence-noMediation";

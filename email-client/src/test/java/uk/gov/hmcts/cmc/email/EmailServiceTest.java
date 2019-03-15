@@ -10,9 +10,9 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.util.Collections;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
