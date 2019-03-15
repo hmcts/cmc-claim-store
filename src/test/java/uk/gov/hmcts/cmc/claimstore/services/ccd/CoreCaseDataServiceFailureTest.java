@@ -132,7 +132,6 @@ public class CoreCaseDataServiceFailureTest {
             referenceNumberService,
             coreCaseDataApi,
             authTokenGenerator,
-            caseAccessApi,
             jobSchedulerService,
             ccdCreateCaseService
         );

@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
-import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
@@ -26,14 +25,12 @@ import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
-import uk.gov.hmcts.reform.ccd.client.model.UserId;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -72,7 +69,6 @@ public class CoreCaseDataService {
     private final ReferenceNumberService referenceNumberService;
     private final CoreCaseDataApi coreCaseDataApi;
     private final AuthTokenGenerator authTokenGenerator;
-    private final CaseAccessApi caseAccessApi;
     private final JobSchedulerService jobSchedulerService;
     private final CCDCreateCaseService ccdCreateCaseService;
 
@@ -85,7 +81,6 @@ public class CoreCaseDataService {
         ReferenceNumberService referenceNumberService,
         CoreCaseDataApi coreCaseDataApi,
         AuthTokenGenerator authTokenGenerator,
-        CaseAccessApi caseAccessApi,
         JobSchedulerService jobSchedulerService,
         CCDCreateCaseService ccdCreateCaseService
     ) {
@@ -95,7 +90,6 @@ public class CoreCaseDataService {
         this.referenceNumberService = referenceNumberService;
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;
-        this.caseAccessApi = caseAccessApi;
         this.jobSchedulerService = jobSchedulerService;
         this.ccdCreateCaseService = ccdCreateCaseService;
     }
@@ -140,7 +134,7 @@ public class CoreCaseDataService {
             );
 
             if (!isRepresented) {
-                grantAccessToCase(caseDetails, claim.getLetterHolderId());
+                ccdCreateCaseService.grantAccessToCase(caseDetails, claim.getLetterHolderId());
             }
 
             return extractClaim(caseDetails);
@@ -698,20 +692,6 @@ public class CoreCaseDataService {
                 caseDataContent
             );
         }
-    }
-
-    @LogExecutionTime
-    public void grantAccessToCase(CaseDetails caseDetails, String letterHolderId) {
-        User user = userService.authenticateAnonymousCaseWorker();
-        caseAccessApi.grantAccessToCase(
-            user.getAuthorisation(),
-            authTokenGenerator.generate(),
-            user.getUserDetails().getId(),
-            JURISDICTION_ID,
-            CASE_TYPE_ID,
-            caseDetails.getId().toString(),
-            new UserId(letterHolderId)
-        );
     }
 
     private Claim extractClaim(CaseDetails caseDetails) {

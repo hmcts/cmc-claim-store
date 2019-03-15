@@ -107,7 +107,6 @@ public class CoreCaseDataServiceTest {
     public void before() {
         when(authTokenGenerator.generate()).thenReturn(AUTH_TOKEN);
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(USER_DETAILS);
-        when(userService.authenticateAnonymousCaseWorker()).thenReturn(ANONYMOUS_USER);
 
         when(coreCaseDataApi.startEventForCitizen(
             eq(AUTHORISATION),
@@ -146,7 +145,6 @@ public class CoreCaseDataServiceTest {
             referenceNumberService,
             coreCaseDataApi,
             authTokenGenerator,
-            caseAccessApi,
             jobSchedulerService,
             ccdCreateCaseService
         );

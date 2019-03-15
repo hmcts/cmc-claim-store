@@ -56,12 +56,11 @@ public class CCDStoreConfiguration {
         ReferenceNumberService referenceNumberService,
         CoreCaseDataApi coreCaseDataApi,
         AuthTokenGenerator authTokenGenerator,
-        CaseAccessApi caseAccessApi,
         JobSchedulerService jobSchedulerService,
         CCDCreateCaseService ccdCreateCaseService
     ) {
         return new CoreCaseDataService(caseMapper, userService, jsonMapper, referenceNumberService, coreCaseDataApi,
-            authTokenGenerator, caseAccessApi, jobSchedulerService, ccdCreateCaseService);
+            authTokenGenerator, jobSchedulerService, ccdCreateCaseService);
     }
 
     @Bean
