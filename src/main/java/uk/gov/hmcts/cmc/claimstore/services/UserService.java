@@ -56,6 +56,7 @@ public class UserService {
         return new User(authorisation, userDetails);
     }
 
+    @LogExecutionTime
     public User authenticateAnonymousCaseWorker() {
         IdamCaseworker anonymousCaseworker = idamCaseworkerProperties.getAnonymous();
         return authenticateUser(anonymousCaseworker.getUsername(), anonymousCaseworker.getPassword());
