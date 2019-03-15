@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -44,6 +45,7 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
+    @LogExecutionTime
     public Optional<Claim> getClaimByExternalId(String externalId, String authorisation) {
         return ccdCaseApi.getByExternalId(externalId, authorisation);
     }
