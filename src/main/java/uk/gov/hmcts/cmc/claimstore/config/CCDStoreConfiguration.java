@@ -49,6 +49,21 @@ public class CCDStoreConfiguration {
     }
 
     @Bean
+    public CCDCreateCaseService ccdCreateCaseService(
+        CoreCaseDataApi coreCaseDataApi,
+        AuthTokenGenerator authTokenGenerator,
+        CaseAccessApi caseAccessApi,
+        UserService userService
+    ) {
+        return new CCDCreateCaseService(
+            coreCaseDataApi,
+            authTokenGenerator,
+            caseAccessApi,
+            userService
+        );
+    }
+
+    @Bean
     public CoreCaseDataService coreCaseDataService(
         CaseMapper caseMapper,
         UserService userService,
