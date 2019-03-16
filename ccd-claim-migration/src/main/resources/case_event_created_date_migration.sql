@@ -23,7 +23,7 @@ WITH subquery AS (
      case_data.id,
      case_data.jurisdiction,
      defendants -> 'value' as value
-     FROM case_data , jsonb_array_elements(case_data.data::JSONB -> 'defendants') defendants
+     FROM case_data , jsonb_array_elements(case_data.data::JSONB -> 'respondents') defendants
   )
      select event.id ,
      event.created_date,
@@ -48,7 +48,7 @@ WITH subquery AS (
      case_data.id,
      case_data.jurisdiction,
      defendants -> 'value' as value
-     FROM case_data , jsonb_array_elements(case_data.data::JSONB -> 'defendants') defendants
+     FROM case_data , jsonb_array_elements(case_data.data::JSONB -> 'respondents') defendants
   )
      select event.id ,
      event.created_date,
@@ -72,7 +72,7 @@ WITH subquery AS (
      case_data.id,
      case_data.jurisdiction,
      defendants -> 'value' as value
-     FROM case_data , jsonb_array_elements(case_data.data::JSONB -> 'defendants') defendants
+     FROM case_data , jsonb_array_elements(case_data.data::JSONB -> 'respondents') defendants
   )
      select event.id ,
      event.created_date,
@@ -96,7 +96,7 @@ WITH subquery AS (
           case_data.id,
           case_data.jurisdiction,
           defendants -> 'value' as value
-          FROM case_data , jsonb_array_elements(case_data.data::JSONB -> 'defendants') defendants
+          FROM case_data , jsonb_array_elements(case_data.data::JSONB -> 'respondents') defendants
       )
       select event.id ,
       event.created_date,
@@ -121,7 +121,7 @@ WITH subquery AS (
         case_data.id,
         case_data.jurisdiction,
         defendants -> 'value' as value
-        FROM case_data , jsonb_array_elements(case_data.data::JSONB -> 'defendants') defendants
+        FROM case_data , jsonb_array_elements(case_data.data::JSONB -> 'respondents') defendants
       )
       select event.id ,
       event.created_date,
