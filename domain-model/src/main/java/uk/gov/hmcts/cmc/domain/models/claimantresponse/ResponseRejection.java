@@ -19,6 +19,12 @@ public class ResponseRejection extends ClaimantResponse {
 
     private final YesNoOption freeMediation;
 
+    @Size(max = 30, message = "Mediation phone number may not be longer than {max} characters")
+    private final String mediationPhoneNumber;
+
+    @Size(max = 30, message = "Mediation contact person may not be longer than {max} characters")
+    private final String mediationContactPerson;
+
     @Size(max = 99000)
     private final String reason;
 
@@ -28,14 +34,26 @@ public class ResponseRejection extends ClaimantResponse {
                              YesNoOption paymentReceived,
                              YesNoOption settleForAmount,
                              YesNoOption freeMediation,
+                             String mediationPhoneNumber,
+                             String mediationContactPerson,
                              String reason) {
         super(ClaimantResponseType.REJECTION, amountPaid, paymentReceived, settleForAmount);
         this.freeMediation = freeMediation;
+        this.mediationPhoneNumber = mediationPhoneNumber;
+        this.mediationContactPerson = mediationContactPerson;
         this.reason = reason;
     }
 
     public Optional<YesNoOption> getFreeMediation() {
         return Optional.ofNullable(freeMediation);
+    }
+
+    public Optional<String> getMediationPhoneNumber() {
+        return Optional.ofNullable(mediationPhoneNumber);
+    }
+
+    public Optional<String> getMediationContactPerson() {
+        return Optional.ofNullable(mediationContactPerson);
     }
 
     public Optional<String> getReason() {

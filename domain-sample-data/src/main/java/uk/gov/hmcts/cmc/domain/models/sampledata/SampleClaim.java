@@ -4,11 +4,9 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.Interest;
-import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
@@ -17,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
+import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
@@ -28,6 +27,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
+import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.DEFAULT;
+import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.CLAIMANT;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.standardInterestBuilder;
@@ -49,6 +55,8 @@ public final class SampleClaim {
     public static final String SUBMITTER_EMAIL = "claimant@mail.com";
     public static final String DEFENDANT_EMAIL = SampleTheirDetails.DEFENDANT_EMAIL;
     public static final String DEFENDANT_EMAIL_VERIFIED = "defendant@mail.com";
+    private static final URI DOCUMENT_URI = URI.create("http://localhost/doc.pdf");
+    private static final String OCMC = "OCMC";
 
     private String submitterId = USER_ID;
     private String letterHolderId = LETTER_HOLDER_ID;
@@ -87,7 +95,7 @@ public final class SampleClaim {
             .withCountyCourtJudgment(
                 SampleCountyCourtJudgment.builder()
                     .ccjType(CountyCourtJudgmentType.ADMISSIONS)
-                    .paymentOption(PaymentOption.IMMEDIATELY)
+                    .paymentOption(IMMEDIATELY)
                     .build()
             ).withResponse(SampleResponse.FullDefence
                 .builder()
@@ -116,7 +124,7 @@ public final class SampleClaim {
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withCountyCourtJudgment(
                 SampleCountyCourtJudgment.builder()
-                    .paymentOption(PaymentOption.IMMEDIATELY)
+                    .paymentOption(IMMEDIATELY)
                     .build()
             ).withResponse(SampleResponse.FullDefence
                 .builder()
@@ -127,6 +135,21 @@ public final class SampleClaim {
             )
             .withRespondedAt(LocalDateTime.now())
             .withDirectionsQuestionnaireDeadline(LocalDate.now())
+            .build();
+    }
+
+    public static Claim getClaimWithFullDefenceAlreadyPaid() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .paymentOption(IMMEDIATELY)
+                    .build()
+            ).withResponse(SampleResponse.FullDefence
+                .builder()
+                .withDefenceType(DefenceType.ALREADY_PAID)
+                .build()
+            )
             .build();
     }
 
@@ -163,8 +186,8 @@ public final class SampleClaim {
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withCountyCourtJudgment(
                 SampleCountyCourtJudgment.builder()
-                    .paymentOption(PaymentOption.IMMEDIATELY)
-                    .ccjType(CountyCourtJudgmentType.DEFAULT)
+                    .paymentOption(IMMEDIATELY)
+                    .ccjType(DEFAULT)
                     .build()
             ).withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
             .build();
@@ -279,8 +302,8 @@ public final class SampleClaim {
             .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
             .withCountyCourtJudgment(
                 SampleCountyCourtJudgment.builder()
-                    .paymentOption(PaymentOption.IMMEDIATELY)
-                    .ccjType(CountyCourtJudgmentType.DEFAULT)
+                    .paymentOption(IMMEDIATELY)
+                    .ccjType(DEFAULT)
                     .build()
             ).withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
             .build();
@@ -311,6 +334,40 @@ public final class SampleClaim {
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withResponse(SampleResponse.FullAdmission.validDefaults())
             .withSettlement(settlement)
+            .build();
+    }
+
+    public static Claim getWithSealedClaimDocument() {
+        return builder()
+            .withSealedClaimDocument(DOCUMENT_URI)
+            .build();
+    }
+
+    public static Claim getWithClaimIssueReceiptDocument() {
+        return builder()
+            .withClaimIssueReceiptDocument(DOCUMENT_URI)
+            .build();
+    }
+
+    public static Claim getWithDefendantResponseReceiptDocument() {
+        return builder().withResponse(
+            SampleResponse.validDefaults())
+            .withDefendantResponseReceiptDocument(DOCUMENT_URI)
+            .build();
+    }
+
+    public static Claim getWithCCJRequestDocument() {
+        return builder().withCountyCourtJudgment(
+            SampleCountyCourtJudgment.builder().ccjType(DEFAULT).build())
+            .withCountyCourtJudgmentRequestedAt(LocalDateTimeFactory.nowInLocalZone())
+            .withCCJRequestDocument(DOCUMENT_URI)
+            .build();
+    }
+
+    public static Claim getWithSettlementAgreementDocument() {
+        return builder().withSettlement(
+            SampleSettlement.validDefaults())
+            .withSettlementAgreementDocument(DOCUMENT_URI)
             .build();
     }
 
@@ -459,9 +516,57 @@ public final class SampleClaim {
         ClaimDocument claimDocument = ClaimDocument.builder()
             .documentManagementUrl(sealedClaimDocument)
             .documentName("001CLAIM-FORM")
-            .documentType(ClaimDocumentType.SEALED_CLAIM)
+            .documentType(SEALED_CLAIM)
             .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
-            .createdBy("OCMC")
+            .createdBy(OCMC)
+            .build();
+        this.claimDocumentCollection.addClaimDocument(claimDocument);
+        return this;
+    }
+
+    public SampleClaim withClaimIssueReceiptDocument(URI uri) {
+        ClaimDocument claimDocument = ClaimDocument.builder()
+            .documentManagementUrl(uri)
+            .documentName("claim-form-claimant-copy.pdf")
+            .documentType(CLAIM_ISSUE_RECEIPT)
+            .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
+            .createdBy(OCMC)
+            .build();
+        this.claimDocumentCollection.addClaimDocument(claimDocument);
+        return this;
+    }
+
+    public SampleClaim withDefendantResponseReceiptDocument(URI uri) {
+        ClaimDocument claimDocument = ClaimDocument.builder()
+            .documentManagementUrl(uri)
+            .documentName("claim-response.pdf")
+            .documentType(DEFENDANT_RESPONSE_RECEIPT)
+            .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
+            .createdBy(OCMC)
+            .build();
+        this.claimDocumentCollection.addClaimDocument(claimDocument);
+        return this;
+    }
+
+    public SampleClaim withCCJRequestDocument(URI uri) {
+        ClaimDocument claimDocument = ClaimDocument.builder()
+            .documentManagementUrl(uri)
+            .documentName("county-court-judgment-details.pdf")
+            .documentType(CCJ_REQUEST)
+            .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
+            .createdBy(OCMC)
+            .build();
+        this.claimDocumentCollection.addClaimDocument(claimDocument);
+        return this;
+    }
+
+    public SampleClaim withSettlementAgreementDocument(URI uri) {
+        ClaimDocument claimDocument = ClaimDocument.builder()
+            .documentManagementUrl(uri)
+            .documentName("settlement-agreement.pdf")
+            .documentType(SETTLEMENT_AGREEMENT)
+            .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
+            .createdBy(OCMC)
             .build();
         this.claimDocumentCollection.addClaimDocument(claimDocument);
         return this;

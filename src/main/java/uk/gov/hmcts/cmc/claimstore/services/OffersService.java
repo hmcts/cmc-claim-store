@@ -116,7 +116,7 @@ public class OffersService {
             OFFER_COUNTER_SIGNED_BY_DEFENDANT);
 
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
-        eventProducer.createAgreementCountersignedEvent(updated, party);
+        eventProducer.createAgreementCountersignedEvent(updated, party, authorisation);
 
         this.ccdEventProducer.createCCDSettlementEvent(claim, settlement, authorisation,
             OFFER_COUNTER_SIGNED_BY_DEFENDANT);
