@@ -44,6 +44,7 @@ public class UserService {
         return idamApi.retrieveUserDetails(authorisation);
     }
 
+    @LogExecutionTime
     public User getUser(String authorisation) {
         return new User(authorisation, idamApi.retrieveUserDetails(authorisation));
     }
@@ -55,11 +56,13 @@ public class UserService {
         return new User(authorisation, userDetails);
     }
 
+    @LogExecutionTime
     public User authenticateAnonymousCaseWorker() {
         IdamCaseworker anonymousCaseworker = idamCaseworkerProperties.getAnonymous();
         return authenticateUser(anonymousCaseworker.getUsername(), anonymousCaseworker.getPassword());
     }
 
+    @LogExecutionTime
     public GeneratePinResponse generatePin(String name, String authorisation) {
         return idamApi.generatePin(new GeneratePinRequest(name), authorisation);
     }

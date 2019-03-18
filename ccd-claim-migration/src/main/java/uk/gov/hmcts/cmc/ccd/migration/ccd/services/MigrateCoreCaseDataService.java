@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.idam.services.UserService;
+import uk.gov.hmcts.cmc.ccd.migration.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
@@ -107,6 +108,7 @@ public class MigrateCoreCaseDataService {
 
     }
 
+    @LogExecutionTime
     public void grantAccess(
         String caseId, String userId
     ) {
@@ -148,6 +150,7 @@ public class MigrateCoreCaseDataService {
         );
     }
 
+    @LogExecutionTime
     public StartEventResponse startEvent(String authorisation, EventRequestData eventRequestData, Long caseId) {
 
         return this.coreCaseDataApi.startEventForCaseWorker(
@@ -161,6 +164,7 @@ public class MigrateCoreCaseDataService {
         );
     }
 
+    @LogExecutionTime
     public CaseDetails submitEvent(
         String authorisation,
         EventRequestData eventRequestData,

@@ -20,6 +20,7 @@ import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalcu
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.CCDCreateCaseService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -48,6 +49,21 @@ public class CCDStoreConfiguration {
     }
 
     @Bean
+    public CCDCreateCaseService ccdCreateCaseService(
+        CoreCaseDataApi coreCaseDataApi,
+        AuthTokenGenerator authTokenGenerator,
+        CaseAccessApi caseAccessApi,
+        UserService userService
+    ) {
+        return new CCDCreateCaseService(
+            coreCaseDataApi,
+            authTokenGenerator,
+            caseAccessApi,
+            userService
+        );
+    }
+
+    @Bean
     public CoreCaseDataService coreCaseDataService(
         CaseMapper caseMapper,
         UserService userService,
@@ -55,11 +71,11 @@ public class CCDStoreConfiguration {
         ReferenceNumberService referenceNumberService,
         CoreCaseDataApi coreCaseDataApi,
         AuthTokenGenerator authTokenGenerator,
-        CaseAccessApi caseAccessApi,
-        JobSchedulerService jobSchedulerService
+        JobSchedulerService jobSchedulerService,
+        CCDCreateCaseService ccdCreateCaseService
     ) {
         return new CoreCaseDataService(caseMapper, userService, jsonMapper, referenceNumberService, coreCaseDataApi,
-            authTokenGenerator, caseAccessApi, jobSchedulerService);
+            authTokenGenerator, jobSchedulerService, ccdCreateCaseService);
     }
 
     @Bean
