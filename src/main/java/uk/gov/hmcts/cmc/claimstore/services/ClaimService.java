@@ -278,9 +278,7 @@ public class ClaimService {
 
         LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
 
-        Map<String, Object> data = new HashMap<>(((Map<String, Object>) callbackRequest.getCaseDetails()
-            .get("case_data"))
-        );
+        Map<String, Object> data = new HashMap<>(callbackRequest.getCaseDetails().getData());
         data.put("moreTimeRequested", CCDYesNoOption.YES);
         data.put("responseDeadline", newDeadline);
 
@@ -306,8 +304,8 @@ public class ClaimService {
     @SuppressWarnings("unchecked")
     private Claim convertCallbackToClaim(CallbackRequest caseDetails) {
         return ccdCaseDataToClaim.to(
-            (long) caseDetails.getCaseDetails().get("id"),
-            (Map<String, Object>) caseDetails.getCaseDetails().get("case_data")
+            caseDetails.getCaseDetails().getId(),
+            caseDetails.getCaseDetails().getData()
         );
     }
 
@@ -316,10 +314,10 @@ public class ClaimService {
         ccdEventProducer.linkDefendantCCDEvent(authorisation);
     }
 
-    public void linkClaimToDocument(String authorisation,
+    public Claim saveClaimDocuments(String authorisation,
                                     Long claimId,
                                     ClaimDocumentCollection claimDocumentCollection) {
-        caseRepository.saveClaimDocuments(authorisation, claimId, claimDocumentCollection);
+        return caseRepository.saveClaimDocuments(authorisation, claimId, claimDocumentCollection);
     }
 
     public void linkLetterHolder(Long claimId, String userId) {

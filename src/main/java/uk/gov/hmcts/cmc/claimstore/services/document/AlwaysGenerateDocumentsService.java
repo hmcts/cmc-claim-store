@@ -65,9 +65,13 @@ public class AlwaysGenerateDocumentsService implements DocumentsService {
     }
 
     @Override
-    public void uploadToDocumentManagement(PDF document,
-                                           String authorisation,
-                                           Claim claim) {
+    public void generateDefendantPinLetter(String externalId, String pin, String authorisation) {
+        throw new UnsupportedOperationException(
+            "This method is not supported when Document Management is turned off");
+    }
+
+    @Override
+    public Claim uploadToDocumentManagement(PDF document, String authorisation, Claim claim) {
         throw new UnsupportedOperationException(
             "This method is not supported when Document Management is turned off");
     }
