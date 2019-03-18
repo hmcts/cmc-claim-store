@@ -1,6 +1,7 @@
 tags:
-  postgresql-pod: true
+  cmc-claim-store-postgresql-pod: true
   cmc-citizen-frontend-pod: true
+  postgresql-pod: false # rpe-feature-toggle-api
 
 postgresql:
   resources:
@@ -101,5 +102,3 @@ cmc-citizen-frontend:
       releaseNameOverride: ${SERVICE_NAME}-ftr-tgl-api
       environment:
         FEATURES_DB_HOST: ${SERVICE_NAME}-claim-store-postgres
-    tags:
-      postgresql-pod: false
