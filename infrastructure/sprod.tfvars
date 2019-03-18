@@ -6,4 +6,4 @@ respond_to_claim_url = "https://cmc-citizen-frontend-sprod.service.core-compute-
 enable_staff_email = "false"
 ccd_enabled = "true"
 ccd_async_enabled = "false"
-dm_url = ""
+dm_url = "false"
