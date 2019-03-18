@@ -14,7 +14,7 @@ public class NonWorkingDaysCollection {
 
     private String dataResource;
 
-    public NonWorkingDaysCollection(@Value("nonworking-days.datafile:/data/non-working_days.dat") String dataSource) {
+    public NonWorkingDaysCollection(@Value("${nonworking-days.datafile}") String dataSource) {
         this.dataResource = dataSource;
     }
 
