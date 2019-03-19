@@ -36,19 +36,6 @@ java:
         - system-update-username
         - system-update-password
         - notify-api-key
-    ccd:
-      resourceGroup: ccd-shared
-      secrets:
-        - ccd-api-gateway-oauth2-client-secret
-        - ccd-admin-web-oauth2-client-secret
-    s2s:
-      resourceGroup: rpe-service-auth-provider
-      secrets:
-        - microservicekey-ccd-data
-        - microservicekey-ccd-definition
-        - microservicekey-ccd-gw
-        - microservicekey-ccd-admin
-        - microservicekey-ccd-ps
   environment:
     IDAM_S2S_AUTH_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
     SEND_LETTER_URL: http://rpe-send-letter-service-aat.service.core-compute-aat.internal
