@@ -1,7 +1,7 @@
 spring:
   cloud:
     propertiesvolume:
-      paths: /mnt/secrets/cmc
+      paths: /mnt/secrets/cmc,/mnt/secrets/s2s,/mnt/secrets/ccd
       prefixed: false
       aliases:
         claim-store-db-password: CLAIM_STORE_DB_PASSWORD
@@ -13,3 +13,10 @@ spring:
         anonymous-caseworker-password: IDAM_CASEWORKER_ANONYMOUS_PASSWORD
         system-update-username: IDAM_CASEWORKER_SYSTEM_USERNAME
         system-update-password: IDAM_CASEWORKER_SYSTEM_PASSWORD
+        microservicekey-ccd-data: DATA_STORE_S2S_KEY
+        microservicekey-ccd-definition: DEFINITION_STORE_S2S_KEY
+        microservicekey-ccd-gw: API_GATEWAY_S2S_KEY
+        microservicekey-ccd-admin: ADMIN_S2S_KEY
+        microservicekey-ccd-ps: PRINT_S2S_KEY
+        ccd-api-gateway-oauth2-client-secre: API_GATEWAY_IDAM_SECRET
+        ccd-admin-web-oauth2-client-secret: ADMIN_WEB_IDAM_SECRET
