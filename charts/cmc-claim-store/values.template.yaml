@@ -28,6 +28,8 @@ java:
     cmc:
       resourceGroup: cmc
       secrets:
+        - claim-store-db-password
+        - cmc-db-password
         - AppInsightsInstrumentationKey
         - citizen-oauth-client-secret
         - claim-store-s2s-secret
