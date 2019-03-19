@@ -232,6 +232,10 @@ task apiTest(type: Test) {
   setClasspath(sourceSets.integrationTest.runtimeClasspath)
 }
 
+apiTest.doFirst {
+  if (true) { throw new StopExecutionException() }
+}
+
 task migrateClaims() {
   description 'Migrating claims from claim-store database to CCD'
 
