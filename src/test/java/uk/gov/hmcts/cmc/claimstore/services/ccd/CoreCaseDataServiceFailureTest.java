@@ -81,6 +81,8 @@ public class CoreCaseDataServiceFailureTest {
     @Mock
     private CoreCaseDataApi coreCaseDataApi;
     @Mock
+    private CCDCreateCaseService ccdCreateCaseService;
+    @Mock
     private AuthTokenGenerator authTokenGenerator;
     @Mock
     private CaseAccessApi caseAccessApi;
@@ -95,19 +97,6 @@ public class CoreCaseDataServiceFailureTest {
     public void before() {
         when(authTokenGenerator.generate()).thenReturn(AUTH_TOKEN);
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(USER_DETAILS);
-        when(coreCaseDataApi.startForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            anyString()
-        ))
-            .thenReturn(StartEventResponse.builder()
-                .caseDetails(CaseDetails.builder().build())
-                .eventId("eventId")
-                .token("token")
-                .build());
 
         when(coreCaseDataApi.startEventForCitizen(
             eq(AUTHORISATION),
@@ -143,8 +132,8 @@ public class CoreCaseDataServiceFailureTest {
             referenceNumberService,
             coreCaseDataApi,
             authTokenGenerator,
-            caseAccessApi,
-            jobSchedulerService
+            jobSchedulerService,
+            ccdCreateCaseService
         );
     }
 
@@ -153,7 +142,7 @@ public class CoreCaseDataServiceFailureTest {
         Claim providedClaim = SampleClaim.getDefault();
         when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
 
-        service.submitPostPayment(AUTHORISATION, providedClaim);
+        service.createNewCase(AUTHORISATION, providedClaim);
 
         verify(coreCaseDataApi).submitForCitizen(
             eq(AUTHORISATION),
