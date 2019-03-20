@@ -1,6 +1,7 @@
 tags:
   cmc-claim-store-postgresql-pod: true
   cmc-citizen-frontend-pod: true
+  cmc-ccd-stack: true
   postgresql-pod: false  # rpe-feature-toggle-api
 
 postgresql:
@@ -134,7 +135,7 @@ ccd:
   importer:
     image: hmcts.azurecr.io/hmcts/cmc-ccd-definition-importer
     definitionFilename: cmc-ccd.xlsx
-    definitions:
+    definitions:  # TODO: change chart-ccd to allow either definitions or definitionFilename
       -
     userRoles:
       - citizen

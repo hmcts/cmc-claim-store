@@ -13,5 +13,6 @@ dependencies:
     tags:
       - cmc-citizen-frontend-pod
   - name: ccd
-    version: 0.6.1
+    version: ~0.6.1
     repository: '@hmcts'
+      - cmc-ccd-stack
