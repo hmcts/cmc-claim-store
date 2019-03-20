@@ -151,10 +151,13 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
             "claim-form.pdf");
     }
 
-    private void assertDocumentIsLinked(ClaimData claimData,
-                                        String authorization,
-                                        ClaimDocumentType claimDocumentType,
-                                        String fileName) throws Exception {
+    private void assertDocumentIsLinked(
+        ClaimData claimData,
+        String authorization,
+        ClaimDocumentType claimDocumentType,
+        String fileName
+    ) throws Exception {
+
         given(documentUploadClient.upload(eq(authorization), any(), any(), any()))
             .willReturn(successfulDocumentManagementUploadResponse());
 
