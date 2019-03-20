@@ -1,0 +1,93 @@
+package uk.gov.hmcts.cmc.ccd.util;
+
+import org.junit.Test;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
+
+import java.util.Arrays;
+
+import static java.util.Collections.singletonList;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+
+public class MapperUtilTest {
+
+    @Test
+    public void caseNameNotNull() {
+        Claim sampleClaim = SampleClaim.getDefault();
+        String caseName = MapperUtil.toCaseName.apply(sampleClaim);
+        assertNotNull(caseName);
+    }
+
+    @Test
+    public void caseNameWhenMultiClaimant() {
+        Claim claimWithMultiClaimant = Claim.builder().claimData(
+            SampleClaimData.builder(Arrays.asList(
+                SampleParty.builder().withName("Brexiter").individual(),
+                SampleParty.builder().withName("Brexiter2").individual(),
+                SampleParty.builder().withName("Brexiter3").individual()),
+                singletonList(
+                    SampleTheirDetails.builder().withName("Theresa May").individualDetails())
+            ).build()
+        ).build();
+
+        String caseName = MapperUtil.toCaseName.apply(claimWithMultiClaimant);
+        assertNotNull(caseName);
+        assertThat(caseName, is("Brexiter + others Vs Theresa May"));
+
+    }
+
+    @Test
+    public void caseNameWhenMultiDefendant() {
+
+        Claim claimWithMultiDefendant = Claim.builder().claimData(
+            SampleClaimData.builder(singletonList(SampleParty.builder().withName("Brexiter").individual()),
+                Arrays.asList(
+                    SampleTheirDetails.builder().withName("Theresa May").individualDetails(),
+                    SampleTheirDetails.builder().withName("John Beckrow").individualDetails(),
+                    SampleTheirDetails.builder().withName("Mr Juncker").individualDetails()))
+                .build()
+        ).build();
+
+        String caseName = MapperUtil.toCaseName.apply(claimWithMultiDefendant);
+        assertNotNull(caseName);
+        assertThat(caseName, is("Brexiter Vs Theresa May + others"));
+
+    }
+
+    @Test
+    public void caseNameWhenClaimantIsNotIndividual() {
+
+        Claim claimWithMultiDefendant = Claim.builder().claimData(
+            SampleClaimData.builder(
+                singletonList(SampleParty.builder().withName("Euro Star").soleTrader()),
+                singletonList(SampleTheirDetails.builder().withName("Boris Johnson").individualDetails())
+            ).build()
+        ).build();
+
+        String caseName = MapperUtil.toCaseName.apply(claimWithMultiDefendant);
+        assertNotNull(caseName);
+        assertThat(caseName, is("Euro Star Vs Boris Johnson"));
+
+    }
+
+    @Test
+    public void caseNameWhenDefendantIsNotIndividual() {
+        Claim claimWithMultiDefendant = Claim.builder().claimData(
+            SampleClaimData.builder(
+                singletonList(SampleParty.builder().withName("Euro Star").soleTrader()),
+                singletonList(SampleTheirDetails.builder().withName("Boris Johnson").companyDetails())
+            ).build()
+        ).build();
+
+        String caseName = MapperUtil.toCaseName.apply(claimWithMultiDefendant);
+        assertNotNull(caseName);
+        assertThat(caseName, is("Euro Star Vs Boris Johnson"));
+
+    }
+
+}

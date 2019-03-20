@@ -1,43 +1,54 @@
 package uk.gov.hmcts.cmc.ccd.util;
 
-import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class MapperUtil {
+    private static final String OTHERS = " + others";
 
-    private MapperUtil(){
+    private MapperUtil() {
         // Utility class, no instances
     }
 
     public static boolean isAllNull(Object... objects) {
-        return Stream.of(objects).allMatch(Objects::nonNull);
+        return Stream.of(objects).allMatch(Objects::isNull);
     }
 
     public static boolean isAnyNotNull(Object... objects) {
         return Stream.of(objects).anyMatch(Objects::nonNull);
     }
 
-    public static Function<Claim, String> toCaseName = claim -> {
-        String caseName = StringUtils.EMPTY;
+    public static Function<Claim, String> toCaseName = claim ->
+        fetchClaimanantName(claim) + " Vs " + fetchDefendantName(claim);
 
-        if(claim.getResponse().isPresent()){
-            caseName = createCaseNameFromResponse(claim.getResponse().get());
-        }else {
-            caseName = claim.getClaimData().getClaimant().getName() + claim.getClaimData().getDe
+    private static String fetchDefendantName(Claim claim) {
+        StringBuilder defendantNameBuilder = new StringBuilder();
+
+        if (claim.getResponse().isPresent()) {
+            defendantNameBuilder
+                .append(claim.getResponse().get().getDefendant().getName());
+        } else {
+            defendantNameBuilder.append(claim.getClaimData().getDefendants().get(0).getName());
         }
 
-        return caseName;
-    };
+        if (claim.getClaimData().getDefendants().size() > 1) {
+            defendantNameBuilder.append(OTHERS);
+        }
 
-    private static String createCaseNameFromResponse(Response response){
-        response.getDefendant().getName();
+        return defendantNameBuilder.toString();
 
     }
 
-    private static String createCaseNameFromClaimantProvidedDetail()
+    private static String fetchClaimanantName(Claim claim) {
+        StringBuilder claimantNameBuilder = new StringBuilder();
+
+        claimantNameBuilder.append(claim.getClaimData().getClaimants().get(0).getName());
+        if (claim.getClaimData().getClaimants().size() > 1) {
+            claimantNameBuilder.append(OTHERS);
+        }
+        return claimantNameBuilder.toString();
+    }
 }
