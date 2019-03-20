@@ -9,7 +9,7 @@ spring:
         notify-api-key: GOV_NOTIFY_API_KEY
         citizen-oauth-client-secret: oauth2.client.secret
         claim-store-s2s-secret: idam.s2s-auth.totp_secret
-        anonymous-caseworker-username: IDAM_CASEWORKER_ANONYMOUS_USERNAME
-        anonymous-caseworker-password: IDAM_CASEWORKER_ANONYMOUS_PASSWORD
-        system-update-username: IDAM_CASEWORKER_SYSTEM_USERNAME
-        system-update-password: IDAM_CASEWORKER_SYSTEM_PASSWORD
+        anonymous-caseworker-username: idam.caseworker.anonoymous.username
+        anonymous-caseworker-password: idam.caseworker.anonoymous.password
+        system-update-username: idam.caseworker.system.username
+        system-update-password: idam.caseworker.system.password
