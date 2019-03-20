@@ -15,4 +15,5 @@ dependencies:
   - name: ccd
     version: ~0.6.1
     repository: '@hmcts'
+    tags:
       - cmc-ccd-stack
