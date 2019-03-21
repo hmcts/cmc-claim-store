@@ -35,7 +35,8 @@ public class ClaimantResponseStaffNotificationHandler {
             this.statesPaidStaffNotificationService.notifyStaffClaimantResponseStatesPaidSubmittedFor(claim);
         }
         if (isPartAdmission(response)
-            && claim.getClaimantResponse().get().getType() == ClaimantResponseType.REJECTION) {
+            && claim.getClaimantResponse().orElseThrow(IllegalArgumentException::new).getType()
+            == ClaimantResponseType.REJECTION) {
             claimantRejectionStaffNotificationService.notifyStaffClaimantRejectPartAdmission(claim);
         }
     }
