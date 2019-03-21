@@ -191,7 +191,7 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Claim saveClaim(String authorisation, Claim claim) {
+    public Claim saveClaim(User user, Claim claim) {
         String claimDataString = jsonMapper.toJson(claim.getClaimData());
         String features = jsonMapper.toJson(claim.getFeatures());
         if (claim.getClaimData().isClaimantRepresented()) {

@@ -48,6 +48,8 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.Sample
 public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest {
 
     public static final String DEFENDANT_BEARER_TOKEN = "defendant-token";
+    private static final User USER = new User(BEARER_TOKEN, getDefault());
+
     @MockBean
     protected SendLetterApi sendLetterApi;
 
@@ -70,7 +72,7 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
             .withDefendantId(DEFENDANT_ID)
             .build();
 
-        claim = caseRepository.saveClaim(BEARER_TOKEN, claim);
+        claim = caseRepository.saveClaim(USER, claim);
     }
 
     @Test

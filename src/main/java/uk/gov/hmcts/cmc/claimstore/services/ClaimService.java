@@ -190,7 +190,7 @@ public class ClaimService {
     ) {
         String externalId = claimData.getExternalId().toString();
         Optional<GeneratePinResponse> pinResponse = Optional.empty();
-        UserDetails userDetails = userService.getUserDetails(authorisation);
+        User user = userService.getUser(authorisation);
 
         if (!claimData.isClaimantRepresented()) {
             pinResponse = Optional.of(userService.generatePin(claimData.getDefendant().getName(), authorisation));
@@ -206,7 +206,7 @@ public class ClaimService {
             Optional<String> letterHolderId = pinResponse.map(GeneratePinResponse::getUserId);
             LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
             LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
-            String submitterEmail = userDetails.getEmail();
+            String submitterEmail = user.getUserDetails().getEmail();
 
             Claim claim = Claim.builder()
                 .claimData(claimData)
@@ -220,7 +220,7 @@ public class ClaimService {
                 .features(features)
                 .build();
 
-            issuedClaim = caseRepository.saveClaim(authorisation, claim);
+            issuedClaim = caseRepository.saveClaim(user, claim);
         } catch (ConflictException e) {
             appInsights.trackEvent(AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE, CLAIM_EXTERNAL_ID, externalId);
             issuedClaim = caseRepository.getClaimByExternalId(externalId, authorisation)
@@ -231,12 +231,12 @@ public class ClaimService {
         eventProducer.createClaimIssuedEvent(
             issuedClaim,
             pinResponse.map(GeneratePinResponse::getPin).orElse(null),
-            userDetails.getFullName(),
+            user.getUserDetails().getFullName(),
             authorisation
         );
 
         trackClaimIssued(issuedClaim.getReferenceNumber(), issuedClaim.getClaimData().isClaimantRepresented());
-        ccdEventProducer.createCCDClaimIssuedEvent(issuedClaim, authorisation);
+        ccdEventProducer.createCCDClaimIssuedEvent(issuedClaim, user);
 
         return issuedClaim;
     }

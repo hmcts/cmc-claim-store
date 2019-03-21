@@ -45,7 +45,6 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -74,7 +73,6 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 @RunWith(MockitoJUnitRunner.class)
 public class CoreCaseDataServiceTest {
     private static final String AUTHORISATION = "Bearer: aaa";
-    private static final String EXTERNAL_ID = UUID.randomUUID().toString();
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder().build();
     private static final User ANONYMOUS_USER = new User(AUTHORISATION, USER_DETAILS);
     private static final String AUTH_TOKEN = "authorisation token";
@@ -181,7 +179,7 @@ public class CoreCaseDataServiceTest {
         when(jsonMapper.fromMap(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
         when(caseMapper.from(any(CCDCase.class))).thenReturn(expectedClaim);
 
-        Claim returnedClaim = service.createNewCase(AUTHORISATION, providedClaim);
+        Claim returnedClaim = service.createNewCase(ANONYMOUS_USER, providedClaim);
 
         assertEquals(expectedClaim, returnedClaim);
         verify(jsonMapper).fromMap(caseDataCaptor.capture(), eq(CCDCase.class));

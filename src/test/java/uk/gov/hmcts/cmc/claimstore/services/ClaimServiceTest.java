@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeRequestedAfterDeadlineException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
@@ -78,6 +79,8 @@ public class ClaimServiceTest {
 
     private static final UserDetails claimantDetails
         = SampleUserDetails.builder().withUserId("11").withMail(SUBMITTER_EMAIL).build();
+
+    private static final User CLAIMANT_USER = new User(AUTHORISATION, claimantDetails);
 
     private ClaimService claimService;
 
@@ -183,26 +186,26 @@ public class ClaimServiceTest {
 
         ClaimData claimData = SampleClaimData.validDefaults();
 
-        when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(claimantDetails);
+        when(userService.getUser(eq(AUTHORISATION))).thenReturn(CLAIMANT_USER);
         when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(ISSUE_DATE);
         when(responseDeadlineCalculator.calculateResponseDeadline(eq(ISSUE_DATE))).thenReturn(RESPONSE_DEADLINE);
-        when(caseRepository.saveClaim(eq(AUTHORISATION), any())).thenReturn(claim);
+        when(caseRepository.saveClaim(eq(CLAIMANT_USER), any())).thenReturn(claim);
 
         Claim createdClaim = claimService.saveClaim(USER_ID, claimData, AUTHORISATION, singletonList("admissions"));
 
         assertThat(createdClaim.getClaimData()).isEqualTo(claim.getClaimData());
 
-        verify(caseRepository, once()).saveClaim(any(String.class), any(Claim.class));
+        verify(caseRepository, once()).saveClaim(any(User.class), any(Claim.class));
         verify(eventProducer, once()).createClaimIssuedEvent(eq(createdClaim), eq(null),
             anyString(), eq(AUTHORISATION));
 
-        verify(ccdEventProducer, once()).createCCDClaimIssuedEvent(eq(createdClaim), eq(AUTHORISATION));
+        verify(ccdEventProducer, once()).createCCDClaimIssuedEvent(eq(createdClaim), eq(CLAIMANT_USER));
     }
 
     @Test
     public void saveClaimShouldProceedWhenDuplicated() {
         ClaimData claimData = SampleClaimData.validDefaults();
-        when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(claimantDetails);
+        when(userService.getUser(eq(AUTHORISATION))).thenReturn(CLAIMANT_USER);
         when(caseRepository.getClaimByExternalId(anyString(), eq(AUTHORISATION)))
             .thenReturn(Optional.of(claim));
 
