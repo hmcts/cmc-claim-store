@@ -17,7 +17,6 @@ import java.util.Objects;
 import static java.time.format.DateTimeFormatter.ISO_DATE;
 import static java.util.Optional.ofNullable;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertNotNull;
 
 public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
 
