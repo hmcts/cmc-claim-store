@@ -1,6 +1,6 @@
 {{ claimantName }} has rejected a partial admission.
 
-{% if defendantFreeMediation == 'YES' and claimantFreeMediation == 'YES' %}
+{% if defendantFreeMediation == 'yes' and claimantFreeMediation == 'yes' %}
 Both parties have agreed for a mediation.
 {% else %}
 Both parties rejected mediation, and have requested for Direction Questionnaires to proceed.
