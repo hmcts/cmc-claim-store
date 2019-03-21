@@ -83,8 +83,8 @@ cmc-citizen-frontend:
     ingressIP: ${INGRESS_IP}
     consulIP: ${CONSUL_LB_IP}
     releaseNameOverride: ${SERVICE_NAME}-nodejs
-    readinessDelay: 90                        # claim-store will start much slower
-    livenessDelay: 90                         # claim-store will start much slower
+    readinessDelay: 90  # claim-store will start much slower
+    livenessDelay: 90  # claim-store will start much slower
     registerAdditionalDns:
       enabled: true
       primaryIngressHost: ${SERVICE_FQDN}
@@ -129,6 +129,7 @@ ccd:
     idamClientSecret: ${ADMIN_WEB_IDAM_SECRET}
     environment:
       NODE_TLS_REJECT_UNAUTHORIZED: 0
+      # TODO: add these to chart-ccd
       ADMINWEB_USER_ROLE_URL: http://${SERVICE_NAME}-definition-store-api/api/user-role
       ADMINWEB_DELETE_DEFINITION_URL: http://${SERVICE_NAME}-definition-store-api/api/draft
       ADMINWEB_ROLES_WHITELIST: 'ccd-import,ccd-import-validate'
