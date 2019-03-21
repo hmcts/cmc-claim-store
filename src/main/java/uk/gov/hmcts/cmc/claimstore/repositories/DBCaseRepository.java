@@ -235,4 +235,9 @@ public class DBCaseRepository implements CaseRepository {
             new NotFoundException(
                 String.format("Claim not found by primary key %s.", claimId)));
     }
+
+    @Override
+    public List<Claim> getMediationClaims(String authorisation, LocalDate mediationDate) {
+        return claimRepository.getMediationClaimsForDate(mediationDate);
+    }
 }

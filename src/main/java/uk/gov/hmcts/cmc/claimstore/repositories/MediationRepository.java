@@ -2,22 +2,22 @@ package uk.gov.hmcts.cmc.claimstore.repositories;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public class MediationRepository {
 
-    private ClaimRepository claimRepository;
     private CaseRepository caseRepository;
 
     @Autowired
-    public MediationRepository(ClaimRepository claimRepository, CaseRepository caseRepository) {
-        this.claimRepository = claimRepository;
+    public MediationRepository(CaseRepository caseRepository) {
         this.caseRepository = caseRepository;
     }
 
-    public void getMediationClaims(LocalDate claimant_responded_date) {
-        claimRepository.getMediationClaimsForDate(claimant_responded_date);
+    public List<Claim> getMediationClaims(String authorisation, LocalDate claimant_responded_date) {
+        return caseRepository.getMediationClaims(authorisation, claimant_responded_date);
     }
 }
