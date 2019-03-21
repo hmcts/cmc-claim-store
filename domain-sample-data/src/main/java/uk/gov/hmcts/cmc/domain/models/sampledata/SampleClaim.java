@@ -215,6 +215,39 @@ public final class SampleClaim {
             .build();
     }
 
+    public static Claim getWithClaimantResponseRejectionForPartAdmissionAndMediation() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withResponse(
+                SampleResponse
+                    .PartAdmission
+                    .builder()
+                    .buildWithFreeMediation())
+            .withRespondedAt(LocalDateTime.now())
+            .withDefendantEmail(DEFENDANT_EMAIL)
+            .withClaimantRespondedAt(LocalDateTime.now())
+            .withClaimantResponse(SampleClaimantResponse
+                .ClaimantResponseRejection
+                .builder()
+                .buildRejectionWithFreeMediation())
+            .build();
+    }
+
+    public static Claim getWithClaimantResponseRejectionForPartAdmissionNoMediation() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withResponse(
+                SampleResponse
+                    .PartAdmission
+                    .builder()
+                    .buildWithFreeMediation())
+            .withRespondedAt(LocalDateTime.now())
+            .withDefendantEmail(DEFENDANT_EMAIL)
+            .withClaimantRespondedAt(LocalDateTime.now())
+            .withClaimantResponse(SampleClaimantResponse.validDefaultRejection())
+            .build();
+    }
+
     public static Claim getDefaultForLegal() {
         return builder().build();
     }
