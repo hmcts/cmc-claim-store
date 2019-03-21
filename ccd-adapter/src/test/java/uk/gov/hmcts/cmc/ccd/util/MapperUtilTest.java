@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.ccd.util;
 
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
@@ -88,6 +89,26 @@ public class MapperUtilTest {
         assertNotNull(caseName);
         assertThat(caseName, is("Euro Star Vs Boris Johnson"));
 
+    }
+
+    @Test
+    public void caseNameWithClaimantProvidedName() {
+        Claim claimWithResponse = Claim.builder().claimData(
+            SampleClaimData.builder(
+                singletonList(SampleParty.builder().withName("Versace").soleTrader()),
+                singletonList(SampleTheirDetails.builder().withName("FCUK").companyDetails())
+            ).build()
+        ).response(PartAdmissionResponse
+            .builder()
+            .defendant(SampleParty
+                .builder()
+                .withName("French Connection UK")
+                .soleTrader()).build())
+            .build();
+
+        String caseName = MapperUtil.toCaseName.apply(claimWithResponse);
+        assertNotNull(caseName);
+        assertThat(caseName, is("Versace Vs French Connection UK"));
     }
 
 }

@@ -9,15 +9,11 @@ import java.util.stream.Stream;
 public class MapperUtil {
     private static final String OTHERS = " + others";
 
-    public static Function<Claim, String> toCaseName = claim ->
-        fetchClaimanantName(claim) + " Vs " + fetchDefendantName(claim);
+    public static final Function<Claim, String> toCaseName = claim ->
+        fetchClaimantName(claim) + " Vs " + fetchDefendantName(claim);
 
     private MapperUtil() {
         // Utility class, no instances
-    }
-
-    public static boolean isAllNull(Object... objects) {
-        return Stream.of(objects).allMatch(Objects::isNull);
     }
 
     public static boolean isAnyNotNull(Object... objects) {
@@ -29,7 +25,7 @@ public class MapperUtil {
 
         if (claim.getResponse().isPresent()) {
             defendantNameBuilder
-                .append(claim.getResponse().get().getDefendant().getName());
+                .append(claim.getResponse().map(response -> response.getDefendant().getName()).orElse(""));
         } else {
             defendantNameBuilder.append(claim.getClaimData().getDefendants().get(0).getName());
         }
@@ -42,7 +38,7 @@ public class MapperUtil {
 
     }
 
-    private static String fetchClaimanantName(Claim claim) {
+    private static String fetchClaimantName(Claim claim) {
         StringBuilder claimantNameBuilder = new StringBuilder();
 
         claimantNameBuilder.append(claim.getClaimData().getClaimants().get(0).getName());
