@@ -1,15 +1,19 @@
 package uk.gov.hmcts.cmc.claimstore.services.document;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
+import uk.gov.hmcts.cmc.claimstore.documents.DefendantPinLetterPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.PdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
+import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
@@ -21,12 +25,14 @@ import java.net.URI;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimIssueReceiptFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForJudgementFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSettlementReachedFileBaseName;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
@@ -34,6 +40,8 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEM
 @Service("documentsService")
 @ConditionalOnProperty(prefix = "document_management", name = "url")
 public class DocumentManagementBackedDocumentsService implements DocumentsService {
+
+    private static final Logger logger = LoggerFactory.getLogger(DocumentManagementBackedDocumentsService.class);
 
     private static final String OCMC = "OCMC";
     private final ClaimService claimService;
@@ -43,6 +51,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     private final DefendantResponseReceiptService defendantResponseReceiptService;
     private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
     private final SettlementAgreementCopyService settlementAgreementCopyService;
+    private final DefendantPinLetterPdfService defendantPinLetterPdfService;
 
     @Autowired
     @SuppressWarnings("squid:S00107")
@@ -54,7 +63,8 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         ClaimIssueReceiptService claimIssueReceiptService,
         DefendantResponseReceiptService defendantResponseReceiptService,
         CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
-        SettlementAgreementCopyService settlementAgreementCopyService) {
+        SettlementAgreementCopyService settlementAgreementCopyService,
+        DefendantPinLetterPdfService defendantPinLetterPdfService) {
         this.claimService = claimService;
         this.documentManagementService = documentManagementService;
         this.sealedClaimPdfService = sealedClaimPdfService;
@@ -62,11 +72,12 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         this.defendantResponseReceiptService = defendantResponseReceiptService;
         this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
         this.settlementAgreementCopyService = settlementAgreementCopyService;
+        this.defendantPinLetterPdfService = defendantPinLetterPdfService;
     }
 
     @Override
     public byte[] generateClaimIssueReceipt(String externalId, String authorisation) {
-        Claim claim = getClaimByExternalId(externalId, authorisation);
+        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
         return processRequest(claim,
             authorisation,
             CLAIM_ISSUE_RECEIPT,
@@ -76,7 +87,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
 
     @Override
     public byte[] generateSealedClaim(String externalId, String authorisation) {
-        Claim claim = getClaimByExternalId(externalId, authorisation);
+        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
         return processRequest(claim,
             authorisation,
             SEALED_CLAIM,
@@ -86,7 +97,10 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
 
     @Override
     public byte[] generateDefendantResponseReceipt(String externalId, String authorisation) {
-        Claim claim = getClaimByExternalId(externalId, authorisation);
+        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
+        if (!claim.getResponse().isPresent() && null == claim.getRespondedAt()) {
+            throw new NotFoundException("Defendant response does not exist for this claim");
+        }
         return processRequest(claim,
             authorisation,
             DEFENDANT_RESPONSE_RECEIPT,
@@ -96,7 +110,10 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
 
     @Override
     public byte[] generateCountyCourtJudgement(String externalId, String authorisation) {
-        Claim claim = getClaimByExternalId(externalId, authorisation);
+        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
+        if (null == claim.getCountyCourtJudgment() && null == claim.getCountyCourtJudgmentRequestedAt()) {
+            throw new NotFoundException("County Court Judgment does not exist for this claim");
+        }
         return processRequest(claim,
             authorisation,
             CCJ_REQUEST,
@@ -107,7 +124,10 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
 
     @Override
     public byte[] generateSettlementAgreement(String externalId, String authorisation) {
-        Claim claim = getClaimByExternalId(externalId, authorisation);
+        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
+        if (!claim.getSettlement().isPresent() && null == claim.getSettlementReachedAt()) {
+            throw new NotFoundException("Settlement Agreement does not exist for this claim");
+        }
         return processRequest(claim,
             authorisation,
             SETTLEMENT_AGREEMENT,
@@ -115,8 +135,22 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
             buildSettlementReachedFileBaseName(claim.getReferenceNumber()));
     }
 
-    private Claim getClaimByExternalId(String externalId, String authorisation) {
-        return claimService.getClaimByExternalId(externalId, authorisation);
+    @Override
+    public void generateDefendantPinLetter(String externalId, String pin, String authorisation) {
+        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
+        final String fileName = buildDefendantLetterFileBaseName(claim.getReferenceNumber());
+        Optional<URI> claimDocument = claim.getClaimDocument(DEFENDANT_PIN_LETTER);
+        if (!claimDocument.isPresent()) {
+            try {
+                PDF defendantLetter = new PDF(fileName,
+                    defendantPinLetterPdfService.createPdf(claim, pin),
+                    DEFENDANT_PIN_LETTER);
+                uploadToDocumentManagement(defendantLetter, authorisation, claim);
+            } catch (Exception ex) {
+                logger.warn(String.format("unable to upload document %s into document management",
+                    fileName), ex);
+            }
+        }
     }
 
     private byte[] processRequest(Claim claim,
@@ -141,21 +175,18 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         }
     }
 
-    @Override
-    public void uploadToDocumentManagement(
+    public Claim uploadToDocumentManagement(
         PDF document,
         String authorisation,
         Claim claim) {
         URI documentSelfPath = documentManagementService.uploadDocument(authorisation, document);
-        claimService.linkClaimToDocument(authorisation,
+        return claimService.saveClaimDocuments(authorisation,
             claim.getId(),
-            getClaimDocumentStore(claim.getExternalId(), document, documentSelfPath, authorisation));
+            getClaimDocumentCollection(claim, document, documentSelfPath));
     }
 
-    private ClaimDocumentCollection getClaimDocumentStore(String externalId,
-                                                          PDF document, URI uri,
-                                                          String authorisation) {
-        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
+    private ClaimDocumentCollection getClaimDocumentCollection(Claim claim,
+                                                               PDF document, URI uri) {
         ClaimDocumentCollection claimDocumentCollection = claim.getClaimDocumentCollection()
             .orElse(new ClaimDocumentCollection());
         claimDocumentCollection.addClaimDocument(ClaimDocument.builder()

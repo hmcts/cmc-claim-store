@@ -3,7 +3,7 @@ provider "azurerm" {
 }
 
 locals {
-  aseName = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
+  aseName = "core-compute-${var.env}"
 
   local_env = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "aat" : "saat" : var.env}"
   local_ase = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview" ) ? "core-compute-aat" : "core-compute-saat" : local.aseName}"
@@ -94,6 +94,12 @@ data "azurerm_key_vault_secret" "system_update_password" {
 
 data "azurerm_key_vault_secret" "oauth_client_secret" {
   name = "citizen-oauth-client-secret"
+  vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
+}
+
+resource "azurerm_key_vault_secret" "cmc-db-password" {
+  name      = "cmc-db-password"
+  value     = "${module.database.postgresql_password}"
   vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
 }
 
