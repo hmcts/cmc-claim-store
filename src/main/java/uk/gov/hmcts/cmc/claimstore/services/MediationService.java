@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.repositories.MediationRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.Mediation;
 import uk.gov.hmcts.cmc.domain.models.MediationRequest;
 
 import java.time.LocalDate;
@@ -23,8 +24,19 @@ public class MediationService {
         generateMediationExtract(authorisation, mediationRequest.getMediationGenerateDate());
     }
 
-    public List<Claim> generateMediationExtract(String authorisation, LocalDate mediationDate) {
-        return mediationRepository.getMediationClaims(authorisation, mediationDate);
+    public void generateMediationExtract(String authorisation, LocalDate mediationDate) {
+        List<Claim> mediationClaims = mediationRepository.getMediationClaims(authorisation, mediationDate);
+
+        for (int i = 0; i < mediationClaims.size(); i++ ) {
+
+
+            new Mediation(
+                mediationClaims.get(i).getReferenceNumber(),
+                mediationClaims.get(i).getTotalAmountTillToday(),
+                mediationClaims.get(i).getClaimData().getClaimant(),
+                mediationClaims.get(i).getResponse().get().getMediationContactPerson(),
+                mediationClaims.get(i).getResponse().get().getMediationPhoneNumber());
+        }
     }
 
 }
