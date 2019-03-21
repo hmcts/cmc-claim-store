@@ -11,6 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -158,12 +159,12 @@ public class EndpointErrorsTest extends MockSpringTest {
         Exception duplicateKeyError = new UnableToExecuteStatementException(new PSQLException(
             "ERROR: duplicate key value violates unique constraint \"external_id_unique\"", null), null);
 
-        given(userService.getUserDetails(anyString())).willReturn(
-            SampleUserDetails.builder()
+        given(userService.getUser(anyString()))
+            .willReturn(new User(BEARER_TOKEN, SampleUserDetails.builder()
                 .withUserId(claimantId)
                 .withMail("claimant@email.com")
                 .build()
-        );
+            ));
 
         given(claimRepository.saveRepresented(anyString(), anyString(), any(LocalDate.class),
             any(LocalDate.class), anyString(), anyString(), anyString()))
