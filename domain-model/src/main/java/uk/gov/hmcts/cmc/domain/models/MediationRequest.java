@@ -8,10 +8,11 @@ import java.time.LocalDate;
 public class MediationRequest {
 
     @NotEmpty
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate mediationGenerateDate;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate mediationGenerateDate;
 
     @NotEmpty
-    String mediationServiceEmail;
+    private String mediationServiceEmail;
 
     public MediationRequest(
         LocalDate mediationGenerateDate,

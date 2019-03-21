@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.claimstore.repositories.MediationRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Mediation;
 import uk.gov.hmcts.cmc.domain.models.MediationRequest;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,16 +28,28 @@ public class MediationService {
     public void generateMediationExtract(String authorisation, LocalDate mediationDate) {
         List<Claim> mediationClaims = mediationRepository.getMediationClaims(authorisation, mediationDate);
 
+        mediationClaims.forEach(this::getDefendantMediationDetails);
         mediationClaims.forEach(this::getClaimantMediationDetails);
     }
 
-    private void getClaimantMediationDetails(Claim mediationClaim) {
-        new Mediation(
+    private Mediation getDefendantMediationDetails(Claim mediationClaim) {
+        return new Mediation(
             mediationClaim.getReferenceNumber(),
             mediationClaim.getTotalAmountTillToday(),
-            mediationClaim.getClaimData().getClaimant(),
-            mediationClaim.getResponse().get().getMediationContactPerson(),
-            mediationClaim.getResponse().get().getMediationPhoneNumber());
+            2,
+            mediationClaim.getResponse().flatMap(Response::getMediationContactPerson),
+            mediationClaim.getResponse().flatMap(Response::getMediationPhoneNumber)
+        );
+    }
+
+    private Mediation getClaimantMediationDetails(Claim mediationClaim) {
+        return new Mediation(
+            mediationClaim.getReferenceNumber(),
+            mediationClaim.getTotalAmountTillToday(),
+            1,
+            mediationClaim.getResponse().flatMap(Response::getMediationContactPerson),
+            mediationClaim.getResponse().flatMap(Response::getMediationPhoneNumber)
+        );
     }
 
 }

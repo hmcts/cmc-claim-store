@@ -11,7 +11,7 @@ public class Mediation {
     private final String caseNumber;
     private final int caseType;
     private final Optional<BigDecimal> amount;
-    private final Party partyType;
+    private final int partyType;
     private final Optional<String> contactName;
     private final Optional<String> contactNumber;
     private final int checkList;
@@ -20,7 +20,7 @@ public class Mediation {
     public Mediation(
         String caseNumber,
         Optional<BigDecimal> amount,
-        Party partyType,
+        int partyType,
         Optional<String> contactName,
         Optional<String> contactNumber
     ) {
