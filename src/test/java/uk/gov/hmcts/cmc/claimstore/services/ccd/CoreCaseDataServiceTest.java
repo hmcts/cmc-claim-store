@@ -74,7 +74,7 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 public class CoreCaseDataServiceTest {
     private static final String AUTHORISATION = "Bearer: aaa";
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder().build();
-    private static final User ANONYMOUS_USER = new User(AUTHORISATION, USER_DETAILS);
+    private static final User USER = new User(AUTHORISATION, USER_DETAILS);
     private static final String AUTH_TOKEN = "authorisation token";
     private static final LocalDate FUTURE_DATE = now().plusWeeks(4);
 
@@ -179,7 +179,7 @@ public class CoreCaseDataServiceTest {
         when(jsonMapper.fromMap(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
         when(caseMapper.from(any(CCDCase.class))).thenReturn(expectedClaim);
 
-        Claim returnedClaim = service.createNewCase(ANONYMOUS_USER, providedClaim);
+        Claim returnedClaim = service.createNewCase(USER, providedClaim);
 
         assertEquals(expectedClaim, returnedClaim);
         verify(jsonMapper).fromMap(caseDataCaptor.capture(), eq(CCDCase.class));

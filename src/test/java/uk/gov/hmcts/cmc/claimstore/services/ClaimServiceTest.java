@@ -176,7 +176,7 @@ public class ClaimServiceTest {
         Optional<Claim> result = empty();
         String externalId = "does not exist";
 
-        when(caseRepository.getClaimByExternalId(eq(externalId), eq(AUTHORISATION))).thenReturn(result);
+        when(caseRepository.getClaimByExternalId(eq(externalId), eq(CLAIMANT_USER))).thenReturn(result);
 
         claimService.getClaimByExternalId(externalId, AUTHORISATION);
     }
@@ -206,7 +206,7 @@ public class ClaimServiceTest {
     public void saveClaimShouldProceedWhenDuplicated() {
         ClaimData claimData = SampleClaimData.validDefaults();
         when(userService.getUser(eq(AUTHORISATION))).thenReturn(CLAIMANT_USER);
-        when(caseRepository.getClaimByExternalId(anyString(), eq(AUTHORISATION)))
+        when(caseRepository.getClaimByExternalId(anyString(), eq(CLAIMANT_USER)))
             .thenReturn(Optional.of(claim));
 
         Claim createdClaim = claimService.saveClaim(USER_ID, claimData, AUTHORISATION, singletonList("admissions"));
@@ -236,7 +236,7 @@ public class ClaimServiceTest {
 
         LocalDate newDeadline = RESPONSE_DEADLINE.plusDays(20);
 
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
             .thenReturn(Optional.of(claim));
         when(responseDeadlineCalculator.calculatePostponedResponseDeadline(any()))
             .thenReturn(newDeadline);
@@ -250,7 +250,7 @@ public class ClaimServiceTest {
 
     @Test(expected = NotFoundException.class)
     public void requestMoreTimeToRespondShouldThrowNotFoundExceptionWhenClaimNotFound() {
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(empty());
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any())).thenReturn(empty());
 
         claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
     }
@@ -262,7 +262,7 @@ public class ClaimServiceTest {
             .minusDays(10);
         Claim claim = createClaimModel(responseDeadlineInThePast, false);
 
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
             .thenReturn(Optional.of(claim));
 
         claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
@@ -272,7 +272,7 @@ public class ClaimServiceTest {
     public void requestMoreTimeForResponseThrowsMoreTimeAlreadyRequestedExceptionWhenMoreTimeRequestForSecondTime() {
         Claim claim = createClaimModel(RESPONSE_DEADLINE, true);
 
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
             .thenReturn(Optional.of(claim));
 
         claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
@@ -325,7 +325,7 @@ public class ClaimServiceTest {
     @Test
     public void paidInFullShouldFinishSuccessfully() {
         when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(validClaimant);
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
             .thenReturn(Optional.of(claim));
         PaidInFull paidInFull = new PaidInFull(now());
 
@@ -343,7 +343,7 @@ public class ClaimServiceTest {
     public void paidInFullShouldThrowConflictExceptionIfAlreadyPaidInFull() {
         when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(validClaimant);
 
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString()))
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
             .thenReturn(Optional.of(createPaidInFullClaim(now())));
 
         claimService.paidInFull(EXTERNAL_ID, new PaidInFull(now()), AUTHORISATION);
@@ -351,7 +351,7 @@ public class ClaimServiceTest {
 
     @Test(expected = NotFoundException.class)
     public void paidInFullShouldThrowNotFoundExceptionWhenClaimNotFound() {
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(empty());
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any())).thenReturn(empty());
 
         claimService.paidInFull(EXTERNAL_ID, new PaidInFull(now()), AUTHORISATION);
     }
@@ -377,7 +377,7 @@ public class ClaimServiceTest {
 
     @Test(expected = ForbiddenActionException.class)
     public void getByExternalIdShouldThrowExceptionWhenCallerNotAuthorised() {
-        when(caseRepository.getClaimByExternalId(claim.getExternalId(), AUTHORISATION))
+        when(caseRepository.getClaimByExternalId(claim.getExternalId(), CLAIMANT_USER))
             .thenReturn(Optional.of(claim));
         when(userService.getUserDetails(AUTHORISATION))
             .thenReturn(SampleUserDetails.builder().withUserId("300").build());
@@ -398,7 +398,7 @@ public class ClaimServiceTest {
 
     @Test(expected = ForbiddenActionException.class)
     public void requestMoreTimeShouldThrowExceptionWhenCallerNotAuthorised() {
-        when(caseRepository.getClaimByExternalId(claim.getExternalId(), AUTHORISATION))
+        when(caseRepository.getClaimByExternalId(claim.getExternalId(), CLAIMANT_USER))
             .thenReturn(Optional.of(claim));
         when(userService.getUserDetails(AUTHORISATION))
             .thenReturn(SampleUserDetails.builder().withUserId("300").build());
@@ -416,7 +416,7 @@ public class ClaimServiceTest {
 
     @Test(expected = ForbiddenActionException.class)
     public void paidInFullShouldThrowExceptionWhenCallerNotAuthorised() {
-        when(caseRepository.getClaimByExternalId(claim.getExternalId(), AUTHORISATION))
+        when(caseRepository.getClaimByExternalId(claim.getExternalId(), CLAIMANT_USER))
             .thenReturn(Optional.of(claim));
 
         when(userService.getUserDetails(AUTHORISATION))
