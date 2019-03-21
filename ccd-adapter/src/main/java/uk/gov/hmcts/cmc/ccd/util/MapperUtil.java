@@ -9,6 +9,9 @@ import java.util.stream.Stream;
 public class MapperUtil {
     private static final String OTHERS = " + others";
 
+    public static Function<Claim, String> toCaseName = claim ->
+        fetchClaimanantName(claim) + " Vs " + fetchDefendantName(claim);
+
     private MapperUtil() {
         // Utility class, no instances
     }
@@ -20,9 +23,6 @@ public class MapperUtil {
     public static boolean isAnyNotNull(Object... objects) {
         return Stream.of(objects).anyMatch(Objects::nonNull);
     }
-
-    public static Function<Claim, String> toCaseName = claim ->
-        fetchClaimanantName(claim) + " Vs " + fetchDefendantName(claim);
 
     private static String fetchDefendantName(Claim claim) {
         StringBuilder defendantNameBuilder = new StringBuilder();
