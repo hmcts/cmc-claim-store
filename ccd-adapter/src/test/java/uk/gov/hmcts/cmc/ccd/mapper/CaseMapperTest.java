@@ -73,7 +73,6 @@ public class CaseMapperTest {
 
         //then
         assertThat(claim).isEqualTo(ccdCase);
-        assertEquals(MapperUtil.toCaseName.apply(claim), ccdCase.getCaseName());
     }
 
     @Test
@@ -86,7 +85,6 @@ public class CaseMapperTest {
 
         //then
         assertThat(claim).isEqualTo(ccdCase);
-        assertEquals(MapperUtil.toCaseName.apply(claim), ccdCase.getCaseName());
     }
 
     @Test(expected = NullPointerException.class)
