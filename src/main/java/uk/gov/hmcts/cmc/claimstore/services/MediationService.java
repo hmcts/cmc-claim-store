@@ -27,16 +27,16 @@ public class MediationService {
     public void generateMediationExtract(String authorisation, LocalDate mediationDate) {
         List<Claim> mediationClaims = mediationRepository.getMediationClaims(authorisation, mediationDate);
 
-        for (int i = 0; i < mediationClaims.size(); i++ ) {
+        mediationClaims.forEach(this::getClaimantMediationDetails);
+    }
 
-
-            new Mediation(
-                mediationClaims.get(i).getReferenceNumber(),
-                mediationClaims.get(i).getTotalAmountTillToday(),
-                mediationClaims.get(i).getClaimData().getClaimant(),
-                mediationClaims.get(i).getResponse().get().getMediationContactPerson(),
-                mediationClaims.get(i).getResponse().get().getMediationPhoneNumber());
-        }
+    private void getClaimantMediationDetails(Claim mediationClaim) {
+        new Mediation(
+            mediationClaim.getReferenceNumber(),
+            mediationClaim.getTotalAmountTillToday(),
+            mediationClaim.getClaimData().getClaimant(),
+            mediationClaim.getResponse().get().getMediationContactPerson(),
+            mediationClaim.getResponse().get().getMediationPhoneNumber());
     }
 
 }
