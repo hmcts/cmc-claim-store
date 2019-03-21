@@ -63,6 +63,15 @@ public class FormattingTest {
         assertThat(formatted).isEqualTo("£123,456.78");
     }
 
+    @Test
+    public void formatMoneyShouldFormatZeroesWithExpectedPattern() {
+        BigDecimal value = new BigDecimal("123456.00");
+
+        String formatted = Formatting.formatMoney(value);
+
+        assertThat(formatted).isEqualTo("£123,456");
+    }
+
     @Test(expected = NullPointerException.class)
     public void formatMoneyShouldThrowNullPointerWhenGivenNullAmount() {
         BigInteger value = null;

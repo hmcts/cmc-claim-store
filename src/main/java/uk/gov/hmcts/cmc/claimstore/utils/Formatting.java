@@ -40,7 +40,7 @@ public class Formatting {
 
     public static String formatMoney(BigDecimal amount) {
         requireNonNull(amount);
-        return NumberFormat.getCurrencyInstance(Locale.forLanguageTag("en-GB")).format(amount);
+        return NumberFormat.getCurrencyInstance(Locale.forLanguageTag("en-GB")).format(amount).replaceAll("\\.00", "");
     }
 
     public static String formatMoney(BigInteger amount) {

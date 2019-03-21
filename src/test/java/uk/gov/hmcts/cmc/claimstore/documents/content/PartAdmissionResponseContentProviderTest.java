@@ -42,7 +42,7 @@ public class PartAdmissionResponseContentProviderTest {
 
         assertThat(content)
             .containsKey("amount")
-            .containsValue("£120.00");
+            .containsValue("£120");
 
         assertThat(content).containsKey("events");
         assertThat(content).containsKey("evidences");
