@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
@@ -65,14 +66,21 @@ public class ClaimantRejectionStaffNotificationService {
         map.put("claimReferenceNumber", claim.getReferenceNumber());
         map.put("claimantName", claim.getClaimData().getClaimant().getName());
         map.put("defendantName", claim.getClaimData().getDefendant().getName());
-        map.put("defendantFreeMediation", defendantResponse.getFreeMediation().get());
-        map.put("claimantFreeMediation", ((ResponseRejection) claimantResponse).getFreeMediation().get());
+        map.put("defendantFreeMediation", defendantResponse.getFreeMediation()
+            .orElse(YesNoOption.NO)
+            .name()
+            .toLowerCase());
+        map.put("claimantFreeMediation", ((ResponseRejection) claimantResponse).getFreeMediation()
+            .orElse(YesNoOption.NO)
+            .name()
+            .toLowerCase());
 
         return map;
     }
 
     private EmailAttachment createResponsePdfAttachment(Claim claim) {
         requireNonNull(claim);
+        System.out.println(claim);
         return pdfCreatorService.createResponsePdfAttachment(claim);
     }
 

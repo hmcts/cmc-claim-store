@@ -61,10 +61,10 @@ public class ClaimantRejectionStaffNotificationServiceTest extends MockSpringTes
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
-        String subject = String.format("Partial admission rejected %s v %s %s",
+        String subject = String.format("Partial admission rejected %s %s v %s",
+            claimWithPartAdmission.getReferenceNumber(),
             claimWithPartAdmission.getClaimData().getClaimant().getName(),
-            claimWithPartAdmission.getClaimData().getDefendant().getName(),
-            claimWithPartAdmission.getReferenceNumber()
+            claimWithPartAdmission.getClaimData().getDefendant().getName()
         );
 
         String body = String.format("%s has rejected a partial admission",
