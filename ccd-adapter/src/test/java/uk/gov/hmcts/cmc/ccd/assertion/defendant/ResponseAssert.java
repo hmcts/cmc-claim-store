@@ -6,7 +6,7 @@ import uk.gov.hmcts.cmc.ccd.assertion.TimelineEventAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.StatementOfMeansAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
@@ -55,18 +55,18 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
         return new StatementOfMeansAssert(statementOfMeans);
     }
 
-    public ResponseAssert isEqualTo(CCDRespondent ccdRespondent) {
+    public ResponseAssert isEqualTo(CCDDefendant ccdDefendant) {
         isNotNull();
 
         switch (actual.getResponseType()) {
             case FULL_DEFENCE:
-                assertFullDefenceResponse(ccdRespondent);
+                assertFullDefenceResponse(ccdDefendant);
                 break;
             case FULL_ADMISSION:
-                assertFullAdmissionResponse(ccdRespondent);
+                assertFullAdmissionResponse(ccdDefendant);
                 break;
             case PART_ADMISSION:
-                assertPartAdmissionResponse(ccdRespondent);
+                assertPartAdmissionResponse(ccdDefendant);
                 break;
             default:
                 throw new AssertionError("Invalid response type");
@@ -75,111 +75,111 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
         return this;
     }
 
-    private void assertPartAdmissionResponse(CCDRespondent ccdRespondent) {
-        assertResponse(ccdRespondent);
+    private void assertPartAdmissionResponse(CCDDefendant ccdDefendant) {
+        assertResponse(ccdDefendant);
         PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse) actual;
 
-        if (!Objects.equals(partAdmissionResponse.getAmount(), ccdRespondent.getResponseAmount())) {
-            failWithMessage("Expected CCDRespondent.responseAmount to be <%s> but was <%s>",
-                ccdRespondent.getResponseAmount(), partAdmissionResponse.getAmount());
+        if (!Objects.equals(partAdmissionResponse.getAmount(), ccdDefendant.getResponseAmount())) {
+            failWithMessage("Expected CCDDefendant.responseAmount to be <%s> but was <%s>",
+                ccdDefendant.getResponseAmount(), partAdmissionResponse.getAmount());
         }
 
-        if (!Objects.equals(partAdmissionResponse.getDefence(), ccdRespondent.getResponseDefence())) {
-            failWithMessage("Expected CCDRespondent.responseDefence to be <%s> but was <%s>",
-                ccdRespondent.getResponseDefence(), partAdmissionResponse.getDefence());
+        if (!Objects.equals(partAdmissionResponse.getDefence(), ccdDefendant.getResponseDefence())) {
+            failWithMessage("Expected CCDDefendant.responseDefence to be <%s> but was <%s>",
+                ccdDefendant.getResponseDefence(), partAdmissionResponse.getDefence());
         }
 
         partAdmissionResponse.getPaymentDeclaration()
-            .ifPresent(paymentDeclaration -> assertPaymentDeclaration(ccdRespondent, paymentDeclaration));
+            .ifPresent(paymentDeclaration -> assertPaymentDeclaration(ccdDefendant, paymentDeclaration));
 
         partAdmissionResponse.getPaymentIntention()
             .ifPresent(paymentIntention ->
-                assertThat(paymentIntention).isEqualTo(ccdRespondent.getDefendantPaymentIntention()));
+                assertThat(paymentIntention).isEqualTo(ccdDefendant.getDefendantPaymentIntention()));
 
-        if (!Objects.equals(partAdmissionResponse.getDefence(), ccdRespondent.getResponseDefence())) {
-            failWithMessage("Expected CCDRespondent.responseDefence to be <%s> but was <%s>",
-                ccdRespondent.getResponseDefence(), partAdmissionResponse.getDefence());
+        if (!Objects.equals(partAdmissionResponse.getDefence(), ccdDefendant.getResponseDefence())) {
+            failWithMessage("Expected CCDDefendant.responseDefence to be <%s> but was <%s>",
+                ccdDefendant.getResponseDefence(), partAdmissionResponse.getDefence());
         }
 
-        partAdmissionResponse.getTimeline().ifPresent(assertDefendantTimelineConsumer(ccdRespondent));
+        partAdmissionResponse.getTimeline().ifPresent(assertDefendantTimelineConsumer(ccdDefendant));
 
-        partAdmissionResponse.getEvidence().ifPresent(assertDefendantEvidenceConsumer(ccdRespondent));
+        partAdmissionResponse.getEvidence().ifPresent(assertDefendantEvidenceConsumer(ccdDefendant));
 
         partAdmissionResponse.getStatementOfMeans()
-            .ifPresent(statementOfMeans -> assertThat(statementOfMeans).isEqualTo(ccdRespondent.getStatementOfMeans()));
+            .ifPresent(statementOfMeans -> assertThat(statementOfMeans).isEqualTo(ccdDefendant.getStatementOfMeans()));
     }
 
-    private void assertFullAdmissionResponse(CCDRespondent ccdRespondent) {
-        assertResponse(ccdRespondent);
+    private void assertFullAdmissionResponse(CCDDefendant ccdDefendant) {
+        assertResponse(ccdDefendant);
         FullAdmissionResponse fullAdmissionResponse = (FullAdmissionResponse) actual;
 
-        assertThat(fullAdmissionResponse.getPaymentIntention()).isEqualTo(ccdRespondent.getDefendantPaymentIntention());
+        assertThat(fullAdmissionResponse.getPaymentIntention()).isEqualTo(ccdDefendant.getDefendantPaymentIntention());
 
         fullAdmissionResponse.getStatementOfMeans()
-            .ifPresent(statementOfMeans -> assertThat(statementOfMeans).isEqualTo(ccdRespondent.getStatementOfMeans()));
+            .ifPresent(statementOfMeans -> assertThat(statementOfMeans).isEqualTo(ccdDefendant.getStatementOfMeans()));
     }
 
-    private void assertFullDefenceResponse(CCDRespondent respondent) {
-        assertResponse(respondent);
+    private void assertFullDefenceResponse(CCDDefendant ccdDefendant) {
+        assertResponse(ccdDefendant);
         FullDefenceResponse fullDefenceResponse = (FullDefenceResponse) actual;
 
         if (!Objects.equals(
             fullDefenceResponse.getDefenceType().name(),
-            respondent.getResponseDefenceType().name()
+            ccdDefendant.getResponseDefenceType().name()
         )) {
-            failWithMessage("Expected CCDRespondent.responseDefenceType to be <%s> but was <%s>",
-                respondent.getResponseDefenceType(), fullDefenceResponse.getDefenceType());
+            failWithMessage("Expected CCDDefendant.responseDefenceType to be <%s> but was <%s>",
+                ccdDefendant.getResponseDefenceType(), fullDefenceResponse.getDefenceType());
         }
 
-        if (!Objects.equals(fullDefenceResponse.getDefence().orElse(null), respondent.getResponseDefence())) {
-            failWithMessage("Expected CCDRespondent.responseDefence to be <%s> but was <%s>",
-                respondent.getResponseDefence(), fullDefenceResponse.getDefence());
+        if (!Objects.equals(fullDefenceResponse.getDefence().orElse(null), ccdDefendant.getResponseDefence())) {
+            failWithMessage("Expected CCDDefendant.responseDefence to be <%s> but was <%s>",
+                ccdDefendant.getResponseDefence(), fullDefenceResponse.getDefence());
         }
 
         fullDefenceResponse.getPaymentDeclaration()
-            .ifPresent(paymentDeclaration -> assertPaymentDeclaration(respondent, paymentDeclaration));
+            .ifPresent(paymentDeclaration -> assertPaymentDeclaration(ccdDefendant, paymentDeclaration));
 
-        fullDefenceResponse.getTimeline().ifPresent(assertDefendantTimelineConsumer(respondent));
+        fullDefenceResponse.getTimeline().ifPresent(assertDefendantTimelineConsumer(ccdDefendant));
 
-        fullDefenceResponse.getEvidence().ifPresent(assertDefendantEvidenceConsumer(respondent));
+        fullDefenceResponse.getEvidence().ifPresent(assertDefendantEvidenceConsumer(ccdDefendant));
     }
 
-    private Consumer<DefendantEvidence> assertDefendantEvidenceConsumer(CCDRespondent ccdRespondent) {
+    private Consumer<DefendantEvidence> assertDefendantEvidenceConsumer(CCDDefendant ccdDefendant) {
         return evidence -> {
-            assertEquals(evidence.getRows().size(), ccdRespondent.getResponseEvidenceRows().size());
-            if (!Objects.equals(evidence.getComment().orElse(null), ccdRespondent.getResponseEvidenceComment())) {
-                failWithMessage("Expected CCDRespondent.responseEvidenceComment to be <%s> but was <%s>",
-                    ccdRespondent.getResponseEvidenceComment(), evidence.getComment());
+            assertEquals(evidence.getRows().size(), ccdDefendant.getResponseEvidenceRows().size());
+            if (!Objects.equals(evidence.getComment().orElse(null), ccdDefendant.getResponseEvidenceComment())) {
+                failWithMessage("Expected CCDDefendant.responseEvidenceComment to be <%s> but was <%s>",
+                    ccdDefendant.getResponseEvidenceComment(), evidence.getComment());
             }
             evidence.getRows()
-                .forEach(evidenceRow -> assertEvidenceRow(evidenceRow, ccdRespondent.getResponseEvidenceRows()));
+                .forEach(evidenceRow -> assertEvidenceRow(evidenceRow, ccdDefendant.getResponseEvidenceRows()));
         };
     }
 
-    private Consumer<DefendantTimeline> assertDefendantTimelineConsumer(CCDRespondent ccdRespondent) {
+    private Consumer<DefendantTimeline> assertDefendantTimelineConsumer(CCDDefendant ccdDefendant) {
         return defendantTimeline -> {
-            assertEquals(defendantTimeline.getEvents().size(), ccdRespondent.getDefendantTimeLineEvents().size());
+            assertEquals(defendantTimeline.getEvents().size(), ccdDefendant.getDefendantTimeLineEvents().size());
             if (!Objects.equals(
                 defendantTimeline.getComment().orElse(null),
-                ccdRespondent.getDefendantTimeLineComment())
+                ccdDefendant.getDefendantTimeLineComment())
             ) {
-                failWithMessage("Expected CCDRespondent.defendantTimeLineComment to be <%s> but was <%s>",
-                    ccdRespondent.getDefendantTimeLineComment(), defendantTimeline.getComment());
+                failWithMessage("Expected CCDDefendant.defendantTimeLineComment to be <%s> but was <%s>",
+                    ccdDefendant.getDefendantTimeLineComment(), defendantTimeline.getComment());
             }
             defendantTimeline.getEvents()
-                .forEach(event -> assertTimelineEvent(event, ccdRespondent.getDefendantTimeLineEvents()));
+                .forEach(event -> assertTimelineEvent(event, ccdDefendant.getDefendantTimeLineEvents()));
         };
     }
 
-    private void assertPaymentDeclaration(CCDRespondent ccdRespondent, PaymentDeclaration paymentDeclaration) {
-        if (!Objects.equals(paymentDeclaration.getPaidDate(), ccdRespondent.getPaymentDeclarationPaidDate())) {
-            failWithMessage("Expected CCDRespondent.paymentDeclarationPaidDate to be <%s> but was <%s>",
-                ccdRespondent.getPaymentDeclarationPaidDate(), paymentDeclaration.getPaidDate());
+    private void assertPaymentDeclaration(CCDDefendant ccdDefendant, PaymentDeclaration paymentDeclaration) {
+        if (!Objects.equals(paymentDeclaration.getPaidDate(), ccdDefendant.getPaymentDeclarationPaidDate())) {
+            failWithMessage("Expected CCDDefendant.paymentDeclarationPaidDate to be <%s> but was <%s>",
+                ccdDefendant.getPaymentDeclarationPaidDate(), paymentDeclaration.getPaidDate());
         }
 
-        if (!Objects.equals(paymentDeclaration.getExplanation(), ccdRespondent.getPaymentDeclarationExplanation())) {
-            failWithMessage("Expected CCDRespondent.paymentDeclarationExplanation to be <%s> but was <%s>",
-                ccdRespondent.getPaymentDeclarationExplanation(), paymentDeclaration.getExplanation());
+        if (!Objects.equals(paymentDeclaration.getExplanation(), ccdDefendant.getPaymentDeclarationExplanation())) {
+            failWithMessage("Expected CCDDefendant.paymentDeclarationExplanation to be <%s> but was <%s>",
+                ccdDefendant.getPaymentDeclarationExplanation(), paymentDeclaration.getExplanation());
         }
     }
 
@@ -203,69 +203,44 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
             .ifPresent(event -> assertThat(actualEvent).isEqualTo(event));
     }
 
-    private void assertResponse(CCDRespondent ccdRespondent) {
-        if (!Objects.equals(actual.getResponseType().name(), ccdRespondent.getResponseType().name())) {
-            failWithMessage("Expected CCDRespondent.responseType to be <%s> but was <%s>",
-                ccdRespondent.getResponseType(), actual.getResponseType());
+    private void assertResponse(CCDDefendant ccdDefendant) {
+        if (!Objects.equals(actual.getResponseType().name(), ccdDefendant.getResponseType().name())) {
+            failWithMessage("Expected CCDDefendant.responseType to be <%s> but was <%s>",
+                ccdDefendant.getResponseType(), actual.getResponseType());
         }
 
         actual.getFreeMediation().ifPresent(freeMediation -> {
             if (!Objects.equals(
-                actual.getFreeMediation().orElse(YesNoOption.YES).name(),
-                ccdRespondent.getResponseFreeMediationOption().name())
+                actual.getFreeMediation().orElse(YesNoOption.NO).name(),
+                ccdDefendant.getResponseFreeMediationOption().name())
             ) {
-                failWithMessage(
-                    "Expected CCDRespondent.responseFreeMediationOption to be <%s> but was <%s>",
-                    ccdRespondent.getResponseFreeMediationOption(), actual.getFreeMediation()
-                );
+                failWithMessage("Expected CCDDefendant.responseFreeMediationOption to be <%s> but was <%s>",
+                    ccdDefendant.getResponseFreeMediationOption(), actual.getFreeMediation());
             }
         });
 
-        actual.getMediationPhoneNumber().ifPresent(mediationPhoneNumber -> {
-            if (!Objects.equals(
-                mediationPhoneNumber,
-                ccdRespondent.getResponseMediationPhoneNumber().getTelephoneNumber())) {
-                failWithMessage("Expected CCDDefendant.responseMediationPhoneNumber to be "
-                        + "<%s> but was <%s>",
-                    ccdRespondent.getResponseMediationPhoneNumber(),
-                    actual.getMediationPhoneNumber());
-            }
-        });
-
-        actual.getMediationContactPerson().ifPresent(mediationContactPerson -> {
-            if (!Objects.equals(
-                mediationContactPerson,
-                ccdRespondent.getResponseMediationContactPerson())) {
-                failWithMessage("Expected CCDDefendant.responseMediationContactPerson to be "
-                        + "<%s> but was <%s>",
-                    ccdRespondent.getResponseMediationContactPerson(),
-                    actual.getMediationContactPerson());
-            }
-        });
-
-        if (!Objects.equals(actual.getMoreTimeNeeded().name(),
-            ccdRespondent.getResponseMoreTimeNeededOption().name())) {
-            failWithMessage("Expected CCDRespondent.responseMoreTimeNeededOption to be <%s> but was <%s>",
-                ccdRespondent.getResponseMoreTimeNeededOption(), actual.getMoreTimeNeeded());
+        if (!Objects.equals(actual.getMoreTimeNeeded().name(), ccdDefendant.getResponseMoreTimeNeededOption().name())) {
+            failWithMessage("Expected CCDDefendant.responseMoreTimeNeededOption to be <%s> but was <%s>",
+                ccdDefendant.getResponseMoreTimeNeededOption(), actual.getMoreTimeNeeded());
         }
 
         actual.getStatementOfTruth()
-            .ifPresent(statementOfTruth -> assertStatementOfTruth(ccdRespondent, statementOfTruth));
+            .ifPresent(statementOfTruth -> assertStatementOfTruth(ccdDefendant, statementOfTruth));
 
-        assertThat(actual.getDefendant()).isEqualTo(ccdRespondent);
+        assertThat(actual.getDefendant()).isEqualTo(ccdDefendant);
     }
 
-    private void assertStatementOfTruth(CCDRespondent ccdRespondent, StatementOfTruth statementOfTruth) {
-        if (!Objects.equals(statementOfTruth.getSignerName(), ccdRespondent.getResponseDefendantSOTSignerName())) {
+    private void assertStatementOfTruth(CCDDefendant ccdDefendant, StatementOfTruth statementOfTruth) {
+        if (!Objects.equals(statementOfTruth.getSignerName(), ccdDefendant.getResponseDefendantSOTSignerName())) {
             failWithMessage(
-                "Expected CCDRespondent.responseDefendantSOTSignerName to be <%s> but was <%s>",
-                statementOfTruth.getSignerName(), ccdRespondent.getResponseDefendantSOTSignerName());
+                "Expected CCDDefendant.responseDefendantSOTSignerName to be <%s> but was <%s>",
+                statementOfTruth.getSignerName(), ccdDefendant.getResponseDefendantSOTSignerName());
         }
 
-        if (!Objects.equals(statementOfTruth.getSignerRole(), ccdRespondent.getResponseDefendantSOTSignerRole())) {
+        if (!Objects.equals(statementOfTruth.getSignerRole(), ccdDefendant.getResponseDefendantSOTSignerRole())) {
             failWithMessage(
-                "Expected CCDRespondent.responseDefendantSOTSignerRole to be <%s> but was <%s>",
-                statementOfTruth.getSignerRole(), ccdRespondent.getResponseDefendantSOTSignerRole());
+                "Expected CCDDefendant.responseDefendantSOTSignerRole to be <%s> but was <%s>",
+                statementOfTruth.getSignerRole(), ccdDefendant.getResponseDefendantSOTSignerRole());
         }
     }
 }

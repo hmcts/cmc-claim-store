@@ -2,14 +2,14 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Component
 public class RepresentativeMapper
-    implements BuilderMapper<CCDApplicant, Representative, CCDApplicant.CCDApplicantBuilder> {
+    implements BuilderMapper<CCDClaimant, Representative, CCDClaimant.CCDClaimantBuilder> {
 
     private final AddressMapper addressMapper;
     private final ContactDetailsMapper contactDetailsMapper;
@@ -21,7 +21,7 @@ public class RepresentativeMapper
     }
 
     @Override
-    public void to(Representative representative, CCDApplicant.CCDApplicantBuilder builder) {
+    public void to(Representative representative, CCDClaimant.CCDClaimantBuilder builder) {
 
         representative.getOrganisationContactDetails()
             .ifPresent(organisationContactDetails ->
@@ -33,20 +33,20 @@ public class RepresentativeMapper
     }
 
     @Override
-    public Representative from(CCDApplicant applicant) {
-        if (isBlank(applicant.getRepresentativeOrganisationName())
-            && applicant.getRepresentativeOrganisationAddress() == null
-            && isBlank(applicant.getRepresentativeOrganisationEmail())
-            && isBlank(applicant.getRepresentativeOrganisationPhone())
-            && isBlank(applicant.getRepresentativeOrganisationDxAddress())
+    public Representative from(CCDClaimant ccdClaimant) {
+        if (isBlank(ccdClaimant.getRepresentativeOrganisationName())
+            && ccdClaimant.getRepresentativeOrganisationAddress() == null
+            && isBlank(ccdClaimant.getRepresentativeOrganisationEmail())
+            && isBlank(ccdClaimant.getRepresentativeOrganisationPhone())
+            && isBlank(ccdClaimant.getRepresentativeOrganisationDxAddress())
         ) {
             return null;
         }
 
         return new Representative(
-            applicant.getRepresentativeOrganisationName(),
-            addressMapper.from(applicant.getRepresentativeOrganisationAddress()),
-            contactDetailsMapper.from(applicant)
+            ccdClaimant.getRepresentativeOrganisationName(),
+            addressMapper.from(ccdClaimant.getRepresentativeOrganisationAddress()),
+            contactDetailsMapper.from(ccdClaimant)
         );
 
     }

@@ -1,15 +1,13 @@
 package uk.gov.hmcts.cmc.ccd.mapper.defendant;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.ccd.mapper.EvidenceRowMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.PaymentIntentionMapper;
-import uk.gov.hmcts.cmc.ccd.mapper.TelephoneMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.TimelineEventMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans.StatementOfMeansMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -41,26 +39,22 @@ public class ResponseMapper {
     private final DefendantPartyMapper defendantPartyMapper;
     private final PaymentIntentionMapper paymentIntentionMapper;
     private final StatementOfMeansMapper statementOfMeansMapper;
-    private final TelephoneMapper telephoneMapper;
 
     public ResponseMapper(
         EvidenceRowMapper evidenceRowMapper,
         TimelineEventMapper timelineEventMapper,
         DefendantPartyMapper defendantPartyMapper,
         PaymentIntentionMapper paymentIntentionMapper,
-        StatementOfMeansMapper statementOfMeansMapper,
-        TelephoneMapper telephoneMapper
+        StatementOfMeansMapper statementOfMeansMapper
     ) {
         this.evidenceRowMapper = evidenceRowMapper;
         this.timelineEventMapper = timelineEventMapper;
         this.defendantPartyMapper = defendantPartyMapper;
         this.paymentIntentionMapper = paymentIntentionMapper;
         this.statementOfMeansMapper = statementOfMeansMapper;
-        this.telephoneMapper = telephoneMapper;
     }
 
-    public void to(CCDRespondent.CCDRespondentBuilder builder, Response response,
-                   CCDParty.CCDPartyBuilder partyDetail) {
+    public void to(CCDDefendant.CCDDefendantBuilder builder, Response response) {
         requireNonNull(builder, "builder must not be null");
         requireNonNull(response, "response must not be null");
 
@@ -70,10 +64,6 @@ public class ResponseMapper {
 
         response.getFreeMediation().ifPresent(freeMediation ->
             builder.responseFreeMediationOption(CCDYesNoOption.valueOf(freeMediation.name())));
-
-        response.getMediationPhoneNumber().ifPresent(phoneNo ->
-            builder.responseMediationPhoneNumber(telephoneMapper.to(phoneNo)));
-        response.getMediationContactPerson().ifPresent(builder::responseMediationContactPerson);
 
         if (response.getMoreTimeNeeded() != null) {
             builder.responseMoreTimeNeededOption(CCDYesNoOption.valueOf(response.getMoreTimeNeeded().name()));
@@ -85,7 +75,7 @@ public class ResponseMapper {
                 builder.responseDefendantSOTSignerRole(statementOfTruth.getSignerRole());
             }
         );
-        defendantPartyMapper.to(builder, response.getDefendant(), partyDetail);
+        defendantPartyMapper.to(builder, response.getDefendant());
 
         switch (response.getResponseType()) {
             case FULL_DEFENCE:
@@ -102,29 +92,7 @@ public class ResponseMapper {
         }
     }
 
-    public void from(Claim.ClaimBuilder claimBuilder, CCDRespondent respondent) {
-        requireNonNull(claimBuilder, "claimBuilder must not be null");
-        requireNonNull(respondent, "respondent must not be null");
-        if (respondent.getResponseType() == null) {
-            return;
-        }
-
-        switch (respondent.getResponseType()) {
-            case FULL_DEFENCE:
-                claimBuilder.response(extractFullDefence(respondent));
-                break;
-            case FULL_ADMISSION:
-                claimBuilder.response(extractFullAdmission(respondent));
-                break;
-            case PART_ADMISSION:
-                claimBuilder.response(extractPartAdmission(respondent));
-                break;
-            default:
-                throw new MappingException("Invalid responseType");
-        }
-    }
-
-    private void toPartAdmissionResponse(CCDRespondent.CCDRespondentBuilder builder, PartAdmissionResponse response) {
+    private void toPartAdmissionResponse(CCDDefendant.CCDDefendantBuilder builder, PartAdmissionResponse response) {
 
         builder.responseAmount(response.getAmount());
         response.getPaymentDeclaration().ifPresent(
@@ -142,7 +110,7 @@ public class ResponseMapper {
         );
     }
 
-    private void toFullAdmissionResponse(CCDRespondent.CCDRespondentBuilder builder, FullAdmissionResponse response) {
+    private void toFullAdmissionResponse(CCDDefendant.CCDDefendantBuilder builder, FullAdmissionResponse response) {
 
         builder.defendantPaymentIntention(paymentIntentionMapper.to(response.getPaymentIntention()));
 
@@ -152,7 +120,7 @@ public class ResponseMapper {
     }
 
     private void toFullDefenceResponse(
-        CCDRespondent.CCDRespondentBuilder builder,
+        CCDDefendant.CCDDefendantBuilder builder,
         FullDefenceResponse fullDefenceResponse
     ) {
         builder.responseDefenceType(CCDDefenceType.valueOf(fullDefenceResponse.getDefenceType().name()));
@@ -162,7 +130,7 @@ public class ResponseMapper {
         fullDefenceResponse.getTimeline().ifPresent(mapDefendantTimeline(builder));
     }
 
-    private Consumer<DefendantTimeline> mapDefendantTimeline(CCDRespondent.CCDRespondentBuilder builder) {
+    private Consumer<DefendantTimeline> mapDefendantTimeline(CCDDefendant.CCDDefendantBuilder builder) {
         return timeline -> {
             timeline.getComment().ifPresent(builder::defendantTimeLineComment);
             builder.defendantTimeLineEvents(asStream(timeline.getEvents())
@@ -173,7 +141,7 @@ public class ResponseMapper {
         };
     }
 
-    private Consumer<DefendantEvidence> mapDefendantEvidence(CCDRespondent.CCDRespondentBuilder builder) {
+    private Consumer<DefendantEvidence> mapDefendantEvidence(CCDDefendant.CCDDefendantBuilder builder) {
         return evidence -> {
             evidence.getComment().ifPresent(builder::responseEvidenceComment);
             builder.responseEvidenceRows(asStream(evidence.getRows())
@@ -184,34 +152,53 @@ public class ResponseMapper {
         };
     }
 
-    private Consumer<PaymentDeclaration> mapPaymentDeclaration(CCDRespondent.CCDRespondentBuilder builder) {
+    private Consumer<PaymentDeclaration> mapPaymentDeclaration(CCDDefendant.CCDDefendantBuilder builder) {
         return paymentDeclaration -> {
             builder.paymentDeclarationExplanation(paymentDeclaration.getExplanation());
             builder.paymentDeclarationPaidDate(paymentDeclaration.getPaidDate());
         };
     }
 
-    private FullDefenceResponse extractFullDefence(CCDRespondent respondent) {
+    public void from(Claim.ClaimBuilder claimBuilder, CCDDefendant defendant) {
+        requireNonNull(claimBuilder, "claimBuilder must not be null");
+        requireNonNull(defendant, "defendant must not be null");
+        if (defendant.getResponseType() == null) {
+            return;
+        }
+
+        switch (defendant.getResponseType()) {
+            case FULL_DEFENCE:
+                claimBuilder.response(extractFullDefence(defendant));
+                break;
+            case FULL_ADMISSION:
+                claimBuilder.response(extractFullAdmission(defendant));
+                break;
+            case PART_ADMISSION:
+                claimBuilder.response(extractPartAdmission(defendant));
+                break;
+            default:
+                throw new MappingException("Invalid responseType");
+        }
+    }
+
+    private FullDefenceResponse extractFullDefence(CCDDefendant defendant) {
 
         return FullDefenceResponse.builder()
-            .defendant(defendantPartyMapper.from(respondent))
-            .statementOfTruth(extractStatementOfTruth(respondent))
-            .moreTimeNeeded(getMoreTimeNeeded(respondent))
-            .freeMediation(getFreeMediation(respondent))
-            .mediationPhoneNumber(telephoneMapper.from(
-                respondent.getResponseMediationPhoneNumber()))
-            .mediationContactPerson(respondent.getResponseMediationContactPerson())
-            .defenceType(DefenceType.valueOf(respondent.getResponseDefenceType().name()))
-            .defence(respondent.getResponseDefence())
-            .evidence(extractDefendantEvidence(respondent))
-            .timeline(extractDefendantTimeline(respondent))
-            .paymentDeclaration(extractPaymentDeclaration(respondent))
+            .defendant(defendantPartyMapper.from(defendant))
+            .statementOfTruth(extractStatementOfTruth(defendant))
+            .moreTimeNeeded(getMoreTimeNeeded(defendant))
+            .freeMediation(getFreeMediation(defendant))
+            .defenceType(DefenceType.valueOf(defendant.getResponseDefenceType().name()))
+            .defence(defendant.getResponseDefence())
+            .evidence(extractDefendantEvidence(defendant))
+            .timeline(extractDefendantTimeline(defendant))
+            .paymentDeclaration(extractPaymentDeclaration(defendant))
             .build();
     }
 
-    private StatementOfTruth extractStatementOfTruth(CCDRespondent respondent) {
-        String signerName = respondent.getResponseDefendantSOTSignerName();
-        String signerRole = respondent.getResponseDefendantSOTSignerRole();
+    private StatementOfTruth extractStatementOfTruth(CCDDefendant defendant) {
+        String signerName = defendant.getResponseDefendantSOTSignerName();
+        String signerRole = defendant.getResponseDefendantSOTSignerRole();
         if (isAllBlank(signerName, signerRole)) {
             return null;
         } else {
@@ -219,76 +206,70 @@ public class ResponseMapper {
         }
     }
 
-    private PaymentDeclaration extractPaymentDeclaration(CCDRespondent respondent) {
-        LocalDate paidDate = respondent.getPaymentDeclarationPaidDate();
-        String explanation = respondent.getPaymentDeclarationExplanation();
-        BigDecimal paidAmount = respondent.getResponseAmount();
+    private PaymentDeclaration extractPaymentDeclaration(CCDDefendant defendant) {
+        LocalDate paidDate = defendant.getPaymentDeclarationPaidDate();
+        String explanation = defendant.getPaymentDeclarationExplanation();
+        BigDecimal paidAmount = defendant.getResponseAmount();
         if (paidDate == null && paidAmount == null && explanation == null) {
             return null;
         }
         return new PaymentDeclaration(paidDate, paidAmount, explanation);
     }
 
-    private DefendantTimeline extractDefendantTimeline(CCDRespondent respondent) {
+    private DefendantTimeline extractDefendantTimeline(CCDDefendant defendant) {
         return new DefendantTimeline(
-            asStream(respondent.getDefendantTimeLineEvents())
+            asStream(defendant.getDefendantTimeLineEvents())
                 .map(timelineEventMapper::from)
                 .collect(Collectors.toList()),
-            respondent.getDefendantTimeLineComment()
+            defendant.getDefendantTimeLineComment()
         );
     }
 
-    private DefendantEvidence extractDefendantEvidence(CCDRespondent respondent) {
+    private DefendantEvidence extractDefendantEvidence(CCDDefendant defendant) {
         return new DefendantEvidence(
-            asStream(respondent.getResponseEvidenceRows())
+            asStream(defendant.getResponseEvidenceRows())
                 .map(evidenceRowMapper::from)
                 .collect(Collectors.toList()),
-            respondent.getResponseEvidenceComment()
+            defendant.getResponseEvidenceComment()
         );
     }
 
-    private PartAdmissionResponse extractPartAdmission(CCDRespondent respondent) {
+    private PartAdmissionResponse extractPartAdmission(CCDDefendant defendant) {
         return PartAdmissionResponse.builder()
-            .defendant(defendantPartyMapper.from(respondent))
-            .statementOfTruth(extractStatementOfTruth(respondent))
-            .moreTimeNeeded(getMoreTimeNeeded(respondent))
-            .freeMediation(getFreeMediation(respondent))
-            .mediationPhoneNumber(telephoneMapper.from(
-                respondent.getResponseMediationPhoneNumber()))
-            .mediationContactPerson(respondent.getResponseMediationContactPerson())
-            .amount(respondent.getResponseAmount())
-            .paymentDeclaration(extractPaymentDeclaration(respondent))
-            .paymentIntention(paymentIntentionMapper.from(respondent.getDefendantPaymentIntention()))
-            .defence(respondent.getResponseDefence())
-            .evidence(extractDefendantEvidence(respondent))
-            .timeline(extractDefendantTimeline(respondent))
-            .statementOfMeans(statementOfMeansMapper.from(respondent.getStatementOfMeans()))
+            .defendant(defendantPartyMapper.from(defendant))
+            .statementOfTruth(extractStatementOfTruth(defendant))
+            .moreTimeNeeded(getMoreTimeNeeded(defendant))
+            .freeMediation(getFreeMediation(defendant))
+            .amount(defendant.getResponseAmount())
+            .paymentDeclaration(extractPaymentDeclaration(defendant))
+            .paymentIntention(paymentIntentionMapper.from(defendant.getDefendantPaymentIntention()))
+            .defence(defendant.getResponseDefence())
+            .evidence(extractDefendantEvidence(defendant))
+            .timeline(extractDefendantTimeline(defendant))
+            .statementOfMeans(statementOfMeansMapper.from(defendant.getStatementOfMeans()))
             .build();
     }
 
-    private YesNoOption getMoreTimeNeeded(CCDRespondent respondent) {
-        return respondent.getResponseMoreTimeNeededOption() != null
-            ? YesNoOption.valueOf(respondent.getResponseMoreTimeNeededOption().name())
+    private YesNoOption getMoreTimeNeeded(CCDDefendant defendant) {
+        return defendant.getResponseMoreTimeNeededOption() != null
+            ? YesNoOption.valueOf(defendant.getResponseMoreTimeNeededOption().name())
             : null;
     }
 
-    private FullAdmissionResponse extractFullAdmission(CCDRespondent respondent) {
+    private FullAdmissionResponse extractFullAdmission(CCDDefendant defendant) {
         return FullAdmissionResponse.builder()
-            .defendant(defendantPartyMapper.from(respondent))
-            .statementOfTruth(extractStatementOfTruth(respondent))
-            .moreTimeNeeded(getMoreTimeNeeded(respondent))
-            .freeMediation(getFreeMediation(respondent))
-            .mediationPhoneNumber(telephoneMapper.from(
-                respondent.getResponseMediationPhoneNumber()))
-            .mediationContactPerson(respondent.getResponseMediationContactPerson())
-            .paymentIntention(paymentIntentionMapper.from(respondent.getDefendantPaymentIntention()))
-            .statementOfMeans(statementOfMeansMapper.from(respondent.getStatementOfMeans()))
+            .defendant(defendantPartyMapper.from(defendant))
+            .statementOfTruth(extractStatementOfTruth(defendant))
+            .moreTimeNeeded(getMoreTimeNeeded(defendant))
+            .freeMediation(getFreeMediation(defendant))
+            .paymentIntention(paymentIntentionMapper.from(defendant.getDefendantPaymentIntention()))
+            .statementOfMeans(statementOfMeansMapper.from(defendant.getStatementOfMeans()))
             .build();
     }
 
-    private YesNoOption getFreeMediation(CCDRespondent respondent) {
-        return respondent.getResponseFreeMediationOption() != null
-            ? YesNoOption.valueOf(respondent.getResponseFreeMediationOption().name())
+    private YesNoOption getFreeMediation(CCDDefendant defendant) {
+        return defendant.getResponseFreeMediationOption() != null
+            ? YesNoOption.valueOf(defendant.getResponseFreeMediationOption().name())
             : null;
     }
 }

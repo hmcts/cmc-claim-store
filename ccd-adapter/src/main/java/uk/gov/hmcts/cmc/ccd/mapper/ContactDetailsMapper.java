@@ -1,17 +1,17 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
 import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Component
 public class ContactDetailsMapper
-    implements BuilderMapper<CCDApplicant, ContactDetails, CCDApplicant.CCDApplicantBuilder> {
+    implements BuilderMapper<CCDClaimant, ContactDetails, CCDClaimant.CCDClaimantBuilder> {
 
     @Override
-    public void to(ContactDetails contactDetails, CCDApplicant.CCDApplicantBuilder builder) {
+    public void to(ContactDetails contactDetails, CCDClaimant.CCDClaimantBuilder builder) {
 
         contactDetails.getEmail().ifPresent(builder::representativeOrganisationEmail);
         contactDetails.getPhone().ifPresent(builder::representativeOrganisationPhone);
@@ -19,18 +19,18 @@ public class ContactDetailsMapper
     }
 
     @Override
-    public ContactDetails from(CCDApplicant ccdApplicant) {
-        if (isBlank(ccdApplicant.getRepresentativeOrganisationPhone())
-            && isBlank(ccdApplicant.getRepresentativeOrganisationEmail())
-            && ccdApplicant.getRepresentativeOrganisationDxAddress() == null
+    public ContactDetails from(CCDClaimant ccdClaimant) {
+        if (isBlank(ccdClaimant.getRepresentativeOrganisationPhone())
+            && isBlank(ccdClaimant.getRepresentativeOrganisationEmail())
+            && ccdClaimant.getRepresentativeOrganisationDxAddress() == null
         ) {
             return null;
         }
 
         return new ContactDetails(
-            ccdApplicant.getRepresentativeOrganisationPhone(),
-            ccdApplicant.getRepresentativeOrganisationEmail(),
-            ccdApplicant.getRepresentativeOrganisationDxAddress()
+            ccdClaimant.getRepresentativeOrganisationPhone(),
+            ccdClaimant.getRepresentativeOrganisationEmail(),
+            ccdClaimant.getRepresentativeOrganisationDxAddress()
         );
     }
 }

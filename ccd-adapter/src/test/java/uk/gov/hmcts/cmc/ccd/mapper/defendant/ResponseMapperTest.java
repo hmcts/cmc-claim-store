@@ -7,8 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
-import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.util.SampleCCDDefendant;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -26,12 +25,12 @@ public class ResponseMapperTest {
 
     @Test(expected = NullPointerException.class)
     public void mapToShouldThrowExceptionWhenBuildersIsNull() {
-        mapper.to(null, SampleResponse.FullDefence.validDefaults(), CCDParty.builder());
+        mapper.to(null, SampleResponse.FullDefence.validDefaults());
     }
 
     @Test(expected = NullPointerException.class)
     public void mapToShouldThrowExceptionWhenResponseIsNull() {
-        mapper.to(CCDRespondent.builder(), null, CCDParty.builder());
+        mapper.to(CCDDefendant.builder(), null);
     }
 
     @Test
@@ -40,8 +39,8 @@ public class ResponseMapperTest {
         Response response = SampleResponse.FullDefence.validDefaults();
 
         //when
-        CCDRespondent.CCDRespondentBuilder builder = CCDRespondent.builder();
-        mapper.to(builder, response, CCDParty.builder());
+        CCDDefendant.CCDDefendantBuilder builder = CCDDefendant.builder();
+        mapper.to(builder, response);
 
         //then
         assertThat(response).isEqualTo(builder.build());
@@ -53,8 +52,8 @@ public class ResponseMapperTest {
         Response response = SampleResponse.FullAdmission.validDefaults();
 
         //when
-        CCDRespondent.CCDRespondentBuilder builder = CCDRespondent.builder();
-        mapper.to(builder, response, CCDParty.builder());
+        CCDDefendant.CCDDefendantBuilder builder = CCDDefendant.builder();
+        mapper.to(builder, response);
 
         //then
         assertThat(response).isEqualTo(builder.build());
@@ -66,8 +65,8 @@ public class ResponseMapperTest {
         Response response = SampleResponse.PartAdmission.validDefaults();
 
         //when
-        CCDRespondent.CCDRespondentBuilder builder = CCDRespondent.builder();
-        mapper.to(builder, response, CCDParty.builder());
+        CCDDefendant.CCDDefendantBuilder builder = CCDDefendant.builder();
+        mapper.to(builder, response);
 
         //then
         assertThat(response).isEqualTo(builder.build());
@@ -76,20 +75,7 @@ public class ResponseMapperTest {
     @Test
     public void shouldMapFullDefenceResponseFromCCD() {
         //given
-        CCDRespondent ccdRespondent = SampleCCDDefendant.withFullDefenceResponse().build();
-        Claim.ClaimBuilder builder = Claim.builder();
-
-        //when
-        mapper.from(builder, ccdRespondent);
-
-        //then
-        assertThat(builder.build().getResponse().orElse(null)).isEqualTo(ccdRespondent);
-    }
-
-    @Test
-    public void shouldMapFullDefenceResponseWithFreeMediationFromCCD() {
-        //given
-        CCDRespondent ccdDefendant = SampleCCDDefendant.withFullDefenceResponseAndFreeMediation().build();
+        CCDDefendant ccdDefendant = SampleCCDDefendant.withFullDefenceResponse().build();
         Claim.ClaimBuilder builder = Claim.builder();
 
         //when
@@ -102,26 +88,26 @@ public class ResponseMapperTest {
     @Test
     public void shouldMapFullAdmissionResponseFromCCD() {
         //given
-        CCDRespondent ccdRespondent = SampleCCDDefendant.withFullAdmissionResponse().build();
+        CCDDefendant ccdDefendant = SampleCCDDefendant.withFullAdmissionResponse().build();
         Claim.ClaimBuilder builder = Claim.builder();
 
         //when
-        mapper.from(builder, ccdRespondent);
+        mapper.from(builder, ccdDefendant);
 
         //then
-        assertThat(builder.build().getResponse().orElse(null)).isEqualTo(ccdRespondent);
+        assertThat(builder.build().getResponse().orElse(null)).isEqualTo(ccdDefendant);
     }
 
     @Test
     public void shouldMapPartAdmissionResponseFromCCD() {
         //given
-        CCDRespondent ccdRespondent = SampleCCDDefendant.withPartAdmissionResponse().build();
+        CCDDefendant ccdDefendant = SampleCCDDefendant.withPartAdmissionResponse().build();
         Claim.ClaimBuilder builder = Claim.builder();
 
         //when
-        mapper.from(builder, ccdRespondent);
+        mapper.from(builder, ccdDefendant);
 
         //then
-        assertThat(builder.build().getResponse().orElse(null)).isEqualTo(ccdRespondent);
+        assertThat(builder.build().getResponse().orElse(null)).isEqualTo(ccdDefendant);
     }
 }

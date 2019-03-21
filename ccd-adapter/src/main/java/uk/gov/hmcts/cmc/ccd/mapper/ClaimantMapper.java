@@ -1,9 +1,9 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.party.Company;
@@ -31,44 +31,45 @@ public class ClaimantMapper {
         this.soleTraderMapper = soleTraderMapper;
     }
 
-    public CCDCollectionElement<CCDApplicant> to(Party party, Claim claim) {
-        CCDApplicant.CCDApplicantBuilder builder = CCDApplicant.builder();
-        CCDParty.CCDPartyBuilder partyDetail = CCDParty.builder();
-        partyDetail.idamId(claim.getSubmitterId());
-        partyDetail.emailAddress(claim.getSubmitterEmail());
+    public CCDCollectionElement<CCDClaimant> to(Party party, Claim claim) {
+        CCDClaimant.CCDClaimantBuilder builder = CCDClaimant.builder();
+        builder.partyEmail(claim.getSubmitterEmail());
 
         if (party instanceof Individual) {
+            builder.partyType(CCDPartyType.INDIVIDUAL);
             Individual individual = (Individual) party;
-            individualMapper.to(individual, builder, partyDetail);
+            individualMapper.to(individual, builder);
         } else if (party instanceof Company) {
+            builder.partyType(CCDPartyType.COMPANY);
             Company company = (Company) party;
-            companyMapper.to(company, builder, partyDetail);
+            companyMapper.to(company, builder);
         } else if (party instanceof Organisation) {
+            builder.partyType(CCDPartyType.ORGANISATION);
             Organisation organisation = (Organisation) party;
-            organisationMapper.to(organisation, builder, partyDetail);
+            organisationMapper.to(organisation, builder);
         } else if (party instanceof SoleTrader) {
+            builder.partyType(CCDPartyType.SOLE_TRADER);
             SoleTrader soleTrader = (SoleTrader) party;
-            soleTraderMapper.to(soleTrader, builder, partyDetail);
+            soleTraderMapper.to(soleTrader, builder);
         }
-        return CCDCollectionElement.<CCDApplicant>builder()
+        return CCDCollectionElement.<CCDClaimant>builder()
             .value(builder.build())
             .id(party.getId())
             .build();
     }
 
-    public Party from(CCDCollectionElement<CCDApplicant> applicant) {
-        switch (applicant.getValue().getPartyDetail().getType()) {
+    public Party from(CCDCollectionElement<CCDClaimant> ccdClaimant) {
+        switch (ccdClaimant.getValue().getPartyType()) {
             case COMPANY:
-                return companyMapper.from(applicant);
+                return companyMapper.from(ccdClaimant);
             case INDIVIDUAL:
-                return individualMapper.from(applicant);
+                return individualMapper.from(ccdClaimant);
             case SOLE_TRADER:
-                return soleTraderMapper.from(applicant);
+                return soleTraderMapper.from(ccdClaimant);
             case ORGANISATION:
-                return organisationMapper.from(applicant);
+                return organisationMapper.from(ccdClaimant);
             default:
-                throw new MappingException("Invalid applicant type, "
-                    + applicant.getValue().getPartyDetail().getType());
+                throw new MappingException("Invalid claimant type, " + ccdClaimant.getValue().getPartyType());
         }
     }
 }

@@ -2,10 +2,8 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
-import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
 import uk.gov.hmcts.cmc.domain.models.party.Company;
 
 @Component
@@ -13,51 +11,40 @@ public class CompanyMapper {
 
     private final AddressMapper addressMapper;
     private final RepresentativeMapper representativeMapper;
-    private final TelephoneMapper telephoneMapper;
 
     @Autowired
-    public CompanyMapper(AddressMapper addressMapper,
-                         RepresentativeMapper representativeMapper,
-                         TelephoneMapper telephoneMapper) {
+    public CompanyMapper(AddressMapper addressMapper, RepresentativeMapper representativeMapper) {
         this.addressMapper = addressMapper;
         this.representativeMapper = representativeMapper;
-        this.telephoneMapper = telephoneMapper;
     }
 
-    public void to(Company company,
-                   CCDApplicant.CCDApplicantBuilder builder,
-                   CCDParty.CCDPartyBuilder applicantPartyDetail) {
+    public void to(Company company, CCDClaimant.CCDClaimantBuilder builder) {
 
-        applicantPartyDetail.type(CCDPartyType.COMPANY);
-        company.getMobilePhone()
-            .ifPresent(mobileNo -> applicantPartyDetail.telephoneNumber(telephoneMapper.to(mobileNo)));
-        company.getContactPerson().ifPresent(applicantPartyDetail::contactPerson);
+        company.getMobilePhone().ifPresent(builder::partyPhone);
+        company.getContactPerson().ifPresent(builder::partyContactPerson);
 
         company.getCorrespondenceAddress()
-            .ifPresent(address -> applicantPartyDetail.correspondenceAddress(addressMapper.to(address)));
+            .ifPresent(address -> builder.partyCorrespondenceAddress(addressMapper.to(address)));
 
         company.getRepresentative()
             .ifPresent(representative -> representativeMapper.to(representative, builder));
 
-        applicantPartyDetail.primaryAddress(addressMapper.to(company.getAddress()));
-
         builder
             .partyName(company.getName())
-            .partyDetail(applicantPartyDetail.build());
+            .partyAddress(addressMapper.to(company.getAddress()));
 
     }
 
-    public Company from(CCDCollectionElement<CCDApplicant> company) {
-        CCDApplicant applicant = company.getValue();
-        CCDParty partyDetail = applicant.getPartyDetail();
+    public Company from(CCDCollectionElement<CCDClaimant> company) {
+        CCDClaimant value = company.getValue();
         return Company.builder()
             .id(company.getId())
-            .name(applicant.getPartyName())
-            .address(addressMapper.from(partyDetail.getPrimaryAddress()))
-            .correspondenceAddress(addressMapper.from(partyDetail.getCorrespondenceAddress()))
-            .mobilePhone(telephoneMapper.from(partyDetail.getTelephoneNumber()))
-            .representative(representativeMapper.from(applicant))
-            .contactPerson(partyDetail.getContactPerson())
+            .name(value.getPartyName())
+            .address(addressMapper.from(value.getPartyAddress()))
+            .correspondenceAddress(addressMapper.from(value.getPartyCorrespondenceAddress()))
+            .mobilePhone(value.getPartyPhone())
+            .representative(representativeMapper.from(value))
+            .contactPerson(value.getPartyContactPerson())
             .build();
     }
 }

@@ -8,8 +8,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.util.SampleCCDDefendant;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
@@ -82,18 +82,18 @@ public class SettlementMapperTest {
     @Test
     public void fromCCDDefendantReturnNullWhenDefendantIsNull() {
         assertNull(
-            settlementMapper.fromCCDDefendant(CCDRespondent.builder().build())
+            settlementMapper.fromCCDDefendant(CCDDefendant.builder().build())
         );
     }
 
     @Test
     public void toCCDPartyStatementsWithDefendantHasNoSettlementReturnsNull() {
         //Given
-        CCDRespondent ccdRespondent = CCDRespondent.builder().build();
+        CCDDefendant ccdDefendant = CCDDefendant.builder().build();
 
         //When
         Settlement settlement =
-            settlementMapper.fromCCDDefendant(ccdRespondent);
+            settlementMapper.fromCCDDefendant(ccdDefendant);
 
         //Then
         assertNull(settlement);
@@ -102,11 +102,11 @@ public class SettlementMapperTest {
     @Test
     public void toCCDPartyStatementsMapsSettlementFromCCDPartyStatement() {
         //Given
-        CCDRespondent ccdRespondent = SampleCCDDefendant.withPartyStatements().build();
+        CCDDefendant ccdDefendant = SampleCCDDefendant.withPartyStatements().build();
 
         //When
         Settlement settlement =
-            settlementMapper.fromCCDDefendant(ccdRespondent);
+            settlementMapper.fromCCDDefendant(ccdDefendant);
 
         //Then
         assertNotNull(settlement);

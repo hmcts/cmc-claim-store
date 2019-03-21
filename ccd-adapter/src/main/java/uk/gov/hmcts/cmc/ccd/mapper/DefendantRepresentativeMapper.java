@@ -2,14 +2,14 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Component
 public class DefendantRepresentativeMapper
-    implements BuilderMapper<CCDRespondent, Representative, CCDRespondent.CCDRespondentBuilder> {
+    implements BuilderMapper<CCDDefendant, Representative, CCDDefendant.CCDDefendantBuilder> {
 
     private final AddressMapper addressMapper;
     private DefendantContactDetailsMapper defendantContactDetailsMapper;
@@ -24,7 +24,7 @@ public class DefendantRepresentativeMapper
     }
 
     @Override
-    public void to(Representative representative, CCDRespondent.CCDRespondentBuilder builder) {
+    public void to(Representative representative, CCDDefendant.CCDDefendantBuilder builder) {
 
         representative.getOrganisationContactDetails().ifPresent(organisationContactDetails ->
             defendantContactDetailsMapper.to(organisationContactDetails, builder));
@@ -37,22 +37,22 @@ public class DefendantRepresentativeMapper
     }
 
     @Override
-    public Representative from(CCDRespondent ccdRespondent) {
-        if (isBlank(ccdRespondent.getClaimantProvidedRepresentativeOrganisationName())
-            && ccdRespondent.getClaimantProvidedRepresentativeOrganisationAddress() == null
-            && isBlank(ccdRespondent.getClaimantProvidedRepresentativeOrganisationPhone())
-            && isBlank(ccdRespondent.getClaimantProvidedRepresentativeOrganisationDxAddress())
-            && isBlank(ccdRespondent.getClaimantProvidedRepresentativeOrganisationEmail())
+    public Representative from(CCDDefendant ccdDefendant) {
+        if (isBlank(ccdDefendant.getClaimantProvidedRepresentativeOrganisationName())
+            && ccdDefendant.getClaimantProvidedRepresentativeOrganisationAddress() == null
+            && isBlank(ccdDefendant.getClaimantProvidedRepresentativeOrganisationPhone())
+            && isBlank(ccdDefendant.getClaimantProvidedRepresentativeOrganisationDxAddress())
+            && isBlank(ccdDefendant.getClaimantProvidedRepresentativeOrganisationEmail())
         ) {
             return null;
         }
 
         return Representative.builder()
-            .organisationName(ccdRespondent.getClaimantProvidedRepresentativeOrganisationName())
+            .organisationName(ccdDefendant.getClaimantProvidedRepresentativeOrganisationName())
             .organisationAddress(
-                addressMapper.from(ccdRespondent.getClaimantProvidedRepresentativeOrganisationAddress())
+                addressMapper.from(ccdDefendant.getClaimantProvidedRepresentativeOrganisationAddress())
             )
-            .organisationContactDetails(defendantContactDetailsMapper.from(ccdRespondent))
+            .organisationContactDetails(defendantContactDetailsMapper.from(ccdDefendant))
             .build();
 
     }
