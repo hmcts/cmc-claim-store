@@ -13,7 +13,8 @@ dependencies:
     tags:
       - cmc-citizen-frontend-pod
   - name: ccd
-    version: ~0.6.1
-    repository: '@hmcts'
+    version: ~0.7.0
+#    repository: '@hmcts'
+    repository: file:///Users/markry/workspace/hmcts/chart-ccd/ccd
     tags:
       - cmc-ccd-stack

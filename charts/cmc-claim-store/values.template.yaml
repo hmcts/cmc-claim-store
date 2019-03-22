@@ -2,7 +2,7 @@ tags:
   cmc-claim-store-postgresql-pod: true
   cmc-citizen-frontend-pod: true
   cmc-ccd-stack: true
-  postgresql-pod: false  # rpe-feature-toggle-api
+  postgresql-pod: false  # rpe-feature-toggle-api & ccd
 
 postgresql:
   resources:
@@ -16,7 +16,12 @@ postgresql:
       CREATE DATABASE cmc WITH OWNER = cmc ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE USER features WITH PASSWORD 'features';
       CREATE DATABASE features WITH OWNER = features ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-  nameOverride: claim-store-postgres
+      CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+      CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+  postgresqlUsername: hmcts
+  postgresqlPassword: hmcts
+  postgresqlDatabase: user-profile
+  nameOverride: ccd-postgres  # because ccd wont work without
   persistence:
     enabled: false
 
@@ -134,14 +139,29 @@ ccd:
       ADMINWEB_DELETE_DEFINITION_URL: http://${SERVICE_NAME}-definition-store-api/api/draft
       ADMINWEB_ROLES_WHITELIST: 'ccd-import,ccd-import-validate'
   importer:
-    image: hmcts.azurecr.io/hmcts/cmc-ccd-definition-importer
-    definitionFilename: cmc-ccd.xlsx
-    definitions:  # TODO: change chart-ccd to allow either definitions or definitionFilename
-      -
-    userRoles:
-      - citizen
-      - caseworker-cmc
-      - caseworker-cmc-solicitor
-      - caseworker-cmc-systemupdate
-      - letter-holder
-      - caseworker-autotest1
+    userprofile:
+      enabled: true
+      users:
+        - civilmoneyclaims+ccd@gmail.com
+      waitHosts: ${SERVICE_NAME}-user-profile-api
+      jurisdiction: CMC
+      defaultCaseType: MoneyClaimCase
+      defaultCaseState: open
+      userProfileDatabaseHost: ${SERVICE_NAME}-claim-store-postgres
+      userProfileDatabasePort: 5432
+      userProfileDatabaseUser: hmcts
+      userProfileDatabasePassword: hmcts
+      userProfileDatabaseName: user-profile
+    definition:
+      enabled: true
+      image: hmcts.azurecr.io/hmcts/cmc-ccd-definition-importer
+      definitionFilename: cmc-ccd.xlsx
+      definitions:  # TODO: change chart-ccd to allow either definitions or definitionFilename
+        -
+      userRoles:
+        - citizen
+        - caseworker-cmc
+        - caseworker-cmc-solicitor
+        - caseworker-cmc-systemupdate
+        - letter-holder
+        - caseworker-autotest1
