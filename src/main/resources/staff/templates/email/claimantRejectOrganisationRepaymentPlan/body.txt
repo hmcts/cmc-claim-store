@@ -1,3 +1,3 @@
-{{ partyName }} has requested a determination against a non individual, please enter judgement by determination.
+{{ partyName }} has requested a determination against a non individual, please transfer to CCBC and enter judgement by determination.
 
 This email has been sent from the HMCTS Civil Money Claims online court.
