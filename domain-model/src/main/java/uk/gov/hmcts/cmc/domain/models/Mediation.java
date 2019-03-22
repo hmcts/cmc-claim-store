@@ -1,38 +1,25 @@
 package uk.gov.hmcts.cmc.domain.models;
 
-import uk.gov.hmcts.cmc.domain.models.amount.Amount;
-import uk.gov.hmcts.cmc.domain.models.party.Party;
+import lombok.Builder;
+import lombok.Value;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
+@Value
+@Builder
 public class Mediation {
-    private final int siteId;
-    private final String caseNumber;
-    private final int caseType;
-    private final Optional<BigDecimal> amount;
-    private final int partyType;
-    private final Optional<String> contactName;
-    private final Optional<String> contactNumber;
-    private final int checkList;
-    private final int partyStatus;
+    @Builder.Default
+    private int siteId = 4;
+    @Builder.Default
+    private final int caseType = 1;
+    @Builder.Default
+    private final int checkList = 4;
+    @Builder.Default
+    private int partyStatus = 5;
 
-    public Mediation(
-        String caseNumber,
-        Optional<BigDecimal> amount,
-        int partyType,
-        Optional<String> contactName,
-        Optional<String> contactNumber
-    ) {
-        this.siteId = 4;
-        this.caseNumber = caseNumber;
-        this.caseType = 1;
-        this.amount = amount; //claim amount not including claim fee
-        this.partyType = partyType; // 1 for claimant and 2 for defendant
-        this.contactName = contactName; //mediation contact person
-        this.contactNumber = contactNumber; //mediation phone number
-        this.checkList = 4;
-        this.partyStatus = 5;
-    }
-
+    private String caseNumber;
+    private BigDecimal amount;
+    private int partyType;
+    private String contactName;
+    private String contactNumber;
 }
