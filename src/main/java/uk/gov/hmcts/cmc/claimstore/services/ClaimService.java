@@ -134,7 +134,7 @@ public class ClaimService {
             .getClaimByExternalId(externalId, user)
             .orElseThrow(() -> new NotFoundException("Claim not found by external id " + externalId));
 
-        claimAuthorisationRule.assertClaimCanBeAccessed(claim, user.getAuthorisation());
+        claimAuthorisationRule.assertClaimCanBeAccessed(claim, user);
 
         return claim;
     }
