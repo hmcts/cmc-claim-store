@@ -7,6 +7,7 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -26,6 +27,7 @@ public class NotificationService {
         this.notificationClient = notificationClient;
     }
 
+    @LogExecutionTime
     @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))
     public void sendMail(
         String targetEmail,
