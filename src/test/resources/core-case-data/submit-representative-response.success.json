@@ -7,21 +7,28 @@
   "state": "open",
   "locked_by_user_id": null,
   "security_level": null,
+  "security_classification": "PUBLIC",
   "case_data": {
     "id": 1546455160649708,
     "reason": "sfdfg dssdgdsfgd",
     "feeCode": "X0008-1",
     "issuedOn": "2019-01-03",
-    "claimants": [
+    "applicants": [
       {
         "id": "7081d646-d07d-4d37-9bb4-571e8a28d769",
         "value": {
           "partyName": "Aamir Khan",
-          "partyType": "INDIVIDUAL",
-          "partyAddress": {
-            "PostCode": "SE28 0JE",
-            "PostTown": "LONDON",
-            "AddressLine1": "38 DELISLE ROAD"
+          "partyDetail": {
+            "type": "INDIVIDUAL",
+            "primaryAddress": {
+              "AddressLine1": "38 DELISLE ROAD",
+              "PostCode": "SE28 0JE",
+              "PostTown": "London"
+            },
+            "telephoneNumber":{
+              "telephoneNumber":"07873727165"
+            },
+            "dateOfBirth":"2000-01-01"
           },
           "representativeOrganisationName": "Jan Clark",
           "representativeOrganisationEmail": "adsda@asds.com",
@@ -38,13 +45,15 @@
         "id": "4a7be47f-cba4-4696-96b2-9f15e149d1b5",
         "value": {
           "partyName": "ABC Solutions",
-          "partyType": "ORGANISATION",
-          "partyAddress": {
-            "PostCode": "SE28 0JE",
-            "PostTown": "LONDON",
-            "AddressLine1": "38 DELISLE ROAD"
+          "partyDetail": {
+            "type": "ORGANISATION",
+            "primaryAddress": {
+              "AddressLine1": "38 DELISLE ROAD",
+              "PostCode": "SE28 0JE",
+              "PostTown": "London"
+            },
+            "companiesHouseNumber": "567"
           },
-          "partyCompaniesHouseNumber": "567",
           "representativeOrganisationName": "Jan Clark",
           "representativeOrganisationEmail": "adsda@asds.com",
           "representativeOrganisationPhone": "07873727165",
@@ -58,37 +67,47 @@
       }
     ],
     "amountType": "RANGE",
-    "defendants": [
+    "respondents": [
       {
         "id": "ed8fc64d-6daf-4318-9491-e1fbf0c33245",
         "value": {
-          "claimantProvidedName": "zczcasdfs",
-          "claimantProvidedType": "ORGANISATION",
-          "claimantProvidedAddress": {
-            "PostCode": "SE28 0JE",
-            "PostTown": "LONDON",
-            "AddressLine1": "38 DELISLE ROAD"
+          "claimantProvidedDetail":{
+            "type": "INDIVIDUAL",
+            "emailAddress": "j.smith@example.com",
+            "primaryAddress": {
+              "PostCode": "SE28 0JE",
+              "PostTown": "London",
+              "AddressLine1": "38 DELISLE ROAD",
+              "AddressLine2": "Street 1",
+              "AddressLine3": "Middle Road"
+            },
+            "companiesHouseNumber": "1213"
           },
+          "claimantProvidedPartyName": "zczcasdfs",
           "representativeOrganisationName": "ewr wrwerwr",
           "representativeOrganisationAddress": {
             "PostCode": "SE28 0JE",
             "PostTown": "LONDON",
             "AddressLine1": "38 DELISLE ROAD"
-          },
-          "claimantProvidedCompaniesHouseNumber": "1213"
+          }
         }
       },
       {
         "id": "1163e93c-f871-4a52-a7f1-02ed2da4fdd4",
         "value": {
-          "claimantProvidedName": "erwer wer ewr",
-          "claimantProvidedType": "SOLE_TRADER",
-          "claimantProvidedAddress": {
-            "PostCode": "SE28 0JE",
-            "PostTown": "LONDON",
-            "AddressLine1": "38 DELISLE ROAD"
+
+          "claimantProvidedDetail":{
+            "type": "SOLE_TRADER",
+            "emailAddress": "j.smith@example.com",
+            "primaryAddress": {
+              "PostCode": "SE28 0JE",
+              "PostTown": "London",
+              "AddressLine1": "38 DELISLE ROAD",
+              "AddressLine2": "Street 1",
+              "AddressLine3": "Middle Road"
+            },
+            "businessName":"sadsafd asda"
           },
-          "claimantProvidedBusinessName": "sadsafd asda",
           "representativeOrganisationName": "solicitor org",
           "representativeOrganisationAddress": {
             "PostCode": "SE28 0JE",
@@ -100,14 +119,20 @@
       {
         "id": "b9ce761d-5612-4b9c-8482-ce1c53f8b278",
         "value": {
-          "responseDeadline": "2019-01-21",
-          "claimantProvidedName": "sdfsfddf sdf ",
-          "claimantProvidedType": "INDIVIDUAL",
-          "claimantProvidedAddress": {
-            "PostCode": "SE28 0JE",
-            "PostTown": "LONDON",
-            "AddressLine1": "38 DELISLE ROAD"
+          "claimantProvidedPartyName": "sdfsfddf sdf ",
+          "claimantProvidedDetail":{
+            "type": "INDIVIDUAL",
+            "emailAddress": "j.smith@example.com",
+            "primaryAddress": {
+              "PostCode": "SE28 0JE",
+              "PostTown": "London",
+              "AddressLine1": "38 DELISLE ROAD",
+              "AddressLine2": "Street 1",
+              "AddressLine3": "Middle Road"
+            },
+            "businessName":"sadsafd asda"
           },
+          "responseDeadline": "2019-01-21",
           "representativeOrganisationName": "ewr wrwerwr",
           "representativeOrganisationAddress": {
             "PostCode": "SE28 0JE",
@@ -133,7 +158,6 @@
     "housingDisrepairOtherDamages": "MORE_THAN_THOUSAND_POUNDS",
     "personalInjuryGeneralDamages": "MORE_THAN_THOUSAND_POUNDS",
     "housingDisrepairCostOfRepairDamages": "MORE_THAN_THOUSAND_POUNDS"
-  },
-  "security_classification": "PUBLIC"
+  }
 }
 
