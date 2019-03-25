@@ -56,7 +56,7 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @LogExecutionTime
-    public Optional<Claim> getClaimByExternalId(String externalId, String authorisation) {
+    public Optional<Claim> getClaimByExternalId(String externalId, User user) {
         return claimRepository.getClaimByExternalId(externalId);
     }
 
