@@ -17,6 +17,8 @@ public class SampleTheirDetails {
     public static final String DEFENDANT_EMAIL = "j.smith@example.com";
 
     private String name = "John Smith";
+    private String firstName = "John";
+    private String lastName = "Smith";
     private Address address = SampleAddress.builder().build();
     private String email = DEFENDANT_EMAIL;
     private String contactPerson = "Arnold Schwarzenegger";
@@ -44,6 +46,16 @@ public class SampleTheirDetails {
 
     public SampleTheirDetails withEmail(String email) {
         this.email = email;
+        return this;
+    }
+
+    public SampleTheirDetails withFirstName(String firstName) {
+        this.firstName = firstName;
+        return this;
+    }
+
+    public SampleTheirDetails withLastName(String lastName) {
+        this.lastName = lastName;
         return this;
     }
 
@@ -88,18 +100,18 @@ public class SampleTheirDetails {
     }
 
     public TheirDetails partyDetails() {
-        return new IndividualDetails(collectionId, name, address, email, representative, serviceAddress, dateOfBirth);
+        return new IndividualDetails(collectionId, name, title, firstName, lastName, address, email, representative, serviceAddress, dateOfBirth);
     }
 
     public IndividualDetails individualDetails() {
-        return new IndividualDetails(collectionId, name, address, email, representative, serviceAddress, dateOfBirth);
+        return new IndividualDetails(collectionId, name, title, firstName, lastName, address, email, representative, serviceAddress, dateOfBirth);
     }
 
     public List<TheirDetails> individualDetails(int count) {
         List<TheirDetails> individualDetailsList = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             individualDetailsList.add(
-                new IndividualDetails(collectionId, name, address, email, representative, serviceAddress, dateOfBirth)
+                new IndividualDetails(collectionId, name, title, firstName, lastName, address, email, representative, serviceAddress, dateOfBirth)
             );
         }
         return individualDetailsList;
@@ -115,7 +127,7 @@ public class SampleTheirDetails {
     }
 
     public SoleTraderDetails soleTraderDetails() {
-        return new SoleTraderDetails(collectionId, name, address, email,
+        return new SoleTraderDetails(collectionId, name, firstName, lastName, address, email,
             representative, serviceAddress, title, businessName);
     }
 

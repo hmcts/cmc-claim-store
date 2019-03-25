@@ -50,6 +50,8 @@
       "type": "individual",
       "title": "Dr.",
       "name": "John Smith",
+      "firstName": "John Smith",
+      "lastName": "John Smith",
       "address": {
         "line1": "52",
         "line2": "Down Street",

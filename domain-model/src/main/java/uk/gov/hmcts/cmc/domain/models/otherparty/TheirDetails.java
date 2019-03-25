@@ -6,16 +6,14 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.Email;
-import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.CollectionId;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.domain.models.party.NamedParty;
 
-import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
@@ -23,7 +21,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
  * This class and its subtypes represent the data that a person provides about the other party.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes(
     {
         @JsonSubTypes.Type(value = IndividualDetails.class, name = "individual"),
@@ -35,8 +33,6 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @EqualsAndHashCode(callSuper = true)
 public abstract class TheirDetails extends CollectionId implements NamedParty {
 
-    @NotBlank
-    @Size(max = 255, message = "may not be longer than {max} characters")
     private final String name;
 
     @Valid

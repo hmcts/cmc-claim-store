@@ -1,32 +1,56 @@
-package uk.gov.hmcts.cmc.domain.models;
+package uk.gov.hmcts.cmc.domain.models.otherparty;
 
 import org.junit.Test;
-import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.BeanValidator.validate;
 
-public class SoleTraderDetailsTest {
+public class IndividualDetailsTest {
 
     @Test
     public void shouldBeValidWhenGivenNullTitle() {
-        TheirDetails soleTraderDetails = SampleTheirDetails.builder()
+        TheirDetails theirDetails = SampleTheirDetails.builder()
             .withTitle(null)
-            .soleTraderDetails();
+            .individualDetails();
 
-        Set<String> validationErrors = validate(soleTraderDetails);
+        Set<String> validationErrors = validate(theirDetails);
 
         assertThat(validationErrors).isEmpty();
+    }
+
+    @Test
+    public void shouldBeValidWhenGivenAgeInRange() {
+        TheirDetails theirDetails = SampleTheirDetails.builder()
+            .withDateOfBirth(LocalDate.now().minusYears(20))
+            .individualDetails();
+
+        Set<String> validationErrors = validate(theirDetails);
+
+        assertThat(validationErrors).isEmpty();
+    }
+
+    @Test
+    public void shouldBeInvalidWhenGivenAgeOutsideOfRange() {
+        TheirDetails theirDetails = SampleTheirDetails.builder()
+            .withDateOfBirth(LocalDate.now().plusYears(200))
+            .individualDetails();
+
+        Set<String> validationErrors = validate(theirDetails);
+
+        assertThat(validationErrors)
+            .hasSize(1)
+            .contains("dateOfBirth : Age must be between 18 and 150");
     }
 
     @Test
     public void shouldBeInvalidWhenGivenNullFirstName() {
         TheirDetails theirDetails = SampleTheirDetails.builder()
             .withFirstName(null)
-            .soleTraderDetails();
+            .individualDetails();
 
         Set<String> validationErrors = validate(theirDetails);
 
@@ -39,7 +63,7 @@ public class SoleTraderDetailsTest {
     public void shouldBeInvalidWhenGivenEmptyFirstName() {
         TheirDetails theirDetails = SampleTheirDetails.builder()
             .withFirstName("")
-            .soleTraderDetails();
+            .individualDetails();
 
         Set<String> validationErrors = validate(theirDetails);
 
@@ -52,7 +76,7 @@ public class SoleTraderDetailsTest {
     public void shouldBeInvalidWhenGivenNullLastName() {
         TheirDetails theirDetails = SampleTheirDetails.builder()
             .withLastName(null)
-            .soleTraderDetails();
+            .individualDetails();
 
         Set<String> validationErrors = validate(theirDetails);
 
@@ -65,7 +89,7 @@ public class SoleTraderDetailsTest {
     public void shouldBeInvalidWhenGivenEmptyLastName() {
         TheirDetails theirDetails = SampleTheirDetails.builder()
             .withLastName("")
-            .soleTraderDetails();
+            .individualDetails();
 
         Set<String> validationErrors = validate(theirDetails);
 
@@ -73,27 +97,4 @@ public class SoleTraderDetailsTest {
             .hasSize(1)
             .contains("lastName : may not be empty");
     }
-
-    @Test
-    public void shouldBeValidWhenGivenNullBusinessName() {
-        TheirDetails soleTraderDetails = SampleTheirDetails.builder()
-            .withBusinessName(null)
-            .soleTraderDetails();
-
-        Set<String> validationErrors = validate(soleTraderDetails);
-
-        assertThat(validationErrors).isEmpty();
-    }
-
-    @Test
-    public void shouldBeValidWhenGivenEmptyBusinessName() {
-        TheirDetails soleTraderDetails = SampleTheirDetails.builder()
-            .withBusinessName(null)
-            .soleTraderDetails();
-
-        Set<String> validationErrors = validate(soleTraderDetails);
-
-        assertThat(validationErrors).isEmpty();
-    }
-
 }

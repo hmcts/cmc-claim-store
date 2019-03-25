@@ -2,12 +2,13 @@ package uk.gov.hmcts.cmc.domain.models.otherparty;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.domain.models.party.HasContactPerson;
 
-import java.util.Optional;
 import javax.validation.constraints.Size;
+import java.util.Optional;
 
 @EqualsAndHashCode(callSuper = true)
 public class CompanyDetails extends TheirDetails implements HasContactPerson {
@@ -33,4 +34,9 @@ public class CompanyDetails extends TheirDetails implements HasContactPerson {
         return Optional.ofNullable(contactPerson);
     }
 
+    @NotBlank
+    @Size(max = 255, message = "may not be longer than {max} characters")
+    public String getName() {
+        return super.getName();
+    }
 }

@@ -104,13 +104,13 @@ public class ClaimDataTest {
     public void shouldBeInvalidWhenGivenInvalidDefendant() {
         ClaimData claimData = SampleClaimData.builder()
             .withDefendant(SampleTheirDetails.builder()
-                .withName("")
+                .withFirstName("")
                 .individualDetails())
             .build();
 
         Set<String> errors = validate(claimData);
 
-        assertThat(errors).containsOnly("defendants[0].name : may not be empty");
+        assertThat(errors).containsOnly("defendants[0].firstName : may not be empty");
     }
 
     @Test
