@@ -126,7 +126,6 @@ public class ClaimService {
     public Claim getClaimByExternalId(String externalId, String authorisation) {
         User user = userService.getUser(authorisation);
         return getClaimByExternalId(externalId, user);
-
     }
 
     public Claim getClaimByExternalId(String externalId, User user) {

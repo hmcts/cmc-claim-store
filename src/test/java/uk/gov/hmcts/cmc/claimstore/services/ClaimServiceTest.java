@@ -71,16 +71,14 @@ public class ClaimServiceTest {
     private static final Claim claim = createClaimModel(VALID_APP, LETTER_HOLDER_ID);
     private static final String AUTHORISATION = "Bearer: aaa";
 
-    public static final UserDetails UNAUTHORISED_USER_DETAILS = SampleUserDetails.builder().withUserId("300").build();
-
-    public static final User UNAUTHORISED_USER = new User(AUTHORISATION, UNAUTHORISED_USER_DETAILS);
-
+    private static final UserDetails UNAUTHORISED_USER_DETAILS = SampleUserDetails.builder().withUserId("300").build();
     private static final UserDetails VALID_DEFENDANT
         = SampleUserDetails.builder().withUserId(DEFENDANT_ID).withMail(DEFENDANT_EMAIL).build();
 
     private static final UserDetails VALID_CLAIMANT
         = SampleUserDetails.builder().withUserId(USER_ID).withMail(SUBMITTER_EMAIL).build();
 
+    private static final User UNAUTHORISED_USER = new User(AUTHORISATION, UNAUTHORISED_USER_DETAILS);
     private static final User USER = new User(AUTHORISATION, VALID_CLAIMANT);
 
     private ClaimService claimService;
