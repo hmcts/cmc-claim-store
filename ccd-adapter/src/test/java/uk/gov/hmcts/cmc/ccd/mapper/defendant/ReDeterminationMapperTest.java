@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.util.SampleCCDDefendant;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
@@ -33,7 +33,7 @@ public class ReDeterminationMapperTest {
 
     @Test(expected = NullPointerException.class)
     public void mapToShouldThrowExceptionWhenClaimIsNull() {
-        mapper.to(CCDDefendant.builder(), null);
+        mapper.to(CCDRespondent.builder(), null);
     }
 
     @Test
@@ -48,17 +48,17 @@ public class ReDeterminationMapperTest {
             .build();
 
         //when
-        CCDDefendant.CCDDefendantBuilder builder = CCDDefendant.builder();
+        CCDRespondent.CCDRespondentBuilder builder = CCDRespondent.builder();
         mapper.to(builder, claim);
-        CCDDefendant ccdDefendant = builder.build();
+        CCDRespondent ccdRespondent = builder.build();
 
         //then
         ReDetermination reDetermination = claim.getReDetermination().orElseThrow(AssertionError::new);
-        assertThat(reDetermination.getExplanation()).isEqualTo(ccdDefendant.getReDeterminationExplanation());
-        assertThat(reDetermination.getPartyType().name()).isEqualTo(ccdDefendant.getReDeterminationMadeBy().name());
+        assertThat(reDetermination.getExplanation()).isEqualTo(ccdRespondent.getReDeterminationExplanation());
+        assertThat(reDetermination.getPartyType().name()).isEqualTo(ccdRespondent.getReDeterminationMadeBy().name());
 
         LocalDateTime reDeterminationAt = claim.getReDeterminationRequestedAt().orElseThrow(AssertionError::new);
-        assertThat(reDeterminationAt).isEqualTo(ccdDefendant.getReDeterminationRequestedDate());
+        assertThat(reDeterminationAt).isEqualTo(ccdRespondent.getReDeterminationRequestedDate());
     }
 
     @Test
@@ -69,24 +69,24 @@ public class ReDeterminationMapperTest {
             .build();
 
         //when
-        CCDDefendant.CCDDefendantBuilder builder = CCDDefendant.builder();
+        CCDRespondent.CCDRespondentBuilder builder = CCDRespondent.builder();
         mapper.to(builder, claim);
-        CCDDefendant ccdDefendant = builder.build();
+        CCDRespondent ccdRespondent = builder.build();
 
         //then
-        assertThat(ccdDefendant.getReDeterminationExplanation()).isBlank();
-        assertThat(ccdDefendant.getReDeterminationMadeBy()).isNull();
-        assertThat(ccdDefendant.getReDeterminationRequestedDate()).isNull();
+        assertThat(ccdRespondent.getReDeterminationExplanation()).isBlank();
+        assertThat(ccdRespondent.getReDeterminationMadeBy()).isNull();
+        assertThat(ccdRespondent.getReDeterminationRequestedDate()).isNull();
     }
 
     @Test
     public void shouldReturnNullForBlankReDeterminationFromCCD() {
         //given
-        CCDDefendant ccdDefendant = CCDDefendant.builder().build();
+        CCDRespondent ccdRespondent = CCDRespondent.builder().build();
         Claim.ClaimBuilder builder = Claim.builder();
 
         //when
-        mapper.from(builder, ccdDefendant);
+        mapper.from(builder, ccdRespondent);
         Claim claim = builder.build();
 
         //then
@@ -97,19 +97,19 @@ public class ReDeterminationMapperTest {
     @Test
     public void shouldMapReDeterminationFromCCD() {
         //given
-        CCDDefendant ccdDefendant = SampleCCDDefendant.withReDetermination().build();
+        CCDRespondent ccdRespondent = SampleCCDDefendant.withReDetermination().build();
         Claim.ClaimBuilder builder = Claim.builder();
 
         //when
-        mapper.from(builder, ccdDefendant);
+        mapper.from(builder, ccdRespondent);
         Claim claim = builder.build();
 
         //then
         ReDetermination reDetermination = claim.getReDetermination().orElseThrow(AssertionError::new);
-        assertThat(reDetermination.getPartyType().name()).isEqualTo(ccdDefendant.getReDeterminationMadeBy().name());
-        assertThat(reDetermination.getExplanation()).isEqualTo(ccdDefendant.getReDeterminationExplanation());
+        assertThat(reDetermination.getPartyType().name()).isEqualTo(ccdRespondent.getReDeterminationMadeBy().name());
+        assertThat(reDetermination.getExplanation()).isEqualTo(ccdRespondent.getReDeterminationExplanation());
 
         LocalDateTime reDeterminationAt = claim.getReDeterminationRequestedAt().orElseThrow(AssertionError::new);
-        assertThat(reDeterminationAt).isEqualTo(ccdDefendant.getReDeterminationRequestedDate());
+        assertThat(reDeterminationAt).isEqualTo(ccdRespondent.getReDeterminationRequestedDate());
     }
 }
