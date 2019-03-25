@@ -76,8 +76,7 @@ public class ClaimantRejectOrgPaymentPlanStaffNotificationServiceTest extends Mo
         String emailBodyContent = emailDataArgument.getValue().getMessage();
 
         assertThat(emailBodyContent).startsWith(
-                String.format("%s has requested a determination against a non individual, "
-                        + "please enter judgement by determination.",
+                String.format("%s has requested a determination, please transfer to CCBC and enter judgment.",
                     claim.getClaimData().getClaimant().getName()
                 )
         );

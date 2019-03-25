@@ -3,12 +3,14 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTelephone;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 @Component
 public class TelephoneMapper implements Mapper<CCDTelephone, String> {
 
     @Override
     public CCDTelephone to(String telephoneNumber) {
-        if (telephoneNumber == null) {
+        if (isBlank(telephoneNumber)) {
             return null;
         }
         return CCDTelephone.builder()

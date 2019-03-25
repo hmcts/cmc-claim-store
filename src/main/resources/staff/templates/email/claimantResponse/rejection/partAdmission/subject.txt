@@ -1,0 +1,1 @@
+Partial admission rejected {{ claimReferenceNumber }} {{ claimantName }} v {{ defendantName }}

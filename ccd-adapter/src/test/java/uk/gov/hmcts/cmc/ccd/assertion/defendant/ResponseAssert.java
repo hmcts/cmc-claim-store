@@ -28,7 +28,6 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
 
@@ -173,10 +172,8 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
     }
 
     private void assertPaymentDeclaration(CCDRespondent ccdRespondent, PaymentDeclaration paymentDeclaration) {
-
         paymentDeclaration.getPaidAmount().ifPresent(paidAmount ->
-                assertTrue("Paid Amount is not properly mapped",
-                    paidAmount.equals(ccdRespondent.getPaymentDeclarationPaidAmount()))
+            assertEquals(paidAmount, ccdRespondent.getPaymentDeclarationPaidAmount())
         );
 
         if (!Objects.equals(paymentDeclaration.getPaidDate(), ccdRespondent.getPaymentDeclarationPaidDate())) {
