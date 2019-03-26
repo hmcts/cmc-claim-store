@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDRejectOrganisationPaymentPlanEv
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDSettlementEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDTestingLinkDefendantEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDTestingResponseDeadlineEvent;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
@@ -39,8 +40,8 @@ public class CCDEventProducer {
         publisher.publishEvent(new CCDDefendantResponseEvent(claim, authorization));
     }
 
-    public void createCCDClaimIssuedEvent(Claim claim, String authorisation) {
-        publisher.publishEvent(new CCDClaimIssuedEvent(claim, authorisation));
+    public void createCCDClaimIssuedEvent(Claim claim, User user) {
+        publisher.publishEvent(new CCDClaimIssuedEvent(claim, user));
     }
 
     public void createMoreTimeForCCDResponseRequestedEvent(
