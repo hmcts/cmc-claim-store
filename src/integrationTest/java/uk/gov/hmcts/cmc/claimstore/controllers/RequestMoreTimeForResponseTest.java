@@ -46,6 +46,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
     private static final String DEFENDANT_ID = "100";
 
     private Claim claim;
+    private User user;
 
     @Before
     public void before() {
@@ -56,7 +57,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
             .withMail("defendant@example.com")
             .withRoles("letter-" + claim.getLetterHolderId())
             .build();
-
+        user = new User(BEARER_TOKEN, userDetails);
         given(userService.getUser(BEARER_TOKEN)).willReturn(new User(BEARER_TOKEN, userDetails));
         given(userService.getUserDetails(BEARER_TOKEN)).willReturn(userDetails);
     }
@@ -93,7 +94,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
         makeRequest(claim.getExternalId())
             .andExpect(status().isOk());
 
-        claim = caseRepository.getClaimByExternalId(this.claim.getExternalId(), BEARER_TOKEN)
+        claim = caseRepository.getClaimByExternalId(this.claim.getExternalId(), user)
             .orElseThrow(NotFoundException::new);
 
         LocalDate responseDeadline = this.claim.getResponseDeadline();
