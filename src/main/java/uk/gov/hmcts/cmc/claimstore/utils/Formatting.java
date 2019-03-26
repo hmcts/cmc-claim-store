@@ -17,6 +17,7 @@ public class Formatting {
 
     private static final String DATE_PATTERN = "d MMMM uuuu";
     private static final String DATE_TIME_PATTERN = "d MMMM uuuu 'at' h:mma";
+    private static final NumberFormat numberFormat = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("en-GB"));
     private static final DecimalFormat decimalFormat = new DecimalFormat("£###,###.##");
 
     private Formatting() {
@@ -46,17 +47,16 @@ public class Formatting {
 
     public static String formatMoney(BigDecimal amount) {
         requireNonNull(amount);
-        if(decimalAmount(amount)){
+        if (decimalAmount(amount)) {
             return decimalFormat.format(amount);
-        }
-        else{
-            return NumberFormat.getCurrencyInstance(Locale.forLanguageTag("en-GB")).format(amount);
+        } else {
+            return numberFormat.format(amount);
         }
     }
 
     public static String formatMoney(BigInteger amount) {
         requireNonNull(amount);
-        return NumberFormat.getCurrencyInstance(Locale.forLanguageTag("en-GB")).format(amount);
+        return numberFormat.format(amount);
     }
 
     public static String formatPercent(BigDecimal percent) {

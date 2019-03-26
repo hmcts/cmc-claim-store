@@ -72,6 +72,15 @@ public class FormattingTest {
         assertThat(formatted).isEqualTo("£123,456");
     }
 
+    @Test
+    public void formatMoneyShouldFormatHalfPoundsWithExpectedPattern() {
+        BigDecimal value = new BigDecimal("123456.50");
+
+        String formatted = Formatting.formatMoney(value);
+
+        assertThat(formatted).isEqualTo("£123,456.50");
+    }
+
     @Test(expected = NullPointerException.class)
     public void formatMoneyShouldThrowNullPointerWhenGivenNullAmount() {
         BigInteger value = null;
