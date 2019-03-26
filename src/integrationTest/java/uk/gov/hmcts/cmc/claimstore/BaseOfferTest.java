@@ -25,11 +25,11 @@ public abstract class BaseOfferTest extends BaseIntegrationTest {
     protected static final String DEFENDANT_AUTH_TOKEN = "defendant-authDataString";
     protected static final String CLAIMANT_AUTH_TOKEN = "claimant-authDataString";
     protected static final byte[] PDF_CONTENT = {1, 2, 3, 4};
-    public static final UserDetails CLAIMANT_USER_DETAILS = SampleUserDetails.builder()
+    protected static final UserDetails CLAIMANT_USER_DETAILS = SampleUserDetails.builder()
         .withUserId(SUBMITTER_ID)
         .withMail(SampleClaim.SUBMITTER_EMAIL)
         .build();
-    public static final UserDetails DEFENDANT_USER_DETAILS = SampleUserDetails.builder()
+    protected static final UserDetails DEFENDANT_USER_DETAILS = SampleUserDetails.builder()
         .withUserId(DEFENDANT_ID)
         .withMail(SampleClaim.DEFENDANT_EMAIL)
         .build();
