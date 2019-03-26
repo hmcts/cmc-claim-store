@@ -37,7 +37,7 @@ public class Formatting {
         return formatTemporalWithPattern(dateTime, DATE_PATTERN);
     }
 
-    private static boolean isWholeNumber(BigDecimal amount){
+    private static boolean isWholeNumber(BigDecimal amount) {
         return amount.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0;
     }
 
