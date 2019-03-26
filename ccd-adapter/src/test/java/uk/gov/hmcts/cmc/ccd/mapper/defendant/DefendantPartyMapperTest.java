@@ -97,7 +97,13 @@ public class DefendantPartyMapperTest {
     @Test
     public void shouldMapIndividualFromCCD() {
         //given
-        CCDRespondent ccdRespondent = withPartyIndividual().build();
+        CCDRespondent ccdRespondent = withPartyIndividual()
+            .claimantProvidedDetail(CCDParty.builder()
+                .title("Mrs.")
+                .firstName("Mary")
+                .lastName("Richards")
+                .build())
+            .build();
 
         //when
         Party party = mapper.from(ccdRespondent);
@@ -121,7 +127,12 @@ public class DefendantPartyMapperTest {
     @Test
     public void shouldMapSoleTraderFromCCD() {
         //given
-        CCDRespondent ccdRespondent = withPartySoleTrader().build();
+        CCDRespondent ccdRespondent = withPartySoleTrader()
+            .claimantProvidedDetail(CCDParty.builder()
+                .title("Mrs.")
+                .firstName("Mary")
+                .lastName("Richards")
+                .build()).build();
 
         //when
         Party party = mapper.from(ccdRespondent);

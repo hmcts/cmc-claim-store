@@ -2,10 +2,12 @@ package uk.gov.hmcts.cmc.domain.models.otherparty;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.domain.models.party.TitledParty;
+import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 
 import javax.validation.constraints.Size;
 import java.util.Optional;
@@ -45,6 +47,14 @@ public class SoleTraderDetails extends TheirDetails implements TitledParty {
         this.businessName = businessName;
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+
+    @Override
+    public String getName() {
+        if (StringUtils.isNotBlank(firstName) && StringUtils.isNotBlank(lastName)) {
+            return PartyUtils.fullNameFrom(title, firstName, lastName);
+        }
+        return super.getName();
     }
 
     @Override

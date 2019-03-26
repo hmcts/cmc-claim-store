@@ -2,11 +2,13 @@ package uk.gov.hmcts.cmc.domain.models.otherparty;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.domain.constraints.AgeRangeValidator;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.domain.models.party.TitledParty;
+import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
@@ -56,6 +58,14 @@ public class IndividualDetails extends TheirDetails implements TitledParty {
     @Override
     public Optional<String> getTitle() {
         return Optional.ofNullable(title);
+    }
+
+    @Override
+    public String getName() {
+        if (StringUtils.isNotBlank(firstName) && StringUtils.isNotBlank(lastName)) {
+            return PartyUtils.fullNameFrom(title, firstName, lastName);
+        }
+        return super.getName();
     }
 
     public String getFirstName() {
