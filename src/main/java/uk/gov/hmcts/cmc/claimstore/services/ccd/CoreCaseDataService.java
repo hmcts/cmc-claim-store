@@ -100,11 +100,10 @@ public class CoreCaseDataService {
     public Claim createNewCase(User user, Claim claim) {
         requireNonNull(user, "user must not be null");
 
-        boolean isRepresented = user.getUserDetails().isSolicitor() || user.getUserDetails().isCaseworker();
         CCDCase ccdCase = caseMapper.to(claim);
 
         if (StringUtils.isBlank(claim.getReferenceNumber())) {
-            ccdCase.setReferenceNumber(referenceNumberService.getReferenceNumber(isRepresented));
+            ccdCase.setReferenceNumber(referenceNumberService.getReferenceNumber(user.isRepresented()));
         }
 
         try {
@@ -117,7 +116,7 @@ public class CoreCaseDataService {
                 .build();
 
             StartEventResponse startEventResponse = ccdCreateCaseService.startCreate(user.getAuthorisation(),
-                eventRequestData, isRepresented);
+                eventRequestData, user.isRepresented());
 
             CaseDataContent caseDataContent = CaseDataContent.builder()
                 .eventToken(startEventResponse.getToken())
@@ -133,10 +132,10 @@ public class CoreCaseDataService {
                 user.getAuthorisation(),
                 eventRequestData,
                 caseDataContent,
-                isRepresented
+                user.isRepresented()
             );
 
-            if (!isRepresented) {
+            if (!user.isRepresented()) {
                 ccdCreateCaseService.grantAccessToCase(caseDetails, claim.getLetterHolderId());
             }
 
