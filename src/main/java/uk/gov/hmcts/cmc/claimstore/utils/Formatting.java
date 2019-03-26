@@ -37,7 +37,7 @@ public class Formatting {
         return formatTemporalWithPattern(dateTime, DATE_PATTERN);
     }
 
-    private static boolean decimalAmount(BigDecimal amount){
+    private static boolean isWholeNumber(BigDecimal amount){
         return amount.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0;
     }
 
@@ -47,7 +47,7 @@ public class Formatting {
 
     public static String formatMoney(BigDecimal amount) {
         requireNonNull(amount);
-        if (decimalAmount(amount)) {
+        if (isWholeNumber(amount)) {
             return decimalFormat.format(amount);
         } else {
             return numberFormat.format(amount);
