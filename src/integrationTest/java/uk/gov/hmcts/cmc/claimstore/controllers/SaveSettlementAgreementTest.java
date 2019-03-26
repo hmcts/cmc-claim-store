@@ -72,6 +72,7 @@ public class SaveSettlementAgreementTest extends BaseIntegrationTest {
         when(userService.getUserDetails(BEARER_TOKEN)).thenReturn(defendantDetails);
         when(userService.getUserDetails(AUTHORISATION_TOKEN)).thenReturn(claimantDetails);
         given(userService.getUser(BEARER_TOKEN)).willReturn(new User(BEARER_TOKEN, defendantDetails));
+        given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(new User(AUTHORISATION_TOKEN, claimantDetails));
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).willReturn(PDF_BYTES);
         caseRepository.linkDefendant(BEARER_TOKEN);
         caseRepository.saveClaimantResponse(claim,
