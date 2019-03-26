@@ -27,6 +27,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
+import uk.gov.hmcts.cmc.claimstore.services.MediationCSVService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
@@ -52,6 +53,7 @@ public class SupportController {
     private final CCJStaffNotificationHandler ccjStaffNotificationHandler;
     private final AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler;
     private final DocumentsService documentsService;
+    private final MediationCSVService mediationCSVService;
 
     @SuppressWarnings("squid:S00107")
     @Autowired
@@ -63,7 +65,8 @@ public class SupportController {
         DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler,
         CCJStaffNotificationHandler ccjStaffNotificationHandler,
         AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler,
-        DocumentsService documentsService
+        DocumentsService documentsService,
+        MediationCSVService mediationCSVService
     ) {
         this.claimService = claimService;
         this.userService = userService;
@@ -73,6 +76,7 @@ public class SupportController {
         this.ccjStaffNotificationHandler = ccjStaffNotificationHandler;
         this.agreementCountersignedStaffNotificationHandler = agreementCountersignedStaffNotificationHandler;
         this.documentsService = documentsService;
+        this.mediationCSVService = mediationCSVService;
     }
 
     @PutMapping("/claim/{referenceNumber}/event/{event}/resend-staff-notifications")
@@ -152,6 +156,16 @@ public class SupportController {
         }
         List<Claim> existingClaims = checkClaimsExist(referenceNumbers);
         resendClaimsToRPA(existingClaims, authorisation);
+    }
+
+    @PostMapping(value = "/sendMediation", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation("Generate and Send Mediation CSV for Telephone Mediation Service")
+    public void sendMediation(
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation,
+        @RequestBody MediationRequest mediationRequest
+    ) {
+        byte[] mediationCSV = mediationCSVService
+            .createMediationCSV(authorisation, mediationRequest.getMediationGenerateDate()).getBytes();
     }
 
     private void resendStaffNotificationCCJRequestSubmitted(Claim claim, String authorisation) {

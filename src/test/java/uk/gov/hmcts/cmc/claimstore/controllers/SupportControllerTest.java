@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
+import uk.gov.hmcts.cmc.claimstore.services.MediationCSVService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
@@ -75,6 +76,9 @@ public class SupportControllerTest {
     @Mock
     private DocumentsService documentsService;
 
+    @Mock
+    private MediationCSVService mediationService;
+
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
 
@@ -87,7 +91,7 @@ public class SupportControllerTest {
         controller = new SupportController(claimService, userService, documentGenerator,
             moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
             ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
-            documentsService
+            documentsService, mediationService
         );
         sampleClaim = SampleClaim.getDefault();
     }
