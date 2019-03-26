@@ -104,9 +104,10 @@ public class CCDStoreConfiguration {
     @Bean
     public CCDCaseRepository ccdCaseRepository(
         CCDCaseApi ccdCaseApi,
-        CoreCaseDataService coreCaseDataService
+        CoreCaseDataService coreCaseDataService,
+        UserService userService
     ) {
-        return new CCDCaseRepository(ccdCaseApi, coreCaseDataService);
+        return new CCDCaseRepository(ccdCaseApi, coreCaseDataService, userService);
     }
 
     @Bean
