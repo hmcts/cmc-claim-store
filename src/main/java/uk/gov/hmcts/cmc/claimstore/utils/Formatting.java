@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.utils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,6 +17,7 @@ public class Formatting {
 
     private static final String DATE_PATTERN = "d MMMM uuuu";
     private static final String DATE_TIME_PATTERN = "d MMMM uuuu 'at' h:mma";
+    private static final DecimalFormat decimalFormat = new DecimalFormat("£###,###.##");
 
     private Formatting() {
         // Statics utility class, no instances
@@ -34,13 +36,22 @@ public class Formatting {
         return formatTemporalWithPattern(dateTime, DATE_PATTERN);
     }
 
+    private static boolean decimalAmount(BigDecimal amount){
+        return amount.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0;
+    }
+
     public static String formatDateTime(LocalDateTime dateTime) {
         return formatTemporalWithPattern(dateTime, DATE_TIME_PATTERN);
     }
 
     public static String formatMoney(BigDecimal amount) {
         requireNonNull(amount);
-        return NumberFormat.getCurrencyInstance(Locale.forLanguageTag("en-GB")).format(amount).replaceAll("\\.00", "");
+        if(decimalAmount(amount)){
+            return decimalFormat.format(amount);
+        }
+        else{
+            return NumberFormat.getCurrencyInstance(Locale.forLanguageTag("en-GB")).format(amount);
+        }
     }
 
     public static String formatMoney(BigInteger amount) {
