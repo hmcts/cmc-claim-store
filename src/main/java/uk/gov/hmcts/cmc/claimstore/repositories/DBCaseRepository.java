@@ -56,7 +56,7 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @LogExecutionTime
-    public Optional<Claim> getClaimByExternalId(String externalId, String authorisation) {
+    public Optional<Claim> getClaimByExternalId(String externalId, User user) {
         return claimRepository.getClaimByExternalId(externalId);
     }
 
@@ -194,7 +194,7 @@ public class DBCaseRepository implements CaseRepository {
 
     @Override
     @LogExecutionTime
-    public Claim saveClaim(String authorisation, Claim claim) {
+    public Claim saveClaim(User user, Claim claim) {
         String claimDataString = jsonMapper.toJson(claim.getClaimData());
         String features = jsonMapper.toJson(claim.getFeatures());
         if (claim.getClaimData().isClaimantRepresented()) {
