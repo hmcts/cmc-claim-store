@@ -11,6 +11,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.BulkPrintStaffNotificationService;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.sendletter.api.Letter;
@@ -53,6 +54,7 @@ public class BulkPrintService {
     }
 
     @EventListener
+    @LogExecutionTime
     @Retryable(
         value = {HttpClientErrorException.class, HttpServerErrorException.class},
         backoff = @Backoff(delay = 200)
