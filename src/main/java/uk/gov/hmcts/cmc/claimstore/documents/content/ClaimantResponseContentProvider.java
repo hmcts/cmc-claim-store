@@ -87,7 +87,7 @@ public class ClaimantResponseContentProvider {
                     .ifPresent(
                         selectedOption -> {
                             if (PartyUtils.isCompanyOrOrganisation(defendantResponse.getDefendant())
-                                && selectedOption == FormaliseOption.REFER_TO_JUDGE.getDescription()) {
+                                && selectedOption.equals(FormaliseOption.REFER_TO_JUDGE.getDescription())) {
                                 content.put("formaliseOption", "Please enter judgment by determination");
                             } else {
                                 content.put("formaliseOption", selectedOption);
