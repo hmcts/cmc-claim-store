@@ -64,7 +64,7 @@ public class ResponseAcceptationContentProviderTest {
         Map<String, Object> content = contentProvider.createContent(claim);
 
         assertThat(content).containsKeys("hasNegativeDisposableIncome");
-        assertThat(content).containsValue("The defendant’s disposable income is -£1.00."
+        assertThat(content).containsValue("The defendant’s disposable income is -£1."
             + " As such, the court has selected the defendant’s repayment plan.");
     }
 

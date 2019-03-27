@@ -152,7 +152,7 @@ public class InterestContentProviderTest {
     public void amountUpToNowShouldBeZeroWhenSubmissionDateIsUsed() {
         InterestContent content = provider.createContent(interest, issuedOnDate(), claimAmount, issuedOn, issuedOn);
 
-        assertThat(content.getAmount()).isEqualTo("£0.00");
+        assertThat(content.getAmount()).isEqualTo("£0");
         assertThat(content.getAmountRealValue()).isEqualTo(BigDecimal.ZERO);
     }
 

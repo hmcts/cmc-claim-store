@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.cmc.claimstore.controllers.base.BaseDownloadDocumentTest;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
@@ -39,7 +40,7 @@ public class DownloadRepresentedClaimCopyWithDocumentManagementTest extends Base
     public void setup() {
         given(pdfServiceClient.generateFromHtml(any(), any()))
             .willReturn(PDF_BYTES);
-
+        given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(new User(AUTHORISATION_TOKEN, USER_DETAILS));
         given(userService.getUserDetails(any())).willReturn(SampleUserDetails.getDefault());
     }
 
