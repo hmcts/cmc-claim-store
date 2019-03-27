@@ -45,8 +45,10 @@ public class ResponseAcceptationContentProviderTest {
 
     @Test
     public void shouldGetContentSayingDisposableIncomeIsNegativeAndSelectDefendantRepaymentPlan() {
-      Claim claim = SampleClaim.builder()
-            .withResponse(SampleResponse.PartAdmission.builder()
+        Claim claim = SampleClaim.builder()
+            .withResponse(SampleResponse
+                .PartAdmission
+                .builder()
                 .buildWithPaymentOptionInstalmentsAndParty(SampleParty.builder().company()))
             .withClaimantResponse(ResponseAcceptation.builder()
                 .courtDetermination(CourtDetermination.builder()
@@ -71,19 +73,24 @@ public class ResponseAcceptationContentProviderTest {
     @Test
     public void shouldExcludeCourtDeterminationSectionWhenReferToJudgeForCompanyOrOrganisation() {
 
-       Claim claim = SampleClaim.builder()
-            .withResponse(SampleResponse.PartAdmission.builder()
-                .buildWithPaymentOptionInstalmentsAndParty(SampleParty.builder().company()))
-            .withClaimantResponse(ResponseAcceptation.builder()
-                .courtDetermination(CourtDetermination.builder()
-                    .courtDecision(bySetDate())
-                    .courtPaymentIntention(PaymentIntention.builder()
-                        .paymentOption(BY_SPECIFIED_DATE)
-                        .paymentDate(ResponseAcceptationContentProvider.SYSTEM_MAX_DATE)
-                        .build())
-                    .disposableIncome(BigDecimal.valueOf(-1))
-                    .decisionType(DecisionType.COURT)
-                    .build())
+        Claim claim = SampleClaim.builder()
+            .withResponse(
+                SampleResponse
+                    .PartAdmission
+                    .builder()
+                    .buildWithPaymentOptionInstalmentsAndParty(SampleParty.builder().company()))
+            .withClaimantResponse(ResponseAcceptation
+               .builder()
+               .courtDetermination(
+                   CourtDetermination.builder()
+                       .courtDecision(bySetDate())
+                       .courtPaymentIntention(PaymentIntention.builder()
+                           .paymentOption(BY_SPECIFIED_DATE)
+                           .paymentDate(ResponseAcceptationContentProvider.SYSTEM_MAX_DATE)
+                           .build())
+                       .disposableIncome(BigDecimal.valueOf(-1))
+                       .decisionType(DecisionType.COURT)
+                       .build())
                 .formaliseOption(FormaliseOption.REFER_TO_JUDGE)
                 .build())
             .build();

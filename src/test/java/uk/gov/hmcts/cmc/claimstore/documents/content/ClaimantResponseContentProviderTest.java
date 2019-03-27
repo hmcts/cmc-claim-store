@@ -47,7 +47,7 @@ public class ClaimantResponseContentProviderTest {
     private ClaimantResponseContentProvider contentProvider;
 
     @Before
-    public void setup(){
+    public void setup() {
         contentProvider = new ClaimantResponseContentProvider(
             partyDetailsContentProvider,
             claimDataContentProvider,
@@ -98,7 +98,7 @@ public class ClaimantResponseContentProviderTest {
                     .build())
                 .formaliseOption(FormaliseOption.CCJ)
                 .build())
-            .withReDetermination(new ReDetermination("because", MadeBy.DEFENDANT ))
+            .withReDetermination(new ReDetermination("because", MadeBy.DEFENDANT))
             .withReDeterminationRequestedAt(LocalDateTime.now())
             .build();
 
@@ -149,7 +149,7 @@ public class ClaimantResponseContentProviderTest {
                     .build())
                 .formaliseOption(FormaliseOption.CCJ)
                 .build())
-            .withReDetermination(new ReDetermination("because", MadeBy.DEFENDANT ))
+            .withReDetermination(new ReDetermination("because", MadeBy.DEFENDANT))
             .withReDeterminationRequestedAt(LocalDateTime.now())
             .build();
 
