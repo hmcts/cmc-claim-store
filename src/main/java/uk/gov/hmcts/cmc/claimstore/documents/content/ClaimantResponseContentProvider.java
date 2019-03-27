@@ -85,12 +85,12 @@ public class ClaimantResponseContentProvider {
                 responseAcceptation.getFormaliseOption()
                     .map(FormaliseOption::getDescription)
                     .ifPresent(
-                        x -> {
+                        selectedOption -> {
                             if (PartyUtils.isCompanyOrOrganisation(defendantResponse.getDefendant())
-                                && x == FormaliseOption.REFER_TO_JUDGE.getDescription()) {
+                                && selectedOption == FormaliseOption.REFER_TO_JUDGE.getDescription()) {
                                 content.put("formaliseOption", "Please enter judgment by determination");
                             } else {
-                                content.put("formaliseOption", x);
+                                content.put("formaliseOption", selectedOption);
                             }
                         }
                     );
