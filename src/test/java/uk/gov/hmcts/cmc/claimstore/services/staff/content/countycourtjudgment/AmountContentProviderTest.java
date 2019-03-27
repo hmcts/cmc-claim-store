@@ -61,9 +61,9 @@ public class AmountContentProviderTest {
             .build();
 
         AmountContent amountContent = amountContentProvider.create(claim);
-        assertThat(amountContent.getAdmittedAmount()).isEqualTo("£120.00");
-        assertThat(amountContent.getSubTotalAmount()).isEqualTo("£160.00");
-        assertThat(amountContent.getRemainingAmount()).isEqualTo("£160.00");
+        assertThat(amountContent.getAdmittedAmount()).isEqualTo("£120");
+        assertThat(amountContent.getSubTotalAmount()).isEqualTo("£160");
+        assertThat(amountContent.getRemainingAmount()).isEqualTo("£160");
     }
 
     @Test
@@ -78,15 +78,15 @@ public class AmountContentProviderTest {
             .build();
 
         AmountContent amountContent = amountContentProvider.create(claim);
-        assertThat(amountContent.getAdmittedAmount()).isEqualTo("£120.00");
-        assertThat(amountContent.getSubTotalAmount()).isEqualTo("£160.00");
-        assertThat(amountContent.getRemainingAmount()).isEqualTo("£150.00");
+        assertThat(amountContent.getAdmittedAmount()).isEqualTo("£120");
+        assertThat(amountContent.getSubTotalAmount()).isEqualTo("£160");
+        assertThat(amountContent.getRemainingAmount()).isEqualTo("£150");
     }
 
     @Test
     public void calculateWithNoInterest() {
         assertThat(amountContentProvider.create(noInterest).getRemainingAmount())
-            .isEqualTo("£80.00");
+            .isEqualTo("£80");
     }
 
     @Test

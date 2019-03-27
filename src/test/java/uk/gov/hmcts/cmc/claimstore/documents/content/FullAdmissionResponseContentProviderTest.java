@@ -66,10 +66,10 @@ public class FullAdmissionResponseContentProviderTest {
         Map<String, Object> content = provider.createContent(fullAdmissionResponse, BigDecimal.valueOf(900));
         assertThat(content).containsKey("whenWillTheyFinishPaying");
         String whenWillTheyFinishPaying = (String)content.get("whenWillTheyFinishPaying");
-        assertThat(whenWillTheyFinishPaying).startsWith("£900.00, no later");
+        assertThat(whenWillTheyFinishPaying).startsWith("£900, no later");
 
         content = provider.createContent(fullAdmissionResponse, BigDecimal.valueOf(2000));
         whenWillTheyFinishPaying = (String)content.get("whenWillTheyFinishPaying");
-        assertThat(whenWillTheyFinishPaying).startsWith("£2,000.00, no later");
+        assertThat(whenWillTheyFinishPaying).startsWith("£2,000, no later");
     }
 }
