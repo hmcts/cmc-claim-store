@@ -10,7 +10,9 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
+import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -76,13 +78,21 @@ public class ClaimantResponseContentProvider {
 
         switch (claimantResponse.getType()) {
             case ACCEPTATION: {
-                content.put("defendantAdmissionAccepted", "I accept this amount");
+                content.put("defendantAdmissionAccepted",
+                    String.format("I accept %s", getDefendantAdmissionStatus(claim, defendantResponse)));
                 ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponse;
-                content.putAll(responseAcceptationContentProvider.createContent(responseAcceptation));
+                content.putAll(responseAcceptationContentProvider.createContent(claim));
                 responseAcceptation.getFormaliseOption()
                     .map(FormaliseOption::getDescription)
                     .ifPresent(
-                        x -> content.put("formaliseOption", x)
+                        x -> {
+                            if (PartyUtils.isCompanyOrOrganisation(defendantResponse.getDefendant()) &&
+                                x == FormaliseOption.REFER_TO_JUDGE.getDescription()) {
+                                content.put("formaliseOption", "Please enter judgment by determination");
+                            } else{
+                                content.put("formaliseOption", x);
+                            }
+                        }
                     );
                 claim.getTotalAmountTillDateOfIssue()
                     .map(totalAmount ->
@@ -94,7 +104,8 @@ public class ClaimantResponseContentProvider {
             }
             break;
             case REJECTION:
-                content.put("defendantAdmissionAccepted", "I reject this amount");
+                content.put("defendantAdmissionAccepted",
+                    String.format("I reject %s", getDefendantAdmissionStatus(claim, defendantResponse)));
                 content.putAll(responseRejectionContentProvider.createContent((ResponseRejection) claimantResponse));
                 break;
             default:
@@ -120,6 +131,21 @@ public class ClaimantResponseContentProvider {
                 break;
             default:
                 throw new MappingException("Invalid formalization type " + responseAcceptation.getFormaliseOption());
+        }
+    }
+
+    private String getDefendantAdmissionStatus(Claim claim, Response response) {
+        if (!claim.getReDeterminationRequestedAt().isPresent()) {
+            return "this amount";
+        }
+
+        switch (response.getResponseType()) {
+            case PART_ADMISSION:
+                return formatMoney(((PartAdmissionResponse) response).getAmount());
+            case FULL_ADMISSION:
+                return "full admission";
+            default:
+                return "this amount";
         }
     }
 }

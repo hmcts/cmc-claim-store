@@ -1,14 +1,19 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
@@ -26,39 +31,44 @@ public class ResponseAcceptationContentProvider {
         this.paymentIntentionContentProvider = paymentIntentionContentProvider;
     }
 
-    public Map<String, Object> createContent(ResponseAcceptation responseAcceptation) {
-        requireNonNull(responseAcceptation);
+    public Map<String, Object> createContent(Claim claim) {
+        requireNonNull(claim);
         Map<String, Object> content = new HashMap<>();
 
-        responseAcceptation.getCourtDetermination().ifPresent(courtDetermination -> {
-            PaymentIntention courtDecision = courtDetermination.getCourtDecision();
-            content.put("courtDetermination", courtDetermination);
-            content.putAll(paymentIntentionContentProvider.createContent(
-                courtDecision.getPaymentOption(),
-                courtDecision.getRepaymentPlan().orElse(null),
-                courtDecision.getPaymentDate().orElse(null),
-                "The agreed amount",
-                "courtDecision"
-            ));
-            PaymentIntention courtPaymentIntention = courtDetermination.getCourtPaymentIntention();
-            Optional<LocalDate> paymentDate = courtPaymentIntention.getPaymentDate();
-            if (courtPaymentIntention.getPaymentOption() == PaymentOption.BY_SPECIFIED_DATE
-                && paymentDate.isPresent()
-                && paymentDate.get().equals(SYSTEM_MAX_DATE)) {
-                content.put("hasNegativeDisposableIncome", "The defendant’s disposable income is "
-                    + formatMoney(courtDetermination.getDisposableIncome())
-                    + ". As such, the court has selected the defendant’s repayment plan.");
-            } else {
+        ResponseAcceptation responseAcceptation =
+            (ResponseAcceptation) claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
+
+        if (!isCompanyOrOrganisationWithCCJDetermination(claim, responseAcceptation)) {
+            responseAcceptation.getCourtDetermination().ifPresent(courtDetermination -> {
+                PaymentIntention courtDecision = courtDetermination.getCourtDecision();
+                content.put("courtDetermination", courtDetermination);
                 content.putAll(paymentIntentionContentProvider.createContent(
-                    courtPaymentIntention.getPaymentOption(),
-                    courtPaymentIntention.getRepaymentPlan().orElse(null),
-                    paymentDate.orElse(null),
+                    courtDecision.getPaymentOption(),
+                    courtDecision.getRepaymentPlan().orElse(null),
+                    courtDecision.getPaymentDate().orElse(null),
                     "The agreed amount",
-                    "courtPaymentIntention"
-                    )
-                );
-            }
-        });
+                    "courtDecision"
+                ));
+                PaymentIntention courtPaymentIntention = courtDetermination.getCourtPaymentIntention();
+                Optional<LocalDate> paymentDate = courtPaymentIntention.getPaymentDate();
+                if (courtPaymentIntention.getPaymentOption() == PaymentOption.BY_SPECIFIED_DATE
+                    && paymentDate.isPresent()
+                    && paymentDate.get().equals(SYSTEM_MAX_DATE)) {
+                    content.put("hasNegativeDisposableIncome", "The defendant’s disposable income is "
+                        + formatMoney(courtDetermination.getDisposableIncome())
+                        + ". As such, the court has selected the defendant’s repayment plan.");
+                } else {
+                    content.putAll(paymentIntentionContentProvider.createContent(
+                        courtPaymentIntention.getPaymentOption(),
+                        courtPaymentIntention.getRepaymentPlan().orElse(null),
+                        paymentDate.orElse(null),
+                        "The agreed amount",
+                        "courtPaymentIntention"
+                        )
+                    );
+                }
+            });
+        }
 
         Optional<PaymentIntention> claimantPaymentIntention = responseAcceptation.getClaimantPaymentIntention();
 
@@ -79,5 +89,13 @@ public class ResponseAcceptationContentProvider {
 
         content.put("formNumber", ADMISSIONS_FORM_NO);
         return content;
+    }
+
+    private boolean isCompanyOrOrganisationWithCCJDetermination(Claim claim, ResponseAcceptation responseAcceptation) {
+        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+        
+        return PartyUtils.isCompanyOrOrganisation(response.getDefendant())
+            && responseAcceptation.getFormaliseOption()
+            .filter(Predicate.isEqual(FormaliseOption.REFER_TO_JUDGE)).isPresent();
     }
 }
