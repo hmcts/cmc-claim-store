@@ -72,7 +72,12 @@ public class ClaimMapper {
 
         AtomicInteger applicantIndex = new AtomicInteger(0);
         builder.applicants(claimData.getClaimants().stream()
-            .map(claimant -> claimantMapper.to(claimant, claim, isLeadApplicant(claim, applicantIndex)))
+            .map(claimant -> claimantMapper.to(
+                claimant,
+                claim,
+                isLeadApplicant(claim, applicantIndex.getAndIncrement())
+                )
+            )
             .collect(Collectors.toList()));
 
         builder.respondents(claimData.getDefendants().stream()
@@ -93,8 +98,8 @@ public class ClaimMapper {
             .feeAmountInPennies(claimData.getFeeAmountInPennies());
     }
 
-    private boolean isLeadApplicant(Claim claim, AtomicInteger applicantIndex) {
-        return !claim.getClaimData().isClaimantRepresented() && applicantIndex.getAndIncrement() == 0;
+    private boolean isLeadApplicant(Claim claim, int applicantIndex) {
+        return !claim.getClaimData().isClaimantRepresented() && applicantIndex == 0;
     }
 
     public void from(CCDCase ccdCase, Claim.ClaimBuilder claimBuilder) {
