@@ -98,6 +98,10 @@ cmc-citizen-frontend:
       LOG_LEVEL: DEBUG
       FEATURE_TOGGLES_API_URL: http://${SERVICE_NAME}-ftr-tgl-api
       CLAIM_STORE_URL: http://${SERVICE_NAME}-java
+      # TODO: bump frontend chart version (forgot when updated with sidam update)
+      IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
+      IDAM_URL: https://idam-api.aat.platform.hmcts.net
+      IDAM_AUTHENTICATION_WEB_URL: https://idam-web-public.aat.platform.hmcts.net
   rpe-feature-toggle-api:
     releaseNameOverride: ${SERVICE_NAME}-ftr-tgl-api
     importer:
@@ -110,6 +114,9 @@ cmc-citizen-frontend:
         FEATURES_DB_HOST: ${SERVICE_NAME}-claim-store-postgres
 
 ccd:
+  # TODO: update CCD chart with SIDAM
+  idamApiUrl: https://idam-api.aat.platform.hmcts.net
+  idamWebUrl: https://idam-web-public.aat.platform.hmcts.net
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP}
@@ -141,17 +148,16 @@ ccd:
   importer:
     userprofile:
       enabled: true
+      jurisdictions:
+        - CMC
       users:
-        - civilmoneyclaims+ccd@gmail.com
-      waitHosts: ${SERVICE_NAME}-user-profile-api
-      jurisdiction: CMC
-      defaultCaseType: MoneyClaimCase
-      defaultCaseState: open
+        - civilmoneyclaims+ccd@gmail.com|CMC|MoneyClaimCase|open
       userProfileDatabaseHost: ${SERVICE_NAME}-claim-store-postgres
       userProfileDatabasePort: 5432
       userProfileDatabaseUser: hmcts
       userProfileDatabasePassword: hmcts
       userProfileDatabaseName: user-profile
+      waitHosts: ${SERVICE_NAME}-user-profile-api
     definition:
       enabled: true
       image: hmcts.azurecr.io/hmcts/cmc-ccd-definition-importer
