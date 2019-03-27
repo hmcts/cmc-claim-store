@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
@@ -40,6 +41,7 @@ public class DocumentGenerator {
     }
 
     @EventListener
+    @LogExecutionTime
     public void generateForNonRepresentedClaim(CitizenClaimIssuedEvent event) {
         Document sealedClaimDoc = citizenServiceDocumentsService.sealedClaimDocument(event.getClaim());
         Document defendantLetterDoc = citizenServiceDocumentsService.pinLetterDocument(event.getClaim(),
@@ -56,6 +58,7 @@ public class DocumentGenerator {
     }
 
     @EventListener
+    @LogExecutionTime
     public void generateForRepresentedClaim(RepresentedClaimIssuedEvent event) {
         PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(event.getClaim().getReferenceNumber()),
             sealedClaimPdfService.createPdf(event.getClaim()), SEALED_CLAIM);
