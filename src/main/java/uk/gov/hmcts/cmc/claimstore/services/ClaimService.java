@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimAuthorisationRule;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.rules.PaidInFullRule;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -123,14 +124,18 @@ public class ClaimService {
     }
 
     public Claim getClaimByExternalId(String externalId, String authorisation) {
+        User user = userService.getUser(authorisation);
+        return getClaimByExternalId(externalId, user);
+    }
+
+    public Claim getClaimByExternalId(String externalId, User user) {
         Claim claim = caseRepository
-            .getClaimByExternalId(externalId, authorisation)
+            .getClaimByExternalId(externalId, user)
             .orElseThrow(() -> new NotFoundException("Claim not found by external id " + externalId));
 
-        claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorisation);
+        claimAuthorisationRule.assertClaimCanBeAccessed(claim, user);
 
         return claim;
-
     }
 
     public Optional<Claim> getClaimByReference(String reference, String authorisation) {
@@ -181,6 +186,7 @@ public class ClaimService {
         return caseRepository.savePrePaymentClaim(externalId, authorisation);
     }
 
+    @LogExecutionTime
     @Transactional(transactionManager = "transactionManager")
     public Claim saveClaim(
         String submitterId,
@@ -190,7 +196,7 @@ public class ClaimService {
     ) {
         String externalId = claimData.getExternalId().toString();
         Optional<GeneratePinResponse> pinResponse = Optional.empty();
-        UserDetails userDetails = userService.getUserDetails(authorisation);
+        User user = userService.getUser(authorisation);
 
         if (!claimData.isClaimantRepresented()) {
             pinResponse = Optional.of(userService.generatePin(claimData.getDefendant().getName(), authorisation));
@@ -198,7 +204,7 @@ public class ClaimService {
 
         Claim issuedClaim;
         try {
-            caseRepository.getClaimByExternalId(externalId, authorisation).ifPresent(claim -> {
+            caseRepository.getClaimByExternalId(externalId, user).ifPresent(claim -> {
                 throw new ConflictException(
                     String.format("Claim already exist with same external reference as %s", externalId));
             });
@@ -206,7 +212,7 @@ public class ClaimService {
             Optional<String> letterHolderId = pinResponse.map(GeneratePinResponse::getUserId);
             LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
             LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
-            String submitterEmail = userDetails.getEmail();
+            String submitterEmail = user.getUserDetails().getEmail();
 
             Claim claim = Claim.builder()
                 .claimData(claimData)
@@ -220,10 +226,10 @@ public class ClaimService {
                 .features(features)
                 .build();
 
-            issuedClaim = caseRepository.saveClaim(authorisation, claim);
+            issuedClaim = caseRepository.saveClaim(user, claim);
         } catch (ConflictException e) {
             appInsights.trackEvent(AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE, CLAIM_EXTERNAL_ID, externalId);
-            issuedClaim = caseRepository.getClaimByExternalId(externalId, authorisation)
+            issuedClaim = caseRepository.getClaimByExternalId(externalId, user)
                 .orElseThrow(() ->
                     new NotFoundException("Could not find claim with external ID '" + externalId + "'"));
         }
@@ -231,12 +237,12 @@ public class ClaimService {
         eventProducer.createClaimIssuedEvent(
             issuedClaim,
             pinResponse.map(GeneratePinResponse::getPin).orElse(null),
-            userDetails.getFullName(),
+            user.getUserDetails().getFullName(),
             authorisation
         );
 
         trackClaimIssued(issuedClaim.getReferenceNumber(), issuedClaim.getClaimData().isClaimantRepresented());
-        ccdEventProducer.createCCDClaimIssuedEvent(issuedClaim, authorisation);
+        ccdEventProducer.createCCDClaimIssuedEvent(issuedClaim, user);
 
         return issuedClaim;
     }

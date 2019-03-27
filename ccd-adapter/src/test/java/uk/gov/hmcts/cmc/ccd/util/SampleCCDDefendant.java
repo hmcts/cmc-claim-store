@@ -1,9 +1,11 @@
 package uk.gov.hmcts.cmc.ccd.util;
 
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
+import uk.gov.hmcts.cmc.ccd.domain.CCDTelephone;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.ccd.domain.offers.CCDMadeBy;
 
@@ -17,6 +19,7 @@ import static java.util.Arrays.asList;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.COMPANY;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType.ALREADY_PAID;
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType.FULL_ADMISSION;
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType.FULL_DEFENCE;
@@ -32,26 +35,38 @@ public class SampleCCDDefendant {
         //Utility class
     }
 
-    public static CCDDefendant.CCDDefendantBuilder withDefault() {
-        return CCDDefendant.builder()
-            .claimantProvidedType(INDIVIDUAL)
+    public static CCDRespondent.CCDRespondentBuilder withDefault() {
+        return CCDRespondent.builder()
+            .claimantProvidedDetail(CCDParty.builder()
+                .type(INDIVIDUAL)
+                .emailAddress("defendant@Ididabadjob.com")
+                .build())
             .defendantId("defendantId")
             .letterHolderId("JCJEDU")
-            .responseDeadline(now().plusDays(14))
-            .partyEmail("defendant@Ididabadjob.com");
+            .responseDeadline(now().plusDays(14));
     }
 
-    public static CCDDefendant.CCDDefendantBuilder withResponseMoreTimeNeededOption() {
-        return withDefault().responseMoreTimeNeededOption(NO);
+    public static CCDRespondent.CCDRespondentBuilder withResponseMoreTimeNeededOption() {
+        return withDefault()
+            .partyDetail(CCDParty.builder().emailAddress("defendant@Ididabadjob.com").build())
+            .responseMoreTimeNeededOption(NO);
     }
 
-    private static CCDDefendant.CCDDefendantBuilder withParty() {
-        return CCDDefendant.builder()
-            .partyType(COMPANY)
+    private static CCDParty.CCDPartyBuilder withPartyDetails() {
+        return CCDParty.builder().type(COMPANY)
+            .primaryAddress(getCCDAddress())
+            .correspondenceAddress(getCCDAddress())
+            .telephoneNumber(
+                CCDTelephone.builder()
+                    .telephoneNumber("07123456789")
+                    .build()
+            );
+    }
+
+    private static CCDRespondent.CCDRespondentBuilder withParty() {
+
+        return CCDRespondent.builder()
             .partyName("Mr Norman")
-            .partyAddress(getCCDAddress())
-            .partyCorrespondenceAddress(getCCDAddress())
-            .partyPhone("07123456789")
             .representativeOrganisationName("Trading ltd")
             .representativeOrganisationAddress(getCCDAddress())
             .representativeOrganisationPhone("07123456789")
@@ -59,29 +74,37 @@ public class SampleCCDDefendant {
             .representativeOrganisationDxAddress("DX123456");
     }
 
-    public static CCDDefendant.CCDDefendantBuilder withPartyIndividual() {
-        return withParty()
-            .partyDateOfBirth(LocalDate.of(1980, 1, 1));
+    public static CCDRespondent.CCDRespondentBuilder withPartyIndividual() {
+        return withParty().partyDetail(
+            withPartyDetails()
+                .dateOfBirth(LocalDate.of(1980, 1, 1))
+                .build());
     }
 
-    public static CCDDefendant.CCDDefendantBuilder withPartyCompany() {
+    public static CCDRespondent.CCDRespondentBuilder withPartyCompany() {
         return withParty()
-            .partyContactPerson("Mr Steven");
+            .partyDetail(withPartyDetails()
+                .contactPerson("Mr Steven")
+                .build());
     }
 
-    public static CCDDefendant.CCDDefendantBuilder withPartySoleTrader() {
+    public static CCDRespondent.CCDRespondentBuilder withPartySoleTrader() {
         return withParty()
-            .partyTitle("Mr")
-            .partyBusinessName("Trading as name");
+            .partyDetail(withPartyDetails()
+                .title("Mr")
+                .businessName("Trading as name")
+                .build());
     }
 
-    public static CCDDefendant.CCDDefendantBuilder withPartyOrganisation() {
+    public static CCDRespondent.CCDRespondentBuilder withPartyOrganisation() {
         return withParty()
-            .partyContactPerson("Mr Steven")
-            .partyCompaniesHouseNumber("12345");
+            .partyDetail(withPartyDetails()
+                .contactPerson("Mr Steven")
+                .companiesHouseNumber("12345")
+                .build());
     }
 
-    private static CCDDefendant.CCDDefendantBuilder withResponse() {
+    private static CCDRespondent.CCDRespondentBuilder withResponse() {
         return withPartyIndividual()
             .responseMoreTimeNeededOption(NO)
             .responseFreeMediationOption(NO)
@@ -89,7 +112,7 @@ public class SampleCCDDefendant {
             .responseDefendantSOTSignerRole("Signer role");
     }
 
-    public static CCDDefendant.CCDDefendantBuilder withFullDefenceResponse() {
+    public static CCDRespondent.CCDRespondentBuilder withFullDefenceResponse() {
         return withResponse()
             .responseType(FULL_DEFENCE)
             .responseDefenceType(ALREADY_PAID)
@@ -115,21 +138,28 @@ public class SampleCCDDefendant {
                 ));
     }
 
-    public static CCDDefendant.CCDDefendantBuilder withFullAdmissionResponse() {
+    public static CCDRespondent.CCDRespondentBuilder withFullDefenceResponseAndFreeMediation() {
+        return withFullDefenceResponse()
+            .responseFreeMediationOption(YES)
+            .responseMediationPhoneNumber(CCDTelephone.builder().telephoneNumber("07999999999").build())
+            .responseMediationContactPerson("Mediation Contact Person");
+    }
+
+    public static CCDRespondent.CCDRespondentBuilder withFullAdmissionResponse() {
         return withResponse()
             .responseType(FULL_ADMISSION)
             .statementOfMeans(getCCDStatementOfMeans())
             .defendantPaymentIntention(getCCDPaymentIntention());
     }
 
-    public static CCDDefendant.CCDDefendantBuilder withReDetermination() {
+    public static CCDRespondent.CCDRespondentBuilder withReDetermination() {
         return withParty()
             .reDeterminationMadeBy(CCDMadeBy.CLAIMANT)
             .reDeterminationExplanation("Need money sooner")
             .reDeterminationRequestedDate(LocalDateTime.now());
     }
 
-    public static CCDDefendant.CCDDefendantBuilder withPartAdmissionResponse() {
+    public static CCDRespondent.CCDRespondentBuilder withPartAdmissionResponse() {
         return withResponse()
             .responseType(PART_ADMISSION)
             .responseAmount(TEN)
@@ -157,11 +187,11 @@ public class SampleCCDDefendant {
                 ));
     }
 
-    public static CCDDefendant.CCDDefendantBuilder withPaidInFull(LocalDate paidInFullDate) {
+    public static CCDRespondent.CCDRespondentBuilder withPaidInFull(LocalDate paidInFullDate) {
         return withDefault().paidInFullDate(paidInFullDate);
     }
 
-    public static CCDDefendant.CCDDefendantBuilder withPartyStatements() {
+    public static CCDRespondent.CCDRespondentBuilder withPartyStatements() {
         List<CCDCollectionElement<CCDPartyStatement>> partyStatements =
             asList(
                 CCDCollectionElement.<CCDPartyStatement>builder()
@@ -172,7 +202,7 @@ public class SampleCCDDefendant {
                     .value(SampleCCDPartyStatement.counterSignPartyStatement()).build()
             );
         return withPartAdmissionResponse()
-            .claimantProvidedType(INDIVIDUAL)
+            .claimantProvidedDetail(CCDParty.builder().type(COMPANY).build())
             .settlementReachedAt(LocalDateTime.now())
             .settlementPartyStatements(partyStatements);
     }
