@@ -1,7 +1,6 @@
-package uk.gov.hmcts.cmc.domain.models;
+package uk.gov.hmcts.cmc.domain.models.otherparty;
 
 import org.junit.Test;
-import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
 import java.util.Set;
@@ -25,6 +24,7 @@ public class SoleTraderDetailsTest {
     @Test
     public void shouldBeInvalidWhenGivenNullFirstName() {
         TheirDetails theirDetails = SampleTheirDetails.builder()
+            .withName("")
             .withFirstName(null)
             .soleTraderDetails();
 
@@ -32,12 +32,13 @@ public class SoleTraderDetailsTest {
 
         assertThat(validationErrors)
             .hasSize(1)
-            .contains("firstName : may not be empty");
+            .contains("Either name or both first and last name must be provided");
     }
 
     @Test
     public void shouldBeInvalidWhenGivenEmptyFirstName() {
         TheirDetails theirDetails = SampleTheirDetails.builder()
+            .withName("")
             .withFirstName("")
             .soleTraderDetails();
 
@@ -45,12 +46,13 @@ public class SoleTraderDetailsTest {
 
         assertThat(validationErrors)
             .hasSize(1)
-            .contains("firstName : may not be empty");
+            .contains("Either name or both first and last name must be provided");
     }
 
     @Test
     public void shouldBeInvalidWhenGivenNullLastName() {
         TheirDetails theirDetails = SampleTheirDetails.builder()
+            .withName("")
             .withLastName(null)
             .soleTraderDetails();
 
@@ -58,12 +60,13 @@ public class SoleTraderDetailsTest {
 
         assertThat(validationErrors)
             .hasSize(1)
-            .contains("lastName : may not be empty");
+            .contains("Either name or both first and last name must be provided");
     }
 
     @Test
     public void shouldBeInvalidWhenGivenEmptyLastName() {
         TheirDetails theirDetails = SampleTheirDetails.builder()
+            .withName("")
             .withLastName("")
             .soleTraderDetails();
 
@@ -71,7 +74,7 @@ public class SoleTraderDetailsTest {
 
         assertThat(validationErrors)
             .hasSize(1)
-            .contains("lastName : may not be empty");
+            .contains("Either name or both first and last name must be provided");
     }
 
     @Test
@@ -94,6 +97,48 @@ public class SoleTraderDetailsTest {
         Set<String> validationErrors = validate(soleTraderDetails);
 
         assertThat(validationErrors).isEmpty();
+    }
+
+    //todo ROC-5160 remove these tests once frontend is merged
+    @Test
+    public void shouldBeValidWhenGivenNameAndEmptyLastNameAndFirstName() {
+        TheirDetails theirDetails = SampleTheirDetails.builder()
+            .withName("a name")
+            .withFirstName("")
+            .withLastName("")
+            .individualDetails();
+
+        Set<String> validationErrors = validate(theirDetails);
+
+        assertThat(validationErrors).isEmpty();
+    }
+
+    @Test
+    public void shouldBeValidWhenGivenEmptyNameAndValidLastNameAndFirstName() {
+        TheirDetails theirDetails = SampleTheirDetails.builder()
+            .withName("")
+            .withFirstName("some")
+            .withLastName("some")
+            .individualDetails();
+
+        Set<String> validationErrors = validate(theirDetails);
+
+        assertThat(validationErrors).isEmpty();
+    }
+
+    @Test
+    public void shouldBeInvalidWhenGivenEmptyNameAndEmptyLastNameAndFirstName() {
+        TheirDetails theirDetails = SampleTheirDetails.builder()
+            .withName("")
+            .withFirstName("")
+            .withLastName("")
+            .individualDetails();
+
+        Set<String> validationErrors = validate(theirDetails);
+
+        assertThat(validationErrors)
+            .hasSize(1)
+            .contains("Either name or both first and last name must be provided");
     }
 
 }

@@ -7,8 +7,8 @@ import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.domain.models.party.HasContactPerson;
 
-import javax.validation.constraints.Size;
 import java.util.Optional;
+import javax.validation.constraints.Size;
 
 @EqualsAndHashCode(callSuper = true)
 public class CompanyDetails extends TheirDetails implements HasContactPerson {

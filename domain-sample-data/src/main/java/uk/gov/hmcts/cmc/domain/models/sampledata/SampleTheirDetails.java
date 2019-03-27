@@ -100,18 +100,21 @@ public class SampleTheirDetails {
     }
 
     public TheirDetails partyDetails() {
-        return new IndividualDetails(collectionId, name, title, firstName, lastName, address, email, representative, serviceAddress, dateOfBirth);
+        return new IndividualDetails(collectionId, name, title, firstName, lastName,
+            address, email, representative, serviceAddress, dateOfBirth);
     }
 
     public IndividualDetails individualDetails() {
-        return new IndividualDetails(collectionId, name, title, firstName, lastName, address, email, representative, serviceAddress, dateOfBirth);
+        return new IndividualDetails(collectionId, name, title, firstName, lastName,
+            address, email, representative, serviceAddress, dateOfBirth);
     }
 
     public List<TheirDetails> individualDetails(int count) {
         List<TheirDetails> individualDetailsList = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             individualDetailsList.add(
-                new IndividualDetails(collectionId, name, title, firstName, lastName, address, email, representative, serviceAddress, dateOfBirth)
+                new IndividualDetails(collectionId, name, title, firstName, lastName,
+                    address, email, representative, serviceAddress, dateOfBirth)
             );
         }
         return individualDetailsList;
