@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.events.ccd;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
@@ -12,11 +13,11 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 public class CCDClaimIssuedEvent {
 
     private final Claim claim;
-    private final String authorization;
+    private final User user;
 
-    public CCDClaimIssuedEvent(Claim claim, String authorization) {
+    public CCDClaimIssuedEvent(Claim claim, User user) {
         this.claim = claim;
-        this.authorization = authorization;
+        this.user = user;
     }
 
     @Override

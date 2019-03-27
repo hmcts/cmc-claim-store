@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
@@ -42,6 +43,7 @@ public class ClaimIssuedStaffNotificationService {
     }
 
     @EventListener
+    @LogExecutionTime
     public void notifyStaffOfClaimIssue(DocumentGeneratedEvent event) {
         requireNonNull(event);
 
