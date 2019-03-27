@@ -52,11 +52,11 @@ java:
     REFORM_SERVICE_NAME: claim-store
     REFORM_ENVIRONMENT: preview
     LOG_LEVEL: DEBUG
-    CLAIM_STORE_DB_HOST: ${SERVICE_NAME}-claim-store-postgres
+    CLAIM_STORE_DB_HOST: ${SERVICE_NAME}-ccd-postgres
     CLAIM_STORE_DB_PORT: 5432
     CLAIM_STORE_DB_USERNAME: claimstore
     CLAIM_STORE_DB_NAME: claimstore
-    CMC_DB_HOST: ${SERVICE_NAME}-claim-store-postgres
+    CMC_DB_HOST: ${SERVICE_NAME}-ccd-postgres
     CMC_DB_PORT: 5432
     CMC_DB_USERNAME: cmc
     CMC_DB_NAME: cmc
@@ -111,7 +111,7 @@ cmc-citizen-frontend:
     java:
       releaseNameOverride: ${SERVICE_NAME}-ftr-tgl-api
       environment:
-        FEATURES_DB_HOST: ${SERVICE_NAME}-claim-store-postgres
+        FEATURES_DB_HOST: ${SERVICE_NAME}-ccd-postgres
 
 ccd:
   # TODO: update CCD chart with SIDAM
