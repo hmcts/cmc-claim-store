@@ -98,10 +98,10 @@ public class DocumentManagementServiceTest {
     @Test
     public void shouldDownloadDocumentFromDocumentManagement() {
         URI docUri = URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4");
-        when(documentMetadataDownloadClient.getDocumentMetadata(anyString(), anyString(), anyString(), anyString()))
+        when(documentMetadataDownloadClient.getDocumentMetadata(anyString(), anyString(), anyString(), anyString(), anyString()))
             .thenReturn(successfulDocumentManagementDownloadResponse());
         when(responseEntity.getBody()).thenReturn(new ByteArrayResource("test".getBytes()));
-        when(documentDownloadClient.downloadBinary(anyString(), anyString(), anyString(), anyString()))
+        when(documentDownloadClient.downloadBinary(anyString(), anyString(), anyString(), anyString(), anyString()))
             .thenReturn(responseEntity);
         byte[] pdf = documentManagementService.downloadDocument("auth string", docUri, "0000-claim");
         assertNotNull(pdf);
@@ -113,7 +113,7 @@ public class DocumentManagementServiceTest {
         expectedException.expect(DocumentManagementException.class);
         expectedException.expectMessage("Unable to download document 0000-claim from document management");
         URI docUri = URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4");
-        when(documentMetadataDownloadClient.getDocumentMetadata(anyString(), anyString(), anyString(), anyString()))
+        when(documentMetadataDownloadClient.getDocumentMetadata(anyString(), anyString(), anyString(), anyString(), anyString()))
             .thenReturn(null);
         documentManagementService.downloadDocument("auth string", docUri, "0000-claim");
         verify(appInsights).trackEvent(DOCUMENT_MANAGEMENT_DOWNLOAD_FAILURE, DOCUMENT_NAME, anyString());
