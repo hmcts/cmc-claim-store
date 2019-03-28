@@ -525,7 +525,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .orElseThrow(IllegalStateException::new);
 
         assertThat(offer.getContent()).contains("John Rambo will repay £80.89, in instalments of £100 every week."
-            + "The first instalment will be paid by 10 October 2100.");
+            + " The first instalment will be paid by 10 October 2100.");
 
         PaymentIntention paymentIntentionWithinOffer = offer
             .getPaymentIntention()

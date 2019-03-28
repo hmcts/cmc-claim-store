@@ -150,7 +150,7 @@ public class FormaliseResponseAcceptanceService {
     private String prepareOfferContentForRepayment(Response response, RepaymentPlan repaymentPlan,
                                                    BigDecimal claimAmountTillDate) {
         return String.format(
-            "%s will repay %s, in instalments of %s %s.The first instalment will be paid by %s.",
+            "%s will repay %s, in instalments of %s %s. The first instalment will be paid by %s.",
             response.getDefendant().getName(),
             response.getResponseType() == ResponseType.PART_ADMISSION
                 ? formatMoney(((PartAdmissionResponse) response).getAmount()) : formatMoney(claimAmountTillDate),
