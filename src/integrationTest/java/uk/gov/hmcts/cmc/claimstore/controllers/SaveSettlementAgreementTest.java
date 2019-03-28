@@ -20,6 +20,7 @@ import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.reform.document.domain.Classification;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 
 import java.time.LocalDate;
@@ -29,6 +30,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -113,8 +115,10 @@ public class SaveSettlementAgreementTest extends BaseIntegrationTest {
     @Test
     public void shouldUploadDocumentToDocumentManagementAfterCountersignSettlementAgreement() throws Exception {
         final ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
-        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
-            .willReturn(successfulDocumentManagementUploadResponse());
+        given(documentUploadClient
+            .upload(eq(AUTHORISATION_TOKEN), any(), any(), anyList(), any(Classification.class), any())
+        ).willReturn(successfulDocumentManagementUploadResponse());
+
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
         makeRequest(claim.getExternalId(), "countersign").andExpect(status().isCreated());
         Claim claimWithSettlementAgreement = claimStore.getClaimByExternalId(claim.getExternalId());
@@ -125,10 +129,14 @@ public class SaveSettlementAgreementTest extends BaseIntegrationTest {
             PDF_BYTES
         );
         Settlement settlement = claimWithSettlementAgreement.getSettlement().orElseThrow(AssertionError::new);
+
         verify(documentUploadClient).upload(anyString(),
             anyString(),
             anyString(),
+            anyList(),
+            any(Classification.class),
             argument.capture());
+
         List<MultipartFile> files = argument.getValue();
         assertTrue(files.contains(settlementAgreement));
         assertThat(settlement.getLastStatement().getType()).isEqualTo(StatementType.COUNTERSIGNATURE);
