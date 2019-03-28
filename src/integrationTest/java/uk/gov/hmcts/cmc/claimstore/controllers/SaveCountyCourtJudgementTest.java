@@ -22,6 +22,7 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
+import uk.gov.hmcts.reform.document.domain.Classification;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 
 import java.time.LocalDate;
@@ -31,6 +32,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -129,6 +131,8 @@ public class SaveCountyCourtJudgementTest extends BaseIntegrationTest {
         verify(documentUploadClient).upload(anyString(),
             anyString(),
             anyString(),
+            anyList(),
+            any(Classification.class),
             argument.capture());
         List<MultipartFile> files = argument.getValue();
         assertTrue(files.contains(ccj));
