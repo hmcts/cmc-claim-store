@@ -51,7 +51,6 @@ public class CaseMapper {
 
     public Claim from(CCDCase ccdCase) {
         Claim.ClaimBuilder builder = Claim.builder();
-
         claimMapper.from(ccdCase, builder);
 
         builder
