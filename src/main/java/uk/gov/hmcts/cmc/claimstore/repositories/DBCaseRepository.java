@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
@@ -55,7 +56,8 @@ public class DBCaseRepository implements CaseRepository {
         return claimRepository.getBySubmitterId(submitterId);
     }
 
-    public Optional<Claim> getClaimByExternalId(String externalId, String authorisation) {
+    @LogExecutionTime
+    public Optional<Claim> getClaimByExternalId(String externalId, User user) {
         return claimRepository.getClaimByExternalId(externalId);
     }
 
@@ -192,7 +194,8 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Claim saveClaim(String authorisation, Claim claim) {
+    @LogExecutionTime
+    public Claim saveClaim(User user, Claim claim) {
         String claimDataString = jsonMapper.toJson(claim.getClaimData());
         String features = jsonMapper.toJson(claim.getFeatures());
         if (claim.getClaimData().isClaimantRepresented()) {
@@ -225,11 +228,15 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void saveClaimDocuments(String authorisation,
-                                   Long claimId,
-                                   ClaimDocumentCollection claimDocumentCollection,
-                                   ClaimDocumentType claimDocumentType
+    public Claim saveClaimDocuments(
+        String authorisation,
+        Long claimId,
+        ClaimDocumentCollection claimDocumentCollection,
+        ClaimDocumentType claimDocumentType
     ) {
         claimRepository.saveClaimDocuments(claimId, jsonMapper.toJson(claimDocumentCollection));
+        return claimRepository.getById(claimId).orElseThrow(() ->
+            new NotFoundException(
+                String.format("Claim not found by primary key %s.", claimId)));
     }
 }

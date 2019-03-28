@@ -2,9 +2,6 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDClaimant;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.mapper.defendant.DefendantMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -72,12 +69,12 @@ public class ClaimMapper {
         claimData.getHousingDisrepair()
             .ifPresent(housingDisrepair -> housingDisrepairMapper.to(housingDisrepair, builder));
 
-        builder.claimants(claimData.getClaimants().stream()
-            .map(ccdClaimant -> claimantMapper.to(ccdClaimant, claim))
+        builder.applicants(claimData.getClaimants().stream()
+            .map(claimant -> claimantMapper.to(claimant, claim))
             .collect(Collectors.toList()));
 
-        builder.defendants(claimData.getDefendants().stream()
-            .map(ccdDefendant -> defendantMapper.to(ccdDefendant, claim))
+        builder.respondents(claimData.getDefendants().stream()
+            .map(defendant -> defendantMapper.to(defendant, claim))
             .collect(Collectors.toList()));
 
         claimData.getTimeline().ifPresent(timeline -> timelineMapper.to(timeline, builder));
@@ -95,18 +92,10 @@ public class ClaimMapper {
             .feeAmountInPennies(claimData.getFeeAmountInPennies());
     }
 
-    private CCDCollectionElement<CCDClaimant> mapClaimantToValue(CCDClaimant ccdParty) {
-        return CCDCollectionElement.<CCDClaimant>builder().value(ccdParty).build();
-    }
-
-    private CCDCollectionElement<CCDDefendant> mapDefendantToValue(CCDDefendant ccdParty) {
-        return CCDCollectionElement.<CCDDefendant>builder().value(ccdParty).build();
-    }
-
     public void from(CCDCase ccdCase, Claim.ClaimBuilder claimBuilder) {
         Objects.requireNonNull(ccdCase, "ccdCase must not be null");
 
-        List<Party> claimants = ccdCase.getClaimants()
+        List<Party> claimants = ccdCase.getApplicants()
             .stream()
             .map(claimantMapper::from)
             .collect(Collectors.toList());
@@ -136,8 +125,8 @@ public class ClaimMapper {
 
     private List<TheirDetails> getDefendants(CCDCase ccdCase, Claim.ClaimBuilder claimBuilder) {
 
-        return ccdCase.getDefendants().stream()
-            .map(defendant -> defendantMapper.from(claimBuilder, defendant))
+        return ccdCase.getRespondents().stream()
+            .map(respondent -> defendantMapper.from(claimBuilder, respondent))
             .collect(Collectors.toList());
     }
 }
