@@ -69,8 +69,7 @@ public class DocumentManagementServiceTest {
     public void setUp() {
         when(authTokenGenerator.generate()).thenReturn("authString");
         documentManagementService = new DocumentManagementService(documentMetadataDownloadClient,
-            documentDownloadClient, documentUploadClient, authTokenGenerator, userService,
-            "caseworker-cmc", appInsights);
+            documentDownloadClient, documentUploadClient, authTokenGenerator, userService, appInsights);
     }
 
     @Test
