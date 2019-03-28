@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentMetadataDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
+import uk.gov.hmcts.reform.document.domain.Classification;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.document.domain.UploadResponse;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
@@ -44,7 +45,7 @@ public class DocumentManagementService {
     private final DocumentUploadClientApi documentUploadClient;
     private final AuthTokenGenerator authTokenGenerator;
     private final UserService userService;
-    private final String caseWorkerRole;
+    private final String citizenRole;
     private final AppInsights appInsights;
 
     @Autowired
@@ -54,7 +55,7 @@ public class DocumentManagementService {
         DocumentUploadClientApi documentUploadClientApi,
         AuthTokenGenerator authTokenGenerator,
         UserService userService,
-        @Value("${document_management.caseWorkerRole}") String caseWorkerRole,
+        @Value("${document_management.citizenRole}") String citizenRole,
         AppInsights appInsights
     ) {
         this.documentMetadataDownloadClient = documentMetadataDownloadApi;
@@ -62,7 +63,7 @@ public class DocumentManagementService {
         this.documentUploadClient = documentUploadClientApi;
         this.authTokenGenerator = authTokenGenerator;
         this.userService = userService;
-        this.caseWorkerRole = caseWorkerRole;
+        this.citizenRole = citizenRole;
         this.appInsights = appInsights;
     }
 
@@ -83,6 +84,8 @@ public class DocumentManagementService {
                 authorisation,
                 authTokenGenerator.generate(),
                 userService.getUserDetails(authorisation).getId(),
+                singletonList(citizenRole),
+                Classification.RESTRICTED,
                 singletonList(file)
             );
 
@@ -121,14 +124,16 @@ public class DocumentManagementService {
             Document documentMetadata = documentMetadataDownloadClient.getDocumentMetadata(
                 authorisation,
                 authTokenGenerator.generate(),
-                caseWorkerRole,
+                citizenRole,
+                userService.getUserDetails(authorisation).getId(),
                 documentSelf.getPath()
             );
 
             ResponseEntity<Resource> responseEntity = documentDownloadClient.downloadBinary(
                 authorisation,
                 authTokenGenerator.generate(),
-                caseWorkerRole,
+                citizenRole,
+                userService.getUserDetails(authorisation).getId(),
                 URI.create(documentMetadata.links.binary.href).getPath()
             );
 

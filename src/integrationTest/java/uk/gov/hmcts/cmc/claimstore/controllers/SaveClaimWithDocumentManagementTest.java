@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.reform.document.domain.Classification;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 
 import java.net.URI;
@@ -23,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -83,6 +85,8 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
             eq(AUTHORISATION_TOKEN),
             any(),
             any(),
+            anyList(),
+            any(Classification.class),
             argument.capture()
         );
         List<List> capturedArgument = argument.getAllValues();
@@ -112,6 +116,8 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
             eq(SOLICITOR_AUTHORISATION_TOKEN),
             any(),
             any(),
+            anyList(),
+            any(Classification.class),
             argument.capture()
         );
         List<InMemoryMultipartFile> capturedArgument = argument.getValue();
@@ -158,7 +164,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
         String fileName
     ) throws Exception {
 
-        given(documentUploadClient.upload(eq(authorization), any(), any(), any()))
+        given(documentUploadClient.upload(eq(authorization), any(), any(), anyList(), any(Classification.class), any()))
             .willReturn(successfulDocumentManagementUploadResponse());
 
         MvcResult result = makeIssueClaimRequest(claimData, authorization)
