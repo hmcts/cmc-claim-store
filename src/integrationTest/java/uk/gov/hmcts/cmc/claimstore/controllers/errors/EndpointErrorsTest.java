@@ -14,7 +14,6 @@ import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
@@ -162,14 +161,13 @@ public class EndpointErrorsTest extends MockSpringTest {
 
     @Test
     public void saveClaimShouldReturnConflictForDuplicateClaimFailures() throws Exception {
-        ClaimData claimData = SampleClaimData.validDefaults();
 
         Exception duplicateKeyError = new UnableToExecuteStatementException(new PSQLException(
             "ERROR: duplicate key value violates unique constraint \"external_id_unique\"", null), null);
 
         given(userService.getUser(anyString()))
             .willReturn(USER);
-        
+
         given(claimRepository.saveRepresented(anyString(), anyString(), any(LocalDate.class),
             any(LocalDate.class), anyString(), anyString(), anyString()))
             .willThrow(duplicateKeyError);
@@ -179,7 +177,7 @@ public class EndpointErrorsTest extends MockSpringTest {
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
                 .header("Features", ImmutableList.of("admissions"))
-                .content(jsonMapper.toJson(claimData))
+                .content(jsonMapper.toJson(SampleClaimData.validDefaults()))
             )
             .andExpect(status().isConflict());
     }
