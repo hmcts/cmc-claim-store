@@ -190,7 +190,7 @@ dependencies {
   testCompile group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock'
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.12.1'
   testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.10.7'
-  testCompile group: 'org.mockito', name: 'mockito-core', version: '2.25.0'
+  testCompile group: 'org.mockito', name: 'mockito-core', version: '2.25.1'
   testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
   testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.4.0'
 
