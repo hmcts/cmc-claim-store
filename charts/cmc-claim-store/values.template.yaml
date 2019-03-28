@@ -21,7 +21,7 @@ postgresql:
   postgresqlUsername: hmcts
   postgresqlPassword: hmcts
   postgresqlDatabase: user-profile
-  nameOverride: ccd-postgres  # because ccd wont work without
+  nameOverride: ccd-postgres  # because ccd wont work without specific name
   persistence:
     enabled: false
 
@@ -157,7 +157,6 @@ ccd:
       userProfileDatabaseUser: hmcts
       userProfileDatabasePassword: hmcts
       userProfileDatabaseName: user-profile
-      waitHosts: ${SERVICE_NAME}-user-profile-api
     definition:
       enabled: true
       image: hmcts.azurecr.io/hmcts/cmc-ccd-definition-importer
