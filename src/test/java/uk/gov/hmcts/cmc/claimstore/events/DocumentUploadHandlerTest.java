@@ -102,9 +102,7 @@ public class DocumentUploadHandlerTest {
         documentUploadHandler = new DocumentUploadHandler(defendantResponseReceiptService,
             countyCourtJudgmentPdfService,
             settlementAgreementCopyService,
-            sealedClaimPdfService,
             claimIssueReceiptService,
-            defendantPinLetterPdfService,
             documentService);
     }
 
