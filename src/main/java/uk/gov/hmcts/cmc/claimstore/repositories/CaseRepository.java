@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
@@ -19,7 +20,7 @@ import java.util.Optional;
 public interface CaseRepository {
     List<Claim> getBySubmitterId(String submitterId, String authorisation);
 
-    Optional<Claim> getClaimByExternalId(String externalId, String authorisation);
+    Optional<Claim> getClaimByExternalId(String externalId, User user);
 
     Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation);
 
@@ -57,15 +58,17 @@ public interface CaseRepository {
 
     CaseReference savePrePaymentClaim(String externalId, String authorisation);
 
-    Claim saveClaim(String authorisation, Claim claim);
+    Claim saveClaim(User user, Claim claim);
 
     void saveReDetermination(String authorisation, Claim claim, ReDetermination reDetermination);
 
     void saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent);
 
-    void saveClaimDocuments(String authorisation,
-                            Long claimId,
-                            ClaimDocumentCollection claimDocumentCollection,
-                            ClaimDocumentType claimDocumentType);
+    Claim saveClaimDocuments(
+        String authorisation,
+        Long claimId,
+        ClaimDocumentCollection claimDocumentCollection,
+        ClaimDocumentType claimDocumentType
+    );
 }
 

@@ -14,5 +14,7 @@ public interface DocumentsService {
 
     byte[] generateSettlementAgreement(String externalId, String authorisation);
 
-    void uploadToDocumentManagement(PDF document, String authorisation, Claim claim);
+    Claim uploadToDocumentManagement(PDF document, String authorisation, Claim claim);
+
+    void generateDefendantPinLetter(String externalId, String pin, String authorisation);
 }

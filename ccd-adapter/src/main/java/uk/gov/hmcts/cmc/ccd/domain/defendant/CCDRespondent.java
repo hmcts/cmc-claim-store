@@ -4,8 +4,9 @@ import lombok.Builder;
 import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
+import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentIntention;
+import uk.gov.hmcts.cmc.ccd.domain.CCDTelephone;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
@@ -21,22 +22,14 @@ import java.util.List;
 
 @Value
 @Builder
-public class CCDDefendant {
+public class CCDRespondent {
+    private String partyName;
     private String letterHolderId;
     private String defendantId;
     private LocalDate responseDeadline;
 
-    private CCDPartyType claimantProvidedType;
-    private String claimantProvidedEmail;
-    private CCDAddress claimantProvidedServiceAddress;
-    private String claimantProvidedName;
-    private CCDAddress claimantProvidedAddress;
-    private CCDAddress claimantProvidedCorrespondenceAddress;
-    private LocalDate claimantProvidedDateOfBirth;
-    private String claimantProvidedContactPerson;
-    private String claimantProvidedCompaniesHouseNumber;
-    private String claimantProvidedTitle;
-    private String claimantProvidedBusinessName;
+    private CCDParty claimantProvidedDetail;
+    private String claimantProvidedPartyName;
 
     private String claimantProvidedRepresentativeOrganisationName;
     private CCDAddress claimantProvidedRepresentativeOrganisationAddress;
@@ -50,18 +43,7 @@ public class CCDDefendant {
     private String representativeOrganisationEmail;
     private String representativeOrganisationDxAddress;
 
-    private CCDPartyType partyType;
-    private String partyTitle;
-    private String partyName;
-    private LocalDate partyDateOfBirth;
-    private String partyPhone;
-    private String partyEmail;
-    private CCDAddress partyAddress;
-    private CCDAddress partyCorrespondenceAddress;
-    private String partyBusinessName;
-    private String partyContactPerson;
-    private String partyCompaniesHouseNumber;
-
+    private CCDParty partyDetail;
     private LocalDateTime responseSubmittedOn;
     private CCDResponseType responseType;
     private BigDecimal responseAmount;
@@ -74,6 +56,8 @@ public class CCDDefendant {
     private CCDDefenceType responseDefenceType;
     private String responseDefence;
     private CCDYesNoOption responseFreeMediationOption;
+    private CCDTelephone responseMediationPhoneNumber;
+    private String responseMediationContactPerson;
     private CCDYesNoOption responseMoreTimeNeededOption;
     private String responseDefendantSOTSignerName;
     private String responseDefendantSOTSignerRole;
