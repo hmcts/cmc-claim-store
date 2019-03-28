@@ -41,6 +41,10 @@ public class CaseMapper {
             .submitterId(claim.getSubmitterId())
             .submitterEmail(claim.getSubmitterEmail())
             .issuedOn(claim.getIssuedOn())
+            .currentInterestAmount(
+                claim.getTotalInterestTillDateOfIssue()
+                .map(String::valueOf)
+                    .orElse(null))
             .submittedOn(claim.getCreatedAt())
             .features(claim.getFeatures() != null ? String.join(",", claim.getFeatures()) : null)
             .migratedFromClaimStore(isMigrated ? YES : NO)

@@ -64,6 +64,13 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
             }
         });
 
+        actual.getTotalInterestTillDateOfIssue().ifPresent(currentInterestAmount -> {
+            if (ccdCase.getCurrentInterestAmount() != null && !ccdCase.getCurrentInterestAmount().equals(String.valueOf(currentInterestAmount))) {
+                failWithMessage("Expected CCDCase.currentInterestAmount to be <%s> but was <%s>",
+                    ccdCase.getCurrentInterestAmount(), currentInterestAmount);
+            }
+        });
+
         ClaimData claimData = actual.getClaimData();
         if (!Objects.equals(claimData.getReason(), ccdCase.getReason())) {
             failWithMessage("Expected CCDClaim.reason to be <%s> but was <%s>",

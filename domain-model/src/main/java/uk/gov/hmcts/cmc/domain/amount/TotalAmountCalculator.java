@@ -49,8 +49,12 @@ public class TotalAmountCalculator {
         return Optional.ofNullable(calculateTotalAmount(claim, claim.getIssuedOn(), true));
     }
 
+    public static Optional<BigDecimal> calculateInterestForClaim(Claim claim, LocalDate localDate) {
+        return calculateInterest(claim, localDate);
+    }
+
     public static Optional<BigDecimal> calculateInterestForClaim(Claim claim) {
-        return calculateInterest(claim, getToDate(claim));
+        return calculateInterestForClaim(claim, getToDate(claim));
     }
 
     public static BigDecimal calculateInterest(

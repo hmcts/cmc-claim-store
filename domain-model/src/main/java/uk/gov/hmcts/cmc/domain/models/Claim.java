@@ -168,6 +168,10 @@ public class Claim {
         return TotalAmountCalculator.calculateInterestForClaim(this);
     }
 
+    public Optional<BigDecimal> getTotalInterestTillDateOfIssue() {
+        return TotalAmountCalculator.calculateInterestForClaim(this, issuedOn);
+    }
+
     public Optional<ClaimantResponse> getClaimantResponse() {
         return Optional.ofNullable(claimantResponse);
     }
