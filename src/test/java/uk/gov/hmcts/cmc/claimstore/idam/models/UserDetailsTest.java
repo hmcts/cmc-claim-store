@@ -9,7 +9,7 @@ import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIss
 
 public class UserDetailsTest {
     @Test
-    public void shouldReturnFullNameWhenBothArePresent() throws Exception {
+    public void shouldReturnFullNameWhenBothArePresent() {
         //given
         UserDetails userDetails = SampleUserDetails.builder().build();
 
@@ -21,7 +21,7 @@ public class UserDetailsTest {
     }
 
     @Test
-    public void shouldReturnForNameWhenSurnameIsMissing() throws Exception {
+    public void shouldReturnForNameWhenSurnameIsMissing() {
         //given
         UserDetails userDetails = SampleUserDetails.builder().withSurname(null).build();
 

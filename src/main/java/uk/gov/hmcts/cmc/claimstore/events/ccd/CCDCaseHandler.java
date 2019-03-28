@@ -55,8 +55,7 @@ public class CCDCaseHandler {
     public void saveClaim(CCDClaimIssuedEvent event) {
         Claim claim = event.getClaim();
         try {
-            String authorization = event.getAuthorization();
-            ccdCaseRepository.saveClaim(authorization, claim);
+            ccdCaseRepository.saveClaim(event.getUser(), claim);
         } catch (FeignException e) {
             appInsights.trackEvent(CCD_ASYNC_FAILURE, REFERENCE_NUMBER, claim.getReferenceNumber());
             throw e;

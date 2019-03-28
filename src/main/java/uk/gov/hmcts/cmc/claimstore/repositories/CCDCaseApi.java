@@ -98,6 +98,10 @@ public class CCDCaseApi {
         return getCaseBy(authorisation, ImmutableMap.of("case.referenceNumber", referenceNumber));
     }
 
+    public Optional<Claim> getByExternalId(String externalId, User user) {
+        return getCaseBy(user, ImmutableMap.of("case.externalId", externalId));
+    }
+
     public Optional<Claim> getByExternalId(String externalId, String authorisation) {
         return getCaseBy(authorisation, ImmutableMap.of("case.externalId", externalId));
     }
@@ -184,7 +188,10 @@ public class CCDCaseApi {
 
     private Optional<Claim> getCaseBy(String authorisation, Map<String, String> searchString) {
         User user = userService.getUser(authorisation);
+        return getCaseBy(user, searchString);
+    }
 
+    private Optional<Claim> getCaseBy(User user, Map<String, String> searchString) {
         List<CaseDetails> result = searchAll(user, searchString);
 
         if (result.size() == 1 && isCaseOnHold(result.get(0))) {
