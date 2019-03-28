@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimAuthorisationRule;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.rules.PaidInFullRule;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -123,14 +124,18 @@ public class ClaimService {
     }
 
     public Claim getClaimByExternalId(String externalId, String authorisation) {
+        User user = userService.getUser(authorisation);
+        return getClaimByExternalId(externalId, user);
+    }
+
+    public Claim getClaimByExternalId(String externalId, User user) {
         Claim claim = caseRepository
-            .getClaimByExternalId(externalId, authorisation)
+            .getClaimByExternalId(externalId, user)
             .orElseThrow(() -> new NotFoundException("Claim not found by external id " + externalId));
 
-        claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorisation);
+        claimAuthorisationRule.assertClaimCanBeAccessed(claim, user);
 
         return claim;
-
     }
 
     public Optional<Claim> getClaimByReference(String reference, String authorisation) {
@@ -181,6 +186,7 @@ public class ClaimService {
         return caseRepository.savePrePaymentClaim(externalId, authorisation);
     }
 
+    @LogExecutionTime
     @Transactional(transactionManager = "transactionManager")
     public Claim saveClaim(
         String submitterId,
@@ -189,18 +195,18 @@ public class ClaimService {
         List<String> features
     ) {
         String externalId = claimData.getExternalId().toString();
+        User user = userService.getUser(authorisation);
 
-        caseRepository.getClaimByExternalId(externalId, authorisation).ifPresent(claim -> {
+        caseRepository.getClaimByExternalId(externalId, user).ifPresent(claim -> {
             throw new ConflictException(
                 String.format("Claim already exist with same external reference as %s", externalId));
         });
 
         Optional<GeneratePinResponse> pinResponse = getPinResponse(claimData, authorisation);
-        UserDetails userDetails = userService.getUserDetails(authorisation);
         Optional<String> letterHolderId = pinResponse.map(GeneratePinResponse::getUserId);
         LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
         LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
-        String submitterEmail = userDetails.getEmail();
+        String submitterEmail = user.getUserDetails().getEmail();
 
         Claim claim = Claim.builder()
             .claimData(claimData)
@@ -214,13 +220,13 @@ public class ClaimService {
             .features(features)
             .build();
 
-        Claim savedClaim = caseRepository.saveClaim(authorisation, claim);
-        ccdEventProducer.createCCDClaimIssuedEvent(savedClaim, authorisation);
+        Claim savedClaim = caseRepository.saveClaim(user, claim);
+        ccdEventProducer.createCCDClaimIssuedEvent(savedClaim, user);
 
         eventProducer.createClaimIssuedEvent(
             savedClaim,
             pinResponse.map(GeneratePinResponse::getPin).orElse(null),
-            userDetails.getFullName(),
+            user.getUserDetails().getFullName(),
             authorisation
         );
 

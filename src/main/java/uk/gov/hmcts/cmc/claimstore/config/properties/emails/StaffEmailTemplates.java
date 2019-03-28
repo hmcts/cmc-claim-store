@@ -94,4 +94,12 @@ public class StaffEmailTemplates {
     public String getClaimantRejectOrganisationRepaymentPlanEmailSubject() {
         return readString("/staff/templates/email/claimantRejectOrganisationRepaymentPlan/subject.txt");
     }
+
+    public String getClaimantRejectPartAdmissionEmailBody() {
+        return readString("/staff/templates/email/claimantResponse/rejection/partAdmission/body.txt");
+    }
+
+    public String getClaimantRejectPartAdmissionEmailSubject() {
+        return readString("/staff/templates/email/claimantResponse/rejection/partAdmission/subject.txt");
+    }
 }

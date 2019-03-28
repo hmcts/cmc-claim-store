@@ -21,6 +21,7 @@ import uk.gov.hmcts.cmc.claimstore.events.settlement.CountersignSettlementAgreem
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.List;
@@ -73,7 +74,8 @@ public class DocumentUploadHandler {
     }
 
     @EventListener
-    public void uploadDocument(CitizenClaimIssuedEvent event) {
+    @LogExecutionTime
+    public void uploadCitizenClaimDocument(CitizenClaimIssuedEvent event) {
         Claim claim = event.getClaim();
         requireNonNull(claim, CLAIM_MUST_NOT_BE_NULL);
         PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(claim.getReferenceNumber()),
@@ -94,7 +96,8 @@ public class DocumentUploadHandler {
     }
 
     @EventListener
-    public void uploadDocument(RepresentedClaimIssuedEvent event) {
+    @LogExecutionTime
+    public void uploadRepresentedClaimDocument(RepresentedClaimIssuedEvent event) {
         Claim claim = event.getClaim();
         requireNonNull(claim, CLAIM_MUST_NOT_BE_NULL);
         PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(event.getClaim().getReferenceNumber()),
@@ -106,7 +109,8 @@ public class DocumentUploadHandler {
     }
 
     @EventListener
-    public void uploadDocument(DefendantResponseEvent event) {
+    @LogExecutionTime
+    public void uploadDefendantResponseDocument(DefendantResponseEvent event) {
         Claim claim = event.getClaim();
         requireNonNull(claim, CLAIM_MUST_NOT_BE_NULL);
         if (!claim.getResponse().isPresent() && null == claim.getRespondedAt()) {
@@ -119,7 +123,8 @@ public class DocumentUploadHandler {
     }
 
     @EventListener
-    public void uploadDocument(CountyCourtJudgmentEvent event) {
+    @LogExecutionTime
+    public void uploadCountyCourtJudgmentDocument(CountyCourtJudgmentEvent event) {
         Claim claim = event.getClaim();
         requireNonNull(claim, CLAIM_MUST_NOT_BE_NULL);
         if (null == claim.getCountyCourtJudgment() && null == claim.getCountyCourtJudgmentRequestedAt()) {
@@ -133,12 +138,14 @@ public class DocumentUploadHandler {
     }
 
     @EventListener
-    public void uploadDocument(AgreementCountersignedEvent event) {
+    @LogExecutionTime
+    public void uploadSettlementAgreementDocument(AgreementCountersignedEvent event) {
         processSettlementAgreementUpload(event.getClaim(), event.getAuthorisation());
     }
 
     @EventListener
-    public void uploadDocument(CountersignSettlementAgreementEvent event) {
+    @LogExecutionTime
+    public void uploadSettlementAgreementDocument(CountersignSettlementAgreementEvent event) {
         processSettlementAgreementUpload(event.getClaim(), event.getAuthorisation());
     }
 
