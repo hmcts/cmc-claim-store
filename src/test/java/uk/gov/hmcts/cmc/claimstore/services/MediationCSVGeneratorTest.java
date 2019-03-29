@@ -26,10 +26,11 @@ public class MediationCSVGeneratorTest {
     @Mock
     private CaseRepository mockCaseRepository;
 
-    private List<Claim> mediationClaims = new ArrayList<>();
+    private List<Claim> mediationClaims;
 
     @Before
-    public void setUp () {
+    public void setUp() {
+        mediationClaims = new ArrayList<>();
         mediationCSVGenerator = new MediationCSVGenerator(mockCaseRepository);
 
         when(mockCaseRepository.getMediationClaims(AUTHORISATION, LocalDate.now()))
@@ -37,7 +38,7 @@ public class MediationCSVGeneratorTest {
     }
 
     @Test
-    public void shouldCreateMediationForClaim () {
+    public void shouldCreateMediationForClaim() {
         mediationClaims.add(getWithClaimantResponseRejectionForPartAdmissionAndMediation());
 
         String expected = "4,1,4,5,000CM001,80.89,1,Mediation Contact Person,07999999999\r\n" +
@@ -47,7 +48,7 @@ public class MediationCSVGeneratorTest {
     }
 
     @Test
-    public void shouldCreateMediationCSVEvenWhenNoClaimsWithMediation () {
+    public void shouldCreateMediationCSVEvenWhenNoClaimsWithMediation() {
 
         String expected = "null,null,null,null,null,null,null,null,null\r\n";
         String mediationCSV = mediationCSVGenerator.createMediationCSV(AUTHORISATION, LocalDate.now());
