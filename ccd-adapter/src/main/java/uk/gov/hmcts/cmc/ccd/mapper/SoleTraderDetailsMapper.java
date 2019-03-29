@@ -24,6 +24,8 @@ public class SoleTraderDetailsMapper {
                    CCDRespondent.CCDRespondentBuilder builder) {
 
         CCDParty.CCDPartyBuilder claimantProvidedPartyDetail = CCDParty.builder().type(CCDPartyType.SOLE_TRADER);
+        claimantProvidedPartyDetail.firstName(soleTrader.getFirstName());
+        claimantProvidedPartyDetail.lastName(soleTrader.getLastName());
         soleTrader.getTitle().ifPresent(claimantProvidedPartyDetail::title);
         soleTrader.getBusinessName().ifPresent(claimantProvidedPartyDetail::businessName);
         soleTrader.getRepresentative()

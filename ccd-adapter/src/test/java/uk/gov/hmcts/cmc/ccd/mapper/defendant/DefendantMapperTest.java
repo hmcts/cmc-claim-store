@@ -94,7 +94,14 @@ public class DefendantMapperTest {
     @Test
     public void mapToCCDDefendantWithResponseDetails() {
         // Given
-        TheirDetails theirDetails = SampleTheirDetails.builder().individualDetails();
+        String firstName = "John";
+        String lastName = "Smith";
+        String title = "Mr.";
+        TheirDetails theirDetails = SampleTheirDetails.builder()
+            .withTitle(title)
+            .withFirstName(firstName)
+            .withLastName(lastName)
+            .individualDetails();
         Claim claim = SampleClaim.getClaimWithFullDefenceNoMediation();
 
         //When
@@ -124,6 +131,72 @@ public class DefendantMapperTest {
 
         assertEquals("The mapping for theirDetailsMapper is not done properly",
             INDIVIDUAL, respondent.getPartyDetail().getType());
+
+        assertEquals("Claim defendant first name is not mapped properly",
+            respondent.getClaimantProvidedDetail().getFirstName(), firstName);
+
+        assertEquals("Claim defendant last name is not mapped properly",
+            respondent.getClaimantProvidedDetail().getLastName(), lastName);
+
+        assertEquals("Claim defendant title is not mapped properly",
+            respondent.getClaimantProvidedDetail().getTitle(), title);
+
+        assertEquals("The claim response submitted is not mapped properly when response is present",
+            respondent.getResponseSubmittedOn(), claim.getRespondedAt());
+
+        assertEquals("The Response mapper is not called / mapped when response is available",
+            respondent.getResponseType().name(), claim.getResponse().get().getResponseType().name());
+    }
+
+    @Test
+    public void mapToCCDDefendantWithResponseDetailsForSoleTraders() {
+        // Given
+        String firstName = "John";
+        String lastName = "Smith";
+        String title = "Mr.";
+        TheirDetails theirDetails = SampleTheirDetails.builder()
+            .withTitle(title)
+            .withFirstName(firstName)
+            .withLastName(lastName)
+            .soleTraderDetails();
+        Claim claim = SampleClaim.getClaimWithFullDefenceNoMediation();
+
+        //When
+        CCDCollectionElement<CCDRespondent> ccdRespondent = mapper.to(theirDetails, claim);
+        CCDRespondent respondent = ccdRespondent.getValue();
+        //Then
+        assertEquals("Claim response deadline is not mapped properly",
+            respondent.getResponseDeadline(), claim.getResponseDeadline());
+
+        assertEquals("Claim response letter holder id is not mapped properly",
+            respondent.getLetterHolderId(), claim.getLetterHolderId());
+
+        assertEquals("Claim defendantId is not mapped properly",
+            respondent.getDefendantId(), claim.getDefendantId());
+
+        assertEquals("Claim defendant email is not mapped properly",
+            respondent.getPartyDetail().getEmailAddress(), claim.getDefendantEmail());
+
+        assertEquals("Claim response more time requested is not mapped properly",
+            respondent.getResponseMoreTimeNeededOption().toBoolean(), claim.isMoreTimeRequested());
+
+        //Verify if the TheirDetails mapper and response mapper are called by assert not null
+        assertThat(respondent.getResponseSubmittedOn(), is(notNullValue()));
+        assertThat(respondent.getResponseType(), is(notNullValue()));
+        assertThat(respondent.getClaimantProvidedDetail(), is(notNullValue()));
+        assertThat(respondent.getClaimantProvidedDetail().getType(), is(notNullValue()));
+
+        assertEquals("The mapping for theirDetailsMapper is not done properly",
+            INDIVIDUAL, respondent.getPartyDetail().getType());
+
+        assertEquals("Claim defendant first name is not mapped properly",
+            respondent.getClaimantProvidedDetail().getFirstName(), firstName);
+
+        assertEquals("Claim defendant last name is not mapped properly",
+            respondent.getClaimantProvidedDetail().getLastName(), lastName);
+
+        assertEquals("Claim defendant title is not mapped properly",
+            respondent.getClaimantProvidedDetail().getTitle(), title);
 
         assertEquals("The claim response submitted is not mapped properly when response is present",
             respondent.getResponseSubmittedOn(), claim.getRespondedAt());
