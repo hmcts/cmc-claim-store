@@ -77,7 +77,7 @@ public class SupportControllerTest {
     private DocumentsService documentsService;
 
     @Mock
-    private MediationCSVService mediationService;
+    private MediationCSVService mediationCSVService;
 
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
@@ -91,7 +91,7 @@ public class SupportControllerTest {
         controller = new SupportController(claimService, userService, documentGenerator,
             moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
             ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
-            documentsService, mediationService
+            documentsService, mediationCSVService
         );
         sampleClaim = SampleClaim.getDefault();
     }

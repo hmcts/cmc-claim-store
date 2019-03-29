@@ -167,8 +167,9 @@ public class SupportController {
         @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation,
         @RequestBody MediationRequest mediationRequest
     ) {
-        byte[] mediationCSV = mediationCSVService
-            .createMediationCSV(authorisation, mediationRequest.getMediationGenerateDate()).getBytes();
+        mediationCSVService
+            .sendMediationCSV(authorisation, mediationRequest.getMediationGenerateDate());
+
     }
 
     private void resendStaffNotificationCCJRequestSubmitted(Claim claim, String authorisation) {

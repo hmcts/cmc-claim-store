@@ -17,11 +17,11 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getClaimWithFullDefenceWithMediation;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MediationCSVServiceTest {
+public class MediationCSVGeneratorTest {
 
     private static final String AUTHORISATION = "Bearer: aaa";
 
-    private MediationCSVService mediationCSVService;
+    private MediationCSVGenerator mediationCSVGenerator;
 
     @Mock
     private CaseRepository mockCaseRepository;
@@ -30,7 +30,7 @@ public class MediationCSVServiceTest {
 
     @Before
     public void setUp () {
-        mediationCSVService = new MediationCSVService(mockCaseRepository);
+        mediationCSVGenerator = new MediationCSVGenerator(mockCaseRepository);
 
         when(mockCaseRepository.getMediationClaims(AUTHORISATION, LocalDate.now()))
             .thenReturn(mediationClaims);
@@ -42,14 +42,14 @@ public class MediationCSVServiceTest {
 
         String expected = "4,1,4,5,000CM001,80.89,1,Mediation Contact Person,07999999999\r\n" +
             "4,1,4,5,000CM001,80.89,2,Mediation Contact Person,07999999999\r\n";
-        assertThat(mediationCSVService.createMediationCSV(AUTHORISATION, LocalDate.now())).isEqualTo(expected);
+        assertThat(mediationCSVGenerator.createMediationCSV(AUTHORISATION, LocalDate.now())).isEqualTo(expected);
     }
 
     @Test
     public void shouldCreateMediationCSVEvenWhenNoClaimsWithMediation () {
 
         String expected = "null,null,null,null,null,null,null,null,null\r\n";
-        assertThat(mediationCSVService.createMediationCSV(AUTHORISATION, LocalDate.now())).isEqualTo(expected);
+        assertThat(mediationCSVGenerator.createMediationCSV(AUTHORISATION, LocalDate.now())).isEqualTo(expected);
     }
 
 //    @Test(expected = MediationCSVGenerationException.class)
