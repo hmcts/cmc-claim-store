@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.constraints.DateNotInTheFuture;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
 
 import java.math.BigDecimal;
 import java.net.URI;
@@ -25,7 +26,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 // Create these fields in JSON when serialize Java object, ignore them when deserialize.
 @JsonIgnoreProperties(
     value = {"totalAmountTillToday", "totalAmountTillDateOfIssue",
-        "amountWithInterestUntilIssueDate", "totalInterest",
+        "amountWithInterestUntilIssueDate", "totalInterestTillDateOfIssue", "totalInterest",
         "serviceDate", "amountWithInterest", "directionsQuestionnaireDeadline"},
     allowGetters = true
 )
@@ -169,7 +170,7 @@ public class Claim {
     }
 
     public Optional<BigDecimal> getTotalInterestTillDateOfIssue() {
-        return TotalAmountCalculator.calculateInterestForClaim(this, issuedOn);
+        return TotalAmountCalculator.calculateInterestForClaim(this, issuedOn).map(MonetaryConversions::poundsToPennies);
     }
 
     public Optional<ClaimantResponse> getClaimantResponse() {
