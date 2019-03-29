@@ -14,7 +14,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getClaimWithFullDefenceWithMediation;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getWithClaimantResponseRejectionForPartAdmissionAndMediation;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MediationCSVGeneratorTest {
@@ -38,18 +38,20 @@ public class MediationCSVGeneratorTest {
 
     @Test
     public void shouldCreateMediationForClaim () {
-        mediationClaims.add(getClaimWithFullDefenceWithMediation());
+        mediationClaims.add(getWithClaimantResponseRejectionForPartAdmissionAndMediation());
 
         String expected = "4,1,4,5,000CM001,80.89,1,Mediation Contact Person,07999999999\r\n" +
             "4,1,4,5,000CM001,80.89,2,Mediation Contact Person,07999999999\r\n";
-        assertThat(mediationCSVGenerator.createMediationCSV(AUTHORISATION, LocalDate.now())).isEqualTo(expected);
+        String mediationCSV = mediationCSVGenerator.createMediationCSV(AUTHORISATION, LocalDate.now());
+        assertThat(mediationCSV).isEqualTo(expected);
     }
 
     @Test
     public void shouldCreateMediationCSVEvenWhenNoClaimsWithMediation () {
 
         String expected = "null,null,null,null,null,null,null,null,null\r\n";
-        assertThat(mediationCSVGenerator.createMediationCSV(AUTHORISATION, LocalDate.now())).isEqualTo(expected);
+        String mediationCSV = mediationCSVGenerator.createMediationCSV(AUTHORISATION, LocalDate.now());
+        assertThat(mediationCSV).isEqualTo(expected);
     }
 
 //    @Test(expected = MediationCSVGenerationException.class)

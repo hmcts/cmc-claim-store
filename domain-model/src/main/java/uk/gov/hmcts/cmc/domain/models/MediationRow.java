@@ -5,25 +5,46 @@ import lombok.Builder;
 import java.util.Arrays;
 import java.util.List;
 
-@Builder
 public class MediationRow {
-    @Builder.Default
-    private String siteId = "4";
-    @Builder.Default
-    private String caseType = "1";
-    @Builder.Default
-    private String checkList = "4";
-    @Builder.Default
-    private String partyStatus = "5";
+    public static final String SITE_ID = "4";
+    public static final String CASE_TYPE = "1";
+    public static final String CHECK_LIST = "4";
+    public static final String PARTY_STATUS = "5";
 
+    private String siteId;
+    private String caseType;
+    private String checkList;
+    private String partyStatus;
     private String caseNumber;
     private String amount;
     private String partyType;
     private String contactName;
     private String contactNumber;
 
+    @Builder
+    public MediationRow(
+        String siteId,
+        String caseType,
+        String checkList,
+        String partyStatus,
+        String caseNumber,
+        String amount,
+        String partyType,
+        String contactName,
+        String contactNumber
+    ) {
+        this.siteId = siteId;
+        this.caseType = caseType;
+        this.checkList = checkList;
+        this.partyStatus = partyStatus;
+        this.caseNumber = caseNumber;
+        this.amount = amount;
+        this.partyType = partyType;
+        this.contactName = contactName;
+        this.contactNumber = contactNumber;
+    }
 
-    public List<String> toArray() {
+    public List<String> toList() {
         return Arrays.asList(
             siteId,
             caseType,
