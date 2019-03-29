@@ -58,7 +58,7 @@ public class LinkDefendantToClaimWithWithCoreCaseDataTest extends BaseIntegratio
 
     @Before
     public void init() {
-        given(userService.generatePin("John Smith", AUTHORISATION_TOKEN))
+        given(userService.generatePin("Dr. John Smith", AUTHORISATION_TOKEN))
             .willReturn(new GeneratePinResponse("my-pin", "2"));
 
         given(userService.authenticateAnonymousCaseWorker())
