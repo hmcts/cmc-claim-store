@@ -49,7 +49,7 @@ public class IndividualDetailsTest {
     @Test
     public void shouldBeInvalidWhenGivenNullFirstName() {
         TheirDetails theirDetails = SampleTheirDetails.builder()
-            .withName("")
+            .withName(null)
             .withFirstName(null)
             .individualDetails();
 
@@ -57,13 +57,13 @@ public class IndividualDetailsTest {
 
         assertThat(validationErrors)
             .hasSize(1)
-            .contains("Either name or both first and last name must be provided");
+            .contains("firstName : may not be empty");
     }
 
     @Test
     public void shouldBeInvalidWhenGivenEmptyFirstName() {
         TheirDetails theirDetails = SampleTheirDetails.builder()
-            .withName("")
+            .withName(null)
             .withFirstName("")
             .individualDetails();
 
@@ -71,13 +71,13 @@ public class IndividualDetailsTest {
 
         assertThat(validationErrors)
             .hasSize(1)
-            .contains("Either name or both first and last name must be provided");
+            .contains("firstName : may not be empty");
     }
 
     @Test
     public void shouldBeInvalidWhenGivenNullLastName() {
         TheirDetails theirDetails = SampleTheirDetails.builder()
-            .withName("")
+            .withName(null)
             .withLastName(null)
             .individualDetails();
 
@@ -85,13 +85,13 @@ public class IndividualDetailsTest {
 
         assertThat(validationErrors)
             .hasSize(1)
-            .contains("Either name or both first and last name must be provided");
+            .contains("lastName : may not be empty");
     }
 
     @Test
     public void shouldBeInvalidWhenGivenEmptyLastName() {
         TheirDetails theirDetails = SampleTheirDetails.builder()
-            .withName("")
+            .withName(null)
             .withLastName("")
             .individualDetails();
 
@@ -99,48 +99,6 @@ public class IndividualDetailsTest {
 
         assertThat(validationErrors)
             .hasSize(1)
-            .contains("Either name or both first and last name must be provided");
-    }
-
-    //todo ROC-5160  remove these tests once frontend is merged
-    @Test
-    public void shouldBeValidWhenGivenNameAndEmptyLastNameAndFirstName() {
-        TheirDetails theirDetails = SampleTheirDetails.builder()
-            .withName("a name")
-            .withFirstName("")
-            .withLastName("")
-            .individualDetails();
-
-        Set<String> validationErrors = validate(theirDetails);
-
-        assertThat(validationErrors).isEmpty();
-    }
-
-    @Test
-    public void shouldBeValidWhenGivenEmptyNameAndValidLastNameAndFirstName() {
-        TheirDetails theirDetails = SampleTheirDetails.builder()
-            .withName("")
-            .withFirstName("some")
-            .withLastName("some")
-            .individualDetails();
-
-        Set<String> validationErrors = validate(theirDetails);
-
-        assertThat(validationErrors).isEmpty();
-    }
-
-    @Test
-    public void shouldBeInvalidWhenGivenEmptyNameAndEmptyLastNameAndFirstName() {
-        TheirDetails theirDetails = SampleTheirDetails.builder()
-            .withName("")
-            .withFirstName("")
-            .withLastName("")
-            .individualDetails();
-
-        Set<String> validationErrors = validate(theirDetails);
-
-        assertThat(validationErrors)
-            .hasSize(1)
-            .contains("Either name or both first and last name must be provided");
+            .contains("lastName : may not be empty");
     }
 }

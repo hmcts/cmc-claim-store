@@ -3,28 +3,26 @@ package uk.gov.hmcts.cmc.domain.models.otherparty;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
-import uk.gov.hmcts.cmc.domain.constraints.SplitName;
+import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
-import uk.gov.hmcts.cmc.domain.models.party.SplitNamedParty;
 import uk.gov.hmcts.cmc.domain.models.party.TitledParty;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 
-import java.util.Optional;
 import javax.validation.constraints.Size;
+import java.util.Optional;
 
-@SplitName
 @EqualsAndHashCode(callSuper = true)
-public class SoleTraderDetails extends TheirDetails implements TitledParty, SplitNamedParty {
+public class SoleTraderDetails extends TheirDetails implements TitledParty {
 
     @Size(max = 35, message = "must be at most {max} characters")
     private final String title;
 
-    // todo ROC-5160 remove @SplitName and put @NotBlank when frontend is merged
+    @NotBlank
     @Size(max = 255, message = "must be at most {max} characters")
     private final String firstName;
 
-    // todo ROC-5160 remove @SplitName and put @NotBlank when frontend is merged
+    @NotBlank
     @Size(max = 255, message = "must be at most {max} characters")
     private final String lastName;
 
@@ -68,12 +66,10 @@ public class SoleTraderDetails extends TheirDetails implements TitledParty, Spli
         return Optional.ofNullable(businessName);
     }
 
-    @Override
     public String getFirstName() {
         return firstName;
     }
 
-    @Override
     public String getLastName() {
         return lastName;
     }
