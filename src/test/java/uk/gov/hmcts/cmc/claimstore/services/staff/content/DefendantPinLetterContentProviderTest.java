@@ -93,7 +93,7 @@ public class DefendantPinLetterContentProviderTest {
     public void shouldProvideDefendantName() {
         Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
 
-        assertThat(content).containsEntry("defendantFullName", "John Smith");
+        assertThat(content).containsEntry("defendantFullName", "Dr. John Smith");
     }
 
     @Test

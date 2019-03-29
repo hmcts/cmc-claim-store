@@ -140,7 +140,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
 
         public PartAdmissionResponse buildWithPaymentOptionInstalments() {
             return PartAdmissionResponse.builder()
-                .defendant(SampleParty.builder().individual())
+                .defendant(SampleParty.builder().withTitle(null).individual())
                 .moreTimeNeeded(YesNoOption.NO)
                 .amount(BigDecimal.valueOf(120))
                 .paymentIntention(SamplePaymentIntention.instalments())
