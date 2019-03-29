@@ -51,6 +51,7 @@ public class DefendantMapper {
         requireNonNull(claim, "claim must not be null");
 
         CCDRespondent.CCDRespondentBuilder respondentBuilder = CCDRespondent.builder();
+        respondentBuilder.servedDate(claim.getServiceDate());
         respondentBuilder.responseDeadline(claim.getResponseDeadline());
         respondentBuilder.letterHolderId(claim.getLetterHolderId());
         respondentBuilder.defendantId(claim.getDefendantId());

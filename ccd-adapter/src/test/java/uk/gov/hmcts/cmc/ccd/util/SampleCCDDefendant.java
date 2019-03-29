@@ -43,6 +43,7 @@ public class SampleCCDDefendant {
                 .build())
             .defendantId("defendantId")
             .letterHolderId("JCJEDU")
+            .servedDate(now().plusDays(5))
             .responseDeadline(now().plusDays(14));
     }
 
