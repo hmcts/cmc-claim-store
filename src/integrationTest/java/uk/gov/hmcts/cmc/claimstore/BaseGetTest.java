@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore;
 import org.junit.Before;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.ResultActions;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 
@@ -23,6 +24,7 @@ public abstract class BaseGetTest extends BaseIntegrationTest {
     @Before
     public void setup() {
         given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(USER_DETAILS);
+        given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(new User(AUTHORISATION_TOKEN, USER_DETAILS));
     }
 
     protected ResultActions makeRequest(String urlTemplate) throws Exception {
