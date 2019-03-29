@@ -1,6 +1,8 @@
 package uk.gov.hmcts.cmc.ccd.util;
 
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.party.Party;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -23,12 +25,9 @@ public class MapperUtil {
     private static String fetchDefendantName(Claim claim) {
         StringBuilder defendantNameBuilder = new StringBuilder();
 
-        if (claim.getResponse().isPresent()) {
-            defendantNameBuilder
-                .append(claim.getResponse().map(response -> response.getDefendant().getName()).orElse(""));
-        } else {
-            defendantNameBuilder.append(claim.getClaimData().getDefendants().get(0).getName());
-        }
+        defendantNameBuilder.append(claim.getResponse().map(Response::getDefendant)
+            .map(Party::getName)
+            .orElseGet(() -> claim.getClaimData().getDefendants().get(0).getName()));
 
         if (claim.getClaimData().getDefendants().size() > 1) {
             defendantNameBuilder.append(OTHERS);
