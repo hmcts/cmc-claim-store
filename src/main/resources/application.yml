@@ -80,6 +80,7 @@ dateCalculations:
   serviceDays: 5
   responseDays: 14
   requestedAdditionalTimeInDays: 14
+  claimantResponseDays: 28
   freeMediationTimeForDecisionInDays: 5
   offerMadeTimeForResponseInDays: 14
   lastResponseReminderDay: 1

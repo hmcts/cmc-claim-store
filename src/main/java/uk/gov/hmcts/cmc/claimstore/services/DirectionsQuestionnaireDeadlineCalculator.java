@@ -30,13 +30,9 @@ public class DirectionsQuestionnaireDeadlineCalculator {
     }
 
     public LocalDate calculateDirectionsQuestionnaireDeadlineCalculator(LocalDateTime respondedAt) {
-        return calculateFirstWorkingDayAndAddOffset(respondedAt, serviceDays + timeForResponseInDays);
-    }
+        LocalDate date = respondedAt.toLocalDate().plusDays(serviceDays + timeForResponseInDays);
 
-    private LocalDate calculateFirstWorkingDayAndAddOffset(LocalDateTime dateTime, int offset) {
-        LocalDate date = dateTime.toLocalDate();
-
-        if (isTooLateForToday(dateTime.getHour())) {
+        if (isTooLateForToday(respondedAt.getHour())) {
             date = date.plusDays(1);
         }
 
@@ -44,7 +40,7 @@ public class DirectionsQuestionnaireDeadlineCalculator {
             date = date.plusDays(1);
         }
 
-        return date.plusDays(offset);
+        return date;
     }
 
     private boolean isTooLateForToday(int hour) {

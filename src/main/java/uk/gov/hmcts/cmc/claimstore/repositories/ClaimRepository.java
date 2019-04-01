@@ -167,12 +167,14 @@ public interface ClaimRepository {
         "UPDATE CLAIM SET "
             + "response = :response::JSONB, "
             + "defendant_email = :defendantEmail, "
-            + "responded_at = now() AT TIME ZONE 'utc' "
+            + "responded_at = now() AT TIME ZONE 'utc', "
+            + "claimant_response_deadline = :claimantResponseDeadline "
             + "WHERE external_id = :externalId"
     )
     void saveDefendantResponse(
         @Bind("externalId") String externalId,
         @Bind("defendantEmail") String defendantEmail,
+        @Bind("claimantResponseDeadline") LocalDate claimantResponseDeadline,
         @Bind("response") String response
     );
 

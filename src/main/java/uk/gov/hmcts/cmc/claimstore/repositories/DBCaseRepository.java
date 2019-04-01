@@ -110,9 +110,20 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void saveDefendantResponse(Claim claim, String defendantEmail, Response response, String authorization) {
+    public void saveDefendantResponse(
+        Claim claim,
+        String defendantEmail,
+        Response response,
+        LocalDate claimantResponseDeadline,
+        String authorization
+    ) {
         String defendantResponse = jsonMapper.toJson(response);
-        claimRepository.saveDefendantResponse(claim.getExternalId(), defendantEmail, defendantResponse);
+        claimRepository.saveDefendantResponse(
+            claim.getExternalId(),
+            defendantEmail,
+            claimantResponseDeadline,
+            defendantResponse
+        );
     }
 
     @Override

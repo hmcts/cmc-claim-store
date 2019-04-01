@@ -85,6 +85,7 @@ public final class SampleClaim {
     private LocalDateTime reDeterminationRequestedAt;
     private ReDetermination reDetermination = new ReDetermination("I feel defendant can pay", CLAIMANT);
     private ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
+    private LocalDate claimantResponseDeadline;
 
     private SampleClaim() {
     }
@@ -436,7 +437,8 @@ public final class SampleClaim {
             moneyReceivedOn,
             reDetermination,
             reDeterminationRequestedAt,
-            claimDocumentCollection
+            claimDocumentCollection,
+            claimantResponseDeadline
         );
     }
 
@@ -607,6 +609,11 @@ public final class SampleClaim {
 
     public SampleClaim withClaimantResponse(ClaimantResponse claimantResponse) {
         this.claimantResponse = claimantResponse;
+        return this;
+    }
+
+    public SampleClaim withClaimantResponseDeadline(LocalDate claimantResponseDeadline) {
+        this.claimantResponseDeadline = claimantResponseDeadline;
         return this;
     }
 
