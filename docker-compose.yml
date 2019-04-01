@@ -25,6 +25,7 @@ services:
       - REFORM_SERVICE_NAME
       - REFORM_TEAM
       - REFORM_ENVIRONMENT
+      - DOCUMENT_MANAGEMENT_CITIZENROLE=citizen
     volumes:
       - ./build/install/claim-store:/opt/app/
     ports:
