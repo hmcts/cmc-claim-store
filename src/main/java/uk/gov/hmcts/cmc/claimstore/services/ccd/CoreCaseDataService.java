@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
@@ -36,6 +37,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
 
+import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_NEW_CASE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
@@ -95,26 +97,26 @@ public class CoreCaseDataService {
     }
 
     @LogExecutionTime
-    public Claim createNewCase(String authorisation, Claim claim) {
-        UserDetails userDetails = userService.getUserDetails(authorisation);
-        boolean isRepresented = userDetails.isSolicitor() || userDetails.isCaseworker();
+    public Claim createNewCase(User user, Claim claim) {
+        requireNonNull(user, "user must not be null");
+
         CCDCase ccdCase = caseMapper.to(claim);
 
         if (StringUtils.isBlank(claim.getReferenceNumber())) {
-            ccdCase.setReferenceNumber(referenceNumberService.getReferenceNumber(isRepresented));
+            ccdCase.setReferenceNumber(referenceNumberService.getReferenceNumber(user.isRepresented()));
         }
 
         try {
             EventRequestData eventRequestData = EventRequestData.builder()
-                .userId(userDetails.getId())
+                .userId(user.getUserDetails().getId())
                 .jurisdictionId(JURISDICTION_ID)
                 .caseTypeId(CASE_TYPE_ID)
                 .eventId(CREATE_NEW_CASE.getValue())
                 .ignoreWarning(true)
                 .build();
 
-            StartEventResponse startEventResponse = ccdCreateCaseService.startCreate(authorisation, eventRequestData,
-                userDetails.isSolicitor() || userDetails.isCaseworker());
+            StartEventResponse startEventResponse = ccdCreateCaseService.startCreate(user.getAuthorisation(),
+                eventRequestData, user.isRepresented());
 
             CaseDataContent caseDataContent = CaseDataContent.builder()
                 .eventToken(startEventResponse.getToken())
@@ -127,13 +129,13 @@ public class CoreCaseDataService {
                 .build();
 
             CaseDetails caseDetails = ccdCreateCaseService.submitCreate(
-                authorisation,
+                user.getAuthorisation(),
                 eventRequestData,
                 caseDataContent,
-                isRepresented
+                user.isRepresented()
             );
 
-            if (!isRepresented) {
+            if (!user.isRepresented()) {
                 ccdCreateCaseService.grantAccessToCase(caseDetails, claim.getLetterHolderId());
             }
 

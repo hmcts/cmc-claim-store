@@ -39,7 +39,7 @@ java:
   environment:
     IDAM_S2S_AUTH_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
     SEND_LETTER_URL: http://rpe-send-letter-service-aat.service.core-compute-aat.internal
-    IDAM_API_URL: https://preprod-idamapi.reform.hmcts.net:3511
+    IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
     PDF_SERVICE_URL: http://cmc-pdf-service-aat.service.core-compute-aat.internal
     DOCUMENT_MANAGEMENT_URL: http://dm-store-aat.service.core-compute-aat.internal
     REFORM_TEAM: cmc
@@ -63,7 +63,7 @@ java:
     FEATURE_TOGGLES_EMAILTOSTAFF: true
     FEATURE_TOGGLES_CCD_ENABLED: false
     FEATURE_TOGGLES_CCD_ASYNC_ENABLED: false
-    DOCUMENT_MANAGEMENT_CASEWORKERROLE: caseworker-cmc
+    DOCUMENT_MANAGEMENT_CITIZENROLE: citizen
     CORE_CASE_DATA_API_URL: false
     FRONTEND_BASE_URL: https://www-${SERVICE_FQDN}
     RESPOND_TO_CLAIM_URL: https://www-${SERVICE_FQDN}/first-contact/start

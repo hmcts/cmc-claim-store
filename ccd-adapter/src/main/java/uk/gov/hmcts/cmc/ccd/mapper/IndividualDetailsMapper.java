@@ -3,7 +3,9 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
+import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPartyType;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
 
 @Component
@@ -21,34 +23,44 @@ public class IndividualDetailsMapper {
         this.representativeMapper = defendantRepresentativeMapper;
     }
 
-    public void to(IndividualDetails individual, CCDDefendant.CCDDefendantBuilder builder) {
+    public void to(IndividualDetails individual,
+                   CCDRespondent.CCDRespondentBuilder builder) {
 
+        CCDParty.CCDPartyBuilder claimantProvidedDetails = CCDParty.builder().type(CCDPartyType.INDIVIDUAL);
+        claimantProvidedDetails.firstName(individual.getFirstName());
+        claimantProvidedDetails.lastName(individual.getLastName());
+        individual.getTitle().ifPresent(claimantProvidedDetails::title);
         individual.getServiceAddress()
-            .ifPresent(address -> builder.claimantProvidedServiceAddress(addressMapper.to(address)));
+            .ifPresent(address -> claimantProvidedDetails.correspondenceAddress(addressMapper.to(address)));
 
         individual.getRepresentative()
             .ifPresent(representative -> representativeMapper.to(representative, builder));
 
-        individual.getDateOfBirth().ifPresent(builder::claimantProvidedDateOfBirth);
+        individual.getDateOfBirth().ifPresent(claimantProvidedDetails::dateOfBirth);
 
-        individual.getEmail().ifPresent(builder::claimantProvidedEmail);
+        individual.getEmail().ifPresent(claimantProvidedDetails::emailAddress);
+        claimantProvidedDetails.primaryAddress(addressMapper.to(individual.getAddress()));
 
         builder
-            .claimantProvidedName(individual.getName())
-            .claimantProvidedAddress(addressMapper.to(individual.getAddress()));
+            .claimantProvidedPartyName(individual.getName())
+            .claimantProvidedDetail(claimantProvidedDetails.build());
     }
 
-    public IndividualDetails from(CCDCollectionElement<CCDDefendant> ccdDefendant) {
-        CCDDefendant value = ccdDefendant.getValue();
+    public IndividualDetails from(CCDCollectionElement<CCDRespondent> ccdRespondent) {
+        CCDRespondent respondent = ccdRespondent.getValue();
+        CCDParty claimantProvidedPartyDetail = respondent.getClaimantProvidedDetail();
 
         return IndividualDetails.builder()
-            .id(ccdDefendant.getId())
-            .name(value.getClaimantProvidedName())
-            .address(addressMapper.from(value.getClaimantProvidedAddress()))
-            .email(value.getClaimantProvidedEmail())
-            .representative(representativeMapper.from(value))
-            .serviceAddress(addressMapper.from(value.getClaimantProvidedServiceAddress()))
-            .dateOfBirth(value.getClaimantProvidedDateOfBirth())
+            .id(ccdRespondent.getId())
+            .name(respondent.getClaimantProvidedPartyName())
+            .firstName(respondent.getClaimantProvidedDetail().getFirstName())
+            .lastName(respondent.getClaimantProvidedDetail().getLastName())
+            .title(respondent.getClaimantProvidedDetail().getTitle())
+            .address(addressMapper.from(claimantProvidedPartyDetail.getPrimaryAddress()))
+            .email(claimantProvidedPartyDetail.getEmailAddress())
+            .representative(representativeMapper.from(respondent))
+            .serviceAddress(addressMapper.from(claimantProvidedPartyDetail.getCorrespondenceAddress()))
+            .dateOfBirth(claimantProvidedPartyDetail.getDateOfBirth())
             .build();
     }
 }

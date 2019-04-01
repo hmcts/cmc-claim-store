@@ -61,6 +61,11 @@ public class ResponseUtils {
         return responseType == ResponseType.FULL_ADMISSION || responseType == ResponseType.PART_ADMISSION;
     }
 
+    public static boolean isPartAdmission(Response response) {
+        ResponseType responseType = response.getResponseType();
+        return responseType == ResponseType.PART_ADMISSION;
+    }
+
     public static boolean isFullDefenceDisputeAndNoMediation(Response response) {
         return isFullDefenceAndNoMediation(response) && ((FullDefenceResponse) response)
             .getDefenceType().equals(DefenceType.DISPUTE);

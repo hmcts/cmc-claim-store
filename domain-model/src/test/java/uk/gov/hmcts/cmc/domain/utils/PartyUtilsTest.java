@@ -164,4 +164,10 @@ public class PartyUtilsTest {
         Organisation organisation = SampleParty.builder().organisation();
         assertThat(PartyUtils.isCompanyOrOrganisation(organisation)).isTrue();
     }
+
+    @Test
+    public void shouldReturnFullNameFromSplitName() {
+        assertThat(PartyUtils.fullNameFrom("Mr.", "Coffee", "McCoffee")).isEqualTo("Mr. Coffee McCoffee");
+        assertThat(PartyUtils.fullNameFrom(null, "Coffee", "McCoffee")).isEqualTo("Coffee McCoffee");
+    }
 }

@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -28,14 +30,17 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 public class CCDCaseRepository implements CaseRepository {
     private final CCDCaseApi ccdCaseApi;
     private final CoreCaseDataService coreCaseDataService;
+    private final UserService userService;
 
     @Autowired
     public CCDCaseRepository(
         CCDCaseApi ccdCaseApi,
-        CoreCaseDataService coreCaseDataService
+        CoreCaseDataService coreCaseDataService,
+        UserService userService
     ) {
         this.ccdCaseApi = ccdCaseApi;
         this.coreCaseDataService = coreCaseDataService;
+        this.userService = userService;
     }
 
     @Override
@@ -45,8 +50,13 @@ public class CCDCaseRepository implements CaseRepository {
 
     @Override
     @LogExecutionTime
-    public Optional<Claim> getClaimByExternalId(String externalId, String authorisation) {
-        return ccdCaseApi.getByExternalId(externalId, authorisation);
+    public Optional<Claim> getClaimByExternalId(String externalId, User user) {
+        return ccdCaseApi.getByExternalId(externalId, user);
+    }
+
+    @LogExecutionTime
+    public Optional<Claim> getClaimByExternalId(String externalId, String authorization) {
+        return ccdCaseApi.getByExternalId(externalId, userService.getUser(authorization));
     }
 
     @Override
@@ -145,8 +155,8 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Claim saveClaim(String authorisation, Claim claim) {
-        return coreCaseDataService.createNewCase(authorisation, claim);
+    public Claim saveClaim(User user, Claim claim) {
+        return coreCaseDataService.createNewCase(user, claim);
     }
 
     @Override

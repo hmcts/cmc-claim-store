@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -53,6 +54,7 @@ public class DBCaseRepository implements CaseRepository {
         return claimRepository.getBySubmitterId(submitterId);
     }
 
+    @LogExecutionTime
     public Optional<Claim> getClaimByExternalId(String externalId, String authorisation) {
         return claimRepository.getClaimByExternalId(externalId)
             .map(fetchedClaim -> fetchedClaim.toBuilder().id(null).build());
@@ -183,7 +185,8 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Claim saveClaim(String authorisation, Claim claim) {
+    @LogExecutionTime
+    public Claim saveClaim(User user, Claim claim) {
         String claimDataString = jsonMapper.toJson(claim.getClaimData());
         String features = jsonMapper.toJson(claim.getFeatures());
         if (claim.getClaimData().isClaimantRepresented()) {

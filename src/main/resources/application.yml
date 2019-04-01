@@ -69,7 +69,7 @@ pdf-service:
 
 document_management:
   url: ${DOCUMENT_MANAGEMENT_URL}
-  caseWorkerRole: ${DOCUMENT_MANAGEMENT_CASEWORKERROLE}
+  citizenRole: ${DOCUMENT_MANAGEMENT_CITIZENROLE}
 
 bankHolidays:
   api:
