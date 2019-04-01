@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.domain.constraints.DateNotInTheFuture;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
-import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
 
 import java.math.BigDecimal;
 import java.net.URI;
@@ -170,7 +169,7 @@ public class Claim {
     }
 
     public Optional<BigDecimal> getTotalInterestTillDateOfIssue() {
-        return TotalAmountCalculator.calculateInterestForClaim(this, issuedOn).map(MonetaryConversions::poundsToPennies);
+        return TotalAmountCalculator.calculateInterestForClaim(this, issuedOn);
     }
 
     public Optional<ClaimantResponse> getClaimantResponse() {

@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.amount.Amount;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
 import uk.gov.hmcts.cmc.domain.models.amount.NotKnown;
+import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -65,7 +66,8 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
         });
 
         actual.getTotalInterestTillDateOfIssue().ifPresent(currentInterestAmount -> {
-            if (ccdCase.getCurrentInterestAmount() != null && !ccdCase.getCurrentInterestAmount().equals(String.valueOf(currentInterestAmount))) {
+            if (ccdCase.getCurrentInterestAmount() != null && !ccdCase.getCurrentInterestAmount()
+                .equals(String.valueOf(MonetaryConversions.poundsToPennies(currentInterestAmount)))) {
                 failWithMessage("Expected CCDCase.currentInterestAmount to be <%s> but was <%s>",
                     ccdCase.getCurrentInterestAmount(), currentInterestAmount);
             }

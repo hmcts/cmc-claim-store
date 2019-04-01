@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.domain.utils;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,8 +22,8 @@ public class MonetaryConversionsTest {
 
     @Test
     public void zeroPoundsShouldConvertToZeroPennies() {
-        BigDecimal converted = MonetaryConversions.poundsToPennies(BigDecimal.ZERO);
-        assertThat(converted).isEqualByComparingTo("0");
+        BigInteger converted = MonetaryConversions.poundsToPennies(BigDecimal.ZERO);
+        assertThat(converted).isEqualTo("0");
     }
 
     @Test
@@ -33,8 +34,8 @@ public class MonetaryConversionsTest {
 
     @Test
     public void oneHundredthOfPoundShouldConvertToOnePenny() {
-        BigDecimal converted = MonetaryConversions.poundsToPennies(new BigDecimal("0.01"));
-        assertThat(converted).isEqualByComparingTo("1");
+        BigInteger converted = MonetaryConversions.poundsToPennies(new BigDecimal("0.01"));
+        assertThat(converted).isEqualTo("1");
     }
 
     @Test
@@ -45,8 +46,8 @@ public class MonetaryConversionsTest {
 
     @Test
     public void oneTenthofPoundShouldConvertToTenPennies() {
-        BigDecimal converted = MonetaryConversions.poundsToPennies(new BigDecimal("0.10"));
-        assertThat(converted).isEqualByComparingTo("10");
+        BigInteger converted = MonetaryConversions.poundsToPennies(new BigDecimal("0.10"));
+        assertThat(converted).isEqualTo("10");
     }
 
     @Test
@@ -57,8 +58,8 @@ public class MonetaryConversionsTest {
 
     @Test
     public void onePoundShouldConvertToHundredPennies() {
-        BigDecimal converted = MonetaryConversions.poundsToPennies(new BigDecimal("1.00"));
-        assertThat(converted).isEqualByComparingTo("100");
+        BigInteger converted = MonetaryConversions.poundsToPennies(new BigDecimal("1.00"));
+        assertThat(converted).isEqualTo("100");
     }
 
     @Test
@@ -69,8 +70,8 @@ public class MonetaryConversionsTest {
 
     @Test
     public void twentyFivePoundsShouldConvertTotwoAndHalfThousandPennies() {
-        BigDecimal converted = MonetaryConversions.poundsToPennies(new BigDecimal("25.00"));
-        assertThat(converted).isEqualByComparingTo("2500");
+        BigInteger converted = MonetaryConversions.poundsToPennies(new BigDecimal("25.00"));
+        assertThat(converted).isEqualTo("2500");
     }
 
 }
