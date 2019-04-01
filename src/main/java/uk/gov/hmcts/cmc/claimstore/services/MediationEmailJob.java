@@ -1,26 +1,29 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.quartz.Job;
-import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-@Component
+import java.time.LocalDate;
+
 public class MediationEmailJob implements Job {
 
     private MediationCSVService mediationCSVService;
+    private String authorisation;
+    private LocalDate mediationDate;
 
-    @Autowired
-    public MediationEmailJob(MediationCSVService mediationCSVService) {
+    public MediationEmailJob(
+        MediationCSVService mediationCSVService,
+        String authorisation,
+        LocalDate mediationDate
+    ) {
         this.mediationCSVService = mediationCSVService;
+        this.authorisation = authorisation;
+        this.mediationDate = mediationDate;
     }
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        JobDetail jobDetail = context.getJobDetail();
-        mediationCSVService.sendMediationCSV(jobDetail);
-        logger.debug("Completed job work for id {}", jobDetail.getKey().getName());
+        mediationCSVService.sendMediationCSV(authorisation, mediationDate);
     }
 }
