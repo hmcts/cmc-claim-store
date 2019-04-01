@@ -181,10 +181,6 @@ public class ClaimService {
         return caseRepository.getByPaymentReference(payReference, authorisation);
     }
 
-    public CaseReference savePrePayment(String externalId, String authorisation) {
-        return caseRepository.savePrePaymentClaim(externalId, authorisation);
-    }
-
     @LogExecutionTime
     @Transactional(transactionManager = "transactionManager")
     public Claim saveClaim(
