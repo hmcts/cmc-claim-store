@@ -228,8 +228,4 @@ public class DBCaseRepository implements CaseRepository {
             new NotFoundException(
                 String.format("Claim not found by primary key %s.", claimId)));
     }
-
-    private Optional<Claim> filterClaimId(Claim claim) {
-        return Optional.of(claim.toBuilder().id(null).build());
-    }
 }
