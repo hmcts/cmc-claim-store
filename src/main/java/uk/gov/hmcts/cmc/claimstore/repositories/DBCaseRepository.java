@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATED;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service("caseRepository")
@@ -36,19 +38,22 @@ public class DBCaseRepository implements CaseRepository {
     private final JsonMapper jsonMapper;
     private final UserService userService;
     private final JobSchedulerService jobSchedulerService;
+    private final boolean saveClaimStateEnabled;
 
     public DBCaseRepository(
         ClaimRepository claimRepository,
         OffersRepository offersRepository,
         JsonMapper jsonMapper,
         UserService userService,
-        JobSchedulerService jobSchedulerService
+        JobSchedulerService jobSchedulerService,
+        @Value("${feature_toggles.save_claim_state_enabled:false}") boolean saveClaimStateEnabled
     ) {
         this.claimRepository = claimRepository;
         this.offersRepository = offersRepository;
         this.jsonMapper = jsonMapper;
         this.userService = userService;
         this.jobSchedulerService = jobSchedulerService;
+        this.saveClaimStateEnabled = saveClaimStateEnabled;
     }
 
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
@@ -204,7 +209,7 @@ public class DBCaseRepository implements CaseRepository {
             claimRepository.saveSubmittedByClaimant(claimDataString,
                 claim.getSubmitterId(), claim.getLetterHolderId(),
                 claim.getIssuedOn(), claim.getResponseDeadline(), claim.getExternalId(),
-                claim.getSubmitterEmail(), features);
+                claim.getSubmitterEmail(), features, this.saveClaimStateEnabled ? CREATED : null);
         }
 
         return claimRepository
