@@ -17,8 +17,12 @@ import uk.gov.hmcts.cmc.domain.models.UserRoleRequest;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
+import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
 import java.util.UUID;
+
+import static java.util.Collections.singletonList;
 
 @Service
 public class CommonOperations {
@@ -33,6 +37,14 @@ public class CommonOperations {
     ) {
         this.jsonMapper = jsonMapper;
         this.testData = testData;
+    }
+
+    public Claim submitClaimWithDefendantCollectionId(String userAuthentication, String userId, String collectionId) {
+        UUID externalId = UUID.randomUUID();
+        return submitClaim(userAuthentication, userId, testData.submittedByClaimantBuilder()
+            .withDefendant(SampleTheirDetails.builder().withCollectionId(collectionId).individualDetails())
+            .withExternalId(externalId)
+            .build());
     }
 
     public Claim submitClaim(String userAuthentication, String userId) {
