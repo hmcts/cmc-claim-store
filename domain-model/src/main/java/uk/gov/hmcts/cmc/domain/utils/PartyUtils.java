@@ -96,4 +96,11 @@ public class PartyUtils {
     public static boolean isCompanyOrOrganisation(Party party) {
         return (party instanceof Company) || (party instanceof Organisation);
     }
+
+    public static String fullNameFrom(String title, String firstName, String lastName) {
+        if (title != null) {
+            return String.join(" ", title, firstName, lastName);
+        }
+        return String.join(" ", firstName, lastName);
+    }
 }
