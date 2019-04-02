@@ -1,60 +1,44 @@
 package uk.gov.hmcts.cmc.claimstore.jobs;
 
-import com.google.common.collect.ImmutableMap;
-import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.Trigger;
+import org.quartz.CronScheduleBuilder;
+import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
-import uk.gov.hmcts.cmc.claimstore.services.MediationCSVGenerator;
 import uk.gov.hmcts.cmc.claimstore.services.MediationEmailJob;
-import uk.gov.hmcts.cmc.scheduler.model.JobData;
-import uk.gov.hmcts.cmc.scheduler.services.JobService;
 
-import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.util.Map;
+import static org.quartz.JobBuilder.newJob;
+import static org.quartz.TriggerBuilder.newTrigger;
 
 @Component
 public class MediationJobSchedulerService {
 
-    private static final Logger logger = LoggerFactory.getLogger(JobSchedulerService.class);
+    public void scheduleMediation() {
 
-    private final JobService jobService;
+        try {
+            Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+            scheduler.start();
 
-    private MediationCSVGenerator mediationCSVGenerator;
+            // define the job and tie it to our HelloJob class
+            JobDetail job = newJob(MediationEmailJob.class)
+                .withIdentity("Mediation Job")
+                .build();
 
-    @Autowired
-    public MediationJobSchedulerService(
-        JobService jobService,
-        MediationCSVGenerator mediationCSVGenerator
-    ) {
-        this.jobService = jobService;
-        this.mediationCSVGenerator = mediationCSVGenerator;
-    }
+            // Trigger the job to run now, and then repeat every 40 seconds
+            Trigger trigger = newTrigger()
+                .withIdentity("Mediation Trigger")
+                .startNow()
+                .withSchedule(CronScheduleBuilder.cronSchedule("0 6 * * *"))
+                .build();
 
-    public void scheduleMediation(String authorisation, LocalDate mediationDate) {
+            // Tell quartz to schedule the job using our trigger
+            scheduler.scheduleJob(job, trigger);
 
-        JobDetail jobDetail = JobBuilder.newJob(MediationEmailJob.class)
-            .withIdentity("MediationJob")
-            .build();
-
-        ZonedDateTime scheduleMediationTime = LocalDate.now().atTime(5,0).atZone(ZoneOffset.UTC);
-        jobService.scheduleJob(createMediationJobData(authorisation, mediationDate), scheduleMediationTime);
-    }
-
-    public JobData createMediationJobData(String authorisation, LocalDate mediationDate) {
-        Map<String, Object> mediationData =
-            ImmutableMap.of("mediation", mediationCSVGenerator.createMediationCSV(authorisation, mediationDate));
-
-        return JobData.builder()
-            .id("Mediation csv")
-            .description("Mediation csv job for " + LocalDate.now().toString())
-            .jobClass(MediationEmailJob.class)
-            .data(mediationData)
-            .build();
+            scheduler.shutdown();
+        } catch (SchedulerException e) {
+            e.printStackTrace();
+        }
     }
 }
