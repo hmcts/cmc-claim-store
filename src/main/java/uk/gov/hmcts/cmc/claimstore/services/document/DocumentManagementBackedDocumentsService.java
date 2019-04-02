@@ -13,8 +13,10 @@ import uk.gov.hmcts.cmc.claimstore.documents.PdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
@@ -52,6 +54,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
     private final SettlementAgreementCopyService settlementAgreementCopyService;
     private final DefendantPinLetterPdfService defendantPinLetterPdfService;
+    private final UserService userService;
 
     @Autowired
     @SuppressWarnings("squid:S00107")
@@ -64,7 +67,8 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         DefendantResponseReceiptService defendantResponseReceiptService,
         CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
         SettlementAgreementCopyService settlementAgreementCopyService,
-        DefendantPinLetterPdfService defendantPinLetterPdfService) {
+        DefendantPinLetterPdfService defendantPinLetterPdfService,
+        UserService userService) {
         this.claimService = claimService;
         this.documentManagementService = documentManagementService;
         this.sealedClaimPdfService = sealedClaimPdfService;
@@ -73,6 +77,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
         this.settlementAgreementCopyService = settlementAgreementCopyService;
         this.defendantPinLetterPdfService = defendantPinLetterPdfService;
+        this.userService = userService;
     }
 
     @Override
@@ -136,21 +141,18 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     }
 
     @Override
-    public void generateDefendantPinLetter(String externalId, String pin, String authorisation) {
+    public void generateDefendantPinLetter(String externalId, String authorisation) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        final String fileName = buildDefendantLetterFileBaseName(claim.getReferenceNumber());
-        Optional<URI> claimDocument = claim.getClaimDocument(DEFENDANT_PIN_LETTER);
-        if (!claimDocument.isPresent()) {
-            try {
-                PDF defendantLetter = new PDF(fileName,
-                    defendantPinLetterPdfService.createPdf(claim, pin),
-                    DEFENDANT_PIN_LETTER);
-                uploadToDocumentManagement(defendantLetter, authorisation, claim);
-            } catch (Exception ex) {
-                logger.warn(String.format("unable to upload document %s into document management",
-                    fileName), ex);
-            }
+        if (claim.getDefendantId() != null) {
+            throw new ConflictException("Cannot generate pin letter.Claim has already been linked to defendant.");
         }
+        final String fileName = buildDefendantLetterFileBaseName(claim.getReferenceNumber());
+        String pin = userService.generatePin(claim.getClaimData().getDefendant().getName(), authorisation)
+            .getPin();
+        PDF defendantLetter = new PDF(fileName,
+            defendantPinLetterPdfService.createPdf(claim, pin),
+            DEFENDANT_PIN_LETTER);
+        uploadToDocumentManagement(defendantLetter, authorisation, claim);
     }
 
     private byte[] processRequest(Claim claim,

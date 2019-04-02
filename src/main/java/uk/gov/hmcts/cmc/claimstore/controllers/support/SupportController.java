@@ -31,10 +31,17 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 
 @RestController
 @RequestMapping("/support")
@@ -118,6 +125,10 @@ public class SupportController {
         if (StringUtils.isBlank(authorisation)) {
             throw new BadRequestException(AUTHORISATION_IS_REQUIRED);
         }
+        if (claimDocumentType != DEFENDANT_PIN_LETTER && claim.getClaimDocument(claimDocumentType).isPresent()) {
+            throw new BadRequestException("Document already Exists");
+        }
+        final LocalDateTime requestTime = LocalDateTimeFactory.nowInLocalZone();
         switch (claimDocumentType) {
             case SEALED_CLAIM:
                 documentsService.generateSealedClaim(claim.getExternalId(), authorisation);
@@ -134,12 +145,38 @@ public class SupportController {
             case SETTLEMENT_AGREEMENT:
                 documentsService.generateSettlementAgreement(claim.getExternalId(), authorisation);
                 break;
+            case DEFENDANT_PIN_LETTER:
+                documentsService.generateDefendantPinLetter(claim.getExternalId(), authorisation);
+                break;
             default:
                 throw new BadRequestException("ClaimDocumentType " + claimDocumentType + " is not supported");
         }
-        claimService.getClaimByReferenceAnonymous(referenceNumber)
-            .ifPresent(updatedClaim -> updatedClaim.getClaimDocument(claimDocumentType)
-                .orElseThrow(() -> new NotFoundException("Unable to upload the document. Please try again later")));
+        if (!isDocumentCreated(referenceNumber, claimDocumentType, requestTime)) {
+            throw new NotFoundException("Unable to upload the document. Please try again later");
+        }
+    }
+
+    private boolean isDocumentCreated(
+        String referenceNumber,
+        ClaimDocumentType claimDocumentType,
+        LocalDateTime requestTime) {
+        Optional<Claim> updatedClaim = claimService.getClaimByReferenceAnonymous(referenceNumber);
+        if (updatedClaim.isPresent()) {
+            Optional<ClaimDocumentCollection> claimDocumentCollectionOptional = updatedClaim.get()
+                                                                                    .getClaimDocumentCollection();
+            if (claimDocumentCollectionOptional.isPresent()) {
+                Optional<ClaimDocument> claimDocumentOptional = claimDocumentCollectionOptional.get()
+                                                                                    .getDocument(claimDocumentType);
+                if (claimDocumentOptional.isPresent()) {
+                    return claimDocumentOptional.get().getCreatedDatetime().isAfter(requestTime);
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+        return false;
     }
 
     @PutMapping("/claim/resend-rpa-notifications")

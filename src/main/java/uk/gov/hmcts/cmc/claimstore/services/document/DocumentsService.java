@@ -16,5 +16,5 @@ public interface DocumentsService {
 
     Claim uploadToDocumentManagement(PDF document, String authorisation, Claim claim);
 
-    void generateDefendantPinLetter(String externalId, String pin, String authorisation);
+    void generateDefendantPinLetter(String externalId, String authorisation);
 }

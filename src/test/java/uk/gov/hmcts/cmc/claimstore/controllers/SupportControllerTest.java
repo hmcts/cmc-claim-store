@@ -6,7 +6,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 import uk.gov.hmcts.cmc.claimstore.controllers.support.SupportController;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
@@ -34,11 +36,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
@@ -143,8 +147,7 @@ public class SupportControllerTest {
     @Test
     public void shouldUploadSealedClaimDocument() {
         Claim claim = SampleClaim.getWithSealedClaimDocument();
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
-            .thenReturn(Optional.of(claim));
+        setUpClaim(claim);
         controller.uploadDocumentToDocumentManagement(CLAIMREFERENCENUMBER, SEALED_CLAIM, AUTHORISATION);
         verify(documentsService).generateSealedClaim(claim.getExternalId(), AUTHORISATION);
     }
@@ -152,8 +155,7 @@ public class SupportControllerTest {
     @Test
     public void shouldUploadClaimIssueReceiptDocument() {
         Claim claim = SampleClaim.getWithClaimIssueReceiptDocument();
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
-            .thenReturn(Optional.of(claim));
+        setUpClaim(claim);
         controller.uploadDocumentToDocumentManagement(CLAIMREFERENCENUMBER, CLAIM_ISSUE_RECEIPT, AUTHORISATION);
         verify(documentsService).generateClaimIssueReceipt(claim.getExternalId(), AUTHORISATION);
     }
@@ -161,8 +163,7 @@ public class SupportControllerTest {
     @Test
     public void shouldUploadDefendantResponseReceiptDocument() {
         Claim claim = SampleClaim.getWithDefendantResponseReceiptDocument();
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
-            .thenReturn(Optional.of(claim));
+        setUpClaim(claim);
         controller.uploadDocumentToDocumentManagement(CLAIMREFERENCENUMBER, DEFENDANT_RESPONSE_RECEIPT, AUTHORISATION);
         verify(documentsService).generateDefendantResponseReceipt(claim.getExternalId(), AUTHORISATION);
     }
@@ -170,8 +171,7 @@ public class SupportControllerTest {
     @Test
     public void shouldUploadCCJDocument() {
         Claim claim = SampleClaim.getWithCCJRequestDocument();
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
-            .thenReturn(Optional.of(claim));
+        setUpClaim(claim);
         controller.uploadDocumentToDocumentManagement(CLAIMREFERENCENUMBER, CCJ_REQUEST, AUTHORISATION);
         verify(documentsService).generateCountyCourtJudgement(claim.getExternalId(), AUTHORISATION);
     }
@@ -179,8 +179,7 @@ public class SupportControllerTest {
     @Test
     public void shouldUploadSettlementAgreementDocument() {
         Claim claim = SampleClaim.getWithSettlementAgreementDocument();
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
-            .thenReturn(Optional.of(claim));
+        setUpClaim(claim);
         controller.uploadDocumentToDocumentManagement(CLAIMREFERENCENUMBER, SETTLEMENT_AGREEMENT, AUTHORISATION);
         verify(documentsService).generateSettlementAgreement(claim.getExternalId(), AUTHORISATION);
     }
@@ -202,6 +201,39 @@ public class SupportControllerTest {
         exceptionRule.expect(BadRequestException.class);
         exceptionRule.expectMessage("Authorisation is required");
         controller.uploadDocumentToDocumentManagement(CLAIMREFERENCENUMBER, SEALED_CLAIM, "");
+    }
+
+    @Test
+    public void shouldThrowBadRequestExceptionWhenDocumentAlreadyExists() {
+        Claim claim = SampleClaim.getWithSealedClaimDocument();
+        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
+            .thenReturn(Optional.of(claim));
+        exceptionRule.expect(BadRequestException.class);
+        exceptionRule.expectMessage("Document already Exists");
+        controller.uploadDocumentToDocumentManagement(CLAIMREFERENCENUMBER, SEALED_CLAIM, AUTHORISATION);
+    }
+
+    @Test
+    public void shouldNotThrowErrorDocumentAlreadyExistsForDefendantPinLetter() {
+        Claim claim = SampleClaim.getWithDefendantPinLetterDocument();
+        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
+            .thenReturn(Optional.of(claim));
+        controller.uploadDocumentToDocumentManagement(CLAIMREFERENCENUMBER, DEFENDANT_PIN_LETTER, AUTHORISATION);
+        verify(documentsService).generateDefendantPinLetter(claim.getExternalId(), AUTHORISATION);
+    }
+
+    private void setUpClaim(Claim claimWithDocument) {
+        doAnswer(new Answer() {
+            private int count = 0;
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                if (count == 0) {
+                    count++;
+                    return Optional.of(SampleClaim.getDefault());
+                }
+                return Optional.of(claimWithDocument);
+            }
+        }).when(claimService).getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER));
     }
 
 }

@@ -29,6 +29,7 @@ import java.util.UUID;
 
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
@@ -376,6 +377,12 @@ public final class SampleClaim {
             .build();
     }
 
+    public static Claim getWithDefendantPinLetterDocument() {
+        return builder()
+            .withDefendantPinLetterDocument(DOCUMENT_URI)
+            .build();
+    }
+
     public static Claim getWithClaimIssueReceiptDocument() {
         return builder()
             .withClaimIssueReceiptDocument(DOCUMENT_URI)
@@ -550,7 +557,19 @@ public final class SampleClaim {
             .documentManagementUrl(sealedClaimDocument)
             .documentName("001CLAIM-FORM")
             .documentType(SEALED_CLAIM)
-            .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
+            .createdDatetime(LocalDateTimeFactory.nowInLocalZone().plusSeconds(10))
+            .createdBy(OCMC)
+            .build();
+        this.claimDocumentCollection.addClaimDocument(claimDocument);
+        return this;
+    }
+
+    public SampleClaim withDefendantPinLetterDocument(URI defendantPinLetterDocument) {
+        ClaimDocument claimDocument = ClaimDocument.builder()
+            .documentManagementUrl(defendantPinLetterDocument)
+            .documentName("001-defendant-pin-letter")
+            .documentType(DEFENDANT_PIN_LETTER)
+            .createdDatetime(LocalDateTimeFactory.nowInLocalZone().plusSeconds(10))
             .createdBy(OCMC)
             .build();
         this.claimDocumentCollection.addClaimDocument(claimDocument);
@@ -562,7 +581,7 @@ public final class SampleClaim {
             .documentManagementUrl(uri)
             .documentName("claim-form-claimant-copy.pdf")
             .documentType(CLAIM_ISSUE_RECEIPT)
-            .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
+            .createdDatetime(LocalDateTimeFactory.nowInLocalZone().plusSeconds(10))
             .createdBy(OCMC)
             .build();
         this.claimDocumentCollection.addClaimDocument(claimDocument);
@@ -574,7 +593,7 @@ public final class SampleClaim {
             .documentManagementUrl(uri)
             .documentName("claim-response.pdf")
             .documentType(DEFENDANT_RESPONSE_RECEIPT)
-            .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
+            .createdDatetime(LocalDateTimeFactory.nowInLocalZone().plusSeconds(10))
             .createdBy(OCMC)
             .build();
         this.claimDocumentCollection.addClaimDocument(claimDocument);
@@ -586,7 +605,7 @@ public final class SampleClaim {
             .documentManagementUrl(uri)
             .documentName("county-court-judgment-details.pdf")
             .documentType(CCJ_REQUEST)
-            .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
+            .createdDatetime(LocalDateTimeFactory.nowInLocalZone().plusSeconds(10))
             .createdBy(OCMC)
             .build();
         this.claimDocumentCollection.addClaimDocument(claimDocument);
@@ -598,7 +617,7 @@ public final class SampleClaim {
             .documentManagementUrl(uri)
             .documentName("settlement-agreement.pdf")
             .documentType(SETTLEMENT_AGREEMENT)
-            .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
+            .createdDatetime(LocalDateTimeFactory.nowInLocalZone().plusSeconds(10))
             .createdBy(OCMC)
             .build();
         this.claimDocumentCollection.addClaimDocument(claimDocument);

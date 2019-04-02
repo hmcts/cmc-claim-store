@@ -65,7 +65,7 @@ public class AlwaysGenerateDocumentsService implements DocumentsService {
     }
 
     @Override
-    public void generateDefendantPinLetter(String externalId, String pin, String authorisation) {
+    public void generateDefendantPinLetter(String externalId, String authorisation) {
         throw new UnsupportedOperationException(
             "This method is not supported when Document Management is turned off");
     }
