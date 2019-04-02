@@ -438,7 +438,7 @@ public class ClaimServiceTest {
 
     @Test
     public void saveDefendantResponseShouldCalculateClaimantResponseDeadline() {
-        LocalDate deadline = LocalDate.now().plusDays(99);
+        LocalDate deadline = now().plusDays(99);
         when(responseDeadlineCalculator.calculateClaimantResponseDeadline(any(LocalDate.class)))
             .thenReturn(deadline);
         claimService.saveDefendantResponse(claim, DEFENDANT_EMAIL, SampleResponse.validDefaults(), AUTHORISATION);
