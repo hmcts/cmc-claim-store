@@ -94,10 +94,6 @@ cmc-citizen-frontend:
       CLAIM_STORE_URL: http://${SERVICE_NAME}-java
   rpe-feature-toggle-api:
     releaseNameOverride: ${SERVICE_NAME}-ftr-tgl-api
-    importer:
-      oneoff:
-        command: /scripts/add-weighted-toggle.sh cmc_admissions 'CMC admissions' '1.0' ${ADMIN_USERNAME_TEST} ${ADMIN_PASSWORD_TEST} &&
-          /scripts/add-toggle.sh cmc_defence_reminders 'CMC defence reminders' false ${ADMIN_USERNAME_TEST} ${ADMIN_PASSWORD_TEST}
     java:
       releaseNameOverride: ${SERVICE_NAME}-ftr-tgl-api
       environment:
