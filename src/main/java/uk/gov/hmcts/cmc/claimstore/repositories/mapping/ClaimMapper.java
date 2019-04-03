@@ -56,11 +56,11 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             toNullableEntity(result.getString("re_determination"), ReDetermination.class),
             toNullableLocalDateTimeFromUTC(result.getTimestamp("re_determination_requested_at")),
             toNullableEntity(result.getString("claim_documents"), ClaimDocumentCollection.class),
-            toNullableState(result.getString("state"))
+            toNullableClaimState(result.getString("state"))
         );
     }
 
-    private ClaimState toNullableState(String state) {
+    private ClaimState toNullableClaimState(String state) {
         if (state == null) {
             return null;
         } else {
