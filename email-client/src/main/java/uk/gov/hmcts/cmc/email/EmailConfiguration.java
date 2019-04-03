@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.email;
 
 import com.microsoft.applicationinsights.TelemetryClient;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.retry.annotation.EnableRetry;
