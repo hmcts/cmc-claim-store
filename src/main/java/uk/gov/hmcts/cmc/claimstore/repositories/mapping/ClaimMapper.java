@@ -56,8 +56,16 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             toNullableEntity(result.getString("re_determination"), ReDetermination.class),
             toNullableLocalDateTimeFromUTC(result.getTimestamp("re_determination_requested_at")),
             toNullableEntity(result.getString("claim_documents"), ClaimDocumentCollection.class),
-            toNullableEntity(result.getString("state"), ClaimState.class)
+            toNullableState(result.getString("state"))
         );
+    }
+
+    private ClaimState toNullableState(String state) {
+        if (state == null) {
+            return null;
+        } else {
+            return ClaimState.valueOf(state);
+        }
     }
 
     private ClaimData toClaimData(String input) {
