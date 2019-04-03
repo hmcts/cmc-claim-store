@@ -425,6 +425,7 @@ public final class SampleClaim {
             claimData,
             createdAt,
             issuedOn,
+            issuedOn.plusDays(5),
             responseDeadline,
             isMoreTimeRequested,
             submitterEmail,

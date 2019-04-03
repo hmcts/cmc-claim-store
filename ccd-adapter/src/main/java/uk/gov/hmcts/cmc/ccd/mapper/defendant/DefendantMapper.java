@@ -93,13 +93,13 @@ public class DefendantMapper {
         CCDParty partyDetail = ccdRespondent.getPartyDetail();
 
         builder
+            .serviceDate(ccdRespondent.getServedDate())
             .letterHolderId(ccdRespondent.getLetterHolderId())
             .responseDeadline(ccdRespondent.getResponseDeadline())
             .defendantEmail(Optional.ofNullable(partyDetail)
                 .map(CCDParty::getEmailAddress).orElse(null))
             .directionsQuestionnaireDeadline(ccdRespondent.getDirectionsQuestionnaireDeadline())
             .defendantId(ccdRespondent.getDefendantId());
-
         countyCourtJudgmentMapper.from(ccdRespondent.getCountyCourtJudgmentRequest(), builder);
         builder.settlement(settlementMapper.fromCCDDefendant(ccdRespondent));
         builder.settlementReachedAt(ccdRespondent.getSettlementReachedAt());

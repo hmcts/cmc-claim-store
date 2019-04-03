@@ -142,7 +142,7 @@ public class DefendantMapperTest {
     public void mapTheirDetailsFromCCDClaimWithNoResponse() {
         //Given
         CCDRespondent ccdRespondent = SampleCCDDefendant.withResponseMoreTimeNeededOption().build();
-        Claim.ClaimBuilder claimBuilder = Claim.builder().issuedOn(now());
+        Claim.ClaimBuilder claimBuilder = Claim.builder().serviceDate(now());
 
         //when
         mapper.from(claimBuilder, CCDCollectionElement.<CCDRespondent>builder().value(ccdRespondent).build());
