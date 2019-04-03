@@ -43,8 +43,6 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEM
 @ConditionalOnProperty(prefix = "document_management", name = "url")
 public class DocumentManagementBackedDocumentsService implements DocumentsService {
 
-    private static final Logger logger = LoggerFactory.getLogger(DocumentManagementBackedDocumentsService.class);
-
     private static final String OCMC = "OCMC";
     private final ClaimService claimService;
     private final DocumentManagementService documentManagementService;
