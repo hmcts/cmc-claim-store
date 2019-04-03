@@ -3,20 +3,17 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
-import uk.gov.hmcts.cmc.domain.models.response.Response;
-import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
+import static uk.gov.hmcts.cmc.domain.utils.ClaimantResponseUtils.isCompanyOrOrganisationWithCCJDetermination;
 
 @Component
 public class ResponseAcceptationContentProvider {
@@ -89,13 +86,5 @@ public class ResponseAcceptationContentProvider {
 
         content.put("formNumber", ADMISSIONS_FORM_NO);
         return content;
-    }
-
-    private boolean isCompanyOrOrganisationWithCCJDetermination(Claim claim, ResponseAcceptation responseAcceptation) {
-        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
-
-        return PartyUtils.isCompanyOrOrganisation(response.getDefendant())
-            && responseAcceptation.getFormaliseOption()
-            .filter(Predicate.isEqual(FormaliseOption.REFER_TO_JUDGE)).isPresent();
     }
 }

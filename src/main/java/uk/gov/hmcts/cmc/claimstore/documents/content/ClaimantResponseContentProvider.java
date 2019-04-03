@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
-import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -22,6 +21,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDateTime;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
+import static uk.gov.hmcts.cmc.domain.utils.ClaimantResponseUtils.isCompanyOrOrganisationWithCCJDetermination;
 
 @Component
 public class ClaimantResponseContentProvider {
@@ -78,22 +78,26 @@ public class ClaimantResponseContentProvider {
 
         switch (claimantResponse.getType()) {
             case ACCEPTATION: {
-                content.put("defendantAdmissionAccepted",
-                    String.format("I accept %s", getDefendantAdmissionStatus(claim, defendantResponse)));
                 ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponse;
                 content.putAll(responseAcceptationContentProvider.createContent(claim));
-                responseAcceptation.getFormaliseOption()
-                    .map(FormaliseOption::getDescription)
-                    .ifPresent(
-                        selectedOption -> {
-                            if (PartyUtils.isCompanyOrOrganisation(defendantResponse.getDefendant())
-                                && selectedOption.equals(FormaliseOption.REFER_TO_JUDGE.getDescription())) {
-                                content.put("formaliseOption", "Please enter judgment by determination");
-                            } else {
-                                content.put("formaliseOption", selectedOption);
-                            }
-                        }
-                    );
+                String admissionStatus = "this amount";
+                if (isCompanyOrOrganisationWithCCJDetermination(claim, responseAcceptation)) {
+                    admissionStatus = getDefendantAdmissionStatus(defendantResponse);
+                    content.put("formaliseOption", "Please enter judgment by determination");
+                } else {
+                    responseAcceptation.getFormaliseOption()
+                        .map(FormaliseOption::getDescription)
+                        .ifPresent(
+                            selectedOption -> content.put("formaliseOption", selectedOption)
+                        );
+
+                    if (claim.getReDeterminationRequestedAt().isPresent()) {
+                        admissionStatus = getDefendantAdmissionStatus(defendantResponse);
+                    }
+                }
+
+                content.put("defendantAdmissionAccepted", String.format("I accept %s", admissionStatus));
+
                 claim.getTotalAmountTillDateOfIssue()
                     .map(totalAmount ->
                         totalAmount.subtract(claimantResponse.getAmountPaid().orElse(BigDecimal.ZERO))
@@ -104,8 +108,8 @@ public class ClaimantResponseContentProvider {
             }
             break;
             case REJECTION:
-                content.put("defendantAdmissionAccepted",
-                    String.format("I reject %s", getDefendantAdmissionStatus(claim, defendantResponse)));
+                content.put("defendantAdmissionAccepted", String.format("I reject %s",
+                    getDefendantAdmissionStatus(defendantResponse)));
                 content.putAll(responseRejectionContentProvider.createContent((ResponseRejection) claimantResponse));
                 break;
             default:
@@ -134,11 +138,7 @@ public class ClaimantResponseContentProvider {
         }
     }
 
-    private String getDefendantAdmissionStatus(Claim claim, Response response) {
-        if (!claim.getReDeterminationRequestedAt().isPresent()) {
-            return "this amount";
-        }
-
+    private String getDefendantAdmissionStatus(Response response) {
         switch (response.getResponseType()) {
             case PART_ADMISSION:
                 return formatMoney(((PartAdmissionResponse) response).getAmount());
