@@ -267,10 +267,6 @@ public final class SampleClaim {
             .build();
     }
 
-    public static Claim getClaimWithSealedClaimLink(URI sealedClaimUri) {
-        return builder().withSealedClaimDocument(sealedClaimUri).build();
-    }
-
     public static Claim claim(ClaimData claimData, String referenceNumber) {
         return Claim.builder()
             .id(CLAIM_ID)
@@ -371,43 +367,43 @@ public final class SampleClaim {
             .build();
     }
 
-    public static Claim getWithSealedClaimDocument() {
+    public static Claim getWithSealedClaimDocument(int addSecondsToCreateTime) {
         return builder()
-            .withSealedClaimDocument(DOCUMENT_URI)
+            .withSealedClaimDocument(addSecondsToCreateTime)
             .build();
     }
 
-    public static Claim getWithDefendantPinLetterDocument() {
+    public static Claim getWithDefendantPinLetterDocument(int addSecondsToCreateTime) {
         return builder()
-            .withDefendantPinLetterDocument(DOCUMENT_URI)
+            .withDefendantPinLetterDocument(addSecondsToCreateTime)
             .build();
     }
 
-    public static Claim getWithClaimIssueReceiptDocument() {
+    public static Claim getWithClaimIssueReceiptDocument(int addSecondsToCreateTime) {
         return builder()
-            .withClaimIssueReceiptDocument(DOCUMENT_URI)
+            .withClaimIssueReceiptDocument(addSecondsToCreateTime)
             .build();
     }
 
-    public static Claim getWithDefendantResponseReceiptDocument() {
+    public static Claim getWithDefendantResponseReceiptDocument(int addSecondsToCreateTime) {
         return builder().withResponse(
             SampleResponse.validDefaults())
-            .withDefendantResponseReceiptDocument(DOCUMENT_URI)
+            .withDefendantResponseReceiptDocument(addSecondsToCreateTime)
             .build();
     }
 
-    public static Claim getWithCCJRequestDocument() {
+    public static Claim getWithCCJRequestDocument(int addSecondsToCreateTime) {
         return builder().withCountyCourtJudgment(
             SampleCountyCourtJudgment.builder().ccjType(DEFAULT).build())
             .withCountyCourtJudgmentRequestedAt(LocalDateTimeFactory.nowInLocalZone())
-            .withCCJRequestDocument(DOCUMENT_URI)
+            .withCCJRequestDocument(addSecondsToCreateTime)
             .build();
     }
 
-    public static Claim getWithSettlementAgreementDocument() {
+    public static Claim getWithSettlementAgreementDocument(int addSecondsToCreateTime) {
         return builder().withSettlement(
             SampleSettlement.validDefaults())
-            .withSettlementAgreementDocument(DOCUMENT_URI)
+            .withSettlementAgreementDocument(addSecondsToCreateTime)
             .build();
     }
 
@@ -552,72 +548,72 @@ public final class SampleClaim {
         return this;
     }
 
-    public SampleClaim withSealedClaimDocument(URI sealedClaimDocument) {
+    public SampleClaim withSealedClaimDocument(int seconds) {
         ClaimDocument claimDocument = ClaimDocument.builder()
-            .documentManagementUrl(sealedClaimDocument)
+            .documentManagementUrl(DOCUMENT_URI)
             .documentName("001CLAIM-FORM")
             .documentType(SEALED_CLAIM)
-            .createdDatetime(LocalDateTimeFactory.nowInLocalZone().plusSeconds(10))
+            .createdDatetime(LocalDateTimeFactory.nowInUTC().plusSeconds(seconds))
             .createdBy(OCMC)
             .build();
         this.claimDocumentCollection.addClaimDocument(claimDocument);
         return this;
     }
 
-    public SampleClaim withDefendantPinLetterDocument(URI defendantPinLetterDocument) {
+    public SampleClaim withDefendantPinLetterDocument(int seconds) {
         ClaimDocument claimDocument = ClaimDocument.builder()
-            .documentManagementUrl(defendantPinLetterDocument)
+            .documentManagementUrl(DOCUMENT_URI)
             .documentName("001-defendant-pin-letter")
             .documentType(DEFENDANT_PIN_LETTER)
-            .createdDatetime(LocalDateTimeFactory.nowInLocalZone().plusSeconds(10))
+            .createdDatetime(LocalDateTimeFactory.nowInUTC().plusSeconds(seconds))
             .createdBy(OCMC)
             .build();
         this.claimDocumentCollection.addClaimDocument(claimDocument);
         return this;
     }
 
-    public SampleClaim withClaimIssueReceiptDocument(URI uri) {
+    public SampleClaim withClaimIssueReceiptDocument(int seconds) {
         ClaimDocument claimDocument = ClaimDocument.builder()
-            .documentManagementUrl(uri)
+            .documentManagementUrl(DOCUMENT_URI)
             .documentName("claim-form-claimant-copy.pdf")
             .documentType(CLAIM_ISSUE_RECEIPT)
-            .createdDatetime(LocalDateTimeFactory.nowInLocalZone().plusSeconds(10))
+            .createdDatetime(LocalDateTimeFactory.nowInUTC().plusSeconds(seconds))
             .createdBy(OCMC)
             .build();
         this.claimDocumentCollection.addClaimDocument(claimDocument);
         return this;
     }
 
-    public SampleClaim withDefendantResponseReceiptDocument(URI uri) {
+    public SampleClaim withDefendantResponseReceiptDocument(int seconds) {
         ClaimDocument claimDocument = ClaimDocument.builder()
-            .documentManagementUrl(uri)
+            .documentManagementUrl(DOCUMENT_URI)
             .documentName("claim-response.pdf")
             .documentType(DEFENDANT_RESPONSE_RECEIPT)
-            .createdDatetime(LocalDateTimeFactory.nowInLocalZone().plusSeconds(10))
+            .createdDatetime(LocalDateTimeFactory.nowInUTC().plusSeconds(seconds))
             .createdBy(OCMC)
             .build();
         this.claimDocumentCollection.addClaimDocument(claimDocument);
         return this;
     }
 
-    public SampleClaim withCCJRequestDocument(URI uri) {
+    public SampleClaim withCCJRequestDocument(int seconds) {
         ClaimDocument claimDocument = ClaimDocument.builder()
-            .documentManagementUrl(uri)
+            .documentManagementUrl(DOCUMENT_URI)
             .documentName("county-court-judgment-details.pdf")
             .documentType(CCJ_REQUEST)
-            .createdDatetime(LocalDateTimeFactory.nowInLocalZone().plusSeconds(10))
+            .createdDatetime(LocalDateTimeFactory.nowInUTC().plusSeconds(seconds))
             .createdBy(OCMC)
             .build();
         this.claimDocumentCollection.addClaimDocument(claimDocument);
         return this;
     }
 
-    public SampleClaim withSettlementAgreementDocument(URI uri) {
+    public SampleClaim withSettlementAgreementDocument(int seconds) {
         ClaimDocument claimDocument = ClaimDocument.builder()
-            .documentManagementUrl(uri)
+            .documentManagementUrl(DOCUMENT_URI)
             .documentName("settlement-agreement.pdf")
             .documentType(SETTLEMENT_AGREEMENT)
-            .createdDatetime(LocalDateTimeFactory.nowInLocalZone().plusSeconds(10))
+            .createdDatetime(LocalDateTimeFactory.nowInUTC().plusSeconds(seconds))
             .createdBy(OCMC)
             .build();
         this.claimDocumentCollection.addClaimDocument(claimDocument);

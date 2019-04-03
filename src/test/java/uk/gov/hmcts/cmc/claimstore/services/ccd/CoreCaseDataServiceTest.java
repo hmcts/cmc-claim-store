@@ -41,7 +41,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 
-import java.net.URI;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -241,8 +240,7 @@ public class CoreCaseDataServiceTest {
     @Test
     public void linkSealedClaimDocumentShouldReturnCaseDetails() {
 
-        URI sealedClaimUri = URI.create("http://localhost/sealedClaim.pdf");
-        Claim claim = SampleClaim.getClaimWithSealedClaimLink(sealedClaimUri);
+        Claim claim = SampleClaim.getWithSealedClaimDocument(0);
         when(jsonMapper.fromMap(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
         when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
 

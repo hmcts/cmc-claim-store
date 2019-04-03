@@ -146,7 +146,7 @@ public class SupportControllerTest {
 
     @Test
     public void shouldUploadSealedClaimDocument() {
-        Claim claim = SampleClaim.getWithSealedClaimDocument();
+        Claim claim = SampleClaim.getWithSealedClaimDocument(10);
         setUpClaim(claim);
         controller.uploadDocumentToDocumentManagement(CLAIMREFERENCENUMBER, SEALED_CLAIM, AUTHORISATION);
         verify(documentsService).generateSealedClaim(claim.getExternalId(), AUTHORISATION);
@@ -154,7 +154,7 @@ public class SupportControllerTest {
 
     @Test
     public void shouldUploadClaimIssueReceiptDocument() {
-        Claim claim = SampleClaim.getWithClaimIssueReceiptDocument();
+        Claim claim = SampleClaim.getWithClaimIssueReceiptDocument(10);
         setUpClaim(claim);
         controller.uploadDocumentToDocumentManagement(CLAIMREFERENCENUMBER, CLAIM_ISSUE_RECEIPT, AUTHORISATION);
         verify(documentsService).generateClaimIssueReceipt(claim.getExternalId(), AUTHORISATION);
@@ -162,7 +162,7 @@ public class SupportControllerTest {
 
     @Test
     public void shouldUploadDefendantResponseReceiptDocument() {
-        Claim claim = SampleClaim.getWithDefendantResponseReceiptDocument();
+        Claim claim = SampleClaim.getWithDefendantResponseReceiptDocument(10);
         setUpClaim(claim);
         controller.uploadDocumentToDocumentManagement(CLAIMREFERENCENUMBER, DEFENDANT_RESPONSE_RECEIPT, AUTHORISATION);
         verify(documentsService).generateDefendantResponseReceipt(claim.getExternalId(), AUTHORISATION);
@@ -170,7 +170,7 @@ public class SupportControllerTest {
 
     @Test
     public void shouldUploadCCJDocument() {
-        Claim claim = SampleClaim.getWithCCJRequestDocument();
+        Claim claim = SampleClaim.getWithCCJRequestDocument(10);
         setUpClaim(claim);
         controller.uploadDocumentToDocumentManagement(CLAIMREFERENCENUMBER, CCJ_REQUEST, AUTHORISATION);
         verify(documentsService).generateCountyCourtJudgement(claim.getExternalId(), AUTHORISATION);
@@ -178,7 +178,7 @@ public class SupportControllerTest {
 
     @Test
     public void shouldUploadSettlementAgreementDocument() {
-        Claim claim = SampleClaim.getWithSettlementAgreementDocument();
+        Claim claim = SampleClaim.getWithSettlementAgreementDocument(10);
         setUpClaim(claim);
         controller.uploadDocumentToDocumentManagement(CLAIMREFERENCENUMBER, SETTLEMENT_AGREEMENT, AUTHORISATION);
         verify(documentsService).generateSettlementAgreement(claim.getExternalId(), AUTHORISATION);
@@ -205,7 +205,7 @@ public class SupportControllerTest {
 
     @Test
     public void shouldThrowBadRequestExceptionWhenDocumentAlreadyExists() {
-        Claim claim = SampleClaim.getWithSealedClaimDocument();
+        Claim claim = SampleClaim.getWithSealedClaimDocument(10);
         when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
             .thenReturn(Optional.of(claim));
         exceptionRule.expect(BadRequestException.class);
@@ -215,7 +215,7 @@ public class SupportControllerTest {
 
     @Test
     public void shouldNotThrowErrorDocumentAlreadyExistsForDefendantPinLetter() {
-        Claim claim = SampleClaim.getWithDefendantPinLetterDocument();
+        Claim claim = SampleClaim.getWithDefendantPinLetterDocument(10);
         when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
             .thenReturn(Optional.of(claim));
         controller.uploadDocumentToDocumentManagement(CLAIMREFERENCENUMBER, DEFENDANT_PIN_LETTER, AUTHORISATION);

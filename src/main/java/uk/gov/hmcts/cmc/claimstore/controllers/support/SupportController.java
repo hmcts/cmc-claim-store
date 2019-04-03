@@ -128,7 +128,7 @@ public class SupportController {
         if (claimDocumentType != DEFENDANT_PIN_LETTER && claim.getClaimDocument(claimDocumentType).isPresent()) {
             throw new BadRequestException("Document already Exists");
         }
-        final LocalDateTime requestTime = LocalDateTimeFactory.nowInLocalZone();
+        final LocalDateTime requestTime = LocalDateTimeFactory.nowInUTC();
         switch (claimDocumentType) {
             case SEALED_CLAIM:
                 documentsService.generateSealedClaim(claim.getExternalId(), authorisation);
