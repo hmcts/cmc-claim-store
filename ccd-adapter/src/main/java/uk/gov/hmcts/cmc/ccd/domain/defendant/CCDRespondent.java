@@ -48,6 +48,7 @@ public class CCDRespondent {
     private CCDResponseType responseType;
     private BigDecimal responseAmount;
     private LocalDate paymentDeclarationPaidDate;
+    private BigDecimal paymentDeclarationPaidAmount;
     private String paymentDeclarationExplanation;
     private List<CCDCollectionElement<CCDTimelineEvent>> defendantTimeLineEvents;
     private String defendantTimeLineComment;

@@ -188,6 +188,7 @@ public class ResponseMapper {
         return paymentDeclaration -> {
             builder.paymentDeclarationExplanation(paymentDeclaration.getExplanation());
             builder.paymentDeclarationPaidDate(paymentDeclaration.getPaidDate());
+            builder.paymentDeclarationPaidAmount(paymentDeclaration.getPaidAmount().orElse(null));
         };
     }
 
@@ -222,7 +223,7 @@ public class ResponseMapper {
     private PaymentDeclaration extractPaymentDeclaration(CCDRespondent respondent) {
         LocalDate paidDate = respondent.getPaymentDeclarationPaidDate();
         String explanation = respondent.getPaymentDeclarationExplanation();
-        BigDecimal paidAmount = respondent.getResponseAmount();
+        BigDecimal paidAmount = respondent.getPaymentDeclarationPaidAmount();
         if (paidDate == null && paidAmount == null && explanation == null) {
             return null;
         }
