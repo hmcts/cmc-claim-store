@@ -50,6 +50,6 @@ public class ClaimDocumentCollectionMapper {
             .map(claimDocumentMapper::from)
             .forEach(claimDocumentCollection::addClaimDocument);
 
-         builder.claimDocumentCollection(claimDocumentCollection);
+        builder.claimDocumentCollection(claimDocumentCollection);
     }
 }
