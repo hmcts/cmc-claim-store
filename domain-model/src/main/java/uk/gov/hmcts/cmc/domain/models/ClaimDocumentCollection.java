@@ -16,7 +16,7 @@ public class ClaimDocumentCollection {
         claimDocuments.add(claimDocument);
     }
 
-    public Optional<ClaimDocument> getDocument(ClaimDocumentType claimDocumentType) {
+    public Optional<ClaimDocument> getLatestDocument(ClaimDocumentType claimDocumentType) {
         return claimDocuments.stream()
             .filter(claimDocument -> claimDocument.getDocumentType().equals(claimDocumentType))
             .max(Comparator.comparing(ClaimDocument::getCreatedDatetime));

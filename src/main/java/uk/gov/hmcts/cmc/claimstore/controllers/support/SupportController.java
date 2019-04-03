@@ -160,23 +160,12 @@ public class SupportController {
         String referenceNumber,
         ClaimDocumentType claimDocumentType,
         LocalDateTime requestTime) {
-        Optional<Claim> updatedClaim = claimService.getClaimByReferenceAnonymous(referenceNumber);
-        if (updatedClaim.isPresent()) {
-            Optional<ClaimDocumentCollection> claimDocumentCollectionOptional = updatedClaim.get()
-                                                                                    .getClaimDocumentCollection();
-            if (claimDocumentCollectionOptional.isPresent()) {
-                Optional<ClaimDocument> claimDocumentOptional = claimDocumentCollectionOptional.get()
-                                                                                    .getDocument(claimDocumentType);
-                if (claimDocumentOptional.isPresent()) {
-                    return claimDocumentOptional.get().getCreatedDatetime().isAfter(requestTime);
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        }
-        return false;
+        return claimService.getClaimByReferenceAnonymous(referenceNumber)
+            .filter(claim -> claim.getClaimDocumentCollection().isPresent())
+            .map(Claim::getClaimDocumentCollection)
+            .map(claimDocumentCollection -> claimDocumentCollection.get().getLatestDocument(claimDocumentType))
+            .filter(claimDocumentOptional -> claimDocumentOptional.get().getCreatedDatetime().isAfter(requestTime))
+            .isPresent();
     }
 
     @PutMapping("/claim/resend-rpa-notifications")

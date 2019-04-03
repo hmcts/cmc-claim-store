@@ -136,7 +136,7 @@ public class Claim {
         if (claimDocumentCollection == null) {
             return Optional.empty();
         } else {
-            Optional<ClaimDocument> claimDocument = claimDocumentCollection.getDocument(claimDocumentType);
+            Optional<ClaimDocument> claimDocument = claimDocumentCollection.getLatestDocument(claimDocumentType);
             if (claimDocument.isPresent()) {
                 return Optional.ofNullable(claimDocument.get().getDocumentManagementUrl());
             }

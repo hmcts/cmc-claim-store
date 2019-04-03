@@ -177,7 +177,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
             Claim.class).getClaimDocumentCollection();
         ClaimDocument claimDocument = claimDocumentCollection
             .orElseThrow(AssertionError::new)
-            .getDocument(claimDocumentType)
+            .getLatestDocument(claimDocumentType)
             .orElseThrow(AssertionError::new);
         assertThat(claimDocument.getDocumentManagementUrl()
             .equals(URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4")));
