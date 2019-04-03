@@ -24,6 +24,14 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
     public static final String MEDIATION_CONTACT_PERSON = "Mediation Contact Person";
     public static final String COLLECTION_ID = "acd82549-d279-4adc-b38c-d195dd0db0d6";
 
+    protected YesNoOption freeMediationOption = YesNoOption.YES;
+    protected YesNoOption moreTimeNeededOption = YesNoOption.YES;
+    protected StatementOfTruth statementOfTruth;
+    protected Party defendantDetails = SampleParty.builder()
+        .withCollectionId(COLLECTION_ID)
+        .withRepresentative(null)
+        .individual();
+
     public static class FullAdmission extends SampleResponse<FullAdmission> {
         public static FullAdmission builder() {
             return new FullAdmission();
@@ -245,16 +253,6 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
             );
         }
     }
-
-    protected YesNoOption freeMediationOption = YesNoOption.YES;
-    protected YesNoOption moreTimeNeededOption = YesNoOption.YES;
-
-    protected Party defendantDetails = SampleParty.builder()
-        .withCollectionId(COLLECTION_ID)
-        .withRepresentative(null)
-        .individual();
-
-    protected StatementOfTruth statementOfTruth;
 
     public static FullDefenceResponse validDefaults() {
         return FullDefence.builder().build();

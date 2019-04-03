@@ -133,7 +133,7 @@ public class ResponseMapperTest {
         //given
         CCDRespondent ccdRespondent = SampleCCDDefendant.withPartAdmissionResponse().build();
         Claim.ClaimBuilder builder = Claim.builder();
-        
+
         CCDCollectionElement<CCDRespondent> respondentElement = CCDCollectionElement.<CCDRespondent>builder()
             .value(ccdRespondent)
             .id(UUID.randomUUID().toString())
