@@ -103,7 +103,7 @@ public class ClaimIssuedNotificationService {
         if (!claim.getClaimData().isClaimantRepresented()) {
             parameters.put(CLAIMANT_NAME, getNameWithTitle(claim.getClaimData().getClaimant()));
             parameters.put(CLAIMANT_TYPE, PartyUtils.getType(claim.getClaimData().getClaimant()));
-            parameters.put(DEFENDANT_NAME, getNameWithTitle(claim.getClaimData().getDefendant()));
+            parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
         } else {
             parameters.put(CLAIMANT_NAME, submitterName);
         }
