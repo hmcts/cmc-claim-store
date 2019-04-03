@@ -99,7 +99,7 @@ cmc-citizen-frontend:
       environment:
         FEATURES_DB_HOST: ${SERVICE_NAME}-claim-store-postgres
 
-#idam-pr:
-#  service:
-#    name: Money%20Claims%20-%20Citizen
-#    redirect_uri: https://www-${SERVICE_FQDN}/receiver
+idam-pr:
+  service:
+    name: Money%20Claims%20-%20Citizen
+    redirect_uri: https://www-${SERVICE_FQDN}/receiver
