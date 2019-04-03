@@ -1,1 +1,1 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=uk.gov.hmcts.cmc.email.EmailService
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=uk.gov.hmcts.cmc.email.EmailService, uk.gov.hmcts.cmc.email.AppInsightsService
