@@ -14,12 +14,9 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 
-import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
-import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 public class RespondToClaimTest extends BaseTest {
 
@@ -122,7 +119,7 @@ public class RespondToClaimTest extends BaseTest {
 
         assertThat(updatedCase.getResponse().isPresent()).isTrue();
         assertThat(updatedCase.getResponse().get()).isEqualTo(response);
-        assertThat(updatedCase.getRespondedAt()).isCloseTo(nowInUTC(), within(2, ChronoUnit.MINUTES));
+        assertThat(updatedCase.getRespondedAt()).isNotNull();
     }
 
     @Test
