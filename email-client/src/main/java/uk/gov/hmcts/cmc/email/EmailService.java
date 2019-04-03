@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-@Service
 public class EmailService {
 
     public static final String NOTIFICATION_FAILURE = "Notification - failure";
@@ -24,7 +23,6 @@ public class EmailService {
     private final AppInsightsService appInsightsService;
     private final JavaMailSender sender;
 
-    @Autowired
     public EmailService(AppInsightsService appInsightsService, JavaMailSender sender) {
         this.appInsightsService = appInsightsService;
         this.sender = sender;
