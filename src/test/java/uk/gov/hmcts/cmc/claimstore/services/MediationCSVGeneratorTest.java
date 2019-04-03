@@ -1,19 +1,15 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import org.apache.commons.csv.CSVPrinter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.claimstore.exceptions.MediationCSVGenerationException;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,9 +25,6 @@ public class MediationCSVGeneratorTest {
 
     @Mock
     private CaseRepository mockCaseRepository;
-
-    @Mock
-    private CSVPrinter mockCSVPrinter;
 
     private List<Claim> mediationClaims;
 
