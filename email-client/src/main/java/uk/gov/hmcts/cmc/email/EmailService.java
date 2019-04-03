@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.email;
 
+import com.microsoft.applicationinsights.TelemetryClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,17 +15,21 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+import static java.util.Collections.singletonMap;
+
+@Service
 public class EmailService {
 
     public static final String NOTIFICATION_FAILURE = "Notification - failure";
     public static final String EMAIL_SUBJECT = "EmailSubject";
     private final Logger logger = LoggerFactory.getLogger(EmailService.class);
 
-    private final AppInsightsService appInsightsService;
+    private final TelemetryClient telemetry;
     private final JavaMailSender sender;
 
-    public EmailService(AppInsightsService appInsightsService, JavaMailSender sender) {
-        this.appInsightsService = appInsightsService;
+    @Autowired
+    public EmailService(TelemetryClient telemetry, JavaMailSender sender) {
+        this.telemetry = telemetry;
         this.sender = sender;
     }
 
@@ -59,6 +64,6 @@ public class EmailService {
         );
         logger.error(errorMessage, exception);
 
-        appInsightsService.trackEvent(NOTIFICATION_FAILURE, EMAIL_SUBJECT, emailData.getSubject());
+        telemetry.trackEvent(NOTIFICATION_FAILURE, singletonMap(EMAIL_SUBJECT, emailData.getSubject()), null);
     }
 }
