@@ -1,16 +1,19 @@
 package uk.gov.hmcts.cmc.email;
 
 import com.microsoft.applicationinsights.TelemetryClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.logging.appinsights.AbstractAppInsights;
 
 import static java.util.Collections.singletonMap;
 
 @Component
-public class AppInsightsService extends AbstractAppInsights {
+public class AppInsightsService {
 
+    private final TelemetryClient telemetry;
+
+    @Autowired
     public AppInsightsService(TelemetryClient telemetry) {
-        super(telemetry);
+        this.telemetry = telemetry;
     }
 
     public void trackEvent(String appInsightsEvent, String referenceType, String value) {
