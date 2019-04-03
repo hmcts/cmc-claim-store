@@ -12,3 +12,4 @@ dependencies:
     repository: '@hmcts'
     tags:
       - cmc-citizen-frontend-pod
+
