@@ -1,9 +1,5 @@
 package uk.gov.hmcts.cmc.domain.models.evidence;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 public enum EvidenceType {
     CONTRACTS_AND_AGREEMENTS("Contracts and agreements"),
     EXPERT_WITNESS("Expert witness"),
