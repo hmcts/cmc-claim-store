@@ -262,7 +262,9 @@ public class CoreCaseDataService {
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
 
-            EventRequestData eventRequestData = eventRequest(CaseEventMapper.map(claimDocumentType), userDetails.getId());
+            EventRequestData eventRequestData = eventRequest(
+                CaseEventMapper.map(claimDocumentType), userDetails.getId()
+            );
 
             StartEventResponse startEventResponse = startUpdate(
                 authorisation,
