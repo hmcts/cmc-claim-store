@@ -108,13 +108,12 @@ public class DefendantPartyMapperTest {
                 .build())
             .build();
 
-
-        CCDCollectionElement<CCDRespondent> collectionElement = CCDCollectionElement.<CCDRespondent>builder()
+        CCDCollectionElement<CCDRespondent> respondentElement = CCDCollectionElement.<CCDRespondent>builder()
             .value(ccdRespondent)
             .id(UUID.randomUUID().toString())
             .build();
         //when
-        Party party = mapper.from(collectionElement);
+        Party party = mapper.from(respondentElement);
 
         //then
         assertThat(party).isEqualTo(ccdRespondent);
@@ -125,13 +124,13 @@ public class DefendantPartyMapperTest {
         //given
         CCDRespondent ccdRespondent = withPartyCompany().build();
 
-        CCDCollectionElement<CCDRespondent> collectionElement = CCDCollectionElement.<CCDRespondent>builder()
+        CCDCollectionElement<CCDRespondent> respondentElement = CCDCollectionElement.<CCDRespondent>builder()
             .value(ccdRespondent)
             .id(UUID.randomUUID().toString())
             .build();
 
         //when
-        Party party = mapper.from(collectionElement);
+        Party party = mapper.from(respondentElement);
 
         //then
         assertThat(party).isEqualTo(ccdRespondent);
@@ -147,13 +146,13 @@ public class DefendantPartyMapperTest {
                 .lastName("Richards")
                 .build()).build();
 
-        CCDCollectionElement<CCDRespondent> collectionElement = CCDCollectionElement.<CCDRespondent>builder()
+        CCDCollectionElement<CCDRespondent> respondentElement = CCDCollectionElement.<CCDRespondent>builder()
             .value(ccdRespondent)
             .id(UUID.randomUUID().toString())
             .build();
 
         //when
-        Party party = mapper.from(collectionElement);
+        Party party = mapper.from(respondentElement);
 
         //then
         assertThat(party).isEqualTo(ccdRespondent);
@@ -164,13 +163,13 @@ public class DefendantPartyMapperTest {
         //given
         CCDRespondent ccdRespondent = withPartyOrganisation().build();
 
-        CCDCollectionElement<CCDRespondent> collectionElement = CCDCollectionElement.<CCDRespondent>builder()
+        CCDCollectionElement<CCDRespondent> respondentElement = CCDCollectionElement.<CCDRespondent>builder()
             .value(ccdRespondent)
             .id(UUID.randomUUID().toString())
             .build();
 
         //when
-        Party party = mapper.from(collectionElement);
+        Party party = mapper.from(respondentElement);
 
         //then
         assertThat(party).isEqualTo(ccdRespondent);

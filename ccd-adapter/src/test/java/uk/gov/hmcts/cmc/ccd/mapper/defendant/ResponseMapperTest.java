@@ -82,13 +82,13 @@ public class ResponseMapperTest {
         CCDRespondent ccdRespondent = SampleCCDDefendant.withFullDefenceResponse().build();
         Claim.ClaimBuilder builder = Claim.builder();
 
-        CCDCollectionElement<CCDRespondent> collectionElement = CCDCollectionElement.<CCDRespondent>builder()
+        CCDCollectionElement<CCDRespondent> respondentElement = CCDCollectionElement.<CCDRespondent>builder()
             .value(ccdRespondent)
             .id(UUID.randomUUID().toString())
             .build();
         //when
 
-        mapper.from(builder, collectionElement);
+        mapper.from(builder, respondentElement);
 
         //then
         assertThat(builder.build().getResponse().orElse(null)).isEqualTo(ccdRespondent);
@@ -100,12 +100,12 @@ public class ResponseMapperTest {
         CCDRespondent ccdRespondent = SampleCCDDefendant.withFullDefenceResponseAndFreeMediation().build();
         Claim.ClaimBuilder builder = Claim.builder();
 
-        CCDCollectionElement<CCDRespondent> collectionElement = CCDCollectionElement.<CCDRespondent>builder()
+        CCDCollectionElement<CCDRespondent> respondentElement = CCDCollectionElement.<CCDRespondent>builder()
             .value(ccdRespondent)
             .id(UUID.randomUUID().toString())
             .build();
         //when
-        mapper.from(builder, collectionElement);
+        mapper.from(builder, respondentElement);
 
         //then
         assertThat(builder.build().getResponse().orElse(null)).isEqualTo(ccdRespondent);
@@ -117,12 +117,12 @@ public class ResponseMapperTest {
         CCDRespondent ccdRespondent = SampleCCDDefendant.withFullAdmissionResponse().build();
         Claim.ClaimBuilder builder = Claim.builder();
 
-        CCDCollectionElement<CCDRespondent> collectionElement = CCDCollectionElement.<CCDRespondent>builder()
+        CCDCollectionElement<CCDRespondent> respondentElement = CCDCollectionElement.<CCDRespondent>builder()
             .value(ccdRespondent)
             .id(UUID.randomUUID().toString())
             .build();
         //when
-        mapper.from(builder, collectionElement);
+        mapper.from(builder, respondentElement);
 
         //then
         assertThat(builder.build().getResponse().orElse(null)).isEqualTo(ccdRespondent);
@@ -133,14 +133,13 @@ public class ResponseMapperTest {
         //given
         CCDRespondent ccdRespondent = SampleCCDDefendant.withPartAdmissionResponse().build();
         Claim.ClaimBuilder builder = Claim.builder();
-
-
-        CCDCollectionElement<CCDRespondent> collectionElement = CCDCollectionElement.<CCDRespondent>builder()
+        
+        CCDCollectionElement<CCDRespondent> respondentElement = CCDCollectionElement.<CCDRespondent>builder()
             .value(ccdRespondent)
             .id(UUID.randomUUID().toString())
             .build();
         //when
-        mapper.from(builder, collectionElement);
+        mapper.from(builder, respondentElement);
 
         //then
         assertThat(builder.build().getResponse().orElse(null)).isEqualTo(ccdRespondent);

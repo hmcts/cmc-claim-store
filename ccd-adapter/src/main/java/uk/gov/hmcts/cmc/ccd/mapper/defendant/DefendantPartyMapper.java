@@ -120,6 +120,7 @@ public class DefendantPartyMapper {
     private Organisation extractOrganisation(CCDCollectionElement<CCDRespondent> respondentElement) {
         CCDRespondent respondent = respondentElement.getValue();
         CCDParty partyDetail = respondent.getPartyDetail();
+
         return Organisation.builder()
             .id(respondentElement.getId())
             .name(respondent.getPartyName())
@@ -166,6 +167,7 @@ public class DefendantPartyMapper {
     private Individual extractIndividual(CCDCollectionElement<CCDRespondent> respondentElement) {
         CCDRespondent respondent = respondentElement.getValue();
         CCDParty partyDetail = respondent.getPartyDetail();
+
         return Individual.builder()
             .id(respondentElement.getId())
             .name(respondent.getPartyName())
