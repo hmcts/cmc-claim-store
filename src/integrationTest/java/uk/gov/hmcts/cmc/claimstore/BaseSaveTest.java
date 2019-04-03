@@ -26,7 +26,7 @@ public abstract class BaseSaveTest extends BaseIntegrationTest {
         given(userService.getUser(SOLICITOR_AUTHORISATION_TOKEN))
             .willReturn(new User(SOLICITOR_AUTHORISATION_TOKEN, solicitorDetails));
 
-        given(userService.generatePin("John Smith", AUTHORISATION_TOKEN))
+        given(userService.generatePin("Dr. John Smith", AUTHORISATION_TOKEN))
             .willReturn(new GeneratePinResponse("my-pin", "2"));
 
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
