@@ -12,4 +12,8 @@ dependencies:
     repository: '@hmcts'
     tags:
       - cmc-citizen-frontend-pod
-
+#  - name: idam-pr
+#    version: ~1.0.0
+#    repository: '@hmcts'
+#    tags:
+#      - cmc-citizen-frontend-pod
