@@ -39,7 +39,7 @@ public class DocumentManagementService {
     private final DocumentUploadClientApi documentUploadClient;
     private final AuthTokenGenerator authTokenGenerator;
     private final UserService userService;
-    private final String roles;
+    private final String citizenRole;
     private final AppInsights appInsights;
 
     @Autowired
@@ -49,7 +49,7 @@ public class DocumentManagementService {
         DocumentUploadClientApi documentUploadClientApi,
         AuthTokenGenerator authTokenGenerator,
         UserService userService,
-        @Value("${document_management.caseWorkerRole}") String roles,
+        @Value("${document_management.citizenRole}") String citizenRole,
         AppInsights appInsights
     ) {
         this.documentMetadataDownloadClient = documentMetadataDownloadApi;
@@ -57,7 +57,7 @@ public class DocumentManagementService {
         this.documentUploadClient = documentUploadClientApi;
         this.authTokenGenerator = authTokenGenerator;
         this.userService = userService;
-        this.roles = roles;
+        this.citizenRole = citizenRole;
         this.appInsights = appInsights;
     }
 
@@ -77,7 +77,7 @@ public class DocumentManagementService {
                 authorisation,
                 authTokenGenerator.generate(),
                 userService.getUserDetails(authorisation).getId(),
-                singletonList(roles),
+                singletonList(citizenRole),
                 Classification.RESTRICTED,
                 singletonList(file)
             );
@@ -100,7 +100,7 @@ public class DocumentManagementService {
             Document documentMetadata = documentMetadataDownloadClient.getDocumentMetadata(
                 authorisation,
                 authTokenGenerator.generate(),
-                roles,
+                citizenRole,
                 userService.getUserDetails(authorisation).getId(),
                 documentSelf.getPath()
             );
@@ -108,7 +108,7 @@ public class DocumentManagementService {
             ResponseEntity<Resource> responseEntity = documentDownloadClient.downloadBinary(
                 authorisation,
                 authTokenGenerator.generate(),
-                roles,
+                citizenRole,
                 userService.getUserDetails(authorisation).getId(),
                 URI.create(documentMetadata.links.binary.href).getPath()
             );

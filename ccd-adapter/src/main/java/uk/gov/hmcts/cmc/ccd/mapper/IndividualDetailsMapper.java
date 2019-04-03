@@ -27,6 +27,9 @@ public class IndividualDetailsMapper {
                    CCDRespondent.CCDRespondentBuilder builder) {
 
         CCDParty.CCDPartyBuilder claimantProvidedDetails = CCDParty.builder().type(CCDPartyType.INDIVIDUAL);
+        claimantProvidedDetails.firstName(individual.getFirstName());
+        claimantProvidedDetails.lastName(individual.getLastName());
+        individual.getTitle().ifPresent(claimantProvidedDetails::title);
         individual.getServiceAddress()
             .ifPresent(address -> claimantProvidedDetails.correspondenceAddress(addressMapper.to(address)));
 
@@ -50,6 +53,9 @@ public class IndividualDetailsMapper {
         return IndividualDetails.builder()
             .id(ccdRespondent.getId())
             .name(respondent.getClaimantProvidedPartyName())
+            .firstName(respondent.getClaimantProvidedDetail().getFirstName())
+            .lastName(respondent.getClaimantProvidedDetail().getLastName())
+            .title(respondent.getClaimantProvidedDetail().getTitle())
             .address(addressMapper.from(claimantProvidedPartyDetail.getPrimaryAddress()))
             .email(claimantProvidedPartyDetail.getEmailAddress())
             .representative(representativeMapper.from(respondent))
