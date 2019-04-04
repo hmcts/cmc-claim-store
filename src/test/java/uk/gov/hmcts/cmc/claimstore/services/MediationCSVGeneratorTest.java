@@ -41,8 +41,8 @@ public class MediationCSVGeneratorTest {
     public void shouldCreateMediationForClaim() {
         mediationClaims.add(getWithClaimantResponseRejectionForPartAdmissionAndMediation());
 
-        String expected = "4,1,4,5,000CM001,80.89,1,Mediation Contact Person,07999999999\r\n" +
-            "4,1,4,5,000CM001,80.89,2,Mediation Contact Person,07999999999\r\n";
+        String expected = "4,1,4,5,000CM001,80.89,1,Mediation Contact Person,07999999999,null\r\n" +
+            "4,1,4,5,000CM001,80.89,2,Mediation Contact Person,07999999999,null\r\n";
         String mediationCSV = mediationCSVGenerator.createMediationCSV(AUTHORISATION, LocalDate.now());
         assertThat(mediationCSV).isEqualTo(expected);
     }

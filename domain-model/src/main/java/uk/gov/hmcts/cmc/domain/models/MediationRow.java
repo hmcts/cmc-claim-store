@@ -20,6 +20,7 @@ public class MediationRow {
     private String partyType;
     private String contactName;
     private String contactNumber;
+    private String contactEmailAddress;
 
     @Builder
     public MediationRow(
@@ -31,7 +32,8 @@ public class MediationRow {
         String amount,
         String partyType,
         String contactName,
-        String contactNumber
+        String contactNumber,
+        String contactEmailAddress
     ) {
         this.siteId = siteId;
         this.caseType = caseType;
@@ -42,6 +44,7 @@ public class MediationRow {
         this.partyType = partyType;
         this.contactName = contactName;
         this.contactNumber = contactNumber;
+        this.contactEmailAddress = contactEmailAddress;
     }
 
     public List<String> toList() {
@@ -54,7 +57,8 @@ public class MediationRow {
             amount,
             partyType,
             contactName,
-            contactNumber
+            contactNumber,
+            contactEmailAddress
         );
     }
 }
