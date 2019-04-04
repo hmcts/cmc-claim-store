@@ -1,10 +1,12 @@
 package uk.gov.hmcts.cmc.domain.models;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 
 import java.util.Arrays;
 import java.util.List;
 
+@EqualsAndHashCode
 public class MediationRow {
     public static final String SITE_ID = "4";
     public static final String CASE_TYPE = "1";
