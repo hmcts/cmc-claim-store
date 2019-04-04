@@ -376,6 +376,7 @@ public final class SampleClaim {
     public static Claim getWithDefendantPinLetterDocument(int addSecondsToCreateTime) {
         return builder()
             .withDefendantPinLetterDocument(addSecondsToCreateTime)
+            .withDefendantId(null)
             .build();
     }
 
