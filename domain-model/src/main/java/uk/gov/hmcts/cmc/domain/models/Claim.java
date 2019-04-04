@@ -195,6 +195,7 @@ public class Claim {
         return Optional.ofNullable(claimDocumentCollection);
     }
 
+    @JsonIgnore
     public Optional<ClaimState> getState() {
         return Optional.ofNullable(state);
     }
