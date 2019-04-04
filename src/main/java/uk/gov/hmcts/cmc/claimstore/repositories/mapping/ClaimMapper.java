@@ -61,11 +61,7 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
     }
 
     private ClaimState toNullableClaimState(String state) {
-        if (state == null) {
-            return null;
-        } else {
-            return ClaimState.valueOf(state);
-        }
+        return state != null ? ClaimState.valueOf(state) : null;
     }
 
     private ClaimData toClaimData(String input) {
