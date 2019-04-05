@@ -57,13 +57,15 @@ public class DocumentUploadHandler {
     private final DefendantPinLetterPdfService defendantPinLetterPdfService;
 
     @Autowired
-    public DocumentUploadHandler(DefendantResponseReceiptService defendantResponseReceiptService,
-                                 CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
-                                 SettlementAgreementCopyService settlementAgreementCopyService,
-                                 SealedClaimPdfService sealedClaimPdfService,
-                                 ClaimIssueReceiptService claimIssueReceiptService,
-                                 DefendantPinLetterPdfService defendantPinLetterPdfService,
-                                 DocumentsService documentService) {
+    public DocumentUploadHandler(
+        DefendantResponseReceiptService defendantResponseReceiptService,
+        CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
+        SettlementAgreementCopyService settlementAgreementCopyService,
+        SealedClaimPdfService sealedClaimPdfService,
+        ClaimIssueReceiptService claimIssueReceiptService,
+        DefendantPinLetterPdfService defendantPinLetterPdfService,
+        DocumentsService documentService
+    ) {
         this.defendantResponseReceiptService = defendantResponseReceiptService;
         this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
         this.settlementAgreementCopyService = settlementAgreementCopyService;
