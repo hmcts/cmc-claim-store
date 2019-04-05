@@ -325,14 +325,16 @@ public class ClaimService {
         ccdEventProducer.linkDefendantCCDEvent(authorisation);
     }
 
-    public Claim saveClaimDocuments(String authorisation,
-                                    Long claimId,
-                                    ClaimDocumentCollection claimDocumentCollection) {
+    public Claim saveClaimDocuments(
+        String authorisation,
+        Long claimId,
+        ClaimDocumentCollection claimDocumentCollection
+    ) {
         return caseRepository.saveClaimDocuments(authorisation, claimId, claimDocumentCollection);
     }
 
-    public void linkLetterHolder(Long claimId, String userId) {
-        claimRepository.linkLetterHolder(claimId, userId);
+    public Claim linkLetterHolder(Long claimId, String letterHolderId, String authorisation) {
+        return caseRepository.linkLetterHolder(claimId, letterHolderId, authorisation);
     }
 
     public void saveCountyCourtJudgment(
