@@ -22,59 +22,20 @@ postgresql:
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
-  applicationPort: 4400
-  cpuRequests: 25m
-  keyVaults:
-    cmc:
-      resourceGroup: cmc
-      secrets:
-        - AppInsightsInstrumentationKey
-        - citizen-oauth-client-secret
-        - claim-store-s2s-secret
-        - anonymous-caseworker-username
-        - anonymous-caseworker-password
-        - system-update-username
-        - system-update-password
-        - notify-api-key
   environment:
+    LOG_LEVEL: DEBUG
+    CORE_CASE_DATA_API_URL: false
     IDAM_S2S_AUTH_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
     SEND_LETTER_URL: http://rpe-send-letter-service-aat.service.core-compute-aat.internal
     IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
     PDF_SERVICE_URL: http://cmc-pdf-service-aat.service.core-compute-aat.internal
     DOCUMENT_MANAGEMENT_URL: http://dm-store-aat.service.core-compute-aat.internal
-    REFORM_TEAM: cmc
-    REFORM_SERVICE_NAME: claim-store
-    REFORM_ENVIRONMENT: preview
-    LOG_LEVEL: DEBUG
-    CLAIM_STORE_DB_HOST: ${SERVICE_NAME}-claim-store-postgres
-    CLAIM_STORE_DB_PORT: 5432
-    CLAIM_STORE_DB_USERNAME: claimstore
-    CLAIM_STORE_DB_NAME: claimstore
-    CMC_DB_HOST: ${SERVICE_NAME}-claim-store-postgres
-    CMC_DB_PORT: 5432
-    CMC_DB_USERNAME: cmc
-    CMC_DB_NAME: cmc
-    SPRING_MAIL_HOST: mta.reform.hmcts.net
-    SPRING_MAIL_PORT: 25
-    SPRING_MAIL_TEST_CONNECTION: false
-    SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: true
-    SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: mta.reform.hmcts.net
-    CLAIM_STORE_TEST_SUPPORT_ENABLED: true
-    FEATURE_TOGGLES_EMAILTOSTAFF: true
-    FEATURE_TOGGLES_CCD_ENABLED: false
-    FEATURE_TOGGLES_CCD_ASYNC_ENABLED: false
-    DOCUMENT_MANAGEMENT_CITIZENROLE: citizen
-    CORE_CASE_DATA_API_URL: false
     FRONTEND_BASE_URL: https://www-${SERVICE_FQDN}
     RESPOND_TO_CLAIM_URL: https://www-${SERVICE_FQDN}/first-contact/start
-    STAFF_NOTIFICATIONS_RECIPIENT: civilmoneyclaims+staff-int-tests@gmail.com
-    STAFF_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
-    RPA_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
-    RPA_NOTIFICATIONS_SEALEDCLAIMRECIPIENT: civilmoneyclaims+rpa-claim-issued@gmail.com
-    RPA_NOTIFICATIONS_MORETIMEREQUESTEDRECIPIENT: civilmoneyclaims+rpa-more-time-requested@gmail.com
-    RPA_NOTIFICATIONS_RESPONSERECIPIENT: civilmoneyclaims+rpa-defence-response@gmail.com
-    RPA_NOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT: civilmoneyclaims+rpa-county-court-judgement@gmail.com
-    RPA_NOTIFICATIONS_PAIDINFULLRECIPIENT: civilmoneyclaims+rpa-paid-in-full@gmail.com
+    CLAIM_STORE_DB_HOST: ${SERVICE_NAME}-claim-store-postgres
+    CLAIM_STORE_DB_USERNAME: claimstore
+    CMC_DB_HOST: ${SERVICE_NAME}-claim-store-postgres
+    CMC_DB_USERNAME: cmc
 
 cmc-citizen-frontend:
   nodejs:
