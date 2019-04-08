@@ -160,6 +160,11 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
+    public List<Claim> getClaimsByState(User user, ClaimState claimState) {
+        return claimRepository.getClaimsByState(claimState);
+    }
+
+    @Override
     public Optional<Claim> getByLetterHolderId(String id, String authorisation) {
         return claimRepository.getByLetterHolderId(id);
     }

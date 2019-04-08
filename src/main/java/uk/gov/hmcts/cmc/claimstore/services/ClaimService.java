@@ -24,6 +24,7 @@ import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
@@ -180,6 +181,10 @@ public class ClaimService {
 
     public List<Claim> getClaimByPaymentReference(String payReference, String authorisation) {
         return caseRepository.getByPaymentReference(payReference, authorisation);
+    }
+
+    public List<Claim> getClaimsByState(User user, ClaimState claimState) {
+        return caseRepository.getClaimsByState(user, claimState);
     }
 
     public CaseReference savePrePayment(String externalId, String authorisation) {

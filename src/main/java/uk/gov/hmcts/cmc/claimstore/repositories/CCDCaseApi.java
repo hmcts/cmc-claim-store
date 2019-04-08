@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
@@ -130,6 +132,10 @@ public class CCDCaseApi {
     public List<Claim> getByPaymentReference(String payReference, String authorisation) {
         User user = userService.getUser(authorisation);
         return getAllCasesBy(user, ImmutableMap.of("case.paymentReference", payReference));
+    }
+
+    public List<Claim> getClaimsByState(User user, ClaimState claimState) {
+        throw new NotImplementedException("This will be implemented as a separate PR");
     }
 
     /**

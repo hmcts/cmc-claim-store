@@ -69,6 +69,9 @@ public interface ClaimRepository {
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.is_migrated = false")
     List<Claim> getAllNotMigratedClaims();
 
+    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.state = :state")
+    List<Claim> getClaimsByState(@Bind("state") ClaimState state);
+
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.id = :id")
     Optional<Claim> getById(@Bind("id") Long id);
