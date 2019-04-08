@@ -30,7 +30,8 @@ public class AlwaysGenerateDocumentsService implements DocumentsService {
         ClaimIssueReceiptService claimIssueReceiptService,
         DefendantResponseReceiptService defendantResponseReceiptService,
         CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
-        SettlementAgreementCopyService settlementAgreementCopyService) {
+        SettlementAgreementCopyService settlementAgreementCopyService
+    ) {
         this.claimService = claimService;
         this.sealedClaimPdfService = sealedClaimPdfService;
         this.claimIssueReceiptService = claimIssueReceiptService;

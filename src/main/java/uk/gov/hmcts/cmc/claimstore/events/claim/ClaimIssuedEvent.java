@@ -14,9 +14,10 @@ public class ClaimIssuedEvent {
     private final String submitterName;
     private final String authorisation;
 
-    public ClaimIssuedEvent(Claim claim,
-                            String submitterName,
-                            String authorisation
+    public ClaimIssuedEvent(
+        Claim claim,
+        String submitterName,
+        String authorisation
     ) {
         this.claim = claim;
         this.submitterName = submitterName;

@@ -31,6 +31,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.DOCUMENT_NAME;
@@ -68,8 +69,7 @@ public class DocumentManagementServiceTest {
     public void setUp() {
         when(authTokenGenerator.generate()).thenReturn("authString");
         documentManagementService = new DocumentManagementService(documentMetadataDownloadClient,
-            documentDownloadClient, documentUploadClient, authTokenGenerator, userService,
-            "caseworker-cmc", appInsights);
+            documentDownloadClient, documentUploadClient, authTokenGenerator, userService, appInsights);
     }
 
     @Test
@@ -97,6 +97,10 @@ public class DocumentManagementServiceTest {
         when(documentUploadClient.upload(anyString(), anyString(), anyString(), anyList()))
             .thenReturn(unsuccessfulDocumentManagementUploadResponse());
         documentManagementService.uploadDocument("authString", document);
+
+        verify(documentUploadClient, atLeast(3))
+            .upload(anyString(), anyString(), anyString(), anyList());
+
         verify(appInsights).trackEvent(DOCUMENT_MANAGEMENT_UPLOAD_FAILURE, DOCUMENT_NAME, anyString());
     }
 

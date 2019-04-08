@@ -64,7 +64,8 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         DefendantResponseReceiptService defendantResponseReceiptService,
         CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
         SettlementAgreementCopyService settlementAgreementCopyService,
-        DefendantPinLetterPdfService defendantPinLetterPdfService) {
+        DefendantPinLetterPdfService defendantPinLetterPdfService
+    ) {
         this.claimService = claimService;
         this.documentManagementService = documentManagementService;
         this.sealedClaimPdfService = sealedClaimPdfService;
@@ -153,11 +154,13 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         }
     }
 
-    private byte[] processRequest(Claim claim,
-                                  String authorisation,
-                                  ClaimDocumentType claimDocumentType,
-                                  PdfService pdfService,
-                                  String baseFileName) {
+    private byte[] processRequest(
+        Claim claim,
+        String authorisation,
+        ClaimDocumentType claimDocumentType,
+        PdfService pdfService,
+        String baseFileName
+    ) {
         Optional<URI> claimDocument = claim.getClaimDocument(claimDocumentType);
         try {
             if (claimDocument.isPresent()) {
@@ -178,15 +181,15 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     public Claim uploadToDocumentManagement(
         PDF document,
         String authorisation,
-        Claim claim) {
+        Claim claim
+    ) {
         URI documentSelfPath = documentManagementService.uploadDocument(authorisation, document);
         return claimService.saveClaimDocuments(authorisation,
             claim.getId(),
             getClaimDocumentCollection(claim, document, documentSelfPath));
     }
 
-    private ClaimDocumentCollection getClaimDocumentCollection(Claim claim,
-                                                               PDF document, URI uri) {
+    private ClaimDocumentCollection getClaimDocumentCollection(Claim claim, PDF document, URI uri) {
         ClaimDocumentCollection claimDocumentCollection = claim.getClaimDocumentCollection()
             .orElse(new ClaimDocumentCollection());
         claimDocumentCollection.addClaimDocument(ClaimDocument.builder()
