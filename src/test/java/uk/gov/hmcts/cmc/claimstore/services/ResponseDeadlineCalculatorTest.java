@@ -22,7 +22,7 @@ import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.toDate;
 public class ResponseDeadlineCalculatorTest {
 
     private static final int DAYS_FOR_RESPONSE = 14;
-    private static final int DAYS_FOR_CLAIMANT_RESPONSE = 21;
+    private static final int DAYS_FOR_CLAIMANT_RESPONSE = 28;
     private static final int DAYS_FOR_SERVICE = 5;
     private static final int POSTPONE_BY = 14;
 
