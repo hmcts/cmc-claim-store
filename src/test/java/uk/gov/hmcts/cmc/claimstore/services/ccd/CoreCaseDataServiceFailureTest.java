@@ -20,6 +20,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
@@ -43,7 +44,6 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.Map;
-import java.util.UUID;
 
 import static java.time.LocalDate.now;
 import static org.junit.Assert.assertNotNull;
@@ -56,7 +56,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCATORY_JUDGEMENT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCUTORY_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_CLAIMANT;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
@@ -65,9 +65,8 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 @RunWith(MockitoJUnitRunner.class)
 public class CoreCaseDataServiceFailureTest {
     private static final String AUTHORISATION = "Bearer: aaa";
-    private static final String EXTERNAL_ID = UUID.randomUUID().toString();
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder().build();
-    private static final User ANONYMOUS_USER = new User(AUTHORISATION, USER_DETAILS);
+    private static final User USER = new User(AUTHORISATION, USER_DETAILS);
     private static final String AUTH_TOKEN = "authorisation token";
     private static final LocalDate FUTURE_DATE = now().plusWeeks(4);
 
@@ -81,6 +80,8 @@ public class CoreCaseDataServiceFailureTest {
     private ReferenceNumberService referenceNumberService;
     @Mock
     private CoreCaseDataApi coreCaseDataApi;
+    @Mock
+    private CCDCreateCaseService ccdCreateCaseService;
     @Mock
     private AuthTokenGenerator authTokenGenerator;
     @Mock
@@ -96,19 +97,6 @@ public class CoreCaseDataServiceFailureTest {
     public void before() {
         when(authTokenGenerator.generate()).thenReturn(AUTH_TOKEN);
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(USER_DETAILS);
-        when(coreCaseDataApi.startForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            anyString()
-        ))
-            .thenReturn(StartEventResponse.builder()
-                .caseDetails(CaseDetails.builder().build())
-                .eventId("eventId")
-                .token("token")
-                .build());
 
         when(coreCaseDataApi.startEventForCitizen(
             eq(AUTHORISATION),
@@ -144,34 +132,8 @@ public class CoreCaseDataServiceFailureTest {
             referenceNumberService,
             coreCaseDataApi,
             authTokenGenerator,
-            caseAccessApi,
-            jobSchedulerService
-        );
-    }
-
-    @Test(expected = CoreCaseDataStoreException.class)
-    public void savePrePaymentShouldReturnReferenceNumber() {
-        when(coreCaseDataApi.submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
-        ))
-            .thenThrow(new RuntimeException("Any runtime exception"));
-
-        service.savePrePayment(EXTERNAL_ID, AUTHORISATION);
-
-        verify(coreCaseDataApi).submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
+            jobSchedulerService,
+            ccdCreateCaseService
         );
     }
 
@@ -180,7 +142,7 @@ public class CoreCaseDataServiceFailureTest {
         Claim providedClaim = SampleClaim.getDefault();
         when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
 
-        service.submitPostPayment(AUTHORISATION, providedClaim);
+        service.createNewCase(USER, providedClaim);
 
         verify(coreCaseDataApi).submitForCitizen(
             eq(AUTHORISATION),
@@ -267,10 +229,13 @@ public class CoreCaseDataServiceFailureTest {
     public void linkSealedClaimDocumentFailure() {
 
         URI sealedClaimUri = URI.create("http://localhost/sealedClaim.pdf");
+        Claim claim = SampleClaim.getClaimWithSealedClaimLink(sealedClaimUri);
         when(jsonMapper.fromMap(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
-        when(caseMapper.from(any(CCDCase.class))).thenReturn(SampleClaim.getClaimWithSealedClaimLink(sealedClaimUri));
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
 
-        service.linkSealedClaimDocument(AUTHORISATION, SampleClaim.CLAIM_ID, sealedClaimUri);
+        service.saveClaimDocuments(AUTHORISATION,
+            SampleClaim.CLAIM_ID,
+            claim.getClaimDocumentCollection().orElse(new ClaimDocumentCollection()));
 
         verify(coreCaseDataApi).submitForCitizen(
             eq(AUTHORISATION),
@@ -558,7 +523,7 @@ public class CoreCaseDataServiceFailureTest {
 
         when(jsonMapper.fromMap(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
 
-        service.saveCaseEvent(AUTHORISATION, claim.getId(), INTERLOCATORY_JUDGEMENT);
+        service.saveCaseEvent(AUTHORISATION, claim.getId(), INTERLOCUTORY_JUDGMENT);
     }
 
     @Test(expected = CoreCaseDataStoreException.class)

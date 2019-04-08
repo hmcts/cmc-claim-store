@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
@@ -34,13 +34,13 @@ public class SettlementMapper {
 
     }
 
-    public Settlement fromCCDDefendant(CCDDefendant ccdDefendant) {
-        if (CollectionUtils.isEmpty(ccdDefendant.getSettlementPartyStatements())) {
+    public Settlement fromCCDDefendant(CCDRespondent ccdRespondent) {
+        if (CollectionUtils.isEmpty(ccdRespondent.getSettlementPartyStatements())) {
             return null;
         }
 
         Settlement settlement = new Settlement();
-        ccdDefendant.getSettlementPartyStatements().stream()
+        ccdRespondent.getSettlementPartyStatements().stream()
             .map(partyStatementMapper::from)
             .forEach(partyStatement -> addPartyStatement(partyStatement, settlement));
 
@@ -57,15 +57,15 @@ public class SettlementMapper {
         }
 
         if (partyStatement.getType() == StatementType.REJECTION) {
-            settlement.reject(partyStatement.getMadeBy(), partyStatement.getId());
+            settlement.addRejection(partyStatement.getMadeBy(), partyStatement.getId());
         }
 
         if (partyStatement.getType() == StatementType.ACCEPTATION) {
-            settlement.accept(partyStatement.getMadeBy(), partyStatement.getId());
+            settlement.addAcceptation(partyStatement.getMadeBy(), partyStatement.getId());
         }
 
         if (partyStatement.getType() == StatementType.COUNTERSIGNATURE) {
-            settlement.countersign(partyStatement.getMadeBy(), partyStatement.getId());
+            settlement.addCounterSignature(partyStatement.getMadeBy(), partyStatement.getId());
         }
     }
 }

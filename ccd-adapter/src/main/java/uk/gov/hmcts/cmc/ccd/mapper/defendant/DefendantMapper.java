@@ -3,8 +3,9 @@ package uk.gov.hmcts.cmc.ccd.mapper.defendant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.mapper.TheirDetailsMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.claimantresponse.ClaimantResponseMapper;
@@ -45,74 +46,84 @@ public class DefendantMapper {
         this.reDeterminationMapper = reDeterminationMapper;
     }
 
-    public CCDCollectionElement<CCDDefendant> to(TheirDetails theirDetails, Claim claim) {
+    public CCDCollectionElement<CCDRespondent> to(TheirDetails theirDetails, Claim claim) {
         requireNonNull(theirDetails, "theirDetails must not be null");
         requireNonNull(claim, "claim must not be null");
 
-        CCDDefendant.CCDDefendantBuilder builder = CCDDefendant.builder();
-        builder.responseDeadline(claim.getResponseDeadline());
-        builder.letterHolderId(claim.getLetterHolderId());
-        builder.defendantId(claim.getDefendantId());
-        builder.partyEmail(claim.getDefendantEmail());
-        builder.responseMoreTimeNeededOption(CCDYesNoOption.valueOf(claim.isMoreTimeRequested()));
-        builder.directionsQuestionnaireDeadline(claim.getDirectionsQuestionnaireDeadline());
-        builder.countyCourtJudgementRequest(countyCourtJudgmentMapper.to(claim));
+        CCDRespondent.CCDRespondentBuilder respondentBuilder = CCDRespondent.builder();
+        respondentBuilder.responseDeadline(claim.getResponseDeadline());
+        respondentBuilder.letterHolderId(claim.getLetterHolderId());
+        respondentBuilder.defendantId(claim.getDefendantId());
+
+        CCDParty.CCDPartyBuilder partyDetail = CCDParty.builder();
+        partyDetail.emailAddress(claim.getDefendantEmail());
+        partyDetail.idamId(claim.getDefendantId());
+
+        respondentBuilder.responseMoreTimeNeededOption(CCDYesNoOption.valueOf(claim.isMoreTimeRequested()));
+        respondentBuilder.directionsQuestionnaireDeadline(claim.getDirectionsQuestionnaireDeadline());
+        respondentBuilder.countyCourtJudgmentRequest(countyCourtJudgmentMapper.to(claim));
 
         claim.getSettlement().ifPresent(settlement ->
-            builder.settlementPartyStatements(
+            respondentBuilder.settlementPartyStatements(
                 settlementMapper.toCCDPartyStatements(settlement)
             )
         );
-        builder.settlementReachedAt(claim.getSettlementReachedAt());
+        respondentBuilder.settlementReachedAt(claim.getSettlementReachedAt());
 
-        claim.getResponse().ifPresent(toResponse(claim, builder));
-        theirDetailsMapper.to(builder, theirDetails);
+        respondentBuilder.partyDetail(partyDetail.build());
+        claim.getResponse().ifPresent(toResponse(claim, respondentBuilder, partyDetail));
 
-        builder.claimantResponse(claimantResponseMapper.to(claim));
-        claim.getMoneyReceivedOn().ifPresent(builder::paidInFullDate);
+        theirDetailsMapper.to(respondentBuilder, theirDetails);
 
-        reDeterminationMapper.to(builder, claim);
+        respondentBuilder.claimantResponse(claimantResponseMapper.to(claim));
+        claim.getMoneyReceivedOn().ifPresent(respondentBuilder::paidInFullDate);
 
-        return CCDCollectionElement.<CCDDefendant>builder()
-            .value(builder.build())
+        reDeterminationMapper.to(respondentBuilder, claim);
+
+        return CCDCollectionElement.<CCDRespondent>builder()
+            .value(respondentBuilder.build())
             .id(theirDetails.getId())
             .build();
     }
 
-    public TheirDetails from(Claim.ClaimBuilder builder, CCDCollectionElement<CCDDefendant> defendant) {
+    public TheirDetails from(Claim.ClaimBuilder builder, CCDCollectionElement<CCDRespondent> respondentElement) {
 
-        CCDDefendant ccdDefendant = defendant.getValue();
+        CCDRespondent ccdRespondent = respondentElement.getValue();
+        CCDParty partyDetail = ccdRespondent.getPartyDetail();
 
         builder
-            .letterHolderId(ccdDefendant.getLetterHolderId())
-            .responseDeadline(ccdDefendant.getResponseDeadline())
-            .defendantEmail(ccdDefendant.getPartyEmail())
-            .directionsQuestionnaireDeadline(ccdDefendant.getDirectionsQuestionnaireDeadline())
-            .defendantId(ccdDefendant.getDefendantId());
+            .letterHolderId(ccdRespondent.getLetterHolderId())
+            .responseDeadline(ccdRespondent.getResponseDeadline())
+            .defendantEmail(Optional.ofNullable(partyDetail)
+                .map(CCDParty::getEmailAddress).orElse(null))
+            .directionsQuestionnaireDeadline(ccdRespondent.getDirectionsQuestionnaireDeadline())
+            .defendantId(ccdRespondent.getDefendantId());
 
-        countyCourtJudgmentMapper.from(ccdDefendant.getCountyCourtJudgementRequest(), builder);
-        builder.settlement(settlementMapper.fromCCDDefendant(ccdDefendant));
-        builder.settlementReachedAt(ccdDefendant.getSettlementReachedAt());
+        countyCourtJudgmentMapper.from(ccdRespondent.getCountyCourtJudgmentRequest(), builder);
+        builder.settlement(settlementMapper.fromCCDDefendant(ccdRespondent));
+        builder.settlementReachedAt(ccdRespondent.getSettlementReachedAt());
 
-        Optional.ofNullable(ccdDefendant.getResponseMoreTimeNeededOption()).ifPresent(
+        Optional.ofNullable(ccdRespondent.getResponseMoreTimeNeededOption()).ifPresent(
             moreTimeNeeded -> builder.moreTimeRequested(moreTimeNeeded.toBoolean())
         );
 
-        builder.respondedAt(ccdDefendant.getResponseSubmittedOn());
-        responseMapper.from(builder, ccdDefendant);
+        builder.respondedAt(ccdRespondent.getResponseSubmittedOn());
+        responseMapper.from(builder, ccdRespondent);
 
-        claimantResponseMapper.from(ccdDefendant.getClaimantResponse(), builder);
+        claimantResponseMapper.from(ccdRespondent.getClaimantResponse(), builder);
 
-        reDeterminationMapper.from(builder, ccdDefendant);
+        reDeterminationMapper.from(builder, ccdRespondent);
 
-        builder.moneyReceivedOn(ccdDefendant.getPaidInFullDate());
+        builder.moneyReceivedOn(ccdRespondent.getPaidInFullDate());
 
-        return theirDetailsMapper.from(defendant);
+        return theirDetailsMapper.from(respondentElement);
     }
 
-    private Consumer<Response> toResponse(Claim claim, CCDDefendant.CCDDefendantBuilder builder) {
+    private Consumer<Response> toResponse(Claim claim,
+                                          CCDRespondent.CCDRespondentBuilder builder,
+                                          CCDParty.CCDPartyBuilder partyDetail) {
         return response -> {
-            responseMapper.to(builder, response);
+            responseMapper.to(builder, response, partyDetail);
             builder.responseSubmittedOn(claim.getRespondedAt());
         };
     }

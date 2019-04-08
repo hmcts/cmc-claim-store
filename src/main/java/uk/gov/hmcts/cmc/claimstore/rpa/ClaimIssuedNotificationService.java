@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
 import uk.gov.hmcts.cmc.claimstore.rpa.config.EmailProperties;
 import uk.gov.hmcts.cmc.claimstore.rpa.email.ClaimIssuedEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.cmc.rpa.mapper.SealedClaimJsonMapper;
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service("rpa/claim-issued-notification-service")
@@ -47,6 +49,7 @@ public class ClaimIssuedNotificationService {
     }
 
     @EventListener
+    @LogExecutionTime
     public void notifyRobotOfClaimIssue(DocumentGeneratedEvent event) {
         requireNonNull(event);
 
@@ -60,7 +63,7 @@ public class ClaimIssuedNotificationService {
         EmailContent content = emailContentProvider.createContent(claim);
 
         EmailAttachment sealedClaimPdfAttachment = documents.stream()
-            .filter(document -> document.getFilename().contains("claim-form"))
+            .filter(document -> document.getClaimDocumentType() == SEALED_CLAIM)
             .map(document -> pdf(document.getBytes(), document.getFilename()))
             .findFirst().orElseThrow(() -> new IllegalArgumentException("Event does not contain sealed claim PDF"));
 

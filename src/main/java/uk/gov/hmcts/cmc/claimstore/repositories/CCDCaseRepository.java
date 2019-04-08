@@ -4,9 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
@@ -16,7 +19,6 @@ import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
-import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -29,14 +31,17 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 public class CCDCaseRepository implements CaseRepository {
     private final CCDCaseApi ccdCaseApi;
     private final CoreCaseDataService coreCaseDataService;
+    private final UserService userService;
 
     @Autowired
     public CCDCaseRepository(
         CCDCaseApi ccdCaseApi,
-        CoreCaseDataService coreCaseDataService
+        CoreCaseDataService coreCaseDataService,
+        UserService userService
     ) {
         this.ccdCaseApi = ccdCaseApi;
         this.coreCaseDataService = coreCaseDataService;
+        this.userService = userService;
     }
 
     @Override
@@ -45,13 +50,14 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Optional<Claim> getClaimByExternalId(String externalId, String authorisation) {
-        return ccdCaseApi.getByExternalId(externalId, authorisation);
+    @LogExecutionTime
+    public Optional<Claim> getClaimByExternalId(String externalId, User user) {
+        return ccdCaseApi.getByExternalId(externalId, user);
     }
 
-    @Override
-    public Long getOnHoldIdByExternalId(String externalId, String authorisation) {
-        return ccdCaseApi.getOnHoldIdByExternalId(externalId, authorisation);
+    @LogExecutionTime
+    public Optional<Claim> getClaimByExternalId(String externalId, String authorization) {
+        return ccdCaseApi.getByExternalId(externalId, userService.getUser(authorization));
     }
 
     @Override
@@ -103,7 +109,8 @@ public class CCDCaseRepository implements CaseRepository {
         Claim claim,
         String defendantEmail,
         Response response,
-        String authorization) {
+        String authorization
+    ) {
         coreCaseDataService.saveDefendantResponse(claim.getId(), defendantEmail, response, authorization);
     }
 
@@ -132,34 +139,39 @@ public class CCDCaseRepository implements CaseRepository {
         Claim claim,
         Settlement settlement,
         String authorisation,
-        CaseEvent caseEvent) {
+        CaseEvent caseEvent
+    ) {
         coreCaseDataService.saveSettlement(claim.getId(), settlement, authorisation, caseEvent);
     }
 
     @Override
-    public void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation,
-                                         CaseEvent caseEvent) {
+    public void reachSettlementAgreement(
+        Claim claim,
+        Settlement settlement,
+        String authorisation,
+        CaseEvent caseEvent
+    ) {
         coreCaseDataService.reachSettlementAgreement(claim.getId(), settlement, nowInUTC(), authorisation,
             caseEvent);
     }
 
     @Override
     public CaseReference savePrePaymentClaim(String externalId, String authorisation) {
-        try {
-            return new CaseReference(getOnHoldIdByExternalId(externalId, authorisation).toString());
-        } catch (NotFoundException e) {
-            return coreCaseDataService.savePrePayment(externalId, authorisation);
-        }
+        return new CaseReference(externalId);
     }
 
     @Override
-    public Claim saveClaim(String authorisation, Claim claim) {
-        return coreCaseDataService.submitPostPayment(authorisation, claim);
+    public Claim saveClaim(User user, Claim claim) {
+        return coreCaseDataService.createNewCase(user, claim);
     }
 
     @Override
-    public void linkSealedClaimDocument(String authorisation, Claim claim, URI documentURI) {
-        coreCaseDataService.linkSealedClaimDocument(authorisation, claim.getId(), documentURI);
+    public Claim saveClaimDocuments(
+        String authorisation,
+        Long claimId,
+        ClaimDocumentCollection claimDocumentCollection
+    ) {
+        return coreCaseDataService.saveClaimDocuments(authorisation, claimId, claimDocumentCollection);
     }
 
     @Override

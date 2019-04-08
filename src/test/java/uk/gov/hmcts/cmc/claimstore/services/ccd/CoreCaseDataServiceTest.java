@@ -11,7 +11,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
-import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
@@ -20,6 +19,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
@@ -27,7 +27,6 @@ import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
-import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
@@ -39,13 +38,13 @@ import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,7 +62,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CLAIMANT_RESPONSE_ACCEPTATION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CLAIMANT_RESPONSE_REJECTION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCATORY_JUDGEMENT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCUTORY_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_CLAIMANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
@@ -74,9 +73,8 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 @RunWith(MockitoJUnitRunner.class)
 public class CoreCaseDataServiceTest {
     private static final String AUTHORISATION = "Bearer: aaa";
-    private static final String EXTERNAL_ID = UUID.randomUUID().toString();
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder().build();
-    private static final User ANONYMOUS_USER = new User(AUTHORISATION, USER_DETAILS);
+    private static final User USER = new User(AUTHORISATION, USER_DETAILS);
     private static final String AUTH_TOKEN = "authorisation token";
     private static final LocalDate FUTURE_DATE = now().plusWeeks(4);
 
@@ -95,6 +93,8 @@ public class CoreCaseDataServiceTest {
     @Mock
     private CaseAccessApi caseAccessApi;
     @Mock
+    private CCDCreateCaseService ccdCreateCaseService;
+    @Mock
     private JobSchedulerService jobSchedulerService;
     @Captor
     private ArgumentCaptor<Map<String, Object>> caseDataCaptor;
@@ -105,20 +105,6 @@ public class CoreCaseDataServiceTest {
     public void before() {
         when(authTokenGenerator.generate()).thenReturn(AUTH_TOKEN);
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(USER_DETAILS);
-        when(userService.authenticateAnonymousCaseWorker()).thenReturn(ANONYMOUS_USER);
-        when(coreCaseDataApi.startForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            anyString()
-        ))
-            .thenReturn(StartEventResponse.builder()
-                .caseDetails(CaseDetails.builder().build())
-                .eventId("eventId")
-                .token("token")
-                .build());
 
         when(coreCaseDataApi.startEventForCitizen(
             eq(AUTHORISATION),
@@ -157,69 +143,43 @@ public class CoreCaseDataServiceTest {
             referenceNumberService,
             coreCaseDataApi,
             authTokenGenerator,
-            caseAccessApi,
-            jobSchedulerService
+            jobSchedulerService,
+            ccdCreateCaseService
         );
     }
 
     @Test
-    public void savePrePaymentShouldReturnReferenceNumber() {
-        when(coreCaseDataApi.submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
-        ))
-            .thenReturn(CaseDetails.builder().id(SampleClaim.CLAIM_ID).build());
-
-        CaseReference reference = service.savePrePayment(EXTERNAL_ID, AUTHORISATION);
-
-        verify(coreCaseDataApi).submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
-        );
-
-        assertNotNull(reference);
-        assertEquals(SampleClaim.CLAIM_ID.toString(), reference.getCaseReference());
-    }
-
-    @Test(expected = CoreCaseDataStoreException.class)
-    public void shouldThrowCCDExceptionWhenSubmitFails() {
-        when(coreCaseDataApi.submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
-        ))
-            .thenThrow(new RuntimeException("Any runtime exception"));
-
-        CaseReference reference = service.savePrePayment(EXTERNAL_ID, AUTHORISATION);
-
-        assertNotNull(reference);
-        assertEquals(SampleClaim.CLAIM_ID.toString(), reference.getCaseReference());
-    }
-
-    @Test
-    public void submitPostPaymentShouldReturnClaim() {
+    public void submitClaimShouldReturnClaim() {
         Claim providedClaim = SampleClaim.getDefault();
-        Claim expectedClaim = SampleClaim.claim(null, "000MC001");
+        Claim expectedClaim = SampleClaim.claim(providedClaim.getClaimData(), "000MC001");
+
+        when(ccdCreateCaseService.startCreate(
+            eq(AUTHORISATION),
+            any(EventRequestData.class),
+            eq(false)
+        ))
+            .thenReturn(StartEventResponse.builder()
+                .caseDetails(CaseDetails.builder().build())
+                .eventId("eventId")
+                .token("token")
+                .build());
+
+        when(ccdCreateCaseService.submitCreate(
+            eq(AUTHORISATION),
+            any(EventRequestData.class),
+            any(CaseDataContent.class),
+            eq(false)
+        ))
+            .thenReturn(CaseDetails.builder()
+                .id(SampleClaim.CLAIM_ID)
+                .data(new HashMap<>())
+                .build());
 
         when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
         when(jsonMapper.fromMap(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
         when(caseMapper.from(any(CCDCase.class))).thenReturn(expectedClaim);
 
-        Claim returnedClaim = service.submitPostPayment(AUTHORISATION, providedClaim);
+        Claim returnedClaim = service.createNewCase(USER, providedClaim);
 
         assertEquals(expectedClaim, returnedClaim);
         verify(jsonMapper).fromMap(caseDataCaptor.capture(), eq(CCDCase.class));
@@ -227,7 +187,7 @@ public class CoreCaseDataServiceTest {
     }
 
     @Test
-    public void linkDefendantShouldbeSuccessful() {
+    public void linkDefendantShouldBeSuccessful() {
         Claim providedClaim = SampleClaim.getDefault();
         when(jsonMapper.fromMap(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
         when(caseMapper.from(any(CCDCase.class))).thenReturn(providedClaim);
@@ -282,12 +242,15 @@ public class CoreCaseDataServiceTest {
     public void linkSealedClaimDocumentShouldReturnCaseDetails() {
 
         URI sealedClaimUri = URI.create("http://localhost/sealedClaim.pdf");
+        Claim claim = SampleClaim.getClaimWithSealedClaimLink(sealedClaimUri);
         when(jsonMapper.fromMap(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
-        when(caseMapper.from(any(CCDCase.class))).thenReturn(SampleClaim.getClaimWithSealedClaimLink(sealedClaimUri));
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
 
-        CaseDetails caseDetails = service.linkSealedClaimDocument(AUTHORISATION, SampleClaim.CLAIM_ID, sealedClaimUri);
+        Claim updatedClaim = service.saveClaimDocuments(AUTHORISATION,
+            SampleClaim.CLAIM_ID,
+            claim.getClaimDocumentCollection().orElse(new ClaimDocumentCollection()));
 
-        assertNotNull(caseDetails);
+        assertNotNull(updatedClaim);
     }
 
     @Test
@@ -500,10 +463,10 @@ public class CoreCaseDataServiceTest {
 
         when(jsonMapper.fromMap(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
 
-        service.saveCaseEvent(AUTHORISATION, claim.getId(), INTERLOCATORY_JUDGEMENT);
+        service.saveCaseEvent(AUTHORISATION, claim.getId(), INTERLOCUTORY_JUDGMENT);
 
         verify(coreCaseDataApi, atLeastOnce()).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
-            anyString(), anyString(), eq(INTERLOCATORY_JUDGEMENT.getValue()));
+            anyString(), anyString(), eq(INTERLOCUTORY_JUDGMENT.getValue()));
     }
 
     @Test

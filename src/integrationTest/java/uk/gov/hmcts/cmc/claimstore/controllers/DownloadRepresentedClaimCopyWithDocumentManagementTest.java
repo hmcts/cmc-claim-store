@@ -4,9 +4,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.cmc.claimstore.controllers.base.BaseDownloadDocumentTest;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.reform.document.domain.Classification;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 
 import java.net.URI;
@@ -15,6 +17,7 @@ import java.util.Optional;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -22,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementUploadResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.unsuccessfulDocumentManagementUploadResponse;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @TestPropertySource(
     properties = {
@@ -38,14 +42,15 @@ public class DownloadRepresentedClaimCopyWithDocumentManagementTest extends Base
     public void setup() {
         given(pdfServiceClient.generateFromHtml(any(), any()))
             .willReturn(PDF_BYTES);
-
+        given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(new User(AUTHORISATION_TOKEN, USER_DETAILS));
         given(userService.getUserDetails(any())).willReturn(SampleUserDetails.getDefault());
     }
 
     @Test
     public void shouldUploadSealedClaimWhenDocumentHasNotBeenUploadedYet() throws Exception {
-        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
-            .willReturn(successfulDocumentManagementUploadResponse());
+        given(documentUploadClient
+            .upload(eq(AUTHORISATION_TOKEN), any(), any(), anyList(), any(Classification.class), any())
+        ).willReturn(successfulDocumentManagementUploadResponse());
 
         Claim claim = claimStore.saveClaim(SampleClaimData.submittedByLegalRepresentative());
 
@@ -53,16 +58,17 @@ public class DownloadRepresentedClaimCopyWithDocumentManagementTest extends Base
             .andExpect(status().isOk())
             .andExpect(content().bytes(PDF_BYTES));
 
-        verify(documentUploadClient).upload(eq(AUTHORISATION_TOKEN), any(), any(),
+        verify(documentUploadClient).upload(eq(AUTHORISATION_TOKEN), any(), any(), anyList(), any(Classification.class),
             eq(newArrayList(new InMemoryMultipartFile("files",
-            claim.getReferenceNumber() + "-claim-form.pdf", "application/pdf", PDF_BYTES)))
+                claim.getReferenceNumber() + "-claim-form.pdf", "application/pdf", PDF_BYTES)))
         );
     }
 
     @Test
     public void shouldLinkSealedClaimWhenDocumentHasNotBeenUploadedYet() throws Exception {
-        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
-            .willReturn(successfulDocumentManagementUploadResponse());
+        given(documentUploadClient
+            .upload(eq(AUTHORISATION_TOKEN), any(), any(), anyList(), any(Classification.class), any())
+        ).willReturn(successfulDocumentManagementUploadResponse());
 
         Claim claim = claimStore.saveClaim(SampleClaimData.submittedByLegalRepresentative());
 
@@ -70,7 +76,7 @@ public class DownloadRepresentedClaimCopyWithDocumentManagementTest extends Base
             .andExpect(status().isOk())
             .andExpect(content().bytes(PDF_BYTES));
 
-        assertThat(claimStore.getClaim(claim.getId()).getSealedClaimDocument())
+        assertThat(claimStore.getClaim(claim.getId()).getClaimDocument(SEALED_CLAIM))
             .isEqualTo(Optional.of(URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4")));
     }
 
@@ -85,7 +91,7 @@ public class DownloadRepresentedClaimCopyWithDocumentManagementTest extends Base
             .andExpect(status().isOk())
             .andExpect(content().bytes(PDF_BYTES));
 
-        assertThat(claimStore.getClaim(claim.getId()).getSealedClaimDocument())
+        assertThat(claimStore.getClaim(claim.getId()).getClaimDocument(SEALED_CLAIM))
             .isEqualTo(Optional.empty());
 
     }

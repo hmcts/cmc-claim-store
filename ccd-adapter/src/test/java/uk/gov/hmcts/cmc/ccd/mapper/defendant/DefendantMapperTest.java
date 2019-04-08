@@ -10,7 +10,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.util.SampleCCDDefendant;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -66,29 +66,29 @@ public class DefendantMapperTest {
             "referenceNumber");
 
         //When
-        CCDCollectionElement<CCDDefendant> ccdDefendant = mapper.to(theirDetails, claim);
-        CCDDefendant defendant = ccdDefendant.getValue();
+        CCDCollectionElement<CCDRespondent> ccdRespondent = mapper.to(theirDetails, claim);
+        CCDRespondent respondent = ccdRespondent.getValue();
 
         //Then
-        Assertions.assertThat(theirDetails.getId()).isEqualTo(ccdDefendant.getId());
+        Assertions.assertThat(theirDetails.getId()).isEqualTo(ccdRespondent.getId());
 
         assertEquals("Claim response deadline is not mapped properly",
-            defendant.getResponseDeadline(), claim.getResponseDeadline());
+            respondent.getResponseDeadline(), claim.getResponseDeadline());
 
         assertEquals("Claim response letter holder id is not mapped properly",
-            defendant.getLetterHolderId(), claim.getLetterHolderId());
+            respondent.getLetterHolderId(), claim.getLetterHolderId());
 
         assertEquals("Claim defendantId is not mapped properly",
-            defendant.getDefendantId(), claim.getDefendantId());
+            respondent.getDefendantId(), claim.getDefendantId());
 
         assertEquals("Claim defendant email is not mapped properly",
-            defendant.getPartyEmail(), claim.getDefendantEmail());
+            respondent.getPartyDetail().getEmailAddress(), claim.getDefendantEmail());
 
         assertEquals("Claim response more time requested is not mapped properly",
-            defendant.getResponseMoreTimeNeededOption().toBoolean(), claim.isMoreTimeRequested());
+            respondent.getResponseMoreTimeNeededOption().toBoolean(), claim.isMoreTimeRequested());
 
         assertEquals("The claimantProvidedType should be of organization",
-            ORGANISATION, defendant.getClaimantProvidedType());
+            ORGANISATION, respondent.getClaimantProvidedDetail().getType());
     }
 
     @Test
@@ -98,74 +98,75 @@ public class DefendantMapperTest {
         Claim claim = SampleClaim.getClaimWithFullDefenceNoMediation();
 
         //When
-        CCDCollectionElement<CCDDefendant> ccdDefendant = mapper.to(theirDetails, claim);
-        CCDDefendant defendant = ccdDefendant.getValue();
+        CCDCollectionElement<CCDRespondent> ccdRespondent = mapper.to(theirDetails, claim);
+        CCDRespondent respondent = ccdRespondent.getValue();
         //Then
         assertEquals("Claim response deadline is not mapped properly",
-            defendant.getResponseDeadline(), claim.getResponseDeadline());
+            respondent.getResponseDeadline(), claim.getResponseDeadline());
 
         assertEquals("Claim response letter holder id is not mapped properly",
-            defendant.getLetterHolderId(), claim.getLetterHolderId());
+            respondent.getLetterHolderId(), claim.getLetterHolderId());
 
         assertEquals("Claim defendantId is not mapped properly",
-            defendant.getDefendantId(), claim.getDefendantId());
+            respondent.getDefendantId(), claim.getDefendantId());
 
         assertEquals("Claim defendant email is not mapped properly",
-            defendant.getPartyEmail(), claim.getDefendantEmail());
+            respondent.getPartyDetail().getEmailAddress(), claim.getDefendantEmail());
 
         assertEquals("Claim response more time requested is not mapped properly",
-            defendant.getResponseMoreTimeNeededOption().toBoolean(), claim.isMoreTimeRequested());
+            respondent.getResponseMoreTimeNeededOption().toBoolean(), claim.isMoreTimeRequested());
 
         //Verify if the TheirDetails mapper and response mapper are called by assert not null
-        assertThat(defendant.getResponseSubmittedOn(), is(notNullValue()));
-        assertThat(defendant.getResponseType(), is(notNullValue()));
-        assertThat(defendant.getClaimantProvidedType(), is(notNullValue()));
+        assertThat(respondent.getResponseSubmittedOn(), is(notNullValue()));
+        assertThat(respondent.getResponseType(), is(notNullValue()));
+        assertThat(respondent.getClaimantProvidedDetail(), is(notNullValue()));
+        assertThat(respondent.getClaimantProvidedDetail().getType(), is(notNullValue()));
 
         assertEquals("The mapping for theirDetailsMapper is not done properly",
-            INDIVIDUAL, defendant.getClaimantProvidedType());
+            INDIVIDUAL, respondent.getPartyDetail().getType());
 
         assertEquals("The claim response submitted is not mapped properly when response is present",
-            defendant.getResponseSubmittedOn(), claim.getRespondedAt());
+            respondent.getResponseSubmittedOn(), claim.getRespondedAt());
 
         assertEquals("The Response mapper is not called / mapped when response is available",
-            defendant.getResponseType().name(), claim.getResponse().get().getResponseType().name());
+            respondent.getResponseType().name(), claim.getResponse().get().getResponseType().name());
     }
 
     @Test
     public void mapTheirDetailsFromCCDClaimWithNoResponse() {
         //Given
-        CCDDefendant ccdDefendant = SampleCCDDefendant.withResponseMoreTimeNeededOption().build();
+        CCDRespondent ccdRespondent = SampleCCDDefendant.withResponseMoreTimeNeededOption().build();
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         //when
-        mapper.from(claimBuilder, CCDCollectionElement.<CCDDefendant>builder().value(ccdDefendant).build());
+        mapper.from(claimBuilder, CCDCollectionElement.<CCDRespondent>builder().value(ccdRespondent).build());
         Claim finalClaim = claimBuilder.build();
 
         // Then
         assertEquals("response deadline is not mapped properly",
-            finalClaim.getResponseDeadline(), ccdDefendant.getResponseDeadline());
+            finalClaim.getResponseDeadline(), ccdRespondent.getResponseDeadline());
 
         assertEquals("Claim response letter holder id is not mapped properly",
-            finalClaim.getLetterHolderId(), ccdDefendant.getLetterHolderId());
+            finalClaim.getLetterHolderId(), ccdRespondent.getLetterHolderId());
 
         assertEquals("Claim defendantId is not mapped properly",
-            finalClaim.getDefendantId(), ccdDefendant.getDefendantId());
+            finalClaim.getDefendantId(), ccdRespondent.getDefendantId());
 
         assertEquals("Claim defendant email is not mapped properly",
-            finalClaim.getDefendantEmail(), ccdDefendant.getPartyEmail());
+            finalClaim.getDefendantEmail(), ccdRespondent.getPartyDetail().getEmailAddress());
 
         assertEquals("Claim response more time requested is not mapped properly",
-            finalClaim.isMoreTimeRequested(), ccdDefendant.getResponseMoreTimeNeededOption().toBoolean());
+            finalClaim.isMoreTimeRequested(), ccdRespondent.getResponseMoreTimeNeededOption().toBoolean());
     }
 
     @Test
     public void mapTheirDetailsFromCCDClaimWithNoResponseMoreTimeNeededOption() {
         //Given
-        CCDDefendant ccdDefendant = SampleCCDDefendant.withDefault().build();
+        CCDRespondent ccdRespondent = SampleCCDDefendant.withDefault().build();
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         //when
-        mapper.from(claimBuilder, CCDCollectionElement.<CCDDefendant>builder().value(ccdDefendant).build());
+        mapper.from(claimBuilder, CCDCollectionElement.<CCDRespondent>builder().value(ccdRespondent).build());
         Claim finalClaim = claimBuilder.build();
 
         // Then
@@ -176,10 +177,10 @@ public class DefendantMapperTest {
     @Test
     public void mapTheirDetailsFromCCDClaimWithResponse() {
         //Given
-        CCDDefendant ccdDefendant = SampleCCDDefendant.withResponseMoreTimeNeededOption().build();
+        CCDRespondent ccdRespondent = SampleCCDDefendant.withResponseMoreTimeNeededOption().build();
 
-        CCDCollectionElement<CCDDefendant> defendant
-            = CCDCollectionElement.<CCDDefendant>builder().value(ccdDefendant).build();
+        CCDCollectionElement<CCDRespondent> defendant
+            = CCDCollectionElement.<CCDRespondent>builder().value(ccdRespondent).build();
 
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
@@ -191,19 +192,19 @@ public class DefendantMapperTest {
         assertThat(party, instanceOf(IndividualDetails.class));
 
         assertEquals("Response deadline is not mapped properly",
-            finalClaim.getResponseDeadline(), ccdDefendant.getResponseDeadline());
+            finalClaim.getResponseDeadline(), ccdRespondent.getResponseDeadline());
 
         assertEquals("Claim response letter holder id is not mapped properly",
-            finalClaim.getLetterHolderId(), ccdDefendant.getLetterHolderId());
+            finalClaim.getLetterHolderId(), ccdRespondent.getLetterHolderId());
 
         assertEquals("Claim defendantId is not mapped properly",
-            finalClaim.getDefendantId(), ccdDefendant.getDefendantId());
+            finalClaim.getDefendantId(), ccdRespondent.getDefendantId());
 
         assertEquals("Claim defendant email is not mapped properly",
-            finalClaim.getDefendantEmail(), ccdDefendant.getPartyEmail());
+            finalClaim.getDefendantEmail(), ccdRespondent.getPartyDetail().getEmailAddress());
 
         assertEquals("Claim response more time requested is not mapped properly",
-            finalClaim.isMoreTimeRequested(), ccdDefendant.getResponseMoreTimeNeededOption().toBoolean());
+            finalClaim.isMoreTimeRequested(), ccdRespondent.getResponseMoreTimeNeededOption().toBoolean());
     }
 
     @Test
@@ -214,10 +215,10 @@ public class DefendantMapperTest {
         CountyCourtJudgment countyCourtJudgment = claimWithCCJ.getCountyCourtJudgment();
 
         //When
-        CCDCollectionElement<CCDDefendant> defendant = mapper.to(theirDetails, claimWithCCJ);
-        CCDDefendant ccdDefendant = defendant.getValue();
+        CCDCollectionElement<CCDRespondent> defendant = mapper.to(theirDetails, claimWithCCJ);
+        CCDRespondent respondent = defendant.getValue();
         //Then
-        CCDCountyCourtJudgment ccdCountyCourtJudgment = ccdDefendant.getCountyCourtJudgementRequest();
+        CCDCountyCourtJudgment ccdCountyCourtJudgment = respondent.getCountyCourtJudgmentRequest();
         assertNotNull(ccdCountyCourtJudgment);
         assertEquals(ccdCountyCourtJudgment.getType().name(), countyCourtJudgment.getCcjType().name());
         assertEquals(ccdCountyCourtJudgment.getRequestedDate(), claimWithCCJ.getCountyCourtJudgmentRequestedAt());
@@ -231,8 +232,8 @@ public class DefendantMapperTest {
         Claim claimWithPaidInFull = SampleClaim.builder().withMoneyReceivedOn(moneyReceivedOn).build();
 
         //When
-        CCDCollectionElement<CCDDefendant> ccdDefendant = mapper.to(theirDetails, claimWithPaidInFull);
-        CCDDefendant value = ccdDefendant.getValue();
+        CCDCollectionElement<CCDRespondent> ccdRespondent = mapper.to(theirDetails, claimWithPaidInFull);
+        CCDRespondent value = ccdRespondent.getValue();
 
         //Then
         assertNotNull(value.getPaidInFullDate());
@@ -242,16 +243,16 @@ public class DefendantMapperTest {
     @Test
     public void mapPaidInFullFromCCDDefendant() {
         //Given
-        CCDDefendant ccdDefendant = SampleCCDDefendant.withPaidInFull(now()).build();
+        CCDRespondent ccdRespondent = SampleCCDDefendant.withPaidInFull(now()).build();
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         //when
-        mapper.from(claimBuilder, CCDCollectionElement.<CCDDefendant>builder().value(ccdDefendant).build());
+        mapper.from(claimBuilder, CCDCollectionElement.<CCDRespondent>builder().value(ccdRespondent).build());
         Claim claim = claimBuilder.build();
 
         //Then
         assertTrue(claim.getMoneyReceivedOn().isPresent());
-        assertEquals(ccdDefendant.getPaidInFullDate(), claim.getMoneyReceivedOn().orElseThrow(AssertionError::new));
+        assertEquals(ccdRespondent.getPaidInFullDate(), claim.getMoneyReceivedOn().orElseThrow(AssertionError::new));
     }
 
     @Test
@@ -261,8 +262,8 @@ public class DefendantMapperTest {
         Claim claimWithCCJ = SampleClaim.getWithSettlement(null);
 
         //When
-        CCDCollectionElement<CCDDefendant> ccdDefendant = mapper.to(theirDetails, claimWithCCJ);
-        CCDDefendant value = ccdDefendant.getValue();
+        CCDCollectionElement<CCDRespondent> ccdRespondent = mapper.to(theirDetails, claimWithCCJ);
+        CCDRespondent value = ccdRespondent.getValue();
 
         //Then
         assertNull(value.getSettlementPartyStatements());
@@ -279,38 +280,38 @@ public class DefendantMapperTest {
         final LocalDateTime settlementReachedAt = claimWithSettlement.getSettlementReachedAt();
 
         //When
-        CCDCollectionElement<CCDDefendant> collectionElement = mapper.to(theirDetails, claimWithSettlement);
-        CCDDefendant ccdDefendant = collectionElement.getValue();
+        CCDCollectionElement<CCDRespondent> collectionElement = mapper.to(theirDetails, claimWithSettlement);
+        CCDRespondent ccdRespondent = collectionElement.getValue();
 
         //Then
-        assertNotNull(ccdDefendant.getSettlementPartyStatements());
-        assertNotNull(ccdDefendant.getSettlementReachedAt());
-        assertThat(ccdDefendant.getSettlementPartyStatements().size(), is(2));
-        assertEquals(settlementReachedAt, ccdDefendant.getSettlementReachedAt());
+        assertNotNull(ccdRespondent.getSettlementPartyStatements());
+        assertNotNull(ccdRespondent.getSettlementReachedAt());
+        assertThat(ccdRespondent.getSettlementPartyStatements().size(), is(2));
+        assertEquals(settlementReachedAt, ccdRespondent.getSettlementReachedAt());
     }
 
     @Test
     public void mapFromCCDDefendantWithNoSettlementDetails() {
         //Given
-        CCDDefendant ccdDefendant = SampleCCDDefendant.withResponseMoreTimeNeededOption().build();
+        CCDRespondent ccdRespondent = SampleCCDDefendant.withResponseMoreTimeNeededOption().build();
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         //when
-        mapper.from(claimBuilder, CCDCollectionElement.<CCDDefendant>builder().value(ccdDefendant).build());
+        mapper.from(claimBuilder, CCDCollectionElement.<CCDRespondent>builder().value(ccdRespondent).build());
 
         //Then
-        assertNull(ccdDefendant.getSettlementReachedAt());
-        assertNull(ccdDefendant.getSettlementPartyStatements());
+        assertNull(ccdRespondent.getSettlementReachedAt());
+        assertNull(ccdRespondent.getSettlementPartyStatements());
     }
 
     @Test
     public void mapFromCCDDefendantWithSettlements() {
         //Given
-        CCDDefendant ccdDefendant = SampleCCDDefendant.withPartyStatements().build();
+        CCDRespondent ccdRespondent = SampleCCDDefendant.withPartyStatements().build();
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         //when
-        mapper.from(claimBuilder, CCDCollectionElement.<CCDDefendant>builder().value(ccdDefendant).build());
+        mapper.from(claimBuilder, CCDCollectionElement.<CCDRespondent>builder().value(ccdRespondent).build());
         Claim finalClaim = claimBuilder.build();
 
         // Then

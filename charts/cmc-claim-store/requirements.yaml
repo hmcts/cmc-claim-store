@@ -1,14 +1,14 @@
 dependencies:
+  - name: java
+    version: ~1.1.0
+    repository: '@hmcts'
   - name: postgresql
     version: ~2.6.5
     repository: '@stable'
-  - name: java
-    version: ~0.0.12
+    tags:
+      - cmc-claim-store-postgresql-pod
+  - name: cmc-citizen-frontend
+    version: ~0.0.6
     repository: '@hmcts'
-    alias: claim-store
-  - name: nodejs
-    version: 0.0.11
-    repository: '@hmcts'
-  - name: rpe-feature-toggle-api
-    version: 0.0.4
-    repository: '@hmcts'
+    tags:
+      - cmc-citizen-frontend-pod

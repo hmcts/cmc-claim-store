@@ -53,6 +53,8 @@ public class PartAdmissionResponse extends Response {
     @Builder
     public PartAdmissionResponse(
         YesNoOption freeMediation,
+        String mediationPhoneNumber,
+        String mediationContactPerson,
         YesNoOption moreTimeNeeded,
         Party defendant,
         StatementOfTruth statementOfTruth,
@@ -64,7 +66,15 @@ public class PartAdmissionResponse extends Response {
         DefendantEvidence evidence,
         StatementOfMeans statementOfMeans
     ) {
-        super(PART_ADMISSION, freeMediation, moreTimeNeeded, defendant, statementOfTruth);
+        super(
+            PART_ADMISSION,
+            freeMediation,
+            mediationPhoneNumber,
+            mediationContactPerson,
+            moreTimeNeeded,
+            defendant,
+            statementOfTruth
+        );
         this.amount = amount;
         this.paymentDeclaration = paymentDeclaration;
         this.paymentIntention = paymentIntention;

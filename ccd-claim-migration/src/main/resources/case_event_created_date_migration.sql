@@ -23,7 +23,7 @@ WITH subquery AS (
      case_data.id,
      case_data.jurisdiction,
      defendants -> 'value' as value
-     FROM case_data , jsonb_array_elements(case_data.data::JSONB -> 'defendants') defendants
+     FROM case_data , jsonb_array_elements(case_data.data::JSONB -> 'respondents') defendants
   )
      select event.id ,
      event.created_date,
@@ -48,7 +48,7 @@ WITH subquery AS (
      case_data.id,
      case_data.jurisdiction,
      defendants -> 'value' as value
-     FROM case_data , jsonb_array_elements(case_data.data::JSONB -> 'defendants') defendants
+     FROM case_data , jsonb_array_elements(case_data.data::JSONB -> 'respondents') defendants
   )
      select event.id ,
      event.created_date,
@@ -72,11 +72,11 @@ WITH subquery AS (
      case_data.id,
      case_data.jurisdiction,
      defendants -> 'value' as value
-     FROM case_data , jsonb_array_elements(case_data.data::JSONB -> 'defendants') defendants
+     FROM case_data , jsonb_array_elements(case_data.data::JSONB -> 'respondents') defendants
   )
      select event.id ,
      event.created_date,
-     json_extract_path_text(data.value::JSON, 'countyCourtJudgementRequest', 'requestedDate') as date
+     json_extract_path_text(data.value::JSON, 'countyCourtJudgmentRequest', 'requestedDate') as date
      from dataquery data, case_event event
      where event.case_data_id = data.id and data.jurisdiction='CMC'
      and (event.event_id = 'DefaultCCJRequested' or
@@ -96,7 +96,7 @@ WITH subquery AS (
           case_data.id,
           case_data.jurisdiction,
           defendants -> 'value' as value
-          FROM case_data , jsonb_array_elements(case_data.data::JSONB -> 'defendants') defendants
+          FROM case_data , jsonb_array_elements(case_data.data::JSONB -> 'respondents') defendants
       )
       select event.id ,
       event.created_date,
@@ -121,7 +121,7 @@ WITH subquery AS (
         case_data.id,
         case_data.jurisdiction,
         defendants -> 'value' as value
-        FROM case_data , jsonb_array_elements(case_data.data::JSONB -> 'defendants') defendants
+        FROM case_data , jsonb_array_elements(case_data.data::JSONB -> 'respondents') defendants
       )
       select event.id ,
       event.created_date,

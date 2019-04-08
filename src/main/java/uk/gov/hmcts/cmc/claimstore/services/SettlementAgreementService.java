@@ -80,7 +80,7 @@ public class SettlementAgreementService {
 
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
 
-        eventProducer.createSettlementAgreementCountersignedEvent(updated);
+        eventProducer.createSettlementAgreementCountersignedEvent(updated, authorisation);
         this.ccdEventProducer.createCCDSettlementEvent(claim, settlement, authorisation, caseEvent);
         AppInsightsEvent appInsightsEvent = settlement.isSettlementThroughAdmissions()
             ? SETTLEMENT_AGREEMENT_REACHED_BY_ADMISSION : SETTLEMENT_AGREEMENT_REACHED;

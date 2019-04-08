@@ -42,7 +42,7 @@ public class FullDefenceStaffEmailContentProviderTest {
         EmailContent content = service.createContent(wrapInMap(SampleClaim.getWithDefaultResponse(), DEFENDANT_EMAIL));
         assertThat(content.getSubject())
             .contains("Civil Money Claim defence submitted:")
-            .contains("John Rambo v John Smith")
+            .contains("John Rambo v Dr. John Smith")
             .contains("000CM001");
     }
 

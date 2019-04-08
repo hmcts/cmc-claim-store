@@ -37,7 +37,6 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails.getDefault;
-import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.RESPONSE_DEADLINE;
 
 @TestPropertySource(
     properties = {
@@ -48,7 +47,9 @@ import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.RESPONSE_DEADLINE;
 )
 public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest {
 
-    public static final String DEFENDANT_BEARER_TOKEN = "token";
+    public static final String DEFENDANT_BEARER_TOKEN = "defendant-token";
+    private static final User USER = new User(BEARER_TOKEN, getDefault());
+
     @MockBean
     protected SendLetterApi sendLetterApi;
 
@@ -62,6 +63,7 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
     @Before
     public void setUp() {
         given(userService.getUserDetails(anyString())).willReturn(getDefault());
+
         claim = SampleClaim.builder()
             .withExternalId(UUID.randomUUID().toString())
             .withClaimData(SampleClaimData.validDefaults())
@@ -71,7 +73,7 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
             .withDefendantId(DEFENDANT_ID)
             .build();
 
-        claim = caseRepository.saveClaim(BEARER_TOKEN, claim);
+        claim = caseRepository.saveClaim(USER, claim);
     }
 
     @Test
@@ -99,13 +101,14 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
         return webClient
             .perform(post("/claims/" + externalId + "/county-court-judgment")
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
-                .header(HttpHeaders.AUTHORIZATION, "token")
+                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
                 .content(jsonMapper.toJson(countyCourtJudgment))
             );
     }
 
     @Test
     public void shouldNotSendStaffNotificationWhenCounterSignRequestSubmitted() throws Exception {
+        claimStore.saveResponse(claim, SampleResponse.FullDefence.builder().build());
         Settlement settlement = new Settlement();
         settlement.makeOffer(SampleOffer.builder().build(), MadeBy.DEFENDANT, null);
         claim = claimStore.makeOffer(claim.getExternalId(), settlement);
@@ -122,20 +125,24 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
         return webClient
             .perform(post("/claims/" + externalId + "/offers/DEFENDANT/countersign")
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
-                .header(HttpHeaders.AUTHORIZATION, "token")
+                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
             );
     }
 
     @Test
     public void shouldNotInvokeStaffActionsHandlerAfterSuccessfulDefendantResponseSave() throws Exception {
-        given(userService.getUser(anyString())).willReturn(SampleUser.builder()
+        UserDetails userDetails = SampleUserDetails.builder()
+            .withUserId(DEFENDANT_ID)
+            .withRoles("citizen", "letter-" + SampleClaim.LETTER_HOLDER_ID)
+            .build();
+
+        User citizen = SampleUser.builder()
             .withAuthorisation(BEARER_TOKEN)
-            .withUserDetails(SampleUserDetails.builder()
-                .withUserId(DEFENDANT_ID)
-                .withRoles("citizen", "letter-" + SampleClaim.LETTER_HOLDER_ID)
-                .build())
-            .build()
-        );
+            .withUserDetails(userDetails)
+            .build();
+
+        given(userService.getUser(BEARER_TOKEN)).willReturn(citizen);
+        given(userService.getUser(DEFENDANT_BEARER_TOKEN)).willReturn(new User(DEFENDANT_BEARER_TOKEN, userDetails));
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
         caseRepository.linkDefendant(BEARER_TOKEN);
@@ -151,22 +158,13 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
         UserDetails userDetails = SampleUserDetails.builder()
             .withUserId(DEFENDANT_ID)
             .withMail("defendant@example.com")
-            .withRoles("letter-" + claim.getLetterHolderId())
+            .withRoles("citizen", "letter-" + SampleClaim.LETTER_HOLDER_ID)
             .build();
 
         given(userService.getUser(DEFENDANT_BEARER_TOKEN)).willReturn(new User(DEFENDANT_BEARER_TOKEN, userDetails));
         given(userService.getUserDetails(DEFENDANT_BEARER_TOKEN)).willReturn(userDetails);
-
-        Claim claim = SampleClaim.builder()
-            .withExternalId(UUID.randomUUID().toString())
-            .withClaimData(SampleClaimData.validDefaults())
-            .withIssuedOn(LocalDate.now().minusDays(3))
-            .withResponseDeadline(RESPONSE_DEADLINE.plusDays(20))
-            .withSubmitterId("1")
-            .withDefendantId(DEFENDANT_ID)
-            .build();
-
-        claim = caseRepository.saveClaim(BEARER_TOKEN, claim);
+        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now().plusDays(1));
+        caseRepository.linkDefendant(DEFENDANT_BEARER_TOKEN);
 
         makeRequestForMoreTimeToRespond(claim.getExternalId(), claim)
             .andExpect(status().isOk());
@@ -187,7 +185,7 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
         return webClient
             .perform(post("/claims/" + externalId + "/request-more-time")
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
-                .header(HttpHeaders.AUTHORIZATION, "token")
+                .header(HttpHeaders.AUTHORIZATION, DEFENDANT_BEARER_TOKEN)
                 .content(jsonMapper.toJson(claim))
             );
     }

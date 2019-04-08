@@ -12,12 +12,12 @@ import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDLinkDefendantEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDLinkSealedClaimDocumentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDMoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDPaidInFullEvent;
-import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDPrePaymentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDReDetermination;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDRejectOrganisationPaymentPlanEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDSettlementEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDTestingLinkDefendantEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDTestingResponseDeadlineEvent;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
@@ -40,12 +40,8 @@ public class CCDEventProducer {
         publisher.publishEvent(new CCDDefendantResponseEvent(claim, authorization));
     }
 
-    public void createCCDPrePaymentEvent(String externalId, String authorisation) {
-        publisher.publishEvent(new CCDPrePaymentEvent(externalId, authorisation));
-    }
-
-    public void createCCDClaimIssuedEvent(Claim claim, String authorisation) {
-        publisher.publishEvent(new CCDClaimIssuedEvent(claim, authorisation));
+    public void createCCDClaimIssuedEvent(Claim claim, User user) {
+        publisher.publishEvent(new CCDClaimIssuedEvent(claim, user));
     }
 
     public void createMoreTimeForCCDResponseRequestedEvent(

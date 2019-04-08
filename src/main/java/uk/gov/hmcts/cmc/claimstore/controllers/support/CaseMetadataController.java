@@ -73,7 +73,7 @@ public class CaseMetadataController {
     public CaseMetadata getByExternalId(@PathVariable("externalId") String externalId) {
         return fromClaim(claimService.getClaimByExternalId(
             externalId,
-            userService.authenticateAnonymousCaseWorker().getAuthorisation()
+            userService.authenticateAnonymousCaseWorker()
             )
         );
     }

@@ -9,6 +9,7 @@ import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -50,6 +51,7 @@ public class ClaimIssuedNotificationService {
         this.notificationsProperties = notificationsProperties;
     }
 
+    @LogExecutionTime
     @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))
     public void sendMail(
         Claim claim,
@@ -77,10 +79,11 @@ public class ClaimIssuedNotificationService {
         String reference,
         String submitterName
     ) {
-        String errorMessage = "Failure: "
-            + " failed to send notification (" + reference
-            + " to " + targetEmail + ") "
-            + " due to " + exception.getMessage();
+        String errorMessage = String.format(
+            "Failure: failed to send notification (%s) due to %s",
+            reference,
+            exception.getMessage()
+        );
 
         logger.info(errorMessage, exception);
     }
@@ -93,7 +96,7 @@ public class ClaimIssuedNotificationService {
         if (!claim.getClaimData().isClaimantRepresented()) {
             parameters.put(CLAIMANT_NAME, getNameWithTitle(claim.getClaimData().getClaimant()));
             parameters.put(CLAIMANT_TYPE, PartyUtils.getType(claim.getClaimData().getClaimant()));
-            parameters.put(DEFENDANT_NAME, getNameWithTitle(claim.getClaimData().getDefendant()));
+            parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
         } else {
             parameters.put(CLAIMANT_NAME, submitterName);
         }

@@ -35,55 +35,62 @@
         }
       }
     ],
-    "claimants": [
+    "applicants": [
       {
         "id": "0da037e8-701c-405d-8d92-222b233d6026",
         "value": {
           "partyName": "Jan Clark",
-          "partyType": "INDIVIDUAL",
-          "partyPhone": "07873727165",
-          "partyAddress": {
-            "PostCode": "SW1A 9AA",
-            "PostTown": "London",
-            "AddressLine1": "Street 1",
-            "AddressLine2": "Street 2",
-            "AddressLine3": "Street 3"
-          },
-          "partyDateOfBirth": "2000-01-01"
+          "partyDetail": {
+            "type": "INDIVIDUAL",
+            "primaryAddress": {
+              "AddressLine1": "Street 1",
+              "AddressLine2": "Street 2",
+              "AddressLine3": "Street 3",
+              "PostCode": "SW1A 9AA",
+              "PostTown": "London"
+            },
+            "telephoneNumber":{
+              "telephoneNumber":"07873727165"
+            },
+            "dateOfBirth":"2000-01-01"
+          }
         }
       }
     ],
     "amountType": "BREAK_DOWN",
-    "defendants": [
+    "respondents": [
       {
         "id": "440ebab7-f812-4f89-9be1-9f67b80f8179",
         "value": {
           "partyName": "Mary Richards",
-          "partyType": "INDIVIDUAL",
-          "partyEmail": "j.smith@example.com",
-          "partyPhone": "07873727165",
-          "defendantId": "62",
-          "partyAddress": {
-            "PostCode": "SW1A 9AA",
-            "PostTown": "London",
-            "AddressLine1": "Flat 3A",
-            "AddressLine2": "Street 1",
-            "AddressLine3": "Middle Road"
+          "partyDetail": {
+            "type": "INDIVIDUAL",
+            "emailAddress": "j.smith@example.com",
+            "primaryAddress": {
+              "PostCode": "SW1A 9AA",
+              "PostTown": "London",
+              "AddressLine1": "Flat 3A",
+              "AddressLine2": "Street 1",
+              "AddressLine3": "Middle Road"
+            },
+            "dateOfBirth": "1970-01-01"
           },
+          "defendantId": "62",
           "letterHolderId": "75",
-          "partyDateOfBirth": "1970-01-01",
           "responseDeadline": "2020-02-06",
           "responseDefenceType": "ALREADY_PAID",
           "responseSubmittedOn": "2019-01-02T16:02:30.834",
-          "claimantProvidedName": "Mary Richards",
-          "claimantProvidedType": "INDIVIDUAL",
-          "claimantProvidedEmail": "j.smith@example.com",
-          "claimantProvidedAddress": {
-            "PostCode": "SW1A 9AA",
-            "PostTown": "London",
-            "AddressLine1": "Flat 3A",
-            "AddressLine2": "Street 1",
-            "AddressLine3": "Middle Road"
+          "claimantProvidedPartyName": "Mary Richards",
+          "claimantProvidedDetail": {
+            "type": "INDIVIDUAL",
+            "emailAddress": "j.smith@example.com",
+            "primaryAddress": {
+              "PostCode": "SW1A 9AA",
+              "PostTown": "London",
+              "AddressLine1": "Flat 3A",
+              "AddressLine2": "Street 1",
+              "AddressLine3": "Middle Road"
+            }
           },
           "paymentDeclarationPaidDate": "2018-01-01",
           "responseFreeMediationOption": "NO",

@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
@@ -19,6 +20,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
@@ -41,6 +43,7 @@ public class ClaimIssuedStaffNotificationService {
     }
 
     @EventListener
+    @LogExecutionTime
     public void notifyStaffOfClaimIssue(DocumentGeneratedEvent event) {
         requireNonNull(event);
 
@@ -53,6 +56,7 @@ public class ClaimIssuedStaffNotificationService {
         List<PDF> documents) {
         EmailContent content = provider.createContent(wrapInMap(claim));
         List<EmailAttachment> attachments = documents.stream()
+            .filter(document -> document.getClaimDocumentType() != CLAIM_ISSUE_RECEIPT)
             .map(document -> pdf(document.getBytes(), document.getFilename()))
             .collect(Collectors.toList());
 

@@ -1,8 +1,15 @@
 package uk.gov.hmcts.cmc.claimstore.services.notifications;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.core.Appender;
+import org.junit.After;
+import org.junit.Before;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.slf4j.LoggerFactory;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -12,7 +19,11 @@ import uk.gov.service.notify.NotificationClient;
 
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
+
 public abstract class BaseNotificationServiceTest {
+
     protected static final String CLAIMANT_CLAIM_ISSUED_TEMPLATE = "claimantClaimIssued";
     protected static final String RESPONSE_BY_CLAIMANT_EMAIL_TO_DEFENDANT = "responseByClaimantEmailToDefendant";
     protected static final String DEFENDANT_RESPONSE_TEMPLATE = "fullDefence";
@@ -25,7 +36,10 @@ public abstract class BaseNotificationServiceTest {
     protected static final String RESPOND_TO_CLAIM_URL = "http://some.host.dot.com/first-contact/start";
     protected static final String USER_EMAIL = "user@example.com";
     protected static final String USER_FULLNAME = "Steven Patrick";
+
     protected final Claim claim = SampleClaim.getDefault();
+
+    protected Logger log = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
     @Mock
     protected NotificationClient notificationClient;
@@ -35,7 +49,32 @@ public abstract class BaseNotificationServiceTest {
     protected NotificationTemplates templates;
     @Mock
     protected EmailTemplates emailTemplates;
+    @Mock
+    protected Appender<ILoggingEvent> mockAppender;
 
     @Captor
+    protected ArgumentCaptor<LoggingEvent> captorLoggingEvent;
+    @Captor
     protected ArgumentCaptor<Map<String, String>> templateParameters;
+
+    @Before
+    public void setUp() {
+        log.addAppender(mockAppender);
+    }
+
+    @After
+    public void tearDown() {
+        log.detachAppender(mockAppender);
+    }
+
+    protected void assertWasLogged(CharSequence text) {
+        verify(mockAppender).doAppend(captorLoggingEvent.capture());
+        LoggingEvent loggingEvent = captorLoggingEvent.getValue();
+        assertThat(loggingEvent.getFormattedMessage()).contains(text);
+    }
+
+    protected void assertWasNotLogged(CharSequence text) {
+        LoggingEvent loggingEvent = captorLoggingEvent.getValue();
+        assertThat(loggingEvent.getFormattedMessage()).doesNotContain(text);
+    }
 }

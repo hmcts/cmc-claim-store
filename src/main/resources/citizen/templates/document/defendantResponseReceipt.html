@@ -180,7 +180,7 @@
       <td colspan="2"><p><strong>Issued on: </strong> {{ claim.issuedOn }}</p></td>
     </tr>
     <tr>
-      <td colspan="2" class="spacing-bottom"><p><strong>Response submitted on: </strong> {{ defenceSubmittedOn }}</p>
+      <td colspan="2" class="spacing-bottom"><p><strong>Response received on: </strong> {{ defenceSubmittedOn }}</p>
       </td>
     </tr>
   </table>
@@ -765,25 +765,17 @@
       {% endif %}
 
       {% if signerName is defined and signerName is not empty %}
-      {% if defendant.type == 'on behalf of a company' %}
       <tr class="no-border">
         <td class="no-border"></td>
-        <td class="no-border"><strong>Company: </strong> {{ defendant.fullName }}</td>
+        <td class="no-border"><strong>Company: </strong> {{ defendant.businessName }}</td>
       </tr>
-      {% endif %}
       <tr class="no-border">
         <td class="no-border"></td>
         <td class="no-border"><strong>Name: </strong> {{ signerName }}</td>
       </tr>
-      {% if defendant.type == 'as a sole trader or self-employed person' %}
       <tr class="no-border">
         <td class="no-border"></td>
-        <td class="no-border"><strong>Trading as: </strong>{{ defendant.businessName }}</td>
-      </tr>
-      {% endif %}
-      <tr class="no-border">
-        <td class="no-border"></td>
-        <td class="no-border"><strong>Job Title: </strong>{{ signerRole }}</td>
+        <td class="no-border"><strong>Role: </strong>{{ signerRole }}</td>
       </tr>
       {% endif %}
       <tr class="no-border">
