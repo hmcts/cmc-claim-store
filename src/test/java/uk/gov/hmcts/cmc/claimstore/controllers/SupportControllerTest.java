@@ -144,8 +144,6 @@ public class SupportControllerTest {
             .withDefendantId(null)
             .build();
 
-        List<String> sendList = new ArrayList<>();
-        sendList.add(CLAIMREFERENCENUMBER);
         String letterHolderId = "333";
         GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", letterHolderId);
         given(userService.generatePin(anyString(), eq(AUTHORISATION))).willReturn(pinResponse);
