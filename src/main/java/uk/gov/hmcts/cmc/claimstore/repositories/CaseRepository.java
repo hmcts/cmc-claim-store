@@ -48,7 +48,7 @@ public interface CaseRepository {
 
     List<Claim> getByPaymentReference(String payReference, String authorisation);
 
-    List<Claim> getClaimsByState(User user, ClaimState claimState);
+    List<Claim> getClaimsByState(ClaimState claimState, User user);
 
     Optional<Claim> getByLetterHolderId(String id, String authorisation);
 

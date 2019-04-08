@@ -183,8 +183,8 @@ public class ClaimService {
         return caseRepository.getByPaymentReference(payReference, authorisation);
     }
 
-    public List<Claim> getClaimsByState(User user, ClaimState claimState) {
-        return caseRepository.getClaimsByState(user, claimState);
+    public List<Claim> getClaimsByState(ClaimState claimState, User user) {
+        return caseRepository.getClaimsByState(claimState, user);
     }
 
     public CaseReference savePrePayment(String externalId, String authorisation) {

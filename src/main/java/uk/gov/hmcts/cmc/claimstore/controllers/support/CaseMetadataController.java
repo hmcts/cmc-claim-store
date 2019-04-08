@@ -124,7 +124,7 @@ public class CaseMetadataController {
 
     @GetMapping("/filters/created")
     public List<CaseMetadata> getCreatedCases() {
-        return claimService.getClaimsByState(userService.authenticateAnonymousCaseWorker(), CREATED)
+        return claimService.getClaimsByState(CREATED, userService.authenticateAnonymousCaseWorker())
             .stream()
             .map(CaseMetadata::fromClaim)
             .collect(Collectors.toList());

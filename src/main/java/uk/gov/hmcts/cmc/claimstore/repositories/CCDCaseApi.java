@@ -134,7 +134,7 @@ public class CCDCaseApi {
         return getAllCasesBy(user, ImmutableMap.of("case.paymentReference", payReference));
     }
 
-    public List<Claim> getClaimsByState(User user, ClaimState claimState) {
+    public List<Claim> getClaimsByState(ClaimState claimState, User user) {
         throw new NotImplementedException("This will be implemented as a separate PR");
     }
 

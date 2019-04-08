@@ -92,8 +92,8 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public List<Claim> getClaimsByState(User user, ClaimState claimState) {
-        return ccdCaseApi.getClaimsByState(user, claimState);
+    public List<Claim> getClaimsByState(ClaimState claimState, User user) {
+        return ccdCaseApi.getClaimsByState(claimState, user);
     }
 
     @Override
