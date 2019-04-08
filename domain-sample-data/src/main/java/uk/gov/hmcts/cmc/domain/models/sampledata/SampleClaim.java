@@ -4,6 +4,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.Interest;
@@ -85,6 +86,8 @@ public final class SampleClaim {
     private LocalDateTime reDeterminationRequestedAt;
     private ReDetermination reDetermination = new ReDetermination("I feel defendant can pay", CLAIMANT);
     private ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
+    private ClaimSubmissionOperationIndicators submissionOperationIndicators =
+        new SampleClaimSubmissionOperationIndicators().withClaimantNotification().build();
 
     private SampleClaim() {
     }
@@ -436,7 +439,8 @@ public final class SampleClaim {
             moneyReceivedOn,
             reDetermination,
             reDeterminationRequestedAt,
-            claimDocumentCollection
+            claimDocumentCollection,
+            submissionOperationIndicators
         );
     }
 
