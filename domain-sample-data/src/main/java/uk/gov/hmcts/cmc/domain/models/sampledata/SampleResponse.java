@@ -140,7 +140,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
 
         public PartAdmissionResponse buildWithPaymentOptionInstalments() {
             return PartAdmissionResponse.builder()
-                .defendant(SampleParty.builder().individual())
+                .defendant(SampleParty.builder().withTitle(null).individual())
                 .moreTimeNeeded(YesNoOption.NO)
                 .amount(BigDecimal.valueOf(120))
                 .paymentIntention(SamplePaymentIntention.instalments())
@@ -176,12 +176,14 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         public PartAdmissionResponse buildWithFreeMediation() {
             return PartAdmissionResponse.builder()
                 .defendant(SampleParty.builder().individual())
+                .defence(USER_DEFENCE)
                 .freeMediation(YesNoOption.YES)
                 .mediationPhoneNumber(MEDIATION_PHONE_NUMBER)
                 .mediationContactPerson(MEDIATION_CONTACT_PERSON)
                 .moreTimeNeeded(YesNoOption.NO)
                 .amount(BigDecimal.valueOf(120))
-                .paymentDeclaration(SamplePaymentDeclaration.builder().build())
+                .paymentIntention(SamplePaymentIntention.instalments())
+                .statementOfMeans(SampleStatementOfMeans.builder().build())
                 .build();
         }
     }
