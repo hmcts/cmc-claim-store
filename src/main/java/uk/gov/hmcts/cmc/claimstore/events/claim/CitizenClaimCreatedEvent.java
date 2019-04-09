@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.events.claim;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -9,17 +10,21 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Getter
 @EqualsAndHashCode
-public class ClaimIssuedEvent {
-    protected final Claim claim;
-    protected final String submitterName;
-    protected final String authorisation;
+@Builder(toBuilder = true)
+public class CitizenClaimCreatedEvent {
+    private final Claim claim;
+    private final String pin;
+    private final String submitterName;
+    private final String authorisation;
 
-    public ClaimIssuedEvent(
+    public CitizenClaimCreatedEvent(
         Claim claim,
+        String pin,
         String submitterName,
         String authorisation
     ) {
         this.claim = claim;
+        this.pin = pin;
         this.submitterName = submitterName;
         this.authorisation = authorisation;
     }

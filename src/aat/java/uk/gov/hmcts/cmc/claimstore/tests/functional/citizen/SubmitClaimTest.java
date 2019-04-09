@@ -36,7 +36,6 @@ public class SubmitClaimTest extends BaseSubmitClaimTest {
         return testData::submittedByClaimantBuilder;
     }
 
-
     @Test
     public void shouldReturnUnprocessableEntityWhenClaimWithInvalidTimelineIsSubmitted() {
         ClaimData invalidClaimData = testData.submittedByClaimantBuilder()
@@ -61,8 +60,7 @@ public class SubmitClaimTest extends BaseSubmitClaimTest {
 
     @Override
     protected void assertDocumentsCreated(Claim claim) {
-        claim.getClaimDocumentCollection().ifPresent(claimDocumentCollection ->
-            {
+        claim.getClaimDocumentCollection().ifPresent(claimDocumentCollection -> {
                 List<ClaimDocument> claimDocuments = claimDocumentCollection.getClaimDocuments();
                 assertThat(claimDocuments).hasSize(3);
 

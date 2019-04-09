@@ -86,7 +86,8 @@ public class ClaimService {
         CCDCaseDataToClaim ccdCaseDataToClaim,
         PaidInFullRule paidInFullRule,
         CCDEventProducer ccdEventProducer,
-        ClaimAuthorisationRule claimAuthorisationRule) {
+        ClaimAuthorisationRule claimAuthorisationRule
+    ) {
         this.claimRepository = claimRepository;
         this.userService = userService;
         this.issueDateCalculator = issueDateCalculator;
