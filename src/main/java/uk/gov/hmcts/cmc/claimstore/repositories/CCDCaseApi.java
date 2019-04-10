@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,25 +32,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATED;
 
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
 public class CCDCaseApi {
-
-    public static enum CaseState {
-        ONHOLD("onhold"),
-        OPEN("open");
-
-        private final String state;
-
-        CaseState(String state) {
-            this.state = state;
-        }
-
-        public String getValue() {
-            return state;
-        }
-    }
 
     public static final String JURISDICTION_ID = "CMC";
     public static final String CASE_TYPE_ID = "MoneyClaimCase";
@@ -135,7 +120,7 @@ public class CCDCaseApi {
     }
 
     public List<Claim> getClaimsByState(ClaimState claimState, User user) {
-        throw new NotImplementedException("This will be implemented as a separate PR");
+        return extractClaims(searchAll(user, claimState));
     }
 
     /**
@@ -186,7 +171,7 @@ public class CCDCaseApi {
     private List<Claim> getAllCasesBy(User user, ImmutableMap<String, String> searchString) {
         List<CaseDetails> validCases = searchAll(user, searchString)
             .stream()
-            .filter(c -> !isCaseOnHold(c))
+            .filter(caseDetails -> !isCreatedState(caseDetails))
             .collect(Collectors.toList());
 
         return extractClaims(validCases);
@@ -200,7 +185,7 @@ public class CCDCaseApi {
     private Optional<Claim> getCaseBy(User user, Map<String, String> searchString) {
         List<CaseDetails> result = searchAll(user, searchString);
 
-        if (result.size() == 1 && isCaseOnHold(result.get(0))) {
+        if (result.size() == 1 && isCreatedState(result.get(0))) {
             return Optional.empty();
         }
 
@@ -315,6 +300,10 @@ public class CCDCaseApi {
         return ccdCaseDataToClaim.to(caseDetails.getId(), caseDetails.getData());
     }
 
+    private List<CaseDetails> searchAll(User user, ClaimState state) {
+        return search(user, ImmutableMap.of(), 1, new ArrayList<>(), null, state);
+    }
+
     private List<CaseDetails> searchAll(User user, Map<String, String> searchString) {
         return search(user, searchString, 1, new ArrayList<>(), null, null);
     }
@@ -326,7 +315,7 @@ public class CCDCaseApi {
         Integer page,
         List<CaseDetails> results,
         Integer numOfPages,
-        CaseState state
+        ClaimState state
     ) {
         Map<String, String> searchCriteria = new HashMap<>(searchString);
         searchCriteria.put("page", page.toString());
@@ -412,7 +401,7 @@ public class CCDCaseApi {
             .collect(Collectors.toList());
     }
 
-    private boolean isCaseOnHold(CaseDetails caseDetails) {
-        return caseDetails.getState().equals(CaseState.ONHOLD.getValue());
+    private boolean isCreatedState(CaseDetails caseDetails) {
+        return caseDetails.getState().equals(CREATED.getValue());
     }
 }
