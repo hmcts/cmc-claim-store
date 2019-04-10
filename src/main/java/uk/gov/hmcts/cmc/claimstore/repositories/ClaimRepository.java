@@ -233,4 +233,13 @@ public interface ClaimRepository {
         @Bind("defendantId") String defendantId,
         @Bind("defendantEmail") String defendantEmail
     );
+
+    @SqlUpdate(
+            "UPDATE claim SET claim_documents = :claimDocumentCollection::JSONB"
+            + " WHERE id = :claimId"
+    )
+    Integer saveClaimDocuments(
+        @Bind("claimId") Long claimId,
+        @Bind("claimDocumentCollection") String claimDocumentCollection
+    );
 }
