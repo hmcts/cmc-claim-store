@@ -13,14 +13,14 @@ import java.time.LocalDateTime;
 public class DirectionsQuestionnaireDeadlineCalculator {
 
     private final WorkingDayIndicator workingDayIndicator;
-    private final int serviceDays;
-    private final int timeForResponseInDays;
+    private final long serviceDays;
+    private final long timeForResponseInDays;
     private final int endOfBusinessDayHour;
 
     public DirectionsQuestionnaireDeadlineCalculator(
         WorkingDayIndicator workingDayIndicator,
-        @Value("${dateCalculations.serviceDays}") int serviceDays,
-        @Value("${dateCalculations.responseDays}") int timeForResponseInDays,
+        @Value("${dateCalculations.serviceDays}") long serviceDays,
+        @Value("${dateCalculations.responseDays}") long timeForResponseInDays,
         @Value("${dateCalculations.endOfBusinessDayHour}") int endOfBusinessDayHour) {
 
         this.workingDayIndicator = workingDayIndicator;
