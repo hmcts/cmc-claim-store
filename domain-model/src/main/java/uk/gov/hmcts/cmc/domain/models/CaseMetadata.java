@@ -33,6 +33,7 @@ public class CaseMetadata {
     private final URI sealedClaimDocument;
     private final String paymentReference;
     private final ClaimState state;
+    private final ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
 
     public static CaseMetadata fromClaim(Claim claim) {
         return new CaseMetadata(
@@ -51,7 +52,8 @@ public class CaseMetadata {
             claim.getSettlementReachedAt(),
             claim.getClaimDocument(SEALED_CLAIM).orElse(null),
             claim.getClaimData().getPayment().getReference(),
-            claim.getState().orElse(null)
+            claim.getState().orElse(null),
+            claim.getClaimSubmissionOperationIndicators().orElse(null)
         );
     }
 
