@@ -5,8 +5,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.claimstore.services.bankholidays.NonWorkingDaysCollection;
-import uk.gov.hmcts.cmc.claimstore.services.bankholidays.PublicHolidaysCollection;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,17 +30,8 @@ public class DirectionsQuestionnaireDeadlineCalculatorTest {
     @Mock
     private WorkingDayIndicator workingDayIndicator;
 
-    @Mock
-    private NonWorkingDaysCollection nonWorkingDaysCollection;
-
     @Before
     public void setUp() {
-        when(publicHolidaysCollection.getPublicHolidays()).thenReturn(new TreeSet<>());
-
-        WorkingDayIndicator workingDayIndicator = new WorkingDayIndicator(
-            publicHolidaysCollection, nonWorkingDaysCollection
-        );
-
         calculator = new DirectionsQuestionnaireDeadlineCalculator(
             workingDayIndicator, SERVICE_DAYS, DAYS_FOR_RESPONSE, END_OF_BUSINESS_DAY
         );
@@ -77,19 +66,5 @@ public class DirectionsQuestionnaireDeadlineCalculatorTest {
 
         LocalDate actual = calculator.calculateDirectionsQuestionnaireDeadlineCalculator(input);
         assertThat(actual).isTheSame(expected);
-    }
-
-    @Test
-    public void shouldAddDaysToAvoidNonWorkingDays() {
-        LocalDateTime fridayBefore4pm = toDateTime("2018-08-10 12:10");
-        // +3 non-working days, +2 weekend days
-        LocalDate expected = fridayBefore4pm.toLocalDate().plusDays(DAYS_FOR_RESPONSE + SERVICE_DAYS + 3 + 2);
-
-        when(nonWorkingDaysCollection.contains(any(LocalDate.class)))
-            .thenReturn(true, true, true, false);
-
-        LocalDate dqDeadline = calculator.calculateDirectionsQuestionnaireDeadlineCalculator(fridayBefore4pm);
-
-        assertThat(dqDeadline).isTheSame(expected);
     }
 }
