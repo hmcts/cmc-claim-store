@@ -35,7 +35,7 @@ public class SubmitClaimTest extends BaseSubmitClaimTest {
     protected Supplier<SampleClaimData> getSampleClaimDataBuilder() {
         return testData::submittedByClaimantBuilder;
     }
-    
+
     @Test
     public void shouldReturnUnprocessableEntityWhenClaimWithInvalidTimelineIsSubmitted() {
         ClaimData invalidClaimData = testData.submittedByClaimantBuilder()
