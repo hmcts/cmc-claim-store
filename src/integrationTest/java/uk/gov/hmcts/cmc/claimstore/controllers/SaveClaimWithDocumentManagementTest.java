@@ -32,6 +32,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.DOCUMENT_NAME;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DOCUMENT_MANAGEMENT_UPLOAD_FAILURE;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimIssueReceiptFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
@@ -194,7 +196,8 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
 
     @Test
     public void shouldNotReturn500HttpStatusAndShouldSendStaffEmailWhenDocumentUploadFailed() throws Exception {
-        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
+        given(documentUploadClient
+            .upload(eq(AUTHORISATION_TOKEN), anyString(), anyString(), anyList(), any(Classification.class), anyList()))
             .willReturn(unsuccessfulDocumentManagementUploadResponse());
 
         makeIssueClaimRequest(SampleClaimData.submittedByLegalRepresentativeBuilder().build(), AUTHORISATION_TOKEN)
@@ -221,5 +224,8 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
 
         verify(documentUploadClient, times(3))
             .upload(eq(AUTHORISATION_TOKEN), anyString(), anyString(), anyList(), any(Classification.class), anyList());
+
+        verify(appInsights).trackEvent(eq(DOCUMENT_MANAGEMENT_UPLOAD_FAILURE), eq(DOCUMENT_NAME), anyString());
+
     }
 }

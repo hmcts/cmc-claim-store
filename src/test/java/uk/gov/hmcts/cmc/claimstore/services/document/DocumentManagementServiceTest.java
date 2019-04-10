@@ -95,8 +95,8 @@ public class DocumentManagementServiceTest {
         when(userService.getUserDetails(eq(authorisation))).thenReturn(userDetails);
 
         when(documentUploadClient
-            .upload(anyString(), anyString(), anyString(), anyList(), any(Classification.class), anyList())
-        ).thenReturn(unsuccessfulDocumentManagementUploadResponse());
+            .upload(anyString(), anyString(), anyString(), anyList(), any(Classification.class), anyList()))
+            .thenReturn(unsuccessfulDocumentManagementUploadResponse());
 
         documentManagementService.uploadDocument(authorisation, document);
     }

@@ -146,6 +146,6 @@ public class DocumentManagementService {
 
         logger.info(errorMessage, exception);
         appInsights.trackEvent(DOCUMENT_MANAGEMENT_DOWNLOAD_FAILURE, DOCUMENT_NAME, filename);
-        return null;
+        throw exception;
     }
 }
