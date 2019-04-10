@@ -26,8 +26,7 @@ public class SolicitorSubmitClaimTest extends BaseSubmitClaimTest {
 
     @Override
     protected void assertDocumentsCreated(Claim claim) {
-        claim.getClaimDocumentCollection().ifPresent(claimDocumentCollection ->
-            {
+        claim.getClaimDocumentCollection().ifPresent(claimDocumentCollection -> {
                 List<ClaimDocument> claimDocuments = claimDocumentCollection.getClaimDocuments();
 
                 assertThat(claimDocuments).hasSize(1);
