@@ -20,6 +20,7 @@ import java.util.Optional;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -173,7 +174,10 @@ public class CaseMetadataControllerTest {
         assertEquals(dto.getClaimantRespondedAt().orElse(null), metadata.getClaimantRespondedAt());
         assertEquals(dto.getSettlementReachedAt(), metadata.getSettlementReachedAt());
         assertEquals(dto.getClaimDocument(SEALED_CLAIM), Optional.ofNullable(metadata.getSealedClaimDocument()));
-        if (dto.getClaimData().getPayment() != null) {
+
+        if (dto.getClaimData().getPayment() == null) {
+            assertNull(metadata.getPaymentReference());
+        } else {
             assertEquals(dto.getClaimData().getPayment().getReference(), metadata.getPaymentReference());
         }
     }
