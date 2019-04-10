@@ -8,12 +8,14 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.config.JacksonConfiguration;
 import uk.gov.hmcts.cmc.claimstore.services.bankholidays.BankHolidays;
 import uk.gov.hmcts.cmc.claimstore.services.bankholidays.BankHolidaysApi;
+import uk.gov.hmcts.cmc.claimstore.services.bankholidays.NonWorkingDaysCollection;
 import uk.gov.hmcts.cmc.claimstore.services.bankholidays.PublicHolidaysCollection;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 
 import java.io.IOException;
 import java.time.LocalDate;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.DayAssert.assertThat;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.toDate;
@@ -29,12 +31,16 @@ public class ResponseDeadlineCalculatorTest {
     @Mock
     private BankHolidaysApi bankHolidaysApi;
 
+    @Mock
+    private NonWorkingDaysCollection nonWorkingDaysCollection;
+
     private ResponseDeadlineCalculator calculator;
 
     @Before
     public void setUp() throws IOException {
         WorkingDayIndicator workingDayIndicator = new WorkingDayIndicator(
-            new PublicHolidaysCollection(bankHolidaysApi)
+            new PublicHolidaysCollection(bankHolidaysApi),
+            nonWorkingDaysCollection
         );
 
         when(bankHolidaysApi.retrieveAll()).thenReturn(loadFixture());
@@ -98,6 +104,22 @@ public class ResponseDeadlineCalculatorTest {
         LocalDate issuedOn = toDate("2017-09-15");
         LocalDate expectedDeadlineDate = toDate("2017-10-04");
         LocalDate expectedPostponedDate = toDate("2017-10-18");
+
+        LocalDate responseDeadline = calculator.calculateResponseDeadline(issuedOn);
+        LocalDate postponedDeadline = calculator.calculatePostponedResponseDeadline(issuedOn);
+
+        assertThat(responseDeadline).isWeekday().isTheSame(expectedDeadlineDate);
+        assertThat(postponedDeadline).isWeekday().isTheSame(expectedPostponedDate);
+    }
+
+    @Test
+    public void calculateWhenDeadlineIsOnNonWorkingDay() {
+        LocalDate issuedOn = toDate("2017-09-15");
+        LocalDate expectedDeadlineDate = toDate("2017-10-09");
+        LocalDate expectedPostponedDate = toDate("2017-10-18");
+
+        when(nonWorkingDaysCollection.contains(any(LocalDate.class)))
+            .thenReturn(true, true, true, false);
 
         LocalDate responseDeadline = calculator.calculateResponseDeadline(issuedOn);
         LocalDate postponedDeadline = calculator.calculatePostponedResponseDeadline(issuedOn);
