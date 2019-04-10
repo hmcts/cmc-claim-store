@@ -18,19 +18,19 @@ import uk.gov.hmcts.cmc.email.EmailData;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
-import static uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssuedNotificationService.JSON_EXTENSION;
+import static uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssueNotificationService.JSON_EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildJsonClaimFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
-public class ClaimIssuedNotificationServiceTest extends MockSpringTest {
+public class ClaimIssueNotificationServiceTest extends MockSpringTest {
 
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 
     @Autowired
-    private ClaimIssuedNotificationService service;
+    private ClaimIssueNotificationService service;
     @Autowired
     private EmailProperties emailProperties;
 
@@ -58,12 +58,12 @@ public class ClaimIssuedNotificationServiceTest extends MockSpringTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaim() {
-        service.notifyRobotOfClaimIssue(null);
+        service.notifyRobotics(null);
     }
 
     @Test
     public void shouldSendEmailFromConfiguredSender() {
-        service.notifyRobotOfClaimIssue(event);
+        service.notifyRobotics(event);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
@@ -72,7 +72,7 @@ public class ClaimIssuedNotificationServiceTest extends MockSpringTest {
 
     @Test
     public void shouldSendEmailToConfiguredRecipient() {
-        service.notifyRobotOfClaimIssue(event);
+        service.notifyRobotics(event);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
@@ -81,7 +81,7 @@ public class ClaimIssuedNotificationServiceTest extends MockSpringTest {
 
     @Test
     public void shouldSendEmailWithContent() {
-        service.notifyRobotOfClaimIssue(event);
+        service.notifyRobotics(event);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
@@ -91,7 +91,7 @@ public class ClaimIssuedNotificationServiceTest extends MockSpringTest {
 
     @Test
     public void shouldSendEmailWithPDFAttachments() {
-        service.notifyRobotOfClaimIssue(event);
+        service.notifyRobotics(event);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 

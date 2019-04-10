@@ -2,15 +2,11 @@ package uk.gov.hmcts.cmc.claimstore.rpa;
 
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
-import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
 import uk.gov.hmcts.cmc.claimstore.rpa.config.EmailProperties;
 import uk.gov.hmcts.cmc.claimstore.rpa.email.ClaimIssuedEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
-import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
@@ -25,8 +21,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service("rpa/claim-issued-notification-service")
-@ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff")
-public class ClaimIssuedNotificationService {
+public class ClaimIssueNotificationService {
 
     public static final String JSON_EXTENSION = ".json";
 
@@ -36,7 +31,7 @@ public class ClaimIssuedNotificationService {
     private final SealedClaimJsonMapper jsonMapper;
 
     @Autowired
-    public ClaimIssuedNotificationService(
+    public ClaimIssueNotificationService(
         EmailService emailService,
         EmailProperties emailProperties,
         ClaimIssuedEmailContentProvider emailContentProvider,
@@ -48,13 +43,11 @@ public class ClaimIssuedNotificationService {
         this.jsonMapper = jsonMapper;
     }
 
-    @EventListener
-    @LogExecutionTime
-    public void notifyRobotOfClaimIssue(DocumentGeneratedEvent event) {
-        requireNonNull(event);
+    public void notifyRobotics(Claim claim, List<PDF> documents) {
+        requireNonNull(claim);
 
-        if (!event.getClaim().getClaimData().isClaimantRepresented()) {
-            EmailData emailData = prepareEmailData(event.getClaim(), event.getDocuments());
+        if (!claim.getClaimData().isClaimantRepresented()) {
+            EmailData emailData = prepareEmailData(claim, documents);
             emailService.sendEmail(emailProperties.getSender(), emailData);
         }
     }
@@ -65,7 +58,8 @@ public class ClaimIssuedNotificationService {
         EmailAttachment sealedClaimPdfAttachment = documents.stream()
             .filter(document -> document.getClaimDocumentType() == SEALED_CLAIM)
             .map(document -> pdf(document.getBytes(), document.getFilename()))
-            .findFirst().orElseThrow(() -> new IllegalArgumentException("Event does not contain sealed claim PDF"));
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Event does not contain sealed claim PDF"));
 
         return new EmailData(emailProperties.getSealedClaimRecipient(),
             content.getSubject(),

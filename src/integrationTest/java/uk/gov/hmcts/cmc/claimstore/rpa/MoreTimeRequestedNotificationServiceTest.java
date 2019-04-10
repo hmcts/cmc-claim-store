@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssuedNotificationService.JSON_EXTENSION;
+import static uk.gov.hmcts.cmc.claimstore.rpa.RpaNotificationHandler.JSON_EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildJsonMoreTimeRequestedFileBaseName;
 
 public class MoreTimeRequestedNotificationServiceTest extends MockSpringTest {

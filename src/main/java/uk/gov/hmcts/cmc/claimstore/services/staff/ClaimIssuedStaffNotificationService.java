@@ -1,8 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
@@ -24,7 +22,6 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEI
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
-@ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff")
 public class ClaimIssuedStaffNotificationService {
 
     private final EmailService emailService;
@@ -42,7 +39,6 @@ public class ClaimIssuedStaffNotificationService {
         this.provider = provider;
     }
 
-    @EventListener
     @LogExecutionTime
     public void notifyStaffOfClaimIssue(DocumentGeneratedEvent event) {
         requireNonNull(event);
