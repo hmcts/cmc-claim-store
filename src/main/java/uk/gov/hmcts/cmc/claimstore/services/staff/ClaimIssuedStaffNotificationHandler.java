@@ -15,7 +15,9 @@ public class ClaimIssuedStaffNotificationHandler {
     private final ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService;
 
     @Autowired
-    public ClaimIssuedStaffNotificationHandler(ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService) {
+    public ClaimIssuedStaffNotificationHandler(
+        ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService
+    ) {
         this.claimIssuedStaffNotificationService = claimIssuedStaffNotificationService;
     }
 

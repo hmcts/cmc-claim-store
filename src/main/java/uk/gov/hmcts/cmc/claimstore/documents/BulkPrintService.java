@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
-import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.BulkPrintStaffNotificationService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -18,7 +17,6 @@ import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BULK_PRINT_FAILED;
@@ -57,21 +55,29 @@ public class BulkPrintService {
         value = {HttpClientErrorException.class, HttpServerErrorException.class},
         backoff = @Backoff(delay = 200)
     )
-    public void print(Claim claim, List<Document> documents) {
+    public void print(Claim claim, Document defendantLetterDocument, Document sealedClaimDocument) {
         sendLetterApi.sendLetter(
             authTokenGenerator.generate(),
-            new Letter(documents, XEROX_TYPE_PARAMETER, wrapInMap(claim))
+            new Letter(Arrays.asList(defendantLetterDocument, sealedClaimDocument),
+                XEROX_TYPE_PARAMETER, wrapInMap(claim)
+            )
         );
     }
 
     @Recover
-    public void notifyStaffForBulkPrintFailure(DocumentReadyToPrintEvent event) {
+    public void notifyStaffForBulkPrintFailure(
+        RuntimeException exception,
+        Claim claim,
+        Document defendantLetterDocument,
+        Document sealedClaimDocument
+    ) {
         bulkPrintStaffNotificationService.notifyFailedBulkPrint(
-            event.getDefendantLetterDocument(),
-            event.getSealedClaimDocument(),
-            event.getClaim()
+            defendantLetterDocument,
+            sealedClaimDocument,
+            claim
         );
-        appInsights.trackEvent(BULK_PRINT_FAILED, "referenceNumber", event.getClaim().getReferenceNumber());
+
+        appInsights.trackEvent(BULK_PRINT_FAILED, "referenceNumber", claim.getReferenceNumber());
     }
 
     private static Map<String, Object> wrapInMap(Claim claim) {

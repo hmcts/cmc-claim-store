@@ -64,7 +64,7 @@ public class BulkPrintServiceTest {
         Document sealedClaimDocument = new Document("sealedClaimTemplate", claimContents);
 
         //when
-        bulkPrintService.print(claim, Arrays.asList(defendantLetterDocument, sealedClaimDocument));
+        bulkPrintService.print(claim, defendantLetterDocument, sealedClaimDocument);
         //then
         List<Document> documents = Arrays.asList(defendantLetterDocument, sealedClaimDocument);
 
