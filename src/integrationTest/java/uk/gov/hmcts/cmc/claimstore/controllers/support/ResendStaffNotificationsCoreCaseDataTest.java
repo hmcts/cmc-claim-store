@@ -196,7 +196,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
             any(),
             any(),
             any(),
-            eq(ImmutableMap.of("case.referenceNumber", caseReference,
+            eq(ImmutableMap.of("case.previousServiceCaseReference", caseReference,
                 "page", PAGE,
                 "sortDirection", "desc"))
             )

@@ -52,7 +52,7 @@ public class SearchCCDCaseService {
     )
     @LogExecutionTime
     public Optional<CaseDetails> getCcdIdByReferenceNumber(User user, String referenceNumber) {
-        return search(user, ImmutableMap.of("case.referenceNumber", referenceNumber));
+        return search(user, ImmutableMap.of("case.previousServiceCaseReference", referenceNumber));
     }
 
     @Recover

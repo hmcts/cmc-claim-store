@@ -16,7 +16,7 @@ import java.util.List;
 public class CCDCase {
 
     private Long id;
-    private String referenceNumber;
+    private String previousServiceCaseReference;
     private String submitterId;
     private String externalId;
     private LocalDateTime submittedOn;

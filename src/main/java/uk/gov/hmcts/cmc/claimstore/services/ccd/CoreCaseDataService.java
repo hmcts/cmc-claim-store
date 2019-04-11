@@ -103,7 +103,7 @@ public class CoreCaseDataService {
         CCDCase ccdCase = caseMapper.to(claim);
 
         if (StringUtils.isBlank(claim.getReferenceNumber())) {
-            ccdCase.setReferenceNumber(referenceNumberService.getReferenceNumber(user.isRepresented()));
+            ccdCase.setPreviousServiceCaseReference(referenceNumberService.getReferenceNumber(user.isRepresented()));
         }
 
         try {
@@ -145,7 +145,7 @@ public class CoreCaseDataService {
             throw new CoreCaseDataStoreException(
                 String.format(
                     CCD_STORING_FAILURE_MESSAGE,
-                    ccdCase.getReferenceNumber(),
+                    ccdCase.getPreviousServiceCaseReference(),
                     CREATE_NEW_CASE
                 ), exception
             );
@@ -628,7 +628,7 @@ public class CoreCaseDataService {
             throw new CoreCaseDataStoreException(
                 String.format(
                     "Failed updating claim in CCD store for claim %s on event %s",
-                    ccdCase.getReferenceNumber(),
+                    ccdCase.getPreviousServiceCaseReference(),
                     caseEvent
                 ), exception
             );
