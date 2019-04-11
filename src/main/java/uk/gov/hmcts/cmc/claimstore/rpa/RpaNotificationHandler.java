@@ -1,22 +1,23 @@
 package uk.gov.hmcts.cmc.claimstore.rpa;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 
 import static java.util.Objects.requireNonNull;
 
-@Service
-@ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff")
+@Component
 public class RpaNotificationHandler {
-    private final ClaimIssuedNotificationService claimIssuedNotificationService;
+    private final ClaimIssuedNotificationService rpaNotificationService;
 
     @Autowired
-    public RpaNotificationHandler(ClaimIssuedNotificationService claimIssuedNotificationService) {
-        this.claimIssuedNotificationService = claimIssuedNotificationService;
+    public RpaNotificationHandler(
+        @Qualifier("rpa/claim-issued-notification-service") ClaimIssuedNotificationService rpaNotificationService
+    ) {
+        this.rpaNotificationService = rpaNotificationService;
     }
 
     @EventListener
@@ -24,6 +25,6 @@ public class RpaNotificationHandler {
     public void notifyRobotOfClaimIssue(DocumentGeneratedEvent event) {
         requireNonNull(event);
 
-        claimIssuedNotificationService.notifyRobotics(event.getClaim(), event.getDocuments());
+        rpaNotificationService.notifyRobotics(event.getClaim(), event.getDocuments());
     }
 }

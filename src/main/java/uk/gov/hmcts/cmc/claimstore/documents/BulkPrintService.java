@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.documents;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
@@ -23,6 +24,7 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BULK_PRINT_FAILED;
 
 @Service
+@ConditionalOnProperty(prefix = "send-letter", name = "url")
 public class BulkPrintService {
 
     /* This is configured on Xerox end so they know its us printing and controls things
