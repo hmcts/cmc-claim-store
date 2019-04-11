@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
-import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
-
 import java.util.Arrays;
 
 public enum CaseEvent {
@@ -51,6 +49,6 @@ public enum CaseEvent {
     public static CaseEvent fromValue(String value) {
         return Arrays.stream(values()).filter(event -> event.value.equals(value))
             .findFirst()
-            .orElseThrow(() -> new BadRequestException("Unknown Case Event: " + value));
+            .orElseThrow(() -> new IllegalArgumentException("Unknown Case Event: " + value));
     }
 }

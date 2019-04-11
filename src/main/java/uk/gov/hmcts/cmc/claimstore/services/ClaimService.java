@@ -1,6 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import com.google.common.collect.ImmutableList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +60,7 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Component
 public class ClaimService {
+    private final Logger logger = LoggerFactory.getLogger(ClaimService.class);
 
     private final ClaimRepository claimRepository;
     private final IssueDateCalculator issueDateCalculator;
@@ -278,19 +281,17 @@ public class ClaimService {
     }
 
     public AboutToStartOrSubmitCallbackResponse prepopulateFields(CallbackRequest callbackRequest) {
-        AboutToStartOrSubmitCallbackResponseBuilder builder = AboutToStartOrSubmitCallbackResponse
-            .builder();
-
+        logger.info("Prepopulating fields for callback {}", callbackRequest.getEventId());
         LocalDate deadline = legalOrderGenerationDeadlinesCalculator.calculateOrderGenerationDeadlines();
-
         Map<String, Object> data = new HashMap<>();
+        data.put("docUploadDeadline", deadline);
+        data.put("eyewitnessUploadDeadline", deadline);
         data.put("directionList", ImmutableList.of(
             CCDOrderDirectionType.DOCUMENTS.name(),
             CCDOrderDirectionType.EYEWITNESS.name(),
             CCDOrderDirectionType.MEDIATION.name()));
-        data.put("docUploadDeadline", deadline);
-        data.put("eyewitnessUploadDeadline", deadline);
-        return builder
+        return AboutToStartOrSubmitCallbackResponse
+            .builder()
             .data(data)
             .build();
     }

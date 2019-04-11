@@ -8,7 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.Clock;
 import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -33,8 +33,8 @@ public class LegalOrderGenerationDeadlinesCalculatorTest {
         calculator = new LegalOrderGenerationDeadlinesCalculator(
             clock,
             workingDayIndicator);
-        when(clock.instant()).thenReturn(TODAY.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        when(clock.getZone()).thenReturn(ZoneId.systemDefault());
+        when(clock.instant()).thenReturn(TODAY.atStartOfDay(ZoneOffset.UTC).toInstant());
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
     }
 
     @Test
@@ -49,7 +49,8 @@ public class LegalOrderGenerationDeadlinesCalculatorTest {
 
     @Test
     public void shouldCalculateDeadlineAsTheNextWorkingDayIfDeadlineIsOnAHoliday() {
-        when(workingDayIndicator.isWorkingDay(any(LocalDate.class))).thenReturn(false).thenReturn(true);
+        when(workingDayIndicator.isWorkingDay(any(LocalDate.class)))
+            .thenReturn(false, true);
         LocalDate expected = TODAY.plusDays(DAYS_FOR_RESPONSE + DAYS_FOR_SERVICE + 1);
         LocalDate responseDeadline = calculator.calculateOrderGenerationDeadlines();
 

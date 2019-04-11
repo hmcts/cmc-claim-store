@@ -29,7 +29,7 @@ public class CallbackServiceTest {
         assertNotNull(callback);
     }
 
-    @Test(expected = BadRequestException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void shouldThrowIfUnsupportedEvent() {
         callbackService.getCallbackFor(
                 "this event does not exist",

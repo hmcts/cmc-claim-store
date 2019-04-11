@@ -43,7 +43,7 @@ public class CallbackController {
         @PathVariable("callback-type") String callbackType,
         @NotNull @RequestBody CallbackRequest callback
     ) {
-        logger.info("Received callback from CCD, type: {}, eventId: {}", callbackType, callback.getEventId());
+        logger.info("Received callback from CCD, eventId: {}", callback.getEventId());
         return callbackService
             .getCallbackFor(callback.getEventId(), callbackType)
             .execute(claimService, callback);

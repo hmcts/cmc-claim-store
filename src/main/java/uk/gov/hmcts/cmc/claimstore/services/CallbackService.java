@@ -33,13 +33,14 @@ public class CallbackService {
 
     public Callback getCallbackFor(String eventId, String callbackType) {
         CaseEvent caseEvent = CaseEvent.fromValue(eventId);
-        
+
         return Optional.ofNullable(callbacks.get(caseEvent))
-            .map(callbacks -> callbacks.get(callbackType))
+            .map(c -> c.get(callbackType))
             .orElseThrow(() -> new BadRequestException(
                 format("Callback for event %s, type %s not implemented", eventId, callbackType)));
     }
 
+    @FunctionalInterface
     public interface Callback {
         CallbackResponse execute(ClaimService claimService, CallbackRequest callbackRequest);
     }
