@@ -32,8 +32,8 @@ public class MapperUtilTest {
                 SampleParty.builder().withName("Brexiter2").individual(),
                 SampleParty.builder().withName("Brexiter3").individual()),
                 singletonList(
-                    SampleTheirDetails.builder().withTitle("Mrs.").
-                        withFirstName("Theresa")
+                    SampleTheirDetails.builder().withTitle("Mrs.")
+                        .withFirstName("Theresa")
                         .withLastName("May")
                         .individualDetails())
             ).build()
@@ -51,16 +51,16 @@ public class MapperUtilTest {
         Claim claimWithMultiDefendant = Claim.builder().claimData(
             SampleClaimData.builder(singletonList(SampleParty.builder().withName("Brexiter").individual()),
                 Arrays.asList(
-                    SampleTheirDetails.builder().withTitle("Mrs.").
-                        withFirstName("Theresa")
+                    SampleTheirDetails.builder().withTitle("Mrs.")
+                        .withFirstName("Theresa")
                         .withLastName("May")
                         .individualDetails(),
-                    SampleTheirDetails.builder().withTitle("Mr.").
-                        withFirstName("John")
+                    SampleTheirDetails.builder().withTitle("Mr.")
+                        .withFirstName("John")
                         .withLastName("Bercow")
                         .individualDetails(),
-                    SampleTheirDetails.builder().withTitle("Mr.").
-                        withFirstName("Claude")
+                    SampleTheirDetails.builder().withTitle("Mr.")
+                        .withFirstName("Claude")
                         .withLastName("Juncker")
                         .individualDetails())).build()
         ).build();
