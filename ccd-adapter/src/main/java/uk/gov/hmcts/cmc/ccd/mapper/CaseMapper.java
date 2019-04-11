@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.mapClaimSubmissionOperationIndicators;
 
 import java.util.Arrays;
 
@@ -58,7 +59,9 @@ public class CaseMapper {
             .referenceNumber(ccdCase.getReferenceNumber())
             .createdAt(ccdCase.getSubmittedOn())
             .issuedOn(ccdCase.getIssuedOn())
-            .submitterEmail(ccdCase.getSubmitterEmail());
+            .submitterEmail(ccdCase.getSubmitterEmail())
+            .claimSubmissionOperationIndicators(
+                mapClaimSubmissionOperationIndicators.apply(ccdCase.getClaimSubmissionOperationIndicators()));
 
         if (ccdCase.getFeatures() != null) {
             builder.features(Arrays.asList(ccdCase.getFeatures().split(",")));

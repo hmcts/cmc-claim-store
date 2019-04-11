@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
@@ -819,6 +820,44 @@ public class CoreCaseDataService {
     }
 
     public void savePaidInFull(Long caseId, PaidInFull paidInFull, String authorisation) {
+        try {
+            UserDetails userDetails = userService.getUserDetails(authorisation);
+
+            EventRequestData eventRequestData = eventRequest(SETTLED_PRE_JUDGMENT, userDetails.getId());
+
+            StartEventResponse startEventResponse = startUpdate(
+                authorisation,
+                eventRequestData,
+                caseId,
+                userDetails.isSolicitor() || userDetails.isCaseworker()
+            );
+
+            Claim updatedClaim = toClaimBuilder(startEventResponse)
+                .moneyReceivedOn(paidInFull.getMoneyReceivedOn())
+                .build();
+
+            CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);
+
+            submitUpdate(authorisation,
+                eventRequestData,
+                caseDataContent,
+                caseId,
+                userDetails.isSolicitor() || userDetails.isCaseworker()
+            );
+        } catch (Exception exception) {
+            throw new CoreCaseDataStoreException(
+                String.format(
+                    CCD_UPDATE_FAILURE_MESSAGE,
+                    caseId,
+                    SETTLED_PRE_JUDGMENT
+                ), exception
+            );
+        }
+    }
+
+    public void saveClaimSubmissionOperationIndicators(Long caseId,
+                                                  ClaimSubmissionOperationIndicators indicators,
+                                                  String authorisation) {
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
 

@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
@@ -172,6 +173,11 @@ public class CCDCaseRepository implements CaseRepository {
         ClaimDocumentCollection claimDocumentCollection
     ) {
         return coreCaseDataService.saveClaimDocuments(authorisation, claimId, claimDocumentCollection);
+    }
+
+    @Override
+    public Claim updateClaimSubmissionOperationStatus(String authorisation, Long claimId, ClaimSubmissionOperationIndicators indicators) {
+        return coreCaseDataService.saveClaimSubmissionOperationIndicators(authorisation, claimId, indicators);
     }
 
     @Override

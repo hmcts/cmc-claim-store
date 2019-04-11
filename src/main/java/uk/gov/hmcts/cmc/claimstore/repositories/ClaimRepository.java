@@ -65,9 +65,6 @@ public interface ClaimRepository {
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim->'payment'->>'reference' = :payReference")
     List<Claim> getByPaymentReference(@Bind("payReference") String payReference);
 
-    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.is_migrated = false")
-    List<Claim> getAllNotMigratedClaims();
-
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.id = :id")
     Optional<Claim> getById(@Bind("id") Long id);
@@ -235,11 +232,13 @@ public interface ClaimRepository {
     );
 
     @SqlUpdate(
-            "UPDATE claim SET claim_documents = :claimDocumentCollection::JSONB"
+            "UPDATE claim SET submission_operation_indicators = :claimSubmissionOperationIndicators::JSONB"
             + " WHERE id = :claimId"
     )
-    Integer saveClaimDocuments(
+    Integer updateClaimSubmissionOperationStatus(
         @Bind("claimId") Long claimId,
-        @Bind("claimDocumentCollection") String claimDocumentCollection
+        @Bind("claimSubmissionOperationIndicators") String claimSubmissionOperationIndicators
     );
+
+
 }
