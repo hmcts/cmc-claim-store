@@ -32,13 +32,16 @@ public class MapperUtilTest {
                 SampleParty.builder().withName("Brexiter2").individual(),
                 SampleParty.builder().withName("Brexiter3").individual()),
                 singletonList(
-                    SampleTheirDetails.builder().withName("Theresa May").individualDetails())
+                    SampleTheirDetails.builder().withTitle("Mrs.").
+                        withFirstName("Theresa")
+                        .withLastName("May")
+                        .individualDetails())
             ).build()
         ).build();
 
         String caseName = MapperUtil.toCaseName.apply(claimWithMultiClaimant);
         assertNotNull(caseName);
-        assertThat(caseName, is("Brexiter + others Vs Theresa May"));
+        assertThat(caseName, is("Brexiter + others Vs Mrs. Theresa May"));
 
     }
 
@@ -48,15 +51,23 @@ public class MapperUtilTest {
         Claim claimWithMultiDefendant = Claim.builder().claimData(
             SampleClaimData.builder(singletonList(SampleParty.builder().withName("Brexiter").individual()),
                 Arrays.asList(
-                    SampleTheirDetails.builder().withName("Theresa May").individualDetails(),
-                    SampleTheirDetails.builder().withName("John Beckrow").individualDetails(),
-                    SampleTheirDetails.builder().withName("Mr Juncker").individualDetails()))
-                .build()
+                    SampleTheirDetails.builder().withTitle("Mrs.").
+                        withFirstName("Theresa")
+                        .withLastName("May")
+                        .individualDetails(),
+                    SampleTheirDetails.builder().withTitle("Mr.").
+                        withFirstName("John")
+                        .withLastName("Bercow")
+                        .individualDetails(),
+                    SampleTheirDetails.builder().withTitle("Mr.").
+                        withFirstName("Claude")
+                        .withLastName("Juncker")
+                        .individualDetails())).build()
         ).build();
 
         String caseName = MapperUtil.toCaseName.apply(claimWithMultiDefendant);
         assertNotNull(caseName);
-        assertThat(caseName, is("Brexiter Vs Theresa May + others"));
+        assertThat(caseName, is("Brexiter Vs Mrs. Theresa May + others"));
 
     }
 
@@ -66,13 +77,17 @@ public class MapperUtilTest {
         Claim claimWithMultiDefendant = Claim.builder().claimData(
             SampleClaimData.builder(
                 singletonList(SampleParty.builder().withName("Euro Star").soleTrader()),
-                singletonList(SampleTheirDetails.builder().withName("Boris Johnson").individualDetails())
+                singletonList(SampleTheirDetails.builder()
+                    .withTitle("Mr.")
+                    .withFirstName("Boris")
+                    .withLastName("Johnson")
+                    .individualDetails())
             ).build()
         ).build();
 
         String caseName = MapperUtil.toCaseName.apply(claimWithMultiDefendant);
         assertNotNull(caseName);
-        assertThat(caseName, is("Euro Star Vs Boris Johnson"));
+        assertThat(caseName, is("Euro Star Vs Mr. Boris Johnson"));
 
     }
 
