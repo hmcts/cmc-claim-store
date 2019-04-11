@@ -176,7 +176,7 @@ public class SupportController {
 
             String fullName = userService.getUserDetails(authorisation).getFullName();
 
-            claimService.linkLetterHolder(claim.getId(), pinResponse.getUserId(), authorisation);
+            claimService.linkLetterHolder(claim.getId(), pinResponse.getUserId());
 
             documentGenerator.generateForNonRepresentedClaim(
                 new CitizenClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation)
@@ -228,7 +228,7 @@ public class SupportController {
 
             String fullName = userService.getUserDetails(authorisation).getFullName();
 
-            claimService.linkLetterHolder(claim.getId(), pinResponse.getUserId(), authorisation);
+            claimService.linkLetterHolder(claim.getId(), pinResponse.getUserId());
 
             documentGenerator.generateForCitizenRPA(
                 new CitizenClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation)

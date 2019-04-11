@@ -237,7 +237,7 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Claim linkLetterHolder(Long claimId, String letterHolderId, String authorisation) {
+    public Claim linkLetterHolder(Long claimId, String letterHolderId) {
         claimRepository.linkLetterHolder(claimId, letterHolderId);
         return getClaimById(claimId);
     }

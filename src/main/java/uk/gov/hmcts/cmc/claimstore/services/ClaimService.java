@@ -333,8 +333,8 @@ public class ClaimService {
         return caseRepository.saveClaimDocuments(authorisation, claimId, claimDocumentCollection);
     }
 
-    public Claim linkLetterHolder(Long claimId, String letterHolderId, String authorisation) {
-        return caseRepository.linkLetterHolder(claimId, letterHolderId, authorisation);
+    public Claim linkLetterHolder(Long claimId, String letterHolderId) {
+        return caseRepository.linkLetterHolder(claimId, letterHolderId);
     }
 
     public void saveCountyCourtJudgment(

@@ -65,6 +65,6 @@ public interface CaseRepository {
 
     Claim saveClaimDocuments(String authorisation, Long claimId, ClaimDocumentCollection claimDocumentCollection);
 
-    Claim linkLetterHolder(Long claimId, String letterHolderId, String authorisation);
+    Claim linkLetterHolder(Long claimId, String letterHolderId);
 }
 

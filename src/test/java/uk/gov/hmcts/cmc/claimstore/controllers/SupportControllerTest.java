@@ -127,8 +127,7 @@ public class SupportControllerTest {
         when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER))).thenReturn(Optional.of(sampleClaim));
         when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(USER_DETAILS);
 
-        when(claimService.linkLetterHolder(eq(sampleClaim.getId()), eq(letterHolderId), eq(AUTHORISATION)))
-            .thenReturn(sampleClaim);
+        when(claimService.linkLetterHolder(eq(sampleClaim.getId()), eq(letterHolderId))).thenReturn(sampleClaim);
 
         controller.resendRPANotifications(AUTHORISATION, sendList);
 
@@ -151,9 +150,7 @@ public class SupportControllerTest {
         // when
         when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER))).thenReturn(Optional.of(sampleClaim));
         when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(USER_DETAILS);
-
-        when(claimService.linkLetterHolder(eq(sampleClaim.getId()), eq(letterHolderId), eq(AUTHORISATION)))
-            .thenReturn(sampleClaim);
+        when(claimService.linkLetterHolder(eq(sampleClaim.getId()), eq(letterHolderId))).thenReturn(sampleClaim);
 
         controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claim-issued", AUTHORISATION);
 

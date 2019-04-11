@@ -36,6 +36,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_LETTER_HOLDER;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetails;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetailsWithCCJ;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetailsWithDefResponse;
@@ -120,7 +121,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
             anyString(),
-            eq(LINK_LETTER_HOLDER)
+            eq(LINK_LETTER_HOLDER.getValue())
             )
         ).willReturn(successfulCoreCaseDataStoreStartResponse());
 
@@ -153,7 +154,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
                 eq(JURISDICTION_ID),
                 eq(CASE_TYPE_ID),
                 anyString(),
-                eq(LINK_LETTER_HOLDER)
+                eq(LINK_LETTER_HOLDER.getValue())
             );
 
         verify(coreCaseDataApi)
