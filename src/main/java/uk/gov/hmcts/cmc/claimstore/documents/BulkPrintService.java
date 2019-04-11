@@ -84,7 +84,7 @@ public class BulkPrintService {
             claim
         );
 
-        appInsights.trackEvent(BULK_PRINT_FAILED, "referenceNumber", claim.getReferenceNumber());
+        appInsights.trackEvent(BULK_PRINT_FAILED, AppInsights.REFERENCE_NUMBER, claim.getReferenceNumber());
     }
 
     private static Map<String, Object> wrapInMap(Claim claim) {
