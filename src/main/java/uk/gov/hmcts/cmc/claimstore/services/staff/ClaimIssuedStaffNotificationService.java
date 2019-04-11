@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
+import uk.gov.hmcts.reform.document.domain.Document;
 
 import java.util.HashMap;
 import java.util.List;
@@ -40,16 +41,14 @@ public class ClaimIssuedStaffNotificationService {
     }
 
     @LogExecutionTime
-    public void notifyStaffOfClaimIssue(DocumentGeneratedEvent event) {
-        requireNonNull(event);
+    public void notifyStaffOfClaimIssue(Claim claim, List<PDF> documents) {
+        requireNonNull(claim);
 
-        EmailData emailData = prepareEmailData(event.getClaim(), event.getDocuments());
+        EmailData emailData = prepareEmailData(claim, documents);
         emailService.sendEmail(staffEmailProperties.getSender(), emailData);
     }
 
-    private EmailData prepareEmailData(
-        Claim claim,
-        List<PDF> documents) {
+    private EmailData prepareEmailData(Claim claim, List<PDF> documents) {
         EmailContent content = provider.createContent(wrapInMap(claim));
         List<EmailAttachment> attachments = documents.stream()
             .filter(document -> document.getClaimDocumentType() != CLAIM_ISSUE_RECEIPT)

@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BULK_PRINT_FAILED;
 
 @Service
@@ -56,6 +57,10 @@ public class BulkPrintService {
         backoff = @Backoff(delay = 200)
     )
     public void print(Claim claim, Document defendantLetterDocument, Document sealedClaimDocument) {
+        requireNonNull(claim);
+        requireNonNull(defendantLetterDocument);
+        requireNonNull(sealedClaimDocument);
+
         sendLetterApi.sendLetter(
             authTokenGenerator.generate(),
             new Letter(Arrays.asList(defendantLetterDocument, sealedClaimDocument),

@@ -5,6 +5,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
 
+import static java.util.Objects.requireNonNull;
+
 @Service
 public class BulkPrintHandler {
 
@@ -17,6 +19,7 @@ public class BulkPrintHandler {
 
     @EventListener
     public void print(DocumentReadyToPrintEvent event) {
+        requireNonNull(event);
         bulkPrintService.print(event.getClaim(), event.getDefendantLetterDocument(), event.getSealedClaimDocument());
     }
 }

@@ -25,6 +25,6 @@ public class ClaimIssuedStaffNotificationHandler {
     public void notifyStaff(DocumentGeneratedEvent event) {
         requireNonNull(event);
 
-        claimIssuedStaffNotificationService.notifyStaffOfClaimIssue(event);
+        claimIssuedStaffNotificationService.notifyStaffOfClaimIssue(event.getClaim(), event.getDocuments());
     }
 }
