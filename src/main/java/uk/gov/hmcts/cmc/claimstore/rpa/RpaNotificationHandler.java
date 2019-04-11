@@ -12,11 +12,11 @@ import static java.util.Objects.requireNonNull;
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff")
 public class RpaNotificationHandler {
-    private final ClaimIssueNotificationService claimIssueNotificationService;
+    private final ClaimIssuedNotificationService claimIssuedNotificationService;
 
     @Autowired
-    public RpaNotificationHandler(ClaimIssueNotificationService claimIssueNotificationService) {
-        this.claimIssueNotificationService = claimIssueNotificationService;
+    public RpaNotificationHandler(ClaimIssuedNotificationService claimIssuedNotificationService) {
+        this.claimIssuedNotificationService = claimIssuedNotificationService;
     }
 
     @EventListener
@@ -24,6 +24,6 @@ public class RpaNotificationHandler {
     public void notifyRobotOfClaimIssue(DocumentGeneratedEvent event) {
         requireNonNull(event);
 
-        claimIssueNotificationService.notifyRobotics(event.getClaim(), event.getDocuments());
+        claimIssuedNotificationService.notifyRobotics(event.getClaim(), event.getDocuments());
     }
 }

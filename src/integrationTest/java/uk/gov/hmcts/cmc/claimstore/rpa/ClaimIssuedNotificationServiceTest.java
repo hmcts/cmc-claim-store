@@ -8,29 +8,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
-import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
 import uk.gov.hmcts.cmc.claimstore.rpa.config.EmailProperties;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
-import static uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssueNotificationService.JSON_EXTENSION;
+import static uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssuedNotificationService.JSON_EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildJsonClaimFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
-public class ClaimIssueNotificationServiceTest extends MockSpringTest {
+public class ClaimIssuedNotificationServiceTest extends MockSpringTest {
 
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 
     @Autowired
-    private ClaimIssueNotificationService service;
+    private ClaimIssuedNotificationService service;
     @Autowired
     private EmailProperties emailProperties;
 
@@ -40,7 +42,7 @@ public class ClaimIssueNotificationServiceTest extends MockSpringTest {
     private ArgumentCaptor<EmailData> emailDataArgument;
 
     private Claim claim;
-    private DocumentGeneratedEvent event;
+    private List<PDF> documents = new ArrayList<>();
 
     @Before
     public void setUp() {
@@ -53,17 +55,18 @@ public class ClaimIssueNotificationServiceTest extends MockSpringTest {
             PDF_CONTENT,
             DEFENDANT_PIN_LETTER);
 
-        event = new DocumentGeneratedEvent(claim, "AUTH_CODE", defendantLetterDoc, sealedClaimDoc);
+        documents.add(defendantLetterDoc);
+        documents.add(sealedClaimDoc);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaim() {
-        service.notifyRobotics(null);
+        service.notifyRobotics(null, documents);
     }
 
     @Test
     public void shouldSendEmailFromConfiguredSender() {
-        service.notifyRobotics(event);
+        service.notifyRobotics(claim, documents);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
@@ -72,7 +75,7 @@ public class ClaimIssueNotificationServiceTest extends MockSpringTest {
 
     @Test
     public void shouldSendEmailToConfiguredRecipient() {
-        service.notifyRobotics(event);
+        service.notifyRobotics(claim, documents);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
@@ -81,7 +84,7 @@ public class ClaimIssueNotificationServiceTest extends MockSpringTest {
 
     @Test
     public void shouldSendEmailWithContent() {
-        service.notifyRobotics(event);
+        service.notifyRobotics(claim, documents);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
@@ -91,7 +94,7 @@ public class ClaimIssueNotificationServiceTest extends MockSpringTest {
 
     @Test
     public void shouldSendEmailWithPDFAttachments() {
-        service.notifyRobotics(event);
+        service.notifyRobotics(claim, documents);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 

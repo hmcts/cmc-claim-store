@@ -21,7 +21,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service("rpa/claim-issued-notification-service")
-public class ClaimIssueNotificationService {
+public class ClaimIssuedNotificationService {
 
     public static final String JSON_EXTENSION = ".json";
 
@@ -31,7 +31,7 @@ public class ClaimIssueNotificationService {
     private final SealedClaimJsonMapper jsonMapper;
 
     @Autowired
-    public ClaimIssueNotificationService(
+    public ClaimIssuedNotificationService(
         EmailService emailService,
         EmailProperties emailProperties,
         ClaimIssuedEmailContentProvider emailContentProvider,

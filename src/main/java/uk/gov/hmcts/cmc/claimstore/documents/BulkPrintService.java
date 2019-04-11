@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.documents;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.event.EventListener;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
@@ -14,17 +12,18 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.BulkPrintStaffNotificationServ
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.sendletter.api.Document;
 import uk.gov.hmcts.reform.sendletter.api.Letter;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BULK_PRINT_FAILED;
 
 @Service
-@ConditionalOnProperty(prefix = "send-letter", name = "url")
 public class BulkPrintService {
 
     /* This is configured on Xerox end so they know its us printing and controls things
@@ -53,19 +52,15 @@ public class BulkPrintService {
         this.appInsights = appInsights;
     }
 
-    @EventListener
     @LogExecutionTime
     @Retryable(
         value = {HttpClientErrorException.class, HttpServerErrorException.class},
         backoff = @Backoff(delay = 200)
     )
-    public void print(DocumentReadyToPrintEvent event) {
+    public void print(Claim claim, List<Document> documents) {
         sendLetterApi.sendLetter(
             authTokenGenerator.generate(),
-            new Letter(
-                Arrays.asList(event.getDefendantLetterDocument(), event.getSealedClaimDocument()),
-                XEROX_TYPE_PARAMETER, wrapInMap(event.getClaim())
-            )
+            new Letter(documents, XEROX_TYPE_PARAMETER, wrapInMap(claim))
         );
     }
 
