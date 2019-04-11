@@ -63,7 +63,7 @@ java:
     FEATURE_TOGGLES_EMAILTOSTAFF: true
     FEATURE_TOGGLES_CCD_ENABLED: false
     FEATURE_TOGGLES_CCD_ASYNC_ENABLED: false
-    DOCUMENT_MANAGEMENT_CASEWORKERROLE: caseworker-cmc
+    DOCUMENT_MANAGEMENT_CITIZENROLE: citizen
     CORE_CASE_DATA_API_URL: false
     FRONTEND_BASE_URL: https://www-${SERVICE_FQDN}
     RESPOND_TO_CLAIM_URL: https://www-${SERVICE_FQDN}/first-contact/start
@@ -94,10 +94,6 @@ cmc-citizen-frontend:
       CLAIM_STORE_URL: http://${SERVICE_NAME}-java
   rpe-feature-toggle-api:
     releaseNameOverride: ${SERVICE_NAME}-ftr-tgl-api
-    importer:
-      oneoff:
-        command: /scripts/add-weighted-toggle.sh cmc_admissions 'CMC admissions' '1.0' ${ADMIN_USERNAME_TEST} ${ADMIN_PASSWORD_TEST} &&
-          /scripts/add-toggle.sh cmc_defence_reminders 'CMC defence reminders' false ${ADMIN_USERNAME_TEST} ${ADMIN_PASSWORD_TEST}
     java:
       releaseNameOverride: ${SERVICE_NAME}-ftr-tgl-api
       environment:
