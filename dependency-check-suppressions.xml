@@ -148,7 +148,7 @@
         <notes><![CDATA[
 			Not applicable - Randomness vulnerability when using SecureRandomFactoryBean
 			]]></notes>
-        <cve>CVE-2019-3795
-        </cve>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2019-3795</cve>
     </suppress>
 </suppressions>
