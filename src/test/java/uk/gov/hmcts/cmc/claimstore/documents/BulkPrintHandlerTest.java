@@ -24,7 +24,6 @@ public class BulkPrintHandlerTest {
     public void notifyStaff() {
         //given
         BulkPrintHandler bulkPrintHandler = new BulkPrintHandler(bulkPrintService);
-        String authorisation = "Bearer Token";
         Claim claim = SampleClaim.getDefault();
         Map<String, Object> pinContents = new HashMap<>();
         Document defendantLetterDocument = new Document("pinTemplate", pinContents);

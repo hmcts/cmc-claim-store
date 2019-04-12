@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
 
 import static java.util.Objects.requireNonNull;
