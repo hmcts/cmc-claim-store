@@ -49,8 +49,12 @@ public class TotalAmountCalculator {
         return Optional.ofNullable(calculateTotalAmount(claim, claim.getIssuedOn(), true));
     }
 
+    public static Optional<BigDecimal> calculateInterestForClaim(Claim claim, LocalDate localDate) {
+        return calculateInterest(claim, localDate);
+    }
+
     public static Optional<BigDecimal> calculateInterestForClaim(Claim claim) {
-        return calculateInterest(claim, getToDate(claim));
+        return calculateInterestForClaim(claim, getToDate(claim));
     }
 
     public static BigDecimal calculateInterest(
@@ -193,14 +197,6 @@ public class TotalAmountCalculator {
 
         return duration.isNegative() ? ZERO : valueOf(duration.toDays());
     }
-
-    //    private static void requireValidOrderOfDates(LocalDate startDate, LocalDate endDate) {
-    //        if (startDate.isAfter(endDate)) {
-    //            throw new IllegalArgumentException(
-    //                String.format("StartDate %s cannot be after endDate %s", startDate, endDate)
-    //            );
-    //        }
-    //    }
 
     private static void requireNonNegative(BigDecimal value) {
         requireNonNull(value);
