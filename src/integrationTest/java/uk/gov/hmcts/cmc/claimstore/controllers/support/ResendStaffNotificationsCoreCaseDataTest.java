@@ -46,7 +46,8 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetails
     properties = {
         "document_management.url=false",
         "feature_toggles.ccd_async_enabled=false",
-        "feature_toggles.ccd_enabled=true"
+        "feature_toggles.ccd_enabled=true",
+        "feature_toggles.async_eventOperations_enabled=false"
     }
 )
 public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTest {

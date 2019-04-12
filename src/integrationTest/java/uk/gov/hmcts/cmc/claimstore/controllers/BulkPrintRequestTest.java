@@ -32,7 +32,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     properties = {
         "document_management.url=false",
         "core_case_data.api.url=false",
-        "send-letter.url=http://localhost:${wiremock.server.port}"
+        "send-letter.url=http://localhost:${wiremock.server.port}",
+        "feature_toggles.async_eventOperations_enabled=false"
     }
 )
 @AutoConfigureWireMock(port = 0)

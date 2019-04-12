@@ -99,27 +99,21 @@ public class ClaimCreatedOperationHandler {
             );
 
             String authorisation = event.getAuthorisation();
-
-            Claim updatedClaim = uploadOperationService.uploadDocuments(
-                claim,
-                authorisation,
-                ImmutableList.of(defendantLetter)
-            );
-
             String submitterName = event.getSubmitterName();
-            updatedClaim = defendantOperationService.notify(updatedClaim, pin, submitterName, authorisation);
-            updatedClaim = bulkPrintOperationService.print(updatedClaim, defendantLetterDoc, sealedClaimDoc);
+
+            Claim updatedClaim = uploadOperationService.uploadDocument(claim, authorisation, defendantLetter);
+            updatedClaim
+                = bulkPrintOperationService.print(updatedClaim, defendantLetterDoc, sealedClaimDoc, authorisation);
+
             updatedClaim = staffOperationHandler.notify(updatedClaim, authorisation, sealedClaim, defendantLetter);
+            updatedClaim = defendantOperationService.notify(updatedClaim, pin, submitterName, authorisation);
 
             //TODO Check if above operation indicators are successful, if no return else  continue
 
-            updatedClaim = uploadOperationService.uploadDocuments(
-                updatedClaim,
-                authorisation,
-                ImmutableList.of(sealedClaim, claimIssueReceipt)
-            );
+            updatedClaim = uploadOperationService.uploadDocument(updatedClaim, authorisation, sealedClaim);
+            updatedClaim = uploadOperationService.uploadDocument(updatedClaim, authorisation, claimIssueReceipt);
             updatedClaim = rpaOperationService.notify(updatedClaim, authorisation, sealedClaim);
-            claimantOperationService.notify(updatedClaim, pin, submitterName, authorisation);
+            claimantOperationService.notify(updatedClaim, submitterName, authorisation);
 
             //TODO update claim state
             //claimService.updateState
@@ -138,9 +132,7 @@ public class ClaimCreatedOperationHandler {
             PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(claim.getReferenceNumber()),
                 sealedClaimPdfService.createPdf(claim), SEALED_CLAIM);
 
-            Claim updatedClaim = uploadOperationService
-                .uploadDocuments(claim, authorisation, ImmutableList.of(sealedClaim));
-
+            Claim updatedClaim = uploadOperationService.uploadDocument(claim, authorisation, sealedClaim);
             updatedClaim = rpaOperationService.notify(updatedClaim, authorisation, sealedClaim);
             updatedClaim = staffOperationHandler.notify(updatedClaim, authorisation, sealedClaim);
 

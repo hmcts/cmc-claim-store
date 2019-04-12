@@ -36,10 +36,10 @@ public class EventProducer {
     @Autowired
     public EventProducer(
         ApplicationEventPublisher publisher,
-        @Value("feature_toggles.async_eventOperations_enabled") boolean asyncEventOperationEnabled
+        @Value("feature_toggles.async_eventOperations_enabled") String asyncEventOperationEnabled
     ) {
         this.publisher = publisher;
-        this.asyncEventOperationEnabled = asyncEventOperationEnabled;
+        this.asyncEventOperationEnabled = Boolean.getBoolean(asyncEventOperationEnabled);
     }
 
     public void createClaimIssuedEvent(Claim claim, String pin, String submitterName, String authorisation) {

@@ -7,7 +7,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentUploadHandler;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
-import java.util.List;
+import static java.util.Collections.singletonList;
 
 @Component
 @ConditionalOnProperty(prefix = "feature_toggles", name = "async_eventOperations_enabled")
@@ -20,9 +20,9 @@ public class UploadOperationService {
         this.documentUploadHandler = documentUploadHandler;
     }
 
-    public Claim uploadDocuments(Claim claim, String authorisation, List<PDF> documents) {
+    public Claim uploadDocument(Claim claim, String authorisation, PDF document) {
         //TODO check claim if operation already complete, if yes return claim else
 
-        return documentUploadHandler.uploadToDocumentManagement(claim, authorisation, documents);
+        return documentUploadHandler.uploadToDocumentManagement(claim, authorisation, singletonList(document));
     }
 }
