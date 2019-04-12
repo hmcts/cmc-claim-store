@@ -24,6 +24,7 @@ import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.toDate;
 public class ResponseDeadlineCalculatorTest {
 
     private static final int DAYS_FOR_RESPONSE = 14;
+    private static final int DAYS_FOR_CLAIMANT_RESPONSE = 28;
     private static final int DAYS_FOR_SERVICE = 5;
     private static final int POSTPONE_BY = 14;
 
@@ -45,7 +46,7 @@ public class ResponseDeadlineCalculatorTest {
         when(bankHolidaysApi.retrieveAll()).thenReturn(loadFixture());
 
         calculator = new ResponseDeadlineCalculator(
-            workingDayIndicator, DAYS_FOR_SERVICE, DAYS_FOR_RESPONSE, POSTPONE_BY
+            workingDayIndicator, DAYS_FOR_SERVICE, DAYS_FOR_RESPONSE, POSTPONE_BY, DAYS_FOR_CLAIMANT_RESPONSE
         );
     }
 

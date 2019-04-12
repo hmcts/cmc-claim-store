@@ -5,18 +5,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.claimstore.services.bankholidays.NonWorkingDaysCollection;
-import uk.gov.hmcts.cmc.claimstore.services.bankholidays.PublicHolidaysCollection;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Set;
-import java.util.TreeSet;
+import java.time.LocalTime;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.DayAssert.assertThat;
-import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.toDateTime;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DirectionsQuestionnaireDeadlineCalculatorTest {
@@ -25,83 +21,50 @@ public class DirectionsQuestionnaireDeadlineCalculatorTest {
     private static final int DAYS_FOR_RESPONSE = 14;
     private static final int END_OF_BUSINESS_DAY = 16;
 
+    private static final LocalDate SAMPLE_WEDNESDAY = LocalDate.of(2010, 1, 1);
+    private static final LocalTime BEFORE_EOB = LocalTime.of(END_OF_BUSINESS_DAY - 1, 0);
+    private static final LocalTime AFTER_EOB = LocalTime.of(END_OF_BUSINESS_DAY + 1, 0);
+
     private DirectionsQuestionnaireDeadlineCalculator calculator;
 
     @Mock
-    private PublicHolidaysCollection publicHolidaysCollection;
-
-    @Mock
-    private NonWorkingDaysCollection nonWorkingDaysCollection;
+    private WorkingDayIndicator workingDayIndicator;
 
     @Before
     public void setUp() {
-        when(publicHolidaysCollection.getPublicHolidays()).thenReturn(new TreeSet<>());
-
-        WorkingDayIndicator workingDayIndicator = new WorkingDayIndicator(
-            publicHolidaysCollection, nonWorkingDaysCollection
-        );
-
         calculator = new DirectionsQuestionnaireDeadlineCalculator(
             workingDayIndicator, SERVICE_DAYS, DAYS_FOR_RESPONSE, END_OF_BUSINESS_DAY
         );
+        when(workingDayIndicator.isWorkingDay(any(LocalDate.class))).thenReturn(true);
     }
 
     @Test
-    public void shouldOnlyAdd19DaysWhenWorkingDayAndBefore4pm() {
-        LocalDateTime weekdayBefore16 = toDateTime("2018-08-08 15:10");
-        LocalDate expected = weekdayBefore16.toLocalDate().plusDays(DAYS_FOR_RESPONSE + SERVICE_DAYS);
+    public void shouldAddUsualDaysWhenWorkingDayAndBefore4pm() {
+        LocalDateTime input = SAMPLE_WEDNESDAY.atTime(BEFORE_EOB);
+        LocalDate expected = input.plusDays(SERVICE_DAYS + DAYS_FOR_RESPONSE).toLocalDate();
 
-        LocalDate dqDeadline = calculator.calculateDirectionsQuestionnaireDeadlineCalculator(weekdayBefore16);
-
-        assertThat(dqDeadline).isWeekday().isTheSame(expected);
+        LocalDate actual = calculator.calculateDirectionsQuestionnaireDeadlineCalculator(input);
+        assertThat(actual).isTheSame(expected);
     }
 
     @Test
-    public void shouldAdd19DaysAndOneMoreDayWhenWorkingDayAndAfter4pm() {
-        LocalDateTime weekdayAfter16 = toDateTime("2018-08-08 18:10");
-        LocalDate expected = weekdayAfter16.toLocalDate().plusDays(DAYS_FOR_RESPONSE + SERVICE_DAYS + 1);
+    public void shouldAddUsualDaysPlusOneWhenWorkingDayAndAfter4pm() {
+        LocalDateTime input = SAMPLE_WEDNESDAY.atTime(AFTER_EOB);
+        LocalDate expected = input.plusDays(SERVICE_DAYS + DAYS_FOR_RESPONSE + 1).toLocalDate();
 
-        LocalDate dqDeadline = calculator.calculateDirectionsQuestionnaireDeadlineCalculator(weekdayAfter16);
-
-        assertThat(dqDeadline).isWeekday().isTheSame(expected);
+        LocalDate actual = calculator.calculateDirectionsQuestionnaireDeadlineCalculator(input);
+        assertThat(actual).isTheSame(expected);
     }
 
     @Test
-    public void shouldAdd19DaysAnd2MoreDaysWhenSubmittedOnSaturday() {
-        LocalDateTime saturday = toDateTime("2018-08-11 10:10");
-        LocalDate expected = saturday.toLocalDate().plusDays(DAYS_FOR_RESPONSE + SERVICE_DAYS + 2);
+    public void shouldAddDaysUntilWorkingDay() {
+        LocalDateTime input = SAMPLE_WEDNESDAY.atTime(BEFORE_EOB);
 
-        LocalDate dqDeadline = calculator.calculateDirectionsQuestionnaireDeadlineCalculator(saturday);
+        LocalDate usualResult = input.plusDays(SERVICE_DAYS + DAYS_FOR_RESPONSE).toLocalDate();
+        when(workingDayIndicator.isWorkingDay(any(LocalDate.class))).thenReturn(false, false, false, true);
+        LocalDate expected = usualResult.plusDays(3);
 
-        assertThat(dqDeadline).isTheSame(expected);
-    }
-
-    @Test
-    public void shouldAdd19DaysAndOne3MoreDaysWhenSubmittedOnFridayAfter4pmAndBankHolidayOnMonday() {
-        LocalDateTime fridayAfter4pm = toDateTime("2018-08-10 18:10");
-        LocalDate bankHolidayOnMonday = fridayAfter4pm.plusDays(3).toLocalDate();
-        LocalDate expected = fridayAfter4pm.toLocalDate().plusDays(DAYS_FOR_RESPONSE + SERVICE_DAYS + 4);
-
-        Set<LocalDate> bankHolidays = new TreeSet<>();
-        bankHolidays.add(bankHolidayOnMonday);
-        when(publicHolidaysCollection.getPublicHolidays()).thenReturn(bankHolidays);
-
-        LocalDate dqDeadline = calculator.calculateDirectionsQuestionnaireDeadlineCalculator(fridayAfter4pm);
-
-        assertThat(dqDeadline).isTheSame(expected);
-    }
-
-    @Test
-    public void shouldAddDaysToAvoidNonWorkingDays() {
-        LocalDateTime fridayBefore4pm = toDateTime("2018-08-10 12:10");
-        // +3 non-working days, +2 weekend days
-        LocalDate expected = fridayBefore4pm.toLocalDate().plusDays(DAYS_FOR_RESPONSE + SERVICE_DAYS + 3 + 2);
-
-        when(nonWorkingDaysCollection.contains(any(LocalDate.class)))
-            .thenReturn(true, true, true, false);
-
-        LocalDate dqDeadline = calculator.calculateDirectionsQuestionnaireDeadlineCalculator(fridayBefore4pm);
-
-        assertThat(dqDeadline).isTheSame(expected);
+        LocalDate actual = calculator.calculateDirectionsQuestionnaireDeadlineCalculator(input);
+        assertThat(actual).isTheSame(expected);
     }
 }
