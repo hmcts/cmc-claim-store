@@ -86,34 +86,34 @@ public class ClaimCreatedOperationHandler {
             Document sealedClaimDoc = citizenServiceDocumentsService.sealedClaimDocument(claim);
             Document defendantLetterDoc = citizenServiceDocumentsService.pinLetterDocument(claim, pin);
 
-            PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(claim.getReferenceNumber()),
-                sealedClaimPdfService.createPdf(claim), SEALED_CLAIM);
-
             PDF defendantLetter = new PDF(buildDefendantLetterFileBaseName(claim.getReferenceNumber()),
                 pdfServiceClient.generateFromHtml(defendantLetterDoc.template.getBytes(), defendantLetterDoc.values),
                 DEFENDANT_PIN_LETTER);
 
-            PDF claimIssueReceipt = new PDF(buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber()),
-                claimIssueReceiptService.createPdf(claim),
-                CLAIM_ISSUE_RECEIPT
-            );
-
             String authorisation = event.getAuthorisation();
-            String submitterName = event.getSubmitterName();
 
             Claim updatedClaim = uploadOperationService.uploadDocument(claim, authorisation, defendantLetter);
             updatedClaim
                 = bulkPrintOperationService.print(updatedClaim, defendantLetterDoc, sealedClaimDoc, authorisation);
 
+            PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(claim.getReferenceNumber()),
+                sealedClaimPdfService.createPdf(claim), SEALED_CLAIM);
+
             updatedClaim = staffOperationHandler.notify(updatedClaim, authorisation, sealedClaim, defendantLetter);
-            updatedClaim = defendantOperationService.notify(updatedClaim, pin, submitterName, authorisation);
+            updatedClaim = defendantOperationService.notify(updatedClaim, pin, event.getSubmitterName(), authorisation);
 
             //TODO Check if above operation indicators are successful, if no return else  continue
 
             updatedClaim = uploadOperationService.uploadDocument(updatedClaim, authorisation, sealedClaim);
+
+            PDF claimIssueReceipt = new PDF(buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber()),
+                claimIssueReceiptService.createPdf(claim),
+                CLAIM_ISSUE_RECEIPT
+            );
+            
             updatedClaim = uploadOperationService.uploadDocument(updatedClaim, authorisation, claimIssueReceipt);
             updatedClaim = rpaOperationService.notify(updatedClaim, authorisation, sealedClaim);
-            claimantOperationService.notify(updatedClaim, submitterName, authorisation);
+            claimantOperationService.notify(updatedClaim, event.getSubmitterName(), authorisation);
 
             //TODO update claim state
             //claimService.updateState
