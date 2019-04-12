@@ -4,6 +4,11 @@ import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingTimeType;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDPartyForDirectionType;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -62,4 +67,17 @@ public class CCDCase {
     private CCDDocument sealedClaimDocument;
     private String features;
     private CCDYesNoOption migratedFromClaimStore;
+    private LocalDate docUploadDeadline;
+    private CCDPartyForDirectionType docUploadForParty;
+    private LocalDate eyewitnessUploadDeadline;
+    private CCDPartyForDirectionType eyewitnessUploadForParty;
+    private CCDPartyForDirectionType mediationForParty;
+    private List<CCDOrderDirectionType> directionList;
+    private List<CCDOrderDirection> otherDirectionList;
+    private CCDYesNoOption hearingIsRequired;
+    private String newRequestedCourt;
+    private String preferredCourtObjectingReason;
+    private CCDHearingCourtType hearingCourt;
+    private CCDHearingTimeType estimatedHearingDuration;
+    private String hearingStatement;
 }

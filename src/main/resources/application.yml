@@ -75,6 +75,10 @@ bankHolidays:
   api:
     url: "https://www.gov.uk"
 
+docAssembly:
+  api:
+    url: "http://localhost:4666"
+
 dateCalculations:
   endOfBusinessDayHour: 16
   serviceDays: 5
