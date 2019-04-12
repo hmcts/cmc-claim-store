@@ -4,6 +4,7 @@ tags:
   postgresql-pod: false # rpe-feature-toggle-api
 
 postgresql:
+  enabled: true
   resources:
     requests:
       cpu: 25m
