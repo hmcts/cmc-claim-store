@@ -40,6 +40,7 @@ public class CCDCase {
     private String interestReason;
     private BigDecimal interestSpecificDailyAmount;
     private CCDInterestDateType interestDateType;
+    private String currentInterestAmount;
     private LocalDate interestClaimStartDate;
     private String interestStartDateReason;
     private CCDInterestEndDateType interestEndDateType;
