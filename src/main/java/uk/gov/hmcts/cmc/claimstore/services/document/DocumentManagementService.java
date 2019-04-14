@@ -12,6 +12,8 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentMetadataDownloadClientApi;
@@ -33,6 +35,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DOCUMENT_
 public class DocumentManagementService {
 
     private static final String FILES_NAME = "files";
+    private static final String OCMC = "OCMC";
 
     private final DocumentMetadataDownloadClientApi documentMetadataDownloadClient;
     private final DocumentDownloadClientApi documentDownloadClient;
@@ -61,18 +64,15 @@ public class DocumentManagementService {
         this.appInsights = appInsights;
     }
 
-    public URI uploadDocument(String authorisation, PDF document) {
-        return uploadDocument(authorisation, document.getFilename(), document.getBytes(), PDF.CONTENT_TYPE);
-    }
-
-    public URI uploadDocument(
+    public ClaimDocument uploadDocument(
         String authorisation,
-        String originalFileName,
-        byte[] documentBytes,
-        String contentType
+        PDF pdf
     ) {
+        final String originalFileName = pdf.getFilename();
         try {
-            MultipartFile file = new InMemoryMultipartFile(FILES_NAME, originalFileName, contentType, documentBytes);
+            MultipartFile file = new InMemoryMultipartFile(FILES_NAME, originalFileName,
+                PDF.CONTENT_TYPE,
+                pdf.getBytes());
             UploadResponse response = documentUploadClient.upload(
                 authorisation,
                 authTokenGenerator.generate(),
@@ -87,7 +87,14 @@ public class DocumentManagementService {
                 .orElseThrow(() ->
                     new DocumentManagementException("Document management failed uploading file" + originalFileName));
 
-            return URI.create(document.links.self.href);
+            return ClaimDocument.builder()
+                .documentManagementUrl(URI.create(document.links.self.href))
+                .documentName(originalFileName)
+                .documentType(pdf.getClaimDocumentType())
+                .createdDatetime(LocalDateTimeFactory.nowInUTC())
+                .size(document.size)
+                .createdBy(OCMC)
+                .build();
         } catch (Exception ex) {
             appInsights.trackEvent(DOCUMENT_MANAGEMENT_UPLOAD_FAILURE, DOCUMENT_NAME, originalFileName);
             throw new DocumentManagementException(String.format("Unable to upload document %s to document management",
