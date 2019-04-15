@@ -227,12 +227,23 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Claim saveClaimDocuments(String authorisation,
-                                    Long claimId,
-                                    ClaimDocumentCollection claimDocumentCollection) {
+    public Claim saveClaimDocuments(
+        String authorisation,
+        Long claimId,
+        ClaimDocumentCollection claimDocumentCollection
+    ) {
         claimRepository.saveClaimDocuments(claimId, jsonMapper.toJson(claimDocumentCollection));
+        return getClaimById(claimId);
+    }
+
+    @Override
+    public Claim linkLetterHolder(Long claimId, String letterHolderId) {
+        claimRepository.linkLetterHolder(claimId, letterHolderId);
+        return getClaimById(claimId);
+    }
+
+    private Claim getClaimById(Long claimId) {
         return claimRepository.getById(claimId).orElseThrow(() ->
-            new NotFoundException(
-                String.format("Claim not found by primary key %s.", claimId)));
+            new NotFoundException(String.format("Claim not found by primary key %s.", claimId)));
     }
 }

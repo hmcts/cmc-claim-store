@@ -41,12 +41,14 @@ public class ClaimantOperationService {
     }
 
     @LogExecutionTime
-    public void confirmRepresentative(
+    public Claim confirmRepresentative(
         Claim claim,
         String submitterName,
         String representativeEmail,
         String authorisation
     ) {
+        //TODO check claim if operation already complete, if yes return claim else
+
         claimIssuedNotificationService.sendMail(
             claim,
             representativeEmail,
@@ -54,5 +56,8 @@ public class ClaimantOperationService {
             notificationsProperties.getTemplates().getEmail().getRepresentativeClaimIssued(),
             "representative-issue-notification-" + claim.getReferenceNumber(),
             submitterName);
+
+        //TODO update claim and return updated claim, below is placeholder
+        return claim;
     }
 }

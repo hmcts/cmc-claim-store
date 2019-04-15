@@ -64,7 +64,10 @@ public class EventProducer {
     }
 
     public void createMoreTimeForResponseRequestedEvent(
-        Claim claim, LocalDate newResponseDeadline, String defendantEmail) {
+        Claim claim,
+        LocalDate newResponseDeadline,
+        String defendantEmail
+    ) {
         publisher.publishEvent(new MoreTimeRequestedEvent(claim, newResponseDeadline, defendantEmail));
     }
 
