@@ -28,13 +28,13 @@ public class MapperUtil {
         mapClaimSubmissionOperationIndicators = claimSubmissionOperationIndicators ->
         ClaimSubmissionOperationIndicators.builder()
             .claimantNotification(YesNoOption.valueOf(claimSubmissionOperationIndicators.getClaimantNotification().name()))
-            .defendantNotification(YesNoOption.valueOf(claimSubmissionOperationIndicators.getClaimantNotification().name()))
-            .bulkPrint(YesNoOption.valueOf(claimSubmissionOperationIndicators.getClaimantNotification().name()))
+            .defendantNotification(YesNoOption.valueOf(claimSubmissionOperationIndicators.getDefendantNotification().name()))
+            .bulkPrint(YesNoOption.valueOf(claimSubmissionOperationIndicators.getBulkPrint().name()))
             .RPA(YesNoOption.valueOf(claimSubmissionOperationIndicators.getRPA().name()))
-            .staffNotification(YesNoOption.valueOf(claimSubmissionOperationIndicators.getClaimantNotification().name()))
-            .sealedClaimUpload(YesNoOption.valueOf(claimSubmissionOperationIndicators.getClaimantNotification().name()))
-            .claimIssueReceiptUpload(YesNoOption.valueOf(claimSubmissionOperationIndicators.getClaimantNotification().name()))
-            .defendantPinLetterUpload(YesNoOption.valueOf(claimSubmissionOperationIndicators.getClaimantNotification().name()))
+            .staffNotification(YesNoOption.valueOf(claimSubmissionOperationIndicators.getStaffNotification().name()))
+            .sealedClaimUpload(YesNoOption.valueOf(claimSubmissionOperationIndicators.getSealedClaimUpload().name()))
+            .claimIssueReceiptUpload(YesNoOption.valueOf(claimSubmissionOperationIndicators.getClaimIssueReceiptUpload().name()))
+            .defendantPinLetterUpload(YesNoOption.valueOf(claimSubmissionOperationIndicators.getDefendantPinLetterUpload().name()))
             .build();
 
     public static Supplier<ClaimSubmissionOperationIndicators> getDefaultClaimSubmissionOperationIndicators =
