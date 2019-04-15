@@ -20,6 +20,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NOTIFICATION_FAILURE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefendantResponseNotificationServiceTest extends BaseNotificationServiceTest {
@@ -30,8 +32,8 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
     @Before
     public void beforeEachTest() {
         service = new DefendantResponseNotificationService(
-            notificationClient, new FreeMediationDecisionDateCalculator(28), properties
-        );
+            notificationClient, new FreeMediationDecisionDateCalculator(28), properties,
+            appInsights);
 
         when(properties.getFrontendBaseUrl()).thenReturn(FRONTEND_BASE_URL);
         when(templates.getEmail()).thenReturn(emailTemplates);
@@ -47,6 +49,7 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
             .thenThrow(mock(NotificationClientException.class));
 
         service.notifyDefendant(claim, USER_EMAIL, reference);
+        verify(appInsights).trackEvent(eq(NOTIFICATION_FAILURE), eq(REFERENCE_NUMBER), eq(reference));
     }
 
     @Test

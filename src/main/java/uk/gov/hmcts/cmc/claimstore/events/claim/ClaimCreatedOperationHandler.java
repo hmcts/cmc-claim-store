@@ -7,9 +7,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.claimstore.documents.CitizenServiceDocumentsService;
-import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
-import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.operations.BulkPrintOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.ClaimantOperationService;
@@ -20,15 +17,6 @@ import uk.gov.hmcts.cmc.claimstore.events.operations.RpaOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.UploadOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimCreatedEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
-import uk.gov.hmcts.reform.sendletter.api.Document;
-
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimIssueReceiptFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @Async("threadPoolTaskExecutor")
 @Service
@@ -36,10 +24,6 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 public class ClaimCreatedOperationHandler {
     private static final Logger logger = LoggerFactory.getLogger(ClaimCreatedOperationHandler.class);
 
-    private final CitizenServiceDocumentsService citizenServiceDocumentsService;
-    private final SealedClaimPdfService sealedClaimPdfService;
-    private final PDFServiceClient pdfServiceClient;
-    private final ClaimIssueReceiptService claimIssueReceiptService;
     private final RepresentativeOperationService representativeOperationService;
     private final BulkPrintOperationService bulkPrintOperationService;
     private final ClaimantOperationService claimantOperationService;
@@ -47,27 +31,20 @@ public class ClaimCreatedOperationHandler {
     private final RpaOperationService rpaOperationService;
     private final NotifyStaffOperationService notifyStaffOperationService;
     private final UploadOperationService uploadOperationService;
+    private final DocumentGenerationService documentGenerationService;
 
     @Autowired
     @SuppressWarnings("squid:S00107")
     public ClaimCreatedOperationHandler(
-        CitizenServiceDocumentsService citizenServiceDocumentsService,
-        SealedClaimPdfService sealedClaimPdfService,
-        PDFServiceClient pdfServiceClient,
-        ClaimIssueReceiptService claimIssueReceiptService,
         RepresentativeOperationService representativeOperationService,
         BulkPrintOperationService bulkPrintOperationService,
         ClaimantOperationService claimantOperationService,
         DefendantOperationService defendantOperationService,
         RpaOperationService rpaOperationService,
         NotifyStaffOperationService notifyStaffOperationService,
-        UploadOperationService uploadOperationService
+        UploadOperationService uploadOperationService,
+        DocumentGenerationService documentGenerationService
     ) {
-        this.citizenServiceDocumentsService = citizenServiceDocumentsService;
-        this.sealedClaimPdfService = sealedClaimPdfService;
-        this.pdfServiceClient = pdfServiceClient;
-        this.claimIssueReceiptService = claimIssueReceiptService;
-
         this.representativeOperationService = representativeOperationService;
         this.bulkPrintOperationService = bulkPrintOperationService;
         this.claimantOperationService = claimantOperationService;
@@ -75,44 +52,60 @@ public class ClaimCreatedOperationHandler {
         this.rpaOperationService = rpaOperationService;
         this.notifyStaffOperationService = notifyStaffOperationService;
         this.uploadOperationService = uploadOperationService;
+        this.documentGenerationService = documentGenerationService;
     }
 
     @EventListener
     public void citizenIssueHandler(CitizenClaimCreatedEvent event) {
         try {
             Claim claim = event.getClaim();
-            String pin = event.getPin();
-            Document sealedClaimDoc = citizenServiceDocumentsService.sealedClaimDocument(claim);
-            Document defendantLetterDoc = citizenServiceDocumentsService.pinLetterDocument(claim, pin);
-
-            PDF defendantLetter = new PDF(buildDefendantLetterFileBaseName(claim.getReferenceNumber()),
-                pdfServiceClient.generateFromHtml(defendantLetterDoc.template.getBytes(), defendantLetterDoc.values),
-                DEFENDANT_PIN_LETTER);
-
             String authorisation = event.getAuthorisation();
+            String submitterName = event.getSubmitterName();
+            GeneratedDocuments generatedDocuments = documentGenerationService.generateForCitizen(claim, authorisation);
 
-            Claim updatedClaim = uploadOperationService.uploadDocument(claim, authorisation, defendantLetter);
-            updatedClaim
-                = bulkPrintOperationService.print(updatedClaim, defendantLetterDoc, sealedClaimDoc, authorisation);
+            Claim updatedClaim = uploadOperationService.uploadDocument(
+                claim,
+                authorisation,
+                generatedDocuments.getDefendantLetter()
+            );
 
-            PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(claim.getReferenceNumber()),
-                sealedClaimPdfService.createPdf(claim), SEALED_CLAIM);
+            updatedClaim = bulkPrintOperationService.print(
+                updatedClaim,
+                generatedDocuments.getDefendantLetterDoc(),
+                generatedDocuments.getSealedClaimDoc(),
+                authorisation
+            );
 
-            updatedClaim = notifyStaffOperationService.notify(updatedClaim, authorisation, sealedClaim, defendantLetter);
-            updatedClaim = defendantOperationService.notify(updatedClaim, pin, event.getSubmitterName(), authorisation);
+            updatedClaim = notifyStaffOperationService.notify(
+                updatedClaim,
+                authorisation,
+                generatedDocuments.getSealedClaim(),
+                generatedDocuments.getDefendantLetter()
+            );
+
+            updatedClaim = defendantOperationService.notify(
+                updatedClaim,
+                generatedDocuments.getPin(),
+                submitterName,
+                authorisation
+            );
 
             //TODO Check if above operation indicators are successful, if no return else  continue
 
-            updatedClaim = uploadOperationService.uploadDocument(updatedClaim, authorisation, sealedClaim);
-
-            PDF claimIssueReceipt = new PDF(buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber()),
-                claimIssueReceiptService.createPdf(claim),
-                CLAIM_ISSUE_RECEIPT
+            updatedClaim = uploadOperationService.uploadDocument(
+                updatedClaim,
+                authorisation,
+                generatedDocuments.getSealedClaim()
             );
 
-            updatedClaim = uploadOperationService.uploadDocument(updatedClaim, authorisation, claimIssueReceipt);
-            updatedClaim = rpaOperationService.notify(updatedClaim, authorisation, sealedClaim);
-            claimantOperationService.notifyCitizen(updatedClaim, event.getSubmitterName(), authorisation);
+            updatedClaim = uploadOperationService.uploadDocument(
+                updatedClaim,
+                authorisation,
+                generatedDocuments.getClaimIssueReceipt()
+            );
+
+            updatedClaim = rpaOperationService.notify(updatedClaim, authorisation, generatedDocuments.getSealedClaim());
+            updatedClaim = claimantOperationService.notifyCitizen(updatedClaim, submitterName, authorisation);
 
             //TODO update claim state
             //claimService.updateState
@@ -128,8 +121,8 @@ public class ClaimCreatedOperationHandler {
             Claim claim = event.getClaim();
             String authorisation = event.getAuthorisation();
 
-            PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(claim.getReferenceNumber()),
-                sealedClaimPdfService.createPdf(claim), SEALED_CLAIM);
+            GeneratedDocuments generatedDocuments = documentGenerationService.generateForRepresentative(claim);
+            PDF sealedClaim = generatedDocuments.getSealedClaim();
 
             Claim updatedClaim = uploadOperationService.uploadDocument(claim, authorisation, sealedClaim);
             updatedClaim = rpaOperationService.notify(updatedClaim, authorisation, sealedClaim);
@@ -137,6 +130,7 @@ public class ClaimCreatedOperationHandler {
 
             String submitterName = event.getRepresentativeName().orElse(null);
             representativeOperationService.notify(updatedClaim, submitterName, authorisation);
+
             claimantOperationService
                 .confirmRepresentative(updatedClaim, submitterName, event.getRepresentativeEmail(), authorisation);
 

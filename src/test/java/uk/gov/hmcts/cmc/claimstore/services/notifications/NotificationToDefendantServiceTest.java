@@ -16,6 +16,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NOTIFICATION_FAILURE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationToDefendantServiceTest extends BaseNotificationServiceTest {
@@ -30,7 +32,7 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
 
     @Before
     public void beforeEachTest() {
-        service = new NotificationToDefendantService(notificationClient, properties);
+        service = new NotificationToDefendantService(notificationClient, properties, appInsights);
         claim = SampleClaim.builder()
             .withDefendantEmail(DEFENDANT_EMAIL)
             .build();
@@ -46,6 +48,7 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
             .thenThrow(mock(NotificationClientException.class));
 
         service.notifyDefendant(claim);
+        verify(appInsights).trackEvent(eq(NOTIFICATION_FAILURE), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 
     @Test

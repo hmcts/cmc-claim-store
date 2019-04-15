@@ -189,7 +189,11 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
             getClaimDocumentCollection(claim, document, documentSelfPath));
     }
 
-    private ClaimDocumentCollection getClaimDocumentCollection(Claim claim, PDF document, URI uri) {
+    private ClaimDocumentCollection getClaimDocumentCollection(
+        Claim claim,
+        PDF document,
+        URI uri
+    ) {
         ClaimDocumentCollection claimDocumentCollection = claim.getClaimDocumentCollection()
             .orElse(new ClaimDocumentCollection());
         claimDocumentCollection.addClaimDocument(ClaimDocument.builder()

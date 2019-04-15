@@ -16,6 +16,8 @@ import uk.gov.hmcts.cmc.claimstore.events.operations.RepresentativeOperationServ
 import uk.gov.hmcts.cmc.claimstore.events.operations.RpaOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.UploadOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimCreatedEvent;
+import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
+import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
@@ -23,6 +25,7 @@ import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -34,11 +37,12 @@ import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClaimCreatedOperationHandlerTest {
-    public static final Claim claim = SampleClaim.getDefault();
-    public static final String pin = "pin";
-    public static final String submitterName = "submitter-name";
-    public static final String authorisation = "authorisation";
+    public static final Claim CLAIM = SampleClaim.getDefault();
+    public static final String PIN = "PIN";
+    public static final String SUBMITTER_NAME = "submitter-name";
+    public static final String AUTHORISATION = "AUTHORISATION";
     private static final byte[] PDF_BYTES = new byte[] {1, 2, 3, 4};
+    public static final String LETTER_HOLDER_ID = "LetterHolderId";
 
     private Map<String, Object> pinContents = new HashMap<>();
     private String pinTemplate = "pinTemplate";
@@ -58,7 +62,7 @@ public class ClaimCreatedOperationHandlerTest {
     @Mock
     private PDFServiceClient pdfServiceClient;
     @Mock
-    private ClaimIssueReceiptService ClaimIssueReceiptService;
+    private ClaimIssueReceiptService claimIssueReceiptService;
     @Mock
     private RepresentativeOperationService representativeOperationService;
     @Mock
@@ -71,76 +75,93 @@ public class ClaimCreatedOperationHandlerTest {
     private NotifyStaffOperationService notifyStaffOperationService;
     @Mock
     private UploadOperationService uploadOperationService;
+    @Mock
+    private ClaimService claimService;
 
     @Before
     public void before() {
-        claimCreatedOperationHandler = new ClaimCreatedOperationHandler(
+        DocumentGenerationService documentGenerationService = new DocumentGenerationService(
             citizenServiceDocumentsService,
             sealedClaimPdfService,
             pdfServiceClient,
-            ClaimIssueReceiptService,
+            claimIssueReceiptService,
+            claimService);
+
+        claimCreatedOperationHandler = new ClaimCreatedOperationHandler(
             representativeOperationService,
             bulkPrintOperationService,
             claimantOperationService,
             defendantOperationService,
             rpaOperationService,
             notifyStaffOperationService,
-            uploadOperationService
+            uploadOperationService,
+            documentGenerationService
+
         );
 
-        given(citizenServiceDocumentsService.pinLetterDocument(eq(claim), eq(pin))).willReturn(defendantLetterDocument);
-        given(citizenServiceDocumentsService.sealedClaimDocument(eq(claim))).willReturn(sealedClaimLetterDocument);
-        given(sealedClaimPdfService.createPdf(eq(claim))).willReturn(PDF_BYTES);
+        given(claimService.getPinResponse(eq(CLAIM.getClaimData()), eq(AUTHORISATION)))
+            .willReturn(Optional.of(GeneratePinResponse.builder()
+                .pin(PIN)
+                .userId(LETTER_HOLDER_ID)
+                .build()
+            ));
+
+        given(citizenServiceDocumentsService.pinLetterDocument(eq(CLAIM), eq(PIN))).willReturn(defendantLetterDocument);
+        given(citizenServiceDocumentsService.sealedClaimDocument(eq(CLAIM))).willReturn(sealedClaimLetterDocument);
+        given(sealedClaimPdfService.createPdf(eq(CLAIM))).willReturn(PDF_BYTES);
         given(pdfServiceClient.generateFromHtml(any(), anyMap())).willReturn(PDF_BYTES);
-        given(ClaimIssueReceiptService.createPdf(eq(claim))).willReturn(PDF_BYTES);
-        given(representativeOperationService.notify(eq(claim), eq(submitterName), eq(authorisation))).willReturn(claim);
-        given(bulkPrintOperationService.print(eq(claim), any(), any(), eq(authorisation))).willReturn(claim);
-        given(claimantOperationService.notifyCitizen(eq(claim), any(), eq(authorisation))).willReturn(claim);
-        given(defendantOperationService.notify(eq(claim), any(), any(), eq(authorisation))).willReturn(claim);
-        given(rpaOperationService.notify(eq(claim), eq(authorisation), any())).willReturn(claim);
-        given(notifyStaffOperationService.notify(eq(claim), eq(authorisation), any())).willReturn(claim);
-        given(uploadOperationService.uploadDocument(eq(claim), eq(authorisation), any())).willReturn(claim);
+        given(claimIssueReceiptService.createPdf(eq(CLAIM))).willReturn(PDF_BYTES);
+
+        given(representativeOperationService.notify(eq(CLAIM), eq(SUBMITTER_NAME), eq(AUTHORISATION)))
+            .willReturn(CLAIM);
+
+        given(bulkPrintOperationService.print(eq(CLAIM), any(), any(), eq(AUTHORISATION))).willReturn(CLAIM);
+        given(claimantOperationService.notifyCitizen(eq(CLAIM), any(), eq(AUTHORISATION))).willReturn(CLAIM);
+        given(defendantOperationService.notify(eq(CLAIM), any(), any(), eq(AUTHORISATION))).willReturn(CLAIM);
+        given(rpaOperationService.notify(eq(CLAIM), eq(AUTHORISATION), any())).willReturn(CLAIM);
+        given(notifyStaffOperationService.notify(eq(CLAIM), eq(AUTHORISATION), any())).willReturn(CLAIM);
+        given(uploadOperationService.uploadDocument(eq(CLAIM), eq(AUTHORISATION), any())).willReturn(CLAIM);
 
     }
 
     @Test
     public void citizenIssueHandler() {
         //given
-        CitizenClaimCreatedEvent event = new CitizenClaimCreatedEvent(claim, pin, submitterName, authorisation);
+        CitizenClaimCreatedEvent event = new CitizenClaimCreatedEvent(CLAIM, SUBMITTER_NAME, AUTHORISATION);
 
         //when
         claimCreatedOperationHandler.citizenIssueHandler(event);
 
         //then
-        verify(citizenServiceDocumentsService).sealedClaimDocument(eq(claim));
-        verify(pdfServiceClient).generateFromHtml(any(), anyMap());
-        verify(ClaimIssueReceiptService).createPdf(eq(claim));
-        verify(bulkPrintOperationService).print(eq(claim), any(), any(), eq(authorisation));
-        verify(claimantOperationService).notifyCitizen(eq(claim), any(), eq(authorisation));
-        verify(defendantOperationService).notify(eq(claim), any(), any(), eq(authorisation));
-        verify(rpaOperationService).notify(eq(claim), eq(authorisation), any());
-        verify(notifyStaffOperationService).notify(eq(claim), eq(authorisation), any());
-        verify(uploadOperationService, atLeast(3)).uploadDocument(eq(claim), eq(authorisation), any());
+        verify(citizenServiceDocumentsService).sealedClaimDocument(eq(CLAIM));
+        verify(pdfServiceClient, atLeast(2)).generateFromHtml(any(), anyMap());
+        verify(claimIssueReceiptService).createPdf(eq(CLAIM));
+        verify(bulkPrintOperationService).print(eq(CLAIM), any(), any(), eq(AUTHORISATION));
+        verify(claimantOperationService).notifyCitizen(eq(CLAIM), any(), eq(AUTHORISATION));
+        verify(defendantOperationService).notify(eq(CLAIM), any(), any(), eq(AUTHORISATION));
+        verify(rpaOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
+        verify(notifyStaffOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
+        verify(uploadOperationService, atLeast(3)).uploadDocument(eq(CLAIM), eq(AUTHORISATION), any());
 
     }
 
     @Test
     public void representativeIssueHandler() {
         //given
-        RepresentedClaimCreatedEvent event = new RepresentedClaimCreatedEvent(claim, submitterName, authorisation);
+        RepresentedClaimCreatedEvent event = new RepresentedClaimCreatedEvent(CLAIM, SUBMITTER_NAME, AUTHORISATION);
 
         //when
         claimCreatedOperationHandler.representativeIssueHandler(event);
 
         //then
-        verify(sealedClaimPdfService).createPdf(eq(claim));
-        verify(representativeOperationService).notify(eq(claim), eq(submitterName), eq(authorisation));
+        verify(sealedClaimPdfService).createPdf(eq(CLAIM));
+        verify(representativeOperationService).notify(eq(CLAIM), eq(SUBMITTER_NAME), eq(AUTHORISATION));
 
         verify(claimantOperationService)
-            .confirmRepresentative(eq(claim), eq(submitterName), anyString(), eq(authorisation));
+            .confirmRepresentative(eq(CLAIM), eq(SUBMITTER_NAME), anyString(), eq(AUTHORISATION));
 
-        verify(rpaOperationService).notify(eq(claim), eq(authorisation), any());
-        verify(notifyStaffOperationService).notify(eq(claim), eq(authorisation), any());
-        verify(uploadOperationService).uploadDocument(eq(claim), eq(authorisation), any());
+        verify(rpaOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
+        verify(notifyStaffOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
+        verify(uploadOperationService).uploadDocument(eq(CLAIM), eq(AUTHORISATION), any());
     }
 }

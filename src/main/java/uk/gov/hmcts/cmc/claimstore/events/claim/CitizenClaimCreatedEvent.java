@@ -13,18 +13,15 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @Builder(toBuilder = true)
 public class CitizenClaimCreatedEvent {
     private final Claim claim;
-    private final String pin;
     private final String submitterName;
     private final String authorisation;
 
     public CitizenClaimCreatedEvent(
         Claim claim,
-        String pin,
         String submitterName,
         String authorisation
     ) {
         this.claim = claim;
-        this.pin = pin;
         this.submitterName = submitterName;
         this.authorisation = authorisation;
     }

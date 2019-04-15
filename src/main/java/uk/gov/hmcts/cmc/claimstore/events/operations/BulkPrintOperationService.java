@@ -18,7 +18,12 @@ public class BulkPrintOperationService {
         this.bulkPrintService = bulkPrintService;
     }
 
-    public Claim print(Claim claim, Document defendantLetterDocument, Document sealedClaimDocument, String authorisation) {
+    public Claim print(
+        Claim claim,
+        Document defendantLetterDocument,
+        Document sealedClaimDocument,
+        String authorisation
+    ) {
         //TODO check claim if operation already complete, if yes return claim else
 
         bulkPrintService.print(claim, defendantLetterDocument, sealedClaimDocument);
