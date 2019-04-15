@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
+import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 @Component
@@ -22,7 +24,7 @@ public class ClaimantOperationService {
         this.notificationsProperties = notificationsProperties;
     }
 
-    public Claim notify(Claim claim, String submitterName, String authorisation) {
+    public Claim notifyCitizen(Claim claim, String submitterName, String authorisation) {
         //TODO check claim if operation already complete, if yes return claim else
 
         claimIssuedNotificationService.sendMail(
@@ -36,5 +38,21 @@ public class ClaimantOperationService {
 
         //TODO update claim and return updated claim, below is placeholder
         return claim;
+    }
+
+    @LogExecutionTime
+    public void confirmRepresentative(
+        Claim claim,
+        String submitterName,
+        String representativeEmail,
+        String authorisation
+    ) {
+        claimIssuedNotificationService.sendMail(
+            claim,
+            representativeEmail,
+            null,
+            notificationsProperties.getTemplates().getEmail().getRepresentativeClaimIssued(),
+            "representative-issue-notification-" + claim.getReferenceNumber(),
+            submitterName);
     }
 }

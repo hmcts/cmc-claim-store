@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.events.claim;
 
-import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +45,7 @@ public class ClaimCreatedOperationHandler {
     private final ClaimantOperationService claimantOperationService;
     private final DefendantOperationService defendantOperationService;
     private final RpaOperationService rpaOperationService;
-    private final NotifyStaffOperationService staffOperationHandler;
+    private final NotifyStaffOperationService notifyStaffOperationService;
     private final UploadOperationService uploadOperationService;
 
     @Autowired
@@ -61,7 +60,7 @@ public class ClaimCreatedOperationHandler {
         ClaimantOperationService claimantOperationService,
         DefendantOperationService defendantOperationService,
         RpaOperationService rpaOperationService,
-        NotifyStaffOperationService staffOperationHandler,
+        NotifyStaffOperationService notifyStaffOperationService,
         UploadOperationService uploadOperationService
     ) {
         this.citizenServiceDocumentsService = citizenServiceDocumentsService;
@@ -74,7 +73,7 @@ public class ClaimCreatedOperationHandler {
         this.claimantOperationService = claimantOperationService;
         this.defendantOperationService = defendantOperationService;
         this.rpaOperationService = rpaOperationService;
-        this.staffOperationHandler = staffOperationHandler;
+        this.notifyStaffOperationService = notifyStaffOperationService;
         this.uploadOperationService = uploadOperationService;
     }
 
@@ -99,7 +98,7 @@ public class ClaimCreatedOperationHandler {
             PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(claim.getReferenceNumber()),
                 sealedClaimPdfService.createPdf(claim), SEALED_CLAIM);
 
-            updatedClaim = staffOperationHandler.notify(updatedClaim, authorisation, sealedClaim, defendantLetter);
+            updatedClaim = notifyStaffOperationService.notify(updatedClaim, authorisation, sealedClaim, defendantLetter);
             updatedClaim = defendantOperationService.notify(updatedClaim, pin, event.getSubmitterName(), authorisation);
 
             //TODO Check if above operation indicators are successful, if no return else  continue
@@ -110,10 +109,10 @@ public class ClaimCreatedOperationHandler {
                 claimIssueReceiptService.createPdf(claim),
                 CLAIM_ISSUE_RECEIPT
             );
-            
+
             updatedClaim = uploadOperationService.uploadDocument(updatedClaim, authorisation, claimIssueReceipt);
             updatedClaim = rpaOperationService.notify(updatedClaim, authorisation, sealedClaim);
-            claimantOperationService.notify(updatedClaim, event.getSubmitterName(), authorisation);
+            claimantOperationService.notifyCitizen(updatedClaim, event.getSubmitterName(), authorisation);
 
             //TODO update claim state
             //claimService.updateState
@@ -134,10 +133,12 @@ public class ClaimCreatedOperationHandler {
 
             Claim updatedClaim = uploadOperationService.uploadDocument(claim, authorisation, sealedClaim);
             updatedClaim = rpaOperationService.notify(updatedClaim, authorisation, sealedClaim);
-            updatedClaim = staffOperationHandler.notify(updatedClaim, authorisation, sealedClaim);
+            updatedClaim = notifyStaffOperationService.notify(updatedClaim, authorisation, sealedClaim);
 
             String submitterName = event.getRepresentativeName().orElse(null);
             representativeOperationService.notify(updatedClaim, submitterName, authorisation);
+            claimantOperationService
+                .confirmRepresentative(updatedClaim, submitterName, event.getRepresentativeEmail(), authorisation);
 
             //TODO update claim state
             //claimService.updateState
