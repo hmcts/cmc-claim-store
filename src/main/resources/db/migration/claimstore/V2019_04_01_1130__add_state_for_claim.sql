@@ -1,0 +1,3 @@
+ALTER TABLE claim
+  ADD COLUMN state TEXT DEFAULT NULL;
+

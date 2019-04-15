@@ -21,6 +21,8 @@ import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATED;
+
 @Component
 public class ClaimStore {
 
@@ -69,7 +71,8 @@ public class ClaimStore {
             responseDeadline,
             claimData.getExternalId().toString(),
             SampleClaim.SUBMITTER_EMAIL,
-            "[\"admissions\"]"
+            "[\"admissions\"]",
+            CREATED
         );
 
         logger.debug("Saved claim has been given ID {}.", claimId);
