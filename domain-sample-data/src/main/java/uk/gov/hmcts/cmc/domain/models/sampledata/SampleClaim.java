@@ -86,7 +86,7 @@ public final class SampleClaim {
     private LocalDateTime reDeterminationRequestedAt;
     private ReDetermination reDetermination = new ReDetermination("I feel defendant can pay", CLAIMANT);
     private ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
-    private ClaimState state;
+    private ClaimState state = null;
 
     private SampleClaim() {
     }
