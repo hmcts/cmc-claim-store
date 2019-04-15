@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class MapperUtil {
@@ -35,4 +36,18 @@ public class MapperUtil {
             .claimIssueReceiptUpload(YesNoOption.valueOf(claimSubmissionOperationIndicators.getClaimantNotification().name()))
             .defendantPinLetterUpload(YesNoOption.valueOf(claimSubmissionOperationIndicators.getClaimantNotification().name()))
             .build();
+
+    public static Supplier<ClaimSubmissionOperationIndicators> getDefaultClaimSubmissionOperationIndicators =
+        () -> ClaimSubmissionOperationIndicators.builder()
+            .claimantNotification(YesNoOption.NO)
+            .defendantNotification(YesNoOption.NO)
+            .bulkPrint(YesNoOption.NO)
+            .RPA(YesNoOption.NO)
+            .staffNotification(YesNoOption.NO)
+            .sealedClaimUpload(YesNoOption.NO)
+            .claimIssueReceiptUpload(YesNoOption.NO)
+            .defendantPinLetterUpload(YesNoOption.NO)
+            .build();
+
+
 }
