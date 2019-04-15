@@ -101,5 +101,5 @@ cmc-citizen-frontend:
 
 idam-pr:
   service:
-    name: Money%20Claims%20-%20Citizen
+    name: Money Claims - Citizen
     redirect_uri: https://www-${SERVICE_FQDN}/receiver
