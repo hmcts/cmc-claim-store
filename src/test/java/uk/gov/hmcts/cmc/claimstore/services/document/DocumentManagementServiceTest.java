@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentMetadataDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
+import uk.gov.hmcts.reform.document.domain.Classification;
 
 import java.net.URI;
 import java.util.Collections;
@@ -27,6 +28,7 @@ import java.util.Collections;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -75,8 +77,11 @@ public class DocumentManagementServiceTest {
         UserDetails userDetails = new UserDetails("id", "mail@mail.com",
             "userFirstName", "userLastName", Collections.singletonList("role"));
         when(userService.getUserDetails(anyString())).thenReturn(userDetails);
-        when(documentUploadClient.upload(anyString(), anyString(), anyString(), anyList()))
-            .thenReturn(successfulDocumentManagementUploadResponse());
+
+        when(documentUploadClient
+            .upload(anyString(), anyString(), anyString(), anyList(), any(Classification.class), anyList())
+        ).thenReturn(successfulDocumentManagementUploadResponse());
+
         URI documentSelfPath = documentManagementService.uploadDocument("authString", document);
         assertNotNull(documentSelfPath);
         assertEquals("/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4", documentSelfPath.getPath());
@@ -98,11 +103,19 @@ public class DocumentManagementServiceTest {
     @Test
     public void shouldDownloadDocumentFromDocumentManagement() {
         URI docUri = URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4");
-        when(documentMetadataDownloadClient.getDocumentMetadata(anyString(), anyString(), anyString(), anyString()))
-            .thenReturn(successfulDocumentManagementDownloadResponse());
+
+        when(documentMetadataDownloadClient
+            .getDocumentMetadata(anyString(), anyString(), anyString(), anyString(), anyString())
+        ).thenReturn(successfulDocumentManagementDownloadResponse());
+
+        UserDetails userDetails = new UserDetails("id", "mail@mail.com",
+            "userFirstName", "userLastName", Collections.singletonList("role"));
+        when(userService.getUserDetails(anyString())).thenReturn(userDetails);
         when(responseEntity.getBody()).thenReturn(new ByteArrayResource("test".getBytes()));
-        when(documentDownloadClient.downloadBinary(anyString(), anyString(), anyString(), anyString()))
+
+        when(documentDownloadClient.downloadBinary(anyString(), anyString(), anyString(), anyString(), anyString()))
             .thenReturn(responseEntity);
+
         byte[] pdf = documentManagementService.downloadDocument("auth string", docUri, "0000-claim");
         assertNotNull(pdf);
         assertArrayEquals("test".getBytes(), pdf);
@@ -113,8 +126,11 @@ public class DocumentManagementServiceTest {
         expectedException.expect(DocumentManagementException.class);
         expectedException.expectMessage("Unable to download document 0000-claim from document management");
         URI docUri = URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4");
-        when(documentMetadataDownloadClient.getDocumentMetadata(anyString(), anyString(), anyString(), anyString()))
-            .thenReturn(null);
+
+        when(documentMetadataDownloadClient
+            .getDocumentMetadata(anyString(), anyString(), anyString(), anyString(), anyString())
+        ).thenReturn(null);
+
         documentManagementService.downloadDocument("auth string", docUri, "0000-claim");
         verify(appInsights).trackEvent(DOCUMENT_MANAGEMENT_DOWNLOAD_FAILURE, DOCUMENT_NAME, anyString());
     }

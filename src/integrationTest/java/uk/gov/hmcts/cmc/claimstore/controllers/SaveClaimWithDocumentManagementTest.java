@@ -10,26 +10,34 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.reform.document.domain.Classification;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 
 import java.net.URI;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimIssueReceiptFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementUploadResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.unsuccessfulDocumentManagementUploadResponse;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @TestPropertySource(
@@ -41,63 +49,119 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 )
 public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
 
+    private static final String EXTENSION = ".pdf";
+
     @Test
     public void shouldUploadSealedCopyOfNonRepresentedClaimIntoDocumentManagementStore() throws Exception {
-        assertSealedClaimIsUploadedIntoDocumentManagementStore(SampleClaimData.submittedByClaimant(),
-            AUTHORISATION_TOKEN);
+        ClaimData claimData = SampleClaimData.submittedByClaimant();
+        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
+            .willReturn(successfulDocumentManagementUploadResponse());
+        given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
+        MvcResult result = makeIssueClaimRequest(claimData, AUTHORISATION_TOKEN)
+            .andExpect(status().isOk())
+            .andReturn();
+        final ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
+        Claim claim = deserializeObjectFrom(result, Claim.class);
+        InMemoryMultipartFile sealedClaimForm = new InMemoryMultipartFile(
+            "files",
+            buildSealedClaimFileBaseName(claim.getReferenceNumber()) + EXTENSION,
+            MediaType.APPLICATION_PDF_VALUE,
+            PDF_BYTES
+        );
+        InMemoryMultipartFile defendantPinLetter = new InMemoryMultipartFile(
+            "files",
+            buildDefendantLetterFileBaseName(claim.getReferenceNumber()) + EXTENSION,
+            MediaType.APPLICATION_PDF_VALUE,
+            PDF_BYTES
+        );
+        InMemoryMultipartFile claimIssueReceipt = new InMemoryMultipartFile(
+            "files",
+            buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber()) + EXTENSION,
+            MediaType.APPLICATION_PDF_VALUE,
+            PDF_BYTES
+        );
+        List<InMemoryMultipartFile> files = Arrays.asList(sealedClaimForm, defendantPinLetter, claimIssueReceipt);
+        verify(documentUploadClient, times(3)).upload(
+            eq(AUTHORISATION_TOKEN),
+            any(),
+            any(),
+            anyList(),
+            any(Classification.class),
+            argument.capture()
+        );
+        List<List> capturedArgument = argument.getAllValues();
+        capturedArgument.forEach(fileList ->
+            fileList.forEach(file -> assertTrue(files.contains(file)))
+        );
     }
 
     @Test
     public void shouldUploadSealedCopyOfRepresentedClaimIntoDocumentManagementStore() throws Exception {
-        assertSealedClaimIsUploadedIntoDocumentManagementStore(SampleClaimData.submittedByLegalRepresentative(),
-            SOLICITOR_AUTHORISATION_TOKEN);
-    }
-
-    private void assertSealedClaimIsUploadedIntoDocumentManagementStore(
-        ClaimData claimData,
-        String authorization
-    ) throws Exception {
-        given(documentUploadClient.upload(eq(authorization), any(), any(), any()))
+        ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
+        given(documentUploadClient.upload(eq(SOLICITOR_AUTHORISATION_TOKEN), any(), any(), any()))
             .willReturn(successfulDocumentManagementUploadResponse());
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
-        MvcResult result = makeIssueClaimRequest(claimData, authorization)
+        MvcResult result = makeIssueClaimRequest(claimData, SOLICITOR_AUTHORISATION_TOKEN)
             .andExpect(status().isOk())
             .andReturn();
         final ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
+        Claim claim = deserializeObjectFrom(result, Claim.class);
         InMemoryMultipartFile sealedClaimForm = new InMemoryMultipartFile(
             "files",
-            deserializeObjectFrom(result, Claim.class).getReferenceNumber() + "-claim-form.pdf",
+            buildSealedClaimFileBaseName(claim.getReferenceNumber()) + EXTENSION,
             MediaType.APPLICATION_PDF_VALUE,
             PDF_BYTES
         );
-        verify(documentUploadClient, atLeastOnce()).upload(
-            eq(authorization),
+        verify(documentUploadClient, times(1)).upload(
+            eq(SOLICITOR_AUTHORISATION_TOKEN),
             any(),
             any(),
+            anyList(),
+            any(Classification.class),
             argument.capture()
         );
-        verify(documentUploadClient, atMost(2)).upload(
-            eq(authorization),
-            any(),
-            any(),
-            argument.capture()
-        );
-        List<List> capturedArgument = argument.getAllValues();
-        assertThat(capturedArgument.contains(Collections.singleton(sealedClaimForm)));
+        List<InMemoryMultipartFile> capturedArgument = argument.getValue();
+        assertEquals(capturedArgument.size(), 1);
+        assertTrue(capturedArgument.contains(sealedClaimForm));
     }
 
     @Test
     public void shouldLinkSealedCopyOfNonRepresentedClaimAfterUpload() throws Exception {
-        assertSealedClaimIsLinked(SampleClaimData.submittedByClaimant(), AUTHORISATION_TOKEN);
+        assertDocumentIsLinked(SampleClaimData.submittedByClaimant(),
+            AUTHORISATION_TOKEN,
+            SEALED_CLAIM,
+            "claim-form.pdf");
+    }
+
+    @Test
+    public void shouldLinkDefendantPinLetterAfterUpload() throws Exception {
+        assertDocumentIsLinked(SampleClaimData.submittedByClaimant(),
+            AUTHORISATION_TOKEN,
+            DEFENDANT_PIN_LETTER,
+            "defendant-pin-letter.pdf");
+    }
+
+    @Test
+    public void shouldLinkClaimIssueReceiptClaimAfterUpload() throws Exception {
+        assertDocumentIsLinked(SampleClaimData.submittedByClaimant(),
+            AUTHORISATION_TOKEN,
+            CLAIM_ISSUE_RECEIPT,
+            "claim-form-claimant-copy.pdf");
     }
 
     @Test
     public void shouldLinkSealedCopyOfRepresentedClaimAfterUpload() throws Exception {
-        assertSealedClaimIsLinked(SampleClaimData.submittedByLegalRepresentative(), SOLICITOR_AUTHORISATION_TOKEN);
+        assertDocumentIsLinked(SampleClaimData.submittedByLegalRepresentative(),
+            SOLICITOR_AUTHORISATION_TOKEN,
+            SEALED_CLAIM,
+            "claim-form.pdf");
     }
 
-    private void assertSealedClaimIsLinked(ClaimData claimData, String authorization) throws Exception {
-        given(documentUploadClient.upload(eq(authorization), any(), any(), any()))
+    private void assertDocumentIsLinked(ClaimData claimData,
+                                        String authorization,
+                                        ClaimDocumentType claimDocumentType,
+                                        String fileName) throws Exception {
+        given(documentUploadClient.upload(eq(authorization), any(), any(), anyList(), any(Classification.class), any()))
             .willReturn(successfulDocumentManagementUploadResponse());
 
         MvcResult result = makeIssueClaimRequest(claimData, authorization)
@@ -110,15 +174,14 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
             .andReturn();
 
         Optional<ClaimDocumentCollection> claimDocumentCollection = deserializeObjectFrom(resultWithDocument,
-                                                                Claim.class).getClaimDocumentCollection();
+            Claim.class).getClaimDocumentCollection();
         ClaimDocument claimDocument = claimDocumentCollection
             .orElseThrow(AssertionError::new)
-            .getDocument(SEALED_CLAIM)
+            .getDocument(claimDocumentType)
             .orElseThrow(AssertionError::new);
         assertThat(claimDocument.getDocumentManagementUrl()
             .equals(URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4")));
-        assertThat(claimDocument.getDocumentName().equals("000MC001-claim-form.pdf"));
-        assertThat(claimDocument.getDocumentType().equals(SEALED_CLAIM));
+        assertThat(claimDocument.getDocumentName()).endsWith(fileName);
     }
 
     @Test

@@ -29,7 +29,7 @@ public class DefendantResponseCitizenNotificationsHandler {
         }
         defendantResponseNotificationService.notifyDefendant(
             claim,
-            event.getUserEmail(),
+            claim.getDefendantEmail(),
             referenceForDefendant(claim.getReferenceNumber())
         );
     }
@@ -51,4 +51,5 @@ public class DefendantResponseCitizenNotificationsHandler {
             referenceForClaimant(claim.getReferenceNumber())
         );
     }
+
 }

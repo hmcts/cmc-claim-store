@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.claimstore.documents.content.LegalSealedClaimContentProvider;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.reform.sendletter.api.Document;
@@ -11,7 +12,7 @@ import uk.gov.hmcts.reform.sendletter.api.Document;
 import static java.util.Objects.requireNonNull;
 
 @Service
-public class SealedClaimPdfService {
+public class SealedClaimPdfService implements PdfService {
 
     private final DocumentTemplates documentTemplates;
     private final PDFServiceClient pdfServiceClient;
@@ -31,6 +32,7 @@ public class SealedClaimPdfService {
         this.citizenServiceDocumentsService = citizenServiceDocumentsService;
     }
 
+    @LogExecutionTime
     public byte[] createPdf(Claim claim) {
         requireNonNull(claim);
 

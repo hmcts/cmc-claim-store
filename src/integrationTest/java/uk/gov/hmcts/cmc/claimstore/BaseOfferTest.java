@@ -3,6 +3,8 @@ package uk.gov.hmcts.cmc.claimstore;
 import org.junit.Before;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
@@ -23,24 +25,23 @@ public abstract class BaseOfferTest extends BaseIntegrationTest {
     protected static final String DEFENDANT_AUTH_TOKEN = "defendant-authDataString";
     protected static final String CLAIMANT_AUTH_TOKEN = "claimant-authDataString";
     protected static final byte[] PDF_CONTENT = {1, 2, 3, 4};
+    protected static final UserDetails CLAIMANT_USER_DETAILS = SampleUserDetails.builder()
+        .withUserId(SUBMITTER_ID)
+        .withMail(SampleClaim.SUBMITTER_EMAIL)
+        .build();
+    protected static final UserDetails DEFENDANT_USER_DETAILS = SampleUserDetails.builder()
+        .withUserId(DEFENDANT_ID)
+        .withMail(SampleClaim.DEFENDANT_EMAIL)
+        .build();
 
     protected Claim claim;
 
     @Before
     public void beforeEachTest() throws Exception {
-        when(userService.getUserDetails(eq(CLAIMANT_AUTH_TOKEN))).thenReturn(
-            SampleUserDetails.builder()
-                .withUserId(SUBMITTER_ID)
-                .withMail(SampleClaim.SUBMITTER_EMAIL)
-                .build()
-        );
-
-        when(userService.getUserDetails(eq(DEFENDANT_AUTH_TOKEN))).thenReturn(
-            SampleUserDetails.builder()
-                .withUserId(DEFENDANT_ID)
-                .withMail(SampleClaim.DEFENDANT_EMAIL)
-                .build()
-        );
+        when(userService.getUser(eq(CLAIMANT_AUTH_TOKEN)))
+            .thenReturn(new User(CLAIMANT_AUTH_TOKEN, CLAIMANT_USER_DETAILS));
+        when(userService.getUser(eq(DEFENDANT_AUTH_TOKEN)))
+            .thenReturn(new User(DEFENDANT_AUTH_TOKEN, DEFENDANT_USER_DETAILS));
 
         claim = claimStore.saveClaim(SampleClaimData.builder().build(), SUBMITTER_ID, LocalDate.now());
         claimRepository.linkDefendant(claim.getLetterHolderId(), DEFENDANT_ID, DEFENDANT_EMAIL);

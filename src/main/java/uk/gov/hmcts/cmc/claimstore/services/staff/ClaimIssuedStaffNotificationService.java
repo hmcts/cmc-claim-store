@@ -2,12 +2,11 @@ package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
-import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
@@ -19,6 +18,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
@@ -40,19 +40,18 @@ public class ClaimIssuedStaffNotificationService {
         this.provider = provider;
     }
 
-    @EventListener
-    public void notifyStaffOfClaimIssue(DocumentGeneratedEvent event) {
-        requireNonNull(event);
+    @LogExecutionTime
+    public void notifyStaffOfClaimIssue(Claim claim, List<PDF> documents) {
+        requireNonNull(claim);
 
-        EmailData emailData = prepareEmailData(event.getClaim(), event.getDocuments());
+        EmailData emailData = prepareEmailData(claim, documents);
         emailService.sendEmail(staffEmailProperties.getSender(), emailData);
     }
 
-    private EmailData prepareEmailData(
-        Claim claim,
-        List<PDF> documents) {
+    private EmailData prepareEmailData(Claim claim, List<PDF> documents) {
         EmailContent content = provider.createContent(wrapInMap(claim));
         List<EmailAttachment> attachments = documents.stream()
+            .filter(document -> document.getClaimDocumentType() != CLAIM_ISSUE_RECEIPT)
             .map(document -> pdf(document.getBytes(), document.getFilename()))
             .collect(Collectors.toList());
 

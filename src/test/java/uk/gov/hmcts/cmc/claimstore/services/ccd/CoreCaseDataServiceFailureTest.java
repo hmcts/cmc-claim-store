@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
@@ -43,7 +44,6 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.Map;
-import java.util.UUID;
 
 import static java.time.LocalDate.now;
 import static org.junit.Assert.assertNotNull;
@@ -65,8 +65,8 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 @RunWith(MockitoJUnitRunner.class)
 public class CoreCaseDataServiceFailureTest {
     private static final String AUTHORISATION = "Bearer: aaa";
-    private static final String EXTERNAL_ID = UUID.randomUUID().toString();
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder().build();
+    private static final User USER = new User(AUTHORISATION, USER_DETAILS);
     private static final String AUTH_TOKEN = "authorisation token";
     private static final LocalDate FUTURE_DATE = now().plusWeeks(4);
 
@@ -80,6 +80,8 @@ public class CoreCaseDataServiceFailureTest {
     private ReferenceNumberService referenceNumberService;
     @Mock
     private CoreCaseDataApi coreCaseDataApi;
+    @Mock
+    private CCDCreateCaseService ccdCreateCaseService;
     @Mock
     private AuthTokenGenerator authTokenGenerator;
     @Mock
@@ -95,19 +97,6 @@ public class CoreCaseDataServiceFailureTest {
     public void before() {
         when(authTokenGenerator.generate()).thenReturn(AUTH_TOKEN);
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(USER_DETAILS);
-        when(coreCaseDataApi.startForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            anyString()
-        ))
-            .thenReturn(StartEventResponse.builder()
-                .caseDetails(CaseDetails.builder().build())
-                .eventId("eventId")
-                .token("token")
-                .build());
 
         when(coreCaseDataApi.startEventForCitizen(
             eq(AUTHORISATION),
@@ -143,34 +132,8 @@ public class CoreCaseDataServiceFailureTest {
             referenceNumberService,
             coreCaseDataApi,
             authTokenGenerator,
-            caseAccessApi,
-            jobSchedulerService
-        );
-    }
-
-    @Test(expected = CoreCaseDataStoreException.class)
-    public void savePrePaymentShouldReturnReferenceNumber() {
-        when(coreCaseDataApi.submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
-        ))
-            .thenThrow(new RuntimeException("Any runtime exception"));
-
-        service.savePrePayment(EXTERNAL_ID, AUTHORISATION);
-
-        verify(coreCaseDataApi).submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
+            jobSchedulerService,
+            ccdCreateCaseService
         );
     }
 
@@ -179,7 +142,7 @@ public class CoreCaseDataServiceFailureTest {
         Claim providedClaim = SampleClaim.getDefault();
         when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
 
-        service.submitPostPayment(AUTHORISATION, providedClaim);
+        service.createNewCase(USER, providedClaim);
 
         verify(coreCaseDataApi).submitForCitizen(
             eq(AUTHORISATION),

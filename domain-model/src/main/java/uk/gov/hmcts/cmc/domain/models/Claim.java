@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
@@ -19,15 +20,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 // Create these fields in JSON when serialize Java object, ignore them when deserialize.
 @JsonIgnoreProperties(
     value = {"totalAmountTillToday", "totalAmountTillDateOfIssue",
-        "amountWithInterestUntilIssueDate", "totalInterest",
-        "serviceDate", "amountWithInterest", "directionsQuestionnaireDeadline",
-        "sealedClaimDocument"},
+        "amountWithInterestUntilIssueDate", "totalInterestTillDateOfIssue", "totalInterest",
+        "serviceDate", "amountWithInterest", "directionsQuestionnaireDeadline"},
     allowGetters = true
 )
 @Getter
@@ -132,11 +131,12 @@ public class Claim {
         return Optional.ofNullable(settlement);
     }
 
-    public Optional<URI> getSealedClaimDocument() {
+    @JsonIgnore
+    public Optional<URI> getClaimDocument(ClaimDocumentType claimDocumentType) {
         if (claimDocumentCollection == null) {
             return Optional.empty();
         } else {
-            Optional<ClaimDocument> claimDocument = claimDocumentCollection.getDocument(SEALED_CLAIM);
+            Optional<ClaimDocument> claimDocument = claimDocumentCollection.getDocument(claimDocumentType);
             if (claimDocument.isPresent()) {
                 return Optional.ofNullable(claimDocument.get().getDocumentManagementUrl());
             }
@@ -166,6 +166,10 @@ public class Claim {
 
     public Optional<BigDecimal> getTotalInterest() {
         return TotalAmountCalculator.calculateInterestForClaim(this);
+    }
+
+    public Optional<BigDecimal> getTotalInterestTillDateOfIssue() {
+        return TotalAmountCalculator.calculateInterestForClaim(this, issuedOn);
     }
 
     public Optional<ClaimantResponse> getClaimantResponse() {

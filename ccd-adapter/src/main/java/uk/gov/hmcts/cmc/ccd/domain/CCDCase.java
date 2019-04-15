@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.ccd.domain;
 
 import lombok.Builder;
 import lombok.Data;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefendant;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 
 import java.math.BigDecimal;
@@ -40,6 +40,7 @@ public class CCDCase {
     private String interestReason;
     private BigDecimal interestSpecificDailyAmount;
     private CCDInterestDateType interestDateType;
+    private String currentInterestAmount;
     private LocalDate interestClaimStartDate;
     private String interestStartDateReason;
     private CCDInterestEndDateType interestEndDateType;
@@ -54,10 +55,11 @@ public class CCDCase {
     private String housingDisrepairOtherDamages;
     private String sotSignerName;
     private String sotSignerRole;
-    private List<CCDCollectionElement<CCDClaimant>> claimants;
-    private List<CCDCollectionElement<CCDDefendant>> defendants;
+    private List<CCDCollectionElement<CCDApplicant>> applicants;
+    private List<CCDCollectionElement<CCDRespondent>> respondents;
     private List<CCDCollectionElement<CCDTimelineEvent>> timeline;
     private List<CCDCollectionElement<CCDEvidenceRow>> evidence;
     private CCDDocument sealedClaimDocument;
     private String features;
+    private CCDYesNoOption migratedFromClaimStore;
 }
