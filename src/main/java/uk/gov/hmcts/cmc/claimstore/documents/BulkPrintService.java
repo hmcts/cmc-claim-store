@@ -21,8 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BULK_PRINT_FAILED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BULK_PRINT_FAILED;
 
 @Service
 @ConditionalOnProperty(prefix = "send-letter", name = "url")
@@ -84,8 +84,8 @@ public class BulkPrintService {
             sealedClaimDocument,
             claim
         );
-      
-        appInsights.trackEvent(BULK_PRINT_FAILED, REFERENCE_NUMBER, event.getClaim().getReferenceNumber());
+
+        appInsights.trackEvent(BULK_PRINT_FAILED, REFERENCE_NUMBER, claim.getReferenceNumber());
     }
 
     private static Map<String, Object> wrapInMap(Claim claim) {
