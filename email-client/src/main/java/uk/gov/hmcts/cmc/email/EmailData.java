@@ -20,11 +20,12 @@ public class EmailData {
     private final List<EmailAttachment> attachments;
 
     @Builder
-    public EmailData(String to,
-                     String subject,
-                     String message,
-                     List<EmailAttachment> attachments) {
-
+    public EmailData(
+        String to,
+        String subject,
+        String message,
+        List<EmailAttachment> attachments
+    ) {
         this.to = to;
         this.subject = subject;
         this.message = message;
