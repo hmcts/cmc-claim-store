@@ -172,7 +172,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
         documentManagementBackedDocumentsService.generateDefendantPinLetter(
             claim.getExternalId(),
             "pin",
-            AUTHORISATION); 
+            AUTHORISATION);
         verify(documentManagementService).uploadDocument(anyString(), any(PDF.class));
         verify(claimService).saveClaimDocuments(
             eq(AUTHORISATION),
