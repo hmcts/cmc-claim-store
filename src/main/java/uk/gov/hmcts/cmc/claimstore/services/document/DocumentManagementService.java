@@ -14,6 +14,8 @@ import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentMetadataDownloadClientApi;
@@ -35,6 +37,7 @@ public class DocumentManagementService {
 
     private final Logger logger = LoggerFactory.getLogger(DocumentManagementService.class);
     private static final String FILES_NAME = "files";
+    private static final String OCMC = "OCMC";
 
     private final DocumentMetadataDownloadClientApi documentMetadataDownloadClient;
     private final DocumentDownloadClientApi documentDownloadClient;
@@ -60,11 +63,11 @@ public class DocumentManagementService {
     }
 
     @Retryable(value = {DocumentManagementException.class}, backoff = @Backoff(delay = 200))
-    public URI uploadDocument(String authorisation, PDF document) {
-        String originalFileName = document.getFilename();
+    public ClaimDocument uploadDocument(String authorisation, PDF pdf) {
+        String originalFileName = pdf.getFilename();
         try {
             MultipartFile file
-                = new InMemoryMultipartFile(FILES_NAME, originalFileName, PDF.CONTENT_TYPE, document.getBytes());
+                = new InMemoryMultipartFile(FILES_NAME, originalFileName, PDF.CONTENT_TYPE, pdf.getBytes());
 
             UserDetails userDetails = userService.getUserDetails(authorisation);
             UploadResponse response = documentUploadClient.upload(
@@ -76,12 +79,19 @@ public class DocumentManagementService {
                 singletonList(file)
             );
 
-            Document uploadedDocument = response.getEmbedded().getDocuments().stream()
+            Document document = response.getEmbedded().getDocuments().stream()
                 .findFirst()
                 .orElseThrow(() ->
                     new DocumentManagementException("Document management failed uploading file" + originalFileName));
 
-            return URI.create(uploadedDocument.links.self.href);
+            return ClaimDocument.builder()
+                .documentManagementUrl(URI.create(document.links.self.href))
+                .documentName(originalFileName)
+                .documentType(pdf.getClaimDocumentType())
+                .createdDatetime(LocalDateTimeFactory.nowInUTC())
+                .size(document.size)
+                .createdBy(OCMC)
+                .build();
         } catch (Exception ex) {
             throw new DocumentManagementException(String.format("Unable to upload document %s to document management",
                 originalFileName), ex);
@@ -89,8 +99,12 @@ public class DocumentManagementService {
     }
 
     @Recover
-    public URI logUploadDocumentFailure(DocumentManagementException exception, String authorisation, PDF document) {
-        String filename = document.getFilename();
+    public ClaimDocument logUploadDocumentFailure(
+        DocumentManagementException exception,
+        String authorisation,
+        PDF pdf
+    ) {
+        String filename = pdf.getFilename();
         String errorMessage = String.format(
             "After retry : unable to upload document %s into document management due to %s",
             filename, exception.getMessage()

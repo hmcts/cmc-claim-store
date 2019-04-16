@@ -25,7 +25,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 // Create these fields in JSON when serialize Java object, ignore them when deserialize.
 @JsonIgnoreProperties(
     value = {"totalAmountTillToday", "totalAmountTillDateOfIssue",
-        "amountWithInterestUntilIssueDate", "totalInterest",
+        "amountWithInterestUntilIssueDate", "totalInterestTillDateOfIssue", "totalInterest",
         "serviceDate", "amountWithInterest", "directionsQuestionnaireDeadline"},
     allowGetters = true
 )
@@ -63,6 +63,7 @@ public class Claim {
     private final ReDetermination reDetermination;
     private final LocalDateTime reDeterminationRequestedAt;
     private final ClaimDocumentCollection claimDocumentCollection;
+    private final ClaimState state;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     public Claim(
@@ -92,7 +93,8 @@ public class Claim {
         LocalDate moneyReceivedOn,
         ReDetermination reDetermination,
         LocalDateTime reDeterminationRequestedAt,
-        ClaimDocumentCollection claimDocumentCollection
+        ClaimDocumentCollection claimDocumentCollection,
+        ClaimState state
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -121,6 +123,7 @@ public class Claim {
         this.reDetermination = reDetermination;
         this.reDeterminationRequestedAt = reDeterminationRequestedAt;
         this.claimDocumentCollection = claimDocumentCollection;
+        this.state = state;
     }
 
     public Optional<Response> getResponse() {
@@ -168,6 +171,10 @@ public class Claim {
         return TotalAmountCalculator.calculateInterestForClaim(this);
     }
 
+    public Optional<BigDecimal> getTotalInterestTillDateOfIssue() {
+        return TotalAmountCalculator.calculateInterestForClaim(this, issuedOn);
+    }
+
     public Optional<ClaimantResponse> getClaimantResponse() {
         return Optional.ofNullable(claimantResponse);
     }
@@ -190,6 +197,11 @@ public class Claim {
 
     public Optional<ClaimDocumentCollection> getClaimDocumentCollection() {
         return Optional.ofNullable(claimDocumentCollection);
+    }
+
+    @JsonIgnore
+    public Optional<ClaimState> getState() {
+        return Optional.ofNullable(state);
     }
 
     @Override

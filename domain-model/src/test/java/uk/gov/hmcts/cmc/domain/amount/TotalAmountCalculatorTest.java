@@ -505,6 +505,13 @@ public class TotalAmountCalculatorTest {
             .isEqualTo(Optional.of(format(new BigDecimal("0.01"))));
     }
 
+    @Test
+    public void calculateInterestForClaimShouldStopAtProvidedDate() {
+        Claim claim = claimWithCCJ();
+        assertThat(TotalAmountCalculator.calculateInterestForClaim(claim, claim.getIssuedOn()))
+            .isEqualTo(Optional.of(format(new BigDecimal("0.02"))));
+    }
+
     private static Claim claimWithAmountRange() {
         return SampleClaim.builder()
             .withClaimData(
