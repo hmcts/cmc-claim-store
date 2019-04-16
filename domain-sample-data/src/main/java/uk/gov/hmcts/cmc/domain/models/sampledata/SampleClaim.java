@@ -252,7 +252,10 @@ public final class SampleClaim {
     }
 
     public static Claim getDefaultForLegal() {
-        return builder().build();
+        return builder()
+            .withReferenceNumber("012LR345")
+            .withClaimData(SampleClaimData.builder().withPayment(null).build())
+            .build();
     }
 
     public static Claim getLegalDataWithReps() {
