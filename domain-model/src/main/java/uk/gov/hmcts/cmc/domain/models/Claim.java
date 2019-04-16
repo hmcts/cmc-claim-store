@@ -95,7 +95,7 @@ public class Claim {
         ReDetermination reDetermination,
         LocalDateTime reDeterminationRequestedAt,
         ClaimDocumentCollection claimDocumentCollection,
-        LocalDate claimantResponseDeadline
+        LocalDate claimantResponseDeadline,
         ClaimState state
     ) {
         this.id = id;
