@@ -113,7 +113,7 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
         final ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
         Response response = SampleResponse.validDefaults();
         given(documentUploadClient
-            .upload(eq(BEARER_TOKEN), any(), any(), anyList(), any(Classification.class), anyList())
+            .upload(eq(AUTHORISATION_TOKEN), any(), any(), anyList(), any(Classification.class), any())
         ).willReturn(successfulDocumentManagementUploadResponse());
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);

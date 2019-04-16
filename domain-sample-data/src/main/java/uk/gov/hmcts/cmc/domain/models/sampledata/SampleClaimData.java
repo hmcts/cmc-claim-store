@@ -239,10 +239,6 @@ public class SampleClaimData {
 
     public static SampleClaimData submittedByLegalRepresentativeBuilder() {
         return builder()
-            .clearClaimants()
-            .withClaimant(SampleParty.builder()
-                .withRepresentative(SampleRepresentative.builder().build())
-                .individual())
             .withAmount(SampleAmountRange.builder().build());
     }
 
