@@ -8,6 +8,7 @@ import org.skife.jdbi.v2.sqlobject.customizers.RegisterMapper;
 import org.skife.jdbi.v2.sqlobject.customizers.SingleValueResult;
 import uk.gov.hmcts.cmc.claimstore.repositories.mapping.ClaimMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -113,7 +114,8 @@ public interface ClaimRepository {
         + "external_id, "
         + "submitter_email, "
         + "reference_number, "
-        + "features"
+        + "features, "
+        + "state"
         + ") "
         + "VALUES ("
         + ":submitterId, "
@@ -124,7 +126,8 @@ public interface ClaimRepository {
         + ":externalId, "
         + ":submitterEmail, "
         + "next_reference_number(), "
-        + ":features::JSONB"
+        + ":features::JSONB, "
+        + ":state"
         + ")")
     Long saveSubmittedByClaimant(
         @Bind("claim") String claim,
@@ -134,7 +137,8 @@ public interface ClaimRepository {
         @Bind("responseDeadline") LocalDate responseDeadline,
         @Bind("externalId") String externalId,
         @Bind("submitterEmail") String submitterEmail,
-        @Bind("features") String features
+        @Bind("features") String features,
+        @Bind("state") ClaimState state
     );
 
     @SqlUpdate(
