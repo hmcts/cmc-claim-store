@@ -139,6 +139,7 @@ feature_toggles:
   reminderEmails: false
   ccd_async_enabled: false
   ccd_enabled: false
+  save_claim_state_enabled: false
 
 feign:
   httpclient:
