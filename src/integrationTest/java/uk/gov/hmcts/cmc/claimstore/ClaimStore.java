@@ -20,7 +20,6 @@ import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATED;
 
@@ -62,23 +61,22 @@ public class ClaimStore {
     }
 
     public Claim saveClaim(ClaimData claimData, String submitterId, LocalDate responseDeadline) {
-        UUID externalId = claimData.getExternalId();
-        logger.debug("Saving claim: {}", externalId);
+        logger.debug("Saving claim: {}", claimData.getExternalId());
 
-        this.claimRepository.saveSubmittedByClaimant(
+        Long claimId = this.claimRepository.saveSubmittedByClaimant(
             jsonMapper.toJson(claimData),
             submitterId,
             SampleClaim.LETTER_HOLDER_ID,
             LocalDate.now(),
             responseDeadline,
-            externalId.toString(),
+            claimData.getExternalId().toString(),
             SampleClaim.SUBMITTER_EMAIL,
             "[\"admissions\"]",
             CREATED
         );
 
-        logger.debug("Saved claim for externalId {}.", externalId);
-        return getClaimByExternalId(externalId.toString());
+        logger.debug("Saved claim has been given ID {}.", claimId);
+        return getClaim(claimId);
     }
 
     public Claim saveResponse(Claim claim, Response response) {

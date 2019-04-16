@@ -205,5 +205,8 @@ module "claim-store-api" {
     ASYNC_MAX_THREADPOOL_SIZE = 50
 
     ROOT_APPENDER = "CMC"
+
+    DOCUMENT_MANAGEMENT_CITIZENROLE = "citizen"
+
   }
 }

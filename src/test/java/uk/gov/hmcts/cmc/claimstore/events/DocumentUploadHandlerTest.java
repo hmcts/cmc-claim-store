@@ -16,9 +16,11 @@ import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
+import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.settlement.CountersignSettlementAgreementEvent;
+import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
@@ -39,8 +41,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
@@ -55,7 +55,6 @@ public class DocumentUploadHandlerTest {
 
     private String submitterName = "Dr. John Smith";
     private String pin = "123456";
-    private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
@@ -102,31 +101,26 @@ public class DocumentUploadHandlerTest {
         documentUploadHandler = new DocumentUploadHandler(defendantResponseReceiptService,
             countyCourtJudgmentPdfService,
             settlementAgreementCopyService,
+            sealedClaimPdfService,
             claimIssueReceiptService,
+            defendantPinLetterPdfService,
             documentService);
     }
 
     @Test
     public void citizenClaimIssuedEventTriggersDocumentUpload() {
         Claim claim = SampleClaim.getDefault();
-        String referenceNumber = claim.getReferenceNumber();
-        PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(referenceNumber), PDF_CONTENT, SEALED_CLAIM);
-        PDF pinLetter = new PDF(buildDefendantLetterFileBaseName(referenceNumber), PDF_CONTENT, DEFENDANT_PIN_LETTER);
-        DocumentGeneratedEvent event = new DocumentGeneratedEvent(claim, AUTHORISATION, sealedClaim, pinLetter);
-
+        CitizenClaimIssuedEvent event = new CitizenClaimIssuedEvent(claim, pin, submitterName, AUTHORISATION);
         documentUploadHandler.uploadCitizenClaimDocument(event);
-
         verify(documentService, times(3))
             .uploadToDocumentManagement(argumentCaptor.capture(), anyString(), any());
         List<PDF> capturedDocuments = argumentCaptor.getAllValues();
         List<ClaimDocumentType> expectedClaimDocumentTypes = Arrays.asList(SEALED_CLAIM,
             DEFENDANT_PIN_LETTER,
             CLAIM_ISSUE_RECEIPT);
-
         List<ClaimDocumentType> actualDocumentTypes = capturedDocuments.stream()
-            .map(PDF::getClaimDocumentType)
+            .map(document -> document.getClaimDocumentType())
             .collect(Collectors.toList());
-
         actualDocumentTypes.forEach(claimDocumentType ->
             assertTrue(expectedClaimDocumentTypes.contains(claimDocumentType)));
     }
@@ -135,16 +129,16 @@ public class DocumentUploadHandlerTest {
     public void citizenClaimIssuedEventThrowsExceptionWhenClaimNotPresent() {
         exceptionRule.expect(NullPointerException.class);
         exceptionRule.expectMessage(CLAIM_MUST_NOT_BE_NULL);
-        documentUploadHandler.uploadCitizenClaimDocument(new DocumentGeneratedEvent(null, AUTHORISATION));
+        documentUploadHandler.uploadCitizenClaimDocument(
+            new CitizenClaimIssuedEvent(null, pin, submitterName, AUTHORISATION)
+        );
     }
 
     @Test
     public void representedClaimIssuedEventTriggersDocumentUpload() {
-        Claim claim = SampleClaim.getLegalDataWithReps();
-        String referenceNumber = claim.getReferenceNumber();
-        PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(referenceNumber), PDF_CONTENT, SEALED_CLAIM);
-        DocumentGeneratedEvent event = new DocumentGeneratedEvent(claim, AUTHORISATION, sealedClaim);
-        documentUploadHandler.uploadCitizenClaimDocument(event);
+        Claim claim = SampleClaim.getDefault();
+        RepresentedClaimIssuedEvent event = new RepresentedClaimIssuedEvent(claim, submitterName, AUTHORISATION);
+        documentUploadHandler.uploadRepresentedClaimDocument(event);
         assertCommon(SEALED_CLAIM);
     }
 
@@ -152,10 +146,9 @@ public class DocumentUploadHandlerTest {
     public void representedClaimIssuedEventForDocumentUploadThrowsExceptionWhenClaimNotPresent() {
         exceptionRule.expect(NullPointerException.class);
         exceptionRule.expectMessage(CLAIM_MUST_NOT_BE_NULL);
-        Claim claim = SampleClaim.getLegalDataWithReps();
-        String referenceNumber = claim.getReferenceNumber();
-        PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(referenceNumber), PDF_CONTENT, SEALED_CLAIM);
-        documentUploadHandler.uploadCitizenClaimDocument(new DocumentGeneratedEvent(null, AUTHORISATION, sealedClaim));
+        documentUploadHandler.uploadRepresentedClaimDocument(
+            new RepresentedClaimIssuedEvent(null, submitterName, AUTHORISATION)
+        );
     }
 
     @Test
