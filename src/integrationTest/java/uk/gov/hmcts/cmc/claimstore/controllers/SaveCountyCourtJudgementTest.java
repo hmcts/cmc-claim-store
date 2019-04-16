@@ -44,6 +44,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForJudgementFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementUploadResponse;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.unsuccessfulDocumentManagementUploadResponse;
 
 @TestPropertySource(
     properties = {
@@ -116,11 +117,8 @@ public class SaveCountyCourtJudgementTest extends BaseIntegrationTest {
     @Test
     public void shouldUploadDocumentToDocumentManagementAfterSuccessfulSave() throws Exception {
         final ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
-
-        given(documentUploadClient
-            .upload(eq(AUTHORISATION_TOKEN), anyString(), anyString(), anyList(), any(Classification.class), anyList()))
+        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
             .willReturn(successfulDocumentManagementUploadResponse());
-
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
         InMemoryMultipartFile ccj = new InMemoryMultipartFile(
             "files",
@@ -142,10 +140,8 @@ public class SaveCountyCourtJudgementTest extends BaseIntegrationTest {
 
     @Test
     public void shouldNotReturn500HttpStatusWhenUploadDocumentToDocumentManagementFails() throws Exception {
-        given(documentUploadClient
-            .upload(eq(AUTHORISATION_TOKEN), anyString(), anyString(), anyList(), any(Classification.class), anyList()))
-            .willReturn(successfulDocumentManagementUploadResponse());
-
+        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
+            .willReturn(unsuccessfulDocumentManagementUploadResponse());
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
         makeRequest(claim.getExternalId(), COUNTY_COURT_JUDGMENT).andExpect(status().isOk());
         Claim claimWithCCJRequest = claimStore.getClaimByExternalId(claim.getExternalId());

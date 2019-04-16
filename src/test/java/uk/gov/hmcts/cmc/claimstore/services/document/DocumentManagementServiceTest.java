@@ -5,6 +5,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -30,8 +31,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.DOCUMENT_NAME;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DOCUMENT_MANAGEMENT_DOWNLOAD_FAILURE;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DOCUMENT_MANAGEMENT_UPLOAD_FAILURE;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementDownloadResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementUploadResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.unsuccessfulDocumentManagementUploadResponse;
@@ -52,9 +56,8 @@ public class DocumentManagementServiceTest {
     private UserService userService;
     @Mock
     private AppInsights appInsights;
-
+    @InjectMocks
     private DocumentManagementService documentManagementService;
-
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
     @Mock
@@ -65,7 +68,8 @@ public class DocumentManagementServiceTest {
     public void setUp() {
         when(authTokenGenerator.generate()).thenReturn("authString");
         documentManagementService = new DocumentManagementService(documentMetadataDownloadClient,
-            documentDownloadClient, documentUploadClient, authTokenGenerator, userService, appInsights);
+            documentDownloadClient, documentUploadClient, authTokenGenerator, userService,
+            "caseworker-cmc", appInsights);
     }
 
     @Test
@@ -88,18 +92,13 @@ public class DocumentManagementServiceTest {
     public void uploadDocumentToDocumentManagementThrowsException() {
         expectedException.expect(DocumentManagementException.class);
         expectedException.expectMessage("Unable to upload document 0000-claim.pdf to document management");
-
         UserDetails userDetails = new UserDetails("id", "mail@mail.com",
             "userFirstName", "userLastName", Collections.singletonList("role"));
-
-        String authorisation = "authString";
-        when(userService.getUserDetails(eq(authorisation))).thenReturn(userDetails);
-
-        when(documentUploadClient
-            .upload(anyString(), anyString(), anyString(), anyList(), any(Classification.class), anyList()))
+        when(userService.getUserDetails(anyString())).thenReturn(userDetails);
+        when(documentUploadClient.upload(anyString(), anyString(), anyString(), anyList()))
             .thenReturn(unsuccessfulDocumentManagementUploadResponse());
-
-        documentManagementService.uploadDocument(authorisation, document);
+        documentManagementService.uploadDocument("authString", document);
+        verify(appInsights).trackEvent(DOCUMENT_MANAGEMENT_UPLOAD_FAILURE, DOCUMENT_NAME, anyString());
     }
 
     @Test
@@ -129,14 +128,11 @@ public class DocumentManagementServiceTest {
         expectedException.expectMessage("Unable to download document 0000-claim from document management");
         URI docUri = URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4");
 
-        UserDetails userDetails = new UserDetails("id", "mail@mail.com",
-            "userFirstName", "userLastName", Collections.singletonList("role"));
-        when(userService.getUserDetails(anyString())).thenReturn(userDetails);
-
         when(documentMetadataDownloadClient
             .getDocumentMetadata(anyString(), anyString(), anyString(), anyString(), anyString())
         ).thenReturn(null);
 
         documentManagementService.downloadDocument("auth string", docUri, "0000-claim");
+        verify(appInsights).trackEvent(DOCUMENT_MANAGEMENT_DOWNLOAD_FAILURE, DOCUMENT_NAME, anyString());
     }
 }
