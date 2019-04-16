@@ -82,7 +82,8 @@ public class DocumentManagementServiceTest {
             .upload(anyString(), anyString(), anyString(), anyList(), any(Classification.class), anyList())
         ).thenReturn(successfulDocumentManagementUploadResponse());
 
-        URI documentSelfPath = documentManagementService.uploadDocument("authString", document);
+        URI documentSelfPath = documentManagementService
+            .uploadDocument("authString", document).getDocumentManagementUrl();
         assertNotNull(documentSelfPath);
         assertEquals("/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4", documentSelfPath.getPath());
     }

@@ -14,6 +14,7 @@ public class ClaimDocument {
     private final LocalDateTime authoredDatetime;
     private final LocalDateTime createdDatetime;
     private final String createdBy;
+    private final long size;
 
     @Builder
     public ClaimDocument(
@@ -22,7 +23,8 @@ public class ClaimDocument {
         ClaimDocumentType documentType,
         LocalDateTime authoredDatetime,
         LocalDateTime createdDatetime,
-        String createdBy
+        String createdBy,
+        long size
     ) {
         this.documentManagementUrl = documentManagementUrl;
         this.documentName = documentName;
@@ -30,5 +32,6 @@ public class ClaimDocument {
         this.authoredDatetime = authoredDatetime;
         this.createdDatetime = createdDatetime;
         this.createdBy = createdBy;
+        this.size = size;
     }
 }
