@@ -64,12 +64,24 @@ public class IdamTestService {
     public User createSolicitor() {
         String email = testData.nextUserEmail();
         idamTestApi.createUser(createSolicitorRequest(email, aatConfiguration.getSmokeTestSolicitor().getPassword()));
+        try {
+            //give the user some time to warm up..
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return userService.authenticateUser(email, aatConfiguration.getSmokeTestSolicitor().getPassword());
     }
 
     public User createCitizen() {
         String email = testData.nextUserEmail();
         idamTestApi.createUser(createCitizenRequest(email, aatConfiguration.getSmokeTestCitizen().getPassword()));
+        try {
+            //give the user some time to warm up..
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return userService.authenticateUser(email, aatConfiguration.getSmokeTestCitizen().getPassword());
     }
 
