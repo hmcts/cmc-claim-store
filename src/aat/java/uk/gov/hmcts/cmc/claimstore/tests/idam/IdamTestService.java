@@ -63,32 +63,20 @@ public class IdamTestService {
 
     public User createSolicitor() {
         String email = testData.nextUserEmail();
-        idamTestApi.createUser(createSolicitorRequest(email, aatConfiguration.getSmokeTestSolicitor().getPassword()));
-        try {
-            //give the user some time to warm up..
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        createUser(createSolicitorRequest(email, aatConfiguration.getSmokeTestSolicitor().getPassword()));
         return userService.authenticateUser(email, aatConfiguration.getSmokeTestSolicitor().getPassword());
     }
 
     public User createCitizen() {
         String email = testData.nextUserEmail();
-        idamTestApi.createUser(createCitizenRequest(email, aatConfiguration.getSmokeTestCitizen().getPassword()));
-        try {
-            //give the user some time to warm up..
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        createUser(createCitizenRequest(email, aatConfiguration.getSmokeTestCitizen().getPassword()));
         return userService.authenticateUser(email, aatConfiguration.getSmokeTestCitizen().getPassword());
     }
 
     public User createDefendant(final String letterHolderId) {
         String email = testData.nextUserEmail();
         String password = aatConfiguration.getSmokeTestCitizen().getPassword();
-        idamTestApi.createUser(createCitizenRequest(email, password));
+        createUser(createCitizenRequest(email, password));
 
         String pin = idamTestApi.getPinByLetterHolderId(letterHolderId);
 
@@ -106,6 +94,16 @@ public class IdamTestService {
 
         // Re-authenticate to get new roles on the user
         return userService.authenticateUser(email, password);
+    }
+
+    private void createUser(CreateUserRequest createUserRequest) {
+        idamTestApi.createUser(createUserRequest);
+        //recommended delay from SIDAM team to stop intermittent auth failures
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private void upliftUser(String email, String password, TokenExchangeResponse exchangeResponse) {
