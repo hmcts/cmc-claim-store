@@ -1,4 +1,4 @@
-idam_api_url = "https://preprod-idamapi.reform.hmcts.net:3511"
+idam_api_url = "https://idam-api.demo.platform.hmcts.net"
 frontend_url = "https://www.moneyclaims.demo.platform.hmcts.net"
 respond_to_claim_url = "https://www.moneyclaims.demo.platform.hmcts.net/first-contact/start"
 db_host = "preprod-data-lb.moneyclaim.reform.hmcts.net"
