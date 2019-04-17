@@ -7,6 +7,8 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
@@ -17,6 +19,7 @@ import uk.gov.service.notify.NotificationClientException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
@@ -28,14 +31,17 @@ public class CCJNotificationService {
 
     private final NotificationClient notificationClient;
     private final NotificationsProperties notificationsProperties;
+    private final AppInsights appInsights;
 
     @Autowired
     public CCJNotificationService(
         NotificationClient notificationClient,
-        NotificationsProperties notificationsProperties
+        NotificationsProperties notificationsProperties,
+        AppInsights appInsights
     ) {
         this.notificationClient = notificationClient;
         this.notificationsProperties = notificationsProperties;
+        this.appInsights = appInsights;
     }
 
     public void notifyClaimantForCCJRequest(Claim claim) {
@@ -97,6 +103,7 @@ public class CCJNotificationService {
         );
 
         logger.info(errorMessage, exception);
+        appInsights.trackEvent(AppInsightsEvent.NOTIFICATION_FAILURE, REFERENCE_NUMBER, reference);
     }
 
     private Map<String, String> aggregateParams(Claim claim) {

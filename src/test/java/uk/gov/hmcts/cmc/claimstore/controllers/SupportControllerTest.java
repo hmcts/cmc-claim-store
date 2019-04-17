@@ -24,6 +24,7 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDet
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 
 import java.util.ArrayList;
@@ -118,17 +119,43 @@ public class SupportControllerTest {
         // given
         List<String> sendList = new ArrayList<>();
         sendList.add(CLAIMREFERENCENUMBER);
-        GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", "333");
+        String letterHolderId = "333";
+        GeneratePinResponse pinResponse = new GeneratePinResponse("PIN-123", letterHolderId);
         given(userService.generatePin(anyString(), eq(AUTHORISATION))).willReturn(pinResponse);
 
         // when
         when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER))).thenReturn(Optional.of(sampleClaim));
         when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(USER_DETAILS);
+
+        when(claimService.linkLetterHolder(eq(sampleClaim.getId()), eq(letterHolderId))).thenReturn(sampleClaim);
+
         controller.resendRPANotifications(AUTHORISATION, sendList);
 
         // then
         verify(documentGenerator).generateForCitizenRPA(any());
+    }
 
+    @Test
+    public void shouldResendStaffNotifications() {
+        // given
+        sampleClaim = SampleClaim.builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withDefendantId(null)
+            .build();
+
+        String letterHolderId = "333";
+        GeneratePinResponse pinResponse = new GeneratePinResponse("PIN-123", letterHolderId);
+        given(userService.generatePin(anyString(), eq(AUTHORISATION))).willReturn(pinResponse);
+
+        // when
+        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER))).thenReturn(Optional.of(sampleClaim));
+        when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(USER_DETAILS);
+        when(claimService.linkLetterHolder(eq(sampleClaim.getId()), eq(letterHolderId))).thenReturn(sampleClaim);
+
+        controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claim-issued", AUTHORISATION);
+
+        // then
+        verify(documentGenerator).generateForNonRepresentedClaim(any());
     }
 
     @Test

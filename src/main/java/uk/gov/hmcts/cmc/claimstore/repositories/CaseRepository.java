@@ -70,5 +70,7 @@ public interface CaseRepository {
         String authorisation,
         Long claimId,
         ClaimSubmissionOperationIndicators indicators);
+
+    Claim linkLetterHolder(Long claimId, String letterHolderId);
 }
 

@@ -46,15 +46,17 @@ public class DocumentGenerator {
         Document sealedClaimDoc = citizenServiceDocumentsService.sealedClaimDocument(event.getClaim());
         Document defendantLetterDoc = citizenServiceDocumentsService.pinLetterDocument(event.getClaim(),
             event.getPin());
+
         PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(event.getClaim().getReferenceNumber()),
             sealedClaimPdfService.createPdf(event.getClaim()), SEALED_CLAIM);
         PDF defendantLetter = new PDF(buildDefendantLetterFileBaseName(event.getClaim().getReferenceNumber()),
             pdfServiceClient.generateFromHtml(defendantLetterDoc.template.getBytes(), defendantLetterDoc.values),
             DEFENDANT_PIN_LETTER);
-        publisher.publishEvent(new DocumentReadyToPrintEvent(event.getClaim(),
-            defendantLetterDoc, sealedClaimDoc));
+
         publisher.publishEvent(new DocumentGeneratedEvent(event.getClaim(), event.getAuthorisation(),
             sealedClaim, defendantLetter));
+
+        publisher.publishEvent(new DocumentReadyToPrintEvent(event.getClaim(), defendantLetterDoc, sealedClaimDoc));
     }
 
     @EventListener

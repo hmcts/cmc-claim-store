@@ -2,27 +2,27 @@ package uk.gov.hmcts.cmc.email;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
-import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-@Service
 public class EmailService {
 
+    public static final String NOTIFICATION_FAILURE = "Notification - failure";
+    public static final String EMAIL_SUBJECT = "EmailSubject";
     private final Logger logger = LoggerFactory.getLogger(EmailService.class);
 
+    private final AppInsightsService appInsightsService;
     private final JavaMailSender sender;
 
-    @Autowired
-    public EmailService(JavaMailSender sender) {
+    public EmailService(AppInsightsService appInsightsService, JavaMailSender sender) {
+        this.appInsightsService = appInsightsService;
         this.sender = sender;
     }
 
@@ -56,5 +56,7 @@ public class EmailService {
             emailData.toString(), exception.getMessage()
         );
         logger.error(errorMessage, exception);
+
+        appInsightsService.trackEvent(NOTIFICATION_FAILURE, EMAIL_SUBJECT, emailData.getSubject());
     }
 }

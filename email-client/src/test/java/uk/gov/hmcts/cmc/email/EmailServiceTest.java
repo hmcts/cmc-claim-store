@@ -29,11 +29,14 @@ public class EmailServiceTest {
     private static final String EMAIL_SUBJECT = "My Test Subject";
     private static final String EMAIL_MESSAGE = "My Test Message";
 
-    @InjectMocks
-    private EmailService emailService;
-
     @Mock
     private JavaMailSenderImpl javaMailSender;
+
+    @Mock
+    private AppInsightsService appInsightsService;
+
+    @InjectMocks
+    private EmailService emailService;
 
     @Mock
     private MimeMessage mimeMessage;
@@ -56,6 +59,8 @@ public class EmailServiceTest {
         EmailData emailData = SampleEmailData.getDefault();
         doThrow(mock(MailException.class)).when(javaMailSender).send(any(MimeMessage.class));
         emailService.sendEmail("no-reply@example.com", emailData);
+
+        verify(appInsightsService).trackEvent(EmailService.NOTIFICATION_FAILURE, EMAIL_SUBJECT, emailData.getSubject());
     }
 
     @Test(expected = IllegalArgumentException.class)
