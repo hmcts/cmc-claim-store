@@ -20,7 +20,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 
 @Async("threadPoolTaskExecutor")
 @Service
-@ConditionalOnProperty(prefix = "feature_toggles", name = "async_eventOperations_enabled")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled")
 public class ClaimCreatedOperationHandler {
     private static final Logger logger = LoggerFactory.getLogger(ClaimCreatedOperationHandler.class);
 

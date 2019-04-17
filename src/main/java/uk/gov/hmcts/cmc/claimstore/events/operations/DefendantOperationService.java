@@ -8,7 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificatio
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 @Component
-@ConditionalOnProperty(prefix = "feature_toggles", name = "async_eventOperations_enabled")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled")
 public class DefendantOperationService {
 
     private final ClaimIssuedNotificationService claimIssuedNotificationService;

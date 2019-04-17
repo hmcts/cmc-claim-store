@@ -88,7 +88,7 @@ public class ClaimService {
         PaidInFullRule paidInFullRule,
         CCDEventProducer ccdEventProducer,
         ClaimAuthorisationRule claimAuthorisationRule,
-        @Value("feature_toggles.async_eventOperations_enabled") String asyncEventOperationEnabled
+        @Value("feature_toggles.async_event_operations_enabled") String asyncEventOperationEnabled
     ) {
         this.claimRepository = claimRepository;
         this.userService = userService;
