@@ -74,11 +74,15 @@ bankHolidays:
   api:
     url: "https://www.gov.uk"
 
+nonworking-days:
+  datafile: ${NONWORKINGDAYS_DATAFILE:/data/non-working_days.dat}
+
 dateCalculations:
   endOfBusinessDayHour: 16
   serviceDays: 5
   responseDays: 14
   requestedAdditionalTimeInDays: 14
+  claimantResponseDays: 28
   freeMediationTimeForDecisionInDays: 5
   offerMadeTimeForResponseInDays: 14
   lastResponseReminderDay: 1
