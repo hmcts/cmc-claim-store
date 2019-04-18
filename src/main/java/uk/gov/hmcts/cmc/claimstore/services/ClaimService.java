@@ -271,7 +271,6 @@ public class ClaimService {
         return claim;
     }
 
-    @SuppressWarnings("unchecked")
     public AboutToStartOrSubmitCallbackResponse requestMoreTimeOnPaper(
         CallbackRequest callbackRequest,
         boolean validateOnly
@@ -313,7 +312,6 @@ public class ClaimService {
             .build();
     }
 
-    @SuppressWarnings("unchecked")
     private Claim convertCallbackToClaim(CallbackRequest caseDetails) {
         return ccdCaseDataToClaim.to(
             caseDetails.getCaseDetails().getId(),
@@ -356,7 +354,9 @@ public class ClaimService {
         String authorization
     ) {
         claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorization);
-        caseRepository.saveDefendantResponse(claim, defendantEmail, response, authorization);
+        LocalDate claimantResponseDeadline =
+            responseDeadlineCalculator.calculateClaimantResponseDeadline(LocalDate.now());
+        caseRepository.saveDefendantResponse(claim, defendantEmail, response, claimantResponseDeadline, authorization);
         if (isFullDefenceWithNoMediation(response)) {
             LocalDate deadline = directionsQuestionnaireDeadlineCalculator
                 .calculateDirectionsQuestionnaireDeadlineCalculator(LocalDateTime.now());
