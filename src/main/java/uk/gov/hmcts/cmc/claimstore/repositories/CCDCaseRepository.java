@@ -181,6 +181,11 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
+    public Claim linkLetterHolder(Long claimId, String letterHolderId) {
+        return coreCaseDataService.linkLetterHolder(claimId, letterHolderId);
+    }
+
+    @Override
     public void saveReDetermination(
         String authorisation,
         Claim claim,

@@ -36,11 +36,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_LETTER_HOLDER;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetails;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetailsWithCCJ;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetailsWithDefResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetailsWithDefendant;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetailsWithOfferCounterSigned;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreStartResponse;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitRepresentativeResponse;
 
 @TestPropertySource(
     properties = {
@@ -63,7 +66,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
     @Before
     public void setUp() {
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
-            .willReturn(new byte[]{1, 2, 3, 4});
+            .willReturn(new byte[] {1, 2, 3, 4});
         UserDetails userDetails = SampleUserDetails.builder().withRoles("caseworker-cmc").build();
         User user = new User(BEARER_TOKEN, userDetails);
         given(userService.getUserDetails(BEARER_TOKEN)).willReturn(userDetails);
@@ -109,6 +112,31 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
         given(sendLetterApi.sendLetter(anyString(), any(Letter.class)))
             .willReturn(new SendLetterResponse(UUID.randomUUID()));
 
+        given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
+
+        given(coreCaseDataApi.startEventForCaseWorker(
+            eq(BEARER_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(USER_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            anyString(),
+            eq(LINK_LETTER_HOLDER.getValue())
+            )
+        ).willReturn(successfulCoreCaseDataStoreStartResponse());
+
+        given(coreCaseDataApi.submitEventForCaseWorker(
+            eq(BEARER_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(USER_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            anyString(),
+            eq(IGNORE_WARNING),
+            any()
+            )
+        ).willReturn(successfulCoreCaseDataStoreSubmitRepresentativeResponse());
+
         makeRequest(CASE_REFERENCE, "claim-issued").andExpect(status().isOk());
 
         verify(emailService, times(2)).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
@@ -117,6 +145,29 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
         assertThat(emailData.getTo()).isEqualTo("recipient@example.com");
         assertThat(emailData.getSubject()).isEqualTo("Claim " + CASE_REFERENCE + " issued");
         assertThat(emailData.getMessage()).isEqualTo("Please find attached claim.");
+
+        verify(coreCaseDataApi)
+            .startEventForCaseWorker(
+                eq(BEARER_TOKEN),
+                eq(SERVICE_TOKEN),
+                eq(USER_ID),
+                eq(JURISDICTION_ID),
+                eq(CASE_TYPE_ID),
+                anyString(),
+                eq(LINK_LETTER_HOLDER.getValue())
+            );
+
+        verify(coreCaseDataApi)
+            .submitEventForCaseWorker(
+                eq(BEARER_TOKEN),
+                eq(SERVICE_TOKEN),
+                eq(USER_ID),
+                eq(JURISDICTION_ID),
+                eq(CASE_TYPE_ID),
+                anyString(),
+                eq(IGNORE_WARNING),
+                any()
+            );
     }
 
     @Test

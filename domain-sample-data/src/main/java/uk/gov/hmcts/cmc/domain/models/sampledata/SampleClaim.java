@@ -87,7 +87,7 @@ public final class SampleClaim {
     private LocalDateTime reDeterminationRequestedAt;
     private ReDetermination reDetermination = new ReDetermination("I feel defendant can pay", CLAIMANT);
     private ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
-    private ClaimState state;
+    private ClaimState state = null;
     private ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators = null;
 
     private SampleClaim() {
@@ -253,7 +253,10 @@ public final class SampleClaim {
     }
 
     public static Claim getDefaultForLegal() {
-        return builder().build();
+        return builder()
+            .withReferenceNumber("012LR345")
+            .withClaimData(SampleClaimData.builder().withPayment(null).build())
+            .build();
     }
 
     public static Claim getLegalDataWithReps() {
