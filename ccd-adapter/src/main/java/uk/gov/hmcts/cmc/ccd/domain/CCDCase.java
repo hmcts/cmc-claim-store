@@ -62,4 +62,5 @@ public class CCDCase {
     private CCDDocument sealedClaimDocument;
     private String features;
     private CCDYesNoOption migratedFromClaimStore;
+    private String caseName;
 }

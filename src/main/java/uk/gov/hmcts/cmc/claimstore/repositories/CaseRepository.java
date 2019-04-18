@@ -70,5 +70,7 @@ public interface CaseRepository {
     void saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent);
 
     Claim saveClaimDocuments(String authorisation, Long claimId, ClaimDocumentCollection claimDocumentCollection);
+
+    Claim linkLetterHolder(Long claimId, String letterHolderId);
 }
 
