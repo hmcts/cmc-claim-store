@@ -6,6 +6,7 @@ public enum CaseEvent {
     MORE_TIME_REQUESTED_PAPER("MoreTimeRequestedPaper"),
     TEST_SUPPORT_UPDATE("TestSupportUpdate"),
     LINK_SEALED_CLAIM("LinkSealedClaimDocument"),
+    LINK_LETTER_HOLDER("LinkLetterHolder"),
     LINK_DEFENDANT("LinkDefendant"),
     MORE_TIME_REQUESTED_ONLINE("MoreTimeRequestedOnline"),
     DEFAULT_CCJ_REQUESTED("DefaultCCJRequested"),

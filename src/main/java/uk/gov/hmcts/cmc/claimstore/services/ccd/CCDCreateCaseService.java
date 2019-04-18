@@ -96,7 +96,7 @@ public class CCDCreateCaseService {
     }
 
     @LogExecutionTime
-    public void grantAccessToCase(CaseDetails caseDetails, String letterHolderId) {
+    public void grantAccessToCase(String caseId, String letterHolderId) {
         User user = userService.authenticateAnonymousCaseWorker();
         caseAccessApi.grantAccessToCase(
             user.getAuthorisation(),
@@ -104,9 +104,21 @@ public class CCDCreateCaseService {
             user.getUserDetails().getId(),
             JURISDICTION_ID,
             CASE_TYPE_ID,
-            caseDetails.getId().toString(),
+            caseId,
             new UserId(letterHolderId)
         );
     }
 
+    @LogExecutionTime
+    public void removeAccessToCase(String caseId, String letterHolderId) {
+        User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
+        caseAccessApi.revokeAccessToCase(anonymousCaseWorker.getAuthorisation(),
+            authTokenGenerator.generate(),
+            anonymousCaseWorker.getUserDetails().getId(),
+            JURISDICTION_ID,
+            CASE_TYPE_ID,
+            caseId,
+            letterHolderId
+        );
+    }
 }

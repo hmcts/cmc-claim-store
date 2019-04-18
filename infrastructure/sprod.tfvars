@@ -1,4 +1,4 @@
-idam_api_url = "http://betaDevBccidamAppLB.reform.hmcts.net"
+idam_api_url = "http://idam-api-idam-sprod.service.core-compute-idam-sprod.internal"
 db_host = "test-data-lb.moneyclaim.reform.hmcts.net"
 frontend_url = "https://cmc-citizen-frontend-sprod.service.core-compute-sprod.internal"
 capacity = "2"
