@@ -24,8 +24,6 @@ import java.util.UUID;
 
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATED;
 
-import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATED;
-
 @Component
 public class ClaimStore {
 
