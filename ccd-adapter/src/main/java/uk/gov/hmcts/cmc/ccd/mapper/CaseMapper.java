@@ -5,11 +5,13 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
 
 import java.util.Arrays;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
+import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.toCaseName;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @Component
@@ -41,9 +43,14 @@ public class CaseMapper {
             .submitterId(claim.getSubmitterId())
             .submitterEmail(claim.getSubmitterEmail())
             .issuedOn(claim.getIssuedOn())
+            .currentInterestAmount(
+                claim.getTotalInterestTillDateOfIssue()
+                    .map(interest -> String.valueOf(MonetaryConversions.poundsToPennies(interest)))
+                    .orElse(null))
             .submittedOn(claim.getCreatedAt())
             .features(claim.getFeatures() != null ? String.join(",", claim.getFeatures()) : null)
             .migratedFromClaimStore(isMigrated ? YES : NO)
+            .caseName(toCaseName.apply(claim))
             .build();
     }
 
