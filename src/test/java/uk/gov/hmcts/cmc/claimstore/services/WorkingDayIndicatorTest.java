@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.services.bankholidays.NonWorkingDaysCollection;
 import uk.gov.hmcts.cmc.claimstore.services.bankholidays.PublicHolidaysCollection;
 
 import java.time.LocalDate;
@@ -35,9 +36,12 @@ public class WorkingDayIndicatorTest {
     @Mock
     private PublicHolidaysCollection publicHolidaysApiClient;
 
+    @Mock
+    private NonWorkingDaysCollection nonWorkingDaysCollection;
+
     @Before
     public void setup() {
-        service = new WorkingDayIndicator(publicHolidaysApiClient);
+        service = new WorkingDayIndicator(publicHolidaysApiClient, nonWorkingDaysCollection);
     }
 
     @Test
@@ -78,5 +82,14 @@ public class WorkingDayIndicatorTest {
         assertFalse(service.isWorkingDay(TUESDAY));
         assertFalse(service.isWorkingDay(WEDNESDAY));
         assertFalse(service.isWorkingDay(THURSDAY));
+    }
+
+    @Test
+    public void shouldReturnFalseForWorkingDayExcludedByNonWorkingDaysCollection() {
+        assertTrue(service.isWorkingDay(MONDAY));
+
+        when(nonWorkingDaysCollection.contains(MONDAY)).thenReturn(true);
+
+        assertFalse(service.isWorkingDay(MONDAY));
     }
 }
