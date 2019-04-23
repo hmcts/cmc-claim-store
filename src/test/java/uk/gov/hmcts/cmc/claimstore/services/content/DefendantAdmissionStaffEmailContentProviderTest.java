@@ -45,7 +45,7 @@ public class DefendantAdmissionStaffEmailContentProviderTest {
         EmailContent content = service.createContent(wrapInMap(claimWithFullAdmission, DEFENDANT_EMAIL));
         assertThat(content.getSubject())
             .contains("Pay immediately 000CM001")
-            .contains("John Rambo v John Smith");
+            .contains("John Rambo v Dr. John Smith");
 
         assertThat(content.getBody())
             .contains("The defendant has offered to pay immediately in response to the ")
@@ -62,7 +62,7 @@ public class DefendantAdmissionStaffEmailContentProviderTest {
         EmailContent content = service.createContent(wrapInMap(claimWithFullAdmission, DEFENDANT_EMAIL));
 
         assertThat(content.getSubject())
-            .contains("Pay by instalments 000CM001 - John Rambo v John Smith");
+            .contains("Pay by instalments 000CM001 - John Rambo v Dr. John Smith");
         assertThat(content.getBody())
             .contains("The defendant has offered to pay by instalments in response to the ")
             .contains("money claim made against them by John Rambo.");
@@ -77,7 +77,7 @@ public class DefendantAdmissionStaffEmailContentProviderTest {
         EmailContent content = service.createContent(wrapInMap(claimWithFullAdmission, DEFENDANT_EMAIL));
 
         assertThat(content.getSubject())
-            .contains("Pay by a set date 000CM001 - John Rambo v John Smith");
+            .contains("Pay by a set date 000CM001 - John Rambo v Dr. John Smith");
         assertThat(content.getBody())
             .contains("The defendant has offered to pay by a set date in response to the ")
             .contains("money claim made against them by John Rambo.");
@@ -92,7 +92,7 @@ public class DefendantAdmissionStaffEmailContentProviderTest {
         EmailContent content = service.createContent(wrapInMap(claimWithPartAdmission, DEFENDANT_EMAIL));
         assertThat(content.getSubject())
             .contains("Pay immediately 000CM001")
-            .contains("John Rambo v John Smith");
+            .contains("John Rambo v Dr. John Smith");
 
         assertThat(content.getBody())
             .contains("The defendant has offered to pay immediately in response to the ")
@@ -109,7 +109,7 @@ public class DefendantAdmissionStaffEmailContentProviderTest {
         EmailContent content = service.createContent(wrapInMap(claimWithPartAdmission, DEFENDANT_EMAIL));
 
         assertThat(content.getSubject())
-            .contains("Pay by instalments 000CM001 - John Rambo v John Smith");
+            .contains("Pay by instalments 000CM001 - John Rambo v Dr. John Smith");
         assertThat(content.getBody())
             .contains("The defendant has offered to pay by instalments in response to the ")
             .contains("money claim made against them by John Rambo.");
@@ -124,7 +124,7 @@ public class DefendantAdmissionStaffEmailContentProviderTest {
         EmailContent content = service.createContent(wrapInMap(claimWithPartAdmission, DEFENDANT_EMAIL));
 
         assertThat(content.getSubject())
-            .contains("Pay by a set date 000CM001 - John Rambo v John Smith");
+            .contains("Pay by a set date 000CM001 - John Rambo v Dr. John Smith");
         assertThat(content.getBody())
             .contains("The defendant has offered to pay by a set date in response to the ")
             .contains("money claim made against them by John Rambo.");

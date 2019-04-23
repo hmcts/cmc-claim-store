@@ -151,6 +151,7 @@ public class JsonMapperTest {
                     .withRepresentative(SampleRepresentative.builder().build())
                     .withServiceAddress(SampleAddress.builder().build())
                     .withDateOfBirth(null)
+                    .withName(null)
                     .individualDetails())
             .withTimeline(null)
             .withPayment(null)

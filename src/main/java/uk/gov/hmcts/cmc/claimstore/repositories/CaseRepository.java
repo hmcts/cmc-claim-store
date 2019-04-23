@@ -29,7 +29,13 @@ public interface CaseRepository {
         CountyCourtJudgment countyCourtJudgment
     );
 
-    void saveDefendantResponse(Claim claim, String defendantEmail, Response response, String authorization);
+    void saveDefendantResponse(
+        Claim claim,
+        String defendantEmail,
+        Response response,
+        LocalDate claimantResponseDeadline,
+        String authorization
+    );
 
     Claim saveClaimantResponse(Claim claim, ClaimantResponse response, String authorization);
 
@@ -64,5 +70,7 @@ public interface CaseRepository {
     void saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent);
 
     Claim saveClaimDocuments(String authorisation, Long claimId, ClaimDocumentCollection claimDocumentCollection);
+
+    Claim linkLetterHolder(Long claimId, String letterHolderId);
 }
 
