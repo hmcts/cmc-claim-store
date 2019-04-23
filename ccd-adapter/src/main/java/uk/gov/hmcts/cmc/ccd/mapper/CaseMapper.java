@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
 
 import java.util.Arrays;
 
@@ -42,6 +43,10 @@ public class CaseMapper {
             .submitterId(claim.getSubmitterId())
             .submitterEmail(claim.getSubmitterEmail())
             .issuedOn(claim.getIssuedOn())
+            .currentInterestAmount(
+                claim.getTotalInterestTillDateOfIssue()
+                    .map(interest -> String.valueOf(MonetaryConversions.poundsToPennies(interest)))
+                    .orElse(null))
             .submittedOn(claim.getCreatedAt())
             .features(claim.getFeatures() != null ? String.join(",", claim.getFeatures()) : null)
             .migratedFromClaimStore(isMigrated ? YES : NO)
