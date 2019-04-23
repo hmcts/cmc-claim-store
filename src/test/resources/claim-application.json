@@ -27,7 +27,10 @@
     {
       "type": "individual",
       "id": "3d0bc933-0d46-4564-94bd-79e6e69b838b",
-      "name": "John Smith",
+      "name": "Dr. John Smith",
+      "title": "Dr.",
+      "firstName": "John",
+      "lastName": "Smith",
       "address": {
         "line1": "52",
         "line2": "Down Street",

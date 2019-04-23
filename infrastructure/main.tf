@@ -199,13 +199,11 @@ module "claim-store-api" {
     FEATURE_TOGGLES_EMAILTOSTAFF = "${var.enable_staff_email}"
     FEATURE_TOGGLES_CCD_ENABLED = "${var.ccd_enabled}"
     FEATURE_TOGGLES_CCD_ASYNC_ENABLED = "${var.ccd_async_enabled}"
+    FEATURE_TOGGLES_SAVE_CLAIM_STATE_ENABLED = "${var.save_claim_state_enabled}"
 
     //thread pool configs
     ASYNC_MAX_THREADPOOL_SIZE = 50
 
     ROOT_APPENDER = "CMC"
-
-    DOCUMENT_MANAGEMENT_CASEWORKERROLE = "caseworker-cmc"
-
   }
 }

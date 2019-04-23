@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.reform.document.domain.Classification;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 
 import java.net.URI;
@@ -23,12 +24,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.DOCUMENT_NAME;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DOCUMENT_MANAGEMENT_UPLOAD_FAILURE;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimIssueReceiptFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
@@ -52,7 +57,8 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
     @Test
     public void shouldUploadSealedCopyOfNonRepresentedClaimIntoDocumentManagementStore() throws Exception {
         ClaimData claimData = SampleClaimData.submittedByClaimant();
-        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
+        given(documentUploadClient
+            .upload(eq(AUTHORISATION_TOKEN), anyString(), anyString(), anyList(), any(Classification.class), anyList()))
             .willReturn(successfulDocumentManagementUploadResponse());
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
         MvcResult result = makeIssueClaimRequest(claimData, AUTHORISATION_TOKEN)
@@ -83,6 +89,8 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
             eq(AUTHORISATION_TOKEN),
             any(),
             any(),
+            anyList(),
+            any(Classification.class),
             argument.capture()
         );
         List<List> capturedArgument = argument.getAllValues();
@@ -94,8 +102,11 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
     @Test
     public void shouldUploadSealedCopyOfRepresentedClaimIntoDocumentManagementStore() throws Exception {
         ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
-        given(documentUploadClient.upload(eq(SOLICITOR_AUTHORISATION_TOKEN), any(), any(), any()))
+        given(documentUploadClient
+            .upload(eq(SOLICITOR_AUTHORISATION_TOKEN), anyString(), anyString(),
+                anyList(), any(Classification.class), anyList()))
             .willReturn(successfulDocumentManagementUploadResponse());
+
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
         MvcResult result = makeIssueClaimRequest(claimData, SOLICITOR_AUTHORISATION_TOKEN)
             .andExpect(status().isOk())
@@ -112,6 +123,8 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
             eq(SOLICITOR_AUTHORISATION_TOKEN),
             any(),
             any(),
+            anyList(),
+            any(Classification.class),
             argument.capture()
         );
         List<InMemoryMultipartFile> capturedArgument = argument.getValue();
@@ -151,11 +164,14 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
             "claim-form.pdf");
     }
 
-    private void assertDocumentIsLinked(ClaimData claimData,
-                                        String authorization,
-                                        ClaimDocumentType claimDocumentType,
-                                        String fileName) throws Exception {
-        given(documentUploadClient.upload(eq(authorization), any(), any(), any()))
+    private void assertDocumentIsLinked(
+        ClaimData claimData,
+        String authorization,
+        ClaimDocumentType claimDocumentType,
+        String fileName
+    ) throws Exception {
+
+        given(documentUploadClient.upload(eq(authorization), any(), any(), anyList(), any(Classification.class), any()))
             .willReturn(successfulDocumentManagementUploadResponse());
 
         MvcResult result = makeIssueClaimRequest(claimData, authorization)
@@ -180,7 +196,8 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
 
     @Test
     public void shouldNotReturn500HttpStatusAndShouldSendStaffEmailWhenDocumentUploadFailed() throws Exception {
-        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
+        given(documentUploadClient
+            .upload(eq(AUTHORISATION_TOKEN), anyString(), anyString(), anyList(), any(Classification.class), anyList()))
             .willReturn(unsuccessfulDocumentManagementUploadResponse());
 
         makeIssueClaimRequest(SampleClaimData.submittedByLegalRepresentativeBuilder().build(), AUTHORISATION_TOKEN)
@@ -190,4 +207,25 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
         verify(emailService, times(1)).sendEmail(anyString(), any());
     }
 
+    @Test
+    public void shouldRetryOnDocumentUploadFailures() throws Exception {
+        given(documentUploadClient
+            .upload(eq(AUTHORISATION_TOKEN), anyString(), anyString(), anyList(), any(Classification.class), anyList()))
+            .willReturn(unsuccessfulDocumentManagementUploadResponse())
+            .willReturn(unsuccessfulDocumentManagementUploadResponse())
+            .willReturn(unsuccessfulDocumentManagementUploadResponse())
+        ;
+
+        when(authTokenGenerator.generate()).thenReturn(BEARER_TOKEN);
+
+        makeIssueClaimRequest(SampleClaimData.submittedByLegalRepresentativeBuilder().build(), AUTHORISATION_TOKEN)
+            .andExpect(status().isOk())
+            .andReturn();
+
+        verify(documentUploadClient, times(3))
+            .upload(eq(AUTHORISATION_TOKEN), anyString(), anyString(), anyList(), any(Classification.class), anyList());
+
+        verify(appInsights).trackEvent(eq(DOCUMENT_MANAGEMENT_UPLOAD_FAILURE), eq(DOCUMENT_NAME), anyString());
+
+    }
 }

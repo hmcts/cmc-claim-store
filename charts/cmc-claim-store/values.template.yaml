@@ -71,6 +71,7 @@ java:
     FEATURE_TOGGLES_CCD_ASYNC_ENABLED: false
     DOCUMENT_MANAGEMENT_CASEWORKERROLE: caseworker-cmc
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
+    FEATURE_TOGGLES_SAVE_CLAIM_STATE_ENABLED: false
     FRONTEND_BASE_URL: https://www-${SERVICE_FQDN}
     RESPOND_TO_CLAIM_URL: https://www-${SERVICE_FQDN}/first-contact/start
     STAFF_NOTIFICATIONS_RECIPIENT: civilmoneyclaims+staff-int-tests@gmail.com
@@ -104,10 +105,6 @@ cmc-citizen-frontend:
       IDAM_AUTHENTICATION_WEB_URL: https://idam-web-public.aat.platform.hmcts.net
   rpe-feature-toggle-api:
     releaseNameOverride: ${SERVICE_NAME}-ftr-tgl-api
-    importer:
-      oneoff:
-        command: /scripts/add-weighted-toggle.sh cmc_admissions 'CMC admissions' '1.0' ${ADMIN_USERNAME_TEST} ${ADMIN_PASSWORD_TEST} &&
-          /scripts/add-toggle.sh cmc_defence_reminders 'CMC defence reminders' false ${ADMIN_USERNAME_TEST} ${ADMIN_PASSWORD_TEST}
     java:
       releaseNameOverride: ${SERVICE_NAME}-ftr-tgl-api
       environment:

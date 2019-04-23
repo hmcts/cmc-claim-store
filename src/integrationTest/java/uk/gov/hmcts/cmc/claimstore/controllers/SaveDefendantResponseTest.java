@@ -21,6 +21,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.reform.document.domain.Classification;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 
 import java.time.LocalDate;
@@ -31,6 +32,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -52,7 +54,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.unsuccessfulDocum
 )
 public class SaveDefendantResponseTest extends BaseIntegrationTest {
 
-    protected static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
+    protected static final byte[] PDF_BYTES = new byte[] {1, 2, 3, 4};
 
     @MockBean
     private DefendantResponseStaffNotificationHandler staffActionsHandler;
@@ -110,8 +112,10 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
     public void shouldUploadDocumentToDocumentManagementAfterSuccessfulSave() throws Exception {
         final ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
         Response response = SampleResponse.validDefaults();
-        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
-            .willReturn(successfulDocumentManagementUploadResponse());
+        given(documentUploadClient
+            .upload(eq(BEARER_TOKEN), any(), any(), anyList(), any(Classification.class), anyList())
+        ).willReturn(successfulDocumentManagementUploadResponse());
+
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
         InMemoryMultipartFile defendantResponseReceipt = new InMemoryMultipartFile(
             "files",
@@ -121,10 +125,14 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
         );
         makeRequest(claim.getExternalId(), DEFENDANT_ID, response)
             .andExpect(status().isOk());
+
         verify(documentUploadClient).upload(anyString(),
             anyString(),
             anyString(),
+            anyList(),
+            any(Classification.class),
             argument.capture());
+
         List<MultipartFile> files = argument.getValue();
         assertTrue(files.contains(defendantResponseReceipt));
     }
