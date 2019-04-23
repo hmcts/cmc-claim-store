@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.util;
 
+import com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRow;
 import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
@@ -30,12 +31,18 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDLivingPartner;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebt;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -61,6 +68,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPaymentF
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebtType.ELECTRICITY;
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDResidenceType.JOINT_OWN_HOME;
 import static uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceType.EXPERT_WITNESS;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOTH;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
 
@@ -183,6 +191,7 @@ public class SampleData {
     public static CCDRespondent getCCDRespondentIndividual() {
         CCDAddress ccdAddress = getCCDAddress();
         return CCDRespondent.builder()
+            .partyName("Mary Richards")
             .claimantProvidedDetail(
                 CCDParty.builder()
                     .type(INDIVIDUAL)
@@ -419,6 +428,79 @@ public class SampleData {
             .paymentReference("RC-1524-6488-1670-7520")
             .applicants(applicants)
             .respondents(respondents)
+            .timeline(singletonList(CCDCollectionElement.<CCDTimelineEvent>builder()
+                .value(CCDTimelineEvent.builder().date("some Date").description("description of event").build())
+                .build()))
+            .evidence(singletonList(CCDCollectionElement.<CCDEvidenceRow>builder()
+                .value(CCDEvidenceRow.builder().type(EXPERT_WITNESS).description("description of evidence").build())
+                .build()))
+            .build();
+    }
+
+    public static CCDCase getCCDCitizenCaseWithDirectionsQuestionnaire() {
+        List<CCDCollectionElement<CCDApplicant>> applicants
+            = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
+        List<CCDCollectionElement<CCDRespondent>> respondents
+            = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(getCCDRespondentIndividual()).build());
+
+        return CCDCase.builder()
+            .id(1L)
+            .submittedOn(LocalDateTime.of(2017, 11, 01, 10, 15, 30))
+            .issuedOn(LocalDate.of(2017, 11, 15))
+            .submitterEmail("my@email.com")
+            .submitterId("123")
+            .referenceNumber("ref no")
+            .externalId(UUID.randomUUID().toString())
+            .features("admissions")
+            .amountType(BREAK_DOWN)
+            .amountBreakDown(Collections.emptyList())
+            .housingDisrepairCostOfRepairDamages(MORE_THAN_THOUSAND_POUNDS.name())
+            .housingDisrepairOtherDamages(THOUSAND_POUNDS_OR_LESS.name())
+            .personalInjuryGeneralDamages(MORE_THAN_THOUSAND_POUNDS.name())
+            .sotSignerName("name")
+            .sotSignerRole("role")
+            .externalReferenceNumber("external ref")
+            .externalId(UUID.randomUUID().toString())
+            .feeCode("X1202")
+            .feeAmountInPennies(BigInteger.valueOf(100))
+            .reason("Reason for the case")
+            .preferredCourt("London Court")
+            .interestType(CCDInterestType.DIFFERENT)
+            .interestReason("reason")
+            .interestRate(BigDecimal.valueOf(2))
+            .interestBreakDownAmount(BigDecimal.valueOf(210))
+            .interestBreakDownExplanation("Explanation")
+            .interestStartDateReason("start date reason")
+            .interestDateType(CCDInterestDateType.CUSTOM)
+            .interestClaimStartDate(LocalDate.now())
+            .interestSpecificDailyAmount(BigDecimal.valueOf(10))
+            .interestEndDateType(CCDInterestEndDateType.SUBMISSION)
+            .paymentStatus("success")
+            .paymentDateCreated(LocalDate.of(2019, 01, 01))
+            .paymentId("PaymentId")
+            .paymentAmount(BigDecimal.valueOf(4000))
+            .paymentReference("RC-1524-6488-1670-7520")
+            .applicants(applicants)
+            .respondents(respondents)
+            .directionList(ImmutableList.of(
+                CCDOrderDirectionType.DOCUMENTS, CCDOrderDirectionType.EYEWITNESS))
+            .otherDirectionList(ImmutableList.of(
+                CCDOrderDirection.builder()
+                    .extraOrderDirection(CCDOrderDirectionType.OTHER)
+                    .otherDirection("a direction")
+                    .forParty(BOTH)
+                    .build()))
+            .hearingIsRequired(YES)
+            .docUploadDeadline(LocalDate.parse("2020-10-11"))
+            .eyewitnessUploadDeadline(LocalDate.parse("2020-10-11"))
+            .preferredCourt("Some court")
+            .hearingCourt(CCDHearingCourtType.DEFENDANT_COURT)
+            .preferredCourtObjectingReason("I like this court more")
+            .hearingStatement("No idea")
+            .newRequestedCourt("Another court")
+            .docUploadForParty(CCDDirectionPartyType.CLAIMANT)
+            .eyewitnessUploadForParty(CCDDirectionPartyType.DEFENDANT)
+            .estimatedHearingDuration(CCDHearingDurationType.FOUR_HOURS)
             .timeline(singletonList(CCDCollectionElement.<CCDTimelineEvent>builder()
                 .value(CCDTimelineEvent.builder().date("some Date").description("description of event").build())
                 .build()))
