@@ -9,9 +9,10 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
+@Getter
 public class Address {
     @JsonProperty("address_lines")
-    @Getter private List<String> addressLines;
-    @Getter private String postcode;
-    @Getter private String town;
+    private List<String> addressLines;
+    private String postcode;
+    private String town;
 }

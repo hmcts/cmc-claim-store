@@ -6,8 +6,9 @@ import lombok.Getter;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
+@Getter
 public class Court {
-    @Getter private String name;
-    @Getter private String slug;
-    @Getter private Address address;
+    private String name;
+    private String slug;
+    private Address address;
 }

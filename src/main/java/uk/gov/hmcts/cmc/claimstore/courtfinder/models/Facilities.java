@@ -6,7 +6,8 @@ import lombok.Getter;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
+@Getter
 public class Facilities {
-    @Getter private String description;
-    @Getter private String name;
+    private String description;
+    private String name;
 }

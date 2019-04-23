@@ -8,8 +8,9 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
+@Getter
 public class CourtDetails {
-    @Getter private String name;
-    @Getter private String slug;
-    @Getter private List<Facilities> facilities;
+    private String name;
+    private String slug;
+    private List<Facilities> facilities;
 }
