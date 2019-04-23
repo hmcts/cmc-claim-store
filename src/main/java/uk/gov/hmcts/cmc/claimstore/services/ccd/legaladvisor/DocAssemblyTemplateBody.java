@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Builder
 @EqualsAndHashCode
-public class DocAssemblyPayload implements FormPayload {
+public class DocAssemblyTemplateBody implements FormPayload {
 
     private static final String HMCTS_URL = "https://www.gov.uk/make-money-claim";
     private static final String COURT_SEAL_IMG = "[userImage:courtseal.PNG]";
@@ -105,8 +105,8 @@ public class DocAssemblyPayload implements FormPayload {
         private final String hmctsURL = HMCTS_URL;
     }
 
-    public static DocAssemblyPayload from(CCDCase ccdCase, UserDetails userDetails) {
-        return DocAssemblyPayload.builder()
+    public static DocAssemblyTemplateBody from(CCDCase ccdCase, UserDetails userDetails) {
+        return DocAssemblyTemplateBody.builder()
             .claimant(Party.builder()
                 .partyName(ccdCase.getApplicants()
                     .get(0)
