@@ -109,6 +109,9 @@ cmc-citizen-frontend:
       releaseNameOverride: ${SERVICE_NAME}-ftr-tgl-api
       environment:
         FEATURES_DB_HOST: ${SERVICE_NAME}-ccd-postgres
+  idam-pr:
+    service:
+      redirect_uri: https://www-${SERVICE_FQDN}/receiver
 
 ccd:
   # TODO: update CCD chart with SIDAM
