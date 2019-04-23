@@ -63,6 +63,7 @@ public class Claim {
     private final ReDetermination reDetermination;
     private final LocalDateTime reDeterminationRequestedAt;
     private final ClaimDocumentCollection claimDocumentCollection;
+    private final LocalDate claimantResponseDeadline;
     private final ClaimState state;
     private final ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
 
@@ -95,6 +96,7 @@ public class Claim {
         ReDetermination reDetermination,
         LocalDateTime reDeterminationRequestedAt,
         ClaimDocumentCollection claimDocumentCollection,
+        LocalDate claimantResponseDeadline,
         ClaimState state,
         ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
     ) {
@@ -125,6 +127,7 @@ public class Claim {
         this.reDetermination = reDetermination;
         this.reDeterminationRequestedAt = reDeterminationRequestedAt;
         this.claimDocumentCollection = claimDocumentCollection;
+        this.claimantResponseDeadline = claimantResponseDeadline;
         this.state = state;
         this.claimSubmissionOperationIndicators = claimSubmissionOperationIndicators;
     }
@@ -200,6 +203,10 @@ public class Claim {
 
     public Optional<ClaimDocumentCollection> getClaimDocumentCollection() {
         return Optional.ofNullable(claimDocumentCollection);
+    }
+
+    public Optional<LocalDate> getClaimantResponseDeadline() {
+        return Optional.ofNullable(claimantResponseDeadline);
     }
 
     @JsonIgnore
