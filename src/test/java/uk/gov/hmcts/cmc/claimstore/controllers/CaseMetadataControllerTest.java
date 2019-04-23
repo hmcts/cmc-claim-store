@@ -174,7 +174,6 @@ public class CaseMetadataControllerTest {
         assertEquals(dto.getClaimantRespondedAt().orElse(null), metadata.getClaimantRespondedAt());
         assertEquals(dto.getSettlementReachedAt(), metadata.getSettlementReachedAt());
         assertEquals(dto.getClaimDocument(SEALED_CLAIM), Optional.ofNullable(metadata.getSealedClaimDocument()));
-        assertEquals(dto.getClaimData().getPayment().getReference(), metadata.getPaymentReference());
         assertEquals(dto.getMoneyReceivedOn(), Optional.ofNullable(metadata.getMoneyReceivedOn()));
 
         if (dto.getClaimData().getPayment() == null) {
