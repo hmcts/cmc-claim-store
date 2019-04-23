@@ -12,12 +12,8 @@ import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
-import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
-
-import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
 
 public class SettlementOfferTest extends BaseTest {
 

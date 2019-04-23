@@ -14,13 +14,10 @@ import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
-import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
 
 public class CountyCourtJudgementTest extends BaseTest {
 
