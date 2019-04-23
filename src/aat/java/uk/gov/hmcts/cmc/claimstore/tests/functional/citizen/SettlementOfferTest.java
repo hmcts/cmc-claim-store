@@ -190,9 +190,7 @@ public class SettlementOfferTest extends BaseTest {
 
         assertThat(caseWithCounterSign.getSettlement().isPresent()).isTrue();
         assertThat(caseWithCounterSign.getSettlement().get().getPartyStatements().size()).isEqualTo(3);
-
-        assertThat(caseWithCounterSign.getSettlementReachedAt())
-            .isCloseTo(LocalDateTimeFactory.nowInLocalZone(), within(2, ChronoUnit.MINUTES));
+        assertThat(caseWithCounterSign.getSettlementReachedAt()).isNotNull();
     }
 
     private Claim countersignAnOffer(Claim createdCase, User defendant) {
