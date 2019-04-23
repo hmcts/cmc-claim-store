@@ -148,7 +148,7 @@ ccd:
       jurisdictions:
         - CMC
       users:
-        - civilmoneyclaims+ccd@gmail.com|CMC|MoneyClaimCase|open
+        - civilmoneyclaimsccd@gmail.com|CMC|MoneyClaimCase|open
       userProfileDatabaseHost: ${SERVICE_NAME}-ccd-postgres
       userProfileDatabasePort: 5432
       userProfileDatabaseUser: hmcts
