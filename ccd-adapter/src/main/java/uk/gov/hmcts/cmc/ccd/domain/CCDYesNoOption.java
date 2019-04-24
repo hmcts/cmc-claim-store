@@ -1,10 +1,8 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
-import com.fasterxml.jackson.annotation.JsonValue;
-
 public enum CCDYesNoOption {
-    YES("Yes"),
-    NO("No");
+    YES("yes"),
+    NO("no");
 
     private String value;
 
@@ -12,7 +10,6 @@ public enum CCDYesNoOption {
         this.value = value;
     }
 
-    @JsonValue
     public String getValue() {
         return value;
     }

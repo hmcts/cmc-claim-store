@@ -31,18 +31,18 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDLivingPartner;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebt;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -437,51 +437,8 @@ public class SampleData {
             .build();
     }
 
-    public static CCDCase getCCDCitizenCaseWithDirectionsQuestionnaire() {
-        List<CCDCollectionElement<CCDApplicant>> applicants
-            = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
-        List<CCDCollectionElement<CCDRespondent>> respondents
-            = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(getCCDRespondentIndividual()).build());
-
-        return CCDCase.builder()
-            .id(1L)
-            .submittedOn(LocalDateTime.of(2017, 11, 01, 10, 15, 30))
-            .issuedOn(LocalDate.of(2017, 11, 15))
-            .submitterEmail("my@email.com")
-            .submitterId("123")
-            .referenceNumber("ref no")
-            .externalId(UUID.randomUUID().toString())
-            .features("admissions")
-            .amountType(BREAK_DOWN)
-            .amountBreakDown(Collections.emptyList())
-            .housingDisrepairCostOfRepairDamages(MORE_THAN_THOUSAND_POUNDS.name())
-            .housingDisrepairOtherDamages(THOUSAND_POUNDS_OR_LESS.name())
-            .personalInjuryGeneralDamages(MORE_THAN_THOUSAND_POUNDS.name())
-            .sotSignerName("name")
-            .sotSignerRole("role")
-            .externalReferenceNumber("external ref")
-            .externalId(UUID.randomUUID().toString())
-            .feeCode("X1202")
-            .feeAmountInPennies(BigInteger.valueOf(100))
-            .reason("Reason for the case")
-            .preferredCourt("London Court")
-            .interestType(CCDInterestType.DIFFERENT)
-            .interestReason("reason")
-            .interestRate(BigDecimal.valueOf(2))
-            .interestBreakDownAmount(BigDecimal.valueOf(210))
-            .interestBreakDownExplanation("Explanation")
-            .interestStartDateReason("start date reason")
-            .interestDateType(CCDInterestDateType.CUSTOM)
-            .interestClaimStartDate(LocalDate.now())
-            .interestSpecificDailyAmount(BigDecimal.valueOf(10))
-            .interestEndDateType(CCDInterestEndDateType.SUBMISSION)
-            .paymentStatus("success")
-            .paymentDateCreated(LocalDate.of(2019, 01, 01))
-            .paymentId("PaymentId")
-            .paymentAmount(BigDecimal.valueOf(4000))
-            .paymentReference("RC-1524-6488-1670-7520")
-            .applicants(applicants)
-            .respondents(respondents)
+    public static CCDOrderGenerationData getCCDOrderGenerationData() {
+        return CCDOrderGenerationData.builder()
             .directionList(ImmutableList.of(
                 CCDOrderDirectionType.DOCUMENTS, CCDOrderDirectionType.EYEWITNESS))
             .otherDirectionList(ImmutableList.of(
@@ -489,11 +446,11 @@ public class SampleData {
                     .extraOrderDirection(CCDOrderDirectionType.OTHER)
                     .otherDirection("a direction")
                     .forParty(BOTH)
+                    .sendBy(LocalDate.parse("2020-10-11"))
                     .build()))
             .hearingIsRequired(YES)
             .docUploadDeadline(LocalDate.parse("2020-10-11"))
             .eyewitnessUploadDeadline(LocalDate.parse("2020-10-11"))
-            .preferredCourt("Some court")
             .hearingCourt(CCDHearingCourtType.DEFENDANT_COURT)
             .preferredCourtObjectingReason("I like this court more")
             .hearingStatement("No idea")
@@ -501,12 +458,6 @@ public class SampleData {
             .docUploadForParty(CCDDirectionPartyType.CLAIMANT)
             .eyewitnessUploadForParty(CCDDirectionPartyType.DEFENDANT)
             .estimatedHearingDuration(CCDHearingDurationType.FOUR_HOURS)
-            .timeline(singletonList(CCDCollectionElement.<CCDTimelineEvent>builder()
-                .value(CCDTimelineEvent.builder().date("some Date").description("description of event").build())
-                .build()))
-            .evidence(singletonList(CCDCollectionElement.<CCDEvidenceRow>builder()
-                .value(CCDEvidenceRow.builder().type(EXPERT_WITNESS).description("description of evidence").build())
-                .build()))
             .build();
     }
 
