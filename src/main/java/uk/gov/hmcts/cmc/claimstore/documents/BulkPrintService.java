@@ -25,7 +25,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BULK_PRIN
 
 @Service
 @ConditionalOnProperty(prefix = "send-letter", name = "url")
-public class BulkPrintService {
+public class BulkPrintService implements PrintService {
 
     /* This is configured on Xerox end so they know its us printing and controls things
      like paper quality and resolution */
@@ -58,6 +58,7 @@ public class BulkPrintService {
         value = {HttpClientErrorException.class, HttpServerErrorException.class},
         backoff = @Backoff(delay = 200)
     )
+    @Override
     public void print(Claim claim, Document defendantLetterDocument, Document sealedClaimDocument) {
         requireNonNull(claim);
         requireNonNull(defendantLetterDocument);
