@@ -10,6 +10,7 @@ import java.util.Arrays;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
+import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.toCaseName;
 
 @Component
 public class CaseMapper {
@@ -50,6 +51,7 @@ public class CaseMapper {
             .submittedOn(claim.getCreatedAt())
             .features(claim.getFeatures() != null ? String.join(",", claim.getFeatures()) : null)
             .migratedFromClaimStore(isMigrated ? YES : NO)
+            .caseName(toCaseName.apply(claim))
             .build();
     }
 

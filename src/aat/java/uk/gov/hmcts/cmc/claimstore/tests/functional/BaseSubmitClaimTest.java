@@ -53,4 +53,6 @@ public abstract class BaseSubmitClaimTest extends BaseTest {
     }
 
     protected abstract Supplier<SampleClaimData> getSampleClaimDataBuilder();
+
+    protected abstract void assertDocumentsCreated(Claim claim);
 }

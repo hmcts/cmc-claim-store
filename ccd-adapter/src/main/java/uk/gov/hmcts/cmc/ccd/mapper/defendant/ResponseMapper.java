@@ -192,6 +192,7 @@ public class ResponseMapper {
 
     private Consumer<PaymentDeclaration> mapPaymentDeclaration(CCDRespondent.CCDRespondentBuilder builder) {
         return paymentDeclaration -> {
+            builder.paymentDeclarationPaidAmount(paymentDeclaration.getPaidAmount().orElse(null));
             builder.paymentDeclarationExplanation(paymentDeclaration.getExplanation());
             builder.paymentDeclarationPaidDate(paymentDeclaration.getPaidDate());
             paymentDeclaration.getPaidAmount().ifPresent(builder::paymentDeclarationPaidAmount);
@@ -231,7 +232,8 @@ public class ResponseMapper {
         LocalDate paidDate = respondent.getPaymentDeclarationPaidDate();
         String explanation = respondent.getPaymentDeclarationExplanation();
         BigDecimal paidAmount = respondent.getPaymentDeclarationPaidAmount();
-        if (paidDate == null && paidAmount == null && StringUtils.isBlank(explanation)) {
+
+        if (paidDate == null && paidAmount == null && explanation == null) {
             return null;
         }
         return new PaymentDeclaration(paidDate, paidAmount, explanation);
@@ -259,6 +261,8 @@ public class ResponseMapper {
         CCDRespondent respondent = respondentElement.getValue();
 
         return PartAdmissionResponse.builder()
+            .defendant(defendantPartyMapper.from(respondentElement))
+            .amount(respondent.getResponseAmount())
             .defendant(defendantPartyMapper.from(respondentElement))
             .statementOfTruth(extractStatementOfTruth(respondent))
             .moreTimeNeeded(getMoreTimeNeeded(respondent))

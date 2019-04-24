@@ -552,4 +552,16 @@ public class CoreCaseDataServiceFailureTest {
 
         service.savePaidInFull(claim.getId(), paidInFull, AUTHORISATION);
     }
+
+    @Test(expected = CoreCaseDataStoreException.class)
+    public void linkLetterHolderEventFailure() {
+        Claim claim = SampleClaim.getDefault();
+
+        when(jsonMapper.fromMap(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
+        when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
+
+        String newLetterHolderId = "letter_holder_id";
+        service.linkLetterHolder(claim.getId(), newLetterHolderId);
+    }
 }

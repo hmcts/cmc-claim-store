@@ -62,4 +62,5 @@ public class CCDCase {
     private String features;
     private CCDYesNoOption migratedFromClaimStore;
     private List<CCDCollectionElement<CCDClaimDocument>> caseDocuments;
+    private String caseName;
 }

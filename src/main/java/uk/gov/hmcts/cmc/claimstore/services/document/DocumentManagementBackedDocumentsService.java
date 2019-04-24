@@ -183,21 +183,23 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         String authorisation,
         Claim claim
     ) {
-        URI documentSelfPath = documentManagementService.uploadDocument(authorisation, document);
+
+        ClaimDocument claimDocument = documentManagementService.uploadDocument(authorisation, document);
         return claimService.saveClaimDocuments(authorisation,
             claim.getId(),
-            getClaimDocumentCollection(claim, document, documentSelfPath),
+            getClaimDocumentCollection(claim.getExternalId(), document, claimDocument.getDocumentManagementUrl(), authorisation),
             document.getClaimDocumentType());
     }
 
     private ClaimDocumentCollection getClaimDocumentCollection(
-        Claim claim,
+        String externalId,
         PDF document,
-        URI uri
+        URI uri,
+        String authorisation
     ) {
+        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
         ClaimDocumentCollection claimDocumentCollection = claim.getClaimDocumentCollection()
             .orElse(new ClaimDocumentCollection());
-
         claimDocumentCollection.addClaimDocument(ClaimDocument.builder()
             .documentManagementUrl(uri)
             .documentName(document.getFilename())

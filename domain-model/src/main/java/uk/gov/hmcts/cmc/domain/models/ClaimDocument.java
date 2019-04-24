@@ -14,6 +14,7 @@ public class ClaimDocument extends CollectionId {
     private final LocalDateTime authoredDatetime;
     private final LocalDateTime createdDatetime;
     private final String createdBy;
+    private final long size;
 
     @Builder
     public ClaimDocument(
@@ -23,7 +24,8 @@ public class ClaimDocument extends CollectionId {
         ClaimDocumentType documentType,
         LocalDateTime authoredDatetime,
         LocalDateTime createdDatetime,
-        String createdBy
+        String createdBy,
+        long size
     ) {
         super(id);
         this.documentManagementUrl = documentManagementUrl;
@@ -32,5 +34,6 @@ public class ClaimDocument extends CollectionId {
         this.authoredDatetime = authoredDatetime;
         this.createdDatetime = createdDatetime;
         this.createdBy = createdBy;
+        this.size = size;
     }
 }
