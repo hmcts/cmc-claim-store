@@ -163,7 +163,7 @@ public class IdamTestService {
     private CreateUserRequest createCitizenRequest(String username, String password) {
         return new CreateUserRequest(
             username,
-            new UserGroup("cmc-private-beta"),
+            new UserGroup("citizen"),
             password
         );
     }
