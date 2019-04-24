@@ -109,6 +109,7 @@ public class CCDCaseRepository implements CaseRepository {
         Claim claim,
         String defendantEmail,
         Response response,
+        LocalDate claimantResponseDeadline,
         String authorization
     ) {
         coreCaseDataService.saveDefendantResponse(claim.getId(), defendantEmail, response, authorization);
@@ -172,6 +173,11 @@ public class CCDCaseRepository implements CaseRepository {
         ClaimDocumentCollection claimDocumentCollection
     ) {
         return coreCaseDataService.saveClaimDocuments(authorisation, claimId, claimDocumentCollection);
+    }
+
+    @Override
+    public Claim linkLetterHolder(Long claimId, String letterHolderId) {
+        return coreCaseDataService.linkLetterHolder(claimId, letterHolderId);
     }
 
     @Override
