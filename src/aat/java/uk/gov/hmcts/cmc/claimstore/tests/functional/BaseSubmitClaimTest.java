@@ -11,13 +11,10 @@ import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
-import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
-import java.time.temporal.ChronoUnit;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
 
 public abstract class BaseSubmitClaimTest extends BaseTest {
     protected User user;
@@ -44,10 +41,7 @@ public abstract class BaseSubmitClaimTest extends BaseTest {
             .extract().body().as(Claim.class);
 
         assertThat(claimData).isEqualTo(createdCase.getClaimData());
-        assertThat(createdCase.getCreatedAt()).isCloseTo(LocalDateTimeFactory.nowInLocalZone(),
-            within(2, ChronoUnit.MINUTES));
-
-        assertDocumentsCreated(createdCase);
+        assertThat(createdCase.getCreatedAt()).isNotNull();
     }
 
     @Test

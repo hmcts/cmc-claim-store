@@ -33,8 +33,7 @@ public class TheirDetailsMapper {
         this.soleTraderDetailsMapper = soleTraderDetailsMapper;
     }
 
-    public void to(CCDRespondent.CCDRespondentBuilder builder,
-                   TheirDetails theirDetails) {
+    public void to(CCDRespondent.CCDRespondentBuilder builder, TheirDetails theirDetails) {
 
         if (theirDetails instanceof IndividualDetails) {
             IndividualDetails individual = (IndividualDetails) theirDetails;
