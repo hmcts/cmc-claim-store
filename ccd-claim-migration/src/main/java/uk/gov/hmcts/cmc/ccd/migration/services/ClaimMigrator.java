@@ -61,7 +61,7 @@ public class ClaimMigrator {
                 .submit(() -> migrateClaims(user, claimsToMigrate, migratedClaims, updatedClaims, failedMigrations))
                 .get();
         } catch (InterruptedException | ExecutionException e) {
-            logger.info("failed migration due to fork join pool interruption");
+            logger.error("failed migration due to fork join pool interruption");
         } finally {
             forkJoinPool.shutdown();
         }
