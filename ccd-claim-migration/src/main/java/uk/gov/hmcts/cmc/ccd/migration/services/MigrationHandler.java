@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.CreateCCDCaseService;
-import uk.gov.hmcts.cmc.ccd.migration.ccd.services.SearchCCDCaseService;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.UpdateCCDCaseService;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.stereotypes.LogExecutionTime;
@@ -35,23 +34,19 @@ import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 @Service
 public class MigrationHandler {
     private static final Logger logger = LoggerFactory.getLogger(MigrationHandler.class);
-    public static final String ON_HOLD_STATE = "onhold";
     public static final String OPEN_STATE = "open";
 
-    private final SearchCCDCaseService searchCCDCaseService;
     private final CreateCCDCaseService createCCDCaseService;
     private final UpdateCCDCaseService updateCCDCaseService;
     private final long delayBetweenCasesLots;
     private final int casesLotsSize;
 
     public MigrationHandler(
-        SearchCCDCaseService searchCCDCaseService,
         CreateCCDCaseService createCCDCaseService,
         UpdateCCDCaseService updateCCDCaseService,
         @Value("${migration.delay.between.cases.lots}") long delayBetweenCasesLots,
         @Value("${migration.cases.lots.size}") int casesLotsSize
     ) {
-        this.searchCCDCaseService = searchCCDCaseService;
         this.createCCDCaseService = createCCDCaseService;
         this.updateCCDCaseService = updateCCDCaseService;
         this.delayBetweenCasesLots = delayBetweenCasesLots;
@@ -93,7 +88,7 @@ public class MigrationHandler {
                 logger.info("Sleeping for {}", delayBetweenCasesLots);
                 Thread.sleep(delayBetweenCasesLots);
             } catch (InterruptedException e) {
-                logger.info("failed sleeping between lots on count {}", migratedClaimsCount);
+                logger.info("Failed sleeping between lots on count {}", migratedClaimsCount);
             }
         }
     }
