@@ -187,7 +187,10 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         ClaimDocument claimDocument = documentManagementService.uploadDocument(authorisation, document);
         return claimService.saveClaimDocuments(authorisation,
             claim.getId(),
-            getClaimDocumentCollection(claim.getExternalId(), document, claimDocument.getDocumentManagementUrl(), authorisation),
+            getClaimDocumentCollection(claim.getExternalId(),
+                document,
+                claimDocument.getDocumentManagementUrl(),
+                authorisation),
             document.getClaimDocumentType());
     }
 
