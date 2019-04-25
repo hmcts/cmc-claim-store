@@ -55,7 +55,7 @@ public class DocAssemblyTemplateBodyMapper {
                 ccdOrderGenerationData.getDocUploadForParty())
             .eyewitnessUploadForParty(
                 ccdOrderGenerationData.getEyewitnessUploadForParty())
-            .hearingIsRequired(
+            .hearingRequired(
                 ccdOrderGenerationData.getHearingIsRequired().toBoolean())
             .preferredCourtName(
                 "Some court")    // will be populated when the acceptance criterias are refined

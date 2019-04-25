@@ -58,7 +58,7 @@ public class DocAssemblyTemplateBody implements FormPayload {
     private LocalDate eyewitnessUploadDeadline;
 
     @JsonProperty("hearingisRequired")
-    private boolean hearingIsRequired;
+    private boolean hearingRequired;
 
     private CCDDirectionPartyType docUploadForParty;
 
