@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
+import java.util.Arrays;
+
 public enum CaseEvent {
 
     CREATE_NEW_CASE("IssueClaim"),
@@ -32,12 +34,15 @@ public enum CaseEvent {
     REJECT_ORGANISATION_PAYMENT_PLAN("RejectOrganisationPaymentPlan"),
     REFER_TO_JUDGE_BY_CLAIMANT("ReferToJudgeByClaimant"),
     REFER_TO_JUDGE_BY_DEFENDANT("ReferToJudgeByDefendant"),
+
     SEALED_CLAIM_UPLOAD("SealedClaimUpload"),
     CLAIM_ISSUE_RECEIPT_UPLOAD("ClaimIssueReceiptUpload"),
     DEFENDANT_RESPONSE_UPLOAD("DefendantResponseReceiptUpload"),
     CCJ_REQUEST_UPLOAD("CCJRequestUpload"),
     SETTLEMENT_AGREEMENT_UPLOAD("SettlementAgreementUpload"),
-    DEFENDANT_PIN_LETTER_UPLOAD("DefendantPinLetterUpload");
+
+    GENERATE_ORDER("GenerateOrder");
+
 
     private String value;
 
@@ -47,5 +52,11 @@ public enum CaseEvent {
 
     public String getValue() {
         return value;
+    }
+
+    public static CaseEvent fromValue(String value) {
+        return Arrays.stream(values()).filter(event -> event.value.equals(value))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Unknown Case Event: " + value));
     }
 }
