@@ -175,11 +175,6 @@ public class DocumentManagementBackedDocumentsServiceTest {
             "pin",
             AUTHORISATION);
         verify(documentManagementService).uploadDocument(anyString(), any(PDF.class));
-        verify(claimService).saveClaimDocuments(
-            eq(AUTHORISATION),
-            eq(claim.getId()),
-            any(ClaimDocumentCollection.class),
-            ClaimDocumentType.CLAIM_ISSUE_RECEIPT);
     }
 
     @Test
@@ -194,16 +189,11 @@ public class DocumentManagementBackedDocumentsServiceTest {
             eq(AUTHORISATION),
             eq(claim.getId()),
             any(ClaimDocumentCollection.class),
-            ClaimDocumentType.CLAIM_ISSUE_RECEIPT);
+            any(ClaimDocumentType.class));
     }
 
     private void verifyCommon(byte[] pdf, Long claimId) {
         assertEquals(PDF_BYTES, pdf);
         verify(documentManagementService).uploadDocument(anyString(), any(PDF.class));
-        verify(claimService).saveClaimDocuments(
-            eq(AUTHORISATION),
-            eq(claimId),
-            any(ClaimDocumentCollection.class),
-            ClaimDocumentType.CLAIM_ISSUE_RECEIPT);
     }
 }
