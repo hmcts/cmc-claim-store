@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
@@ -26,6 +28,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATED;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service("caseRepository")
@@ -37,19 +40,22 @@ public class DBCaseRepository implements CaseRepository {
     private final JsonMapper jsonMapper;
     private final UserService userService;
     private final JobSchedulerService jobSchedulerService;
+    private final boolean saveClaimStateEnabled;
 
     public DBCaseRepository(
         ClaimRepository claimRepository,
         OffersRepository offersRepository,
         JsonMapper jsonMapper,
         UserService userService,
-        JobSchedulerService jobSchedulerService
+        JobSchedulerService jobSchedulerService,
+        @Value("${feature_toggles.save_claim_state_enabled:false}") boolean saveClaimStateEnabled
     ) {
         this.claimRepository = claimRepository;
         this.offersRepository = offersRepository;
         this.jsonMapper = jsonMapper;
         this.userService = userService;
         this.jobSchedulerService = jobSchedulerService;
+        this.saveClaimStateEnabled = saveClaimStateEnabled;
     }
 
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
@@ -111,9 +117,20 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void saveDefendantResponse(Claim claim, String defendantEmail, Response response, String authorization) {
+    public void saveDefendantResponse(
+        Claim claim,
+        String defendantEmail,
+        Response response,
+        LocalDate claimantResponseDeadline,
+        String authorization
+    ) {
         String defendantResponse = jsonMapper.toJson(response);
-        claimRepository.saveDefendantResponse(claim.getExternalId(), defendantEmail, defendantResponse);
+        claimRepository.saveDefendantResponse(
+            claim.getExternalId(),
+            defendantEmail,
+            claimantResponseDeadline,
+            defendantResponse
+        );
     }
 
     @Override
@@ -202,10 +219,11 @@ public class DBCaseRepository implements CaseRepository {
             claimRepository.saveRepresented(claimDataString, claim.getSubmitterId(), claim.getIssuedOn(),
                 claim.getResponseDeadline(), claim.getExternalId(), claim.getSubmitterEmail(), features);
         } else {
+            ClaimState state = this.saveClaimStateEnabled ? CREATED : null;
             claimRepository.saveSubmittedByClaimant(claimDataString,
                 claim.getSubmitterId(), claim.getLetterHolderId(),
                 claim.getIssuedOn(), claim.getResponseDeadline(), claim.getExternalId(),
-                claim.getSubmitterEmail(), features);
+                claim.getSubmitterEmail(), features, state);
         }
 
         return claimRepository
@@ -254,10 +272,6 @@ public class DBCaseRepository implements CaseRepository {
         Long claimId,
         ClaimSubmissionOperationIndicators indicators) {
         claimRepository.updateClaimSubmissionOperationStatus(claimId, jsonMapper.toJson(indicators));
-        return claimRepository.getById(claimId).orElseThrow(() ->
-            new NotFoundException(
-                String.format("Claim not found by primary key %s.", claimId)));
+        return getClaimById(claimId);
     }
-
-
 }

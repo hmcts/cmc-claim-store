@@ -10,7 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import static java.util.Collections.singletonList;
 
 @Component
-@ConditionalOnProperty(prefix = "feature_toggles", name = "async_eventOperations_enabled")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled")
 public class UploadOperationService {
 
     private final DocumentUploadHandler documentUploadHandler;

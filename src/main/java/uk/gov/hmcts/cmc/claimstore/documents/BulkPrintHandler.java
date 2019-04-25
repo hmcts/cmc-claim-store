@@ -12,10 +12,10 @@ import static java.util.Objects.requireNonNull;
 @ConditionalOnProperty(prefix = "send-letter", name = "url")
 public class BulkPrintHandler {
 
-    private final BulkPrintService bulkPrintService;
+    private final PrintService bulkPrintService;
 
     @Autowired
-    public BulkPrintHandler(BulkPrintService bulkPrintService) {
+    public BulkPrintHandler(PrintService bulkPrintService) {
         this.bulkPrintService = bulkPrintService;
     }
 

@@ -36,7 +36,7 @@ public class EventProducer {
     @Autowired
     public EventProducer(
         ApplicationEventPublisher publisher,
-        @Value("feature_toggles.async_eventOperations_enabled") String asyncEventOperationEnabled
+        @Value("feature_toggles.async_event_operations_enabled") String asyncEventOperationEnabled
     ) {
         this.publisher = publisher;
         this.asyncEventOperationEnabled = Boolean.getBoolean(asyncEventOperationEnabled);

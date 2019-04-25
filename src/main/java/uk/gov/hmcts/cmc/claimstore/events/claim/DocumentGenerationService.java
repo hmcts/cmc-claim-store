@@ -22,7 +22,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LET
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @Service
-@ConditionalOnProperty(prefix = "feature_toggles", name = "async_eventOperations_enabled")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled")
 public class DocumentGenerationService {
 
     private final CitizenServiceDocumentsService citizenServiceDocumentsService;

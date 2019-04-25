@@ -24,15 +24,15 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.noInteres
 public class SampleClaimData {
 
     private UUID externalId = UUID.randomUUID();
-    private List<Party> claimants = singletonList(SampleParty.builder().individual());
-    private List<TheirDetails> defendants = singletonList(SampleTheirDetails.builder().individualDetails());
+    private List<Party> claimants;
+    private List<TheirDetails> defendants;
     private Payment payment = SamplePayment.builder().build();
     private Amount amount = SampleAmountBreakdown.builder().build();
     private Interest interest = SampleInterest.standard();
     private String reason = "reason";
     private BigInteger feeAmount = new BigInteger("4000");
     private String feeAccountNumber = "PBA1234567";
-    private StatementOfTruth statementOfTruth = new StatementOfTruth(claimants.get(0).getName(), "Director");
+    private StatementOfTruth statementOfTruth;
     private PersonalInjury personalInjury = new PersonalInjury(DamagesExpectation.MORE_THAN_THOUSAND_POUNDS);
     private String externalReferenceNumber = "CLAIM234324";
     private String preferredCourt = "LONDON COUNTY COUNCIL";
@@ -45,8 +45,20 @@ public class SampleClaimData {
         DamagesExpectation.MORE_THAN_THOUSAND_POUNDS
     );
 
+    public SampleClaimData(List<Party> claimants, List<TheirDetails> defendants) {
+        this.claimants = claimants;
+        this.defendants = defendants;
+        this.statementOfTruth = new StatementOfTruth(claimants.get(0).getName(), "Director");
+    }
+
+    public static SampleClaimData builder(List<Party> claimants, List<TheirDetails> defendants) {
+        return new SampleClaimData(claimants, defendants);
+    }
+
     public static SampleClaimData builder() {
-        return new SampleClaimData();
+        return new SampleClaimData(
+            singletonList(SampleParty.builder().individual()),
+            singletonList(SampleTheirDetails.builder().individualDetails()));
     }
 
     public SampleClaimData withExternalId(UUID externalId) {
@@ -226,7 +238,8 @@ public class SampleClaimData {
     }
 
     public static SampleClaimData submittedByLegalRepresentativeBuilder() {
-        return new SampleClaimData()
+        return builder()
+            .clearClaimants()
             .withClaimant(SampleParty.builder()
                 .withRepresentative(SampleRepresentative.builder().build())
                 .individual())
@@ -238,10 +251,10 @@ public class SampleClaimData {
             .withInterest(
                 noInterestBuilder()
                     .withInterestDate(SampleInterestDate.builder()
-                            .withType(null)
-                            .withDate(null)
-                            .withReason(null)
-                            .build())
+                        .withType(null)
+                        .withDate(null)
+                        .withReason(null)
+                        .build())
                     .build())
             .withAmount(SampleAmountBreakdown.builder().build())
             .build();

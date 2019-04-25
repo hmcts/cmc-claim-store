@@ -11,7 +11,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import java.util.Arrays;
 
 @Component
-@ConditionalOnProperty(prefix = "feature_toggles", name = "async_eventOperations_enabled")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled")
 public class RpaOperationService {
 
     private final ClaimIssuedNotificationService notificationService;

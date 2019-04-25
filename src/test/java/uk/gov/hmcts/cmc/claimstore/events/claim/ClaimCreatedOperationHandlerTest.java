@@ -8,9 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.documents.CitizenServiceDocumentsService;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
-import uk.gov.hmcts.cmc.claimstore.events.operations.BulkPrintOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.ClaimantOperationService;
-import uk.gov.hmcts.cmc.claimstore.events.operations.DefendantOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.NotifyStaffOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.RepresentativeOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.RpaOperationService;
@@ -54,8 +52,6 @@ public class ClaimCreatedOperationHandlerTest {
 
     private ClaimCreatedOperationHandler claimCreatedOperationHandler;
     @Mock
-    private BulkPrintOperationService bulkPrintOperationService;
-    @Mock
     private CitizenServiceDocumentsService citizenServiceDocumentsService;
     @Mock
     private SealedClaimPdfService sealedClaimPdfService;
@@ -68,8 +64,6 @@ public class ClaimCreatedOperationHandlerTest {
     @Mock
     private ClaimantOperationService claimantOperationService;
     @Mock
-    private DefendantOperationService defendantOperationService;
-    @Mock
     private RpaOperationService rpaOperationService;
     @Mock
     private NotifyStaffOperationService notifyStaffOperationService;
@@ -77,6 +71,8 @@ public class ClaimCreatedOperationHandlerTest {
     private UploadOperationService uploadOperationService;
     @Mock
     private ClaimService claimService;
+    @Mock
+    private PinBasedOperationService pinBasedOperationService;
 
     @Before
     public void before() {
@@ -88,15 +84,13 @@ public class ClaimCreatedOperationHandlerTest {
             claimService);
 
         claimCreatedOperationHandler = new ClaimCreatedOperationHandler(
-            representativeOperationService,
-            bulkPrintOperationService,
-            claimantOperationService,
-            defendantOperationService,
-            rpaOperationService,
-            notifyStaffOperationService,
+            documentGenerationService,
+            pinBasedOperationService,
             uploadOperationService,
-            documentGenerationService
-
+            claimantOperationService,
+            rpaOperationService,
+            representativeOperationService,
+            notifyStaffOperationService
         );
 
         given(claimService.getPinResponse(eq(CLAIM.getClaimData()), eq(AUTHORISATION)))
@@ -115,9 +109,8 @@ public class ClaimCreatedOperationHandlerTest {
         given(representativeOperationService.notify(eq(CLAIM), eq(SUBMITTER_NAME), eq(AUTHORISATION)))
             .willReturn(CLAIM);
 
-        given(bulkPrintOperationService.print(eq(CLAIM), any(), any(), eq(AUTHORISATION))).willReturn(CLAIM);
+        given(pinBasedOperationService.process(eq(CLAIM), anyString(), anyString(), any())).willReturn(CLAIM);
         given(claimantOperationService.notifyCitizen(eq(CLAIM), any(), eq(AUTHORISATION))).willReturn(CLAIM);
-        given(defendantOperationService.notify(eq(CLAIM), any(), any(), eq(AUTHORISATION))).willReturn(CLAIM);
         given(rpaOperationService.notify(eq(CLAIM), eq(AUTHORISATION), any())).willReturn(CLAIM);
         given(notifyStaffOperationService.notify(eq(CLAIM), eq(AUTHORISATION), any())).willReturn(CLAIM);
         given(uploadOperationService.uploadDocument(eq(CLAIM), eq(AUTHORISATION), any())).willReturn(CLAIM);
@@ -136,12 +129,10 @@ public class ClaimCreatedOperationHandlerTest {
         verify(citizenServiceDocumentsService).sealedClaimDocument(eq(CLAIM));
         verify(pdfServiceClient, atLeast(2)).generateFromHtml(any(), anyMap());
         verify(claimIssueReceiptService).createPdf(eq(CLAIM));
-        verify(bulkPrintOperationService).print(eq(CLAIM), any(), any(), eq(AUTHORISATION));
+        verify(pinBasedOperationService).process(eq(CLAIM), anyString(), anyString(), any());
         verify(claimantOperationService).notifyCitizen(eq(CLAIM), any(), eq(AUTHORISATION));
-        verify(defendantOperationService).notify(eq(CLAIM), any(), any(), eq(AUTHORISATION));
         verify(rpaOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
-        verify(notifyStaffOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
-        verify(uploadOperationService, atLeast(3)).uploadDocument(eq(CLAIM), eq(AUTHORISATION), any());
+        verify(uploadOperationService, atLeast(2)).uploadDocument(eq(CLAIM), eq(AUTHORISATION), any());
 
     }
 

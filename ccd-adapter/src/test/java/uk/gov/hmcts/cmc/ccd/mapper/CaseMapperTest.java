@@ -8,6 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.util.MapperUtil;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
@@ -42,6 +43,7 @@ public class CaseMapperTest {
         //then
         assertThat(claim).isEqualTo(ccdCase);
         assertEquals(NO, ccdCase.getMigratedFromClaimStore());
+        assertEquals(MapperUtil.toCaseName.apply(claim), ccdCase.getCaseName());
     }
 
     @Test
@@ -55,6 +57,7 @@ public class CaseMapperTest {
         //then
         assertThat(claim).isEqualTo(ccdCase);
         assertEquals(NO, ccdCase.getMigratedFromClaimStore());
+        assertEquals(MapperUtil.toCaseName.apply(claim), ccdCase.getCaseName());
     }
 
     @Test(expected = NullPointerException.class)

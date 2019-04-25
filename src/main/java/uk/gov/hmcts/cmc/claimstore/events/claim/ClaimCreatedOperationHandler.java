@@ -8,9 +8,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
-import uk.gov.hmcts.cmc.claimstore.events.operations.BulkPrintOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.ClaimantOperationService;
-import uk.gov.hmcts.cmc.claimstore.events.operations.DefendantOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.NotifyStaffOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.RepresentativeOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.RpaOperationService;
@@ -20,39 +18,36 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 
 @Async("threadPoolTaskExecutor")
 @Service
-@ConditionalOnProperty(prefix = "feature_toggles", name = "async_eventOperations_enabled")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled")
 public class ClaimCreatedOperationHandler {
     private static final Logger logger = LoggerFactory.getLogger(ClaimCreatedOperationHandler.class);
 
+    private final PinBasedOperationService pinBasedOperationService;
     private final RepresentativeOperationService representativeOperationService;
-    private final BulkPrintOperationService bulkPrintOperationService;
     private final ClaimantOperationService claimantOperationService;
-    private final DefendantOperationService defendantOperationService;
     private final RpaOperationService rpaOperationService;
-    private final NotifyStaffOperationService notifyStaffOperationService;
     private final UploadOperationService uploadOperationService;
     private final DocumentGenerationService documentGenerationService;
+    private final NotifyStaffOperationService notifyStaffOperationService;
 
     @Autowired
     @SuppressWarnings("squid:S00107")
     public ClaimCreatedOperationHandler(
-        RepresentativeOperationService representativeOperationService,
-        BulkPrintOperationService bulkPrintOperationService,
-        ClaimantOperationService claimantOperationService,
-        DefendantOperationService defendantOperationService,
-        RpaOperationService rpaOperationService,
-        NotifyStaffOperationService notifyStaffOperationService,
+        DocumentGenerationService documentGenerationService,
+        PinBasedOperationService pinBasedOperationService,
         UploadOperationService uploadOperationService,
-        DocumentGenerationService documentGenerationService
+        ClaimantOperationService claimantOperationService,
+        RpaOperationService rpaOperationService,
+        RepresentativeOperationService representativeOperationService,
+        NotifyStaffOperationService notifyStaffOperationService
     ) {
+        this.pinBasedOperationService = pinBasedOperationService;
         this.representativeOperationService = representativeOperationService;
-        this.bulkPrintOperationService = bulkPrintOperationService;
         this.claimantOperationService = claimantOperationService;
-        this.defendantOperationService = defendantOperationService;
         this.rpaOperationService = rpaOperationService;
-        this.notifyStaffOperationService = notifyStaffOperationService;
         this.uploadOperationService = uploadOperationService;
         this.documentGenerationService = documentGenerationService;
+        this.notifyStaffOperationService = notifyStaffOperationService;
     }
 
     @EventListener
@@ -61,36 +56,11 @@ public class ClaimCreatedOperationHandler {
             Claim claim = event.getClaim();
             String authorisation = event.getAuthorisation();
             String submitterName = event.getSubmitterName();
+
             GeneratedDocuments generatedDocuments = documentGenerationService.generateForCitizen(claim, authorisation);
 
-            Claim updatedClaim = uploadOperationService.uploadDocument(
-                claim,
-                authorisation,
-                generatedDocuments.getDefendantLetter()
-            );
-
-            updatedClaim = bulkPrintOperationService.print(
-                updatedClaim,
-                generatedDocuments.getDefendantLetterDoc(),
-                generatedDocuments.getSealedClaimDoc(),
-                authorisation
-            );
-
-            updatedClaim = notifyStaffOperationService.notify(
-                updatedClaim,
-                authorisation,
-                generatedDocuments.getSealedClaim(),
-                generatedDocuments.getDefendantLetter()
-            );
-
-            updatedClaim = defendantOperationService.notify(
-                updatedClaim,
-                generatedDocuments.getPin(),
-                submitterName,
-                authorisation
-            );
-
-            //TODO Check if above operation indicators are successful, if no return else  continue
+            Claim updatedClaim
+                = pinBasedOperationService.process(claim, authorisation, submitterName, generatedDocuments);
 
             updatedClaim = uploadOperationService.uploadDocument(
                 updatedClaim,

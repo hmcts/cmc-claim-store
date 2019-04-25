@@ -939,4 +939,50 @@ public class CoreCaseDataService {
             );
         }
     }
+
+    public Claim linkLetterHolder(Long caseId, String letterHolderId) {
+        try {
+            User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
+
+            UserDetails userDetails = anonymousCaseWorker.getUserDetails();
+            EventRequestData eventRequestData = eventRequest(LINK_LETTER_HOLDER, userDetails.getId());
+
+            StartEventResponse startEventResponse = startUpdate(
+                anonymousCaseWorker.getAuthorisation(),
+                eventRequestData,
+                caseId,
+                userDetails.isSolicitor() || userDetails.isCaseworker()
+            );
+
+            CCDCase ccdCase = extractCase(startEventResponse.getCaseDetails());
+            Claim claim = caseMapper.from(ccdCase);
+
+            Claim updatedClaim = claim.toBuilder()
+                .letterHolderId(letterHolderId)
+                .build();
+
+            CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);
+
+            CaseDetails caseDetails = submitUpdate(
+                anonymousCaseWorker.getAuthorisation(),
+                eventRequestData,
+                caseDataContent,
+                caseId,
+                userDetails.isSolicitor() || userDetails.isCaseworker()
+            );
+
+            ccdCreateCaseService.grantAccessToCase(caseId.toString(), letterHolderId);
+            ccdCreateCaseService.removeAccessToCase(caseId.toString(), claim.getLetterHolderId());
+
+            return extractClaim(caseDetails);
+        } catch (Exception exception) {
+            throw new CoreCaseDataStoreException(
+                String.format(
+                    CCD_UPDATE_FAILURE_MESSAGE,
+                    caseId,
+                    LINK_LETTER_HOLDER
+                ), exception
+            );
+        }
+    }
 }

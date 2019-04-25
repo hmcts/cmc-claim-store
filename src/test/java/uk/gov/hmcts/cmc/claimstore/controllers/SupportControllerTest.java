@@ -120,7 +120,7 @@ public class SupportControllerTest {
         List<String> sendList = new ArrayList<>();
         sendList.add(CLAIMREFERENCENUMBER);
         String letterHolderId = "333";
-        GeneratePinResponse pinResponse = new GeneratePinResponse("PIN-123", letterHolderId);
+        GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", letterHolderId);
         given(userService.generatePin(anyString(), eq(AUTHORISATION))).willReturn(pinResponse);
 
         // when
@@ -144,7 +144,7 @@ public class SupportControllerTest {
             .build();
 
         String letterHolderId = "333";
-        GeneratePinResponse pinResponse = new GeneratePinResponse("PIN-123", letterHolderId);
+        GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", letterHolderId);
         given(userService.generatePin(anyString(), eq(AUTHORISATION))).willReturn(pinResponse);
 
         // when
