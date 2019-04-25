@@ -48,7 +48,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.CLAIM_EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
@@ -205,56 +204,53 @@ public class ClaimService {
         List<String> features
     ) {
         String externalId = claimData.getExternalId().toString();
-        Optional<GeneratePinResponse> pinResponse = Optional.empty();
         User user = userService.getUser(authorisation);
 
-        if (!claimData.isClaimantRepresented()) {
-            pinResponse = Optional.of(userService.generatePin(claimData.getDefendant().getName(), authorisation));
-        }
+        caseRepository.getClaimByExternalId(externalId, user).ifPresent(claim -> {
+            throw new ConflictException(
+                String.format("Claim already exist with same external reference as %s", externalId));
+        });
 
-        Claim issuedClaim;
-        try {
-            caseRepository.getClaimByExternalId(externalId, user).ifPresent(claim -> {
-                throw new ConflictException(
-                    String.format("Claim already exist with same external reference as %s", externalId));
-            });
+        Optional<GeneratePinResponse> pinResponse = getPinResponse(claimData, authorisation);
+        Optional<String> letterHolderId = pinResponse.map(GeneratePinResponse::getUserId);
+        LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
+        LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
+        String submitterEmail = user.getUserDetails().getEmail();
 
-            Optional<String> letterHolderId = pinResponse.map(GeneratePinResponse::getUserId);
-            LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
-            LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
-            String submitterEmail = user.getUserDetails().getEmail();
+        Claim claim = Claim.builder()
+            .claimData(claimData)
+            .submitterId(submitterId)
+            .issuedOn(issuedOn)
+            .responseDeadline(responseDeadline)
+            .externalId(externalId)
+            .submitterEmail(submitterEmail)
+            .createdAt(nowInUTC())
+            .letterHolderId(letterHolderId.orElse(null))
+            .features(features)
+            .build();
 
-            Claim claim = Claim.builder()
-                .claimData(claimData)
-                .submitterId(submitterId)
-                .issuedOn(issuedOn)
-                .responseDeadline(responseDeadline)
-                .externalId(externalId)
-                .submitterEmail(submitterEmail)
-                .createdAt(nowInUTC())
-                .letterHolderId(letterHolderId.orElse(null))
-                .features(features)
-                .build();
-
-            issuedClaim = caseRepository.saveClaim(user, claim);
-        } catch (ConflictException e) {
-            appInsights.trackEvent(AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE, CLAIM_EXTERNAL_ID, externalId);
-            issuedClaim = caseRepository.getClaimByExternalId(externalId, user)
-                .orElseThrow(() ->
-                    new NotFoundException("Could not find claim with external ID '" + externalId + "'"));
-        }
+        Claim savedClaim = caseRepository.saveClaim(user, claim);
+        ccdEventProducer.createCCDClaimIssuedEvent(savedClaim, user);
 
         eventProducer.createClaimIssuedEvent(
-            issuedClaim,
+            savedClaim,
             pinResponse.map(GeneratePinResponse::getPin).orElse(null),
             user.getUserDetails().getFullName(),
             authorisation
         );
 
-        trackClaimIssued(issuedClaim.getReferenceNumber(), issuedClaim.getClaimData().isClaimantRepresented());
-        ccdEventProducer.createCCDClaimIssuedEvent(issuedClaim, user);
+        trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
 
-        return issuedClaim;
+        return savedClaim;
+
+    }
+
+    private Optional<GeneratePinResponse> getPinResponse(ClaimData claimData, String authorisation) {
+        if (!claimData.isClaimantRepresented()) {
+            return Optional.of(userService.generatePin(claimData.getDefendant().getName(), authorisation));
+        }
+
+        return Optional.empty();
     }
 
     private void trackClaimIssued(String referenceNumber, boolean represented) {
