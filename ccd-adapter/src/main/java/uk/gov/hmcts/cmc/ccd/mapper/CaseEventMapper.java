@@ -20,8 +20,6 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEM
 
 public class CaseEventMapper {
 
-    private CaseEventMapper() {}
-
     private static final ImmutableMap<ClaimDocumentType, CaseEvent> claimDocumentTypeMap =
         ImmutableMap.<ClaimDocumentType, CaseEvent>builder()
         .put(SEALED_CLAIM, SEALED_CLAIM_UPLOAD)
@@ -31,6 +29,8 @@ public class CaseEventMapper {
         .put(SETTLEMENT_AGREEMENT, SETTLEMENT_AGREEMENT_UPLOAD)
         .put(DEFENDANT_PIN_LETTER, DEFENDANT_PIN_LETTER_UPLOAD)
         .build();
+
+    private CaseEventMapper() {}
 
     public static CaseEvent map(ClaimDocumentType type) {
 

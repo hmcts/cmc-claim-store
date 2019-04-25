@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.mapper.defendant;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
