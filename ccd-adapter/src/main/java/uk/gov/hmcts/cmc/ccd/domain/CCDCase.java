@@ -32,7 +32,6 @@ public class CCDCase {
     private BigDecimal amountHigherValue;
     private List<CCDCollectionElement<CCDAmountRow>> amountBreakDown;
     private BigDecimal totalAmount;
-    private CCDNotKnown notKnown;
     private CCDInterestType interestType;
     private BigDecimal interestBreakDownAmount;
     private String interestBreakDownExplanation;
