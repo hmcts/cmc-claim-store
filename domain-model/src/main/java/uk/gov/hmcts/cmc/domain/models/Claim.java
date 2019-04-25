@@ -63,6 +63,7 @@ public class Claim {
     private final ReDetermination reDetermination;
     private final LocalDateTime reDeterminationRequestedAt;
     private final ClaimDocumentCollection claimDocumentCollection;
+    private final LocalDate claimantResponseDeadline;
     private final ClaimState state;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
@@ -94,6 +95,7 @@ public class Claim {
         ReDetermination reDetermination,
         LocalDateTime reDeterminationRequestedAt,
         ClaimDocumentCollection claimDocumentCollection,
+        LocalDate claimantResponseDeadline,
         ClaimState state
     ) {
         this.id = id;
@@ -123,6 +125,7 @@ public class Claim {
         this.reDetermination = reDetermination;
         this.reDeterminationRequestedAt = reDeterminationRequestedAt;
         this.claimDocumentCollection = claimDocumentCollection;
+        this.claimantResponseDeadline = claimantResponseDeadline;
         this.state = state;
     }
 
@@ -197,6 +200,10 @@ public class Claim {
 
     public Optional<ClaimDocumentCollection> getClaimDocumentCollection() {
         return Optional.ofNullable(claimDocumentCollection);
+    }
+
+    public Optional<LocalDate> getClaimantResponseDeadline() {
+        return Optional.ofNullable(claimantResponseDeadline);
     }
 
     @JsonIgnore
