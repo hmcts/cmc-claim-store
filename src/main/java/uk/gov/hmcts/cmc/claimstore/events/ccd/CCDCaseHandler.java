@@ -193,7 +193,7 @@ public class CCDCaseHandler {
 
     @TransactionalEventListener
     @LogExecutionTime
-    public void saveReDetermination(CCDReDetermination event) {
+    public void saveReDetermination(CCDReDeterminationEvent event) {
         Claim claim = event.getClaim();
         String authorization = event.getAuthorisation();
         try {
