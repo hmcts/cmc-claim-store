@@ -46,6 +46,8 @@ public abstract class BaseSubmitClaimTest extends BaseTest {
         assertThat(claimData).isEqualTo(createdCase.getClaimData());
         assertThat(createdCase.getCreatedAt()).isCloseTo(LocalDateTimeFactory.nowInLocalZone(),
             within(2, ChronoUnit.MINUTES));
+
+        assertDocumentsCreated(createdCase);
     }
 
     @Test
@@ -57,4 +59,6 @@ public abstract class BaseSubmitClaimTest extends BaseTest {
     }
 
     protected abstract Supplier<SampleClaimData> getSampleClaimDataBuilder();
+
+    protected abstract void assertDocumentsCreated(Claim claim);
 }

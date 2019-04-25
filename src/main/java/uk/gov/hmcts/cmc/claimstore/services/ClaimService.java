@@ -1,9 +1,13 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
+import com.google.common.collect.ImmutableList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
@@ -55,10 +59,13 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Component
 public class ClaimService {
+    private final Logger logger = LoggerFactory.getLogger(ClaimService.class);
 
     private final ClaimRepository claimRepository;
     private final IssueDateCalculator issueDateCalculator;
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
+    private final LegalOrderGenerationDeadlinesCalculator
+        legalOrderGenerationDeadlinesCalculator;
     private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
     private final UserService userService;
     private final EventProducer eventProducer;
@@ -78,6 +85,7 @@ public class ClaimService {
         UserService userService,
         IssueDateCalculator issueDateCalculator,
         ResponseDeadlineCalculator responseDeadlineCalculator,
+        LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator,
         DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator,
         MoreTimeRequestRule moreTimeRequestRule,
         EventProducer eventProducer,
@@ -91,6 +99,7 @@ public class ClaimService {
         this.userService = userService;
         this.issueDateCalculator = issueDateCalculator;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
+        this.legalOrderGenerationDeadlinesCalculator = legalOrderGenerationDeadlinesCalculator;
         this.eventProducer = eventProducer;
         this.caseRepository = caseRepository;
         this.moreTimeRequestRule = moreTimeRequestRule;
@@ -267,8 +276,35 @@ public class ClaimService {
         return claim;
     }
 
-    @SuppressWarnings("unchecked")
+    public AboutToStartOrSubmitCallbackResponse prepopulateFields(CallbackRequest callbackRequest) {
+        logger.info("Prepopulating fields for callback {}", callbackRequest.getEventId());
+        LocalDate deadline = legalOrderGenerationDeadlinesCalculator.calculateOrderGenerationDeadlines();
+        Map<String, Object> data = new HashMap<>();
+        data.put("docUploadDeadline", deadline);
+        data.put("eyewitnessUploadDeadline", deadline);
+        data.put("directionList", ImmutableList.of(
+            CCDOrderDirectionType.DOCUMENTS.name(),
+            CCDOrderDirectionType.EYEWITNESS.name(),
+            CCDOrderDirectionType.MEDIATION.name()));
+        return AboutToStartOrSubmitCallbackResponse
+            .builder()
+            .data(data)
+            .build();
+    }
+
+    public AboutToStartOrSubmitCallbackResponse requestMoreTimeOnPaperValidateOnly(
+        CallbackRequest callbackRequest
+    ) {
+        return requestMoreTimeOnPaper(callbackRequest, true);
+    }
+
     public AboutToStartOrSubmitCallbackResponse requestMoreTimeOnPaper(
+        CallbackRequest callbackRequest
+    ) {
+        return requestMoreTimeOnPaper(callbackRequest, false);
+    }
+
+    private AboutToStartOrSubmitCallbackResponse requestMoreTimeOnPaper(
         CallbackRequest callbackRequest,
         boolean validateOnly
     ) {
@@ -309,7 +345,6 @@ public class ClaimService {
             .build();
     }
 
-    @SuppressWarnings("unchecked")
     private Claim convertCallbackToClaim(CallbackRequest caseDetails) {
         return ccdCaseDataToClaim.to(
             caseDetails.getCaseDetails().getId(),
@@ -330,8 +365,8 @@ public class ClaimService {
         return caseRepository.saveClaimDocuments(authorisation, claimId, claimDocumentCollection);
     }
 
-    public void linkLetterHolder(Long claimId, String userId) {
-        claimRepository.linkLetterHolder(claimId, userId);
+    public Claim linkLetterHolder(Long claimId, String letterHolderId) {
+        return caseRepository.linkLetterHolder(claimId, letterHolderId);
     }
 
     public void saveCountyCourtJudgment(
@@ -352,7 +387,9 @@ public class ClaimService {
         String authorization
     ) {
         claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorization);
-        caseRepository.saveDefendantResponse(claim, defendantEmail, response, authorization);
+        LocalDate claimantResponseDeadline =
+            responseDeadlineCalculator.calculateClaimantResponseDeadline(LocalDate.now());
+        caseRepository.saveDefendantResponse(claim, defendantEmail, response, claimantResponseDeadline, authorization);
         if (isFullDefenceWithNoMediation(response)) {
             LocalDate deadline = directionsQuestionnaireDeadlineCalculator
                 .calculateDirectionsQuestionnaireDeadlineCalculator(LocalDateTime.now());
