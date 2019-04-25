@@ -88,7 +88,7 @@ public class MigrationHandler {
                 logger.info("Sleeping for {}", delayBetweenCasesLots);
                 Thread.sleep(delayBetweenCasesLots);
             } catch (InterruptedException e) {
-                logger.info("Failed sleeping between lots on count {}", migratedClaimsCount);
+                logger.error("Failed sleeping between lots on count {}", migratedClaimsCount);
             }
         }
     }
@@ -141,7 +141,7 @@ public class MigrationHandler {
             caseDetails = createCCDCaseService.createCase(user, claim, CaseEvent.CREATE_NEW_CASE);
             migratedClaims.incrementAndGet();
         } catch (Exception e) {
-            logger.info("Claim issue create failed for Claim reference "
+            logger.error("Claim issue create failed for Claim reference "
                     + claim.getReferenceNumber()
                     + " due to " + e.getMessage(),
                 e);
