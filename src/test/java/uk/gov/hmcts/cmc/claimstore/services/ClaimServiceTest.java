@@ -98,6 +98,8 @@ public class ClaimServiceTest {
     @Mock
     private DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
     @Mock
+    private LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator;
+    @Mock
     private EventProducer eventProducer;
     @Mock
     private CCDEventProducer ccdEventProducer;
@@ -116,6 +118,7 @@ public class ClaimServiceTest {
             userService,
             issueDateCalculator,
             responseDeadlineCalculator,
+            legalOrderGenerationDeadlinesCalculator,
             directionsQuestionnaireDeadlineCalculator,
             new MoreTimeRequestRule(new ClaimDeadlineService()),
             eventProducer,
