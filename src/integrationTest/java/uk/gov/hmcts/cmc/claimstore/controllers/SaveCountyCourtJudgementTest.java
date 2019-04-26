@@ -119,18 +119,17 @@ public class SaveCountyCourtJudgementTest extends BaseIntegrationTest {
             .onDefaultJudgmentRequestSubmitted(countyCourtJudgementEventArgument.capture());
 
         Claim updatedClaim = claimRepository.getById(claim.getId()).orElseThrow(RuntimeException::new);
-        assertThat(countyCourtJudgementEventArgument.getValue().getClaim()).isEqualTo(updatedClaim);
+
+        assertThat(countyCourtJudgementEventArgument.getValue().getClaim().getCountyCourtJudgment())
+            .isEqualTo(updatedClaim.getCountyCourtJudgment());
+
+        assertThat(updatedClaim.getCountyCourtJudgmentRequestedAt()).isNotNull();
     }
 
     @Test
     public void shouldUploadDocumentToDocumentManagementAfterSuccessfulSave() throws Exception {
         final ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
 
-        given(documentUploadClient
-            .upload(eq(AUTHORISATION_TOKEN), anyString(), anyString(), anyList(), any(Classification.class), anyList()))
-            .willReturn(successfulDocumentManagementUploadResponse());
-
-        given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
         InMemoryMultipartFile ccj = new InMemoryMultipartFile(
             "files",
             buildRequestForJudgementFileBaseName(claim.getReferenceNumber(),
@@ -151,11 +150,6 @@ public class SaveCountyCourtJudgementTest extends BaseIntegrationTest {
 
     @Test
     public void shouldNotReturn500HttpStatusWhenUploadDocumentToDocumentManagementFails() throws Exception {
-        given(documentUploadClient
-            .upload(eq(AUTHORISATION_TOKEN), anyString(), anyString(), anyList(), any(Classification.class), anyList()))
-            .willReturn(successfulDocumentManagementUploadResponse());
-
-        given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
         makeRequest(claim.getExternalId(), COUNTY_COURT_JUDGMENT).andExpect(status().isOk());
         Claim claimWithCCJRequest = claimStore.getClaimByExternalId(claim.getExternalId());
         assertThat(claimWithCCJRequest.getCountyCourtJudgmentRequestedAt()).isNotNull();

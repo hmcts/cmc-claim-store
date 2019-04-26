@@ -45,7 +45,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_DEFENCE_SUBMITTED;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NOTIFICATION_FAILURE;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementUploadResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.unsuccessfulDocumentManagementUploadResponse;
@@ -185,9 +185,9 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
             .sendEmail(anyString(), anyString(), anyMap(), anyString());
 
         verify(appInsights).trackEvent(
-            eq(RESPONSE_FULL_DEFENCE_SUBMITTED),
+            eq(NOTIFICATION_FAILURE),
             eq(REFERENCE_NUMBER),
-            eq(claim.getReferenceNumber())
+            eq("defendant-response-notification-" + claim.getReferenceNumber())
         );
     }
 
