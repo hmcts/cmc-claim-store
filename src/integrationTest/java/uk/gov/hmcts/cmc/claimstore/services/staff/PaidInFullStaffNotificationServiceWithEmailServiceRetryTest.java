@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
+import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,7 +45,8 @@ public class PaidInFullStaffNotificationServiceWithEmailServiceRetryTest {
     private JavaMailSenderImpl javaMailSender;
     @MockBean
     private AppInsightsService appInsightsService;
-
+    @MockBean
+    protected TelemetryClient telemetry;
     @Autowired
     private PaidInFullStaffNotificationService service;
 
