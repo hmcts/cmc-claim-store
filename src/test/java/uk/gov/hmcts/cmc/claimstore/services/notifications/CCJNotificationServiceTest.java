@@ -37,9 +37,8 @@ public class CCJNotificationServiceTest extends BaseNotificationServiceTest {
     @Before
     public void setup() {
         ccjNotificationService = new CCJNotificationService(
-            notificationClient,
-            properties,
-            appInsights
+            new NotificationService(notificationClient, appInsights),
+            properties
         );
 
         when(templates.getEmail()).thenReturn(emailTemplates);
@@ -128,19 +127,5 @@ public class CCJNotificationServiceTest extends BaseNotificationServiceTest {
         verify(notificationClient).sendEmail(anyString(), anyString(), anyMap(), anyString());
         verify(appInsights)
             .trackEvent(eq(NOTIFICATION_FAILURE), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
-    }
-
-    @Test
-    public void recoveryShouldNotLogPII() {
-        ccjNotificationService.logNotificationFailure(
-            new NotificationException("expected exception"),
-            "hidden@email.com",
-            null,
-            null,
-            "reference"
-        );
-
-        assertWasLogged("Failure: failed to send notification (reference) due to expected exception");
-        assertWasNotLogged("hidden@email.com");
     }
 }

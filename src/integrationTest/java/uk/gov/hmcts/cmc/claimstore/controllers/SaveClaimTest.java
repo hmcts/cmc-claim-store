@@ -30,6 +30,8 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NOTIFICATION_FAILURE;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @TestPropertySource(
@@ -113,11 +115,22 @@ public class SaveClaimTest extends BaseSaveTest {
             .willThrow(new NotificationClientException(new RuntimeException("invalid email2")))
             .willThrow(new NotificationClientException(new RuntimeException("invalid email3")));
 
-        makeIssueClaimRequest(SampleClaimData.submittedByClaimant(), AUTHORISATION_TOKEN)
-            .andExpect(status().isOk());
+        ClaimData claimData = SampleClaimData.submittedByClaimant();
+
+        MvcResult result = makeIssueClaimRequest(claimData, AUTHORISATION_TOKEN)
+            .andExpect(status().isOk())
+            .andReturn();
+
+        Claim claim = deserializeObjectFrom(result, Claim.class);
 
         verify(notificationClient, atLeast(3))
             .sendEmail(anyString(), anyString(), anyMap(), anyString());
+
+        verify(appInsights).trackEvent(
+            eq(NOTIFICATION_FAILURE),
+            eq(REFERENCE_NUMBER),
+            eq("claimant-issue-notification-" + claim.getReferenceNumber())
+        );
     }
 
     @Test

@@ -4,28 +4,20 @@ import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Recover;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
-import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.services.FreeMediationDecisionDateCalculator;
-import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
-import uk.gov.service.notify.NotificationClient;
-import uk.gov.service.notify.NotificationClientException;
+
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.Objects;
 
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper.admissionResponse;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isFullDefenceAndNoMediation;
@@ -45,29 +37,26 @@ public class DefendantResponseNotificationService {
     private static final String ISSUED_ON = "issuedOn";
     private static final String RESPONSE_DEADLINE = "responseDeadline";
     private static final Logger logger = LoggerFactory.getLogger(DefendantResponseNotificationService.class);
-    private final NotificationClient notificationClient;
+    private final NotificationService notificationService;
     private final FreeMediationDecisionDateCalculator freeMediationDecisionDateCalculator;
     private final NotificationsProperties notificationsProperties;
-    private final AppInsights appInsights;
 
     @Autowired
     public DefendantResponseNotificationService(
-        NotificationClient notificationClient,
+        NotificationService notificationService,
         FreeMediationDecisionDateCalculator freeMediationDecisionDateCalculator,
-        NotificationsProperties notificationsProperties,
-        AppInsights appInsights
+        NotificationsProperties notificationsProperties
     ) {
-        this.notificationClient = notificationClient;
+        this.notificationService = notificationService;
         this.freeMediationDecisionDateCalculator = freeMediationDecisionDateCalculator;
         this.notificationsProperties = notificationsProperties;
-        this.appInsights = appInsights;
     }
 
     public void notifyDefendant(Claim claim, String defendantEmail, String reference) {
         Map<String, String> parameters = aggregateParams(claim);
 
         String template = getDefendantResponseIssuedEmailTemplate(claim);
-        notify(defendantEmail, template, parameters, reference);
+        notificationService.sendMail(defendantEmail, template, parameters, reference);
     }
 
     private String getDefendantResponseIssuedEmailTemplate(Claim claim) {
@@ -89,7 +78,7 @@ public class DefendantResponseNotificationService {
 
         String emailTemplate = getClaimantEmailTemplate(response);
 
-        notify(claim.getSubmitterEmail(), emailTemplate, parameters, reference);
+        notificationService.sendMail(claim.getSubmitterEmail(), emailTemplate, parameters, reference);
     }
 
     private String getClaimantEmailTemplate(Response response) {
@@ -105,37 +94,6 @@ public class DefendantResponseNotificationService {
             }
             return getEmailTemplates().getClaimantResponseIssued();
         }
-    }
-
-    @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))
-    public void notify(
-        String targetEmail,
-        String emailTemplate,
-        Map<String, String> parameters,
-        String reference
-    ) {
-        try {
-            notificationClient.sendEmail(emailTemplate, targetEmail, parameters, reference);
-        } catch (NotificationClientException e) {
-            throw new NotificationException(e);
-        }
-    }
-
-    @Recover
-    public void logNotificationFailure(
-        NotificationException exception,
-        Claim claim,
-        String targetEmail,
-        String emailTemplate,
-        String reference
-    ) {
-        String errorMessage = String.format(
-            "Failure: failed to send notification (%s) due to %s",
-            reference, exception.getMessage()
-        );
-
-        logger.info(errorMessage, exception);
-        appInsights.trackEvent(AppInsightsEvent.NOTIFICATION_FAILURE, REFERENCE_NUMBER, reference);
     }
 
     private Map<String, String> aggregateParams(Claim claim) {

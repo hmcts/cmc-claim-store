@@ -29,24 +29,21 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 public class NotificationToDefendantService {
     private final Logger logger = LoggerFactory.getLogger(NotificationToDefendantService.class);
 
-    private final NotificationClient notificationClient;
+    private final NotificationService notificationService;
     private final NotificationsProperties notificationsProperties;
-    private final AppInsights appInsights;
 
     @Autowired
     public NotificationToDefendantService(
-        NotificationClient notificationClient,
-        NotificationsProperties notificationsProperties,
-        AppInsights appInsights
+        NotificationService notificationService,
+        NotificationsProperties notificationsProperties
     ) {
-        this.notificationClient = notificationClient;
+        this.notificationService = notificationService;
         this.notificationsProperties = notificationsProperties;
-        this.appInsights = appInsights;
     }
 
     public void notifyDefendant(Claim claim) {
         Map<String, String> parameters = aggregateParams(claim);
-        sendNotificationEmail(
+        notificationService.sendMail(
             claim.getDefendantEmail(),
             notificationsProperties.getTemplates().getEmail().getResponseByClaimantEmailToDefendant(),
             parameters,
@@ -57,7 +54,7 @@ public class NotificationToDefendantService {
     public void notifyDefendantOfRejection(Claim claim) {
         Map<String, String> parameters = aggregateParams(claim);
         parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
-        sendNotificationEmail(
+        notificationService.sendMail(
             claim.getDefendantEmail(),
             notificationsProperties.getTemplates().getEmail()
                 .getClaimantRejectedPartAdmitOrStatesPaidEmailToDefendant(),
@@ -69,44 +66,12 @@ public class NotificationToDefendantService {
     public void notifyDefendantWhenInterlocutoryJudgementRequested(Claim claim) {
         Map<String, String> parameters = aggregateParams(claim);
         parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
-        sendNotificationEmail(
+        notificationService.sendMail(
             claim.getDefendantEmail(),
             notificationsProperties.getTemplates().getEmail().getClaimantRequestedInterlocutoryJudgement(),
             parameters,
             referenceForDefendant(claim.getReferenceNumber())
         );
-
-    }
-
-    @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))
-    public void sendNotificationEmail(
-        String targetEmail,
-        String emailTemplate,
-        Map<String, String> parameters,
-        String reference
-    ) {
-        try {
-            notificationClient.sendEmail(emailTemplate, targetEmail, parameters, reference);
-        } catch (NotificationClientException e) {
-            throw new NotificationException(e);
-        }
-    }
-
-    @Recover
-    public void logNotificationFailure(
-        NotificationException exception,
-        String targetEmail,
-        String emailTemplate,
-        Map<String, String> parameters,
-        String reference
-    ) {
-        String errorMessage = String.format(
-            "Failure: failed to send notification (%s) due to %s",
-            reference, exception.getMessage()
-        );
-
-        logger.info(errorMessage, exception);
-        appInsights.trackEvent(AppInsightsEvent.NOTIFICATION_FAILURE, REFERENCE_NUMBER, reference);
 
     }
 
