@@ -10,7 +10,6 @@ import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.ClaimantOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.NotifyStaffOperationService;
-import uk.gov.hmcts.cmc.claimstore.events.operations.RepresentativeOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.RpaOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.UploadOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimCreatedEvent;
@@ -60,8 +59,6 @@ public class ClaimCreatedOperationHandlerTest {
     @Mock
     private ClaimIssueReceiptService claimIssueReceiptService;
     @Mock
-    private RepresentativeOperationService representativeOperationService;
-    @Mock
     private ClaimantOperationService claimantOperationService;
     @Mock
     private RpaOperationService rpaOperationService;
@@ -89,7 +86,6 @@ public class ClaimCreatedOperationHandlerTest {
             uploadOperationService,
             claimantOperationService,
             rpaOperationService,
-            representativeOperationService,
             notifyStaffOperationService
         );
 
@@ -105,10 +101,6 @@ public class ClaimCreatedOperationHandlerTest {
         given(sealedClaimPdfService.createPdf(eq(CLAIM))).willReturn(PDF_BYTES);
         given(pdfServiceClient.generateFromHtml(any(), anyMap())).willReturn(PDF_BYTES);
         given(claimIssueReceiptService.createPdf(eq(CLAIM))).willReturn(PDF_BYTES);
-
-        given(representativeOperationService.notify(eq(CLAIM), eq(SUBMITTER_NAME), eq(AUTHORISATION)))
-            .willReturn(CLAIM);
-
         given(pinBasedOperationService.process(eq(CLAIM), anyString(), anyString(), any())).willReturn(CLAIM);
         given(claimantOperationService.notifyCitizen(eq(CLAIM), any(), eq(AUTHORISATION))).willReturn(CLAIM);
         given(rpaOperationService.notify(eq(CLAIM), eq(AUTHORISATION), any())).willReturn(CLAIM);
@@ -146,8 +138,6 @@ public class ClaimCreatedOperationHandlerTest {
 
         //then
         verify(sealedClaimPdfService).createPdf(eq(CLAIM));
-        verify(representativeOperationService).notify(eq(CLAIM), eq(SUBMITTER_NAME), eq(AUTHORISATION));
-
         verify(claimantOperationService)
             .confirmRepresentative(eq(CLAIM), eq(SUBMITTER_NAME), anyString(), eq(AUTHORISATION));
 

@@ -54,7 +54,8 @@ public class ClaimantOperationService {
             null,
             notificationsProperties.getTemplates().getEmail().getRepresentativeClaimIssued(),
             "representative-issue-notification-" + claim.getReferenceNumber(),
-            submitterName);
+            submitterName
+        );
 
         //TODO update claim and return updated claim, below is placeholder
         return claim;

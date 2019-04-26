@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.operations.ClaimantOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.NotifyStaffOperationService;
-import uk.gov.hmcts.cmc.claimstore.events.operations.RepresentativeOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.RpaOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.UploadOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimCreatedEvent;
@@ -23,7 +22,6 @@ public class ClaimCreatedOperationHandler {
     private static final Logger logger = LoggerFactory.getLogger(ClaimCreatedOperationHandler.class);
 
     private final PinBasedOperationService pinBasedOperationService;
-    private final RepresentativeOperationService representativeOperationService;
     private final ClaimantOperationService claimantOperationService;
     private final RpaOperationService rpaOperationService;
     private final UploadOperationService uploadOperationService;
@@ -38,11 +36,9 @@ public class ClaimCreatedOperationHandler {
         UploadOperationService uploadOperationService,
         ClaimantOperationService claimantOperationService,
         RpaOperationService rpaOperationService,
-        RepresentativeOperationService representativeOperationService,
         NotifyStaffOperationService notifyStaffOperationService
     ) {
         this.pinBasedOperationService = pinBasedOperationService;
-        this.representativeOperationService = representativeOperationService;
         this.claimantOperationService = claimantOperationService;
         this.rpaOperationService = rpaOperationService;
         this.uploadOperationService = uploadOperationService;
@@ -99,10 +95,10 @@ public class ClaimCreatedOperationHandler {
             updatedClaim = notifyStaffOperationService.notify(updatedClaim, authorisation, sealedClaim);
 
             String submitterName = event.getRepresentativeName().orElse(null);
-            representativeOperationService.notify(updatedClaim, submitterName, authorisation);
+            String representativeEmail = event.getRepresentativeEmail();
 
             claimantOperationService
-                .confirmRepresentative(updatedClaim, submitterName, event.getRepresentativeEmail(), authorisation);
+                .confirmRepresentative(updatedClaim, submitterName, representativeEmail, authorisation);
 
             //TODO update claim state
             //claimService.updateState
