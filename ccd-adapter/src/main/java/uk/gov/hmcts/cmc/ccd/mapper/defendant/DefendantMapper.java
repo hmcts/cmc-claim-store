@@ -108,7 +108,7 @@ public class DefendantMapper {
         );
 
         builder.respondedAt(ccdRespondent.getResponseSubmittedOn());
-        responseMapper.from(builder, ccdRespondent);
+        responseMapper.from(builder, respondentElement);
 
         claimantResponseMapper.from(ccdRespondent.getClaimantResponse(), builder);
 
@@ -119,9 +119,11 @@ public class DefendantMapper {
         return theirDetailsMapper.from(respondentElement);
     }
 
-    private Consumer<Response> toResponse(Claim claim,
-                                          CCDRespondent.CCDRespondentBuilder builder,
-                                          CCDParty.CCDPartyBuilder partyDetail) {
+    private Consumer<Response> toResponse(
+        Claim claim,
+        CCDRespondent.CCDRespondentBuilder builder,
+        CCDParty.CCDPartyBuilder partyDetail
+    ) {
         return response -> {
             responseMapper.to(builder, response, partyDetail);
             builder.responseSubmittedOn(claim.getRespondedAt());

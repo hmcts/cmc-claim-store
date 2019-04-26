@@ -7,7 +7,7 @@ import java.net.URI;
 import java.time.LocalDateTime;
 
 @Getter
-public class ClaimDocument {
+public class ClaimDocument extends CollectionId {
     private final URI documentManagementUrl;
     private final String documentName;
     private final ClaimDocumentType documentType;
@@ -18,6 +18,7 @@ public class ClaimDocument {
 
     @Builder
     public ClaimDocument(
+        String id,
         URI documentManagementUrl,
         String documentName,
         ClaimDocumentType documentType,
@@ -26,6 +27,7 @@ public class ClaimDocument {
         String createdBy,
         long size
     ) {
+        super(id);
         this.documentManagementUrl = documentManagementUrl;
         this.documentName = documentName;
         this.documentType = documentType;
