@@ -8,7 +8,7 @@ dependencies:
     tags:
       - cmc-claim-store-postgresql-pod
   - name: cmc-citizen-frontend
-    version: ~0.0.6
+    version: ~1.0.0
     repository: '@hmcts'
     tags:
       - cmc-citizen-frontend-pod

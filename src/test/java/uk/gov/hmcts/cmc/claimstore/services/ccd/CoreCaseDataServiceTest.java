@@ -249,7 +249,8 @@ public class CoreCaseDataServiceTest {
 
         Claim updatedClaim = service.saveClaimDocuments(AUTHORISATION,
             SampleClaim.CLAIM_ID,
-            claim.getClaimDocumentCollection().orElse(new ClaimDocumentCollection()));
+            claim.getClaimDocumentCollection().orElse(new ClaimDocumentCollection()),
+            null);
 
         assertNotNull(updatedClaim);
     }

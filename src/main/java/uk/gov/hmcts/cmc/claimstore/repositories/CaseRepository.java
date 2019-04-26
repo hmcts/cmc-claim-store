@@ -4,6 +4,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
@@ -72,7 +73,12 @@ public interface CaseRepository {
 
     void saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent);
 
-    Claim saveClaimDocuments(String authorisation, Long claimId, ClaimDocumentCollection claimDocumentCollection);
+    Claim saveClaimDocuments(
+        String authorisation,
+        Long claimId,
+        ClaimDocumentCollection claimDocumentCollection,
+        ClaimDocumentType claimDocumentType
+    );
 
     Claim linkLetterHolder(Long claimId, String letterHolderId);
 }
