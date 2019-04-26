@@ -23,7 +23,7 @@ public class ClaimIssuedStaffNotificationEmailContentProviderTest extends MockSp
     @Test
     public void shouldFormatEmailSubjectToExpectedValueForLegal() {
         EmailContent emailContent = provider.createContent(wrapInMap(SampleClaim.getDefaultForLegal()));
-        assertThat(emailContent.getSubject()).isEqualTo("Claim form 000CM001");
+        assertThat(emailContent.getSubject()).isEqualTo("Claim form 012LR345");
     }
 
     @Test
