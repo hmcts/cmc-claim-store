@@ -7,12 +7,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.util.SampleCCDDefendant;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+
+import java.util.UUID;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
@@ -79,8 +82,13 @@ public class ResponseMapperTest {
         CCDRespondent ccdRespondent = SampleCCDDefendant.withFullDefenceResponse().build();
         Claim.ClaimBuilder builder = Claim.builder();
 
+        CCDCollectionElement<CCDRespondent> respondentElement = CCDCollectionElement.<CCDRespondent>builder()
+            .value(ccdRespondent)
+            .id(UUID.randomUUID().toString())
+            .build();
         //when
-        mapper.from(builder, ccdRespondent);
+
+        mapper.from(builder, respondentElement);
 
         //then
         assertThat(builder.build().getResponse().orElse(null)).isEqualTo(ccdRespondent);
@@ -89,14 +97,18 @@ public class ResponseMapperTest {
     @Test
     public void shouldMapFullDefenceResponseWithFreeMediationFromCCD() {
         //given
-        CCDRespondent ccdDefendant = SampleCCDDefendant.withFullDefenceResponseAndFreeMediation().build();
+        CCDRespondent ccdRespondent = SampleCCDDefendant.withFullDefenceResponseAndFreeMediation().build();
         Claim.ClaimBuilder builder = Claim.builder();
 
+        CCDCollectionElement<CCDRespondent> respondentElement = CCDCollectionElement.<CCDRespondent>builder()
+            .value(ccdRespondent)
+            .id(UUID.randomUUID().toString())
+            .build();
         //when
-        mapper.from(builder, ccdDefendant);
+        mapper.from(builder, respondentElement);
 
         //then
-        assertThat(builder.build().getResponse().orElse(null)).isEqualTo(ccdDefendant);
+        assertThat(builder.build().getResponse().orElse(null)).isEqualTo(ccdRespondent);
     }
 
     @Test
@@ -105,8 +117,12 @@ public class ResponseMapperTest {
         CCDRespondent ccdRespondent = SampleCCDDefendant.withFullAdmissionResponse().build();
         Claim.ClaimBuilder builder = Claim.builder();
 
+        CCDCollectionElement<CCDRespondent> respondentElement = CCDCollectionElement.<CCDRespondent>builder()
+            .value(ccdRespondent)
+            .id(UUID.randomUUID().toString())
+            .build();
         //when
-        mapper.from(builder, ccdRespondent);
+        mapper.from(builder, respondentElement);
 
         //then
         assertThat(builder.build().getResponse().orElse(null)).isEqualTo(ccdRespondent);
@@ -118,8 +134,12 @@ public class ResponseMapperTest {
         CCDRespondent ccdRespondent = SampleCCDDefendant.withPartAdmissionResponse().build();
         Claim.ClaimBuilder builder = Claim.builder();
 
+        CCDCollectionElement<CCDRespondent> respondentElement = CCDCollectionElement.<CCDRespondent>builder()
+            .value(ccdRespondent)
+            .id(UUID.randomUUID().toString())
+            .build();
         //when
-        mapper.from(builder, ccdRespondent);
+        mapper.from(builder, respondentElement);
 
         //then
         assertThat(builder.build().getResponse().orElse(null)).isEqualTo(ccdRespondent);

@@ -20,6 +20,7 @@ import java.util.Optional;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -38,10 +39,13 @@ public class CaseMetadataControllerTest {
 
     private Claim sampleClaim;
 
+    private Claim sampleRepresentedClaim;
+
     @Before
     public void setup() {
         controller = new CaseMetadataController(claimService, userService);
         sampleClaim = SampleClaim.getDefault();
+        sampleRepresentedClaim = SampleClaim.getDefaultForLegal();
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(SampleUser.getDefault());
     }
 
@@ -141,6 +145,20 @@ public class CaseMetadataControllerTest {
         assertValid(sampleClaim, output.get(0));
     }
 
+    @Test
+    public void shouldReturnRepresentedClaimByClaimReference() {
+        // given
+        when(claimService.getClaimByReferenceAnonymous(sampleRepresentedClaim.getReferenceNumber()))
+            .thenReturn(Optional.of(sampleRepresentedClaim));
+
+        // when
+        CaseMetadata output = controller.getByClaimReference(sampleRepresentedClaim.getReferenceNumber());
+
+        // then
+        assertNotNull(output);
+        assertValid(sampleRepresentedClaim, output);
+    }
+
     private static void assertValid(Claim dto, CaseMetadata metadata) {
         assertEquals(dto.getId(), metadata.getId());
         assertEquals(dto.getSubmitterId(), metadata.getSubmitterId());
@@ -156,6 +174,12 @@ public class CaseMetadataControllerTest {
         assertEquals(dto.getClaimantRespondedAt().orElse(null), metadata.getClaimantRespondedAt());
         assertEquals(dto.getSettlementReachedAt(), metadata.getSettlementReachedAt());
         assertEquals(dto.getClaimDocument(SEALED_CLAIM), Optional.ofNullable(metadata.getSealedClaimDocument()));
-        assertEquals(dto.getClaimData().getPayment().getReference(), metadata.getPaymentReference());
+        assertEquals(dto.getMoneyReceivedOn(), Optional.ofNullable(metadata.getMoneyReceivedOn()));
+
+        if (dto.getClaimData().getPayment() == null) {
+            assertNull(metadata.getPaymentReference());
+        } else {
+            assertEquals(dto.getClaimData().getPayment().getReference(), metadata.getPaymentReference());
+        }
     }
 }

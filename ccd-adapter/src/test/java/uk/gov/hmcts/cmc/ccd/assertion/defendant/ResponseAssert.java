@@ -172,6 +172,10 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
     }
 
     private void assertPaymentDeclaration(CCDRespondent ccdRespondent, PaymentDeclaration paymentDeclaration) {
+        paymentDeclaration.getPaidAmount().ifPresent(paidAmount ->
+            assertEquals(paidAmount, ccdRespondent.getPaymentDeclarationPaidAmount())
+        );
+
         if (!Objects.equals(paymentDeclaration.getPaidDate(), ccdRespondent.getPaymentDeclarationPaidDate())) {
             failWithMessage("Expected CCDRespondent.paymentDeclarationPaidDate to be <%s> but was <%s>",
                 ccdRespondent.getPaymentDeclarationPaidDate(), paymentDeclaration.getPaidDate());

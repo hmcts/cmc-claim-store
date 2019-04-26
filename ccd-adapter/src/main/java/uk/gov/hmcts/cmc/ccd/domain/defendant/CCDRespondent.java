@@ -47,6 +47,7 @@ public class CCDRespondent {
     private LocalDateTime responseSubmittedOn;
     private CCDResponseType responseType;
     private BigDecimal responseAmount;
+    private BigDecimal paymentDeclarationPaidAmount;
     private LocalDate paymentDeclarationPaidDate;
     private String paymentDeclarationExplanation;
     private List<CCDCollectionElement<CCDTimelineEvent>> defendantTimeLineEvents;
@@ -76,8 +77,8 @@ public class CCDRespondent {
 
     private CCDClaimantResponse claimantResponse;
 
-    private String reDeterminationExplanation;
-    private LocalDateTime reDeterminationRequestedDate;
-    private CCDMadeBy reDeterminationMadeBy;
+    private String redeterminationExplanation;
+    private LocalDateTime redeterminationRequestedDate;
+    private CCDMadeBy redeterminationMadeBy;
 
 }
