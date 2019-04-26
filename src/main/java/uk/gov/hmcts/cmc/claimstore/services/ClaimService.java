@@ -28,6 +28,7 @@ import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
@@ -245,6 +246,8 @@ public class ClaimService {
                     new NotFoundException("Could not find claim with external ID '" + externalId + "'"));
         }
 
+        ccdEventProducer.createCCDClaimIssuedEvent(issuedClaim, user);
+
         eventProducer.createClaimIssuedEvent(
             issuedClaim,
             pinResponse.map(GeneratePinResponse::getPin).orElse(null),
@@ -253,7 +256,6 @@ public class ClaimService {
         );
 
         trackClaimIssued(issuedClaim.getReferenceNumber(), issuedClaim.getClaimData().isClaimantRepresented());
-        ccdEventProducer.createCCDClaimIssuedEvent(issuedClaim, user);
 
         return issuedClaim;
     }
@@ -365,9 +367,10 @@ public class ClaimService {
     public Claim saveClaimDocuments(
         String authorisation,
         Long claimId,
-        ClaimDocumentCollection claimDocumentCollection
+        ClaimDocumentCollection claimDocumentCollection,
+        ClaimDocumentType claimDocumentType
     ) {
-        return caseRepository.saveClaimDocuments(authorisation, claimId, claimDocumentCollection);
+        return caseRepository.saveClaimDocuments(authorisation, claimId, claimDocumentCollection, claimDocumentType);
     }
 
     public Claim linkLetterHolder(Long claimId, String letterHolderId) {

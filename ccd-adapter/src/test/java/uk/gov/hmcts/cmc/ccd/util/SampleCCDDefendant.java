@@ -155,9 +155,9 @@ public class SampleCCDDefendant {
 
     public static CCDRespondent.CCDRespondentBuilder withReDetermination() {
         return withParty()
-            .reDeterminationMadeBy(CCDMadeBy.CLAIMANT)
-            .reDeterminationExplanation("Need money sooner")
-            .reDeterminationRequestedDate(LocalDateTime.now());
+            .redeterminationMadeBy(CCDMadeBy.CLAIMANT)
+            .redeterminationExplanation("Need money sooner")
+            .redeterminationRequestedDate(LocalDateTime.now());
     }
 
     public static CCDRespondent.CCDRespondentBuilder withPartAdmissionResponse() {
