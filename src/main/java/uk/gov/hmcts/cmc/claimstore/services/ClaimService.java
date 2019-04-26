@@ -237,14 +237,13 @@ public class ClaimService {
                 .build();
 
             issuedClaim = caseRepository.saveClaim(user, claim);
+            ccdEventProducer.createCCDClaimIssuedEvent(issuedClaim, user);
         } catch (ConflictException e) {
             appInsights.trackEvent(AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE, CLAIM_EXTERNAL_ID, externalId);
             issuedClaim = caseRepository.getClaimByExternalId(externalId, user)
                 .orElseThrow(() ->
                     new NotFoundException("Could not find claim with external ID '" + externalId + "'"));
         }
-
-        ccdEventProducer.createCCDClaimIssuedEvent(issuedClaim, user);
 
         eventProducer.createClaimIssuedEvent(
             issuedClaim,

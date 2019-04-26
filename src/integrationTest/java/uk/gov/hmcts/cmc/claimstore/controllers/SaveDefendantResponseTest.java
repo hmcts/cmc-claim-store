@@ -35,6 +35,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeast;
@@ -181,13 +182,22 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
 
         makeRequest(claim.getExternalId(), DEFENDANT_ID, response).andExpect(status().isOk());
 
-        verify(notificationClient, atLeast(6))
-            .sendEmail(anyString(), anyString(), anyMap(), anyString());
+        verify(notificationClient, atLeast(3))
+            .sendEmail(anyString(), anyString(), anyMap(), contains("defendant-response-notification-"));
+
+        verify(notificationClient, atLeast(3))
+            .sendEmail(anyString(), anyString(), anyMap(), contains("claimant-response-notification-"));
 
         verify(appInsights).trackEvent(
             eq(NOTIFICATION_FAILURE),
             eq(REFERENCE_NUMBER),
             eq("defendant-response-notification-" + claim.getReferenceNumber())
+        );
+
+        verify(appInsights).trackEvent(
+            eq(NOTIFICATION_FAILURE),
+            eq(REFERENCE_NUMBER),
+            eq("claimant-response-notification-" + claim.getReferenceNumber())
         );
     }
 

@@ -36,6 +36,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeast;
@@ -45,7 +46,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NOTIFICATION_FAILURE;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForJudgementFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementUploadResponse;
 
@@ -173,12 +174,12 @@ public class SaveCountyCourtJudgementTest extends BaseIntegrationTest {
         makeRequest(claim.getExternalId(), COUNTY_COURT_JUDGMENT).andExpect(status().isOk());
 
         verify(notificationClient, atLeast(3))
-            .sendEmail(anyString(), anyString(), anyMap(), anyString());
+            .sendEmail(anyString(), anyString(), anyMap(), contains("claimant-ccj-requested-notification-"));
 
         verify(appInsights).trackEvent(
-            eq(CCJ_REQUESTED),
+            eq(NOTIFICATION_FAILURE),
             eq(REFERENCE_NUMBER),
-            eq(claim.getReferenceNumber())
+            eq("claimant-ccj-requested-notification-" + claim.getReferenceNumber())
         );
     }
 
