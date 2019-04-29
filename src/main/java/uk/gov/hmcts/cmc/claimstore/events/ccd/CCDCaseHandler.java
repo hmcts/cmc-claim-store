@@ -23,7 +23,6 @@ import static org.springframework.transaction.event.TransactionPhase.BEFORE_COMM
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCUTORY_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REJECT_ORGANISATION_PAYMENT_PLAN;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
-
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.CCD_LINK_DEFENDANT_ID;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.CLAIM_EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
@@ -49,7 +48,7 @@ public class CCDCaseHandler {
         this.userService = userService;
     }
 
-    @TransactionalEventListener
+    @EventListener
     @LogExecutionTime
     public void saveClaim(CCDClaimIssuedEvent event) {
         Claim claim = event.getClaim();
@@ -147,6 +146,26 @@ public class CCDCaseHandler {
             throw e;
         }
     }
+
+    @EventListener
+    @LogExecutionTime
+    public void saveClaimDocument(CCDSaveClaimDocumentEvent event) {
+        try {
+
+            Claim ccdClaim = ccdCaseRepository.getClaimByExternalId(event.getClaim().getExternalId(), event.getAuthorisation())
+                .orElseThrow(IllegalStateException::new);
+
+            ccdCaseRepository.saveClaimDocuments(event.getAuthorisation(),
+                ccdClaim.getId(),
+                event.getClaimDocumentCollection(),
+                event.getClaimDocumentType()
+            );
+        } catch (FeignException e) {
+            appInsights.trackEvent(CCD_ASYNC_FAILURE, REFERENCE_NUMBER, event.getClaim().getReferenceNumber());
+            throw e;
+        }
+    }
+
 
     @TransactionalEventListener
     @LogExecutionTime
