@@ -7,9 +7,11 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.cmc.claimstore.controllers.support.SupportController;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
+import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedStaffNotificationHandler;
@@ -25,6 +27,8 @@ import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 
 import java.util.ArrayList;
@@ -74,6 +78,9 @@ public class SupportControllerTest {
     private AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler;
 
     @Mock
+    private ClaimantResponseStaffNotificationHandler claimantResponseStaffNotificationHandler;
+
+    @Mock
     private DocumentsService documentsService;
 
     @Rule
@@ -88,7 +95,7 @@ public class SupportControllerTest {
         controller = new SupportController(claimService, userService, documentGenerator,
             moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
             ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
-            documentsService
+            claimantResponseStaffNotificationHandler, documentsService
         );
         sampleClaim = SampleClaim.getDefault();
     }
@@ -165,6 +172,29 @@ public class SupportControllerTest {
         when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
             .thenReturn(Optional.of(SampleClaim.withNoResponse()));
         controller.resendStaffNotifications(CLAIMREFERENCENUMBER, RESPONSESUBMITTED, AUTHORISATION);
+    }
+
+    @Test
+    public void shouldResendClaimantResponseNotifications() {
+        sampleClaim = SampleClaim.builder()
+            .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionImmediately())
+            .withClaimantResponse(SampleClaimantResponse.validDefaultRejection())
+            .build();
+
+        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER))).thenReturn(Optional.of(sampleClaim));
+
+        controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claimant-response", "");
+
+        verify(claimantResponseStaffNotificationHandler).onClaimantResponse(any());
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenClaimHasNoClaimantResponse() {
+        exceptionRule.expect(IllegalStateException.class);
+        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER))).thenReturn(
+            Optional.of(SampleClaim.builder().withClaimantResponse(null).build()));
+
+        controller.resendStaffNotifications(CLAIMREFERENCENUMBER, "claimant-response", "");
     }
 
     @Test
