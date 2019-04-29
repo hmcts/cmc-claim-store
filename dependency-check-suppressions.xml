@@ -151,11 +151,4 @@
         <gav regex="true">.*</gav>
         <cve>CVE-2019-3795</cve>
     </suppress>
-    <suppress>
-        <notes><![CDATA[
-			Not applicable - A Remote Code Execution Vulnerability in Apache Tomcat
-			]]></notes>
-        <gav regex="true">.*</gav>
-        <cve>CVE-2019-0232</cve>
-    </suppress>
 </suppressions>
