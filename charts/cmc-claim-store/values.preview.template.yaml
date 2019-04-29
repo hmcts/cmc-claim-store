@@ -2,6 +2,7 @@ tags:
   cmc-claim-store-postgresql-pod: true
   cmc-citizen-frontend-pod: true
   cmc-ccd-stack: true
+  ccd-idam-pr: true
   postgresql-pod: false  # rpe-feature-toggle-api & ccd
 
 postgresql:
@@ -77,6 +78,7 @@ cmc-citizen-frontend:
         FEATURES_DB_HOST: ${SERVICE_NAME}-ccd-postgres
   idam-pr:
     service:
+      name: Money Claims - Citizen
       redirect_uri: https://www-${SERVICE_FQDN}/receiver
 
 ccd:
@@ -86,6 +88,13 @@ ccd:
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP}
+  idam-pr:
+    releaseNameOverride: ${SERVICE_NAME}-ccd-idam-pr
+    redirect_uris:
+      CCD:
+        - https://case-management-web-${SERVICE_FQDN}/oauth2redirect
+      CCD Admin:
+        - https://admin-web-${SERVICE_FQDN}/oauth2redirect
   apiGateway:
     s2sKey: ${API_GATEWAY_S2S_KEY}
     idamClientSecret: ${API_GATEWAY_IDAM_SECRET}
