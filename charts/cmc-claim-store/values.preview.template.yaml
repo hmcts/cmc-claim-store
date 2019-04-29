@@ -116,10 +116,6 @@ ccd:
     idamClientSecret: ${ADMIN_WEB_IDAM_SECRET}
     environment:
       NODE_TLS_REJECT_UNAUTHORIZED: 0
-      # TODO: add these to chart-ccd
-      ADMINWEB_USER_ROLE_URL: http://${SERVICE_NAME}-definition-store-api/api/user-role
-      ADMINWEB_DELETE_DEFINITION_URL: http://${SERVICE_NAME}-definition-store-api/api/draft
-      ADMINWEB_ROLES_WHITELIST: 'ccd-import,ccd-import-validate'
   importer:
     userprofile:
       enabled: true
@@ -136,8 +132,6 @@ ccd:
       enabled: true
       image: hmcts.azurecr.io/hmcts/cmc-ccd-definition-importer
       definitionFilename: cmc-ccd.xlsx
-      definitions:  # TODO: change chart-ccd to allow either definitions or definitionFilename
-        -
       userRoles:
         - citizen
         - caseworker-cmc
