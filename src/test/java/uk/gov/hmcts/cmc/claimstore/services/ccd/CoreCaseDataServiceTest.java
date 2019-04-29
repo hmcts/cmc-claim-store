@@ -63,6 +63,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CLAIMANT_RESPONSE_ACCEPTATIO
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CLAIMANT_RESPONSE_REJECTION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCUTORY_JUDGMENT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_LETTER_HOLDER;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_CLAIMANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
@@ -248,7 +249,8 @@ public class CoreCaseDataServiceTest {
 
         Claim updatedClaim = service.saveClaimDocuments(AUTHORISATION,
             SampleClaim.CLAIM_ID,
-            claim.getClaimDocumentCollection().orElse(new ClaimDocumentCollection()));
+            claim.getClaimDocumentCollection().orElse(new ClaimDocumentCollection()),
+            null);
 
         assertNotNull(updatedClaim);
     }
@@ -501,5 +503,23 @@ public class CoreCaseDataServiceTest {
 
         verify(coreCaseDataApi).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
             anyString(), anyString(), eq(SETTLED_PRE_JUDGMENT.getValue()));
+    }
+
+    @Test
+    public void linkLetterHolderId() {
+        Claim claim = SampleClaim.getDefault();
+
+        when(jsonMapper.fromMap(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
+        when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
+
+        String newLetterHolderId = "letter_holder_id";
+        service.linkLetterHolder(claim.getId(), newLetterHolderId);
+
+        verify(coreCaseDataApi).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
+            anyString(), anyString(), eq(LINK_LETTER_HOLDER.getValue()));
+
+        verify(ccdCreateCaseService).removeAccessToCase(eq(claim.getId().toString()), eq(claim.getLetterHolderId()));
+        verify(ccdCreateCaseService).grantAccessToCase(eq(claim.getId().toString()), eq(newLetterHolderId));
     }
 }
