@@ -13,8 +13,8 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
-import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
@@ -270,7 +270,8 @@ public class DBCaseRepository implements CaseRepository {
     public Claim updateClaimSubmissionOperationStatus(
         String authorisation,
         Long claimId,
-        ClaimSubmissionOperationIndicators indicators) {
+        ClaimSubmissionOperationIndicators indicators,
+        CaseEvent caseEvent) {
         claimRepository.updateClaimSubmissionOperationStatus(claimId, jsonMapper.toJson(indicators));
         return getClaimById(claimId);
     }

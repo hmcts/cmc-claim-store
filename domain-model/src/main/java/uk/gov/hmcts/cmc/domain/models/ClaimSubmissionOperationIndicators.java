@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Value;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
-@Builder
+@Builder(toBuilder=true)
 @Value
 public class ClaimSubmissionOperationIndicators {
     private YesNoOption claimantNotification;
@@ -15,4 +15,6 @@ public class ClaimSubmissionOperationIndicators {
     private YesNoOption sealedClaimUpload;
     private YesNoOption claimIssueReceiptUpload;
     private YesNoOption defendantPinLetterUpload;
+
+
 }

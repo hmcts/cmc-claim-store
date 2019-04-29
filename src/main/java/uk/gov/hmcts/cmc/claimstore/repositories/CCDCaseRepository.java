@@ -182,8 +182,10 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Claim updateClaimSubmissionOperationStatus(String authorisation, Long claimId, ClaimSubmissionOperationIndicators indicators) {
-        return coreCaseDataService.saveClaimSubmissionOperationIndicators(authorisation, claimId, indicators);
+    public Claim updateClaimSubmissionOperationStatus(String authorisation, Long claimId,
+                                                      ClaimSubmissionOperationIndicators indicators,
+                                                      CaseEvent caseEvent) {
+        return coreCaseDataService.saveClaimSubmissionOperationIndicators(claimId, indicators,authorisation, caseEvent);
     }
 
     @Override
