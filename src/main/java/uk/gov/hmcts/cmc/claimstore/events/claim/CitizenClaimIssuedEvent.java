@@ -12,10 +12,11 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 public class CitizenClaimIssuedEvent extends ClaimIssuedEvent {
     private final String pin;
 
-    public CitizenClaimIssuedEvent(Claim claim,
-                                   String pin,
-                                   String submitterName,
-                                   String authorisation
+    public CitizenClaimIssuedEvent(
+        Claim claim,
+        String pin,
+        String submitterName,
+        String authorisation
     ) {
         super(claim, submitterName, authorisation);
         this.pin = pin;

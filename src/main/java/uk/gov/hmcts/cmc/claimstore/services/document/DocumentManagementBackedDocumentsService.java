@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.net.URI;
 import java.util.Optional;
@@ -42,6 +43,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
 
     private static final Logger logger = LoggerFactory.getLogger(DocumentManagementBackedDocumentsService.class);
 
+    private static final String OCMC = "OCMC";
     private final ClaimService claimService;
     private final DocumentManagementService documentManagementService;
     private final SealedClaimPdfService sealedClaimPdfService;
@@ -181,16 +183,33 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         String authorisation,
         Claim claim
     ) {
+
         ClaimDocument claimDocument = documentManagementService.uploadDocument(authorisation, document);
         return claimService.saveClaimDocuments(authorisation,
             claim.getId(),
-            getClaimDocumentCollection(claim, claimDocument));
+            getClaimDocumentCollection(claim.getExternalId(),
+                document,
+                claimDocument.getDocumentManagementUrl(),
+                authorisation),
+            document.getClaimDocumentType());
     }
 
-    private ClaimDocumentCollection getClaimDocumentCollection(Claim claim, ClaimDocument claimDocument) {
+    private ClaimDocumentCollection getClaimDocumentCollection(
+        String externalId,
+        PDF document,
+        URI uri,
+        String authorisation
+    ) {
+        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
         ClaimDocumentCollection claimDocumentCollection = claim.getClaimDocumentCollection()
             .orElse(new ClaimDocumentCollection());
-        claimDocumentCollection.addClaimDocument(claimDocument);
+        claimDocumentCollection.addClaimDocument(ClaimDocument.builder()
+            .documentManagementUrl(uri)
+            .documentName(document.getFilename())
+            .documentType(document.getClaimDocumentType())
+            .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
+            .createdBy(OCMC)
+            .build());
         return claimDocumentCollection;
     }
 }
