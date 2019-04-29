@@ -42,7 +42,6 @@ public abstract class BaseSubmitClaimTest extends BaseTest {
 
         assertThat(claimData).isEqualTo(createdCase.getClaimData());
         assertThat(createdCase.getCreatedAt()).isNotNull();
-        assertDocumentsCreated(createdCase);
     }
 
     @Test
