@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.events.ccd;
 
 import feign.FeignException;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
 import org.springframework.transaction.event.TransactionalEventListener;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
@@ -147,8 +148,9 @@ public class CCDCaseHandler {
         }
     }
 
-    @EventListener
+    @TransactionalEventListener
     @LogExecutionTime
+    @Order(1)
     public void saveClaimDocument(CCDSaveClaimDocumentEvent event) {
         try {
             Claim ccdClaim = ccdCaseRepository.getClaimByExternalId(
