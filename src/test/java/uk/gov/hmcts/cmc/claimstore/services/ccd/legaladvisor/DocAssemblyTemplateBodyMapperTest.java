@@ -12,9 +12,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
@@ -29,8 +27,6 @@ import java.util.Collections;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
-import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOTH;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DocAssemblyTemplateBodyMapperTest  {

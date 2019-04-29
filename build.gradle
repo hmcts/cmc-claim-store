@@ -324,6 +324,7 @@ sonarqube {
       "**/ClaimRepository.java," +
       "**/CCDCaseRepository.java," +
       "**/cmc/claimstore/appinsights/**," +
+      "**/cmc/claimstore/services/ccd/legaladvisor/**," +
       "**/ccd/migration/**," +
       "**/EmailData.java," +
       "**/CCDCaseHandler.java," +
