@@ -72,7 +72,7 @@ public class PinBasedOperationService{
             updatedOperationIndicator.defendantNotification(YesNoOption.YES);
 
         } finally {
-            updatedClaim = eventsStatusService.updateClaimOperationCompletion(authorisation, updatedClaim.getId(),
+            updatedClaim = eventsStatusService.updateClaimOperationCompletion(authorisation, updatedClaim,
                 updatedOperationIndicator.build(), CaseEvent.PIN_GENERATION_OPERATIONS);
         }
         return updatedClaim;

@@ -25,12 +25,25 @@ public class ClaimCreationEventsStatusService {
     public Claim updateClaimOperationCompletion(
         String authorisation,
         Claim claim,
+        ClaimSubmissionOperationIndicators indicators,
         CaseEvent caseEvent) {
 
         return caseRepository.updateClaimSubmissionOperationStatus(
             authorisation,
             claim.getId(),
-            updateClaimSubmissionIndicatorWithEvent.apply(claim.getClaimSubmissionOperationIndicators(), caseEvent)
+            indicators,
+            caseEvent);
+    }
+
+    public Claim updateClaimOperationCompletion(
+        String authorisation,
+        Claim claim,
+        CaseEvent caseEvent) {
+
+        return caseRepository.updateClaimSubmissionOperationStatus(
+            authorisation,
+            claim.getId(),
+            updateClaimSubmissionIndicatorWithEvent.apply(claim.getClaimSubmissionOperationIndicators(), caseEvent),
             caseEvent);
     }
 
