@@ -82,9 +82,6 @@ cmc-citizen-frontend:
       redirect_uri: https://www-${SERVICE_FQDN}/receiver
 
 ccd:
-  # TODO: update CCD chart with SIDAM
-  idamApiUrl: https://idam-api.aat.platform.hmcts.net
-  idamWebUrl: https://idam-web-public.aat.platform.hmcts.net
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP}
