@@ -195,7 +195,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
             authorisation
         );
 
-        claim = claimService.saveClaimDocuments(authorisation,
+        Claim newClaim = claimService.saveClaimDocuments(authorisation,
             claim.getId(),
             claimDocumentCollection,
             document.getClaimDocumentType());
@@ -205,7 +205,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
             claimDocumentCollection,
             document.getClaimDocumentType());
 
-        return claim;
+        return newClaim;
     }
 
     private ClaimDocumentCollection getClaimDocumentCollection(

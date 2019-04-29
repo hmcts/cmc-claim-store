@@ -151,9 +151,10 @@ public class CCDCaseHandler {
     @LogExecutionTime
     public void saveClaimDocument(CCDSaveClaimDocumentEvent event) {
         try {
-
-            Claim ccdClaim = ccdCaseRepository.getClaimByExternalId(event.getClaim().getExternalId(), event.getAuthorisation())
-                .orElseThrow(IllegalStateException::new);
+            Claim ccdClaim = ccdCaseRepository.getClaimByExternalId(
+                event.getClaim().getExternalId(),
+                event.getAuthorisation()
+            ).orElseThrow(IllegalStateException::new);
 
             ccdCaseRepository.saveClaimDocuments(event.getAuthorisation(),
                 ccdClaim.getId(),
@@ -165,7 +166,6 @@ public class CCDCaseHandler {
             throw e;
         }
     }
-
 
     @TransactionalEventListener
     @LogExecutionTime
