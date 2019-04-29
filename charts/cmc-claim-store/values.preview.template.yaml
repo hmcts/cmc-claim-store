@@ -22,7 +22,7 @@ postgresql:
   postgresqlUsername: hmcts
   postgresqlPassword: hmcts
   postgresqlDatabase: user-profile
-  nameOverride: ccd-postgres  # because ccd wont work without specific name
+  nameOverride: ccd-postgres  # because ccd wont work without this specific name
   persistence:
     enabled: false
 
