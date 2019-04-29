@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.ccd.mapper.defendant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
@@ -35,8 +36,11 @@ public class DefendantPartyMapper {
         this.telephoneMapper = telephoneMapper;
     }
 
-    public void to(CCDRespondent.CCDRespondentBuilder builder, Party party,
-                   CCDParty.CCDPartyBuilder defendantDetail) {
+    public void to(
+        CCDRespondent.CCDRespondentBuilder builder,
+        Party party,
+        CCDParty.CCDPartyBuilder defendantDetail
+    ) {
         requireNonNull(builder, "builder must not be null");
         requireNonNull(party, "party must not be null");
 
@@ -94,27 +98,31 @@ public class DefendantPartyMapper {
         company.getContactPerson().ifPresent(partyBuilder::contactPerson);
     }
 
-    public Party from(CCDRespondent respondent) {
+    public Party from(CCDCollectionElement<CCDRespondent> respondentElement) {
+        CCDRespondent respondent = respondentElement.getValue();
         requireNonNull(respondent, "respondent must not be null");
         requireNonNull(respondent.getPartyDetail(), "respondent.getPartyDetail() must not be null");
 
         switch (respondent.getPartyDetail().getType()) {
             case INDIVIDUAL:
-                return extractIndividual(respondent);
+                return extractIndividual(respondentElement);
             case COMPANY:
-                return extractCompany(respondent);
+                return extractCompany(respondentElement);
             case SOLE_TRADER:
-                return extractSoleTrader(respondent);
+                return extractSoleTrader(respondentElement);
             case ORGANISATION:
-                return extractOrganisation(respondent);
+                return extractOrganisation(respondentElement);
             default:
                 throw new MappingException("Invalid partyType " + respondent.getPartyDetail().getType());
         }
     }
 
-    private Organisation extractOrganisation(CCDRespondent respondent) {
+    private Organisation extractOrganisation(CCDCollectionElement<CCDRespondent> respondentElement) {
+        CCDRespondent respondent = respondentElement.getValue();
         CCDParty partyDetail = respondent.getPartyDetail();
+
         return Organisation.builder()
+            .id(respondentElement.getId())
             .name(respondent.getPartyName())
             .address(addressMapper.from(partyDetail.getPrimaryAddress()))
             .correspondenceAddress(addressMapper.from(partyDetail.getCorrespondenceAddress()))
@@ -125,9 +133,12 @@ public class DefendantPartyMapper {
             .build();
     }
 
-    private SoleTrader extractSoleTrader(CCDRespondent respondent) {
+    private SoleTrader extractSoleTrader(CCDCollectionElement<CCDRespondent> respondentElement) {
+        CCDRespondent respondent = respondentElement.getValue();
         CCDParty partyDetail = respondent.getPartyDetail();
+
         return SoleTrader.builder()
+            .id(respondentElement.getId())
             .name(respondent.getPartyName())
             .address(addressMapper.from(partyDetail.getPrimaryAddress()))
             .correspondenceAddress(addressMapper.from(partyDetail.getCorrespondenceAddress()))
@@ -138,9 +149,12 @@ public class DefendantPartyMapper {
             .build();
     }
 
-    private Company extractCompany(CCDRespondent respondent) {
+    private Company extractCompany(CCDCollectionElement<CCDRespondent> respondentElement) {
+        CCDRespondent respondent = respondentElement.getValue();
         CCDParty partyDetail = respondent.getPartyDetail();
+
         return Company.builder()
+            .id(respondentElement.getId())
             .name(respondent.getPartyName())
             .address(addressMapper.from(partyDetail.getPrimaryAddress()))
             .correspondenceAddress(addressMapper.from(partyDetail.getCorrespondenceAddress()))
@@ -150,9 +164,12 @@ public class DefendantPartyMapper {
             .build();
     }
 
-    private Individual extractIndividual(CCDRespondent respondent) {
+    private Individual extractIndividual(CCDCollectionElement<CCDRespondent> respondentElement) {
+        CCDRespondent respondent = respondentElement.getValue();
         CCDParty partyDetail = respondent.getPartyDetail();
+
         return Individual.builder()
+            .id(respondentElement.getId())
             .name(respondent.getPartyName())
             .address(addressMapper.from(partyDetail.getPrimaryAddress()))
             .correspondenceAddress(addressMapper.from(partyDetail.getCorrespondenceAddress()))

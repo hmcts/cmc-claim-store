@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
@@ -109,6 +110,7 @@ public class CCDCaseRepository implements CaseRepository {
         Claim claim,
         String defendantEmail,
         Response response,
+        LocalDate claimantResponseDeadline,
         String authorization
     ) {
         coreCaseDataService.saveDefendantResponse(claim.getId(), defendantEmail, response, authorization);
@@ -169,9 +171,16 @@ public class CCDCaseRepository implements CaseRepository {
     public Claim saveClaimDocuments(
         String authorisation,
         Long claimId,
-        ClaimDocumentCollection claimDocumentCollection
+        ClaimDocumentCollection claimDocumentCollection,
+        ClaimDocumentType claimDocumentType
     ) {
-        return coreCaseDataService.saveClaimDocuments(authorisation, claimId, claimDocumentCollection);
+        return coreCaseDataService
+            .saveClaimDocuments(authorisation, claimId, claimDocumentCollection, claimDocumentType);
+    }
+
+    @Override
+    public Claim linkLetterHolder(Long claimId, String letterHolderId) {
+        return coreCaseDataService.linkLetterHolder(claimId, letterHolderId);
     }
 
     @Override
