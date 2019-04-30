@@ -38,6 +38,10 @@ variable "dm_url" {
   default = "false"
 }
 
+variable "doc_assembly_api_url" {
+  default = "false"
+}
+
 variable "ilbIp" {}
 
 variable "tenant_id" {
