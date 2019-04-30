@@ -18,10 +18,10 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 @Async("threadPoolTaskExecutor")
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled")
-public class ClaimCreatedOperationHandler {
-    private static final Logger logger = LoggerFactory.getLogger(ClaimCreatedOperationHandler.class);
+public class PostClaimOrchestrationHandler {
+    private static final Logger logger = LoggerFactory.getLogger(PostClaimOrchestrationHandler.class);
 
-    private final PinBasedOperationService pinBasedOperationService;
+    private final PinOrchestrationService pinOrchestrationService;
     private final ClaimantOperationService claimantOperationService;
     private final RpaOperationService rpaOperationService;
     private final UploadOperationService uploadOperationService;
@@ -30,15 +30,15 @@ public class ClaimCreatedOperationHandler {
 
     @Autowired
     @SuppressWarnings("squid:S00107")
-    public ClaimCreatedOperationHandler(
+    public PostClaimOrchestrationHandler(
         DocumentGenerationService documentGenerationService,
-        PinBasedOperationService pinBasedOperationService,
+        PinOrchestrationService pinOrchestrationService,
         UploadOperationService uploadOperationService,
         ClaimantOperationService claimantOperationService,
         RpaOperationService rpaOperationService,
         NotifyStaffOperationService notifyStaffOperationService
     ) {
-        this.pinBasedOperationService = pinBasedOperationService;
+        this.pinOrchestrationService = pinOrchestrationService;
         this.claimantOperationService = claimantOperationService;
         this.rpaOperationService = rpaOperationService;
         this.uploadOperationService = uploadOperationService;
@@ -56,7 +56,7 @@ public class ClaimCreatedOperationHandler {
             GeneratedDocuments generatedDocuments = documentGenerationService.generateForCitizen(claim, authorisation);
 
             Claim updatedClaim
-                = pinBasedOperationService.process(claim, authorisation, submitterName, generatedDocuments);
+                = pinOrchestrationService.process(claim, authorisation, submitterName, generatedDocuments);
 
             updatedClaim = uploadOperationService.uploadDocument(
                 updatedClaim,

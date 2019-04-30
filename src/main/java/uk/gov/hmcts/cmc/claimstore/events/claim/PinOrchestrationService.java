@@ -14,14 +14,14 @@ import static java.util.Collections.singletonList;
 
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled")
-public class PinBasedOperationService {
+public class PinOrchestrationService {
     private final ClaimIssuedNotificationService claimIssuedNotificationService;
     private final NotificationsProperties notificationsProperties;
     private final DocumentUploadHandler documentUploadHandler;
     private final PrintService bulkPrintService;
     private final ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService;
 
-    public PinBasedOperationService(
+    public PinOrchestrationService(
         DocumentUploadHandler documentUploadHandler,
         PrintService bulkPrintService,
         ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService,
