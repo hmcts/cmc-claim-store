@@ -48,6 +48,8 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.Sample
 public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest {
 
     public static final String DEFENDANT_BEARER_TOKEN = "defendant-token";
+    private static final User USER = new User(BEARER_TOKEN, getDefault());
+
     @MockBean
     protected SendLetterApi sendLetterApi;
 
@@ -61,6 +63,7 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
     @Before
     public void setUp() {
         given(userService.getUserDetails(anyString())).willReturn(getDefault());
+
         claim = SampleClaim.builder()
             .withExternalId(UUID.randomUUID().toString())
             .withClaimData(SampleClaimData.validDefaults())
@@ -70,7 +73,7 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
             .withDefendantId(DEFENDANT_ID)
             .build();
 
-        claim = caseRepository.saveClaim(BEARER_TOKEN, claim);
+        claim = caseRepository.saveClaim(USER, claim);
     }
 
     @Test
@@ -98,7 +101,7 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
         return webClient
             .perform(post("/claims/" + externalId + "/county-court-judgment")
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
-                .header(HttpHeaders.AUTHORIZATION, "token")
+                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
                 .content(jsonMapper.toJson(countyCourtJudgment))
             );
     }
@@ -122,20 +125,24 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
         return webClient
             .perform(post("/claims/" + externalId + "/offers/DEFENDANT/countersign")
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
-                .header(HttpHeaders.AUTHORIZATION, "token")
+                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
             );
     }
 
     @Test
     public void shouldNotInvokeStaffActionsHandlerAfterSuccessfulDefendantResponseSave() throws Exception {
-        given(userService.getUser(anyString())).willReturn(SampleUser.builder()
+        UserDetails userDetails = SampleUserDetails.builder()
+            .withUserId(DEFENDANT_ID)
+            .withRoles("citizen", "letter-" + SampleClaim.LETTER_HOLDER_ID)
+            .build();
+
+        User citizen = SampleUser.builder()
             .withAuthorisation(BEARER_TOKEN)
-            .withUserDetails(SampleUserDetails.builder()
-                .withUserId(DEFENDANT_ID)
-                .withRoles("citizen", "letter-" + SampleClaim.LETTER_HOLDER_ID)
-                .build())
-            .build()
-        );
+            .withUserDetails(userDetails)
+            .build();
+
+        given(userService.getUser(BEARER_TOKEN)).willReturn(citizen);
+        given(userService.getUser(DEFENDANT_BEARER_TOKEN)).willReturn(new User(DEFENDANT_BEARER_TOKEN, userDetails));
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
         caseRepository.linkDefendant(BEARER_TOKEN);

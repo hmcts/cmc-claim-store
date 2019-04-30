@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.documents;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.event.EventListener;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
@@ -9,10 +8,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
-import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.BulkPrintStaffNotificationService;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.sendletter.api.Document;
 import uk.gov.hmcts.reform.sendletter.api.Letter;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 
@@ -20,11 +20,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BULK_PRINT_FAILED;
 
 @Service
 @ConditionalOnProperty(prefix = "send-letter", name = "url")
-public class BulkPrintService {
+public class BulkPrintService implements PrintService {
 
     /* This is configured on Xerox end so they know its us printing and controls things
      like paper quality and resolution */
@@ -52,29 +54,39 @@ public class BulkPrintService {
         this.appInsights = appInsights;
     }
 
-    @EventListener
+    @LogExecutionTime
     @Retryable(
         value = {HttpClientErrorException.class, HttpServerErrorException.class},
         backoff = @Backoff(delay = 200)
     )
-    public void print(DocumentReadyToPrintEvent event) {
+    @Override
+    public void print(Claim claim, Document defendantLetterDocument, Document sealedClaimDocument) {
+        requireNonNull(claim);
+        requireNonNull(defendantLetterDocument);
+        requireNonNull(sealedClaimDocument);
+
         sendLetterApi.sendLetter(
             authTokenGenerator.generate(),
-            new Letter(
-                Arrays.asList(event.getDefendantLetterDocument(), event.getSealedClaimDocument()),
-                XEROX_TYPE_PARAMETER, wrapInMap(event.getClaim())
+            new Letter(Arrays.asList(defendantLetterDocument, sealedClaimDocument),
+                XEROX_TYPE_PARAMETER, wrapInMap(claim)
             )
         );
     }
 
     @Recover
-    public void notifyStaffForBulkPrintFailure(DocumentReadyToPrintEvent event) {
+    public void notifyStaffForBulkPrintFailure(
+        RuntimeException exception,
+        Claim claim,
+        Document defendantLetterDocument,
+        Document sealedClaimDocument
+    ) {
         bulkPrintStaffNotificationService.notifyFailedBulkPrint(
-            event.getDefendantLetterDocument(),
-            event.getSealedClaimDocument(),
-            event.getClaim()
+            defendantLetterDocument,
+            sealedClaimDocument,
+            claim
         );
-        appInsights.trackEvent(BULK_PRINT_FAILED, "referenceNumber", event.getClaim().getReferenceNumber());
+
+        appInsights.trackEvent(BULK_PRINT_FAILED, REFERENCE_NUMBER, claim.getReferenceNumber());
     }
 
     private static Map<String, Object> wrapInMap(Claim claim) {

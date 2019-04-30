@@ -3,10 +3,8 @@ package uk.gov.hmcts.cmc.claimstore.rpa;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
-import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
 import uk.gov.hmcts.cmc.claimstore.rpa.config.EmailProperties;
 import uk.gov.hmcts.cmc.claimstore.rpa.email.ClaimIssuedEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
@@ -47,12 +45,11 @@ public class ClaimIssuedNotificationService {
         this.jsonMapper = jsonMapper;
     }
 
-    @EventListener
-    public void notifyRobotOfClaimIssue(DocumentGeneratedEvent event) {
-        requireNonNull(event);
+    public void notifyRobotics(Claim claim, List<PDF> documents) {
+        requireNonNull(claim);
 
-        if (!event.getClaim().getClaimData().isClaimantRepresented()) {
-            EmailData emailData = prepareEmailData(event.getClaim(), event.getDocuments());
+        if (!claim.getClaimData().isClaimantRepresented()) {
+            EmailData emailData = prepareEmailData(claim, documents);
             emailService.sendEmail(emailProperties.getSender(), emailData);
         }
     }
@@ -63,7 +60,8 @@ public class ClaimIssuedNotificationService {
         EmailAttachment sealedClaimPdfAttachment = documents.stream()
             .filter(document -> document.getClaimDocumentType() == SEALED_CLAIM)
             .map(document -> pdf(document.getBytes(), document.getFilename()))
-            .findFirst().orElseThrow(() -> new IllegalArgumentException("Event does not contain sealed claim PDF"));
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Event does not contain sealed claim PDF"));
 
         return new EmailData(emailProperties.getSealedClaimRecipient(),
             content.getSubject(),

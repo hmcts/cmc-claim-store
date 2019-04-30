@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.amount.Amount;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
 import uk.gov.hmcts.cmc.domain.models.amount.NotKnown;
+import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -61,6 +62,14 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
             if (ccdCase.getTotalAmount() != null && !Objects.equals(totalAmount, ccdCase.getTotalAmount())) {
                 failWithMessage("Expected CCDCase.totalAmount to be <%s> but was <%s>",
                     ccdCase.getTotalAmount(), totalAmount);
+            }
+        });
+
+        actual.getTotalInterestTillDateOfIssue().ifPresent(currentInterestAmount -> {
+            if (ccdCase.getCurrentInterestAmount() != null && !ccdCase.getCurrentInterestAmount()
+                .equals(String.valueOf(MonetaryConversions.poundsToPennies(currentInterestAmount)))) {
+                failWithMessage("Expected CCDCase.currentInterestAmount to be <%s> but was <%s>",
+                    ccdCase.getCurrentInterestAmount(), currentInterestAmount);
             }
         });
 
@@ -244,8 +253,8 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
             }
         });
 
-        assertThat(claimData.getClaimants().size()).isEqualTo(ccdCase.getClaimants().size());
-        assertThat(claimData.getDefendants().size()).isEqualTo(ccdCase.getDefendants().size());
+        assertThat(claimData.getClaimants().size()).isEqualTo(ccdCase.getApplicants().size());
+        assertThat(claimData.getDefendants().size()).isEqualTo(ccdCase.getRespondents().size());
 
         return this;
     }

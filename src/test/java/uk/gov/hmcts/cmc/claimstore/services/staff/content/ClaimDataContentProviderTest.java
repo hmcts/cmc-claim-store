@@ -64,14 +64,14 @@ public class ClaimDataContentProviderTest {
     public void shouldProvideExpectedClaimAmount() {
         ClaimContent claimContent = provider.createContent(claim);
 
-        assertThat(claimContent.getClaimAmount()).isEqualTo("£40.00");
+        assertThat(claimContent.getClaimAmount()).isEqualTo("£40");
     }
 
     @Test
     public void shouldProvideExpectedFeeAmount() {
         ClaimContent claimContent = provider.createContent(claim);
 
-        assertThat(claimContent.getFeeAmount()).isEqualTo("£40.00");
+        assertThat(claimContent.getFeeAmount()).isEqualTo("£40");
     }
 
     @Test
@@ -92,7 +92,7 @@ public class ClaimDataContentProviderTest {
     public void shouldUseOnlyAmountAndFeeForTotalIfSubmissionInterestDateIsGiven() {
         ClaimContent claimContent = provider.createContent(SampleClaim.getWithSubmissionInterestDate());
 
-        assertThat(claimContent.getClaimTotalAmount()).isEqualTo("£80.00");
+        assertThat(claimContent.getClaimTotalAmount()).isEqualTo("£80");
     }
 
     private void testReason(String inputReason, String... expectations) {

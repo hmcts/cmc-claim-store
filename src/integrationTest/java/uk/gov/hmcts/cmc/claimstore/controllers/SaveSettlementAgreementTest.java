@@ -20,7 +20,9 @@ import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.reform.document.domain.Classification;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
+import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -29,19 +31,26 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.AGREEMENT_REJECTED_BY_DEFENDANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.AGREEMENT_SIGNED_BY_CLAIMANT;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NOTIFICATION_FAILURE;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.AgreementCounterSigned.referenceForClaimant;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.AgreementCounterSigned.referenceForDefendant;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSettlementReachedFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementUploadResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.unsuccessfulDocumentManagementUploadResponse;
+import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.DEFENDANT;
 
 @TestPropertySource(
     properties = {
@@ -72,6 +81,7 @@ public class SaveSettlementAgreementTest extends BaseIntegrationTest {
         when(userService.getUserDetails(BEARER_TOKEN)).thenReturn(defendantDetails);
         when(userService.getUserDetails(AUTHORISATION_TOKEN)).thenReturn(claimantDetails);
         given(userService.getUser(BEARER_TOKEN)).willReturn(new User(BEARER_TOKEN, defendantDetails));
+        given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(new User(AUTHORISATION_TOKEN, claimantDetails));
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).willReturn(PDF_BYTES);
         caseRepository.linkDefendant(BEARER_TOKEN);
         caseRepository.saveClaimantResponse(claim,
@@ -112,8 +122,10 @@ public class SaveSettlementAgreementTest extends BaseIntegrationTest {
     @Test
     public void shouldUploadDocumentToDocumentManagementAfterCountersignSettlementAgreement() throws Exception {
         final ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
-        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), any(), any(), any()))
-            .willReturn(successfulDocumentManagementUploadResponse());
+        given(documentUploadClient
+            .upload(eq(AUTHORISATION_TOKEN), any(), any(), anyList(), any(Classification.class), any())
+        ).willReturn(successfulDocumentManagementUploadResponse());
+
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
         makeRequest(claim.getExternalId(), "countersign").andExpect(status().isCreated());
         Claim claimWithSettlementAgreement = claimStore.getClaimByExternalId(claim.getExternalId());
@@ -124,10 +136,14 @@ public class SaveSettlementAgreementTest extends BaseIntegrationTest {
             PDF_BYTES
         );
         Settlement settlement = claimWithSettlementAgreement.getSettlement().orElseThrow(AssertionError::new);
+
         verify(documentUploadClient).upload(anyString(),
             anyString(),
             anyString(),
+            anyList(),
+            any(Classification.class),
             argument.capture());
+
         List<MultipartFile> files = argument.getValue();
         assertTrue(files.contains(settlementAgreement));
         assertThat(settlement.getLastStatement().getType()).isEqualTo(StatementType.COUNTERSIGNATURE);
@@ -153,6 +169,47 @@ public class SaveSettlementAgreementTest extends BaseIntegrationTest {
         caseRepository.updateSettlement(claim, settlement, BEARER_TOKEN, AGREEMENT_REJECTED_BY_DEFENDANT);
 
         makeRequest(claim.getExternalId(), "reject").andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void shouldSendNotificationsWhenEverythingIsOk() throws Exception {
+        makeRequest(claim.getExternalId(), "countersign").andExpect(status().isCreated());
+        String referenceNumber = claim.getReferenceNumber();
+
+        verify(notificationClient)
+            .sendEmail(anyString(), anyString(), anyMap(), eq(referenceForClaimant(referenceNumber, DEFENDANT.name())));
+
+        verify(notificationClient).sendEmail(
+            anyString(),
+            anyString(),
+            anyMap(),
+            eq(referenceForDefendant(referenceNumber, DEFENDANT.name()))
+        );
+    }
+
+    @Test
+    public void shouldRetrySendNotifications() throws Exception {
+        given(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
+            .willThrow(new NotificationClientException(new RuntimeException("invalid claimant email1")))
+            .willThrow(new NotificationClientException(new RuntimeException("invalid claimant email2")))
+            .willThrow(new NotificationClientException(new RuntimeException("invalid claimant email3")))
+            .willThrow(new NotificationClientException(new RuntimeException("invalid defendant email4")))
+            .willThrow(new NotificationClientException(new RuntimeException("invalid defendant email5")))
+            .willThrow(new NotificationClientException(new RuntimeException("invalid defendant email6")));
+
+        makeRequest(claim.getExternalId(), "countersign").andExpect(status().isCreated());
+        String referenceNumber = claim.getReferenceNumber();
+
+        String referenceForClaimant = referenceForClaimant(referenceNumber, DEFENDANT.name());
+        verify(notificationClient, atLeast(3))
+            .sendEmail(anyString(), anyString(), anyMap(), eq(referenceForClaimant));
+
+        String referenceForDefendant = referenceForDefendant(referenceNumber, DEFENDANT.name());
+        verify(notificationClient, atLeast(3))
+            .sendEmail(anyString(), anyString(), anyMap(), eq(referenceForDefendant));
+
+        verify(appInsights).trackEvent(eq(NOTIFICATION_FAILURE), eq(REFERENCE_NUMBER), eq(referenceForClaimant));
+        verify(appInsights).trackEvent(eq(NOTIFICATION_FAILURE), eq(REFERENCE_NUMBER), eq(referenceForDefendant));
     }
 
     private ResultActions makeRequest(String externalId, String action) throws Exception {

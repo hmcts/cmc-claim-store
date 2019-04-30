@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplate
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 @Component
@@ -25,6 +26,7 @@ public class ClaimIssuedCitizenActionsHandler {
     }
 
     @EventListener
+    @LogExecutionTime
     public void sendClaimantNotification(CitizenClaimIssuedEvent event) {
         Claim claim = event.getClaim();
 
@@ -39,6 +41,7 @@ public class ClaimIssuedCitizenActionsHandler {
     }
 
     @EventListener
+    @LogExecutionTime
     public void sendDefendantNotification(CitizenClaimIssuedEvent event) {
         Claim claim = event.getClaim();
 
