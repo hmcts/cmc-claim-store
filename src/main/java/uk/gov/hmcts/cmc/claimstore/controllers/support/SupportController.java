@@ -256,7 +256,7 @@ public class SupportController {
 
     private void resendStaffNotificationClaimantResponse(Claim claim) {
         ClaimantResponse claimantResponse = claim.getClaimantResponse()
-            .orElseThrow(IllegalStateException::new);
+            .orElseThrow(IllegalArgumentException::new);
         Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
         if (!isSettlementAgreement(claim, claimantResponse)
             && (!isReferredToJudge(claimantResponse)
