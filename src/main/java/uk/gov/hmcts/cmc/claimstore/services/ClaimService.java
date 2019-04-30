@@ -290,8 +290,7 @@ public class ClaimService {
         data.put("eyewitnessUploadDeadline", deadline);
         data.put("directionList", ImmutableList.of(
             CCDOrderDirectionType.DOCUMENTS.name(),
-            CCDOrderDirectionType.EYEWITNESS.name(),
-            CCDOrderDirectionType.MEDIATION.name()));
+            CCDOrderDirectionType.EYEWITNESS.name()));
         return AboutToStartOrSubmitCallbackResponse
             .builder()
             .data(data)
