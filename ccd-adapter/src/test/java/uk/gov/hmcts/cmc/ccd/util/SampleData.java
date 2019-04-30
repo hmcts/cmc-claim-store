@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.util;
 
+import com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRow;
 import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
@@ -30,6 +31,12 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDLivingPartner;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebt;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
@@ -61,6 +68,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPaymentF
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebtType.ELECTRICITY;
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDResidenceType.JOINT_OWN_HOME;
 import static uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceType.EXPERT_WITNESS;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOTH;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
 
@@ -183,6 +191,7 @@ public class SampleData {
     public static CCDRespondent getCCDRespondentIndividual() {
         CCDAddress ccdAddress = getCCDAddress();
         return CCDRespondent.builder()
+            .partyName("Mary Richards")
             .claimantProvidedDetail(
                 CCDParty.builder()
                     .type(INDIVIDUAL)
@@ -425,6 +434,30 @@ public class SampleData {
             .evidence(singletonList(CCDCollectionElement.<CCDEvidenceRow>builder()
                 .value(CCDEvidenceRow.builder().type(EXPERT_WITNESS).description("description of evidence").build())
                 .build()))
+            .build();
+    }
+
+    public static CCDOrderGenerationData getCCDOrderGenerationData() {
+        return CCDOrderGenerationData.builder()
+            .directionList(ImmutableList.of(
+                CCDOrderDirectionType.DOCUMENTS, CCDOrderDirectionType.EYEWITNESS))
+            .otherDirectionList(ImmutableList.of(
+                CCDOrderDirection.builder()
+                    .extraOrderDirection(CCDOrderDirectionType.OTHER)
+                    .otherDirection("a direction")
+                    .forParty(BOTH)
+                    .sendBy(LocalDate.parse("2020-10-11"))
+                    .build()))
+            .hearingIsRequired(YES)
+            .docUploadDeadline(LocalDate.parse("2020-10-11"))
+            .eyewitnessUploadDeadline(LocalDate.parse("2020-10-11"))
+            .hearingCourt(CCDHearingCourtType.DEFENDANT_COURT)
+            .preferredCourtObjectingReason("I like this court more")
+            .hearingStatement("No idea")
+            .newRequestedCourt("Another court")
+            .docUploadForParty(CCDDirectionPartyType.CLAIMANT)
+            .eyewitnessUploadForParty(CCDDirectionPartyType.DEFENDANT)
+            .estimatedHearingDuration(CCDHearingDurationType.FOUR_HOURS)
             .build();
     }
 
