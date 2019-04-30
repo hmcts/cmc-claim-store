@@ -69,6 +69,7 @@ pdf-service:
 
 document_management:
   url: ${DOCUMENT_MANAGEMENT_URL}
+  userRoles: ${DOCUMENT_MANAGEMENT_USERROLES}
 
 bankHolidays:
   api:
