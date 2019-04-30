@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.email;
 
+import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +15,7 @@ import java.util.Collections;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+import static java.util.Collections.singletonMap;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -33,7 +35,7 @@ public class EmailServiceTest {
     private JavaMailSenderImpl javaMailSender;
 
     @Mock
-    private AppInsightsService appInsightsService;
+    private TelemetryClient telemetryClient;
 
     @InjectMocks
     private EmailService emailService;
@@ -60,7 +62,8 @@ public class EmailServiceTest {
         doThrow(mock(MailException.class)).when(javaMailSender).send(any(MimeMessage.class));
         emailService.sendEmail("no-reply@example.com", emailData);
 
-        verify(appInsightsService).trackEvent(EmailService.NOTIFICATION_FAILURE, EMAIL_SUBJECT, emailData.getSubject());
+        verify(telemetryClient)
+            .trackEvent(EmailService.NOTIFICATION_FAILURE, singletonMap(EMAIL_SUBJECT, emailData.getSubject()), null);
     }
 
     @Test(expected = IllegalArgumentException.class)
