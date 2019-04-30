@@ -50,7 +50,7 @@ public class MediationCSVGeneratorTest {
     @Test
     public void shouldCreateMediationCSVEvenWhenNoClaimsWithMediation() {
 
-        String expected = "null,null,null,null,null,null,null,null,null\r\n";
+        String expected = "null,null,null,null,null,null,null,null,null,null\r\n";
         String mediationCSV = mediationCSVGenerator.createMediationCSV(AUTHORISATION, LocalDate.now());
         assertThat(mediationCSV).isEqualTo(expected);
     }

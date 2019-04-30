@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,21 +9,57 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.MediationCSVGenerationException;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.MediationRow;
-import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import static uk.gov.hmcts.cmc.domain.models.MediationRow.*;
+import static uk.gov.hmcts.cmc.domain.models.MediationRow.CASE_TYPE;
+import static uk.gov.hmcts.cmc.domain.models.MediationRow.CHECK_LIST;
+import static uk.gov.hmcts.cmc.domain.models.MediationRow.MediationRowBuilder;
+import static uk.gov.hmcts.cmc.domain.models.MediationRow.PARTY_STATUS;
+import static uk.gov.hmcts.cmc.domain.models.MediationRow.SITE_ID;
 
 @Component
 public class MediationCSVGenerator {
 
     private static final int MEDIATION_CLAIMANT_PARTY_TYPE = 1;
     private static final int MEDIATION_DEFENDANT_PARTY_TYPE = 2;
-    public static final String NULL_STRING = "null";
+
+    private static final Map<Integer, Function<Claim, Optional<String>>> MEDIATION_CONTACT_PERSON_EXTRACTORS =
+        ImmutableMap.of(
+            MEDIATION_CLAIMANT_PARTY_TYPE,
+            claim -> claim.getClaimantResponse()
+                .map(ResponseRejection.class::cast)
+                .orElseThrow(RuntimeException::new)
+                .getMediationContactPerson(),
+
+            MEDIATION_DEFENDANT_PARTY_TYPE,
+            claim -> claim.getResponse()
+                .orElseThrow(RuntimeException::new)
+                .getMediationContactPerson()
+        );
+
+    private static final Map<Integer, Function<Claim, Optional<String>>> MEDIATION_CONTACT_NUMBER_EXTRACTORS =
+        ImmutableMap.of(
+            MEDIATION_CLAIMANT_PARTY_TYPE,
+            claim -> claim.getClaimantResponse()
+                .map(ResponseRejection.class::cast)
+                .orElseThrow(RuntimeException::new)
+                .getMediationPhoneNumber(),
+
+            MEDIATION_DEFENDANT_PARTY_TYPE,
+            claim -> claim.getResponse()
+                .orElseThrow(RuntimeException::new)
+                .getMediationPhoneNumber()
+        );
+
+    private static final String NULL_STRING = "null";
 
     private CaseRepository caseRepository;
 
@@ -32,9 +69,8 @@ public class MediationCSVGenerator {
     }
 
     public String createMediationCSV(String authorisation, LocalDate mediationDate) {
-        try {
-            StringBuilder stringBuilder = new StringBuilder();
-            CSVPrinter csvPrinter = new CSVPrinter(stringBuilder, CSVFormat.DEFAULT.withNullString(NULL_STRING));
+        StringBuilder stringBuilder = new StringBuilder();
+        try (CSVPrinter csvPrinter = new CSVPrinter(stringBuilder, CSVFormat.DEFAULT.withNullString(NULL_STRING))) {
             csvPrinter.printRecords(createMediationRowForEachParty(authorisation, mediationDate));
             csvPrinter.flush();
             return stringBuilder.toString();
@@ -43,36 +79,39 @@ public class MediationCSVGenerator {
         }
     }
 
-    private List<List<String>> createMediationRowForEachParty(String authorisation, LocalDate mediationDate) {
-        List<List<String>> result = new ArrayList<>();
-        List<Claim> mediationClaims = caseRepository.getMediationClaims(authorisation, mediationDate);
+    private List<MediationRow> createMediationRowForEachParty(String authorisation, LocalDate mediationDate) {
+        List<MediationRow> result = caseRepository.getMediationClaims(authorisation, mediationDate)
+            .stream()
+            .map(claim -> Arrays.asList(
+                createMediationRow(claim, MEDIATION_CLAIMANT_PARTY_TYPE),
+                createMediationRow(claim, MEDIATION_DEFENDANT_PARTY_TYPE)
+            ))
+            .flatMap(List::stream)
+            .collect(Collectors.toList());
 
-        if (mediationClaims.isEmpty()) {
-            result.add(MediationRow.builder().build().toList());
-        } else {
-            mediationClaims.forEach(claim -> {
-                result.add(createMediationRow(claim, MEDIATION_CLAIMANT_PARTY_TYPE).toList());
-                result.add(createMediationRow(claim, MEDIATION_DEFENDANT_PARTY_TYPE).toList());
-            });
+        if (result.isEmpty()) {
+            result.add(MediationRow.builder().build());
         }
 
         return result;
     }
 
     private MediationRow createMediationRow(Claim claim, int partyType) {
-        Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
-
         MediationRowBuilder mediationRowBuilder = MediationRow.builder()
             .siteId(SITE_ID)
             .caseType(CASE_TYPE)
             .checkList(CHECK_LIST)
             .partyStatus(PARTY_STATUS)
             .caseNumber(claim.getReferenceNumber())
-            .amount(String.valueOf(claim.getTotalAmountTillToday().orElse(BigDecimal.ZERO)))
+            .amount(String.valueOf(claim.getTotalAmountTillToday().orElseThrow(RuntimeException::new)))
             .partyType(String.valueOf(partyType));
 
-        response.getMediationContactPerson().ifPresent(mediationRowBuilder::contactName);
-        response.getMediationPhoneNumber().ifPresent(mediationRowBuilder::contactNumber);
+        MEDIATION_CONTACT_PERSON_EXTRACTORS.get(partyType)
+            .apply(claim)
+            .ifPresent(mediationRowBuilder::contactName);
+        MEDIATION_CONTACT_NUMBER_EXTRACTORS.get(partyType)
+            .apply(claim)
+            .ifPresent(mediationRowBuilder::contactNumber);
 
         return mediationRowBuilder.build();
     }
