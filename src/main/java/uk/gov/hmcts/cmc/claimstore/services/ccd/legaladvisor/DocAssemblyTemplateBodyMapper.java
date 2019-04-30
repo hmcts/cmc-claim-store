@@ -68,11 +68,11 @@ public class DocAssemblyTemplateBodyMapper {
             .otherDirectionList(
                 ccdOrderGenerationData.getOtherDirectionList().stream().map(
                     direction -> OtherDirection.builder()
-                        .extraOrderDirection(direction.getExtraOrderDirection())
-                        .directionComment(direction.getOtherDirection())
-                        .forParty(direction.getForParty())
-                        .sendBy(direction.getSendBy())
-                        .build()
+                            .extraOrderDirection(direction.getValue().getExtraOrderDirection())
+                            .directionComment(direction.getValue().getDirectionComment())
+                            .forParty(direction.getValue().getForParty())
+                            .sendBy(direction.getValue().getSendBy())
+                            .build()
                 ).collect(Collectors.toList()))
             .build();
     }

@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Builder
 public class CCDOrderDirection {
     private CCDOrderDirectionType extraOrderDirection;
-    private String otherDirection;
+    private String directionComment;
     private LocalDate sendBy;
     private CCDDirectionPartyType forParty;
 }
