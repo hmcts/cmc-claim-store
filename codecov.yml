@@ -9,6 +9,7 @@ ignore:
   - "**/CCDCaseRepository.java"
   - "**/PathPatterns.java"
   - "**/cmc/claimstore/appinsights/**"
+  - "**/cmc/claimstore/services/ccd/legaladvisor/**"
   - "**/ccd/domain/**"
   - "**/ccd/deprecated/**"
   - "**/ccd/migration/**"
