@@ -38,7 +38,7 @@ public class ClaimCreatedOperationHandlerTest {
     public static final String PIN = "PIN";
     public static final String SUBMITTER_NAME = "submitter-name";
     public static final String AUTHORISATION = "AUTHORISATION";
-    private static final byte[] PDF_BYTES = new byte[] {1, 2, 3, 4};
+    private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
     public static final String LETTER_HOLDER_ID = "LetterHolderId";
 
     private Map<String, Object> pinContents = new HashMap<>();
@@ -70,6 +70,8 @@ public class ClaimCreatedOperationHandlerTest {
     private ClaimService claimService;
     @Mock
     private PinBasedOperationService pinBasedOperationService;
+    @Mock
+    private ClaimCreationEventsStatusService eventsStatusService;
 
     @Before
     public void before() {
@@ -86,7 +88,9 @@ public class ClaimCreatedOperationHandlerTest {
             uploadOperationService,
             claimantOperationService,
             rpaOperationService,
-            notifyStaffOperationService
+            notifyStaffOperationService,
+            eventsStatusService,
+            claimService
         );
 
         given(claimService.getPinResponse(eq(CLAIM.getClaimData()), eq(AUTHORISATION)))
@@ -106,7 +110,6 @@ public class ClaimCreatedOperationHandlerTest {
         given(rpaOperationService.notify(eq(CLAIM), eq(AUTHORISATION), any())).willReturn(CLAIM);
         given(notifyStaffOperationService.notify(eq(CLAIM), eq(AUTHORISATION), any())).willReturn(CLAIM);
         given(uploadOperationService.uploadDocument(eq(CLAIM), eq(AUTHORISATION), any())).willReturn(CLAIM);
-
     }
 
     @Test
@@ -124,7 +127,8 @@ public class ClaimCreatedOperationHandlerTest {
         verify(pinBasedOperationService).process(eq(CLAIM), anyString(), anyString(), any());
         verify(claimantOperationService).notifyCitizen(eq(CLAIM), any(), eq(AUTHORISATION));
         verify(rpaOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
-        verify(uploadOperationService, atLeast(2)).uploadDocument(eq(CLAIM), eq(AUTHORISATION), any());
+        verify(uploadOperationService, atLeast(2)).uploadDocument(eq(CLAIM),
+            eq(AUTHORISATION), any());
 
     }
 

@@ -63,9 +63,9 @@ public class Claim {
     private final ReDetermination reDetermination;
     private final LocalDateTime reDeterminationRequestedAt;
     private final ClaimDocumentCollection claimDocumentCollection;
-    private final ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
     private final LocalDate claimantResponseDeadline;
     private final ClaimState state;
+    private final ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     public Claim(

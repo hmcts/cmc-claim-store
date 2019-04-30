@@ -275,4 +275,9 @@ public class DBCaseRepository implements CaseRepository {
         claimRepository.updateClaimSubmissionOperationStatus(claimId, jsonMapper.toJson(indicators));
         return getClaimById(claimId);
     }
+
+    @Override
+    public void updateClaimState(String authorisation, Long claimId, String state) {
+        claimRepository.updateClaimState(authorisation, claimId, state);
+    }
 }

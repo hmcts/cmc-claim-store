@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
+import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimCreationEventsStatusService;
 import uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
@@ -15,20 +17,21 @@ import java.util.Arrays;
 public class RpaOperationService {
 
     private final ClaimIssuedNotificationService notificationService;
+    private final ClaimCreationEventsStatusService eventsStatusService;
 
     @Autowired
     public RpaOperationService(
-        @Qualifier("rpa/claim-issued-notification-service") ClaimIssuedNotificationService notificationService
+        @Qualifier("rpa/claim-issued-notification-service") ClaimIssuedNotificationService notificationService,
+        ClaimCreationEventsStatusService eventsStatusService
     ) {
         this.notificationService = notificationService;
+        this.eventsStatusService = eventsStatusService;
     }
 
     public Claim notify(Claim claim, String authorisation, PDF... documents) {
-        //TODO check claim if operation already complete, if yes return claim else
 
         notificationService.notifyRobotics(claim, Arrays.asList(documents));
 
-        //TODO update claim and return updated claim, below is placeholder
-        return claim;
+        return eventsStatusService.updateClaimOperationCompletion(authorisation, claim, CaseEvent.SENDING_RPA);
     }
 }

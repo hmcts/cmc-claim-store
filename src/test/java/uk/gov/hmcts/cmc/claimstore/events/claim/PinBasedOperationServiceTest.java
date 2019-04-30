@@ -63,6 +63,8 @@ public class PinBasedOperationServiceTest {
     private NotificationTemplates templates;
     @Mock
     private EmailTemplates emailTemplates;
+    @Mock
+    private ClaimCreationEventsStatusService eventsStatusService;
 
     @Before
     public void before() {
@@ -71,7 +73,8 @@ public class PinBasedOperationServiceTest {
             bulkPrintService,
             claimIssuedStaffNotificationService,
             claimIssuedNotificationService,
-            notificationsProperties
+            notificationsProperties,
+            eventsStatusService
         );
 
         given(documentUploadHandler

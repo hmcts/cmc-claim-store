@@ -246,5 +246,14 @@ public interface ClaimRepository {
         @Bind("claimSubmissionOperationIndicators") String claimSubmissionOperationIndicators
     );
 
+    @SqlUpdate("UPDATE claim SET "
+        + " state = :state"
+        + " WHERE id = :claimId")
+    void updateClaimState(
+        String authorisation,
+        @Bind("claimId") Long claimId,
+        @Bind("state") String state
+    );
+
 
 }

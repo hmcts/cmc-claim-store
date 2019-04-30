@@ -15,6 +15,4 @@ public class ClaimSubmissionOperationIndicators {
     private YesNoOption sealedClaimUpload;
     private YesNoOption claimIssueReceiptUpload;
     private YesNoOption defendantPinLetterUpload;
-
-
 }

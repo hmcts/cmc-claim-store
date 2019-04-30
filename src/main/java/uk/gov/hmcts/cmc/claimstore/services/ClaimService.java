@@ -25,6 +25,7 @@ import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
@@ -390,6 +391,9 @@ public class ClaimService {
         claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorisation);
         caseRepository.saveReDetermination(authorisation, claim, redetermination);
         ccdEventProducer.createCCDReDetermination(claim, authorisation, redetermination);
+    }
 
+    public void updateClaimState(String authorisation, Claim claim, ClaimState state){
+        claimRepository.updateClaimState(authorisation, claim.getId(), state.name());
     }
 }

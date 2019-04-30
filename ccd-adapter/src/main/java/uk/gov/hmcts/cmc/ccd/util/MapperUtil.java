@@ -1,18 +1,15 @@
 package uk.gov.hmcts.cmc.ccd.util;
 
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimSubmissionOperationIndicators;
-import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
-
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class MapperUtil {
@@ -53,8 +50,6 @@ public class MapperUtil {
             .claimIssueReceiptUpload(YesNoOption.NO)
             .defendantPinLetterUpload(YesNoOption.NO)
             .build();
-
-
 
     private static String fetchDefendantName(Claim claim) {
         StringBuilder defendantNameBuilder = new StringBuilder();

@@ -206,4 +206,9 @@ public class CCDCaseRepository implements CaseRepository {
         coreCaseDataService.saveCaseEvent(authorisation, claim.getId(), caseEvent);
     }
 
+    @Override
+    public void updateClaimState(String authorisation, Long claimId, String state){
+        //TODO to be implemented as part of another PR.
+    }
+
 }
