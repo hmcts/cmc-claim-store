@@ -189,7 +189,7 @@ public class SupportControllerTest {
 
     @Test
     public void shouldThrowExceptionWhenClaimHasNoClaimantResponse() {
-        exceptionRule.expect(IllegalStateException.class);
+        exceptionRule.expect(IllegalArgumentException.class);
         when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER))).thenReturn(
             Optional.of(SampleClaim.builder().withClaimantResponse(null).build()));
 
