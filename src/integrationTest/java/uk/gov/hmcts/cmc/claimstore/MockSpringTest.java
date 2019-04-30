@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -103,6 +104,9 @@ public abstract class MockSpringTest {
 
     @MockBean
     protected ReferenceNumberRepository referenceNumberRepository;
+
+    @MockBean
+    protected TelemetryClient telemetry;
 
     protected <T> T deserializeObjectFrom(MvcResult result, Class<T> targetClass) throws UnsupportedEncodingException {
         return jsonMapper.fromJson(result.getResponse().getContentAsString(), targetClass);
