@@ -1,9 +1,9 @@
 tags:
   cmc-claim-store-postgresql-pod: true
   cmc-citizen-frontend-pod: true
-  cmc-ccd-stack: true
-  ccd-idam-pr: true
-  postgresql-pod: false  # rpe-feature-toggle-api & ccd
+  cmc-ccd-stack: false  # ccd=true
+  ccd-idam-pr: false  # ccd=true
+  postgresql-pod: false  # stop any subcharts starting their own postgres instance
 
 postgresql:
   resources:
@@ -45,8 +45,8 @@ java:
     CMC_DB_HOST: ${SERVICE_NAME}-ccd-postgres
     CMC_DB_USERNAME: cmc
     CMC_DB_PASSWORD: cmc
-    CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
-    FEATURE_TOGGLES_CCD_ENABLED: true
+    CORE_CASE_DATA_API_URL: false  # ccd=http://${SERVICE_NAME}-data-store-api
+    FEATURE_TOGGLES_CCD_ENABLED: false  # ccd=true
     FEATURE_TOGGLES_CCD_ASYNC_ENABLED: false
 
 cmc-citizen-frontend:
