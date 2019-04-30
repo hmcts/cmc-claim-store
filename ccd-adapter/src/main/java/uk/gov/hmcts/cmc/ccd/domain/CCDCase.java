@@ -32,7 +32,6 @@ public class CCDCase {
     private BigDecimal amountHigherValue;
     private List<CCDCollectionElement<CCDAmountRow>> amountBreakDown;
     private BigDecimal totalAmount;
-    private CCDNotKnown notKnown;
     private CCDInterestType interestType;
     private BigDecimal interestBreakDownAmount;
     private String interestBreakDownExplanation;
@@ -59,8 +58,8 @@ public class CCDCase {
     private List<CCDCollectionElement<CCDRespondent>> respondents;
     private List<CCDCollectionElement<CCDTimelineEvent>> timeline;
     private List<CCDCollectionElement<CCDEvidenceRow>> evidence;
-    private CCDDocument sealedClaimDocument;
     private String features;
     private CCDYesNoOption migratedFromClaimStore;
+    private List<CCDCollectionElement<CCDClaimDocument>> caseDocuments;
     private String caseName;
 }

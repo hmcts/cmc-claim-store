@@ -50,7 +50,11 @@ public class EmailService {
     }
 
     @Recover
-    public void logSendMessageWithAttachmentFailure(RuntimeException exception, String from, EmailData emailData) {
+    public void logSendMessageWithAttachmentFailure(
+        EmailSendFailedException exception,
+        String from,
+        EmailData emailData
+    ) {
         String errorMessage = String.format(
             "sendEmail failure:  failed to send email with details: %s due to %s",
             emailData.toString(), exception.getMessage()
