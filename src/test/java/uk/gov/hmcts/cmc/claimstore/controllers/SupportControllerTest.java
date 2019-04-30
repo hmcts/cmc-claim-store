@@ -7,7 +7,6 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.cmc.claimstore.controllers.support.SupportController;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
