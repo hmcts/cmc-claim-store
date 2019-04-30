@@ -4,10 +4,11 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 @EqualsAndHashCode
-public class MediationRow {
+public class MediationRow implements Iterable<String> {
     public static final String SITE_ID = "4";
     public static final String CASE_TYPE = "1";
     public static final String CHECK_LIST = "4";
@@ -62,5 +63,10 @@ public class MediationRow {
             contactNumber,
             contactEmailAddress
         );
+    }
+
+    @Override
+    public Iterator<String> iterator() {
+        return this.toList().iterator();
     }
 }
