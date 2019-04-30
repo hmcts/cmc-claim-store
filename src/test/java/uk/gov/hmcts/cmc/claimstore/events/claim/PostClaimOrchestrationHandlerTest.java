@@ -33,12 +33,12 @@ import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ClaimCreatedOperationHandlerTest {
+public class PostClaimOrchestrationHandlerTest {
     public static final Claim CLAIM = SampleClaim.getDefault();
     public static final String PIN = "PIN";
     public static final String SUBMITTER_NAME = "submitter-name";
     public static final String AUTHORISATION = "AUTHORISATION";
-    private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
+    private static final byte[] PDF_BYTES = new byte[] {1, 2, 3, 4};
     public static final String LETTER_HOLDER_ID = "LetterHolderId";
 
     private Map<String, Object> pinContents = new HashMap<>();
@@ -49,7 +49,7 @@ public class ClaimCreatedOperationHandlerTest {
     private String claimTemplate = "claimTemplate";
     private Document sealedClaimLetterDocument = new Document(claimTemplate, claimContents);
 
-    private ClaimCreatedOperationHandler claimCreatedOperationHandler;
+    private PostClaimOrchestrationHandler postClaimOrchestrationHandler;
     @Mock
     private CitizenServiceDocumentsService citizenServiceDocumentsService;
     @Mock
@@ -69,7 +69,9 @@ public class ClaimCreatedOperationHandlerTest {
     @Mock
     private ClaimService claimService;
     @Mock
-    private PinBasedOperationService pinBasedOperationService;
+    private UserService userService;
+    @Mock
+    private PinOrchestrationService pinOrchestrationService;
     @Mock
     private ClaimCreationEventsStatusService eventsStatusService;
 
@@ -84,9 +86,9 @@ public class ClaimCreatedOperationHandlerTest {
             userService
         );
 
-        claimCreatedOperationHandler = new ClaimCreatedOperationHandler(
-            documentGenerationService,
-            pinBasedOperationService,
+        postClaimOrchestrationHandler = new PostClaimOrchestrationHandler(
+            documentOrchestrationService,
+            pinOrchestrationService,
             uploadOperationService,
             claimantOperationService,
             rpaOperationService,
@@ -107,7 +109,7 @@ public class ClaimCreatedOperationHandlerTest {
         given(sealedClaimPdfService.createPdf(eq(CLAIM))).willReturn(PDF_BYTES);
         given(pdfServiceClient.generateFromHtml(any(), anyMap())).willReturn(PDF_BYTES);
         given(claimIssueReceiptService.createPdf(eq(CLAIM))).willReturn(PDF_BYTES);
-        given(pinBasedOperationService.process(eq(CLAIM), anyString(), anyString(), any())).willReturn(CLAIM);
+        given(pinOrchestrationService.process(eq(CLAIM), anyString(), anyString(), any())).willReturn(CLAIM);
         given(claimantOperationService.notifyCitizen(eq(CLAIM), any(), eq(AUTHORISATION))).willReturn(CLAIM);
         given(rpaOperationService.notify(eq(CLAIM), eq(AUTHORISATION), any())).willReturn(CLAIM);
         given(notifyStaffOperationService.notify(eq(CLAIM), eq(AUTHORISATION), any())).willReturn(CLAIM);
@@ -120,13 +122,13 @@ public class ClaimCreatedOperationHandlerTest {
         CitizenClaimCreatedEvent event = new CitizenClaimCreatedEvent(CLAIM, SUBMITTER_NAME, AUTHORISATION);
 
         //when
-        claimCreatedOperationHandler.citizenIssueHandler(event);
+        postClaimOrchestrationHandler.citizenIssueHandler(event);
 
         //then
         verify(citizenServiceDocumentsService).sealedClaimDocument(eq(CLAIM));
         verify(pdfServiceClient, atLeast(2)).generateFromHtml(any(), anyMap());
         verify(claimIssueReceiptService).createPdf(eq(CLAIM));
-        verify(pinBasedOperationService).process(eq(CLAIM), anyString(), anyString(), any());
+        verify(pinOrchestrationService).process(eq(CLAIM), anyString(), anyString(), any());
         verify(claimantOperationService).notifyCitizen(eq(CLAIM), any(), eq(AUTHORISATION));
         verify(rpaOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
         verify(uploadOperationService, atLeast(2)).uploadDocument(eq(CLAIM),
@@ -140,7 +142,7 @@ public class ClaimCreatedOperationHandlerTest {
         RepresentedClaimCreatedEvent event = new RepresentedClaimCreatedEvent(CLAIM, SUBMITTER_NAME, AUTHORISATION);
 
         //when
-        claimCreatedOperationHandler.representativeIssueHandler(event);
+        postClaimOrchestrationHandler.representativeIssueHandler(event);
 
         //then
         verify(sealedClaimPdfService).createPdf(eq(CLAIM));

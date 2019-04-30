@@ -79,7 +79,7 @@ public class PostClaimOrchestrationHandler {
 
         performPinOperations = (claim, event, docs) ->
             isPinOperationSuccess.test(claim.getClaimSubmissionOperationIndicators())
-                ? pinBasedOperationService.process(claim, event.getAuthorisation(), event.getSubmitterName(), docs)
+                ? pinOrchestrationService.process(claim, event.getAuthorisation(), event.getSubmitterName(), docs)
                 : claim;
 
         uploadSealedClaimOperation = (claim, event, docs) ->

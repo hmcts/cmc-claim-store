@@ -29,7 +29,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LET
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PinBasedOperationServiceTest {
+public class PinOrchestrationServiceTest {
     public static final Claim CLAIM = SampleClaim.getDefault();
     public static final String AUTHORISATION = "AUTHORISATION";
     public static final String SUBMITTER_NAME = "submitter-name";
@@ -47,7 +47,7 @@ public class PinBasedOperationServiceTest {
     private String claimTemplate = "claimTemplate";
     private Document sealedClaimLetterDocument = new Document(claimTemplate, claimContents);
 
-    private PinBasedOperationService pinBasedOperationService;
+    private PinOrchestrationService pinOrchestrationService;
 
     @Mock
     private DocumentUploadHandler documentUploadHandler;
@@ -68,7 +68,7 @@ public class PinBasedOperationServiceTest {
 
     @Before
     public void before() {
-        pinBasedOperationService = new PinBasedOperationService(
+        pinOrchestrationService = new PinOrchestrationService(
             documentUploadHandler,
             bulkPrintService,
             claimIssuedStaffNotificationService,
@@ -98,7 +98,7 @@ public class PinBasedOperationServiceTest {
             .build();
 
         //when
-        pinBasedOperationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME, generatedDocuments);
+        pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME, generatedDocuments);
 
         //then
         verify(documentUploadHandler)
