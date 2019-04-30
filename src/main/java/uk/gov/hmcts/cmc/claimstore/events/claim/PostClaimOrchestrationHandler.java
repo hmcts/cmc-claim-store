@@ -25,13 +25,13 @@ public class PostClaimOrchestrationHandler {
     private final ClaimantOperationService claimantOperationService;
     private final RpaOperationService rpaOperationService;
     private final UploadOperationService uploadOperationService;
-    private final DocumentGenerationService documentGenerationService;
+    private final DocumentOrchestrationService documentOrchestrationService;
     private final NotifyStaffOperationService notifyStaffOperationService;
 
     @Autowired
     @SuppressWarnings("squid:S00107")
     public PostClaimOrchestrationHandler(
-        DocumentGenerationService documentGenerationService,
+        DocumentOrchestrationService documentOrchestrationService,
         PinOrchestrationService pinOrchestrationService,
         UploadOperationService uploadOperationService,
         ClaimantOperationService claimantOperationService,
@@ -42,7 +42,7 @@ public class PostClaimOrchestrationHandler {
         this.claimantOperationService = claimantOperationService;
         this.rpaOperationService = rpaOperationService;
         this.uploadOperationService = uploadOperationService;
-        this.documentGenerationService = documentGenerationService;
+        this.documentOrchestrationService = documentOrchestrationService;
         this.notifyStaffOperationService = notifyStaffOperationService;
     }
 
@@ -53,7 +53,8 @@ public class PostClaimOrchestrationHandler {
             String authorisation = event.getAuthorisation();
             String submitterName = event.getSubmitterName();
 
-            GeneratedDocuments generatedDocuments = documentGenerationService.generateForCitizen(claim, authorisation);
+            GeneratedDocuments generatedDocuments
+                = documentOrchestrationService.generateForCitizen(claim, authorisation);
 
             Claim updatedClaim
                 = pinOrchestrationService.process(claim, authorisation, submitterName, generatedDocuments);
@@ -87,7 +88,7 @@ public class PostClaimOrchestrationHandler {
             Claim claim = event.getClaim();
             String authorisation = event.getAuthorisation();
 
-            GeneratedDocuments generatedDocuments = documentGenerationService.generateForRepresentative(claim);
+            GeneratedDocuments generatedDocuments = documentOrchestrationService.generateForRepresentative(claim);
             PDF sealedClaim = generatedDocuments.getSealedClaim();
 
             Claim updatedClaim = uploadOperationService.uploadDocument(claim, authorisation, sealedClaim);

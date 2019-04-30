@@ -257,7 +257,7 @@ public class ClaimService {
         return issuedClaim;
     }
 
-    public Optional<GeneratePinResponse> getPinResponse(ClaimData claimData, String authorisation) {
+    private Optional<GeneratePinResponse> getPinResponse(ClaimData claimData, String authorisation) {
         if (!claimData.isClaimantRepresented() && !asyncEventOperationEnabled) {
             return Optional.of(userService.generatePin(claimData.getDefendant().getName(), authorisation));
         }

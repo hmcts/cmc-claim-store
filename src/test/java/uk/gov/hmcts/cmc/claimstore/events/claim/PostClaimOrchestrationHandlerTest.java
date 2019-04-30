@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.events.operations.UploadOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimCreatedEvent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
@@ -22,7 +23,6 @@ import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -69,19 +69,23 @@ public class PostClaimOrchestrationHandlerTest {
     @Mock
     private ClaimService claimService;
     @Mock
+    private UserService userService;
+    @Mock
     private PinOrchestrationService pinOrchestrationService;
 
     @Before
     public void before() {
-        DocumentGenerationService documentGenerationService = new DocumentGenerationService(
+        DocumentOrchestrationService documentOrchestrationService = new DocumentOrchestrationService(
             citizenServiceDocumentsService,
             sealedClaimPdfService,
             pdfServiceClient,
             claimIssueReceiptService,
-            claimService);
+            claimService,
+            userService
+        );
 
         postClaimOrchestrationHandler = new PostClaimOrchestrationHandler(
-            documentGenerationService,
+            documentOrchestrationService,
             pinOrchestrationService,
             uploadOperationService,
             claimantOperationService,
@@ -89,12 +93,12 @@ public class PostClaimOrchestrationHandlerTest {
             notifyStaffOperationService
         );
 
-        given(claimService.getPinResponse(eq(CLAIM.getClaimData()), eq(AUTHORISATION)))
-            .willReturn(Optional.of(GeneratePinResponse.builder()
+        given(userService.generatePin(eq(CLAIM.getClaimData().getDefendant().getName()), eq(AUTHORISATION)))
+            .willReturn(GeneratePinResponse.builder()
                 .pin(PIN)
                 .userId(LETTER_HOLDER_ID)
                 .build()
-            ));
+            );
 
         given(citizenServiceDocumentsService.pinLetterDocument(eq(CLAIM), eq(PIN))).willReturn(defendantLetterDocument);
         given(citizenServiceDocumentsService.sealedClaimDocument(eq(CLAIM))).willReturn(sealedClaimLetterDocument);
