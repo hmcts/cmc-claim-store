@@ -20,6 +20,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NOTIFICATION_FAILURE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefendantResponseNotificationServiceTest extends BaseNotificationServiceTest {
@@ -30,7 +32,9 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
     @Before
     public void beforeEachTest() {
         service = new DefendantResponseNotificationService(
-            notificationClient, new FreeMediationDecisionDateCalculator(28), properties
+            new NotificationService(notificationClient, appInsights),
+            new FreeMediationDecisionDateCalculator(28),
+            properties
         );
 
         when(properties.getFrontendBaseUrl()).thenReturn(FRONTEND_BASE_URL);
@@ -47,6 +51,7 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
             .thenThrow(mock(NotificationClientException.class));
 
         service.notifyDefendant(claim, USER_EMAIL, reference);
+        verify(appInsights).trackEvent(eq(NOTIFICATION_FAILURE), eq(REFERENCE_NUMBER), eq(reference));
     }
 
     @Test
@@ -128,7 +133,7 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
             .sendEmail(eq(DEFENDANT_RESPOND_BY_ADMISSION), eq(claim.getSubmitterEmail()), anyMap(), eq(reference));
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void throwExceptionWhenResponseNotPresent() {
         Claim claimWithNoResponse = SampleClaim.builder().build();
 
@@ -138,19 +143,4 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
 
         verifyZeroInteractions(emailTemplates, notificationClient);
     }
-
-    @Test
-    public void recoveryShouldNotLogPII() {
-        service.logNotificationFailure(
-            new NotificationException("expected exception"),
-            null,
-            "hidden@email.com",
-            null,
-            "reference"
-        );
-
-        assertWasLogged("Failure: failed to send notification (reference) due to expected exception");
-        assertWasNotLogged("hidden@email.com");
-    }
-
 }

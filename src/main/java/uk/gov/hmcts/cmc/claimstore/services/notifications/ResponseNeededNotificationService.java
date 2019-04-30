@@ -24,6 +24,7 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Map;
 
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
@@ -89,7 +90,7 @@ public class ResponseNeededNotificationService {
         String caseReference = (String) emailData.get("caseReference");
         logger.error(LOG_TEMPLATE, caseReference, exception.getMessage(), exception);
 
-        appInsights.trackEvent(AppInsightsEvent.SCHEDULER_JOB_FAILED, "referenceNumber", caseReference);
+        appInsights.trackEvent(AppInsightsEvent.SCHEDULER_JOB_FAILED, REFERENCE_NUMBER, caseReference);
     }
 
     private Map<String, String> aggregateParams(Claim claim) {
