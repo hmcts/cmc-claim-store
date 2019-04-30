@@ -12,7 +12,8 @@ public class SignSettlementAgreementActionsHandler {
 
     @Autowired
     public SignSettlementAgreementActionsHandler(
-        SettlementAgreementNotificationService notificationToDefendantService) {
+        SettlementAgreementNotificationService notificationToDefendantService
+    ) {
         this.settlementAgreementNotificationService = notificationToDefendantService;
     }
 
