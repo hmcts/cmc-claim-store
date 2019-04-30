@@ -1,0 +1,41 @@
+{
+  "rowNum":0,
+  "displayComments":false,
+  "hmctsURL":"https://www.gov.uk/make-money-claim",
+  "referenceNumber":"ref no",
+  "claimant":{
+    "partyName":"Individual"
+  },
+  "defendant":{
+    "partyName":"Mary Richards"
+  },
+  "judicial":{
+    "firstName":"Judge",
+    "lastName":"McJudge"
+  },
+  "currentDate":"24-04-2019",
+  "docUploadDeadline":"11-10-2020",
+  "eyewitnessUploadDeadline":"11-10-2020",
+  "docUploadForParty":"CLAIMANT",
+  "eyewitnessUploadForParty":"DEFENDANT",
+  "preferredCourtName":"Some court",
+  "preferredCourtAddress":"this is an address EC2Y 3ND",
+  "estimatedHearingDuration":"FOUR_HOURS",
+  "hearingStatement":"No idea",
+  "otherDirectionList":[
+    {
+      "OtherDirection":{
+        "extraOrderDirection":"OTHER",
+        "directionComment":"a direction",
+        "sendBy":"11-10-2020",
+        "forParty":"BOTH",
+        "hmctsURL":"https://www.gov.uk/make-money-claim"
+      }
+    }
+  ],
+  "courtseal":"[userImage:courtseal.PNG]",
+  "displaycode":0,
+  "orderDirections1isIncluded":true,
+  "orderDirections2isIncluded":true,
+  "hearingisRequired":true
+}
