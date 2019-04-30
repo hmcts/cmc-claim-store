@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.domain.legaladvisor;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 // value will be removed once we change the docmosis template
 public enum CCDHearingDurationType {
     HALF_HOUR("THIRTY_MIN"),
@@ -10,6 +12,7 @@ public enum CCDHearingDurationType {
     FOUR_HOURS("FOUR_HOURS"),
     ONE_DAY("ONE_DAY");
 
+    @JsonValue
     private String value;
 
     CCDHearingDurationType(String value) {
