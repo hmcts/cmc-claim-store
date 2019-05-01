@@ -238,7 +238,6 @@ public class ClaimService {
                 .build();
 
             issuedClaim = caseRepository.saveClaim(user, claim);
-
             ccdEventProducer.createCCDClaimIssuedEvent(issuedClaim, user);
         } catch (ConflictException e) {
             appInsights.trackEvent(AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE, CLAIM_EXTERNAL_ID, externalId);
