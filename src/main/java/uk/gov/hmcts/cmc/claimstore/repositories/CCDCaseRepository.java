@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
@@ -184,6 +185,13 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
+    public Claim updateClaimSubmissionOperationStatus(String authorisation, Long claimId,
+                                                      ClaimSubmissionOperationIndicators indicators,
+                                                      CaseEvent caseEvent) {
+        return coreCaseDataService.saveClaimSubmissionOperationIndicators(claimId, indicators,authorisation, caseEvent);
+    }
+
+    @Override
     public void saveReDetermination(
         String authorisation,
         Claim claim,
@@ -199,6 +207,11 @@ public class CCDCaseRepository implements CaseRepository {
     @Override
     public void saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent) {
         coreCaseDataService.saveCaseEvent(authorisation, claim.getId(), caseEvent);
+    }
+
+    @Override
+    public void updateClaimState(String authorisation, Long claimId, String state){
+        //TODO to be implemented as part of another PR.
     }
 
 }

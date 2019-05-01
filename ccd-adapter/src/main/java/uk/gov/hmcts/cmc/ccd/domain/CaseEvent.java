@@ -40,7 +40,10 @@ public enum CaseEvent {
     CCJ_REQUEST_UPLOAD("CCJRequestUpload"),
     SETTLEMENT_AGREEMENT_UPLOAD("SettlementAgreementUpload"),
     DEFENDANT_PIN_LETTER_UPLOAD("DefendantPinLetterUpload"),
-    GENERATE_ORDER("GenerateOrder");
+    GENERATE_ORDER("GenerateOrder"),
+    PIN_GENERATION_OPERATIONS("PinGenerationOperations"),
+    SENDING_CLAIMANT_NOTIFICATION("SendingClaimantNotification"),
+    SENDING_RPA("SendingRPA");
 
     private String value;
 

@@ -126,7 +126,9 @@ public class ClaimServiceTest {
             ccdCaseDataToClaim,
             new PaidInFullRule(),
             ccdEventProducer,
-            new ClaimAuthorisationRule(userService));
+            new ClaimAuthorisationRule(userService),
+            "false"
+        );
     }
 
     @Test
@@ -203,35 +205,6 @@ public class ClaimServiceTest {
             anyString(), eq(AUTHORISATION));
 
         verify(ccdEventProducer, once()).createCCDClaimIssuedEvent(eq(createdClaim), eq(USER));
-    }
-
-    @Test
-    public void saveClaimShouldProceedWhenDuplicated() {
-        ClaimData claimData = SampleClaimData.validDefaults();
-        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
-        when(caseRepository.getClaimByExternalId(anyString(), eq(USER)))
-            .thenReturn(Optional.of(claim));
-
-        Claim createdClaim = claimService.saveClaim(USER_ID, claimData, AUTHORISATION, singletonList("admissions"));
-
-        assertThat(createdClaim.getClaimData()).isEqualTo(claim.getClaimData());
-
-        verify(appInsights).trackEvent(
-            AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE,
-            AppInsights.CLAIM_EXTERNAL_ID,
-            claimData.getExternalId().toString()
-        );
-        verify(eventProducer).createClaimIssuedEvent(
-            eq(createdClaim),
-            eq(null),
-            anyString(),
-            eq(AUTHORISATION)
-        );
-        verify(appInsights).trackEvent(
-            AppInsightsEvent.CLAIM_ISSUED_CITIZEN,
-            AppInsights.REFERENCE_NUMBER,
-            claim.getReferenceNumber()
-        );
     }
 
     @Test

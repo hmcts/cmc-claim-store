@@ -49,7 +49,7 @@ public class EventProducerTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        eventProducer = new EventProducer(publisher);
+        eventProducer = new EventProducer(publisher, "false");
         when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(userDetails);
     }
 
