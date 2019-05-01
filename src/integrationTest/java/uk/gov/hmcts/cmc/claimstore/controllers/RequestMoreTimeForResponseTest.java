@@ -34,6 +34,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NOTIFICATION_FAILURE;
 
 @TestPropertySource(
     properties = {
@@ -46,6 +48,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
     private static final String DEFENDANT_ID = "100";
 
     private Claim claim;
+    private User user;
 
     @Before
     public void before() {
@@ -56,7 +59,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
             .withMail("defendant@example.com")
             .withRoles("letter-" + claim.getLetterHolderId())
             .build();
-
+        user = new User(BEARER_TOKEN, userDetails);
         given(userService.getUser(BEARER_TOKEN)).willReturn(new User(BEARER_TOKEN, userDetails));
         given(userService.getUserDetails(BEARER_TOKEN)).willReturn(userDetails);
     }
@@ -93,7 +96,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
         makeRequest(claim.getExternalId())
             .andExpect(status().isOk());
 
-        claim = caseRepository.getClaimByExternalId(this.claim.getExternalId(), BEARER_TOKEN)
+        claim = caseRepository.getClaimByExternalId(this.claim.getExternalId(), user)
             .orElseThrow(NotFoundException::new);
 
         LocalDate responseDeadline = this.claim.getResponseDeadline();
@@ -120,6 +123,12 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
         verify(notificationClient, times(8))
             .sendEmail(anyString(), anyString(), anyMap(), anyString());
+
+        verify(appInsights).trackEvent(
+            eq(NOTIFICATION_FAILURE),
+            eq(REFERENCE_NUMBER),
+            eq("more-time-requested-notification-to-defendant-" + claim.getReferenceNumber())
+        );
     }
 
     @Test

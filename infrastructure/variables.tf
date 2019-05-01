@@ -38,6 +38,10 @@ variable "dm_url" {
   default = "false"
 }
 
+variable "doc_assembly_api_url" {
+  default = "false"
+}
+
 variable "ilbIp" {}
 
 variable "tenant_id" {
@@ -77,6 +81,10 @@ variable "ccd_enabled" {
 }
 
 variable "ccd_async_enabled" {
+  default = "false"
+}
+
+variable "save_claim_state_enabled" {
   default = "false"
 }
 

@@ -8,6 +8,8 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
@@ -22,6 +24,7 @@ import uk.gov.service.notify.NotificationClientException;
 import java.util.Map;
 import java.util.Optional;
 
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_TYPE;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
@@ -41,14 +44,17 @@ public class ClaimIssuedNotificationService {
 
     private final NotificationClient notificationClient;
     private final NotificationsProperties notificationsProperties;
+    private final AppInsights appInsights;
 
     @Autowired
     public ClaimIssuedNotificationService(
         NotificationClient notificationClient,
-        NotificationsProperties notificationsProperties
+        NotificationsProperties notificationsProperties,
+        AppInsights appInsights
     ) {
         this.notificationClient = notificationClient;
         this.notificationsProperties = notificationsProperties;
+        this.appInsights = appInsights;
     }
 
     @LogExecutionTime
@@ -86,6 +92,7 @@ public class ClaimIssuedNotificationService {
         );
 
         logger.info(errorMessage, exception);
+        appInsights.trackEvent(AppInsightsEvent.NOTIFICATION_FAILURE, REFERENCE_NUMBER, reference);
     }
 
     private Map<String, String> aggregateParams(Claim claim, String pin,
@@ -96,7 +103,7 @@ public class ClaimIssuedNotificationService {
         if (!claim.getClaimData().isClaimantRepresented()) {
             parameters.put(CLAIMANT_NAME, getNameWithTitle(claim.getClaimData().getClaimant()));
             parameters.put(CLAIMANT_TYPE, PartyUtils.getType(claim.getClaimData().getClaimant()));
-            parameters.put(DEFENDANT_NAME, getNameWithTitle(claim.getClaimData().getDefendant()));
+            parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
         } else {
             parameters.put(CLAIMANT_NAME, submitterName);
         }

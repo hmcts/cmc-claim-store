@@ -6,7 +6,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
-import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.BulkPrintStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -54,22 +53,18 @@ public class BulkPrintServiceTest {
         //given
         String authValue = "AuthValue";
         when(authTokenGenerator.generate()).thenReturn(authValue);
-        Map<String, Object> pinContents = new HashMap<>();
-        Document defendantLetterDocument = new Document("pinTemplate", pinContents);
-        Map<String, Object> claimContents = new HashMap<>();
-        Document sealedClaimDocument = new Document("sealedClaimTemplate", claimContents);
         Claim claim = SampleClaim.getDefault();
-
         Map<String, Object> additionalData = new HashMap<>();
         additionalData.put(ADDITIONAL_DATA_LETTER_TYPE_KEY, ADDITIONAL_DATA_LETTER_TYPE_VALUE);
         additionalData.put(ADDITIONAL_DATA_CASE_IDENTIFIER_KEY, claim.getId());
         additionalData.put(ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY, claim.getReferenceNumber());
-
-        DocumentReadyToPrintEvent event
-            = new DocumentReadyToPrintEvent(claim, defendantLetterDocument, sealedClaimDocument);
+        Map<String, Object> pinContents = new HashMap<>();
+        Document defendantLetterDocument = new Document("pinTemplate", pinContents);
+        Map<String, Object> claimContents = new HashMap<>();
+        Document sealedClaimDocument = new Document("sealedClaimTemplate", claimContents);
 
         //when
-        bulkPrintService.print(event);
+        bulkPrintService.print(claim, defendantLetterDocument, sealedClaimDocument);
         //then
         List<Document> documents = Arrays.asList(defendantLetterDocument, sealedClaimDocument);
 

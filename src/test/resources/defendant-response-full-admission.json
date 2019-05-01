@@ -20,21 +20,6 @@
       "postcode": "DF1 3LJ"
     },
     "mobilePhone": "07873727165",
-    "representative": {
-      "organisationName": "Trading ltd",
-      "organisationAddress": {
-        "line1": "52",
-        "line2": "Down Street",
-        "line3": "Salford",
-        "city": "Manchester",
-        "postcode": "DF1 3LJ"
-      },
-      "organisationContactDetails": {
-        "phone": "7873738547",
-        "email": "representative@example.org",
-        "dxAddress": "DX123456"
-      }
-    },
     "dateOfBirth": "1968-01-02"
   },
   "paymentIntention": {

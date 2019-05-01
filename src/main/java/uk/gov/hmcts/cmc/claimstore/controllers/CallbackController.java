@@ -2,6 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,9 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.claimstore.services.CallbackService;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
-import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
@@ -25,16 +26,15 @@ import javax.validation.constraints.NotNull;
     consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
 )
 public class CallbackController {
-
-    public static final String ABOUT_TO_START_CALLBACK = "about-to-start";
-    public static final String ABOUT_TO_SUBMIT_CALLBACK = "about-to-submit";
-    public static final String SUBMITTED_CALLBACK = "submitted";
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final ClaimService claimService;
+    private final CallbackService callbackService;
 
     @Autowired
-    public CallbackController(ClaimService claimService) {
+    public CallbackController(ClaimService claimService, CallbackService callbackService) {
         this.claimService = claimService;
+        this.callbackService = callbackService;
     }
 
     @PostMapping(path = "/{callback-type}")
@@ -43,20 +43,9 @@ public class CallbackController {
         @PathVariable("callback-type") String callbackType,
         @NotNull @RequestBody CallbackRequest callback
     ) {
-
-        if (callback.getEventId().equals(CaseEvent.MORE_TIME_REQUESTED_PAPER.getValue())) {
-            switch (callbackType) {
-                case ABOUT_TO_START_CALLBACK:
-                    return claimService.requestMoreTimeOnPaper(callback, true);
-                case ABOUT_TO_SUBMIT_CALLBACK:
-                    return claimService.requestMoreTimeOnPaper(callback, false);
-                case SUBMITTED_CALLBACK:
-                    return claimService.requestMoreTimeOnPaperSubmitted(callback);
-                default:
-                    throw new BadRequestException("Unknown callback type: " + callbackType);
-            }
-        } else {
-            throw new BadRequestException("Unknown event: " + callback.getEventId());
-        }
+        logger.info("Received callback from CCD, eventId: {}", callback.getEventId());
+        return callbackService
+            .getCallbackFor(callback.getEventId(), callbackType)
+            .execute(claimService, callback);
     }
 }
