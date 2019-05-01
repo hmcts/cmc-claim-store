@@ -2,12 +2,15 @@ package uk.gov.hmcts.cmc.claimstore.tests.idam;
 
 import feign.Response;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriUtils;
+import uk.gov.hmcts.cmc.claimstore.config.LoggerHandler;
 import uk.gov.hmcts.cmc.claimstore.idam.IdamApi;
 import uk.gov.hmcts.cmc.claimstore.idam.TacticalIdamApi;
 import uk.gov.hmcts.cmc.claimstore.idam.models.AuthenticateUserResponse;
@@ -25,6 +28,8 @@ import static uk.gov.hmcts.cmc.claimstore.services.UserService.AUTHORIZATION_COD
 
 @Service
 public class IdamTestService {
+
+    private static final Logger logger = LoggerFactory.getLogger(IdamTestService.class);
     private static final String PIN_PREFIX = "Pin ";
 
     private final TacticalIdamApi tacticalIdamApi;
@@ -101,8 +106,8 @@ public class IdamTestService {
         //recommended delay from SIDAM team to stop intermittent auth failures
         try {
             Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (InterruptedException ex) {
+            logger.error("Error trying to sleep after creating a user", ex);
         }
     }
 
