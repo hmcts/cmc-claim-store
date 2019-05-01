@@ -10,6 +10,7 @@ ignore:
   - "**/PathPatterns.java"
   - "**/cmc/claimstore/appinsights/**"
   - "**/cmc/claimstore/services/ccd/legaladvisor/**"
+  - "**/cmc/claimstore/courtfinder/models/**"
   - "**/ccd/domain/**"
   - "**/ccd/deprecated/**"
   - "**/ccd/migration/**"
