@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
@@ -174,10 +175,6 @@ public class DocumentManagementBackedDocumentsServiceTest {
             "pin",
             AUTHORISATION);
         verify(documentManagementService).uploadDocument(anyString(), any(PDF.class));
-        verify(claimService).saveClaimDocuments(
-            eq(AUTHORISATION),
-            eq(claim.getId()),
-            any(ClaimDocumentCollection.class));
     }
 
     @Test
@@ -191,15 +188,12 @@ public class DocumentManagementBackedDocumentsServiceTest {
         verify(claimService, never()).saveClaimDocuments(
             eq(AUTHORISATION),
             eq(claim.getId()),
-            any(ClaimDocumentCollection.class));
+            any(ClaimDocumentCollection.class),
+            any(ClaimDocumentType.class));
     }
 
     private void verifyCommon(byte[] pdf, Long claimId) {
         assertEquals(PDF_BYTES, pdf);
         verify(documentManagementService).uploadDocument(anyString(), any(PDF.class));
-        verify(claimService).saveClaimDocuments(
-            eq(AUTHORISATION),
-            eq(claimId),
-            any(ClaimDocumentCollection.class));
     }
 }

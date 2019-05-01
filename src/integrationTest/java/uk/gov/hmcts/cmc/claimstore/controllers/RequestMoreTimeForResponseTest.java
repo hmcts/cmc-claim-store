@@ -34,6 +34,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NOTIFICATION_FAILURE;
 
 @TestPropertySource(
     properties = {
@@ -121,6 +123,12 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
         verify(notificationClient, times(8))
             .sendEmail(anyString(), anyString(), anyMap(), anyString());
+
+        verify(appInsights).trackEvent(
+            eq(NOTIFICATION_FAILURE),
+            eq(REFERENCE_NUMBER),
+            eq("more-time-requested-notification-to-defendant-" + claim.getReferenceNumber())
+        );
     }
 
     @Test

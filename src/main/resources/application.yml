@@ -69,10 +69,15 @@ pdf-service:
 
 document_management:
   url: ${DOCUMENT_MANAGEMENT_URL}
+  userRoles: ${DOCUMENT_MANAGEMENT_USERROLES}
 
 bankHolidays:
   api:
     url: "https://www.gov.uk"
+
+doc_assembly:
+  url: ${DOC_ASSEMBLY_URL:false}
+  templateId: "CV-CMC-GOR-ENG-0004.docx"
 
 nonworking-days:
   datafile: ${NONWORKINGDAYS_DATAFILE:/data/non-working_days.dat}
