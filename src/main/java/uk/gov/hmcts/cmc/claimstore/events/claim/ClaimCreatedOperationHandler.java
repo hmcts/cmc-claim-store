@@ -45,6 +45,18 @@ public class ClaimCreatedOperationHandler {
     private final Predicate<ClaimSubmissionOperationIndicators> isUploadSealedClaimSuccess = indicators ->
         Stream.of(indicators.getSealedClaimUpload())
             .anyMatch(ind -> ind.equals(YesNoOption.NO));
+    private final Predicate<ClaimSubmissionOperationIndicators> isUploadClaimReceiptSuccess = indicators ->
+        Stream.of(indicators.getClaimIssueReceiptUpload())
+            .anyMatch(ind -> ind.equals(YesNoOption.NO));
+    private final Predicate<ClaimSubmissionOperationIndicators> isRpaOperationSuccess = indicators ->
+        Stream.of(indicators.getRPA())
+            .anyMatch(ind -> ind.equals(YesNoOption.NO));
+    private final Predicate<ClaimSubmissionOperationIndicators> isNotifyStaffSuccess = indicators ->
+        Stream.of(indicators.getStaffNotification())
+            .anyMatch(ind -> ind.equals(YesNoOption.NO));
+    private final Predicate<ClaimSubmissionOperationIndicators> isNotifyCitizenSuccess = indicators ->
+        Stream.of(indicators.getClaimantNotification())
+            .anyMatch(ind -> ind.equals(YesNoOption.NO));
 
     private final ClaimCreationOperation<Claim, ClaimCreationEvent, GeneratedDocuments, Claim> performPinOperations;
     private final ClaimCreationOperation<Claim, ClaimCreationEvent, GeneratedDocuments, Claim> uploadSealedClaimOperation;
@@ -52,7 +64,7 @@ public class ClaimCreatedOperationHandler {
     private final ClaimCreationOperation<Claim, ClaimCreationEvent, GeneratedDocuments, Claim> rpaOperation;
     private final ClaimCreationOperation<Claim, ClaimCreationEvent, GeneratedDocuments, Claim> notifyStaffOperation;
     private final ClaimCreationOperation<Claim, ClaimCreationEvent, GeneratedDocuments, Claim> notifyCitizenOperation;
-
+    private final ClaimCreationOperation<Claim, ClaimCreationEvent, GeneratedDocuments, Claim> notifyRepresentativeOperation;
 
     @Autowired
     @SuppressWarnings("squid:S00107")
@@ -76,26 +88,34 @@ public class ClaimCreatedOperationHandler {
         this.claimService = claimService;
 
         performPinOperations = (claim, event, docs) ->
-            isPinOperationSuccess.test(claim.getClaimSubmissionOperationIndicators())?
-                pinBasedOperationService.process(claim, event.getAuthorisation(), event.getSubmitterName(), docs): claim;
+            isPinOperationSuccess.test(claim.getClaimSubmissionOperationIndicators()) ?
+                pinBasedOperationService.process(claim, event.getAuthorisation(), event.getSubmitterName(), docs) : claim;
 
-        uploadSealedClaimOperation  = (claim, event, docs) ->
-            isUploadSealedClaimSuccess.test(claim.getClaimSubmissionOperationIndicators())?
-                uploadOperationService.uploadDocument(claim, event.getAuthorisation(), docs.getSealedClaim()): claim;
+        uploadSealedClaimOperation = (claim, event, docs) ->
+            isUploadSealedClaimSuccess.test(claim.getClaimSubmissionOperationIndicators()) ?
+                uploadOperationService.uploadDocument(claim, event.getAuthorisation(), docs.getSealedClaim()) : claim;
 
-        uploadClaimIssueReceiptOperation =  (claim, event, docs) ->
-            isUploadSealedClaimSuccess.test(claim.getClaimSubmissionOperationIndicators())?
-                uploadOperationService.uploadDocument(claim, event.getAuthorisation(), docs.getClaimIssueReceipt()): claim;
+        uploadClaimIssueReceiptOperation = (claim, event, docs) ->
+            isUploadClaimReceiptSuccess.test(claim.getClaimSubmissionOperationIndicators()) ?
+                uploadOperationService.uploadDocument(claim, event.getAuthorisation(), docs.getClaimIssueReceipt()) : claim;
 
         rpaOperation = (claim, event, docs) ->
-            rpaOperationService.notify(claim, event.getAuthorisation(), docs.getSealedClaim());
+            isRpaOperationSuccess.test(claim.getClaimSubmissionOperationIndicators()) ?
+                rpaOperationService.notify(claim, event.getAuthorisation(), docs.getSealedClaim()) : claim;
 
         notifyStaffOperation = (claim, event, docs) ->
-            notifyStaffOperationService.notify(claim, event.getAuthorisation(), docs.getSealedClaim(),
-            docs.getDefendantLetter());
+            isNotifyStaffSuccess.test(claim.getClaimSubmissionOperationIndicators()) ?
+                notifyStaffOperationService.notify(claim, event.getAuthorisation(), docs.getSealedClaim(),
+                    docs.getDefendantLetter()) : claim;
 
         notifyCitizenOperation = (claim, event, docs) ->
-            claimantOperationService.notifyCitizen(claim, event.getSubmitterName(), event.getAuthorisation());
+            isNotifyCitizenSuccess.test(claim.getClaimSubmissionOperationIndicators()) ?
+                claimantOperationService.notifyCitizen(claim, event.getSubmitterName(), event.getAuthorisation()) : claim;
+
+        notifyRepresentativeOperation = (claim, event, docs) ->
+            isNotifyCitizenSuccess.test(claim.getClaimSubmissionOperationIndicators()) ?
+                claimantOperationService.confirmRepresentative(claim, event.getSubmitterName(),
+                    ((RepresentedClaimCreatedEvent) event).getRepresentativeEmail(), event.getAuthorisation()) : claim;
     }
 
     @EventListener
@@ -121,7 +141,6 @@ public class ClaimCreatedOperationHandler {
                     claimAfterRpa -> notifyCitizenOperation.perform(claimAfterRpa, event, generatedDocuments))
                 .get();
 
-            //TODO update claim state
             claimService.updateClaimState(authorisation, updatedClaim, ClaimState.ISSUED);
 
         } catch (Exception e) {
@@ -139,17 +158,14 @@ public class ClaimCreatedOperationHandler {
 
             Claim updatedClaim = CompletableFuture
                 .supplyAsync(() -> uploadSealedClaimOperation.perform(claim, event, generatedDocuments))
-            .thenApplyAsync(
-                claimAfterReceiptUpload -> rpaOperation.perform(claimAfterReceiptUpload, event, generatedDocuments))
+                .thenApplyAsync(
+                    claimAfterReceiptUpload -> rpaOperation.perform(claimAfterReceiptUpload, event, generatedDocuments))
                 .thenApplyAsync(
                     claimAfterRpa -> notifyStaffOperation.perform(claimAfterRpa, event, generatedDocuments))
-                .get();
-
-            String submitterName = event.getRepresentativeName().orElse(null);
-            String representativeEmail = event.getRepresentativeEmail();
-
-            claimantOperationService
-                .confirmRepresentative(updatedClaim, submitterName, representativeEmail, authorisation);
+                .thenApplyAsync(
+                    claimAfterStaffNotify ->
+                        notifyRepresentativeOperation.perform(claimAfterStaffNotify, event, generatedDocuments)
+                ).get();
 
             claimService.updateClaimState(authorisation, updatedClaim, ClaimState.ISSUED);
 

@@ -51,7 +51,6 @@ public class ClaimantOperationService {
         String representativeEmail,
         String authorisation
     ) {
-        //TODO check claim if operation already complete, if yes return claim else
 
         claimIssuedNotificationService.sendMail(
             claim,
@@ -62,7 +61,7 @@ public class ClaimantOperationService {
             submitterName
         );
 
-        //TODO update claim and return updated claim, below is placeholder
-        return claim;
+        return eventsStatusService.updateClaimOperationCompletion(authorisation, claim,
+            CaseEvent.SENDING_CLAIMANT_NOTIFICATION);
     }
 }
