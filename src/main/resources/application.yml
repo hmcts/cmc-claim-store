@@ -82,6 +82,11 @@ doc_assembly:
 nonworking-days:
   datafile: ${NONWORKINGDAYS_DATAFILE:/data/non-working_days.dat}
 
+milo:
+  schedule: "${MILO_CSV_SCHEDULE:0 0/5 * * * ?}"
+  recipient: ${MILO_CSV_RECIPIENT:andrew.walker@hmcts.net}
+  sender: ${MILO_CSV_SENDER:andrew.walker@hmcts.net}
+
 dateCalculations:
   endOfBusinessDayHour: 16
   serviceDays: 5

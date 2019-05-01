@@ -19,14 +19,14 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static uk.gov.hmcts.cmc.domain.models.MediationRow.CASE_TYPE;
-import static uk.gov.hmcts.cmc.domain.models.MediationRow.CHECK_LIST;
 import static uk.gov.hmcts.cmc.domain.models.MediationRow.MediationRowBuilder;
-import static uk.gov.hmcts.cmc.domain.models.MediationRow.PARTY_STATUS;
-import static uk.gov.hmcts.cmc.domain.models.MediationRow.SITE_ID;
 
 @Component
 public class MediationCSVGenerator {
+    private static final String SITE_ID = "4";
+    private static final String CASE_TYPE = "1";
+    private static final String CHECK_LIST = "4";
+    private static final String PARTY_STATUS = "5";
 
     private static final int MEDIATION_CLAIMANT_PARTY_TYPE = 1;
     private static final int MEDIATION_DEFENDANT_PARTY_TYPE = 2;
@@ -35,6 +35,7 @@ public class MediationCSVGenerator {
         ImmutableMap.of(
             MEDIATION_CLAIMANT_PARTY_TYPE,
             claim -> claim.getClaimantResponse()
+                .filter(ResponseRejection.class::isInstance)
                 .map(ResponseRejection.class::cast)
                 .orElseThrow(RuntimeException::new)
                 .getMediationContactPerson(),
@@ -49,6 +50,7 @@ public class MediationCSVGenerator {
         ImmutableMap.of(
             MEDIATION_CLAIMANT_PARTY_TYPE,
             claim -> claim.getClaimantResponse()
+                .filter(ResponseRejection.class::isInstance)
                 .map(ResponseRejection.class::cast)
                 .orElseThrow(RuntimeException::new)
                 .getMediationPhoneNumber(),
@@ -75,7 +77,7 @@ public class MediationCSVGenerator {
             csvPrinter.flush();
             return stringBuilder.toString();
         } catch (Exception e) {
-            throw new MediationCSVGenerationException("Error generating Mediation CSV");
+            throw new MediationCSVGenerationException("Error generating Mediation CSV", e);
         }
     }
 

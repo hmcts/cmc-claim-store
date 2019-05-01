@@ -19,12 +19,15 @@ import java.time.LocalDate;
 import java.util.Scanner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MediationCSVServiceTest {
+    private static final String FROM_ADDRESS = "sender@mail.com";
+    private static final String TO_ADDRESS = "recipient@mail.com";
     private static final String AUTHORISATION = "Authorisation";
     private static final String SAMPLE_CSV = "I,Am,A,Teapot";
 
@@ -41,7 +44,13 @@ public class MediationCSVServiceTest {
 
     @Before
     public void setUp() {
-        this.service = new MediationCSVService(emailService, mediationCSVGenerator, userService);
+        this.service = new MediationCSVService(
+            emailService,
+            mediationCSVGenerator,
+            userService,
+            TO_ADDRESS,
+            FROM_ADDRESS
+        );
         when(mediationCSVGenerator.createMediationCSV(Mockito.anyString(), Mockito.any(LocalDate.class)))
             .thenReturn(SAMPLE_CSV);
     }
@@ -74,11 +83,12 @@ public class MediationCSVServiceTest {
     }
 
     private void verifyEmailData() throws IOException {
-        verify(emailService).sendEmail(Mockito.anyString(), emailDataCaptor.capture());
+        verify(emailService).sendEmail(eq(FROM_ADDRESS), emailDataCaptor.capture());
 
         EmailData emailData = emailDataCaptor.getValue();
         assertThat(emailData.getSubject()).startsWith("MediationCSV");
         assertThat(emailData.getMessage()).startsWith("OCMC mediation");
+        assertThat(emailData.getTo()).isEqualTo(TO_ADDRESS);
 
         assertThat(emailData.getAttachments()).hasSize(1);
         EmailAttachment attachment = emailData.getAttachments().get(0);

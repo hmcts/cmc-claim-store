@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services;
 
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
@@ -17,28 +18,35 @@ public class MediationCSVService {
 
     private EmailService emailService;
     private MediationCSVGenerator mediationCSVGenerator;
-    private final UserService userService;
+    private UserService userService;
+
+    private final String emailToAddress;
+    private final String emailFromAddress;
 
     @Autowired
     public MediationCSVService(
         EmailService emailService,
         MediationCSVGenerator mediationCSVGenerator,
-        UserService userService
+        UserService userService,
+        @Value("${milo.recipient}") String emailToAddress,
+        @Value("${milo.sender}") String emailFromAddress
     ) {
         this.emailService = emailService;
         this.mediationCSVGenerator = mediationCSVGenerator;
         this.userService = userService;
+        this.emailToAddress = emailToAddress;
+        this.emailFromAddress = emailFromAddress;
     }
 
     public void sendMediationCSV(String authorisation, LocalDate mediationDate) {
-        emailService.sendEmail("andrew.walker@hmcts.net",
+        emailService.sendEmail(emailFromAddress,
             prepareMediationEmailData(mediationCSVGenerator.createMediationCSV(authorisation, mediationDate)));
     }
 
-    @Scheduled(cron = "0 0 2 * * ?")
+    @Scheduled(cron = "${milo.schedule}")
     public void automatedMediationCSV() {
         emailService.sendEmail(
-            "andrew.walker@hmcts.net",
+            emailFromAddress,
             prepareMediationEmailData(
                 mediationCSVGenerator.createMediationCSV(
                     userService.authenticateAnonymousCaseWorker().getAuthorisation(),
@@ -51,7 +59,7 @@ public class MediationCSVService {
             EmailAttachment.csv(mediationCSV.getBytes(), "MediationCSV" + LocalDate.now().toString() + ".csv");
 
         return new EmailData(
-            "andrew.walker@hmcts.net",
+            emailToAddress,
             "MediationCSV " + LocalDate.now().toString(),
             "OCMC mediation" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm dd/mm/yyyy")),
             Lists.newArrayList(mediationCSVAttachment)
