@@ -127,7 +127,7 @@ public class ClaimServiceTest {
             new PaidInFullRule(),
             ccdEventProducer,
             new ClaimAuthorisationRule(userService),
-            "false"
+            false
         );
     }
 

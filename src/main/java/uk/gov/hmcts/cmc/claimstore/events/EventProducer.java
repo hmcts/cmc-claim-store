@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.events;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
@@ -31,31 +30,26 @@ import java.time.LocalDate;
 @Component
 public class EventProducer {
     private final ApplicationEventPublisher publisher;
-    private final boolean asyncEventOperationEnabled;
 
     @Autowired
-    public EventProducer(
-        ApplicationEventPublisher publisher,
-        @Value("feature_toggles.async_event_operations_enabled") String asyncEventOperationEnabled
-    ) {
+    public EventProducer(ApplicationEventPublisher publisher) {
         this.publisher = publisher;
-        this.asyncEventOperationEnabled = Boolean.getBoolean(asyncEventOperationEnabled);
     }
 
     public void createClaimIssuedEvent(Claim claim, String pin, String submitterName, String authorisation) {
-
-        if (asyncEventOperationEnabled) {
-            if (claim.getClaimData().isClaimantRepresented()) {
-                publisher.publishEvent(new RepresentedClaimCreatedEvent(claim, submitterName, authorisation));
-            } else {
-                publisher.publishEvent(new CitizenClaimCreatedEvent(claim, submitterName, authorisation));
-            }
+        if (claim.getClaimData().isClaimantRepresented()) {
+            publisher.publishEvent(new RepresentedClaimIssuedEvent(claim, submitterName, authorisation));
         } else {
-            if (claim.getClaimData().isClaimantRepresented()) {
-                publisher.publishEvent(new RepresentedClaimIssuedEvent(claim, submitterName, authorisation));
-            } else {
-                publisher.publishEvent(new CitizenClaimIssuedEvent(claim, pin, submitterName, authorisation));
-            }
+            publisher.publishEvent(new CitizenClaimIssuedEvent(claim, pin, submitterName, authorisation));
+        }
+    }
+
+    public void createClaimCreatedEvent(Claim claim, String pin, String submitterName, String authorisation) {
+
+        if (claim.getClaimData().isClaimantRepresented()) {
+            publisher.publishEvent(new RepresentedClaimCreatedEvent(claim, submitterName, authorisation));
+        } else {
+            publisher.publishEvent(new CitizenClaimCreatedEvent(claim, submitterName, authorisation));
         }
     }
 
