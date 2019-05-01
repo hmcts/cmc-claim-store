@@ -431,7 +431,7 @@ public class ClaimService {
         ccdEventProducer.createCCDReDetermination(claim, authorisation, redetermination);
     }
 
-    public void updateClaimState(String authorisation, Claim claim, ClaimState state){
-        claimRepository.updateClaimState(authorisation, claim.getId(), state.name());
+    public void updateClaimState(String authorisation, Claim claim, ClaimState state) {
+        claimRepository.updateClaimState(claim.getId(), state.name());
     }
 }

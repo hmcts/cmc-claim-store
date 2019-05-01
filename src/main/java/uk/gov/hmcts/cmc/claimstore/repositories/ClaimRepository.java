@@ -250,10 +250,7 @@ public interface ClaimRepository {
         + " state = :state"
         + " WHERE id = :claimId")
     void updateClaimState(
-        String authorisation,
         @Bind("claimId") Long claimId,
         @Bind("state") String state
     );
-
-
 }

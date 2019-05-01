@@ -19,7 +19,7 @@ public class CitizenClaimCreatedEvent extends ClaimCreationEvent {
         String submitterName,
         String authorisation
     ) {
-        super(claim,submitterName,authorisation);
+        super(claim, submitterName, authorisation);
     }
 
     @Override

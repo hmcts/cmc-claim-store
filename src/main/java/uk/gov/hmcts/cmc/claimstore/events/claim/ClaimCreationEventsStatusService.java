@@ -17,6 +17,35 @@ public class ClaimCreationEventsStatusService {
 
     private final CaseRepository caseRepository;
 
+    private static BiFunction<ClaimSubmissionOperationIndicators, CaseEvent, ClaimSubmissionOperationIndicators>
+        updateClaimSubmissionIndicatorWithEvent = (indicator, caseEvent) -> {
+            ClaimSubmissionOperationIndicators.ClaimSubmissionOperationIndicatorsBuilder updatedIndicator
+                = indicator.toBuilder();
+
+            switch (caseEvent) {
+                case PIN_GENERATION_OPERATIONS:
+                    updatedIndicator.defendantNotification(YesNoOption.YES).bulkPrint(YesNoOption.YES)
+                        .defendantPinLetterUpload(YesNoOption.YES);
+                    break;
+                case CLAIM_ISSUE_RECEIPT_UPLOAD:
+                    updatedIndicator.claimIssueReceiptUpload(YesNoOption.YES);
+                    break;
+                case LINK_SEALED_CLAIM:
+                    updatedIndicator.sealedClaimUpload(YesNoOption.YES);
+                    break;
+                case SENDING_RPA:
+                    updatedIndicator.rpa(YesNoOption.YES);
+                    break;
+                case SENDING_CLAIMANT_NOTIFICATION:
+                    updatedIndicator.claimantNotification(YesNoOption.YES);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown case event provided in "
+                        + "updateClaimSubmissionIndicatorWithEvent method");
+            }
+            return updatedIndicator.build();
+        };
+
     @Autowired
     public ClaimCreationEventsStatusService(CaseRepository caseRepository) {
         this.caseRepository = caseRepository;
@@ -46,31 +75,4 @@ public class ClaimCreationEventsStatusService {
             updateClaimSubmissionIndicatorWithEvent.apply(claim.getClaimSubmissionOperationIndicators(), caseEvent),
             caseEvent);
     }
-
-    private static BiFunction<ClaimSubmissionOperationIndicators, CaseEvent, ClaimSubmissionOperationIndicators>
-        updateClaimSubmissionIndicatorWithEvent = (indicator, caseEvent) -> {
-        ClaimSubmissionOperationIndicators.ClaimSubmissionOperationIndicatorsBuilder updatedIndicator = indicator.toBuilder();
-        switch (caseEvent) {
-            case PIN_GENERATION_OPERATIONS:
-                updatedIndicator.defendantNotification(YesNoOption.YES).bulkPrint(YesNoOption.YES)
-                    .defendantPinLetterUpload(YesNoOption.YES);
-                break;
-            case CLAIM_ISSUE_RECEIPT_UPLOAD:
-                updatedIndicator.claimIssueReceiptUpload(YesNoOption.YES);
-                break;
-            case LINK_SEALED_CLAIM:
-                updatedIndicator.sealedClaimUpload(YesNoOption.YES);
-                break;
-            case SENDING_RPA:
-                updatedIndicator.RPA(YesNoOption.YES);
-                break;
-            case SENDING_CLAIMANT_NOTIFICATION:
-                updatedIndicator.claimantNotification(YesNoOption.YES);
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown case event provided in updateClaimSubmissionIndicatorWithEvent method");
-
-        }
-        return updatedIndicator.build();
-    };
 }

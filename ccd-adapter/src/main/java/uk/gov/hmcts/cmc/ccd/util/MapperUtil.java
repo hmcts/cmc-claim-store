@@ -30,7 +30,7 @@ public class MapperUtil {
             .claimantNotification(YesNoOption.NO)
             .defendantNotification(YesNoOption.NO)
             .bulkPrint(YesNoOption.NO)
-            .RPA(YesNoOption.NO)
+            .rpa(YesNoOption.NO)
             .staffNotification(YesNoOption.NO)
             .sealedClaimUpload(YesNoOption.NO)
             .claimIssueReceiptUpload(YesNoOption.NO)

@@ -188,7 +188,8 @@ public class CCDCaseRepository implements CaseRepository {
     public Claim updateClaimSubmissionOperationStatus(String authorisation, Long claimId,
                                                       ClaimSubmissionOperationIndicators indicators,
                                                       CaseEvent caseEvent) {
-        return coreCaseDataService.saveClaimSubmissionOperationIndicators(claimId, indicators,authorisation, caseEvent);
+        return
+            coreCaseDataService.saveClaimSubmissionOperationIndicators(claimId, indicators, authorisation, caseEvent);
     }
 
     @Override
@@ -210,7 +211,7 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void updateClaimState(String authorisation, Long claimId, String state){
+    public void updateClaimState(String authorisation, Long claimId, String state) {
         //TODO to be implemented as part of another PR.
     }
 

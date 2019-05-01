@@ -17,7 +17,7 @@ import static java.util.Collections.singletonList;
 
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled")
-public class PinBasedOperationService{
+public class PinBasedOperationService {
     private final ClaimIssuedNotificationService claimIssuedNotificationService;
     private final NotificationsProperties notificationsProperties;
     private final DocumentUploadHandler documentUploadHandler;
@@ -58,8 +58,8 @@ public class PinBasedOperationService{
             );
             updatedOperationIndicator.defendantPinLetterUpload(YesNoOption.YES);
 
-            bulkPrintService
-                .print(updatedClaim, generatedDocuments.getDefendantLetterDoc(), generatedDocuments.getSealedClaimDoc());
+            bulkPrintService.print(updatedClaim, generatedDocuments.getDefendantLetterDoc(),
+                generatedDocuments.getSealedClaimDoc());
             updatedOperationIndicator.bulkPrint(YesNoOption.YES);
 
             claimIssuedStaffNotificationService.notifyStaffOfClaimIssue(

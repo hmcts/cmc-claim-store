@@ -280,6 +280,6 @@ public class DBCaseRepository implements CaseRepository {
 
     @Override
     public void updateClaimState(String authorisation, Long claimId, String state) {
-        claimRepository.updateClaimState(authorisation, claimId, state);
+        claimRepository.updateClaimState(claimId, state);
     }
 }
