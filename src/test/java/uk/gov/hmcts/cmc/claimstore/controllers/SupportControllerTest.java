@@ -24,11 +24,15 @@ import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
+import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -185,6 +189,25 @@ public class SupportControllerTest {
         controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claimant-response", "");
 
         verify(claimantResponseStaffNotificationHandler).onClaimantResponse(any());
+    }
+
+    @Test
+    public void shouldNotResendClaimantResponseNotificationsWhenSettlementAgreementReached() {
+        sampleClaim = SampleClaim.builder()
+            .withResponse(
+                SampleResponse.FullDefence.builder().build()
+            )
+            .withClaimantResponse(
+                SampleClaimantResponse.ClaimantResponseAcceptation.builder()
+                .buildAcceptationIssueSettlementWithClaimantPaymentIntention()
+            )
+            .build();
+
+        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER))).thenReturn(Optional.of(sampleClaim));
+
+        controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claimant-response", "");
+
+        verify(claimantResponseStaffNotificationHandler, never()).onClaimantResponse(any());
     }
 
     @Test
