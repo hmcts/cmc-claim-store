@@ -97,7 +97,7 @@ public class ClaimService {
         PaidInFullRule paidInFullRule,
         CCDEventProducer ccdEventProducer,
         ClaimAuthorisationRule claimAuthorisationRule,
-        @Value("feature_toggles.async_event_operations_enabled") String asyncEventOperationEnabled
+        @Value("${feature_toggles.async_event_operations_enabled:false}") boolean asyncEventOperationEnabled
     ) {
         this.claimRepository = claimRepository;
         this.userService = userService;
@@ -113,7 +113,7 @@ public class ClaimService {
         this.paidInFullRule = paidInFullRule;
         this.ccdEventProducer = ccdEventProducer;
         this.claimAuthorisationRule = claimAuthorisationRule;
-        this.asyncEventOperationEnabled = Boolean.getBoolean(asyncEventOperationEnabled);
+        this.asyncEventOperationEnabled = asyncEventOperationEnabled;
     }
 
     public Claim getClaimById(long claimId) {
@@ -245,13 +245,21 @@ public class ClaimService {
                     new NotFoundException("Could not find claim with external ID '" + externalId + "'"));
         }
 
-        eventProducer.createClaimIssuedEvent(
-            issuedClaim,
-            pinResponse.map(GeneratePinResponse::getPin).orElse(null),
-            user.getUserDetails().getFullName(),
-            authorisation
-        );
-
+        if (asyncEventOperationEnabled) {
+            eventProducer.createClaimCreatedEvent(
+                issuedClaim,
+                pinResponse.map(GeneratePinResponse::getPin).orElse(null),
+                user.getUserDetails().getFullName(),
+                authorisation
+            );
+        } else {
+            eventProducer.createClaimIssuedEvent(
+                issuedClaim,
+                pinResponse.map(GeneratePinResponse::getPin).orElse(null),
+                user.getUserDetails().getFullName(),
+                authorisation
+            );
+        }
         trackClaimIssued(issuedClaim.getReferenceNumber(), issuedClaim.getClaimData().isClaimantRepresented());
 
         return issuedClaim;
