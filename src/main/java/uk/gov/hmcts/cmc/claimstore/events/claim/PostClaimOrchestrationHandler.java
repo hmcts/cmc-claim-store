@@ -72,10 +72,7 @@ public class PostClaimOrchestrationHandler {
             );
 
             updatedClaim = rpaOperationService.notify(updatedClaim, authorisation, generatedDocuments.getSealedClaim());
-            updatedClaim = claimantOperationService.notifyCitizen(updatedClaim, submitterName, authorisation);
-
-            //TODO update claim state
-            //claimService.updateState
+            claimantOperationService.notifyCitizen(updatedClaim, submitterName, authorisation);
 
         } catch (Exception e) {
             logger.error("failed operation processing for event ()", event, e);
@@ -100,10 +97,6 @@ public class PostClaimOrchestrationHandler {
 
             claimantOperationService
                 .confirmRepresentative(updatedClaim, submitterName, representativeEmail, authorisation);
-
-            //TODO update claim state
-            //claimService.updateState
-
         } catch (Exception e) {
             logger.error("failed operation processing for event ()", event, e);
         }

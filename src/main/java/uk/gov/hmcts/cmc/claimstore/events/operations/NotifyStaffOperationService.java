@@ -20,11 +20,7 @@ public class NotifyStaffOperationService {
     }
 
     public Claim notify(Claim claim, String authorisation, PDF... documents) {
-        //TODO check claim if operation already complete, if yes return claim else
-
         claimIssuedStaffNotificationService.notifyStaffOfClaimIssue(claim, Arrays.asList(documents));
-
-        //TODO update claim and return updated claim, below is placeholder
         return claim;
     }
 }

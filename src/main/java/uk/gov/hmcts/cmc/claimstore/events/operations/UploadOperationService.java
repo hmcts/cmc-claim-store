@@ -21,8 +21,6 @@ public class UploadOperationService {
     }
 
     public Claim uploadDocument(Claim claim, String authorisation, PDF document) {
-        //TODO check claim if operation already complete, if yes return claim else
-
         return documentUploadHandler.uploadToDocumentManagement(claim, authorisation, singletonList(document));
     }
 }

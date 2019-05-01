@@ -42,29 +42,21 @@ public class PinOrchestrationService {
         GeneratedDocuments generatedDocuments
     ) {
         Claim updatedClaim = claim;
-        try {
-            //TODO check if any one of flag is false
-            //TODO have a flag for each operation success
+        updatedClaim = documentUploadHandler.uploadToDocumentManagement(
+            updatedClaim,
+            authorisation,
+            singletonList(generatedDocuments.getDefendantLetter())
+        );
 
-            updatedClaim = documentUploadHandler.uploadToDocumentManagement(
-                updatedClaim,
-                authorisation,
-                singletonList(generatedDocuments.getDefendantLetter())
-            );
+        bulkPrintService
+            .print(claim, generatedDocuments.getDefendantLetterDoc(), generatedDocuments.getSealedClaimDoc());
 
-            bulkPrintService
-                .print(claim, generatedDocuments.getDefendantLetterDoc(), generatedDocuments.getSealedClaimDoc());
+        claimIssuedStaffNotificationService.notifyStaffOfClaimIssue(
+            updatedClaim,
+            ImmutableList.of(generatedDocuments.getSealedClaim(), generatedDocuments.getDefendantLetter())
+        );
 
-            claimIssuedStaffNotificationService.notifyStaffOfClaimIssue(
-                updatedClaim,
-                ImmutableList.of(generatedDocuments.getSealedClaim(), generatedDocuments.getDefendantLetter())
-            );
-
-            notifyDefendant(claim, submitterName, generatedDocuments);
-
-        } finally {
-            //TODO update claim for all four statuses based on counter and assign to updated claim
-        }
+        notifyDefendant(claim, submitterName, generatedDocuments);
         return updatedClaim;
     }
 

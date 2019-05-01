@@ -24,11 +24,7 @@ public class RpaOperationService {
     }
 
     public Claim notify(Claim claim, String authorisation, PDF... documents) {
-        //TODO check claim if operation already complete, if yes return claim else
-
         notificationService.notifyRobotics(claim, Arrays.asList(documents));
-
-        //TODO update claim and return updated claim, below is placeholder
         return claim;
     }
 }
