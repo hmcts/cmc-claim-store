@@ -8,8 +8,8 @@ import lombok.Data;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Builder
 @Data
+@Builder
 public class Address {
     @JsonProperty("address_lines")
     private List<String> addressLines;

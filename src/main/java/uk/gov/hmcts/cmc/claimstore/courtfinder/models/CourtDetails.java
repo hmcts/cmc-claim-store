@@ -1,16 +1,14 @@
 package uk.gov.hmcts.cmc.claimstore.courtfinder.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
+@Data
+@Builder
 public class CourtDetails {
     private String name;
     private String slug;
