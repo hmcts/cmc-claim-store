@@ -19,7 +19,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
-import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.net.URI;
 import java.util.Optional;
@@ -181,35 +180,18 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     public Claim uploadToDocumentManagement(
         PDF document,
         String authorisation,
-        Claim claim
-    ) {
-
+        Claim claim) {
         ClaimDocument claimDocument = documentManagementService.uploadDocument(authorisation, document);
         return claimService.saveClaimDocuments(authorisation,
             claim.getId(),
-            getClaimDocumentCollection(claim.getExternalId(),
-                document,
-                claimDocument.getDocumentManagementUrl(),
-                authorisation),
+            getClaimDocumentCollection(claim, claimDocument),
             document.getClaimDocumentType());
     }
 
-    private ClaimDocumentCollection getClaimDocumentCollection(
-        String externalId,
-        PDF document,
-        URI uri,
-        String authorisation
-    ) {
-        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
+    private ClaimDocumentCollection getClaimDocumentCollection(Claim claim, ClaimDocument claimDocument) {
         ClaimDocumentCollection claimDocumentCollection = claim.getClaimDocumentCollection()
             .orElse(new ClaimDocumentCollection());
-        claimDocumentCollection.addClaimDocument(ClaimDocument.builder()
-            .documentManagementUrl(uri)
-            .documentName(document.getFilename())
-            .documentType(document.getClaimDocumentType())
-            .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
-            .createdBy(OCMC)
-            .build());
+        claimDocumentCollection.addClaimDocument(claimDocument);
         return claimDocumentCollection;
     }
 }
