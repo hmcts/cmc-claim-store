@@ -52,13 +52,22 @@ public class ClaimMigrator {
 
         AtomicInteger migratedClaims = new AtomicInteger(0);
         AtomicInteger updatedClaims = new AtomicInteger(0);
-        AtomicInteger failedMigrations = new AtomicInteger(0);
+        AtomicInteger failedOnCreateMigrations = new AtomicInteger(0);
+        AtomicInteger failedOnUpdateMigrations = new AtomicInteger(0);
 
         ForkJoinPool forkJoinPool = new ForkJoinPool(25);
 
         try {
             forkJoinPool
-                .submit(() -> migrateClaims(user, claimsToMigrate, migratedClaims, updatedClaims, failedMigrations))
+                .submit(() -> migrateClaims(
+                    user,
+                    claimsToMigrate,
+                    migratedClaims,
+                    updatedClaims,
+                    failedOnCreateMigrations,
+                    failedOnUpdateMigrations
+                    )
+                )
                 .get();
         } catch (InterruptedException | ExecutionException e) {
             logger.error("Failed migration due to fork join pool interruption");
@@ -70,7 +79,8 @@ public class ClaimMigrator {
         logger.info("Successful creates: " + migratedClaims.toString());
         logger.info("Successful updates: " + updatedClaims.toString());
         logger.info("Total ccd calls: " + (updatedClaims.intValue() + migratedClaims.intValue()));
-        logger.info("Failed ccd calls: " + failedMigrations.toString());
+        logger.info("Failed on update ccd calls: " + failedOnUpdateMigrations.toString());
+        logger.info("Failed on create ccd calls: " + failedOnCreateMigrations.toString());
     }
 
     private List<Claim> getClaimsToMigrate() {
@@ -86,10 +96,18 @@ public class ClaimMigrator {
         List<Claim> notMigratedClaims,
         AtomicInteger migratedClaims,
         AtomicInteger updatedClaims,
-        AtomicInteger failedMigrations
+        AtomicInteger failedOnCreateMigrations,
+        AtomicInteger failedOnUpdateMigrations
     ) {
         notMigratedClaims.parallelStream().forEach(claim -> {
-            migrationHandler.migrateClaim(migratedClaims, failedMigrations, updatedClaims, claim, user);
+            migrationHandler.migrateClaim(
+                migratedClaims,
+                failedOnCreateMigrations,
+                failedOnUpdateMigrations,
+                updatedClaims,
+                claim,
+                user
+            );
         });
     }
 }
