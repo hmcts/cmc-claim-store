@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriUtils;
-import uk.gov.hmcts.cmc.claimstore.config.LoggerHandler;
 import uk.gov.hmcts.cmc.claimstore.idam.IdamApi;
 import uk.gov.hmcts.cmc.claimstore.idam.TacticalIdamApi;
 import uk.gov.hmcts.cmc.claimstore.idam.models.AuthenticateUserResponse;
