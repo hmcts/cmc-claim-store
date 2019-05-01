@@ -2,18 +2,15 @@ package uk.gov.hmcts.cmc.claimstore.courtfinder;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import feign.FeignException;
-
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.CourtDetails;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
@@ -25,13 +22,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
 @AutoConfigureWireMock(port = 0)
 @TestPropertySource(value = "/environment.properties", properties = {
-    "courtfinder.api.url=http://localhost:${wiremock.server.port}"
+    "courtfinder.api.url=http://localhost:${wiremock.server.port}",
+    "feature_toggles.ccd_enabled=false"
 })
-public class CourtFinderApiTest {
+public class CourtFinderApiTest extends MockSpringTest {
 
     @Autowired
     private WireMockServer wireMockServer;
@@ -45,26 +41,22 @@ public class CourtFinderApiTest {
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .withBody(readPostcodeJSON())
-            )
-        );
+                .withBody(readPostcodeJSON())));
 
         wireMockServer.stubFor(get(urlEqualTo("/courts/sample-court.json"))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .withBody(readCourtJson())
-                )
-            );
+                .withBody(readCourtJson())));
     }
 
     @Test
     public void shouldFindPostcodeThatExists() {
 
-       List<Court> court = courtFinderApi.findMoneyClaimCourtByPostcode("A111AA");
+        List<Court> court = courtFinderApi.findMoneyClaimCourtByPostcode("A111AA");
 
-       assertThat(!court.isEmpty());
-       assertThat(court.get(0).getName().equals("Dudley County Court and Family Court"));
+        assertThat(court).isNotEmpty();
+        assertThat(court.get(0).getName()).isEqualTo("Dudley County Court and Family Court");
     }
 
     @Test(expected = FeignException.class)
@@ -76,8 +68,7 @@ public class CourtFinderApiTest {
     public void shouldFindCourtThatExists() {
         CourtDetails details = courtFinderApi.getCourtDetailsFromNameSlug("sample-court");
 
-        assertThat(details != null);
-        assertThat(details.getName().equals("Dudley County Court and Family Court"));
+        assertThat(details.getName()).isEqualTo("Dudley County Court and Family Court");
     }
 
     @Test(expected = FeignException.class)

@@ -11,10 +11,9 @@ import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.CourtDetails;
 
+import java.util.List;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-
-import java.util.List;
 
 @Api
 @RestController
@@ -34,12 +33,12 @@ public class CourtFinderController {
     @GetMapping(value = "/search-postcode/{postcode}")
     public List<Court> searchByPostcode(
         @NotEmpty @NotNull @PathVariable("postcode") String postcode) {
-       return courtFinderApi.findMoneyClaimCourtByPostcode(postcode);
+        return courtFinderApi.findMoneyClaimCourtByPostcode(postcode);
     }
 
     @GetMapping(value = "/court-details/{court-slug}")
     public CourtDetails getCourtDetails(@NotEmpty @NotNull @PathVariable("court-slug") String courtNameSlug) {
-            return courtFinderApi.getCourtDetailsFromNameSlug(courtNameSlug);
+        return courtFinderApi.getCourtDetailsFromNameSlug(courtNameSlug);
     }
 
 }
