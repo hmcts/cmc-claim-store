@@ -16,11 +16,9 @@ import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
-import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.settlement.CountersignSettlementAgreementEvent;
-import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
@@ -41,6 +39,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
@@ -52,8 +52,11 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEM
 public class DocumentUploadHandlerTest {
     private static final String AUTHORISATION = "Bearer: aaa";
     private static final String CLAIM_MUST_NOT_BE_NULL = "Claim must not be null";
+
     private String submitterName = "Dr. John Smith";
     private String pin = "123456";
+    private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
+
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
     @Mock
@@ -99,26 +102,31 @@ public class DocumentUploadHandlerTest {
         documentUploadHandler = new DocumentUploadHandler(defendantResponseReceiptService,
             countyCourtJudgmentPdfService,
             settlementAgreementCopyService,
-            sealedClaimPdfService,
             claimIssueReceiptService,
-            defendantPinLetterPdfService,
             documentService);
     }
 
     @Test
     public void citizenClaimIssuedEventTriggersDocumentUpload() {
         Claim claim = SampleClaim.getDefault();
-        CitizenClaimIssuedEvent event = new CitizenClaimIssuedEvent(claim, pin, submitterName, AUTHORISATION);
-        documentUploadHandler.uploadDocument(event);
+        String referenceNumber = claim.getReferenceNumber();
+        PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(referenceNumber), PDF_CONTENT, SEALED_CLAIM);
+        PDF pinLetter = new PDF(buildDefendantLetterFileBaseName(referenceNumber), PDF_CONTENT, DEFENDANT_PIN_LETTER);
+        DocumentGeneratedEvent event = new DocumentGeneratedEvent(claim, AUTHORISATION, sealedClaim, pinLetter);
+
+        documentUploadHandler.uploadCitizenClaimDocument(event);
+
         verify(documentService, times(3))
             .uploadToDocumentManagement(argumentCaptor.capture(), anyString(), any());
         List<PDF> capturedDocuments = argumentCaptor.getAllValues();
         List<ClaimDocumentType> expectedClaimDocumentTypes = Arrays.asList(SEALED_CLAIM,
             DEFENDANT_PIN_LETTER,
             CLAIM_ISSUE_RECEIPT);
+
         List<ClaimDocumentType> actualDocumentTypes = capturedDocuments.stream()
-            .map(document -> document.getClaimDocumentType())
+            .map(PDF::getClaimDocumentType)
             .collect(Collectors.toList());
+
         actualDocumentTypes.forEach(claimDocumentType ->
             assertTrue(expectedClaimDocumentTypes.contains(claimDocumentType)));
     }
@@ -127,14 +135,16 @@ public class DocumentUploadHandlerTest {
     public void citizenClaimIssuedEventThrowsExceptionWhenClaimNotPresent() {
         exceptionRule.expect(NullPointerException.class);
         exceptionRule.expectMessage(CLAIM_MUST_NOT_BE_NULL);
-        documentUploadHandler.uploadDocument(new CitizenClaimIssuedEvent(null, pin, submitterName, AUTHORISATION));
+        documentUploadHandler.uploadCitizenClaimDocument(new DocumentGeneratedEvent(null, AUTHORISATION));
     }
 
     @Test
     public void representedClaimIssuedEventTriggersDocumentUpload() {
-        Claim claim = SampleClaim.getDefault();
-        RepresentedClaimIssuedEvent event = new RepresentedClaimIssuedEvent(claim, submitterName, AUTHORISATION);
-        documentUploadHandler.uploadDocument(event);
+        Claim claim = SampleClaim.getLegalDataWithReps();
+        String referenceNumber = claim.getReferenceNumber();
+        PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(referenceNumber), PDF_CONTENT, SEALED_CLAIM);
+        DocumentGeneratedEvent event = new DocumentGeneratedEvent(claim, AUTHORISATION, sealedClaim);
+        documentUploadHandler.uploadCitizenClaimDocument(event);
         assertCommon(SEALED_CLAIM);
     }
 
@@ -142,12 +152,15 @@ public class DocumentUploadHandlerTest {
     public void representedClaimIssuedEventForDocumentUploadThrowsExceptionWhenClaimNotPresent() {
         exceptionRule.expect(NullPointerException.class);
         exceptionRule.expectMessage(CLAIM_MUST_NOT_BE_NULL);
-        documentUploadHandler.uploadDocument(new RepresentedClaimIssuedEvent(null, submitterName, AUTHORISATION));
+        Claim claim = SampleClaim.getLegalDataWithReps();
+        String referenceNumber = claim.getReferenceNumber();
+        PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(referenceNumber), PDF_CONTENT, SEALED_CLAIM);
+        documentUploadHandler.uploadCitizenClaimDocument(new DocumentGeneratedEvent(null, AUTHORISATION, sealedClaim));
     }
 
     @Test
     public void defendantResponseEventTriggersDocumentUpload() {
-        documentUploadHandler.uploadDocument(defendantResponseEvent);
+        documentUploadHandler.uploadDefendantResponseDocument(defendantResponseEvent);
         assertCommon(DEFENDANT_RESPONSE_RECEIPT);
     }
 
@@ -155,19 +168,19 @@ public class DocumentUploadHandlerTest {
     public void defendantResponseEventForDocumentUploadThrowsExceptionWhenResponseNotPresent() {
         exceptionRule.expect(NotFoundException.class);
         exceptionRule.expectMessage("Defendant response does not exist for this claim");
-        documentUploadHandler.uploadDocument(defendantResponseEventWithoutResponse);
+        documentUploadHandler.uploadDefendantResponseDocument(defendantResponseEventWithoutResponse);
     }
 
     @Test
     public void defendantResponseEventForDocumentUploadThrowsExceptionWhenClaimNotPresent() {
         exceptionRule.expect(NullPointerException.class);
         exceptionRule.expectMessage(CLAIM_MUST_NOT_BE_NULL);
-        documentUploadHandler.uploadDocument(new DefendantResponseEvent(null, AUTHORISATION));
+        documentUploadHandler.uploadDefendantResponseDocument(new DefendantResponseEvent(null, AUTHORISATION));
     }
 
     @Test
     public void countyCourtJudgmentEventTriggersDocumentUpload() {
-        documentUploadHandler.uploadDocument(ccjWithoutAdmission);
+        documentUploadHandler.uploadCountyCourtJudgmentDocument(ccjWithoutAdmission);
         assertCommon(CCJ_REQUEST);
     }
 
@@ -175,20 +188,23 @@ public class DocumentUploadHandlerTest {
     public void countyCourtJudgmentEventForDocumentUploadThrowsExceptionWhenClaimNotPresent() {
         exceptionRule.expect(NullPointerException.class);
         exceptionRule.expectMessage(CLAIM_MUST_NOT_BE_NULL);
-        documentUploadHandler.uploadDocument(new CountyCourtJudgmentEvent(null, AUTHORISATION));
+        documentUploadHandler.uploadCountyCourtJudgmentDocument(
+            new CountyCourtJudgmentEvent(null, AUTHORISATION)
+        );
     }
 
     @Test
     public void countyCourtJudgmentEventForDocumentUploadThrowsNotFoundExceptionWhenCCJNotPresent() {
         exceptionRule.expect(NotFoundException.class);
         exceptionRule.expectMessage("County Court Judgment does not exist for this claim");
-        documentUploadHandler.uploadDocument(new CountyCourtJudgmentEvent(SampleClaim.withFullClaimData(),
-            AUTHORISATION));
+        documentUploadHandler.uploadCountyCourtJudgmentDocument(
+            new CountyCourtJudgmentEvent(SampleClaim.withFullClaimData(), AUTHORISATION)
+        );
     }
 
     @Test
     public void agreementCountersignedEventShouldTriggersDocumentUpload() {
-        documentUploadHandler.uploadDocument(offerMadeByClaimant);
+        documentUploadHandler.uploadSettlementAgreementDocument(offerMadeByClaimant);
         assertCommon(SETTLEMENT_AGREEMENT);
     }
 
@@ -196,21 +212,25 @@ public class DocumentUploadHandlerTest {
     public void agreementCountersignedEventForDocumentUploadThrowsExceptionWhenClaimNotPresent() {
         exceptionRule.expect(NullPointerException.class);
         exceptionRule.expectMessage(CLAIM_MUST_NOT_BE_NULL);
-        documentUploadHandler.uploadDocument(new AgreementCountersignedEvent(null, null, AUTHORISATION));
+        documentUploadHandler.uploadSettlementAgreementDocument(
+            new AgreementCountersignedEvent(null, null, AUTHORISATION)
+        );
     }
 
     @Test
     public void agreementCountersignedEventForDocumentUploadThrowsNotFoundExceptionWhenSettlementNotPresent() {
         exceptionRule.expect(NotFoundException.class);
         exceptionRule.expectMessage("Settlement Agreement does not exist for this claim");
-        documentUploadHandler.uploadDocument(new AgreementCountersignedEvent(SampleClaim.getDefault(),
-            null,
-            AUTHORISATION));
+        documentUploadHandler.uploadSettlementAgreementDocument(
+            new AgreementCountersignedEvent(SampleClaim.getDefault(),
+                null,
+                AUTHORISATION)
+        );
     }
 
     @Test
     public void countersignSettlementAgreementEventShouldTriggersDocumentUpload() {
-        documentUploadHandler.uploadDocument(countersignSettlementAgreementEvent);
+        documentUploadHandler.uploadSettlementAgreementDocument(countersignSettlementAgreementEvent);
         assertCommon(SETTLEMENT_AGREEMENT);
     }
 
@@ -218,7 +238,9 @@ public class DocumentUploadHandlerTest {
     public void countersignSettlementAgreementEventForDocumentUploadThrowsExceptionWhenClaimNotPresent() {
         exceptionRule.expect(NullPointerException.class);
         exceptionRule.expectMessage(CLAIM_MUST_NOT_BE_NULL);
-        documentUploadHandler.uploadDocument(new CountersignSettlementAgreementEvent(null, AUTHORISATION));
+        documentUploadHandler.uploadSettlementAgreementDocument(
+            new CountersignSettlementAgreementEvent(null, AUTHORISATION)
+        );
     }
 
     private void assertCommon(ClaimDocumentType claimDocumentType) {
@@ -227,4 +249,3 @@ public class DocumentUploadHandlerTest {
         assertTrue(argumentCaptor.getValue().getClaimDocumentType() == claimDocumentType);
     }
 }
-

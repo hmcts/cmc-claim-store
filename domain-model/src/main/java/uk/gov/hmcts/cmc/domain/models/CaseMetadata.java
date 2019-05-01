@@ -9,6 +9,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
@@ -28,9 +29,11 @@ public class CaseMetadata {
     private final LocalDateTime respondedAt;
     private final boolean moreTimeRequested;
     private final LocalDateTime countyCourtJudgmentRequestedAt;
+    private final LocalDateTime claimantRespondedAt;
     private final LocalDateTime settlementReachedAt;
     private final URI sealedClaimDocument;
     private final String paymentReference;
+    private final LocalDate moneyReceivedOn;
 
     public static CaseMetadata fromClaim(Claim claim) {
         return new CaseMetadata(
@@ -45,9 +48,13 @@ public class CaseMetadata {
             claim.getRespondedAt(),
             claim.isMoreTimeRequested(),
             claim.getCountyCourtJudgmentRequestedAt(),
+            claim.getClaimantRespondedAt().orElse(null),
             claim.getSettlementReachedAt(),
             claim.getClaimDocument(SEALED_CLAIM).orElse(null),
-            claim.getClaimData().getPayment().getReference()
+            Optional.ofNullable(claim.getClaimData().getPayment())
+                .map(Payment::getReference)
+                .orElse(null),
+            claim.getMoneyReceivedOn().orElse(null)
         );
     }
 

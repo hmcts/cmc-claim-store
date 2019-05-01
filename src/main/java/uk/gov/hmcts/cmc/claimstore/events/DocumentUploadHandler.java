@@ -8,36 +8,30 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
-import uk.gov.hmcts.cmc.claimstore.documents.DefendantPinLetterPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
-import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
-import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.settlement.CountersignSettlementAgreementEvent;
-import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import static com.google.common.collect.Lists.newArrayList;
+import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimIssueReceiptFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForJudgementFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSettlementReachedFileBaseName;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
 
 @Component
@@ -51,62 +45,46 @@ public class DocumentUploadHandler {
     private final DefendantResponseReceiptService defendantResponseReceiptService;
     private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
     private final SettlementAgreementCopyService settlementAgreementCopyService;
-    private final SealedClaimPdfService sealedClaimPdfService;
     private final ClaimIssueReceiptService claimIssueReceiptService;
-    private final DefendantPinLetterPdfService defendantPinLetterPdfService;
 
     @Autowired
-    public DocumentUploadHandler(DefendantResponseReceiptService defendantResponseReceiptService,
-                                 CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
-                                 SettlementAgreementCopyService settlementAgreementCopyService,
-                                 SealedClaimPdfService sealedClaimPdfService,
-                                 ClaimIssueReceiptService claimIssueReceiptService,
-                                 DefendantPinLetterPdfService defendantPinLetterPdfService,
-                                 DocumentsService documentService) {
+    public DocumentUploadHandler(
+        DefendantResponseReceiptService defendantResponseReceiptService,
+        CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
+        SettlementAgreementCopyService settlementAgreementCopyService,
+        ClaimIssueReceiptService claimIssueReceiptService,
+        DocumentsService documentService
+    ) {
         this.defendantResponseReceiptService = defendantResponseReceiptService;
         this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
         this.settlementAgreementCopyService = settlementAgreementCopyService;
-        this.sealedClaimPdfService = sealedClaimPdfService;
         this.claimIssueReceiptService = claimIssueReceiptService;
-        this.defendantPinLetterPdfService = defendantPinLetterPdfService;
         this.documentService = documentService;
     }
 
     @EventListener
-    public void uploadDocument(CitizenClaimIssuedEvent event) {
+    @LogExecutionTime
+    public void uploadCitizenClaimDocument(DocumentGeneratedEvent event) {
         Claim claim = event.getClaim();
         requireNonNull(claim, CLAIM_MUST_NOT_BE_NULL);
-        PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(claim.getReferenceNumber()),
-            sealedClaimPdfService.createPdf(claim),
-            SEALED_CLAIM);
-        PDF defendantPinLetter = new PDF(buildDefendantLetterFileBaseName(claim.getReferenceNumber()),
-            defendantPinLetterPdfService.createPdf(claim, event.getPin()),
-            DEFENDANT_PIN_LETTER);
-        PDF claimIssueReceipt = new PDF(buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber()),
-            claimIssueReceiptService.createPdf(claim),
-            CLAIM_ISSUE_RECEIPT);
 
-        uploadToDocumentManagement(claim,
-            event.getAuthorisation(),
-            sealedClaim,
-            defendantPinLetter,
-            claimIssueReceipt);
+        List<PDF> documents = new ArrayList<>(event.getDocuments());
+
+        if (!claim.getClaimData().isClaimantRepresented()) {
+            documents.add(
+                new PDF(buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber()),
+                    claimIssueReceiptService.createPdf(claim),
+                    CLAIM_ISSUE_RECEIPT
+                )
+            );
+        }
+
+        uploadToDocumentManagement(claim, event.getAuthorisation(), documents);
     }
 
     @EventListener
-    public void uploadDocument(RepresentedClaimIssuedEvent event) {
-        Claim claim = event.getClaim();
-        requireNonNull(claim, CLAIM_MUST_NOT_BE_NULL);
-        PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(event.getClaim().getReferenceNumber()),
-            sealedClaimPdfService.createPdf(event.getClaim()),
-            SEALED_CLAIM);
-        uploadToDocumentManagement(event.getClaim(),
-            event.getAuthorisation(),
-            sealedClaim);
-    }
-
-    @EventListener
-    public void uploadDocument(DefendantResponseEvent event) {
+    @LogExecutionTime
+    public void uploadDefendantResponseDocument(DefendantResponseEvent event) {
         Claim claim = event.getClaim();
         requireNonNull(claim, CLAIM_MUST_NOT_BE_NULL);
         if (!claim.getResponse().isPresent() && null == claim.getRespondedAt()) {
@@ -115,11 +93,12 @@ public class DocumentUploadHandler {
         PDF defendantResponseDocument = new PDF(buildResponseFileBaseName(claim.getReferenceNumber()),
             defendantResponseReceiptService.createPdf(claim),
             DEFENDANT_RESPONSE_RECEIPT);
-        uploadToDocumentManagement(claim, event.getAuthorization(), defendantResponseDocument);
+        uploadToDocumentManagement(claim, event.getAuthorization(), singletonList(defendantResponseDocument));
     }
 
     @EventListener
-    public void uploadDocument(CountyCourtJudgmentEvent event) {
+    @LogExecutionTime
+    public void uploadCountyCourtJudgmentDocument(CountyCourtJudgmentEvent event) {
         Claim claim = event.getClaim();
         requireNonNull(claim, CLAIM_MUST_NOT_BE_NULL);
         if (null == claim.getCountyCourtJudgment() && null == claim.getCountyCourtJudgmentRequestedAt()) {
@@ -129,16 +108,19 @@ public class DocumentUploadHandler {
             claim.getClaimData().getDefendant().getName()),
             countyCourtJudgmentPdfService.createPdf(claim),
             CCJ_REQUEST);
-        uploadToDocumentManagement(claim, event.getAuthorisation(), document);
+
+        uploadToDocumentManagement(claim, event.getAuthorisation(), singletonList(document));
     }
 
     @EventListener
-    public void uploadDocument(AgreementCountersignedEvent event) {
+    @LogExecutionTime
+    public void uploadSettlementAgreementDocument(AgreementCountersignedEvent event) {
         processSettlementAgreementUpload(event.getClaim(), event.getAuthorisation());
     }
 
     @EventListener
-    public void uploadDocument(CountersignSettlementAgreementEvent event) {
+    @LogExecutionTime
+    public void uploadSettlementAgreementDocument(CountersignSettlementAgreementEvent event) {
         processSettlementAgreementUpload(event.getClaim(), event.getAuthorisation());
     }
 
@@ -150,17 +132,14 @@ public class DocumentUploadHandler {
         PDF document = new PDF(buildSettlementReachedFileBaseName(claim.getReferenceNumber()),
             settlementAgreementCopyService.createPdf(claim),
             SETTLEMENT_AGREEMENT);
-        uploadToDocumentManagement(claim, authorisation, document);
+        uploadToDocumentManagement(claim, authorisation, singletonList(document));
     }
 
-    private void uploadToDocumentManagement(Claim claim, String authorisation, PDF... documents) {
-        List<PDF> documentList = newArrayList(documents);
+    private void uploadToDocumentManagement(Claim claim, String authorisation, List<PDF> documents) {
         Claim updatedClaim = claim;
-        for (PDF document : documentList) {
+        for (PDF document : documents) {
             try {
-                updatedClaim = documentService.uploadToDocumentManagement(document,
-                    authorisation,
-                    updatedClaim);
+                updatedClaim = documentService.uploadToDocumentManagement(document, authorisation, updatedClaim);
             } catch (Exception ex) {
                 logger.warn(String.format("unable to upload document %s into document management",
                     document.getFilename()), ex);

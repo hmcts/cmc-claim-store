@@ -101,16 +101,18 @@ public class ClaimDataTest {
     }
 
     @Test
-    public void shouldBeInvalidWhenGivenInvalidDefendant() {
+    public void shouldBeInvalidWhenGivenInvalidDefendantTemp() {
         ClaimData claimData = SampleClaimData.builder()
             .withDefendant(SampleTheirDetails.builder()
+                .withFirstName("")
+                .withLastName("")
                 .withName("")
                 .individualDetails())
             .build();
 
         Set<String> errors = validate(claimData);
 
-        assertThat(errors).containsOnly("defendants[0].name : may not be empty");
+        assertThat(errors).containsOnly("defendants[0] : Either name or both first and last name must be provided");
     }
 
     @Test

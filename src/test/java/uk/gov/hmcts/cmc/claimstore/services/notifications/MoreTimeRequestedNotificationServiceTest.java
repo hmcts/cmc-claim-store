@@ -16,6 +16,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NOTIFICATION_FAILURE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MoreTimeRequestedNotificationServiceTest extends BaseNotificationServiceTest {
@@ -28,7 +30,7 @@ public class MoreTimeRequestedNotificationServiceTest extends BaseNotificationSe
 
     @Before
     public void beforeEachTest() {
-        service = new MoreTimeRequestedNotificationService(notificationClient);
+        service = new MoreTimeRequestedNotificationService(notificationClient, appInsights);
     }
 
     @Test(expected = NotificationException.class)
@@ -37,6 +39,8 @@ public class MoreTimeRequestedNotificationServiceTest extends BaseNotificationSe
             .thenThrow(mock(NotificationClientException.class));
 
         service.sendMail(USER_EMAIL, TEMPLATE_ID, PARAMETERS, REFERENCE);
+        verify(appInsights).trackEvent(eq(NOTIFICATION_FAILURE), eq(REFERENCE_NUMBER), eq(REFERENCE));
+
     }
 
     @Test

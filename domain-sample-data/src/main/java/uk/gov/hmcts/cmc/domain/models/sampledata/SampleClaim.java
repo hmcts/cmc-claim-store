@@ -4,6 +4,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.Interest;
@@ -85,6 +86,8 @@ public final class SampleClaim {
     private LocalDateTime reDeterminationRequestedAt;
     private ReDetermination reDetermination = new ReDetermination("I feel defendant can pay", CLAIMANT);
     private ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
+    private LocalDate claimantResponseDeadline;
+    private ClaimState state = null;
 
     private SampleClaim() {
     }
@@ -215,8 +218,44 @@ public final class SampleClaim {
             .build();
     }
 
+    public static Claim getWithClaimantResponseRejectionForPartAdmissionAndMediation() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withResponse(
+                SampleResponse
+                    .PartAdmission
+                    .builder()
+                    .buildWithFreeMediation())
+            .withRespondedAt(LocalDateTime.now())
+            .withDefendantEmail(DEFENDANT_EMAIL)
+            .withClaimantRespondedAt(LocalDateTime.now())
+            .withClaimantResponse(SampleClaimantResponse
+                .ClaimantResponseRejection
+                .builder()
+                .buildRejectionWithFreeMediation())
+            .build();
+    }
+
+    public static Claim getWithClaimantResponseRejectionForPartAdmissionNoMediation() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withResponse(
+                SampleResponse
+                    .PartAdmission
+                    .builder()
+                    .buildWithFreeMediation())
+            .withRespondedAt(LocalDateTime.now())
+            .withDefendantEmail(DEFENDANT_EMAIL)
+            .withClaimantRespondedAt(LocalDateTime.now())
+            .withClaimantResponse(SampleClaimantResponse.validDefaultRejection())
+            .build();
+    }
+
     public static Claim getDefaultForLegal() {
-        return builder().build();
+        return builder()
+            .withReferenceNumber("012LR345")
+            .withClaimData(SampleClaimData.builder().withPayment(null).build())
+            .build();
     }
 
     public static Claim getLegalDataWithReps() {
@@ -403,7 +442,9 @@ public final class SampleClaim {
             moneyReceivedOn,
             reDetermination,
             reDeterminationRequestedAt,
-            claimDocumentCollection
+            claimDocumentCollection,
+            claimantResponseDeadline,
+            state
         );
     }
 
@@ -574,6 +615,11 @@ public final class SampleClaim {
 
     public SampleClaim withClaimantResponse(ClaimantResponse claimantResponse) {
         this.claimantResponse = claimantResponse;
+        return this;
+    }
+
+    public SampleClaim withClaimantResponseDeadline(LocalDate claimantResponseDeadline) {
+        this.claimantResponseDeadline = claimantResponseDeadline;
         return this;
     }
 

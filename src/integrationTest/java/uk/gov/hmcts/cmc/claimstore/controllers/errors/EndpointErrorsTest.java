@@ -11,6 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -43,6 +44,13 @@ public class EndpointErrorsTest extends MockSpringTest {
         = new UnableToExecuteStatementException("Unexpected error", (StatementContext) null);
     private static final String BEARER_TOKEN = "Bearer token";
 
+    private static final String CLAIMANT_ID = "1";
+
+    private static final User USER = new User(BEARER_TOKEN, SampleUserDetails.builder()
+        .withUserId(CLAIMANT_ID)
+        .withMail("claimant@email.com")
+        .build());
+
     @Autowired
     private MockMvc webClient;
 
@@ -50,7 +58,7 @@ public class EndpointErrorsTest extends MockSpringTest {
     public void searchByExternalIdShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
         String externalId = "efa77f92-6fb6-45d6-8620-8662176786f1";
 
-        given(caseRepository.getClaimByExternalId(externalId, BEARER_TOKEN)).willThrow(UNEXPECTED_ERROR);
+        given(caseRepository.getClaimByExternalId(externalId, USER)).willThrow(UNEXPECTED_ERROR);
 
         webClient
             .perform(get("/claims/" + externalId)
@@ -131,7 +139,7 @@ public class EndpointErrorsTest extends MockSpringTest {
     public void requestForMoreTimeShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
         String externalId = "84f1dda3-e205-4277-96a6-1f23b6f1766d";
 
-        given(caseRepository.getClaimByExternalId(externalId, anyString())).willThrow(UNEXPECTED_ERROR);
+        given(caseRepository.getClaimByExternalId(externalId, any())).willThrow(UNEXPECTED_ERROR);
 
         webClient
             .perform(post("/claims/" + externalId + "/request-more-time")
@@ -153,24 +161,19 @@ public class EndpointErrorsTest extends MockSpringTest {
 
     @Test
     public void saveClaimShouldReturnConflictForDuplicateClaimFailures() throws Exception {
-        String claimantId = "1";
 
         Exception duplicateKeyError = new UnableToExecuteStatementException(new PSQLException(
             "ERROR: duplicate key value violates unique constraint \"external_id_unique\"", null), null);
 
-        given(userService.getUserDetails(anyString())).willReturn(
-            SampleUserDetails.builder()
-                .withUserId(claimantId)
-                .withMail("claimant@email.com")
-                .build()
-        );
+        given(userService.getUser(anyString()))
+            .willReturn(USER);
 
         given(claimRepository.saveRepresented(anyString(), anyString(), any(LocalDate.class),
             any(LocalDate.class), anyString(), anyString(), anyString()))
             .willThrow(duplicateKeyError);
 
         webClient
-            .perform(post("/claims/" + claimantId)
+            .perform(post("/claims/" + CLAIMANT_ID)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
                 .header("Features", ImmutableList.of("admissions"))
@@ -185,10 +188,15 @@ public class EndpointErrorsTest extends MockSpringTest {
         Claim claim = SampleClaim.getDefault();
         String externalId = claim.getExternalId();
 
-        given(caseRepository.getClaimByExternalId(externalId, anyString()))
+        given(caseRepository.getClaimByExternalId(externalId, any()))
             .willReturn(Optional.of(claim));
 
-        willThrow(UNEXPECTED_ERROR).given(claimRepository).saveDefendantResponse(anyString(), anyString(), anyString());
+        willThrow(UNEXPECTED_ERROR).given(claimRepository).saveDefendantResponse(
+            anyString(),
+            anyString(),
+            any(LocalDate.class),
+            anyString()
+        );
 
         webClient
             .perform(post("/responses/claim/" + externalId + "/defendant/" + DEFENDANT_ID)
