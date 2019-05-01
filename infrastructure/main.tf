@@ -172,6 +172,7 @@ module "claim-store-api" {
     RESPOND_TO_CLAIM_URL = "${var.respond_to_claim_url}"
     PDF_SERVICE_URL = "${local.pdfserviceUrl}"
     DOCUMENT_MANAGEMENT_URL = "${var.dm_url}"
+    DOC_ASSEMBLY_URL = "${var.doc_assembly_api_url}"
     CORE_CASE_DATA_API_URL = "${local.ccdCnpUrl}"
     SEND_LETTER_URL = "${var.env == "saat" || var.env == "sprod" ? "false" : local.sendLetterUrl}"
 
@@ -205,5 +206,7 @@ module "claim-store-api" {
     ASYNC_MAX_THREADPOOL_SIZE = 50
 
     ROOT_APPENDER = "CMC"
+
+    DOCUMENT_MANAGEMENT_USERROLES = "caseworker-cmc"
   }
 }
