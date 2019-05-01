@@ -73,7 +73,6 @@ import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOT
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
 
-
 public class SampleData {
 
     private static Supplier<CCDCase.CCDCaseBuilder> getCCDBuilderWithDefault = () -> CCDCase.builder()
