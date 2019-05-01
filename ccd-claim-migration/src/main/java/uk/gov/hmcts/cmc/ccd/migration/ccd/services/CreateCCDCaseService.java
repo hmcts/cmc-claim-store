@@ -57,8 +57,11 @@ public class CreateCCDCaseService {
             return migrateCoreCaseDataService.save(user.getAuthorisation(), eventRequestData, claim);
         } catch (Exception exception) {
             throw new CreateCaseException(
-                String.format("Failed storing claim in CCD store for claim on %s on event %s",
-                    claim.getReferenceNumber(), event.getValue()),
+                String.format("Failed storing claim in CCD store for claim on %s on event %s due to %s",
+                    claim.getReferenceNumber(),
+                    event.getValue(),
+                    exception.getMessage()
+                ),
                 exception
             );
         }
@@ -71,12 +74,7 @@ public class CreateCCDCaseService {
         Claim claim,
         CaseEvent event
     ) {
-        String errorMessage = String.format(
-            "Failure: failed save for reference number ( %s for event %s) due to %s",
-            claim.getReferenceNumber(), event.getValue(), exception.getMessage()
-        );
-
-        logger.info(errorMessage, exception);
+        logger.info(exception.getMessage(), exception);
         throw exception;
     }
 }
