@@ -31,6 +31,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
@@ -50,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED;
@@ -57,6 +59,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISS
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED_PAPER;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
@@ -80,6 +83,18 @@ public class ClaimService {
     private final ClaimAuthorisationRule claimAuthorisationRule;
     private final boolean asyncEventOperationEnabled;
     private CCDEventProducer ccdEventProducer;
+
+    public static Supplier<ClaimSubmissionOperationIndicators> getDefaultClaimSubmissionOperationIndicators =
+        () -> ClaimSubmissionOperationIndicators.builder()
+            .claimantNotification(NO)
+            .defendantNotification(NO)
+            .bulkPrint(NO)
+            .rpa(NO)
+            .staffNotification(NO)
+            .sealedClaimUpload(NO)
+            .claimIssueReceiptUpload(NO)
+            .defendantPinLetterUpload(NO)
+            .build();
 
     @SuppressWarnings("squid:S00107") //Constructor need all parameters
     @Autowired
@@ -233,6 +248,7 @@ public class ClaimService {
             .createdAt(nowInUTC())
             .letterHolderId(letterHolderId.orElse(null))
             .features(features)
+            .claimSubmissionOperationIndicators(getDefaultClaimSubmissionOperationIndicators.get())
             .build();
 
         Claim savedClaim = caseRepository.saveClaim(user, claim);
