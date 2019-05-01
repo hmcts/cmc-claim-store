@@ -56,7 +56,8 @@ public class MigrationHandler {
     @LogExecutionTime
     public void migrateClaim(
         AtomicInteger migratedClaims,
-        AtomicInteger failedMigrations,
+        AtomicInteger failedOnCreateMigrations,
+        AtomicInteger failedOnUpdateMigrations,
         AtomicInteger updatedClaims,
         Claim claim,
         User user
@@ -64,9 +65,9 @@ public class MigrationHandler {
         try {
             delayMigrationWhenMigratedCaseLotsReachedAllowed(migratedClaims);
 
-            CaseDetails details = createCase(user, migratedClaims, failedMigrations, claim);
+            CaseDetails details = createCase(user, migratedClaims, failedOnCreateMigrations, claim);
             if (Optional.ofNullable(details).isPresent()) {
-                updateCase(user, updatedClaims, failedMigrations, claim, details);
+                updateCase(user, updatedClaims, failedOnUpdateMigrations, claim, details);
             }
 
         } catch (Exception e) {
@@ -75,7 +76,6 @@ public class MigrationHandler {
                 migratedClaims.get(),
                 e.getMessage()
             );
-            failedMigrations.incrementAndGet();
         }
     }
 
