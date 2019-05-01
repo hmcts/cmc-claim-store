@@ -1,9 +1,13 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
+import com.google.common.collect.ImmutableList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
@@ -24,6 +28,7 @@ import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
@@ -46,7 +51,6 @@ import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.CLAIM_EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED;
@@ -56,10 +60,13 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Component
 public class ClaimService {
+    private final Logger logger = LoggerFactory.getLogger(ClaimService.class);
 
     private final ClaimRepository claimRepository;
     private final IssueDateCalculator issueDateCalculator;
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
+    private final LegalOrderGenerationDeadlinesCalculator
+        legalOrderGenerationDeadlinesCalculator;
     private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
     private final UserService userService;
     private final EventProducer eventProducer;
@@ -79,6 +86,7 @@ public class ClaimService {
         UserService userService,
         IssueDateCalculator issueDateCalculator,
         ResponseDeadlineCalculator responseDeadlineCalculator,
+        LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator,
         DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator,
         MoreTimeRequestRule moreTimeRequestRule,
         EventProducer eventProducer,
@@ -86,11 +94,13 @@ public class ClaimService {
         CCDCaseDataToClaim ccdCaseDataToClaim,
         PaidInFullRule paidInFullRule,
         CCDEventProducer ccdEventProducer,
-        ClaimAuthorisationRule claimAuthorisationRule) {
+        ClaimAuthorisationRule claimAuthorisationRule
+    ) {
         this.claimRepository = claimRepository;
         this.userService = userService;
         this.issueDateCalculator = issueDateCalculator;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
+        this.legalOrderGenerationDeadlinesCalculator = legalOrderGenerationDeadlinesCalculator;
         this.eventProducer = eventProducer;
         this.caseRepository = caseRepository;
         this.moreTimeRequestRule = moreTimeRequestRule;
@@ -227,6 +237,7 @@ public class ClaimService {
                 .build();
 
             issuedClaim = caseRepository.saveClaim(user, claim);
+            ccdEventProducer.createCCDClaimIssuedEvent(issuedClaim, user);
         } catch (ConflictException e) {
             appInsights.trackEvent(AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE, CLAIM_EXTERNAL_ID, externalId);
             issuedClaim = caseRepository.getClaimByExternalId(externalId, user)
@@ -242,7 +253,6 @@ public class ClaimService {
         );
 
         trackClaimIssued(issuedClaim.getReferenceNumber(), issuedClaim.getClaimData().isClaimantRepresented());
-        ccdEventProducer.createCCDClaimIssuedEvent(issuedClaim, user);
 
         return issuedClaim;
     }
@@ -270,8 +280,34 @@ public class ClaimService {
         return claim;
     }
 
-    @SuppressWarnings("unchecked")
+    public AboutToStartOrSubmitCallbackResponse prepopulateFields(CallbackRequest callbackRequest) {
+        logger.info("Prepopulating fields for callback {}", callbackRequest.getEventId());
+        LocalDate deadline = legalOrderGenerationDeadlinesCalculator.calculateOrderGenerationDeadlines();
+        Map<String, Object> data = new HashMap<>();
+        data.put("docUploadDeadline", deadline);
+        data.put("eyewitnessUploadDeadline", deadline);
+        data.put("directionList", ImmutableList.of(
+            CCDOrderDirectionType.DOCUMENTS.name(),
+            CCDOrderDirectionType.EYEWITNESS.name()));
+        return AboutToStartOrSubmitCallbackResponse
+            .builder()
+            .data(data)
+            .build();
+    }
+
+    public AboutToStartOrSubmitCallbackResponse requestMoreTimeOnPaperValidateOnly(
+        CallbackRequest callbackRequest
+    ) {
+        return requestMoreTimeOnPaper(callbackRequest, true);
+    }
+
     public AboutToStartOrSubmitCallbackResponse requestMoreTimeOnPaper(
+        CallbackRequest callbackRequest
+    ) {
+        return requestMoreTimeOnPaper(callbackRequest, false);
+    }
+
+    private AboutToStartOrSubmitCallbackResponse requestMoreTimeOnPaper(
         CallbackRequest callbackRequest,
         boolean validateOnly
     ) {
@@ -312,7 +348,6 @@ public class ClaimService {
             .build();
     }
 
-    @SuppressWarnings("unchecked")
     private Claim convertCallbackToClaim(CallbackRequest caseDetails) {
         return ccdCaseDataToClaim.to(
             caseDetails.getCaseDetails().getId(),
@@ -325,14 +360,17 @@ public class ClaimService {
         ccdEventProducer.linkDefendantCCDEvent(authorisation);
     }
 
-    public Claim saveClaimDocuments(String authorisation,
-                                    Long claimId,
-                                    ClaimDocumentCollection claimDocumentCollection) {
-        return caseRepository.saveClaimDocuments(authorisation, claimId, claimDocumentCollection);
+    public Claim saveClaimDocuments(
+        String authorisation,
+        Long claimId,
+        ClaimDocumentCollection claimDocumentCollection,
+        ClaimDocumentType claimDocumentType
+    ) {
+        return caseRepository.saveClaimDocuments(authorisation, claimId, claimDocumentCollection, claimDocumentType);
     }
 
-    public void linkLetterHolder(Long claimId, String userId) {
-        claimRepository.linkLetterHolder(claimId, userId);
+    public Claim linkLetterHolder(Long claimId, String letterHolderId) {
+        return caseRepository.linkLetterHolder(claimId, letterHolderId);
     }
 
     public void saveCountyCourtJudgment(
@@ -343,7 +381,6 @@ public class ClaimService {
         claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorisation);
         caseRepository.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
         ccdEventProducer.createCCDCountyCourtJudgmentEvent(claim, authorisation, countyCourtJudgment);
-        appInsights.trackEvent(CCJ_REQUESTED, REFERENCE_NUMBER, claim.getReferenceNumber());
     }
 
     public void saveDefendantResponse(
@@ -353,7 +390,9 @@ public class ClaimService {
         String authorization
     ) {
         claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorization);
-        caseRepository.saveDefendantResponse(claim, defendantEmail, response, authorization);
+        LocalDate claimantResponseDeadline =
+            responseDeadlineCalculator.calculateClaimantResponseDeadline(LocalDate.now());
+        caseRepository.saveDefendantResponse(claim, defendantEmail, response, claimantResponseDeadline, authorization);
         if (isFullDefenceWithNoMediation(response)) {
             LocalDate deadline = directionsQuestionnaireDeadlineCalculator
                 .calculateDirectionsQuestionnaireDeadlineCalculator(LocalDateTime.now());

@@ -21,11 +21,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BULK_PRINT_FAILED;
 
 @Service
 @ConditionalOnProperty(prefix = "send-letter", name = "url")
-public class BulkPrintService {
+public class BulkPrintService implements PrintService {
 
     /* This is configured on Xerox end so they know its us printing and controls things
      like paper quality and resolution */
@@ -58,6 +59,7 @@ public class BulkPrintService {
         value = {HttpClientErrorException.class, HttpServerErrorException.class},
         backoff = @Backoff(delay = 200)
     )
+    @Override
     public void print(Claim claim, Document defendantLetterDocument, Document sealedClaimDocument) {
         requireNonNull(claim);
         requireNonNull(defendantLetterDocument);
@@ -84,7 +86,7 @@ public class BulkPrintService {
             claim
         );
 
-        appInsights.trackEvent(BULK_PRINT_FAILED, AppInsights.REFERENCE_NUMBER, claim.getReferenceNumber());
+        appInsights.trackEvent(BULK_PRINT_FAILED, REFERENCE_NUMBER, claim.getReferenceNumber());
     }
 
     private static Map<String, Object> wrapInMap(Claim claim) {

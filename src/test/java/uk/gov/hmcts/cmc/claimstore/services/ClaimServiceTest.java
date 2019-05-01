@@ -29,6 +29,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
@@ -97,6 +98,8 @@ public class ClaimServiceTest {
     @Mock
     private DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
     @Mock
+    private LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator;
+    @Mock
     private EventProducer eventProducer;
     @Mock
     private CCDEventProducer ccdEventProducer;
@@ -115,6 +118,7 @@ public class ClaimServiceTest {
             userService,
             issueDateCalculator,
             responseDeadlineCalculator,
+            legalOrderGenerationDeadlinesCalculator,
             directionsQuestionnaireDeadlineCalculator,
             new MoreTimeRequestRule(new ClaimDeadlineService()),
             eventProducer,
@@ -428,11 +432,26 @@ public class ClaimServiceTest {
     }
 
     @Test(expected = ForbiddenActionException.class)
-    public void saveReDeterminationshouldThrowExceptionWhenCallerNotAuthorised() {
+    public void saveReDeterminationShouldThrowExceptionWhenCallerNotAuthorised() {
         when(userService.getUserDetails(AUTHORISATION))
             .thenReturn(SampleUserDetails.builder().withUserId("300").build());
 
         claimService.saveReDetermination(AUTHORISATION, claim, new ReDetermination("", MadeBy.CLAIMANT));
+    }
+
+    @Test
+    public void saveDefendantResponseShouldCalculateClaimantResponseDeadline() {
+        LocalDate deadline = now().plusDays(99);
+        when(responseDeadlineCalculator.calculateClaimantResponseDeadline(any(LocalDate.class)))
+            .thenReturn(deadline);
+        claimService.saveDefendantResponse(claim, DEFENDANT_EMAIL, SampleResponse.validDefaults(), AUTHORISATION);
+        verify(caseRepository).saveDefendantResponse(
+            any(Claim.class),
+            eq(DEFENDANT_EMAIL),
+            any(Response.class),
+            eq(deadline),
+            eq(AUTHORISATION)
+        );
     }
 
     private static Claim createClaimModel(ClaimData claimData, String letterHolderId) {

@@ -10,12 +10,12 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @EqualsAndHashCode
 @Getter
-public class CCDReDetermination {
+public class CCDReDeterminationEvent {
     private final Claim claim;
     private final String authorisation;
     private final ReDetermination redetermination;
 
-    public CCDReDetermination(Claim claim, String authorisation, ReDetermination redetermination) {
+    public CCDReDeterminationEvent(Claim claim, String authorisation, ReDetermination redetermination) {
 
         this.claim = claim;
         this.authorisation = authorisation;
