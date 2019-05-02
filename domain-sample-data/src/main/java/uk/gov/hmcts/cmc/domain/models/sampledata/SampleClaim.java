@@ -101,7 +101,6 @@ public final class SampleClaim {
             .claimIssueReceiptUpload(NO)
             .defendantPinLetterUpload(NO)
             .build();
-    private ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators = null;
 
     private SampleClaim() {
     }
@@ -460,7 +459,6 @@ public final class SampleClaim {
             claimDocumentCollection,
             claimantResponseDeadline,
             state,
-            claimSubmissionOperationIndicators,
             getDefaultClaimSubmissionOperationIndicators.get()
         );
     }

@@ -127,7 +127,6 @@ public class Claim {
         this.reDetermination = reDetermination;
         this.reDeterminationRequestedAt = reDeterminationRequestedAt;
         this.claimDocumentCollection = claimDocumentCollection;
-        this.claimSubmissionOperationIndicators = claimSubmissionOperationIndicators;
         this.claimantResponseDeadline = claimantResponseDeadline;
         this.state = state;
         this.claimSubmissionOperationIndicators = claimSubmissionOperationIndicators;
