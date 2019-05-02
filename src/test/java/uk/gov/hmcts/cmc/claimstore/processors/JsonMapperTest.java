@@ -248,7 +248,7 @@ public class JsonMapperTest {
         data.put("hearingIsRequired", "Yes");
         data.put("otherDirectionList", new ArrayList<>());
         data.put("directionList", ImmutableList.of("EYEWITNESS"));
-        data.put("estimatedHearingDuration", "THIRTY_MIN");
+        data.put("estimatedHearingDuration", "HALF_HOUR");
 
         CCDOrderGenerationData ccdOrderGenerationData = processor.convertValue(data, CCDOrderGenerationData.class);
 

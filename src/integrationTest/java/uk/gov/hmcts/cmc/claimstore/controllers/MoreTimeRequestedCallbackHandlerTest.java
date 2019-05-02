@@ -33,11 +33,12 @@ import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @TestPropertySource(
     properties = {
-        "core_case_data.api.url=http://core-case-data-api"
+        "core_case_data.api.url=http://core-case-data-api",
+        "doc_assembly.url=false"
     }
 )
 @Ignore
-public class MoreTimeRequestedCallbackServiceTest extends MockSpringTest {
+public class MoreTimeRequestedCallbackHandlerTest extends MockSpringTest {
 
     @SpyBean
     private MoreTimeRequestedNotificationService notificationService;

@@ -2,7 +2,10 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
@@ -21,10 +24,11 @@ import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 import uk.gov.hmcts.reform.docassembly.domain.OutputType;
 
 import java.time.LocalDate;
+import java.util.Map;
 
-import static java.lang.String.format;
-
-public class GenerateOrderCallbackService {
+@Service
+@ConditionalOnProperty(prefix = "doc_assembly", name = "url")
+public class GenerateOrderCallbackHandler extends CallbackHandler {
     @Value("${doc_assembly.templateId}")
     private String templateId;
 
@@ -35,7 +39,8 @@ public class GenerateOrderCallbackService {
     private final UserService userService;
     private final DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
 
-    public GenerateOrderCallbackService(
+    @Autowired
+    public GenerateOrderCallbackHandler(
         UserService userService,
         LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator,
         DocAssemblyClient docAssemblyClient,
@@ -50,28 +55,38 @@ public class GenerateOrderCallbackService {
         this.docAssemblyTemplateBodyMapper = docAssemblyTemplateBodyMapper;
     }
 
-    public CallbackResponse execute(CallbackType callbackType, CallbackRequest callbackRequest, String authorisation) {
-        switch (callbackType) {
-            case ABOUT_TO_START:
-                return prepopulateFields();
-            case MID:
-                return createDocument(authorisation, callbackRequest);
-            default:
-                throw new IllegalArgumentException(
-                    format("Callback for event %s, type %s not implemented",
-                        callbackRequest.getEventId(),
-                        callbackType));
-        }
+    @Override
+    protected Map<CallbackType, Callback> callbacks() {
+        return ImmutableMap.of(
+            CallbackType.ABOUT_TO_START, params -> this.prepopulateOrder(),
+            CallbackType.MID, this::generateOrder
+        );
     }
 
-    private AboutToStartOrSubmitCallbackResponse createDocument(
-        String authorisation,
-        CallbackRequest callbackRequest) {
+    private CallbackResponse prepopulateOrder() {
+        LocalDate deadline = legalOrderGenerationDeadlinesCalculator.calculateOrderGenerationDeadlines();
+        return AboutToStartOrSubmitCallbackResponse
+            .builder()
+            .data(ImmutableMap.of(
+                "directionList", ImmutableList.of(
+                    CCDOrderDirectionType.DOCUMENTS.name(),
+                    CCDOrderDirectionType.EYEWITNESS.name()
+                ),
+                "docUploadDeadline", deadline,
+                "eyewitnessUploadDeadline", deadline
+            ))
+            .build();
+    }
+
+    private CallbackResponse generateOrder(CallbackParams callbackParams) {
+        CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = jsonMapper.fromMap(
             callbackRequest.getCaseDetailsBefore().getData(), CCDCase.class);
         CCDOrderGenerationData ccdOrderGenerationData = jsonMapper.fromMap(
             callbackRequest.getCaseDetails().getData(), CCDOrderGenerationData.class);
 
+        String authorisation = callbackParams.getParams()
+            .get(CallbackParams.Params.BEARER_TOKEN).toString();
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
             .templateId(templateId)
             .outputType(OutputType.DOC)
@@ -91,22 +106,6 @@ public class GenerateOrderCallbackService {
                 CCDDocument.builder()
                     .documentUrl(docAssemblyResponse.getRenditionOutputLocation())
                     .build()
-            ))
-            .build();
-    }
-
-    private AboutToStartOrSubmitCallbackResponse prepopulateFields() {
-        LocalDate deadline = legalOrderGenerationDeadlinesCalculator.calculateOrderGenerationDeadlines();
-        return AboutToStartOrSubmitCallbackResponse
-            .builder()
-            .data(ImmutableMap.of(
-                "directionList", ImmutableList.of(
-                    CCDOrderDirectionType.DOCUMENTS.name(),
-                    CCDOrderDirectionType.EYEWITNESS.name()
-                ),
-                "docUploadDeadline", deadline,
-                "eyewitnessUploadDeadline", deadline
-
             ))
             .build();
     }

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 
@@ -43,5 +44,7 @@ public class CCDOrderGenerationData {
     private CCDHearingDurationType estimatedHearingDuration;
 
     private String hearingStatement;
+
+    private CCDClaimDocument draftOrderDoc;
 
 }

@@ -40,7 +40,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
         "doc_assembly.url=http://doc-assembly-api"
     }
 )
-public class GenerateOrderCallbackServiceTest extends MockSpringTest {
+public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
 
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder()
         .withForename("Judge")
@@ -51,7 +51,7 @@ public class GenerateOrderCallbackServiceTest extends MockSpringTest {
     private static final String DOCUMENT_URL = "http://bla.test";
 
     @Before
-    public void setup() {
+    public void setUp() {
         String serviceToken = "serviceToken";
         DocAssemblyResponse docAssemblyResponse = Mockito.mock(DocAssemblyResponse.class);
         when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOCUMENT_URL);
@@ -137,8 +137,8 @@ public class GenerateOrderCallbackServiceTest extends MockSpringTest {
                     "forParty", "BOTH"))));
         data.put("newRequestedCourt", "Another court");
         data.put("preferredCourtObjectingReason", "Because");
-        data.put("hearingCourt", "SHOREDITCH");
-        data.put("estimatedHearingDuration", "THIRTY_MIN");
+        data.put("hearingCourt", "CLERKENWELL");
+        data.put("estimatedHearingDuration", "HALF_HOUR");
         data.put("hearingStatement", "some");
 
         CaseDetails caseDetails = CaseDetails.builder()
