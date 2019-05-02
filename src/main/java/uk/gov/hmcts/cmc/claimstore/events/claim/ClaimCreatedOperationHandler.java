@@ -136,7 +136,7 @@ public class ClaimCreatedOperationHandler {
                     -> notifyCitizenOperation.perform(claimAfterRpa, event, generatedDocuments))
                 .get();
 
-            claimService.updateClaimState(authorisation, updatedClaim, ClaimState.ISSUED);
+            claimService.updateClaimState(authorisation, updatedClaim, ClaimState.OPEN);
 
         } catch (Exception e) {
             logger.error("failed operation processing for event ()", event, e);
@@ -161,7 +161,7 @@ public class ClaimCreatedOperationHandler {
                     -> notifyRepresentativeOperation.perform(claimAfterStaffNotify, event, generatedDocuments)
                 ).get();
 
-            claimService.updateClaimState(authorisation, updatedClaim, ClaimState.ISSUED);
+            claimService.updateClaimState(authorisation, updatedClaim, ClaimState.OPEN);
 
         } catch (Exception e) {
             logger.error("failed operation processing for event ()", event, e);

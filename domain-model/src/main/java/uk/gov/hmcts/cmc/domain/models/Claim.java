@@ -214,11 +214,6 @@ public class Claim {
         return Optional.ofNullable(state);
     }
 
-    @JsonIgnore
-    public Optional<ClaimSubmissionOperationIndicators> getClaimSubmissionOperationIndicators() {
-        return Optional.ofNullable(claimSubmissionOperationIndicators);
-    }
-
     @Override
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ourStyle());

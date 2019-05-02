@@ -58,7 +58,7 @@ public class CaseMetadata {
                 .orElse(null),
             claim.getMoneyReceivedOn().orElse(null),
             claim.getState().orElse(null),
-            claim.getClaimSubmissionOperationIndicators().orElse(null)
+            claim.getClaimSubmissionOperationIndicators()
         );
     }
 
