@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
+import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -13,7 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.CallbackService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.CallbackHandlerFactory;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
@@ -30,12 +32,11 @@ import javax.validation.constraints.NotNull;
 public class CallbackController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final CallbackService callbackService;
+    private final CallbackHandlerFactory callbackHandlerFactory;
 
     @Autowired
-    public CallbackController(CallbackService callbackService) {
-
-        this.callbackService = callbackService;
+    public CallbackController(CallbackHandlerFactory callbackHandlerFactory) {
+        this.callbackHandlerFactory = callbackHandlerFactory;
     }
 
     @PostMapping(path = "/{callback-type}")
@@ -46,7 +47,12 @@ public class CallbackController {
         @NotNull @RequestBody CallbackRequest callback
     ) {
         logger.info("Received callback from CCD, eventId: {}", callback.getEventId());
-        return callbackService
-            .dispatch(authorisation, CallbackType.fromValue(callbackType), callback);
+        CallbackParams callbackParams = CallbackParams.builder()
+            .request(callback)
+            .type(CallbackType.fromValue(callbackType))
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, authorisation))
+            .build();
+        return callbackHandlerFactory
+            .dispatch(callbackParams);
     }
 }
