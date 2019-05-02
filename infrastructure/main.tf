@@ -1,7 +1,3 @@
-provider "azurerm" {
-  version = "1.19.0"
-}
-
 locals {
   aseName = "core-compute-${var.env}"
 
