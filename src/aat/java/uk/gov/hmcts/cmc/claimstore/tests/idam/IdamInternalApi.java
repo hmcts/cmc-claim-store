@@ -51,7 +51,7 @@ public interface IdamInternalApi {
         }
 
         private CloseableHttpClient getHttpClient() {
-            int timeout = 10000;
+            int timeout = 60000;
             RequestConfig config = RequestConfig.custom()
                 .setConnectTimeout(timeout)
                 .setConnectionRequestTimeout(timeout)
