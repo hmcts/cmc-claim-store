@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
@@ -270,5 +271,20 @@ public class DBCaseRepository implements CaseRepository {
     private Claim getClaimById(Long claimId) {
         return claimRepository.getById(claimId).orElseThrow(() ->
             new NotFoundException(String.format("Claim not found by primary key %s.", claimId)));
+    }
+
+    @Override
+    public Claim updateClaimSubmissionOperationStatus(
+        String authorisation,
+        Long claimId,
+        ClaimSubmissionOperationIndicators indicators,
+        CaseEvent caseEvent) {
+        claimRepository.updateClaimSubmissionOperationStatus(claimId, jsonMapper.toJson(indicators));
+        return getClaimById(claimId);
+    }
+
+    @Override
+    public void updateClaimState(String authorisation, Long claimId, String state) {
+        claimRepository.updateClaimState(claimId, state);
     }
 }

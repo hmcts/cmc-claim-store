@@ -15,7 +15,6 @@ import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
@@ -28,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
@@ -38,6 +38,7 @@ import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.DEFAULT;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.CLAIMANT;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.standardInterestBuilder;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
@@ -89,6 +90,17 @@ public final class SampleClaim {
     private ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
     private LocalDate claimantResponseDeadline;
     private ClaimState state = null;
+    public static Supplier<ClaimSubmissionOperationIndicators> getDefaultClaimSubmissionOperationIndicators =
+        () -> ClaimSubmissionOperationIndicators.builder()
+            .claimantNotification(NO)
+            .defendantNotification(NO)
+            .bulkPrint(NO)
+            .rpa(NO)
+            .staffNotification(NO)
+            .sealedClaimUpload(NO)
+            .claimIssueReceiptUpload(NO)
+            .defendantPinLetterUpload(NO)
+            .build();
     private ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators = null;
 
     private SampleClaim() {
@@ -105,9 +117,10 @@ public final class SampleClaim {
             ).withResponse(SampleResponse.FullDefence
                 .builder()
                 .withDefenceType(DefenceType.DISPUTE)
-                .withMediation(YesNoOption.YES)
+                .withMediation(YES)
                 .build()
-            ).build();
+            )
+            .build();
     }
 
     public static Claim withFullClaimData() {
@@ -447,7 +460,8 @@ public final class SampleClaim {
             claimDocumentCollection,
             claimantResponseDeadline,
             state,
-            claimSubmissionOperationIndicators
+            claimSubmissionOperationIndicators,
+            getDefaultClaimSubmissionOperationIndicators.get()
         );
     }
 
