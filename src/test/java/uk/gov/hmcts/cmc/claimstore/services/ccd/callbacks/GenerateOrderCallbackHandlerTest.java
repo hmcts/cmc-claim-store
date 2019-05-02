@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
+import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalculator;
@@ -35,7 +37,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.GENERATE_ORDER;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GenerateOrderCallbackServiceTest {
+public class GenerateOrderCallbackHandlerTest {
 
     private static final String BEARER_TOKEN = "Bearer let me in";
     private static final String SERVICE_TOKEN = "Bearer service let me in";
@@ -61,11 +63,13 @@ public class GenerateOrderCallbackServiceTest {
     @Mock
     private DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
 
-    private GenerateOrderCallbackService generateOrderCallbackService;
+    private CallbackRequest callbackRequest;
+
+    private GenerateOrderCallbackHandler generateOrderCallbackHandler;
 
     @Before
     public void setUp() {
-        generateOrderCallbackService = new GenerateOrderCallbackService(
+        generateOrderCallbackHandler = new GenerateOrderCallbackHandler(
             userService,
             legalOrderGenerationDeadlinesCalculator,
             docAssemblyClient,
@@ -73,24 +77,27 @@ public class GenerateOrderCallbackServiceTest {
             jsonMapper,
             docAssemblyTemplateBodyMapper
         );
-        ReflectionTestUtils.setField(generateOrderCallbackService, "templateId", "testTemplateId");
+        ReflectionTestUtils.setField(generateOrderCallbackHandler, "templateId", "testTemplateId");
         when(legalOrderGenerationDeadlinesCalculator.calculateOrderGenerationDeadlines())
             .thenReturn(DEADLINE);
         when(userService.getUserDetails(BEARER_TOKEN)).thenReturn(JUDGE);
         when(authTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
+        callbackRequest = CallbackRequest
+            .builder()
+            .eventId(GENERATE_ORDER.getValue())
+            .build();
     }
 
     @Test
     public void shouldPrepopulateFieldsOnAboutToStartEvent() {
-        CallbackRequest callbackRequest = CallbackRequest
-            .builder()
-            .eventId(GENERATE_ORDER.getValue())
+        CallbackParams callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_START)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
-            generateOrderCallbackService
-                .execute(CallbackType.ABOUT_TO_START,
-                    callbackRequest,
-                    BEARER_TOKEN);
+            generateOrderCallbackHandler
+                .handle(callbackParams);
 
         assertThat(response.getData()).contains(
             entry("directionList", ImmutableList.of("DOCUMENTS", "EYEWITNESS")),
@@ -124,11 +131,15 @@ public class GenerateOrderCallbackServiceTest {
             .generateOrder(BEARER_TOKEN, SERVICE_TOKEN, docAssemblyRequest))
             .thenReturn(docAssemblyResponse);
 
+        CallbackParams callbackParams = CallbackParams.builder()
+            .type(CallbackType.MID)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+
         AboutToStartOrSubmitCallbackResponse response =
-            (AboutToStartOrSubmitCallbackResponse) generateOrderCallbackService
-                .execute(CallbackType.MID,
-                callbackRequest,
-                BEARER_TOKEN);
+            (AboutToStartOrSubmitCallbackResponse) generateOrderCallbackHandler
+                .handle(callbackParams);
 
         CCDDocument document = CCDDocument.builder().documentUrl(DOC_URL).build();
         assertThat(response.getData()).containsExactly(
@@ -136,15 +147,14 @@ public class GenerateOrderCallbackServiceTest {
         );
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = CallbackException.class)
     public void shouldThrowIfUnimplementedCallbackForValidEvent() {
-        CallbackRequest callbackRequest = CallbackRequest
-            .builder()
-            .eventId(GENERATE_ORDER.getValue())
+        CallbackParams callbackParams = CallbackParams.builder()
+            .type(CallbackType.SUBMITTED)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
-        generateOrderCallbackService
-            .execute(CallbackType.SUBMITTED,
-                callbackRequest,
-                "Bearer auth");
+        generateOrderCallbackHandler
+            .handle(callbackParams);
     }
 }

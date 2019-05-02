@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
+import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
@@ -20,12 +21,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.lang.String.format;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED_PAPER;
 
 @Service
-public class MoreTimeRequestedCallbackService {
+public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
 
     private final EventProducer eventProducer;
     private final AppInsights appInsights;
@@ -34,7 +34,7 @@ public class MoreTimeRequestedCallbackService {
     private final CCDCaseDataToClaim ccdCaseDataToClaim;
 
     @Autowired
-    public MoreTimeRequestedCallbackService(
+    public MoreTimeRequestedCallbackHandler(
         EventProducer eventProducer,
         AppInsights appInsights,
         ResponseDeadlineCalculator responseDeadlineCalculator,
@@ -47,25 +47,32 @@ public class MoreTimeRequestedCallbackService {
         this.ccdCaseDataToClaim = ccdCaseDataToClaim;
     }
 
-    public CallbackResponse execute(CallbackType callbackType, CallbackRequest callbackRequest) {
-        switch (callbackType) {
-            case ABOUT_TO_START:
-                return requestMoreTimeOnPaper(callbackRequest, true);
-            case ABOUT_TO_SUBMIT:
-                return requestMoreTimeOnPaper(callbackRequest, false);
-            case SUBMITTED:
-                return requestMoreTimeOnPaperSubmitted(callbackRequest);
-            default:
-                throw new IllegalArgumentException(
-                    format("Callback for event %s, type %s not implemented",
-                        callbackRequest.getEventId(),
-                        callbackType));
-        }
+    @Override
+    protected Map<CallbackType, Callback> callbacks() {
+        return ImmutableMap.of(
+            CallbackType.ABOUT_TO_START, params -> this.validateMoreTimeOnPaper(params.getRequest()),
+            CallbackType.ABOUT_TO_SUBMIT, params -> requestMoreTimeOnPaper(params.getRequest()),
+            CallbackType.SUBMITTED, this::requestMoreTimeOnPaperSubmitted
+        );
+    }
+
+    private CallbackResponse requestMoreTimeOnPaperSubmitted(CallbackParams callbackParams) {
+
+        Claim claim = convertCallbackToClaim(callbackParams.getRequest());
+
+        eventProducer.createMoreTimeForResponseRequestedEvent(
+            claim,
+            claim.getResponseDeadline(),
+            claim.getClaimData().getDefendant().getEmail().orElse(null)
+        );
+        appInsights.trackEvent(RESPONSE_MORE_TIME_REQUESTED_PAPER, REFERENCE_NUMBER, claim.getReferenceNumber());
+
+        return SubmittedCallbackResponse.builder()
+            .build();
     }
 
     private AboutToStartOrSubmitCallbackResponse requestMoreTimeOnPaper(
-        CallbackRequest callbackRequest,
-        boolean validateOnly
+        CallbackRequest callbackRequest
     ) {
         Claim claim = convertCallbackToClaim(callbackRequest);
 
@@ -73,7 +80,7 @@ public class MoreTimeRequestedCallbackService {
         AboutToStartOrSubmitCallbackResponseBuilder builder = AboutToStartOrSubmitCallbackResponse
             .builder();
 
-        if (validateOnly || !validationResult.isEmpty()) {
+        if (!validationResult.isEmpty()) {
             return builder
                 .errors(validationResult)
                 .build();
@@ -90,19 +97,15 @@ public class MoreTimeRequestedCallbackService {
             .build();
     }
 
-    private SubmittedCallbackResponse requestMoreTimeOnPaperSubmitted(
-        CallbackRequest callbackRequest) {
-
+    private AboutToStartOrSubmitCallbackResponse validateMoreTimeOnPaper(
+        CallbackRequest callbackRequest
+    ) {
         Claim claim = convertCallbackToClaim(callbackRequest);
 
-        eventProducer.createMoreTimeForResponseRequestedEvent(
-            claim,
-            claim.getResponseDeadline(),
-            claim.getClaimData().getDefendant().getEmail().orElse(null)
-        );
-        appInsights.trackEvent(RESPONSE_MORE_TIME_REQUESTED_PAPER, REFERENCE_NUMBER, claim.getReferenceNumber());
-
-        return SubmittedCallbackResponse.builder()
+        List<String> validationResult = moreTimeRequestRule.validateMoreTimeCanBeRequested(claim);
+        return AboutToStartOrSubmitCallbackResponse
+            .builder()
+            .errors(validationResult)
             .build();
     }
 
