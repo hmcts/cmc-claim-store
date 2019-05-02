@@ -51,7 +51,6 @@ import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.CLAIM_EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED;
@@ -289,8 +288,7 @@ public class ClaimService {
         data.put("eyewitnessUploadDeadline", deadline);
         data.put("directionList", ImmutableList.of(
             CCDOrderDirectionType.DOCUMENTS.name(),
-            CCDOrderDirectionType.EYEWITNESS.name(),
-            CCDOrderDirectionType.MEDIATION.name()));
+            CCDOrderDirectionType.EYEWITNESS.name()));
         return AboutToStartOrSubmitCallbackResponse
             .builder()
             .data(data)
@@ -383,7 +381,6 @@ public class ClaimService {
         claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorisation);
         caseRepository.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
         ccdEventProducer.createCCDCountyCourtJudgmentEvent(claim, authorisation, countyCourtJudgment);
-        appInsights.trackEvent(CCJ_REQUESTED, REFERENCE_NUMBER, claim.getReferenceNumber());
     }
 
     public void saveDefendantResponse(
