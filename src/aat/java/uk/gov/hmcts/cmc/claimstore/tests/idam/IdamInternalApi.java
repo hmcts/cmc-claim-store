@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.tests.idam;
 
 import feign.Client;
+import feign.Logger;
 import feign.Response;
 import feign.httpclient.ApacheHttpClient;
 import org.apache.http.client.config.RequestConfig;
@@ -45,6 +46,11 @@ public interface IdamInternalApi {
     );
 
     class Configuration {
+        @Bean
+        Logger.Level feignLoggerLevel() {
+            return Logger.Level.FULL;
+        }
+
         @Bean
         public Client getFeignHttpClient() {
             return new ApacheHttpClient(getHttpClient());
