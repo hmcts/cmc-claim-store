@@ -8,7 +8,9 @@ import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
@@ -23,26 +25,29 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled")
-public class DocumentGenerationService {
+public class DocumentOrchestrationService {
 
     private final CitizenServiceDocumentsService citizenServiceDocumentsService;
     private final SealedClaimPdfService sealedClaimPdfService;
     private final PDFServiceClient pdfServiceClient;
     private final ClaimIssueReceiptService claimIssueReceiptService;
     private final ClaimService claimService;
+    private final UserService userService;
 
-    public DocumentGenerationService(
+    public DocumentOrchestrationService(
         CitizenServiceDocumentsService citizenServiceDocumentsService,
         SealedClaimPdfService sealedClaimPdfService,
         PDFServiceClient pdfServiceClient,
         ClaimIssueReceiptService claimIssueReceiptService,
-        ClaimService claimService
+        ClaimService claimService,
+        UserService userService
     ) {
         this.citizenServiceDocumentsService = citizenServiceDocumentsService;
         this.sealedClaimPdfService = sealedClaimPdfService;
         this.pdfServiceClient = pdfServiceClient;
         this.claimIssueReceiptService = claimIssueReceiptService;
         this.claimService = claimService;
+        this.userService = userService;
     }
 
     public GeneratedDocuments generateForCitizen(Claim claim, String authorisation) {
@@ -54,7 +59,7 @@ public class DocumentGenerationService {
             SEALED_CLAIM
         );
 
-        Optional<GeneratePinResponse> pinResponse = claimService.getPinResponse(claim.getClaimData(), authorisation);
+        Optional<GeneratePinResponse> pinResponse = getPinResponse(claim.getClaimData(), authorisation);
 
         String pin = pinResponse
             .map(GeneratePinResponse::getPin)
@@ -84,6 +89,10 @@ public class DocumentGenerationService {
             .sealedClaimDoc(sealedClaimDoc)
             .pin(pin)
             .build();
+    }
+
+    private Optional<GeneratePinResponse> getPinResponse(ClaimData claimData, String authorisation) {
+        return Optional.of(userService.generatePin(claimData.getDefendant().getName(), authorisation));
     }
 
     public GeneratedDocuments generateForRepresentative(Claim claim) {

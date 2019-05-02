@@ -53,8 +53,8 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.CLAIM_EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED;
@@ -113,7 +113,7 @@ public class ClaimService {
         PaidInFullRule paidInFullRule,
         CCDEventProducer ccdEventProducer,
         ClaimAuthorisationRule claimAuthorisationRule,
-        @Value("feature_toggles.async_event_operations_enabled") String asyncEventOperationEnabled
+        @Value("${feature_toggles.async_event_operations_enabled:false}") boolean asyncEventOperationEnabled
     ) {
         this.claimRepository = claimRepository;
         this.userService = userService;
@@ -129,7 +129,7 @@ public class ClaimService {
         this.paidInFullRule = paidInFullRule;
         this.ccdEventProducer = ccdEventProducer;
         this.claimAuthorisationRule = claimAuthorisationRule;
-        this.asyncEventOperationEnabled = Boolean.getBoolean(asyncEventOperationEnabled);
+        this.asyncEventOperationEnabled = asyncEventOperationEnabled;
     }
 
     public Claim getClaimById(long claimId) {
@@ -231,16 +231,18 @@ public class ClaimService {
         String externalId = claimData.getExternalId().toString();
         User user = userService.getUser(authorisation);
 
-        caseRepository.getClaimByExternalId(externalId, user).ifPresent(claim -> {
-            throw new ConflictException(
-                String.format("Claim already exist with same external reference as %s", externalId));
-        });
-
         Optional<GeneratePinResponse> pinResponse = getPinResponse(claimData, authorisation);
-        Optional<String> letterHolderId = pinResponse.map(GeneratePinResponse::getUserId);
-        LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
-        LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
-        String submitterEmail = user.getUserDetails().getEmail();
+        Claim issuedClaim;
+        try {
+            caseRepository.getClaimByExternalId(externalId, user).ifPresent(claim -> {
+                throw new ConflictException(
+                    String.format("Claim already exist with same external reference as %s", externalId));
+            });
+
+            Optional<String> letterHolderId = pinResponse.map(GeneratePinResponse::getUserId);
+            LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
+            LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
+            String submitterEmail = user.getUserDetails().getEmail();
 
         Claim claim = Claim.builder()
             .claimData(claimData)
@@ -255,23 +257,36 @@ public class ClaimService {
             .claimSubmissionOperationIndicators(getDefaultClaimSubmissionOperationIndicators.get())
             .build();
 
-        Claim savedClaim = caseRepository.saveClaim(user, claim);
-        ccdEventProducer.createCCDClaimIssuedEvent(savedClaim, user);
+            issuedClaim = caseRepository.saveClaim(user, claim);
+            ccdEventProducer.createCCDClaimIssuedEvent(issuedClaim, user);
+        } catch (ConflictException e) {
+            appInsights.trackEvent(AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE, CLAIM_EXTERNAL_ID, externalId);
+            issuedClaim = caseRepository.getClaimByExternalId(externalId, user)
+                .orElseThrow(() ->
+                    new NotFoundException("Could not find claim with external ID '" + externalId + "'"));
+        }
 
-        eventProducer.createClaimIssuedEvent(
-            savedClaim,
-            pinResponse.map(GeneratePinResponse::getPin).orElse(null),
-            user.getUserDetails().getFullName(),
-            authorisation
-        );
+        if (asyncEventOperationEnabled) {
+            eventProducer.createClaimCreatedEvent(
+                issuedClaim,
+                pinResponse.map(GeneratePinResponse::getPin).orElse(null),
+                user.getUserDetails().getFullName(),
+                authorisation
+            );
+        } else {
+            eventProducer.createClaimIssuedEvent(
+                issuedClaim,
+                pinResponse.map(GeneratePinResponse::getPin).orElse(null),
+                user.getUserDetails().getFullName(),
+                authorisation
+            );
+        }
+        trackClaimIssued(issuedClaim.getReferenceNumber(), issuedClaim.getClaimData().isClaimantRepresented());
 
-        trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
-
-        return savedClaim;
-
+        return issuedClaim;
     }
 
-    public Optional<GeneratePinResponse> getPinResponse(ClaimData claimData, String authorisation) {
+    private Optional<GeneratePinResponse> getPinResponse(ClaimData claimData, String authorisation) {
         if (!claimData.isClaimantRepresented() && !asyncEventOperationEnabled) {
             return Optional.of(userService.generatePin(claimData.getDefendant().getName(), authorisation));
         }
@@ -403,7 +418,6 @@ public class ClaimService {
         claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorisation);
         caseRepository.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
         ccdEventProducer.createCCDCountyCourtJudgmentEvent(claim, authorisation, countyCourtJudgment);
-        appInsights.trackEvent(CCJ_REQUESTED, REFERENCE_NUMBER, claim.getReferenceNumber());
     }
 
     public void saveDefendantResponse(

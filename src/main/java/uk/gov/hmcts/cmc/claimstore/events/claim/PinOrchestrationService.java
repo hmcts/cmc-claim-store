@@ -1,12 +1,15 @@
 package uk.gov.hmcts.cmc.claimstore.events.claim;
 
 import com.google.common.collect.ImmutableList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.PrintService;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentUploadHandler;
+import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -17,7 +20,7 @@ import static java.util.Collections.singletonList;
 
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled")
-public class PinBasedOperationService {
+public class PinOrchestrationService {
     private final ClaimIssuedNotificationService claimIssuedNotificationService;
     private final NotificationsProperties notificationsProperties;
     private final DocumentUploadHandler documentUploadHandler;
@@ -25,7 +28,10 @@ public class PinBasedOperationService {
     private final ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService;
     private final ClaimCreationEventsStatusService eventsStatusService;
 
-    public PinBasedOperationService(
+    private final Logger logger = LoggerFactory.getLogger(ClaimService.class);
+
+
+    public PinOrchestrationService(
         DocumentUploadHandler documentUploadHandler,
         PrintService bulkPrintService,
         ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService,
@@ -50,6 +56,8 @@ public class PinBasedOperationService {
         Claim updatedClaim = claim;
         ClaimSubmissionOperationIndicators.ClaimSubmissionOperationIndicatorsBuilder updatedOperationIndicator =
             ClaimSubmissionOperationIndicators.builder();
+
+        logger.error("Before making documentupload handler");
         try {
             updatedClaim = documentUploadHandler.uploadToDocumentManagement(
                 updatedClaim,
