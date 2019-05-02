@@ -28,6 +28,12 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
 import static uk.gov.hmcts.cmc.domain.models.response.DefenceType.ALREADY_PAID;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 
@@ -272,6 +278,24 @@ public class MigrationHandler {
                 return claim.getReDeterminationRequestedAt().isPresent()
                     && claim.getReDetermination().isPresent()
                     && claim.getReDetermination().get().getPartyType() == MadeBy.DEFENDANT;
+            case SEALED_CLAIM_UPLOAD:
+                return claim.getClaimDocument(SEALED_CLAIM).isPresent();
+            case DEFENDANT_PIN_LETTER_UPLOAD:
+                return claim.getClaimDocument(DEFENDANT_PIN_LETTER).isPresent();
+            case CLAIM_ISSUE_RECEIPT_UPLOAD:
+                return !claim.getClaimData().isClaimantRepresented()
+                    && claim.getClaimDocument(CLAIM_ISSUE_RECEIPT).isPresent();
+            case DEFENDANT_RESPONSE_UPLOAD:
+                return claim.getDefendantId() != null
+                    && claim.getClaimDocument(DEFENDANT_RESPONSE_RECEIPT).isPresent();
+            case CCJ_REQUEST_UPLOAD:
+                return claim.getCountyCourtJudgmentRequestedAt() != null
+                    && claim.getCountyCourtJudgment() != null
+                    &&  claim.getClaimDocument(CCJ_REQUEST).isPresent();
+            case SETTLEMENT_AGREEMENT_UPLOAD:
+                return claim.getSettlementReachedAt() != null
+                    && claim.getSettlement().isPresent()
+                    && claim.getClaimDocument(SETTLEMENT_AGREEMENT).isPresent();
             default:
                 return false;
         }
