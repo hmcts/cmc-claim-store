@@ -568,6 +568,11 @@ public final class SampleClaim {
         return this;
     }
 
+    public SampleClaim withState(ClaimState claimState) {
+        this.state = claimState;
+        return this;
+    }
+
     public SampleClaim withSealedClaimDocument(URI sealedClaimDocument) {
         ClaimDocument claimDocument = ClaimDocument.builder()
             .documentManagementUrl(sealedClaimDocument)
