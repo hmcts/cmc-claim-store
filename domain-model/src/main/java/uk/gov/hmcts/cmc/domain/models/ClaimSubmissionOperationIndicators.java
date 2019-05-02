@@ -4,9 +4,12 @@ import lombok.Builder;
 import lombok.Value;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
-@Builder(toBuilder = true)
+import java.util.Objects;
+
 @Value
+@Builder(toBuilder = true)
 public class ClaimSubmissionOperationIndicators {
+
     private YesNoOption claimantNotification;
     private YesNoOption defendantNotification;
     private YesNoOption bulkPrint;
@@ -15,4 +18,19 @@ public class ClaimSubmissionOperationIndicators {
     private YesNoOption sealedClaimUpload;
     private YesNoOption claimIssueReceiptUpload;
     private YesNoOption defendantPinLetterUpload;
+
+    public static ClaimSubmissionOperationIndicatorsBuilder builder() {
+        return new ClaimSubmissionOperationIndicatorsBuilder(){
+            @Override
+            public ClaimSubmissionOperationIndicators build() {
+                super.claimantNotification = setDefault(super.claimantNotification);
+
+                return super.build();
+            }
+
+            private YesNoOption setDefault(YesNoOption prop){
+                return Objects.isNull(prop)? YesNoOption.NO : prop;
+            }
+        };
+    }
 }
