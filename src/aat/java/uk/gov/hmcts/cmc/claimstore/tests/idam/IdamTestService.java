@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.tests.idam;
 
 import feign.Response;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriUtils;
 import uk.gov.hmcts.cmc.claimstore.idam.IdamApi;
+import uk.gov.hmcts.cmc.claimstore.idam.TacticalIdamApi;
 import uk.gov.hmcts.cmc.claimstore.idam.models.AuthenticateUserResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.Oauth2;
 import uk.gov.hmcts.cmc.claimstore.idam.models.TokenExchangeResponse;
@@ -19,6 +21,7 @@ import uk.gov.hmcts.cmc.claimstore.tests.AATConfiguration;
 import uk.gov.hmcts.cmc.claimstore.tests.helpers.TestData;
 
 import java.nio.charset.Charset;
+import java.util.Base64;
 
 import static uk.gov.hmcts.cmc.claimstore.services.UserService.AUTHORIZATION_CODE;
 
@@ -28,6 +31,7 @@ public class IdamTestService {
     private static final Logger logger = LoggerFactory.getLogger(IdamTestService.class);
     private static final String PIN_PREFIX = "Pin ";
 
+    private final TacticalIdamApi tacticalIdamApi;
     private final IdamApi idamApi;
     private final IdamTestApi idamTestApi;
     private final IdamInternalApi idamInternalApi;
@@ -35,9 +39,11 @@ public class IdamTestService {
     private final TestData testData;
     private final AATConfiguration aatConfiguration;
     private final Oauth2 oauth2;
+    private final boolean strategicIdam;
 
     @Autowired
     public IdamTestService(
+        TacticalIdamApi tacticalIdamApi,
         IdamApi idamApi,
         IdamTestApi idamTestApi,
         IdamInternalApi idamInternalApi,
@@ -47,6 +53,7 @@ public class IdamTestService {
         Oauth2 oauth2,
         @Value("${idam.api.url}") String idamUrl
     ) {
+        this.tacticalIdamApi = tacticalIdamApi;
         this.idamApi = idamApi;
         this.idamTestApi = idamTestApi;
         this.idamInternalApi = idamInternalApi;
@@ -54,6 +61,8 @@ public class IdamTestService {
         this.testData = testData;
         this.aatConfiguration = aatConfiguration;
         this.oauth2 = oauth2;
+        this.strategicIdam = StringUtils.contains(idamUrl, "core-compute")
+            || StringUtils.contains(idamUrl, "platform.hmcts.net");
     }
 
     public User createSolicitor() {
@@ -102,37 +111,58 @@ public class IdamTestService {
     }
 
     private void upliftUser(String email, String password, TokenExchangeResponse exchangeResponse) {
-        Response response = idamInternalApi.upliftUser(
-            UriUtils.encode(email, Charset.forName("UTF-8")),
-            password,
-            exchangeResponse.getAccessToken(),
-            oauth2.getClientId(),
-            oauth2.getRedirectUrl()
-        );
+        if (strategicIdam) {
+            Response response = idamInternalApi.upliftUser(
+                UriUtils.encode(email, Charset.forName("UTF-8")),
+                password,
+                exchangeResponse.getAccessToken(),
+                oauth2.getClientId(),
+                oauth2.getRedirectUrl()
+            );
 
-        String code = getCodeFromRedirect(response);
+            String code = getCodeFromRedirect(response);
 
-        idamApi.exchangeCode(
-            code,
-            AUTHORIZATION_CODE,
-            oauth2.getRedirectUrl(),
-            oauth2.getClientId(),
-            oauth2.getClientSecret()
-        );
+            idamApi.exchangeCode(
+                code,
+                AUTHORIZATION_CODE,
+                oauth2.getRedirectUrl(),
+                oauth2.getClientId(),
+                oauth2.getClientSecret()
+            );
+
+        } else {
+            tacticalIdamApi.upliftUser(
+                userService.getBasicAuthHeader(email, password),
+                exchangeResponse.getAccessToken(),
+                UserService.CODE,
+                oauth2.getClientId(),
+                oauth2.getRedirectUrl()
+            );
+        }
     }
 
     private AuthenticateUserResponse authenticatePinUser(String pin) {
         AuthenticateUserResponse pinUserCode;
+        if (strategicIdam) {
+            Response response = idamInternalApi.authenticatePinUser(
+                pin,
+                oauth2.getClientId(),
+                oauth2.getRedirectUrl()
+            );
 
-        Response response = idamInternalApi.authenticatePinUser(
-            pin,
-            oauth2.getClientId(),
-            oauth2.getRedirectUrl()
-        );
+            String code = getCodeFromRedirect(response);
+            pinUserCode = new AuthenticateUserResponse(code);
 
-        String code = getCodeFromRedirect(response);
-        pinUserCode = new AuthenticateUserResponse(code);
+        } else {
+            String authorisation = PIN_PREFIX + new String(Base64.getEncoder().encode(pin.getBytes()));
 
+            pinUserCode = tacticalIdamApi.authenticatePinUser(
+                authorisation,
+                UserService.CODE,
+                oauth2.getClientId(),
+                oauth2.getRedirectUrl()
+            );
+        }
         return pinUserCode;
     }
 
@@ -147,7 +177,7 @@ public class IdamTestService {
     private CreateUserRequest createCitizenRequest(String username, String password) {
         return new CreateUserRequest(
             username,
-            new UserGroup("citizens"),
+            new UserGroup("cmc-private-beta"),
             password
         );
     }
