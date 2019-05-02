@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
@@ -43,7 +44,7 @@ public class MediationCSVService {
             prepareMediationEmailData(mediationCSVGenerator.createMediationCSV(authorisation, mediationDate)));
     }
 
-    @Scheduled(cron = "${milo.schedule}")
+    @Scheduled(cron = "#{'${milo.schedule}' ?: '-'}")
     public void automatedMediationCSV() {
         emailService.sendEmail(
             emailFromAddress,

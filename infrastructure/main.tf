@@ -47,6 +47,11 @@ data "azurerm_key_vault_secret" "staff_email" {
   vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
 }
 
+data "azurerm_key_vault_secret" "milo_email" {
+  name = "milo-email"
+  vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
+}
+
 data "azurerm_key_vault_secret" "rpa_email_sealed_claim" {
   name = "rpa-email-sealed-claim"
   vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
@@ -186,6 +191,10 @@ module "claim-store-api" {
     // staff notifications
     STAFF_NOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"
     STAFF_NOTIFICATIONS_RECIPIENT = "${data.azurerm_key_vault_secret.staff_email.value}"
+
+    // MILO
+    MILO_CSV_SENDER = "noreply@reform.hmcts.net"
+    MILO_CSV_RECIPIENT = "${data.azurerm_key_vault_secret.milo_email.value}"
 
     // robot notifications
     RPA_NOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"

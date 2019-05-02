@@ -83,7 +83,7 @@ nonworking-days:
   datafile: ${NONWORKINGDAYS_DATAFILE:/data/non-working_days.dat}
 
 milo:
-  schedule: "${MILO_CSV_SCHEDULE:0 0/5 * * * ?}"
+  schedule: "${MILO_CSV_SCHEDULE:0 0 6 * * ?}"
   recipient: ${MILO_CSV_RECIPIENT:andrew.walker@hmcts.net}
   sender: ${MILO_CSV_SENDER:andrew.walker@hmcts.net}
 
