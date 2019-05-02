@@ -26,9 +26,9 @@ import java.util.stream.Stream;
 @Async("threadPoolTaskExecutor")
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled")
-public class ClaimCreatedOperationHandler {
-    private static final Logger logger = LoggerFactory.getLogger(ClaimCreatedOperationHandler.class);
-    private final DocumentGenerationService documentGenerationService;
+public class PostClaimOrchestrationHandler {
+    private static final Logger logger = LoggerFactory.getLogger(PostClaimOrchestrationHandler.class);
+    private final DocumentOrchestrationService documentOrchestrationService;
     private final ClaimService claimService;
 
     private final Predicate<ClaimSubmissionOperationIndicators> isPinOperationSuccess = indicators ->
@@ -64,9 +64,9 @@ public class ClaimCreatedOperationHandler {
 
     @Autowired
     @SuppressWarnings("squid:S00107")
-    public ClaimCreatedOperationHandler(
-        DocumentGenerationService documentGenerationService,
-        PinBasedOperationService pinBasedOperationService,
+    public PostClaimOrchestrationHandler(
+        DocumentOrchestrationService documentOrchestrationService,
+        PinOrchestrationService pinOrchestrationService,
         UploadOperationService uploadOperationService,
         ClaimantOperationService claimantOperationService,
         RpaOperationService rpaOperationService,
@@ -74,7 +74,7 @@ public class ClaimCreatedOperationHandler {
         ClaimCreationEventsStatusService eventsStatusService,
         ClaimService claimService
     ) {
-        this.documentGenerationService = documentGenerationService;
+        this.documentOrchestrationService = documentOrchestrationService;
         this.claimService = claimService;
 
         performPinOperations = (claim, event, docs) ->
@@ -122,7 +122,7 @@ public class ClaimCreatedOperationHandler {
             String authorisation = event.getAuthorisation();
             Claim updatedClaim;
 
-            GeneratedDocuments generatedDocuments = documentGenerationService.generateForCitizen(claim, authorisation);
+            GeneratedDocuments generatedDocuments = documentOrchestrationService.generateForCitizen(claim, authorisation);
 
             updatedClaim = CompletableFuture
                 .supplyAsync(() -> performPinOperations.perform(claim, event, generatedDocuments))
@@ -149,7 +149,7 @@ public class ClaimCreatedOperationHandler {
             Claim claim = event.getClaim();
             String authorisation = event.getAuthorisation();
 
-            GeneratedDocuments generatedDocuments = documentGenerationService.generateForRepresentative(claim);
+            GeneratedDocuments generatedDocuments = documentOrchestrationService.generateForRepresentative(claim);
 
             Claim updatedClaim = CompletableFuture
                 .supplyAsync(() -> uploadSealedClaimOperation.perform(claim, event, generatedDocuments))
