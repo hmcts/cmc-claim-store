@@ -280,8 +280,6 @@ public class MigrationHandler {
                     && claim.getReDetermination().get().getPartyType() == MadeBy.DEFENDANT;
             case SEALED_CLAIM_UPLOAD:
                 return claim.getClaimDocument(SEALED_CLAIM).isPresent();
-            case DEFENDANT_PIN_LETTER_UPLOAD:
-                return claim.getClaimDocument(DEFENDANT_PIN_LETTER).isPresent();
             case CLAIM_ISSUE_RECEIPT_UPLOAD:
                 return !claim.getClaimData().isClaimantRepresented()
                     && claim.getClaimDocument(CLAIM_ISSUE_RECEIPT).isPresent();
