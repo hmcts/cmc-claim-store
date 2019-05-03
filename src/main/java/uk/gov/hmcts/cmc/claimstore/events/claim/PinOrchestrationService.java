@@ -17,6 +17,7 @@ import static java.util.Collections.singletonList;
 public class PinOrchestrationService {
     private final ClaimIssuedNotificationService claimIssuedNotificationService;
     private final NotificationsProperties notificationsProperties;
+    private final DocumentOrchestrationService documentOrchestrationService;
     private final DocumentUploadHandler documentUploadHandler;
     private final PrintService bulkPrintService;
     private final ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService;
@@ -26,37 +27,35 @@ public class PinOrchestrationService {
         PrintService bulkPrintService,
         ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService,
         ClaimIssuedNotificationService claimIssuedNotificationService,
-        NotificationsProperties notificationsProperties
+        NotificationsProperties notificationsProperties,
+        DocumentOrchestrationService documentOrchestrationService
     ) {
         this.documentUploadHandler = documentUploadHandler;
         this.bulkPrintService = bulkPrintService;
         this.claimIssuedStaffNotificationService = claimIssuedStaffNotificationService;
         this.claimIssuedNotificationService = claimIssuedNotificationService;
         this.notificationsProperties = notificationsProperties;
+        this.documentOrchestrationService = documentOrchestrationService;
     }
 
-    public Claim process(
-        Claim claim,
-        String authorisation,
-        String submitterName,
-        GeneratedDocuments generatedDocuments
-    ) {
+    public Claim process(Claim claim, String authorisation, String submitterName) {
         Claim updatedClaim = claim;
+        GeneratedDocuments documents = documentOrchestrationService.generateForCitizen(claim, authorisation);
+
         updatedClaim = documentUploadHandler.uploadToDocumentManagement(
             updatedClaim,
             authorisation,
-            singletonList(generatedDocuments.getDefendantLetter())
+            singletonList(documents.getDefendantLetter())
         );
 
-        bulkPrintService
-            .print(claim, generatedDocuments.getDefendantLetterDoc(), generatedDocuments.getSealedClaimDoc());
+        bulkPrintService.print(claim, documents.getDefendantLetterDoc(), documents.getSealedClaimDoc());
 
         claimIssuedStaffNotificationService.notifyStaffOfClaimIssue(
             updatedClaim,
-            ImmutableList.of(generatedDocuments.getSealedClaim(), generatedDocuments.getDefendantLetter())
+            ImmutableList.of(documents.getSealedClaim(), documents.getDefendantLetter())
         );
 
-        notifyDefendant(claim, submitterName, generatedDocuments);
+        notifyDefendant(claim, submitterName, documents);
         return updatedClaim;
     }
 

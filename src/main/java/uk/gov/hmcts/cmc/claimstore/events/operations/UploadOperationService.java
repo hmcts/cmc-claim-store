@@ -21,6 +21,10 @@ public class UploadOperationService {
     }
 
     public Claim uploadDocument(Claim claim, String authorisation, PDF document) {
+        if (claim.getClaimDocument(document.getClaimDocumentType()).isPresent()) {
+            return claim;
+        }
+
         return documentUploadHandler.uploadToDocumentManagement(claim, authorisation, singletonList(document));
     }
 }

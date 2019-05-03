@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.claimstore.events.operations.NotifyStaffOperationService
 import uk.gov.hmcts.cmc.claimstore.events.operations.RpaOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.UploadOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimCreatedEvent;
-import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -35,15 +34,9 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class PostClaimOrchestrationHandlerTest {
     public static final Claim CLAIM = SampleClaim.getDefault();
-    public static final String PIN = "PIN";
     public static final String SUBMITTER_NAME = "submitter-name";
     public static final String AUTHORISATION = "AUTHORISATION";
     private static final byte[] PDF_BYTES = new byte[] {1, 2, 3, 4};
-    public static final String LETTER_HOLDER_ID = "LetterHolderId";
-
-    private Map<String, Object> pinContents = new HashMap<>();
-    private String pinTemplate = "pinTemplate";
-    private Document defendantLetterDocument = new Document(pinTemplate, pinContents);
 
     private Map<String, Object> claimContents = new HashMap<>();
     private String claimTemplate = "claimTemplate";
@@ -93,19 +86,11 @@ public class PostClaimOrchestrationHandlerTest {
             notifyStaffOperationService
         );
 
-        given(userService.generatePin(eq(CLAIM.getClaimData().getDefendant().getName()), eq(AUTHORISATION)))
-            .willReturn(GeneratePinResponse.builder()
-                .pin(PIN)
-                .userId(LETTER_HOLDER_ID)
-                .build()
-            );
-
-        given(citizenServiceDocumentsService.pinLetterDocument(eq(CLAIM), eq(PIN))).willReturn(defendantLetterDocument);
         given(citizenServiceDocumentsService.sealedClaimDocument(eq(CLAIM))).willReturn(sealedClaimLetterDocument);
         given(sealedClaimPdfService.createPdf(eq(CLAIM))).willReturn(PDF_BYTES);
         given(pdfServiceClient.generateFromHtml(any(), anyMap())).willReturn(PDF_BYTES);
         given(claimIssueReceiptService.createPdf(eq(CLAIM))).willReturn(PDF_BYTES);
-        given(pinOrchestrationService.process(eq(CLAIM), anyString(), anyString(), any())).willReturn(CLAIM);
+        given(pinOrchestrationService.process(eq(CLAIM), anyString(), anyString())).willReturn(CLAIM);
         given(claimantOperationService.notifyCitizen(eq(CLAIM), any(), eq(AUTHORISATION))).willReturn(CLAIM);
         given(rpaOperationService.notify(eq(CLAIM), eq(AUTHORISATION), any())).willReturn(CLAIM);
         given(notifyStaffOperationService.notify(eq(CLAIM), eq(AUTHORISATION), any())).willReturn(CLAIM);
@@ -123,13 +108,14 @@ public class PostClaimOrchestrationHandlerTest {
 
         //then
         verify(citizenServiceDocumentsService).sealedClaimDocument(eq(CLAIM));
-        verify(pdfServiceClient, atLeast(2)).generateFromHtml(any(), anyMap());
+        verify(pdfServiceClient).generateFromHtml(any(), anyMap());
         verify(claimIssueReceiptService).createPdf(eq(CLAIM));
-        verify(pinOrchestrationService).process(eq(CLAIM), anyString(), anyString(), any());
+        verify(pinOrchestrationService).process(eq(CLAIM), anyString(), anyString());
         verify(claimantOperationService).notifyCitizen(eq(CLAIM), any(), eq(AUTHORISATION));
         verify(rpaOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
-        verify(uploadOperationService, atLeast(2)).uploadDocument(eq(CLAIM), eq(AUTHORISATION), any());
 
+        verify(uploadOperationService, atLeast(2))
+            .uploadDocument(eq(CLAIM), eq(AUTHORISATION), any());
     }
 
     @Test
