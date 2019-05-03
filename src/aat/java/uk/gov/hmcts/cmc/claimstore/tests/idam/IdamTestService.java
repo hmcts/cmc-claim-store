@@ -1,6 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.tests.idam;
 
 import feign.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,8 @@ import static uk.gov.hmcts.cmc.claimstore.services.UserService.AUTHORIZATION_COD
 
 @Service
 public class IdamTestService {
+
+    private static final Logger logger = LoggerFactory.getLogger(IdamTestService.class);
     private static final String PIN_PREFIX = "Pin ";
 
     private final IdamApi idamApi;
@@ -54,20 +58,20 @@ public class IdamTestService {
 
     public User createSolicitor() {
         String email = testData.nextUserEmail();
-        idamTestApi.createUser(createSolicitorRequest(email, aatConfiguration.getSmokeTestSolicitor().getPassword()));
+        createUser(createSolicitorRequest(email, aatConfiguration.getSmokeTestSolicitor().getPassword()));
         return userService.authenticateUser(email, aatConfiguration.getSmokeTestSolicitor().getPassword());
     }
 
     public User createCitizen() {
         String email = testData.nextUserEmail();
-        idamTestApi.createUser(createCitizenRequest(email, aatConfiguration.getSmokeTestCitizen().getPassword()));
+        createUser(createCitizenRequest(email, aatConfiguration.getSmokeTestCitizen().getPassword()));
         return userService.authenticateUser(email, aatConfiguration.getSmokeTestCitizen().getPassword());
     }
 
     public User createDefendant(final String letterHolderId) {
         String email = testData.nextUserEmail();
         String password = aatConfiguration.getSmokeTestCitizen().getPassword();
-        idamTestApi.createUser(createCitizenRequest(email, password));
+        createUser(createCitizenRequest(email, password));
 
         String pin = idamTestApi.getPinByLetterHolderId(letterHolderId);
 
@@ -85,6 +89,16 @@ public class IdamTestService {
 
         // Re-authenticate to get new roles on the user
         return userService.authenticateUser(email, password);
+    }
+
+    private void createUser(CreateUserRequest createUserRequest) {
+        idamTestApi.createUser(createUserRequest);
+        //recommended delay from SIDAM team to stop intermittent auth failures
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            logger.error("Error trying to sleep after creating a user", ex);
+        }
     }
 
     private void upliftUser(String email, String password, TokenExchangeResponse exchangeResponse) {

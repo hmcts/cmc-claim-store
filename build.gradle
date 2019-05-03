@@ -24,7 +24,7 @@ dependencyUpdates.resolutionStrategy = {
   }
 }
 
-def springBootVersion = '2.1.3.RELEASE'
+def springBootVersion = '2.1.4.RELEASE'
 def springCloudVersion = 'Greenwich.RELEASE'
 
 allprojects {
@@ -84,6 +84,12 @@ allprojects {
       mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
     dependencies {
+      // CVE-2019-0232 - command line injections on windows - fixed on spring boot master but not released
+      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.19') {
+        entry 'tomcat-embed-core'
+        entry 'tomcat-embed-el'
+        entry 'tomcat-embed-websocket'
+      }
       // checkstyle needs a certain version and so does spring fox swagger, so can't use latest
       // fun times...
       dependencySet(group: 'com.google.guava', version: '20.0') {
@@ -164,6 +170,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'pdf-service-client', version: '7.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.6.2'
   compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '5.0.0'
+  compile group: 'uk.gov.hmcts.reform', name: 'doc-assembly-client', version: '1.0.3'
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '2.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.2.0'
   compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.3'
@@ -188,9 +195,9 @@ dependencies {
 
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
   testCompile group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock'
-  testCompile group: 'org.assertj', name: 'assertj-core', version: '3.12.1'
+  testCompile group: 'org.assertj', name: 'assertj-core', version: '3.12.2'
   testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.10.7'
-  testCompile group: 'org.mockito', name: 'mockito-core', version: '2.25.0'
+  testCompile group: 'org.mockito', name: 'mockito-core', version: '2.27.0'
   testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
   testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.4.0'
 
@@ -317,6 +324,7 @@ sonarqube {
       "**/ClaimRepository.java," +
       "**/CCDCaseRepository.java," +
       "**/cmc/claimstore/appinsights/**," +
+      "**/cmc/claimstore/services/ccd/legaladvisor/**," +
       "**/ccd/migration/**," +
       "**/EmailData.java," +
       "**/CCDCaseHandler.java," +
