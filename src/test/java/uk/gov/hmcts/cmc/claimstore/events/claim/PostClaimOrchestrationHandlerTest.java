@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
@@ -31,6 +32,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PostClaimOrchestrationHandlerTest {
@@ -38,7 +40,7 @@ public class PostClaimOrchestrationHandlerTest {
     public static final String PIN = "PIN";
     public static final String SUBMITTER_NAME = "submitter-name";
     public static final String AUTHORISATION = "AUTHORISATION";
-    private static final byte[] PDF_BYTES = new byte[] {1, 2, 3, 4};
+    private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
     public static final String LETTER_HOLDER_ID = "LetterHolderId";
 
     private Map<String, Object> pinContents = new HashMap<>();
@@ -104,11 +106,12 @@ public class PostClaimOrchestrationHandlerTest {
                 .build()
             );
 
-        given(citizenServiceDocumentsService.pinLetterDocument(eq(CLAIM), eq(PIN))).willReturn(defendantLetterDocument);
-        given(citizenServiceDocumentsService.sealedClaimDocument(eq(CLAIM))).willReturn(sealedClaimLetterDocument);
-        given(sealedClaimPdfService.createPdf(eq(CLAIM))).willReturn(PDF_BYTES);
+        given(citizenServiceDocumentsService.pinLetterDocument(any(), eq(PIN))).willReturn(defendantLetterDocument);
+        given(citizenServiceDocumentsService.sealedClaimDocument(any())).willReturn(sealedClaimLetterDocument);
+        given(sealedClaimPdfService.createPdf(any())).willReturn(PDF_BYTES);
         given(pdfServiceClient.generateFromHtml(any(), anyMap())).willReturn(PDF_BYTES);
-        given(claimIssueReceiptService.createPdf(eq(CLAIM))).willReturn(PDF_BYTES);
+        given(claimIssueReceiptService.createPdf(any())).willReturn(PDF_BYTES);
+
         given(pinOrchestrationService.process(eq(CLAIM), anyString(), anyString(), any())).willReturn(CLAIM);
         given(claimantOperationService.notifyCitizen(eq(CLAIM), any(), eq(AUTHORISATION))).willReturn(CLAIM);
         given(rpaOperationService.notify(eq(CLAIM), eq(AUTHORISATION), any())).willReturn(CLAIM);
@@ -132,6 +135,47 @@ public class PostClaimOrchestrationHandlerTest {
         verify(claimantOperationService).notifyCitizen(eq(CLAIM), any(), eq(AUTHORISATION));
         verify(rpaOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
         verify(uploadOperationService, atLeast(2)).uploadDocument(eq(CLAIM),
+            eq(AUTHORISATION), any());
+
+    }
+
+    @Test
+    public void reSubmitCitizenIssueHandlerWhenPinOperationPassed() {
+        //given
+        Claim claimWithPinOperationSucceededIndicator = CLAIM.toBuilder()
+            .claimSubmissionOperationIndicators(
+                SampleClaimSubmissionOperationIndicators.withPinOperationSuccess.get()
+            ).build();
+
+        given(claimantOperationService
+            .notifyCitizen(eq(claimWithPinOperationSucceededIndicator), any(), eq(AUTHORISATION)))
+            .willReturn(claimWithPinOperationSucceededIndicator);
+        given(rpaOperationService
+            .notify(eq(claimWithPinOperationSucceededIndicator), eq(AUTHORISATION), any()))
+            .willReturn(claimWithPinOperationSucceededIndicator);
+        given(notifyStaffOperationService
+            .notify(eq(claimWithPinOperationSucceededIndicator), eq(AUTHORISATION), any()))
+            .willReturn(claimWithPinOperationSucceededIndicator);
+        given(uploadOperationService
+            .uploadDocument(eq(claimWithPinOperationSucceededIndicator), eq(AUTHORISATION), any()))
+            .willReturn(claimWithPinOperationSucceededIndicator);
+
+        CitizenClaimCreatedEvent event = new CitizenClaimCreatedEvent(
+            claimWithPinOperationSucceededIndicator,
+            SUBMITTER_NAME,
+            AUTHORISATION);
+
+        //when
+        postClaimOrchestrationHandler.citizenIssueHandler(event);
+
+        //then
+        verifyZeroInteractions(pinOrchestrationService);
+        verify(citizenServiceDocumentsService).sealedClaimDocument(eq(claimWithPinOperationSucceededIndicator));
+        verify(pdfServiceClient, atLeast(2)).generateFromHtml(any(), anyMap());
+        verify(claimIssueReceiptService).createPdf(eq(claimWithPinOperationSucceededIndicator));
+        verify(claimantOperationService).notifyCitizen(eq(claimWithPinOperationSucceededIndicator), any(), eq(AUTHORISATION));
+        verify(rpaOperationService).notify(eq(claimWithPinOperationSucceededIndicator), eq(AUTHORISATION), any());
+        verify(uploadOperationService, atLeast(2)).uploadDocument(eq(claimWithPinOperationSucceededIndicator),
             eq(AUTHORISATION), any());
 
     }
