@@ -16,3 +16,4 @@ ignore:
   - "**/ccd/migration/**"
   - "**/EmailData.java"
   - "**/CCDCaseHandler.java"
+  - "**/GeneratedDocuments.java"

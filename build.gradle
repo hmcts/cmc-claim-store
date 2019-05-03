@@ -330,7 +330,8 @@ sonarqube {
       "**/EmailData.java," +
       "**/CCDCaseHandler.java," +
       "**/CCDReDetermination.java," +
-      "**/CCDEventProducer.java"
+      "**/CCDEventProducer.java," +
+      "**/GeneratedDocuments.java"
   }
 }
 
