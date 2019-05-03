@@ -10,6 +10,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.controllers.support.SupportController;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
+import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedStaffNotificationHandler;
@@ -24,9 +25,15 @@ import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.party.Party;
+import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
+import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,6 +82,9 @@ public class SupportControllerTest {
     private AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler;
 
     @Mock
+    private ClaimantResponseStaffNotificationHandler claimantResponseStaffNotificationHandler;
+
+    @Mock
     private DocumentsService documentsService;
 
     @Mock
@@ -89,10 +99,17 @@ public class SupportControllerTest {
 
     @Before
     public void setUp() {
-        controller = new SupportController(claimService, userService, documentGenerator,
-            moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
-            ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
-            documentsService, mediationCSVService
+        controller = new SupportController(
+            claimService,
+            userService,
+            documentGenerator,
+            moreTimeRequestedStaffNotificationHandler,
+            defendantResponseStaffNotificationHandler,
+            ccjStaffNotificationHandler,
+            agreementCountersignedStaffNotificationHandler,
+            documentsService,
+            mediationCSVService,
+            claimantResponseStaffNotificationHandler
         );
         sampleClaim = SampleClaim.getDefault();
     }
@@ -169,6 +186,86 @@ public class SupportControllerTest {
         when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
             .thenReturn(Optional.of(SampleClaim.withNoResponse()));
         controller.resendStaffNotifications(CLAIMREFERENCENUMBER, RESPONSESUBMITTED, AUTHORISATION);
+    }
+
+    @Test
+    public void shouldResendClaimantResponseNotifications() {
+        sampleClaim = SampleClaim.builder()
+            .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionImmediately())
+            .withClaimantResponse(SampleClaimantResponse.validDefaultRejection())
+            .build();
+
+        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER))).thenReturn(Optional.of(sampleClaim));
+
+        controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claimant-response", "");
+
+        verify(claimantResponseStaffNotificationHandler).onClaimantResponse(any());
+    }
+
+    @Test
+    public void shouldResendClaimantResponseNotificationsIfReferToJudgeAndIsBusiness() {
+        PaymentIntention paymentIntention = SamplePaymentIntention.immediately();
+        Party company = SampleParty.builder().withCorrespondenceAddress(null).company();
+        sampleClaim = SampleClaim.builder()
+            .withResponse(
+                SampleResponse.PartAdmission.builder().buildWithPaymentIntentionAndParty(paymentIntention, company)
+            )
+            .withClaimantResponse(
+                SampleClaimantResponse.ClaimantResponseAcceptation.builder()
+                .buildAcceptationReferToJudgeWithCourtDetermination()
+            )
+            .build();
+
+        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER))).thenReturn(Optional.of(sampleClaim));
+
+        controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claimant-response", "");
+
+        verify(claimantResponseStaffNotificationHandler).onClaimantResponse(any());
+    }
+
+    @Test
+    public void shouldNotResendClaimantResponseNotificationsIfReferToJudge() {
+        sampleClaim = SampleClaim.builder()
+            .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionImmediately())
+            .withClaimantResponse(
+                SampleClaimantResponse.ClaimantResponseAcceptation.builder()
+                .buildAcceptationReferToJudgeWithCourtDetermination()
+            )
+            .build();
+
+        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER))).thenReturn(Optional.of(sampleClaim));
+
+        controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claimant-response", "");
+
+        verify(claimantResponseStaffNotificationHandler, never()).onClaimantResponse(any());
+    }
+
+    @Test
+    public void shouldNotResendClaimantResponseNotificationsWhenSettlementAgreementReached() {
+        sampleClaim = SampleClaim.builder()
+            .withResponse(
+                SampleResponse.FullDefence.builder().build()
+            )
+            .withClaimantResponse(
+                SampleClaimantResponse.ClaimantResponseAcceptation.builder()
+                .buildAcceptationIssueSettlementWithClaimantPaymentIntention()
+            )
+            .build();
+
+        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER))).thenReturn(Optional.of(sampleClaim));
+
+        controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claimant-response", "");
+
+        verify(claimantResponseStaffNotificationHandler, never()).onClaimantResponse(any());
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenClaimHasNoClaimantResponse() {
+        exceptionRule.expect(IllegalArgumentException.class);
+        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER))).thenReturn(
+            Optional.of(SampleClaim.builder().withClaimantResponse(null).build()));
+
+        controller.resendStaffNotifications(CLAIMREFERENCENUMBER, "claimant-response", "");
     }
 
     @Test
