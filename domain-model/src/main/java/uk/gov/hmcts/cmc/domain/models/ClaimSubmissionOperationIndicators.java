@@ -20,16 +20,23 @@ public class ClaimSubmissionOperationIndicators {
     private YesNoOption defendantPinLetterUpload;
 
     public static ClaimSubmissionOperationIndicatorsBuilder builder() {
-        return new ClaimSubmissionOperationIndicatorsBuilder(){
+        return new ClaimSubmissionOperationIndicatorsBuilder() {
             @Override
             public ClaimSubmissionOperationIndicators build() {
-                super.claimantNotification = setDefault(super.claimantNotification);
+                super.claimantNotification = setDefaultIfNull(super.claimantNotification);
+                super.defendantNotification = setDefaultIfNull(super.defendantNotification);
+                super.bulkPrint = setDefaultIfNull(super.bulkPrint);
+                super.rpa = setDefaultIfNull(super.rpa);
+                super.staffNotification = setDefaultIfNull(super.staffNotification);
+                super.sealedClaimUpload = setDefaultIfNull(super.sealedClaimUpload);
+                super.claimIssueReceiptUpload = setDefaultIfNull(super.claimIssueReceiptUpload);
+                super.defendantPinLetterUpload = setDefaultIfNull(super.defendantPinLetterUpload);
 
                 return super.build();
             }
 
-            private YesNoOption setDefault(YesNoOption prop){
-                return Objects.isNull(prop)? YesNoOption.NO : prop;
+            private YesNoOption setDefaultIfNull(YesNoOption prop) {
+                return Objects.isNull(prop) ? YesNoOption.NO : prop;
             }
         };
     }

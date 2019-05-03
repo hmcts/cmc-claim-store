@@ -30,7 +30,6 @@ public class PinOrchestrationService {
 
     private final Logger logger = LoggerFactory.getLogger(ClaimService.class);
 
-
     public PinOrchestrationService(
         DocumentUploadHandler documentUploadHandler,
         PrintService bulkPrintService,
