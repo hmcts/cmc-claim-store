@@ -66,18 +66,24 @@ public class IdamTestService {
     }
 
     public User createSolicitor() {
+        logger.debug("createSolicitor");
+
         String email = testData.nextUserEmail();
         createUser(createSolicitorRequest(email, aatConfiguration.getSmokeTestSolicitor().getPassword()));
         return userService.authenticateUser(email, aatConfiguration.getSmokeTestSolicitor().getPassword());
     }
 
     public User createCitizen() {
+        logger.debug("createCitizen");
+
         String email = testData.nextUserEmail();
         createUser(createCitizenRequest(email, aatConfiguration.getSmokeTestCitizen().getPassword()));
         return userService.authenticateUser(email, aatConfiguration.getSmokeTestCitizen().getPassword());
     }
 
     public User createDefendant(final String letterHolderId) {
+        logger.debug("createDefendant");
+
         String email = testData.nextUserEmail();
         String password = aatConfiguration.getSmokeTestCitizen().getPassword();
         createUser(createCitizenRequest(email, password));
