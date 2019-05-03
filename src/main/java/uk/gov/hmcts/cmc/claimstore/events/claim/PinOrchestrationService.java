@@ -38,11 +38,7 @@ public class PinOrchestrationService {
         this.documentOrchestrationService = documentOrchestrationService;
     }
 
-    public Claim process(
-        Claim claim,
-        String authorisation,
-        String submitterName
-    ) {
+    public Claim process(Claim claim, String authorisation, String submitterName) {
         Claim updatedClaim = claim;
         GeneratedDocuments documents = documentOrchestrationService.generateForCitizen(claim, authorisation);
 

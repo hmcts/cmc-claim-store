@@ -113,8 +113,9 @@ public class PostClaimOrchestrationHandlerTest {
         verify(pinOrchestrationService).process(eq(CLAIM), anyString(), anyString());
         verify(claimantOperationService).notifyCitizen(eq(CLAIM), any(), eq(AUTHORISATION));
         verify(rpaOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
-        verify(uploadOperationService, atLeast(2)).uploadDocument(eq(CLAIM), eq(AUTHORISATION), any());
 
+        verify(uploadOperationService, atLeast(2))
+            .uploadDocument(eq(CLAIM), eq(AUTHORISATION), any());
     }
 
     @Test

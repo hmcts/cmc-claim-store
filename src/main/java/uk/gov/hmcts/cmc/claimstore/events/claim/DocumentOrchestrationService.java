@@ -67,20 +67,24 @@ public class DocumentOrchestrationService {
             .orElseThrow(() -> new IllegalArgumentException("Pin generation failed"));
 
         claimService.linkLetterHolder(claim.getId(), letterHolderId);
+        Document sealedClaimDoc = citizenServiceDocumentsService.sealedClaimDocument(claim);
 
         return GeneratedDocuments.builder()
             .claimIssueReceipt(getClaimIssueReceiptPdf(claim))
             .defendantLetter(defendantLetter)
-            .sealedClaim(getSealedClaimPdf(claim))
+            .sealedClaim(getClaimPdf(claim, sealedClaimDoc))
             .defendantLetterDoc(defendantLetterDoc)
-            .sealedClaimDoc(citizenServiceDocumentsService.sealedClaimDocument(claim))
+            .sealedClaimDoc(sealedClaimDoc)
             .pin(pin)
             .build();
     }
 
     public PDF getSealedClaimPdf(Claim claim) {
         Document sealedClaimDoc = citizenServiceDocumentsService.sealedClaimDocument(claim);
+        return getClaimPdf(claim, sealedClaimDoc);
+    }
 
+    private PDF getClaimPdf(Claim claim, Document sealedClaimDoc) {
         return new PDF(buildSealedClaimFileBaseName(
             claim.getReferenceNumber()),
             pdfServiceClient.generateFromHtml(sealedClaimDoc.template.getBytes(), sealedClaimDoc.values),
