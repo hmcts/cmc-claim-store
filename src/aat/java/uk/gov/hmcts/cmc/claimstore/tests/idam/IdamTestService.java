@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.springframework.web.util.UriUtils;
 import uk.gov.hmcts.cmc.claimstore.idam.IdamApi;
 import uk.gov.hmcts.cmc.claimstore.idam.models.AuthenticateUserResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.Oauth2;
@@ -17,8 +16,6 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.tests.AATConfiguration;
 import uk.gov.hmcts.cmc.claimstore.tests.helpers.TestData;
-
-import java.nio.charset.Charset;
 
 import static uk.gov.hmcts.cmc.claimstore.services.UserService.AUTHORIZATION_CODE;
 
@@ -103,7 +100,7 @@ public class IdamTestService {
 
     private void upliftUser(String email, String password, TokenExchangeResponse exchangeResponse) {
         Response response = idamInternalApi.upliftUser(
-            UriUtils.encode(email, Charset.forName("UTF-8")),
+            email,
             password,
             exchangeResponse.getAccessToken(),
             oauth2.getClientId(),
