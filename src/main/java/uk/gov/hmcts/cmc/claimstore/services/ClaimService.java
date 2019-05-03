@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
@@ -76,6 +77,7 @@ public class ClaimService {
     private final CCDCaseDataToClaim ccdCaseDataToClaim;
     private final PaidInFullRule paidInFullRule;
     private final ClaimAuthorisationRule claimAuthorisationRule;
+    private final boolean asyncEventOperationEnabled;
     private CCDEventProducer ccdEventProducer;
 
     @SuppressWarnings("squid:S00107") //Constructor need all parameters
@@ -94,7 +96,8 @@ public class ClaimService {
         CCDCaseDataToClaim ccdCaseDataToClaim,
         PaidInFullRule paidInFullRule,
         CCDEventProducer ccdEventProducer,
-        ClaimAuthorisationRule claimAuthorisationRule
+        ClaimAuthorisationRule claimAuthorisationRule,
+        @Value("${feature_toggles.async_event_operations_enabled:false}") boolean asyncEventOperationEnabled
     ) {
         this.claimRepository = claimRepository;
         this.userService = userService;
@@ -110,6 +113,7 @@ public class ClaimService {
         this.paidInFullRule = paidInFullRule;
         this.ccdEventProducer = ccdEventProducer;
         this.claimAuthorisationRule = claimAuthorisationRule;
+        this.asyncEventOperationEnabled = asyncEventOperationEnabled;
     }
 
     public Claim getClaimById(long claimId) {
@@ -205,13 +209,9 @@ public class ClaimService {
         List<String> features
     ) {
         String externalId = claimData.getExternalId().toString();
-        Optional<GeneratePinResponse> pinResponse = Optional.empty();
         User user = userService.getUser(authorisation);
 
-        if (!claimData.isClaimantRepresented()) {
-            pinResponse = Optional.of(userService.generatePin(claimData.getDefendant().getName(), authorisation));
-        }
-
+        Optional<GeneratePinResponse> pinResponse = getPinResponse(claimData, authorisation);
         Claim issuedClaim;
         try {
             caseRepository.getClaimByExternalId(externalId, user).ifPresent(claim -> {
@@ -245,16 +245,32 @@ public class ClaimService {
                     new NotFoundException("Could not find claim with external ID '" + externalId + "'"));
         }
 
-        eventProducer.createClaimIssuedEvent(
-            issuedClaim,
-            pinResponse.map(GeneratePinResponse::getPin).orElse(null),
-            user.getUserDetails().getFullName(),
-            authorisation
-        );
-
+        if (asyncEventOperationEnabled) {
+            eventProducer.createClaimCreatedEvent(
+                issuedClaim,
+                pinResponse.map(GeneratePinResponse::getPin).orElse(null),
+                user.getUserDetails().getFullName(),
+                authorisation
+            );
+        } else {
+            eventProducer.createClaimIssuedEvent(
+                issuedClaim,
+                pinResponse.map(GeneratePinResponse::getPin).orElse(null),
+                user.getUserDetails().getFullName(),
+                authorisation
+            );
+        }
         trackClaimIssued(issuedClaim.getReferenceNumber(), issuedClaim.getClaimData().isClaimantRepresented());
 
         return issuedClaim;
+    }
+
+    private Optional<GeneratePinResponse> getPinResponse(ClaimData claimData, String authorisation) {
+        if (!claimData.isClaimantRepresented() && !asyncEventOperationEnabled) {
+            return Optional.of(userService.generatePin(claimData.getDefendant().getName(), authorisation));
+        }
+
+        return Optional.empty();
     }
 
     private void trackClaimIssued(String referenceNumber, boolean represented) {
@@ -426,6 +442,5 @@ public class ClaimService {
         claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorisation);
         caseRepository.saveReDetermination(authorisation, claim, redetermination);
         ccdEventProducer.createCCDReDetermination(claim, authorisation, redetermination);
-
     }
 }

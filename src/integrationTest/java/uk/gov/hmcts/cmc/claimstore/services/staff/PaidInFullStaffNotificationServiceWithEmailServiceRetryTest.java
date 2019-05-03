@@ -14,7 +14,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.email.AppInsightsService;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
 import java.time.LocalDate;
@@ -23,6 +22,7 @@ import java.util.Properties;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 
+import static java.util.Collections.singletonMap;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
@@ -43,8 +43,6 @@ public class PaidInFullStaffNotificationServiceWithEmailServiceRetryTest {
     private PDFServiceClient pdfServiceClient;
     @MockBean
     private JavaMailSenderImpl javaMailSender;
-    @MockBean
-    private AppInsightsService appInsightsService;
     @MockBean
     protected TelemetryClient telemetry;
     @Autowired
@@ -84,10 +82,10 @@ public class PaidInFullStaffNotificationServiceWithEmailServiceRetryTest {
         service.notifyPaidInFull(claimWithPaidInFull);
 
         verify(javaMailSender, atLeast(3)).createMimeMessage();
-        verify(appInsightsService).trackEvent(
+        verify(telemetry).trackEvent(
             eq("Notification - failure"),
-            eq("EmailSubject"),
-            eq("Paid in Full 000CM001: John Rambo v Dr. John Smith")
+            eq(singletonMap("EmailSubject", "Paid in Full 000CM001: John Rambo v Dr. John Smith")),
+            eq(null)
         );
     }
 }
