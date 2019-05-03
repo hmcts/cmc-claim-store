@@ -15,6 +15,8 @@ import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
+import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent;
+import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
@@ -32,9 +34,19 @@ import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
+import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+
+import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isReferredToJudge;
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
 
 @RestController
 @RequestMapping("/support")
@@ -51,6 +63,7 @@ public class SupportController {
     private final DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler;
     private final CCJStaffNotificationHandler ccjStaffNotificationHandler;
     private final AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler;
+    private final ClaimantResponseStaffNotificationHandler claimantResponseStaffNotificationHandler;
     private final DocumentsService documentsService;
 
     @SuppressWarnings("squid:S00107")
@@ -63,6 +76,7 @@ public class SupportController {
         DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler,
         CCJStaffNotificationHandler ccjStaffNotificationHandler,
         AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler,
+        ClaimantResponseStaffNotificationHandler claimantResponseStaffNotificationHandler,
         DocumentsService documentsService
     ) {
         this.claimService = claimService;
@@ -72,6 +86,7 @@ public class SupportController {
         this.defendantResponseStaffNotificationHandler = defendantResponseStaffNotificationHandler;
         this.ccjStaffNotificationHandler = ccjStaffNotificationHandler;
         this.agreementCountersignedStaffNotificationHandler = agreementCountersignedStaffNotificationHandler;
+        this.claimantResponseStaffNotificationHandler = claimantResponseStaffNotificationHandler;
         this.documentsService = documentsService;
     }
 
@@ -100,6 +115,9 @@ public class SupportController {
                 break;
             case "offer-accepted":
                 resendStaffNotificationOnAgreementCountersigned(claim, authorisation);
+                break;
+            case "claimant-response":
+                resendStaffNotificationClaimantResponse(claim);
                 break;
             default:
                 throw new NotFoundException("Event " + event + " is not supported");
@@ -234,6 +252,37 @@ public class SupportController {
                 new CitizenClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation)
             );
         }
+    }
+
+    private void resendStaffNotificationClaimantResponse(Claim claim) {
+        ClaimantResponse claimantResponse = claim.getClaimantResponse()
+            .orElseThrow(IllegalArgumentException::new);
+        Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
+        if (!isSettlementAgreement(claim, claimantResponse)
+            && (!isReferredToJudge(claimantResponse)
+                || (isReferredToJudge(claimantResponse)
+                    && PartyUtils.isCompanyOrOrganisation(response.getDefendant())
+                )
+            )
+        ) {
+            claimantResponseStaffNotificationHandler.onClaimantResponse(new ClaimantResponseEvent(claim));
+        }
+    }
+
+    private boolean isSettlementAgreement(Claim claim, ClaimantResponse claimantResponse) {
+        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+
+        if (shouldFormaliseResponseAcceptance(response, claimantResponse)) {
+            return ((ResponseAcceptation) claimantResponse).getFormaliseOption()
+                .filter(Predicate.isEqual(FormaliseOption.SETTLEMENT)).isPresent();
+        }
+        return false;
+    }
+
+    private boolean shouldFormaliseResponseAcceptance(Response response, ClaimantResponse claimantResponse) {
+        return ACCEPTATION == claimantResponse.getType()
+            && !ResponseUtils.isResponseStatesPaid(response)
+            && !ResponseUtils.isResponsePartAdmitPayImmediately(response);
     }
 
     private List<Claim> checkClaimsExist(List<String> referenceNumbers) {
