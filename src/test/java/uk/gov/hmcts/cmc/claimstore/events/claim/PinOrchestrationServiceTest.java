@@ -63,6 +63,8 @@ public class PinOrchestrationServiceTest {
     private NotificationTemplates templates;
     @Mock
     private EmailTemplates emailTemplates;
+    @Mock
+    private DocumentOrchestrationService documentOrchestrationService;
 
     @Before
     public void before() {
@@ -71,7 +73,8 @@ public class PinOrchestrationServiceTest {
             bulkPrintService,
             claimIssuedStaffNotificationService,
             claimIssuedNotificationService,
-            notificationsProperties
+            notificationsProperties,
+            documentOrchestrationService
         );
 
         given(documentUploadHandler
@@ -94,8 +97,11 @@ public class PinOrchestrationServiceTest {
             .pin(PIN)
             .build();
 
+        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION)))
+            .willReturn(generatedDocuments);
+
         //when
-        pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME, generatedDocuments);
+        pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
 
         //then
         verify(documentUploadHandler)

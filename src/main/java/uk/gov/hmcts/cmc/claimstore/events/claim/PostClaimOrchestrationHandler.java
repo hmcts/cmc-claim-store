@@ -53,25 +53,15 @@ public class PostClaimOrchestrationHandler {
             String authorisation = event.getAuthorisation();
             String submitterName = event.getSubmitterName();
 
-            GeneratedDocuments generatedDocuments
-                = documentOrchestrationService.generateForCitizen(claim, authorisation);
+            Claim updatedClaim = pinOrchestrationService.process(claim, authorisation, submitterName);
 
-            Claim updatedClaim
-                = pinOrchestrationService.process(claim, authorisation, submitterName, generatedDocuments);
+            PDF sealedClaimPdf = documentOrchestrationService.getSealedClaimPdf(claim);
+            updatedClaim = uploadOperationService.uploadDocument(updatedClaim, authorisation, sealedClaimPdf);
 
-            updatedClaim = uploadOperationService.uploadDocument(
-                updatedClaim,
-                authorisation,
-                generatedDocuments.getSealedClaim()
-            );
+            PDF claimIssueReceiptPdf = documentOrchestrationService.getClaimIssueReceiptPdf(claim);
+            updatedClaim = uploadOperationService.uploadDocument(updatedClaim, authorisation, claimIssueReceiptPdf);
 
-            updatedClaim = uploadOperationService.uploadDocument(
-                updatedClaim,
-                authorisation,
-                generatedDocuments.getClaimIssueReceipt()
-            );
-
-            updatedClaim = rpaOperationService.notify(updatedClaim, authorisation, generatedDocuments.getSealedClaim());
+            updatedClaim = rpaOperationService.notify(updatedClaim, authorisation, sealedClaimPdf);
             claimantOperationService.notifyCitizen(updatedClaim, submitterName, authorisation);
 
         } catch (Exception e) {
@@ -85,11 +75,11 @@ public class PostClaimOrchestrationHandler {
             Claim claim = event.getClaim();
             String authorisation = event.getAuthorisation();
 
-            GeneratedDocuments generatedDocuments = documentOrchestrationService.generateForRepresentative(claim);
+            GeneratedDocuments generatedDocuments = documentOrchestrationService.getSealedClaimForRepresentative(claim);
             PDF sealedClaim = generatedDocuments.getSealedClaim();
 
             Claim updatedClaim = uploadOperationService.uploadDocument(claim, authorisation, sealedClaim);
-            updatedClaim = rpaOperationService.notify(updatedClaim, authorisation, sealedClaim);
+            updatedClaim = rpaOperationService.notify(updatedClaim, authorisation);
             updatedClaim = notifyStaffOperationService.notify(updatedClaim, authorisation, sealedClaim);
 
             String submitterName = event.getRepresentativeName().orElse(null);
