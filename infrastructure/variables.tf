@@ -88,6 +88,10 @@ variable "save_claim_state_enabled" {
   default = "false"
 }
 
+variable "async_event_operations_enabled" {
+  default = "false"
+}
+
 variable "common_tags" {
   type = "map"
 }
