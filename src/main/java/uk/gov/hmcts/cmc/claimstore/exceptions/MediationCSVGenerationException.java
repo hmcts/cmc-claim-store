@@ -4,4 +4,8 @@ public class MediationCSVGenerationException extends RuntimeException {
     public MediationCSVGenerationException(String message, Throwable cause) {
         super(message, cause);
     }
+
+    public MediationCSVGenerationException(String message) {
+        super(message);
+    }
 }

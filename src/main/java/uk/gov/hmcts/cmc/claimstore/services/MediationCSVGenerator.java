@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.domain.models.MediationRow.MediationRowBuilder;
@@ -28,36 +29,36 @@ public class MediationCSVGenerator {
     private static final String CHECK_LIST = "4";
     private static final String PARTY_STATUS = "5";
 
-    private static final int MEDIATION_CLAIMANT_PARTY_TYPE = 1;
-    private static final int MEDIATION_DEFENDANT_PARTY_TYPE = 2;
+    private static final int CLAIMANT_PARTY_TYPE = 1;
+    private static final int DEFENDANT_PARTY_TYPE = 2;
 
-    private static final Map<Integer, Function<Claim, Optional<String>>> MEDIATION_CONTACT_PERSON_EXTRACTORS =
+    private static final Map<Integer, Function<Claim, Optional<String>>> CONTACT_PERSON_EXTRACTORS =
         ImmutableMap.of(
-            MEDIATION_CLAIMANT_PARTY_TYPE,
+            CLAIMANT_PARTY_TYPE,
             claim -> claim.getClaimantResponse()
                 .filter(ResponseRejection.class::isInstance)
                 .map(ResponseRejection.class::cast)
-                .orElseThrow(RuntimeException::new)
+                .orElseThrow(invalidMediationStateException())
                 .getMediationContactPerson(),
 
-            MEDIATION_DEFENDANT_PARTY_TYPE,
+            DEFENDANT_PARTY_TYPE,
             claim -> claim.getResponse()
-                .orElseThrow(RuntimeException::new)
+                .orElseThrow(invalidMediationStateException())
                 .getMediationContactPerson()
         );
 
-    private static final Map<Integer, Function<Claim, Optional<String>>> MEDIATION_CONTACT_NUMBER_EXTRACTORS =
+    private static final Map<Integer, Function<Claim, Optional<String>>> CONTACT_NUMBER_EXTRACTORS =
         ImmutableMap.of(
-            MEDIATION_CLAIMANT_PARTY_TYPE,
+            CLAIMANT_PARTY_TYPE,
             claim -> claim.getClaimantResponse()
                 .filter(ResponseRejection.class::isInstance)
                 .map(ResponseRejection.class::cast)
-                .orElseThrow(RuntimeException::new)
+                .orElseThrow(invalidMediationStateException())
                 .getMediationPhoneNumber(),
 
-            MEDIATION_DEFENDANT_PARTY_TYPE,
+            DEFENDANT_PARTY_TYPE,
             claim -> claim.getResponse()
-                .orElseThrow(RuntimeException::new)
+                .orElseThrow(invalidMediationStateException())
                 .getMediationPhoneNumber()
         );
 
@@ -85,8 +86,8 @@ public class MediationCSVGenerator {
         List<MediationRow> result = caseRepository.getMediationClaims(authorisation, reportDate)
             .stream()
             .map(claim -> Arrays.asList(
-                createMediationRow(claim, MEDIATION_CLAIMANT_PARTY_TYPE),
-                createMediationRow(claim, MEDIATION_DEFENDANT_PARTY_TYPE)
+                createMediationRow(claim, CLAIMANT_PARTY_TYPE),
+                createMediationRow(claim, DEFENDANT_PARTY_TYPE)
             ))
             .flatMap(List::stream)
             .collect(Collectors.toList());
@@ -108,13 +109,17 @@ public class MediationCSVGenerator {
             .amount(String.valueOf(claim.getTotalAmountTillToday().orElseThrow(RuntimeException::new)))
             .partyType(String.valueOf(partyType));
 
-        MEDIATION_CONTACT_PERSON_EXTRACTORS.get(partyType)
+        CONTACT_PERSON_EXTRACTORS.get(partyType)
             .apply(claim)
             .ifPresent(mediationRowBuilder::contactName);
-        MEDIATION_CONTACT_NUMBER_EXTRACTORS.get(partyType)
+        CONTACT_NUMBER_EXTRACTORS.get(partyType)
             .apply(claim)
             .ifPresent(mediationRowBuilder::contactNumber);
 
         return mediationRowBuilder.build();
+    }
+
+    private static Supplier<RuntimeException> invalidMediationStateException() {
+        return () -> new MediationCSVGenerationException("Invalid mediation state");
     }
 }
