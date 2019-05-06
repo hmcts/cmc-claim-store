@@ -31,7 +31,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
-import uk.gov.hmcts.cmc.claimstore.services.MediationCSVService;
+import uk.gov.hmcts.cmc.claimstore.services.MediationReportService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
@@ -69,7 +69,7 @@ public class SupportController {
     private final AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler;
     private final ClaimantResponseStaffNotificationHandler claimantResponseStaffNotificationHandler;
     private final DocumentsService documentsService;
-    private final MediationCSVService mediationCSVService;
+    private final MediationReportService mediationReportService;
 
     @SuppressWarnings("squid:S00107")
     @Autowired
@@ -82,7 +82,7 @@ public class SupportController {
         CCJStaffNotificationHandler ccjStaffNotificationHandler,
         AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler,
         DocumentsService documentsService,
-        MediationCSVService mediationCSVService,
+        MediationReportService mediationReportService,
         ClaimantResponseStaffNotificationHandler claimantResponseStaffNotificationHandler
     ) {
         this.claimService = claimService;
@@ -93,7 +93,7 @@ public class SupportController {
         this.ccjStaffNotificationHandler = ccjStaffNotificationHandler;
         this.agreementCountersignedStaffNotificationHandler = agreementCountersignedStaffNotificationHandler;
         this.documentsService = documentsService;
-        this.mediationCSVService = mediationCSVService;
+        this.mediationReportService = mediationReportService;
         this.claimantResponseStaffNotificationHandler = claimantResponseStaffNotificationHandler;
     }
 
@@ -181,13 +181,13 @@ public class SupportController {
     }
 
     @PostMapping(value = "/sendMediation", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ApiOperation("Generate and Send Mediation CSV for Telephone Mediation Service")
+    @ApiOperation("Generate and Send Mediation Report for Telephone Mediation Service")
     public void sendMediation(
         @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation,
         @RequestBody MediationRequest mediationRequest
     ) {
-        mediationCSVService
-            .sendMediationCSV(authorisation, mediationRequest.getMediationGenerateDate());
+        mediationReportService
+            .sendMediationReport(authorisation, mediationRequest.getReportDate());
 
     }
 

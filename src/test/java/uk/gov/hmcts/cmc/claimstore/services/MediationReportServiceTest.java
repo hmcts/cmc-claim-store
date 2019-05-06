@@ -25,7 +25,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MediationCSVServiceTest {
+public class MediationReportServiceTest {
     private static final String FROM_ADDRESS = "sender@mail.com";
     private static final String TO_ADDRESS = "recipient@mail.com";
     private static final String AUTHORISATION = "Authorisation";
@@ -40,11 +40,11 @@ public class MediationCSVServiceTest {
     @Captor
     private ArgumentCaptor<EmailData> emailDataCaptor;
 
-    private MediationCSVService service;
+    private MediationReportService service;
 
     @Before
     public void setUp() {
-        this.service = new MediationCSVService(
+        this.service = new MediationReportService(
             emailService,
             mediationCSVGenerator,
             userService,
@@ -57,7 +57,7 @@ public class MediationCSVServiceTest {
 
     @Test
     public void shouldPrepareCSVDataAndInvokeEmailService() throws IOException {
-        service.sendMediationCSV(AUTHORISATION, LocalDate.now());
+        service.sendMediationReport(AUTHORISATION, LocalDate.now());
 
         verify(mediationCSVGenerator).createMediationCSV(AUTHORISATION, LocalDate.now());
         verifyEmailData();
@@ -69,7 +69,7 @@ public class MediationCSVServiceTest {
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(mockUser);
         when(mockUser.getAuthorisation()).thenReturn(AUTHORISATION);
 
-        service.automatedMediationCSV();
+        service.automatedMediationReport();
 
         verify(userService).authenticateAnonymousCaseWorker();
         verify(mediationCSVGenerator).createMediationCSV(AUTHORISATION, LocalDate.now().minusDays(1));

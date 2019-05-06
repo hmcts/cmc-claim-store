@@ -81,8 +81,8 @@ public class MediationCSVGenerator {
         }
     }
 
-    private List<MediationRow> createMediationRowForEachParty(String authorisation, LocalDate mediationDate) {
-        List<MediationRow> result = caseRepository.getMediationClaims(authorisation, mediationDate)
+    private List<MediationRow> createMediationRowForEachParty(String authorisation, LocalDate reportDate) {
+        List<MediationRow> result = caseRepository.getMediationClaims(authorisation, reportDate)
             .stream()
             .map(claim -> Arrays.asList(
                 createMediationRow(claim, MEDIATION_CLAIMANT_PARTY_TYPE),

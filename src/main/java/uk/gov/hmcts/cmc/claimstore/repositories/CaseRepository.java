@@ -79,6 +79,6 @@ public interface CaseRepository {
 
     Claim linkLetterHolder(Long claimId, String letterHolderId);
 
-    List<Claim> getMediationClaims(String authorisation, LocalDate mediationDate);
+    List<Claim> getMediationClaims(String authorisation, LocalDate mediationAgreementDate);
 }
 

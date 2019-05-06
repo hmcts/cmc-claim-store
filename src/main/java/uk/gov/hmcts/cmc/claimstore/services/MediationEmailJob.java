@@ -13,17 +13,17 @@ public class MediationEmailJob implements Job {
 
     private LocalDate mediationDate;
 
-    private MediationCSVService mediationCSVService;
+    private MediationReportService mediationReportService;
 
     @Autowired
-    public MediationEmailJob(String authorisation, LocalDate mediationDate, MediationCSVService mediationCSVService) {
+    public MediationEmailJob(String authorisation, LocalDate mediationDate, MediationReportService mediationReportService) {
         this.authorisation = authorisation;
         this.mediationDate = mediationDate;
-        this.mediationCSVService = mediationCSVService;
+        this.mediationReportService = mediationReportService;
     }
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        mediationCSVService.sendMediationCSV(authorisation, mediationDate);
+        mediationReportService.sendMediationReport(authorisation, mediationDate);
     }
 }
