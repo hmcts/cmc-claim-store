@@ -83,9 +83,9 @@ nonworking-days:
   datafile: ${NONWORKINGDAYS_DATAFILE:/data/non-working_days.dat}
 
 milo:
-  schedule: "${MILO_CSV_SCHEDULE:0 0 6 * * ?}"
-  recipient: ${MILO_CSV_RECIPIENT:andrew.walker@hmcts.net}
-  sender: ${MILO_CSV_SENDER:andrew.walker@hmcts.net}
+  schedule: "${MILO_CSV_SCHEDULE:-}"
+  recipient: ${MILO_CSV_RECIPIENT:}
+  sender: ${MILO_CSV_SENDER:}
 
 dateCalculations:
   endOfBusinessDayHour: 16
