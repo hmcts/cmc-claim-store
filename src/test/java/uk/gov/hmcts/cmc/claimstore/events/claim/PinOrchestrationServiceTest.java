@@ -16,8 +16,6 @@ import uk.gov.hmcts.cmc.claimstore.events.DocumentUploadHandler;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
@@ -127,15 +125,9 @@ public class PinOrchestrationServiceTest {
             eq("defendant-issue-notification-" + CLAIM.getReferenceNumber()),
             eq(SUBMITTER_NAME)
         );
-        ClaimSubmissionOperationIndicators pinBasedIndicator = ClaimSubmissionOperationIndicators.builder()
-            .defendantNotification(YesNoOption.YES)
-            .staffNotification(YesNoOption.YES)
-            .defendantPinLetterUpload(YesNoOption.YES)
-            .bulkPrint(YesNoOption.YES)
-            .build();
 
         verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM),
-            eq(pinBasedIndicator), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+            eq(CaseEvent.PIN_GENERATION_OPERATIONS));
     }
 
     @Test(expected = RuntimeException.class)
@@ -153,10 +145,8 @@ public class PinOrchestrationServiceTest {
         //then
         verify(documentUploadHandler)
             .uploadToDocumentManagement(eq(CLAIM), eq(AUTHORISATION), eq(singletonList(pinLetterClaim)));
-        ClaimSubmissionOperationIndicators pinBasedIndicator = ClaimSubmissionOperationIndicators.builder()
-            .build();
         verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM),
-            eq(pinBasedIndicator), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+            eq(CaseEvent.PIN_GENERATION_OPERATIONS));
     }
 
     @Test(expected = RuntimeException.class)
@@ -174,11 +164,8 @@ public class PinOrchestrationServiceTest {
         //then
         verify(documentUploadHandler)
             .uploadToDocumentManagement(eq(CLAIM), eq(AUTHORISATION), eq(singletonList(pinLetterClaim)));
-        ClaimSubmissionOperationIndicators pinBasedIndicator = ClaimSubmissionOperationIndicators.builder()
-            .defendantPinLetterUpload(YesNoOption.YES)
-            .build();
         verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM),
-            eq(pinBasedIndicator), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+            eq(CaseEvent.PIN_GENERATION_OPERATIONS));
     }
 
     @Test(expected = RuntimeException.class)
@@ -196,13 +183,8 @@ public class PinOrchestrationServiceTest {
         //then
         verify(documentUploadHandler)
             .uploadToDocumentManagement(eq(CLAIM), eq(AUTHORISATION), eq(singletonList(pinLetterClaim)));
-        ClaimSubmissionOperationIndicators pinBasedIndicator = ClaimSubmissionOperationIndicators.builder()
-            .defendantPinLetterUpload(YesNoOption.YES)
-            .bulkPrint(YesNoOption.YES)
-            .build();
-
         verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM),
-            eq(pinBasedIndicator), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+            eq(CaseEvent.PIN_GENERATION_OPERATIONS));
     }
 
     @Test(expected = RuntimeException.class)
@@ -220,12 +202,7 @@ public class PinOrchestrationServiceTest {
         //then
         verify(documentUploadHandler)
             .uploadToDocumentManagement(eq(CLAIM), eq(AUTHORISATION), eq(singletonList(pinLetterClaim)));
-        ClaimSubmissionOperationIndicators pinBasedIndicator = ClaimSubmissionOperationIndicators.builder()
-            .defendantPinLetterUpload(YesNoOption.YES)
-            .bulkPrint(YesNoOption.YES)
-            .staffNotification(YesNoOption.YES)
-            .build();
         verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM),
-            eq(pinBasedIndicator), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+            eq(CaseEvent.PIN_GENERATION_OPERATIONS));
     }
 }

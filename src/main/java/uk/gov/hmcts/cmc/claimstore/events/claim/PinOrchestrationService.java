@@ -74,7 +74,7 @@ public class PinOrchestrationService {
 
         } finally {
             updatedClaim = eventsStatusService.updateClaimOperationCompletion(authorisation, updatedClaim,
-                updatedOperationIndicator.build(), CaseEvent.PIN_GENERATION_OPERATIONS);
+                CaseEvent.PIN_GENERATION_OPERATIONS);
         }
         return updatedClaim;
     }
