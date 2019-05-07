@@ -1,0 +1,46 @@
+java:
+  image: hmcts.azurecr.io/hmcts/cmc-claim-store:latest
+  applicationPort: 4400
+  cpuRequests: 25m
+  keyVaults:
+    cmc:
+      resourceGroup: cmc
+      secrets:
+        - AppInsightsInstrumentationKey
+        - citizen-oauth-client-secret
+        - claim-store-s2s-secret
+        - anonymous-caseworker-username
+        - anonymous-caseworker-password
+        - system-update-username
+        - system-update-password
+        - notify-api-key
+  environment:
+    REFORM_TEAM: cmc
+    REFORM_SERVICE_NAME: claim-store
+    REFORM_ENVIRONMENT: preview
+    SPRING_MAIL_HOST: mta.reform.hmcts.net
+    SPRING_MAIL_PORT: 25
+    SPRING_MAIL_TEST_CONNECTION: false
+    SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: true
+    SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: mta.reform.hmcts.net
+    CLAIM_STORE_TEST_SUPPORT_ENABLED: true
+    CLAIM_STORE_DB_NAME: claimstore
+    CLAIM_STORE_DB_PORT: 5432
+    CMC_DB_NAME: cmc
+    CMC_DB_PORT: 5432
+    FEATURE_TOGGLES_EMAILTOSTAFF: true
+    FEATURE_TOGGLES_CCD_ENABLED: false
+    FEATURE_TOGGLES_CCD_ASYNC_ENABLED: false
+    FEATURE_TOGGLES_ASYNC_EVENT_OPERATIONS_ENABLED: false
+    DOCUMENT_MANAGEMENT_CITIZENROLE: citizen
+    FRONTEND_BASE_URL: https://FRONTEND_BASE_URL
+    RESPOND_TO_CLAIM_URL: https://RESPOND_TO_CLAIM_URL/first-contact/start
+    STAFF_NOTIFICATIONS_RECIPIENT: civilmoneyclaims+staff-int-tests@gmail.com
+    STAFF_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
+    RPA_NOTIFICATIONS_SENDER: noreply@reform.hmcts.net
+    RPA_NOTIFICATIONS_SEALEDCLAIMRECIPIENT: civilmoneyclaims+rpa-claim-issued@gmail.com
+    RPA_NOTIFICATIONS_MORETIMEREQUESTEDRECIPIENT: civilmoneyclaims+rpa-more-time-requested@gmail.com
+    RPA_NOTIFICATIONS_RESPONSERECIPIENT: civilmoneyclaims+rpa-defence-response@gmail.com
+    RPA_NOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT: civilmoneyclaims+rpa-county-court-judgement@gmail.com
+    RPA_NOTIFICATIONS_PAIDINFULLRECIPIENT: civilmoneyclaims+rpa-paid-in-full@gmail.com
+    DOCUMENT_MANAGEMENT_USERROLES: caseworker-cmc
