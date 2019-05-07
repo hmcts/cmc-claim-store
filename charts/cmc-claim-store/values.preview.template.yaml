@@ -46,8 +46,8 @@ java:
     CMC_DB_USERNAME: cmc
     CMC_DB_PASSWORD: cmc
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
-    FEATURE_TOGGLES_CCD_ENABLED: false
-    FEATURE_TOGGLES_CCD_ASYNC_ENABLED: true
+    FEATURE_TOGGLES_CCD_ENABLED: true
+    FEATURE_TOGGLES_CCD_ASYNC_ENABLED: false
 
 cmc-citizen-frontend:
   nodejs:
