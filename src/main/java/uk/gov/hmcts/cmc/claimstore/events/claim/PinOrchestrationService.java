@@ -23,10 +23,11 @@ import static java.util.Collections.singletonList;
 public class PinOrchestrationService {
     private final ClaimIssuedNotificationService claimIssuedNotificationService;
     private final NotificationsProperties notificationsProperties;
+    private final DocumentOrchestrationService documentOrchestrationService;
     private final DocumentUploadHandler documentUploadHandler;
+    private final ClaimCreationEventsStatusService eventsStatusService;
     private final PrintService bulkPrintService;
     private final ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService;
-    private final ClaimCreationEventsStatusService eventsStatusService;
 
     private final Logger logger = LoggerFactory.getLogger(ClaimService.class);
 
@@ -36,7 +37,8 @@ public class PinOrchestrationService {
         ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService,
         ClaimIssuedNotificationService claimIssuedNotificationService,
         NotificationsProperties notificationsProperties,
-        ClaimCreationEventsStatusService eventsStatusService
+        ClaimCreationEventsStatusService eventsStatusService,
+        DocumentOrchestrationService documentOrchestrationService
     ) {
         this.documentUploadHandler = documentUploadHandler;
         this.bulkPrintService = bulkPrintService;
@@ -44,15 +46,13 @@ public class PinOrchestrationService {
         this.claimIssuedNotificationService = claimIssuedNotificationService;
         this.notificationsProperties = notificationsProperties;
         this.eventsStatusService = eventsStatusService;
+        this.documentOrchestrationService = documentOrchestrationService;
     }
 
-    public Claim process(
-        Claim claim,
-        String authorisation,
-        String submitterName,
-        GeneratedDocuments generatedDocuments
-    ) {
+    public Claim process(Claim claim, String authorisation, String submitterName) {
         Claim updatedClaim = claim;
+        GeneratedDocuments documents = documentOrchestrationService.generateForCitizen(claim, authorisation);
+
         ClaimSubmissionOperationIndicators.ClaimSubmissionOperationIndicatorsBuilder updatedOperationIndicator =
             ClaimSubmissionOperationIndicators.builder();
 
@@ -61,21 +61,21 @@ public class PinOrchestrationService {
             updatedClaim = documentUploadHandler.uploadToDocumentManagement(
                 updatedClaim,
                 authorisation,
-                singletonList(generatedDocuments.getDefendantLetter())
+                singletonList(documents.getDefendantLetter())
             );
             updatedOperationIndicator.defendantPinLetterUpload(YesNoOption.YES);
 
-            bulkPrintService.print(updatedClaim, generatedDocuments.getDefendantLetterDoc(),
-                generatedDocuments.getSealedClaimDoc());
+            bulkPrintService.print(updatedClaim, documents.getDefendantLetterDoc(),
+                documents.getSealedClaimDoc());
             updatedOperationIndicator.bulkPrint(YesNoOption.YES);
 
             claimIssuedStaffNotificationService.notifyStaffOfClaimIssue(
                 updatedClaim,
-                ImmutableList.of(generatedDocuments.getSealedClaim(), generatedDocuments.getDefendantLetter())
+                ImmutableList.of(documents.getSealedClaim(), documents.getDefendantLetter())
             );
             updatedOperationIndicator.staffNotification(YesNoOption.YES);
 
-            notifyDefendant(updatedClaim, submitterName, generatedDocuments);
+            notifyDefendant(updatedClaim, submitterName, documents);
             updatedOperationIndicator.defendantNotification(YesNoOption.YES);
 
         } finally {

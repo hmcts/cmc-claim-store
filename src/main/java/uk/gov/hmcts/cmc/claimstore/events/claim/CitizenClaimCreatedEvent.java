@@ -10,7 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Getter
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode
 @Value
 public class CitizenClaimCreatedEvent extends ClaimCreationEvent {
 

@@ -51,14 +51,6 @@ public class DocumentOrchestrationService {
     }
 
     public GeneratedDocuments generateForCitizen(Claim claim, String authorisation) {
-        Document sealedClaimDoc = citizenServiceDocumentsService.sealedClaimDocument(claim);
-
-        PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(
-            claim.getReferenceNumber()),
-            pdfServiceClient.generateFromHtml(sealedClaimDoc.template.getBytes(), sealedClaimDoc.values),
-            SEALED_CLAIM
-        );
-
         Optional<GeneratePinResponse> pinResponse = getPinResponse(claim.getClaimData(), authorisation);
 
         String pin = pinResponse
@@ -71,31 +63,43 @@ public class DocumentOrchestrationService {
             pdfServiceClient.generateFromHtml(defendantLetterDoc.template.getBytes(), defendantLetterDoc.values),
             DEFENDANT_PIN_LETTER);
 
-        PDF claimIssueReceipt = new PDF(buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber()),
-            claimIssueReceiptService.createPdf(claim),
-            CLAIM_ISSUE_RECEIPT
-        );
-
         String letterHolderId = pinResponse.map(GeneratePinResponse::getUserId)
             .orElseThrow(() -> new IllegalArgumentException("Pin generation failed"));
 
         claimService.linkLetterHolder(claim.getId(), letterHolderId);
+        Document sealedClaimDoc = citizenServiceDocumentsService.sealedClaimDocument(claim);
 
         return GeneratedDocuments.builder()
-            .claimIssueReceipt(claimIssueReceipt)
+            .claimIssueReceipt(getClaimIssueReceiptPdf(claim))
             .defendantLetter(defendantLetter)
-            .sealedClaim(sealedClaim)
+            .sealedClaim(getClaimPdf(claim, sealedClaimDoc))
             .defendantLetterDoc(defendantLetterDoc)
             .sealedClaimDoc(sealedClaimDoc)
             .pin(pin)
             .build();
     }
 
-    private Optional<GeneratePinResponse> getPinResponse(ClaimData claimData, String authorisation) {
-        return Optional.of(userService.generatePin(claimData.getDefendant().getName(), authorisation));
+    public PDF getSealedClaimPdf(Claim claim) {
+        Document sealedClaimDoc = citizenServiceDocumentsService.sealedClaimDocument(claim);
+        return getClaimPdf(claim, sealedClaimDoc);
     }
 
-    public GeneratedDocuments generateForRepresentative(Claim claim) {
+    private PDF getClaimPdf(Claim claim, Document sealedClaimDoc) {
+        return new PDF(buildSealedClaimFileBaseName(
+            claim.getReferenceNumber()),
+            pdfServiceClient.generateFromHtml(sealedClaimDoc.template.getBytes(), sealedClaimDoc.values),
+            SEALED_CLAIM
+        );
+    }
+
+    public PDF getClaimIssueReceiptPdf(Claim claim) {
+        return new PDF(buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber()),
+            claimIssueReceiptService.createPdf(claim),
+            CLAIM_ISSUE_RECEIPT
+        );
+    }
+
+    public GeneratedDocuments getSealedClaimForRepresentative(Claim claim) {
         PDF sealedClaim = new PDF(
             buildSealedClaimFileBaseName(claim.getReferenceNumber()),
             sealedClaimPdfService.createPdf(claim),
@@ -105,5 +109,9 @@ public class DocumentOrchestrationService {
         return GeneratedDocuments.builder()
             .sealedClaim(sealedClaim)
             .build();
+    }
+
+    private Optional<GeneratePinResponse> getPinResponse(ClaimData claimData, String authorisation) {
+        return Optional.of(userService.generatePin(claimData.getDefendant().getName(), authorisation));
     }
 }

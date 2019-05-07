@@ -59,7 +59,6 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISS
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED_PAPER;
-import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
@@ -84,16 +83,8 @@ public class ClaimService {
     private final boolean asyncEventOperationEnabled;
     private CCDEventProducer ccdEventProducer;
 
-    public static Supplier<ClaimSubmissionOperationIndicators> getDefaultClaimSubmissionOperationIndicators =
+    private static Supplier<ClaimSubmissionOperationIndicators> getDefaultClaimSubmissionOperationIndicators =
         () -> ClaimSubmissionOperationIndicators.builder()
-            .claimantNotification(NO)
-            .defendantNotification(NO)
-            .bulkPrint(NO)
-            .rpa(NO)
-            .staffNotification(NO)
-            .sealedClaimUpload(NO)
-            .claimIssueReceiptUpload(NO)
-            .defendantPinLetterUpload(NO)
             .build();
 
     @SuppressWarnings("squid:S00107") //Constructor need all parameters
@@ -240,18 +231,18 @@ public class ClaimService {
             LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
             String submitterEmail = user.getUserDetails().getEmail();
 
-        Claim claim = Claim.builder()
-            .claimData(claimData)
-            .submitterId(submitterId)
-            .issuedOn(issuedOn)
-            .responseDeadline(responseDeadline)
-            .externalId(externalId)
-            .submitterEmail(submitterEmail)
-            .createdAt(nowInUTC())
-            .letterHolderId(letterHolderId.orElse(null))
-            .features(features)
-            .claimSubmissionOperationIndicators(getDefaultClaimSubmissionOperationIndicators.get())
-            .build();
+            Claim claim = Claim.builder()
+                .claimData(claimData)
+                .submitterId(submitterId)
+                .issuedOn(issuedOn)
+                .responseDeadline(responseDeadline)
+                .externalId(externalId)
+                .submitterEmail(submitterEmail)
+                .createdAt(nowInUTC())
+                .letterHolderId(letterHolderId.orElse(null))
+                .features(features)
+                .claimSubmissionOperationIndicators(getDefaultClaimSubmissionOperationIndicators.get())
+                .build();
 
             issuedClaim = caseRepository.saveClaim(user, claim);
             ccdEventProducer.createCCDClaimIssuedEvent(issuedClaim, user);

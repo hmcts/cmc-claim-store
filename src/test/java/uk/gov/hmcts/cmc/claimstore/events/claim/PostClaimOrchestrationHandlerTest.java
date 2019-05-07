@@ -31,6 +31,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
@@ -112,11 +113,11 @@ public class PostClaimOrchestrationHandlerTest {
         given(pdfServiceClient.generateFromHtml(any(), anyMap())).willReturn(PDF_BYTES);
         given(claimIssueReceiptService.createPdf(any())).willReturn(PDF_BYTES);
 
-        given(pinOrchestrationService.process(eq(CLAIM), anyString(), anyString(), any())).willReturn(CLAIM);
+        given(pinOrchestrationService.process(eq(CLAIM), anyString(), anyString())).willReturn(CLAIM);
         given(claimantOperationService.notifyCitizen(eq(CLAIM), any(), eq(AUTHORISATION))).willReturn(CLAIM);
         given(rpaOperationService.notify(eq(CLAIM), eq(AUTHORISATION), any())).willReturn(CLAIM);
         given(notifyStaffOperationService.notify(eq(CLAIM), eq(AUTHORISATION), any())).willReturn(CLAIM);
-        given(uploadOperationService.uploadDocument(eq(CLAIM), eq(AUTHORISATION), any())).willReturn(CLAIM);
+        given(uploadOperationService.uploadDocument(eq(CLAIM), eq(AUTHORISATION), any(), any())).willReturn(CLAIM);
     }
 
     @Test
@@ -129,13 +130,13 @@ public class PostClaimOrchestrationHandlerTest {
 
         //then
         verify(citizenServiceDocumentsService).sealedClaimDocument(eq(CLAIM));
-        verify(pdfServiceClient, atLeast(2)).generateFromHtml(any(), anyMap());
+        verify(pdfServiceClient, times(2)).generateFromHtml(any(), anyMap());
         verify(claimIssueReceiptService).createPdf(eq(CLAIM));
-        verify(pinOrchestrationService).process(eq(CLAIM), anyString(), anyString(), any());
+        verify(pinOrchestrationService).process(eq(CLAIM), anyString(), anyString());
         verify(claimantOperationService).notifyCitizen(eq(CLAIM), any(), eq(AUTHORISATION));
         verify(rpaOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
         verify(uploadOperationService, atLeast(2)).uploadDocument(eq(CLAIM),
-            eq(AUTHORISATION), any());
+            eq(AUTHORISATION), any(), any());
 
     }
 
@@ -153,11 +154,8 @@ public class PostClaimOrchestrationHandlerTest {
         given(rpaOperationService
             .notify(eq(claimWithPinOperationSucceededIndicator), eq(AUTHORISATION), any()))
             .willReturn(claimWithPinOperationSucceededIndicator);
-        given(notifyStaffOperationService
-            .notify(eq(claimWithPinOperationSucceededIndicator), eq(AUTHORISATION), any()))
-            .willReturn(claimWithPinOperationSucceededIndicator);
         given(uploadOperationService
-            .uploadDocument(eq(claimWithPinOperationSucceededIndicator), eq(AUTHORISATION), any()))
+            .uploadDocument(eq(claimWithPinOperationSucceededIndicator), eq(AUTHORISATION), any(), any()))
             .willReturn(claimWithPinOperationSucceededIndicator);
 
         CitizenClaimCreatedEvent event = new CitizenClaimCreatedEvent(
@@ -171,12 +169,14 @@ public class PostClaimOrchestrationHandlerTest {
         //then
         verifyZeroInteractions(pinOrchestrationService);
         verify(citizenServiceDocumentsService).sealedClaimDocument(eq(claimWithPinOperationSucceededIndicator));
-        verify(pdfServiceClient, atLeast(2)).generateFromHtml(any(), anyMap());
+        verify(pdfServiceClient, times(2)).generateFromHtml(any(), anyMap());
         verify(claimIssueReceiptService).createPdf(eq(claimWithPinOperationSucceededIndicator));
-        verify(claimantOperationService).notifyCitizen(eq(claimWithPinOperationSucceededIndicator), any(), eq(AUTHORISATION));
+        verify(claimantOperationService).notifyCitizen(eq(claimWithPinOperationSucceededIndicator), any(),
+            eq(AUTHORISATION));
         verify(rpaOperationService).notify(eq(claimWithPinOperationSucceededIndicator), eq(AUTHORISATION), any());
-        verify(uploadOperationService, atLeast(2)).uploadDocument(eq(claimWithPinOperationSucceededIndicator),
-            eq(AUTHORISATION), any());
+        verify(uploadOperationService, atLeast(2))
+            .uploadDocument(eq(claimWithPinOperationSucceededIndicator),
+            eq(AUTHORISATION), any(), any());
 
     }
 
@@ -195,6 +195,6 @@ public class PostClaimOrchestrationHandlerTest {
 
         verify(rpaOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
         verify(notifyStaffOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
-        verify(uploadOperationService).uploadDocument(eq(CLAIM), eq(AUTHORISATION), any());
+        verify(uploadOperationService).uploadDocument(eq(CLAIM), eq(AUTHORISATION), any(), any());
     }
 }
