@@ -75,8 +75,6 @@ public class PostClaimOrchestrationHandlerTest {
     private UserService userService;
     @Mock
     private PinOrchestrationService pinOrchestrationService;
-    @Mock
-    private ClaimCreationEventsStatusService eventsStatusService;
 
     @Before
     public void before() {
@@ -96,7 +94,6 @@ public class PostClaimOrchestrationHandlerTest {
             claimantOperationService,
             rpaOperationService,
             notifyStaffOperationService,
-            eventsStatusService,
             claimService
         );
 

@@ -1,15 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.events.claim;
 
 import com.google.common.collect.ImmutableList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.PrintService;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentUploadHandler;
-import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -28,8 +25,6 @@ public class PinOrchestrationService {
     private final ClaimCreationEventsStatusService eventsStatusService;
     private final PrintService bulkPrintService;
     private final ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService;
-
-    private final Logger logger = LoggerFactory.getLogger(ClaimService.class);
 
     public PinOrchestrationService(
         DocumentUploadHandler documentUploadHandler,
@@ -56,7 +51,6 @@ public class PinOrchestrationService {
         ClaimSubmissionOperationIndicators.ClaimSubmissionOperationIndicatorsBuilder updatedOperationIndicator =
             ClaimSubmissionOperationIndicators.builder();
 
-        logger.error("Before making documentupload handler");
         try {
             updatedClaim = documentUploadHandler.uploadToDocumentManagement(
                 updatedClaim,

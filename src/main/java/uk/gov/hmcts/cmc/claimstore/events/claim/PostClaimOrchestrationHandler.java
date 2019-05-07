@@ -67,7 +67,6 @@ public class PostClaimOrchestrationHandler {
         ClaimantOperationService claimantOperationService,
         RpaOperationService rpaOperationService,
         NotifyStaffOperationService notifyStaffOperationService,
-        ClaimCreationEventsStatusService eventsStatusService,
         ClaimService claimService
     ) {
         this.documentOrchestrationService = documentOrchestrationService;
