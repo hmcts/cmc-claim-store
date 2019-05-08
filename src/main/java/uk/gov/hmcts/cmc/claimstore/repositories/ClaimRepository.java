@@ -70,9 +70,9 @@ public interface ClaimRepository {
     List<Claim> getAllNotMigratedClaims();
 
     @SqlQuery(
-        SELECT_FROM_STATEMENT + " WHERE claim.response->>'freeMediation' = 'yes' " +
-            "AND claim.claimant_response->>'freeMediation' = 'yes' " +
-            "AND DATE(claim.claimant_responded_at) = :report_date")
+        SELECT_FROM_STATEMENT + " WHERE claim.response->>'freeMediation' = 'yes' "
+            + "AND claim.claimant_response->>'freeMediation' = 'yes' "
+            + "AND DATE(claim.claimant_responded_at) = :report_date")
     List<Claim> getMediationClaimsForDate(@Bind("report_date") LocalDate reportDate);
 
     @SingleValueResult
