@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,7 +25,7 @@ public class CCDCase {
     private String reason;
     private String feeCode;
     private String feeAccountNumber;
-    private String feeAmountInPennies;
+    private BigInteger feeAmountInPennies;
     private String externalReferenceNumber;
     private AmountType amountType;
     private String amountLowerValue;

@@ -52,7 +52,7 @@ public class IncomeMapperTest {
         CCDIncome ccdIncome = CCDIncome.builder()
             .type(OTHER)
             .frequency(CCDPaymentFrequency.MONTH)
-            .amountReceived(BigDecimal.TEN)
+            .amountReceived("1000")
             .otherSource("Trading")
             .build();
         String collectionId = UUID.randomUUID().toString();

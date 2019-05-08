@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.models.amount;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
 
@@ -12,6 +13,7 @@ import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@Getter
 @Builder
 @EqualsAndHashCode
 public class AmountRange implements Amount {
@@ -32,10 +34,6 @@ public class AmountRange implements Amount {
 
     public Optional<BigDecimal> getLowerValue() {
         return Optional.ofNullable(lowerValue);
-    }
-
-    public BigDecimal getHigherValue() {
-        return higherValue;
     }
 
     @Override

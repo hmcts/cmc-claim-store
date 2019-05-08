@@ -7,14 +7,23 @@ import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
 @Component
 public class AmountRangeMapper implements BuilderMapper<CCDCase, AmountRange, CCDCase.CCDCaseBuilder> {
 
+    private final MoneyMapper moneyMapper;
+
+    public AmountRangeMapper(MoneyMapper moneyMapper) {
+        this.moneyMapper = moneyMapper;
+    }
+
     @Override
     public void to(AmountRange amountRange, CCDCase.CCDCaseBuilder builder) {
-        amountRange.getLowerValue().ifPresent(builder::amountLowerValue);
-        builder.amountHigherValue(amountRange.getHigherValue());
+        builder.amountLowerValue(amountRange.getLowerValue().map(moneyMapper::to).orElse(null));
+        builder.amountHigherValue(moneyMapper.to(amountRange.getHigherValue()));
     }
 
     @Override
     public AmountRange from(CCDCase ccdAmountRange) {
-        return new AmountRange(ccdAmountRange.getAmountLowerValue(), ccdAmountRange.getAmountHigherValue());
+        return AmountRange.builder()
+            .lowerValue(moneyMapper.from(ccdAmountRange.getAmountLowerValue()))
+            .higherValue(moneyMapper.from(ccdAmountRange.getAmountHigherValue()))
+            .build();
     }
 }

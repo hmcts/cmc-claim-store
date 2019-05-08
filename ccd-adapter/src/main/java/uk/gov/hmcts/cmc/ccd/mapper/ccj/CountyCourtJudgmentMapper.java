@@ -1,9 +1,11 @@
 package uk.gov.hmcts.cmc.ccd.mapper.ccj;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
 import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
 import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgmentType;
+import uk.gov.hmcts.cmc.ccd.mapper.MoneyMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
@@ -19,6 +21,13 @@ import static uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption.valueOf;
 @Component
 public class CountyCourtJudgmentMapper {
 
+    private final MoneyMapper moneyMapper;
+
+    @Autowired
+    public CountyCourtJudgmentMapper(MoneyMapper moneyMapper) {
+        this.moneyMapper = moneyMapper;
+    }
+
     public CCDCountyCourtJudgment to(Claim claim) {
 
         if (claim == null || claim.getCountyCourtJudgment() == null) {
@@ -29,11 +38,11 @@ public class CountyCourtJudgmentMapper {
 
         CountyCourtJudgment countyCourtJudgment = claim.getCountyCourtJudgment();
         countyCourtJudgment.getDefendantDateOfBirth().ifPresent(builder::defendantDateOfBirth);
-        countyCourtJudgment.getPaidAmount().ifPresent(builder::paidAmount);
+        builder.paidAmount(countyCourtJudgment.getPaidAmount().map(moneyMapper::to).orElse(null));
         builder.paymentOption(valueOf(countyCourtJudgment.getPaymentOption().name()));
         countyCourtJudgment.getRepaymentPlan().ifPresent(repaymentPlan -> {
             builder.repaymentPlanFirstPaymentDate(repaymentPlan.getFirstPaymentDate());
-            builder.repaymentPlanInstalmentAmount(repaymentPlan.getInstalmentAmount());
+            builder.repaymentPlanInstalmentAmount(moneyMapper.to(repaymentPlan.getInstalmentAmount()));
             builder.repaymentPlanPaymentLength(repaymentPlan.getPaymentLength());
             builder.repaymentPlanPaymentSchedule(CCDPaymentSchedule.valueOf(repaymentPlan.getPaymentSchedule().name()));
             builder.repaymentPlanCompletionDate(repaymentPlan.getCompletionDate());
@@ -61,7 +70,7 @@ public class CountyCourtJudgmentMapper {
 
         CountyCourtJudgment.CountyCourtJudgmentBuilder ccjBuilder = CountyCourtJudgment.builder()
             .defendantDateOfBirth(ccdCountyCourtJudgment.getDefendantDateOfBirth())
-            .paidAmount(ccdCountyCourtJudgment.getPaidAmount())
+            .paidAmount(moneyMapper.from(ccdCountyCourtJudgment.getPaidAmount()))
             .payBySetDate(ccdCountyCourtJudgment.getPayBySetDate());
 
         if (ccdCountyCourtJudgment.getPaymentOption() != null) {
@@ -78,7 +87,7 @@ public class CountyCourtJudgmentMapper {
             ccjBuilder.repaymentPlan(
                 RepaymentPlan.builder()
                     .paymentLength(ccdCountyCourtJudgment.getRepaymentPlanPaymentLength())
-                    .instalmentAmount(ccdCountyCourtJudgment.getRepaymentPlanInstalmentAmount())
+                    .instalmentAmount(moneyMapper.from(ccdCountyCourtJudgment.getRepaymentPlanInstalmentAmount()))
                     .firstPaymentDate(ccdCountyCourtJudgment.getRepaymentPlanFirstPaymentDate())
                     .completionDate(ccdCountyCourtJudgment.getRepaymentPlanCompletionDate())
                     .paymentSchedule(
