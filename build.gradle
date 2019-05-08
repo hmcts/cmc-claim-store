@@ -176,7 +176,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.3'
   compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version:'0.0.4'
 
-  compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
+  compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
 
   compile group: 'org.jdbi', name: 'jdbi', version: '2.78'
 
@@ -325,6 +325,7 @@ sonarqube {
       "**/CCDCaseRepository.java," +
       "**/cmc/claimstore/appinsights/**," +
       "**/cmc/claimstore/services/ccd/legaladvisor/**," +
+      "**/cmc/claimstore/courtfinder/models/**," +
       "**/ccd/migration/**," +
       "**/EmailData.java," +
       "**/CCDCaseHandler.java," +
