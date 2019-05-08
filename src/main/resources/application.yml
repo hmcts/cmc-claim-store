@@ -64,6 +64,11 @@ idam:
     totp_secret: "AAAAAAAAAAAAAAAA"
     microservice: "cmc_claim_store"
 
+courtfinder:
+  api:
+    url: "https://courttribunalfinder.service.gov.uk"
+
+
 pdf-service:
   url: "${PDF_SERVICE_URL:}"
 
@@ -144,6 +149,7 @@ feature_toggles:
   ccd_async_enabled: false
   ccd_enabled: false
   save_claim_state_enabled: false
+  async_event_operations_enabled: false
 
 feign:
   httpclient:
