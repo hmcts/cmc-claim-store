@@ -1,64 +1,49 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.function.Supplier;
+
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
 public class SampleClaimSubmissionOperationIndicators {
 
     public static Supplier<ClaimSubmissionOperationIndicators> withPinOperationSuccess =
-        () -> getClaimSubmissionIndicatorBuilderByAction("PIN").build();
+        () -> ClaimSubmissionOperationIndicators.builder()
+            .defendantPinLetterUpload(YES)
+            .bulkPrint(YES)
+            .staffNotification(YES)
+            .defendantNotification(YES)
+            .build();
 
     public static Supplier<ClaimSubmissionOperationIndicators> withOnePinOperationFailure =
-        () -> getClaimSubmissionIndicatorBuilderByAction("PIN")
-            .bulkPrint(YesNoOption.NO)
+        () -> withPinOperationSuccess.get().toBuilder()
+            .bulkPrint(NO)
+            .build();
+
+    public static Supplier<ClaimSubmissionOperationIndicators> withSealedClaimUploadOperationSuccess =
+        () -> withPinOperationSuccess.get().toBuilder()
+            .sealedClaimUpload(YES)
+            .build();
+
+    public static Supplier<ClaimSubmissionOperationIndicators> withClaimReceiptUploadOperationSuccess =
+        () -> withSealedClaimUploadOperationSuccess.get().toBuilder()
+            .claimIssueReceiptUpload(YES)
+            .build();
+
+    public static Supplier<ClaimSubmissionOperationIndicators> withRpaOperationSuccess =
+        () -> withClaimReceiptUploadOperationSuccess.get().toBuilder()
+            .rpa(YES)
             .build();
 
     public static Supplier<ClaimSubmissionOperationIndicators> withAllOperationSuccess =
-        () -> getClaimSubmissionIndicatorBuilderByAction("CLAIMANT_NOTIFY").build();
-
-    public static Supplier<ClaimSubmissionOperationIndicators> withSealedClaimUploadOperationSuccess =
-        () -> getClaimSubmissionIndicatorBuilderByAction("SEALED_CLAIM_UPLOAD").build();
-
-    public static Supplier<ClaimSubmissionOperationIndicators> withClaimReceiptUploadOperationSuccess =
-        () -> getClaimSubmissionIndicatorBuilderByAction("CLAIM_RECEIPT_UPLOAD").build();
-
-    public static Supplier<ClaimSubmissionOperationIndicators> withRpaOperationSuccess =
-        () -> getClaimSubmissionIndicatorBuilderByAction("RPA").build();
+        () -> withRpaOperationSuccess.get().toBuilder()
+            .claimantNotification(YES)
+            .build();
 
     private SampleClaimSubmissionOperationIndicators() {
         //Do nothing constructor.
-    }
-
-    @SuppressWarnings("checkstyle:FallThrough")
-    private static ClaimSubmissionOperationIndicators.ClaimSubmissionOperationIndicatorsBuilder
-        getClaimSubmissionIndicatorBuilderByAction(String action) {
-
-        ClaimSubmissionOperationIndicators.ClaimSubmissionOperationIndicatorsBuilder returnBuilder =
-            ClaimSubmissionOperationIndicators.builder();
-
-        switch (action) {
-            case "CLAIMANT_NOTIFY":
-                returnBuilder.claimantNotification(YesNoOption.YES);
-            case "RPA":
-                returnBuilder.rpa(YesNoOption.YES);
-            case "CLAIM_RECEIPT_UPLOAD":
-                returnBuilder.claimIssueReceiptUpload(YesNoOption.YES);
-            case "SEALED_CLAIM_UPLOAD":
-                returnBuilder.sealedClaimUpload(YesNoOption.YES);
-            case "PIN":
-                returnBuilder.defendantPinLetterUpload(YesNoOption.YES)
-                    .bulkPrint(YesNoOption.YES)
-                    .staffNotification(YesNoOption.YES)
-                    .defendantNotification(YesNoOption.YES);
-                break;
-            default:
-                returnBuilder.bulkPrint(YesNoOption.NO);
-
-        }
-
-        return returnBuilder;
     }
 
 }
