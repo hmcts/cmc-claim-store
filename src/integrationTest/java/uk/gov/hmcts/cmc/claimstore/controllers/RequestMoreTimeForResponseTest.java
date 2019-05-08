@@ -7,8 +7,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.testcontainers.shaded.javax.ws.rs.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
+import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
@@ -97,7 +97,7 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
             .andExpect(status().isOk());
 
         claim = caseRepository.getClaimByExternalId(this.claim.getExternalId(), user)
-            .orElseThrow(NotFoundException::new);
+            .orElseThrow(() -> new NotFoundException("Claim not found by id " + claim.getExternalId()));
 
         LocalDate responseDeadline = this.claim.getResponseDeadline();
         ZonedDateTime lastReminderDate = responseDeadline.minusDays(1).atTime(8, 0).atZone(UTC);
