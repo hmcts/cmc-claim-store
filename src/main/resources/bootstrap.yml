@@ -13,4 +13,3 @@ spring:
         anonymous-caseworker-password: idam.caseworker.anonymous.password
         system-update-username: idam.caseworker.system.username
         system-update-password: idam.caseworker.system.password
-        cmc-milo-recipient: milo.recipient
