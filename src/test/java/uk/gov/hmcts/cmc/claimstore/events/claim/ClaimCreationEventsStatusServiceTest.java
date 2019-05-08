@@ -28,7 +28,7 @@ public class ClaimCreationEventsStatusServiceTest {
     private ClaimCreationEventsStatusService eventsStatusService;
 
     @Before
-    public void setup() {
+    public void setUp() {
         eventsStatusService = new ClaimCreationEventsStatusService(caseRepository);
     }
 

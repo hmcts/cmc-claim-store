@@ -70,7 +70,7 @@ public class PinOrchestrationServiceTest {
     @Mock
     private DocumentOrchestrationService documentOrchestrationService;
 
-    GeneratedDocuments generatedDocuments = GeneratedDocuments.builder()
+    private GeneratedDocuments generatedDocuments = GeneratedDocuments.builder()
         .defendantLetterDoc(defendantLetterDocument)
         .defendantLetter(pinLetterClaim)
         .sealedClaimDoc(sealedClaimLetterDocument)
