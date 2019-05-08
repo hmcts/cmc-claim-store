@@ -45,5 +45,5 @@ java:
     RPA_NOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT: civilmoneyclaims+rpa-county-court-judgement@gmail.com
     RPA_NOTIFICATIONS_PAIDINFULLRECIPIENT: civilmoneyclaims+rpa-paid-in-full@gmail.com
     DOCUMENT_MANAGEMENT_USERROLES: caseworker-cmc
-    MILO_CSV_SCHEDULE: - # disabled by default
+    MILO_CSV_SCHEDULE: '-'
     MILO_CSV_SENDER: noreply@reform.hmcts.net
