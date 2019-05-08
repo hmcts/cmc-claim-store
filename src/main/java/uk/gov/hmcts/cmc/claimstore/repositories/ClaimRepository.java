@@ -66,9 +66,6 @@ public interface ClaimRepository {
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim->'payment'->>'reference' = :payReference")
     List<Claim> getByPaymentReference(@Bind("payReference") String payReference);
 
-    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.is_migrated = false")
-    List<Claim> getAllNotMigratedClaims();
-
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.id = :id")
     Optional<Claim> getById(@Bind("id") Long id);
@@ -82,7 +79,8 @@ public interface ClaimRepository {
         + "external_id, "
         + "submitter_email, "
         + "reference_number, "
-        + "features"
+        + "features, "
+        + "submission_operation_indicators"
         + ") "
         + "VALUES ("
         + ":submitterId, "
@@ -92,7 +90,8 @@ public interface ClaimRepository {
         + ":externalId, "
         + ":submitterEmail, "
         + "next_legal_rep_reference_number(), "
-        + ":features::JSONB"
+        + ":features::JSONB,"
+        + ":claimSubmissionOperationIndicators::JSONB"
         + ")")
     Long saveRepresented(
         @Bind("claim") String claim,
@@ -101,7 +100,8 @@ public interface ClaimRepository {
         @Bind("responseDeadline") LocalDate responseDeadline,
         @Bind("externalId") String externalId,
         @Bind("submitterEmail") String submitterEmail,
-        @Bind("features") String features
+        @Bind("features") String features,
+        @Bind("claimSubmissionOperationIndicators") String claimSubmissionOperationIndicators
     );
 
     @GetGeneratedKeys
@@ -115,7 +115,8 @@ public interface ClaimRepository {
         + "submitter_email, "
         + "reference_number, "
         + "features, "
-        + "state"
+        + "state, "
+        + "submission_operation_indicators"
         + ") "
         + "VALUES ("
         + ":submitterId, "
@@ -127,7 +128,8 @@ public interface ClaimRepository {
         + ":submitterEmail, "
         + "next_reference_number(), "
         + ":features::JSONB, "
-        + ":state"
+        + ":state, "
+        + ":claimSubmissionOperationIndicators::JSONB"
         + ")")
     Long saveSubmittedByClaimant(
         @Bind("claim") String claim,
@@ -138,7 +140,8 @@ public interface ClaimRepository {
         @Bind("externalId") String externalId,
         @Bind("submitterEmail") String submitterEmail,
         @Bind("features") String features,
-        @Bind("state") ClaimState state
+        @Bind("state") ClaimState state,
+        @Bind("claimSubmissionOperationIndicators") String claimSubmissionOperationIndicators
     );
 
     @SqlUpdate(
@@ -238,5 +241,22 @@ public interface ClaimRepository {
         @Bind("letterHolderId") String letterHolderId,
         @Bind("defendantId") String defendantId,
         @Bind("defendantEmail") String defendantEmail
+    );
+
+    @SqlUpdate(
+        "UPDATE claim SET submission_operation_indicators = :claimSubmissionOperationIndicators::JSONB"
+            + " WHERE id = :claimId"
+    )
+    Integer updateClaimSubmissionOperationStatus(
+        @Bind("claimId") Long claimId,
+        @Bind("claimSubmissionOperationIndicators") String claimSubmissionOperationIndicators
+    );
+
+    @SqlUpdate("UPDATE claim SET "
+        + " state = :state"
+        + " WHERE id = :claimId")
+    void updateClaimState(
+        @Bind("claimId") Long claimId,
+        @Bind("state") String state
     );
 }
