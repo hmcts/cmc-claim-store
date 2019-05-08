@@ -36,6 +36,14 @@ public class EmailAttachment {
         );
     }
 
+    public static EmailAttachment csv(byte[] content, String fileName) {
+        return new EmailAttachment(
+            new ByteArrayResource(content),
+            "text/csv",
+            fileName
+        );
+    }
+
     public InputStreamSource getData() {
         return data;
     }

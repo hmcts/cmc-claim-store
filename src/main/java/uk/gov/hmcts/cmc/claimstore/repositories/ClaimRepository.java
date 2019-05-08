@@ -69,6 +69,12 @@ public interface ClaimRepository {
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.is_migrated = false")
     List<Claim> getAllNotMigratedClaims();
 
+    @SqlQuery(
+        SELECT_FROM_STATEMENT + " WHERE claim.response->>'freeMediation' = 'yes' "
+            + "AND claim.claimant_response->>'freeMediation' = 'yes' "
+            + "AND DATE(claim.claimant_responded_at) = :report_date")
+    List<Claim> getMediationClaimsForDate(@Bind("report_date") LocalDate reportDate);
+
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.id = :id")
     Optional<Claim> getById(@Bind("id") Long id);
