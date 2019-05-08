@@ -16,6 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getWithClaimantResponseRejectionForPartAdmissionAndMediation;
 
+@RunWith(MockitoJUnitRunner.class)
 public class MediationCSVGeneratorTest {
 
     private static final String AUTHORISATION = "Bearer: aaa";
@@ -40,8 +41,8 @@ public class MediationCSVGeneratorTest {
     public void shouldCreateMediationForClaim() {
         mediationClaims.add(getWithClaimantResponseRejectionForPartAdmissionAndMediation());
 
-        String expected = "4,1,4,5,000CM001,80.89,1,Mediation Contact Person,07999999999,null\r\n"
-            + "4,1,4,5,000CM001,80.89,2,Mediation Contact Person,07999999999,null\r\n";
+        String expected = "4,000CM001,1,80.89,1,Mediation Contact Person,null,07999999999,4,5\r\n"
+            + "4,000CM001,1,80.89,2,Mediation Contact Person,null,07999999999,4,5\r\n";
         String mediationCSV = mediationCSVGenerator.createMediationCSV(AUTHORISATION, LocalDate.now());
         assertThat(mediationCSV).isEqualTo(expected);
     }
