@@ -268,7 +268,7 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public List<Claim> getMediationClaims(String authorisation, LocalDate mediationAgreementDate) {
-        return claimRepository.getMediationClaimsForDate(mediationAgreementDate);
+    public List<Claim> getMediationClaims(String authorisation, LocalDate agreementReachedDate) {
+        return claimRepository.getMediationClaimsForDate(agreementReachedDate);
     }
 }
