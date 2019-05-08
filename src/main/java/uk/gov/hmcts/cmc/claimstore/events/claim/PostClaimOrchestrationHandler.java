@@ -20,8 +20,9 @@ import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
-import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @Async("threadPoolTaskExecutor")
@@ -115,26 +116,22 @@ public class PostClaimOrchestrationHandler {
     @EventListener
     public void citizenIssueHandler(CitizenClaimCreatedEvent event) {
         try {
-            Claim claim = event.getClaim();
             String authorisation = event.getAuthorisation();
-            Claim updatedClaim;
 
             GeneratedDocuments generatedDocuments =
-                documentOrchestrationService.generateForCitizen(claim, authorisation);
+                documentOrchestrationService.generateForCitizen(event.getClaim(), authorisation);
 
-            updatedClaim = CompletableFuture
-                .supplyAsync(() -> performPinOperations.perform(claim, event, generatedDocuments))
-                .thenApplyAsync(pinCompletedClaim
-                    -> uploadSealedClaimOperation.perform(pinCompletedClaim, event, generatedDocuments))
-                .thenApplyAsync(uploadedSealedClaim
-                    -> uploadClaimIssueReceiptOperation.perform(uploadedSealedClaim, event, generatedDocuments))
-                .thenApplyAsync(claimAfterReceiptUpload
-                    -> rpaOperation.perform(claimAfterReceiptUpload, event, generatedDocuments))
-                .thenApplyAsync(claimAfterRpa
-                    -> notifyCitizenOperation.perform(claimAfterRpa, event, generatedDocuments))
-                .get();
+            Function<Claim, Claim> doPinOperation = claimPassed ->
+                performPinOperations.perform(claimPassed, event, generatedDocuments);
 
-            claimService.updateClaimState(authorisation, updatedClaim, ClaimState.ISSUED);
+            Supplier<Claim> updatedClaim = () -> doPinOperation
+                .andThen(claim -> uploadSealedClaimOperation.perform(claim, event, generatedDocuments))
+                .andThen(claim -> uploadClaimIssueReceiptOperation.perform(claim, event, generatedDocuments))
+                .andThen(claim -> rpaOperation.perform(claim, event, generatedDocuments))
+                .andThen(claim -> notifyCitizenOperation.perform(claim, event, generatedDocuments))
+                .apply(event.getClaim());
+
+            claimService.updateClaimState(authorisation, updatedClaim.get(), ClaimState.ISSUED);
 
         } catch (Exception e) {
             logger.error("failed operation processing for event ()", event, e);
@@ -144,22 +141,21 @@ public class PostClaimOrchestrationHandler {
     @EventListener
     public void representativeIssueHandler(RepresentedClaimCreatedEvent event) {
         try {
-            Claim claim = event.getClaim();
             String authorisation = event.getAuthorisation();
 
-            GeneratedDocuments generatedDocuments = documentOrchestrationService.getSealedClaimForRepresentative(claim);
+            GeneratedDocuments generatedDocuments = documentOrchestrationService
+                .getSealedClaimForRepresentative(event.getClaim());
 
-            Claim updatedClaim = CompletableFuture
-                .supplyAsync(() -> uploadSealedClaimOperation.perform(claim, event, generatedDocuments))
-                .thenApplyAsync(claimAfterReceiptUpload
-                    -> rpaOperation.perform(claimAfterReceiptUpload, event, generatedDocuments))
-                .thenApplyAsync(claimAfterRpa
-                    -> notifyStaffOperation.perform(claimAfterRpa, event, generatedDocuments))
-                .thenApplyAsync(claimAfterStaffNotify
-                    -> notifyRepresentativeOperation.perform(claimAfterStaffNotify, event, generatedDocuments)
-                ).get();
+            Function<Claim, Claim> doUploadSealedClaim = claimPassed ->
+                uploadSealedClaimOperation.perform(event.getClaim(), event, generatedDocuments);
 
-            claimService.updateClaimState(authorisation, updatedClaim, ClaimState.ISSUED);
+            Supplier<Claim> updatedClaim = () -> doUploadSealedClaim
+                .andThen(claim -> rpaOperation.perform(claim, event, generatedDocuments))
+                .andThen(claim -> notifyStaffOperation.perform(claim, event, generatedDocuments))
+                .andThen(claim -> notifyRepresentativeOperation.perform(claim, event, generatedDocuments))
+                .apply(event.getClaim());
+
+            claimService.updateClaimState(authorisation, updatedClaim.get(), ClaimState.ISSUED);
 
         } catch (Exception e) {
             logger.error("failed operation processing for event ()", event, e);
