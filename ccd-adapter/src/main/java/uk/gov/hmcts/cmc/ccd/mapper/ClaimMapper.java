@@ -14,6 +14,8 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.math.NumberUtils.createBigInteger;
+
 @Component
 public class ClaimMapper {
 
@@ -98,7 +100,7 @@ public class ClaimMapper {
 
         builder
             .reason(claimData.getReason())
-            .feeAmountInPennies(claimData.getFeeAmountInPennies());
+            .feeAmountInPennies(claimData.getFeeAmountInPennies().toString());
     }
 
     private boolean isLeadApplicant(Claim claim, int applicantIndex) {
@@ -120,7 +122,7 @@ public class ClaimMapper {
                 getDefendants(ccdCase, claimBuilder),
                 paymentMapper.from(ccdCase),
                 amountMapper.from(ccdCase),
-                ccdCase.getFeeAmountInPennies(),
+                createBigInteger(ccdCase.getFeeAmountInPennies()),
                 interestMapper.from(ccdCase),
                 personalInjuryMapper.from(ccdCase),
                 housingDisrepairMapper.from(ccdCase),

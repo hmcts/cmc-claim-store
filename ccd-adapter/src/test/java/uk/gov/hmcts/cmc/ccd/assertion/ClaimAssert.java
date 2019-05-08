@@ -17,6 +17,7 @@ import java.util.Objects;
 import static java.lang.String.format;
 import static java.time.format.DateTimeFormatter.ISO_DATE;
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.math.NumberUtils.createBigInteger;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;
 
@@ -94,7 +95,7 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
                 ccdCase.getFeeAccountNumber(), claimData.getFeeAccountNumber().orElse(null));
         }
 
-        if (!Objects.equals(claimData.getFeeAmountInPennies(), ccdCase.getFeeAmountInPennies())) {
+        if (!Objects.equals(claimData.getFeeAmountInPennies(), createBigInteger(ccdCase.getFeeAmountInPennies()))) {
             failWithMessage("Expected CCDClaim.feeAmountInPennies to be <%s> but was <%s>",
                 ccdCase.getFeeAmountInPennies(), claimData.getFeeAmountInPennies());
         }

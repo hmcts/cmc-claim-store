@@ -40,7 +40,6 @@ import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -408,7 +407,7 @@ public class SampleData {
             .externalReferenceNumber("external ref")
             .externalId(UUID.randomUUID().toString())
             .feeCode("X1202")
-            .feeAmountInPennies(BigInteger.valueOf(100))
+            .feeAmountInPennies("10000")
             .reason("Reason for the case")
             .preferredCourt("London Court")
             .interestType(CCDInterestType.DIFFERENT)
