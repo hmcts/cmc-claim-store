@@ -25,7 +25,7 @@ dependencyUpdates.resolutionStrategy = {
 }
 
 def springBootVersion = '2.1.4.RELEASE'
-def springCloudVersion = 'Greenwich.RELEASE'
+def springCloudVersion = 'Greenwich.SR1'
 
 allprojects {
   apply plugin: 'java'
