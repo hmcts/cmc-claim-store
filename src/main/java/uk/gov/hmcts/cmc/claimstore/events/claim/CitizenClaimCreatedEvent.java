@@ -1,26 +1,29 @@
-package uk.gov.hmcts.cmc.claimstore.events.ccd;
+package uk.gov.hmcts.cmc.claimstore.events.claim;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
-import java.net.URI;
-
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Getter
 @EqualsAndHashCode
-public class CCDLinkSealedClaimDocumentEvent {
-    private final String authorization;
+@Builder(toBuilder = true)
+public class CitizenClaimCreatedEvent {
     private final Claim claim;
-    private final URI sealedClaimDocument;
+    private final String submitterName;
+    private final String authorisation;
 
-    public CCDLinkSealedClaimDocumentEvent(String authorization, Claim claim, URI sealedClaimDocument) {
-
-        this.authorization = authorization;
+    public CitizenClaimCreatedEvent(
+        Claim claim,
+        String submitterName,
+        String authorisation
+    ) {
         this.claim = claim;
-        this.sealedClaimDocument = sealedClaimDocument;
+        this.submitterName = submitterName;
+        this.authorisation = authorisation;
     }
 
     @Override

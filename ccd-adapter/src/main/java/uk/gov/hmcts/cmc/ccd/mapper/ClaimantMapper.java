@@ -12,6 +12,9 @@ import uk.gov.hmcts.cmc.domain.models.party.Organisation;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
+
 @Component
 public class ClaimantMapper {
 
@@ -31,8 +34,9 @@ public class ClaimantMapper {
         this.soleTraderMapper = soleTraderMapper;
     }
 
-    public CCDCollectionElement<CCDApplicant> to(Party party, Claim claim) {
+    public CCDCollectionElement<CCDApplicant> to(Party party, Claim claim, boolean leadApplicant) {
         CCDApplicant.CCDApplicantBuilder builder = CCDApplicant.builder();
+        builder.leadApplicantIndicator(leadApplicant ? YES : NO);
         CCDParty.CCDPartyBuilder partyDetail = CCDParty.builder();
         partyDetail.idamId(claim.getSubmitterId());
         partyDetail.emailAddress(claim.getSubmitterEmail());

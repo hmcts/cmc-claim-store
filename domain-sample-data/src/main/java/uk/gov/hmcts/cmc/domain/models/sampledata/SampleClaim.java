@@ -258,6 +258,12 @@ public final class SampleClaim {
             .build();
     }
 
+    public static Claim getCitizenClaim() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimantBuilder().withExternalId(RAND_UUID).build())
+            .build();
+    }
+
     public static Claim getLegalDataWithReps() {
         return builder()
             .withClaimData(SampleClaimData.builder()
