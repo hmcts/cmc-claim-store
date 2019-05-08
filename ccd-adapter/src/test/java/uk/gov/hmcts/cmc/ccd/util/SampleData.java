@@ -75,7 +75,7 @@ import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOU
 
 public class SampleData {
 
-    private static Supplier<CCDCase.CCDCaseBuilder> getCCDBuilderWithDefault = () -> CCDCase.builder()
+    private static Supplier<CCDCase.CCDCaseBuilder> ccdBuilderWithDefault = () -> CCDCase.builder()
         .id(1L)
         .submittedOn(LocalDateTime.of(2017, 11, 01, 10, 15, 30))
         .issuedOn(LocalDate.of(2017, 11, 15))
@@ -434,7 +434,7 @@ public class SampleData {
         List<CCDCollectionElement<CCDRespondent>> respondents
             = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(getCCDRespondentIndividual()).build());
 
-        return getCCDBuilderWithDefault.get()
+        return ccdBuilderWithDefault.get()
             .amountBreakDown(amountBreakDown)
             .applicants(applicants)
             .respondents(respondents)
