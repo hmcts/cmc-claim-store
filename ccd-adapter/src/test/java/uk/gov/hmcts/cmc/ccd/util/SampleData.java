@@ -329,6 +329,51 @@ public class SampleData {
             .build();
     }
 
+    public static CCDApplicant getIndividualApplicantWithDQ() {
+        CCDAddress ccdAddress = getCCDAddress();
+        return CCDApplicant.builder()
+            .partyDetail(CCDParty.builder()
+                .type(INDIVIDUAL)
+                .primaryAddress(ccdAddress)
+                .telephoneNumber(CCDTelephone.builder().telephoneNumber("07987654321").build())
+                .dateOfBirth(LocalDate.of(1950, 01, 01))
+                .correspondenceAddress(ccdAddress)
+                .build())
+            .partyName("Individual")
+            .representativeOrganisationAddress(ccdAddress)
+            .representativeOrganisationName("My Org")
+            .representativeOrganisationPhone("07987654321")
+            .representativeOrganisationEmail("my@email.com")
+            .representativeOrganisationDxAddress("dx123")
+            .preferredCourtName("Claimant Court")
+            .preferredCourtAddress("Claimant Court address")
+            .preferredCourtReason("As a claimant I like this court more")
+            .build();
+    }
+
+    public static CCDRespondent getIndividualRespondentWithDQ() {
+        CCDAddress ccdAddress = getCCDAddress();
+        return CCDRespondent.builder()
+            .partyName("Mary Richards")
+            .claimantProvidedDetail(
+                CCDParty.builder()
+                    .type(INDIVIDUAL)
+                    .primaryAddress(ccdAddress)
+                    .dateOfBirth(LocalDate.of(1950, 01, 01))
+                    .correspondenceAddress(ccdAddress)
+                    .build())
+            .claimantProvidedPartyName("Individual")
+            .claimantProvidedRepresentativeOrganisationAddress(ccdAddress)
+            .claimantProvidedRepresentativeOrganisationName("My Org")
+            .claimantProvidedRepresentativeOrganisationPhone("07987654321")
+            .claimantProvidedRepresentativeOrganisationPhone("my@email.com")
+            .claimantProvidedRepresentativeOrganisationDxAddress("dx123")
+            .preferredCourtName("Defendant Court")
+            .preferredCourtAddress("Defendant Court address")
+            .preferredCourtReason("As a defendant I like this court more")
+            .build();
+    }
+
     public static CCDApplicant getCCDApplicantCompany() {
         CCDAddress ccdAddress = getCCDAddress();
 

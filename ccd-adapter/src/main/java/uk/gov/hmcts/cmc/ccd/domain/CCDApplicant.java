@@ -14,4 +14,7 @@ public class CCDApplicant {
     private String representativeOrganisationEmail;
     private String representativeOrganisationDxAddress;
     private CCDYesNoOption leadApplicantIndicator;
+    private String preferredCourtName;
+    private String preferredCourtAddress;
+    private String preferredCourtReason;
 }

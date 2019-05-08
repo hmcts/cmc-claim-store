@@ -9,8 +9,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
@@ -68,6 +71,8 @@ public class GenerateOrderCallbackHandlerTest {
 
     private GenerateOrderCallbackHandler generateOrderCallbackHandler;
 
+    private CCDCase ccdCase;
+
     @Before
     public void setUp() {
         generateOrderCallbackHandler = new GenerateOrderCallbackHandler(
@@ -79,18 +84,22 @@ public class GenerateOrderCallbackHandlerTest {
             docAssemblyTemplateBodyMapper
         );
         ReflectionTestUtils.setField(generateOrderCallbackHandler, "templateId", "testTemplateId");
+        ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         when(legalOrderGenerationDeadlinesCalculator.calculateOrderGenerationDeadlines())
             .thenReturn(DEADLINE);
         when(userService.getUserDetails(BEARER_TOKEN)).thenReturn(JUDGE);
         when(authTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
         callbackRequest = CallbackRequest
             .builder()
+            .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
             .eventId(GENERATE_ORDER.getValue())
             .build();
     }
 
     @Test
-    public void shouldPrepopulateFieldsOnAboutToStartEvent() {
+    public void shouldPrepopulateFieldsOnAboutToStartEventIfNobodyObjectsCourt() {
+        when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
+
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_START)
             .request(callbackRequest)
@@ -99,11 +108,72 @@ public class GenerateOrderCallbackHandlerTest {
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
             generateOrderCallbackHandler
                 .handle(callbackParams);
-
         assertThat(response.getData()).contains(
             entry("directionList", ImmutableList.of("DOCUMENTS", "EYEWITNESS")),
             entry("docUploadDeadline", DEADLINE),
-            entry("eyewitnessUploadDeadline", DEADLINE)
+            entry("eyewitnessUploadDeadline", DEADLINE),
+            entry("preferredCourt", ccdCase.getPreferredCourt()),
+            entry("newRequestedCourt", null),
+            entry("preferredCourtObjectingParty", null),
+            entry("preferredCourtObjectingReason", null)
+        );
+    }
+
+    @Test
+    public void shouldPrepopulateFieldsOnAboutToStartEventIfClaimantsObjectsCourt() {
+        ccdCase.setApplicants(
+            ImmutableList.of(
+                CCDCollectionElement.<CCDApplicant>builder()
+                    .value(SampleData.getIndividualApplicantWithDQ())
+                    .build()
+            ));
+        when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
+
+        CallbackParams callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_START)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+        AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
+            generateOrderCallbackHandler
+                .handle(callbackParams);
+        assertThat(response.getData()).contains(
+            entry("directionList", ImmutableList.of("DOCUMENTS", "EYEWITNESS")),
+            entry("docUploadDeadline", DEADLINE),
+            entry("eyewitnessUploadDeadline", DEADLINE),
+            entry("preferredCourt", ccdCase.getPreferredCourt()),
+            entry("newRequestedCourt", "Claimant Court"),
+            entry("preferredCourtObjectingParty", "CLAIMANT"),
+            entry("preferredCourtObjectingReason", "As a claimant I like this court more")
+        );
+    }
+
+    @Test
+    public void shouldPrepopulateFieldsOnAboutToStartEventIfDefendantObjectsCourt() {
+        ccdCase.setRespondents(
+            ImmutableList.of(
+                CCDCollectionElement.<CCDRespondent>builder()
+                    .value(SampleData.getIndividualRespondentWithDQ())
+                    .build()
+            ));
+        when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
+
+        CallbackParams callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_START)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+        AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
+            generateOrderCallbackHandler
+                .handle(callbackParams);
+        assertThat(response.getData()).contains(
+            entry("directionList", ImmutableList.of("DOCUMENTS", "EYEWITNESS")),
+            entry("docUploadDeadline", DEADLINE),
+            entry("eyewitnessUploadDeadline", DEADLINE),
+            entry("preferredCourt", ccdCase.getPreferredCourt()),
+            entry("newRequestedCourt", "Defendant Court"),
+            entry("preferredCourtObjectingParty", "DEFENDANT"),
+            entry("preferredCourtObjectingReason", "As a defendant I like this court more")
         );
     }
 
@@ -131,9 +201,7 @@ public class GenerateOrderCallbackHandlerTest {
 
     @Test
     public void shouldGenerateDocumentOnMidEvent() {
-        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData();
-        when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
             .templateId("testTemplateId")
             .outputType(OutputType.DOC)
