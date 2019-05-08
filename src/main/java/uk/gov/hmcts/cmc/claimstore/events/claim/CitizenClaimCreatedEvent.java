@@ -1,29 +1,25 @@
 package uk.gov.hmcts.cmc.claimstore.events.claim;
 
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Value;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.claimstore.events.ClaimCreationEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Getter
-@EqualsAndHashCode
-@Builder(toBuilder = true)
-public class CitizenClaimCreatedEvent {
-    private final Claim claim;
-    private final String submitterName;
-    private final String authorisation;
+@EqualsAndHashCode(callSuper = true)
+@Value
+public class CitizenClaimCreatedEvent extends ClaimCreationEvent {
 
     public CitizenClaimCreatedEvent(
         Claim claim,
         String submitterName,
         String authorisation
     ) {
-        this.claim = claim;
-        this.submitterName = submitterName;
-        this.authorisation = authorisation;
+        super(claim, submitterName, authorisation);
     }
 
     @Override

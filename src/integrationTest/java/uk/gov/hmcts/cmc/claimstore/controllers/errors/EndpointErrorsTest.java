@@ -169,7 +169,7 @@ public class EndpointErrorsTest extends MockSpringTest {
             .willReturn(USER);
 
         given(claimRepository.saveRepresented(anyString(), anyString(), any(LocalDate.class),
-            any(LocalDate.class), anyString(), anyString(), anyString()))
+            any(LocalDate.class), anyString(), anyString(), anyString(), anyString()))
             .willThrow(duplicateKeyError);
 
         webClient
