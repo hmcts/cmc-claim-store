@@ -12,15 +12,15 @@ public class EmailAttachmentTest {
     private static final String CSV_CONTENT_TYPE = "text/csv";
     private static final String PDF_FILE_NAME = "document.pdf";
     private static final String CSV_FILE_NAME = "document.csv";
-    private static final String FAKE_CSV="John\t123-456\nJane\t456-123\n";
+    private static final String FAKE_CSV = "John\t123-456\nJane\t456-123\n";
 
     @Test(expected = NullPointerException.class)
-    public void constructorShouldThrowNPEForNullContent() throws Exception {
+    public void constructorShouldThrowNPEForNullContent() {
         new EmailAttachment(null, PDF_CONTENT_TYPE, PDF_FILE_NAME);
     }
 
     @Test(expected = NullPointerException.class)
-    public void constructorShouldThrowNPEForNullContentType() throws Exception {
+    public void constructorShouldThrowNPEForNullContentType() {
         new EmailAttachment(CONTENT, null, PDF_FILE_NAME);
     }
 
@@ -31,6 +31,7 @@ public class EmailAttachmentTest {
 
     @Test
     public void shouldCreateEmailWithCSVAttachment() {
-        assertThat(EmailAttachment.csv(FAKE_CSV.getBytes(), CSV_FILE_NAME).getContentType()).isEqualTo(CSV_CONTENT_TYPE);
+        assertThat(EmailAttachment.csv(FAKE_CSV.getBytes(), CSV_FILE_NAME).getContentType())
+            .isEqualTo(CSV_CONTENT_TYPE);
     }
 }
