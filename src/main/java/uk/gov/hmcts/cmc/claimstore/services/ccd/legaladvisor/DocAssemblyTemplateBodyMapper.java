@@ -2,9 +2,13 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
+import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 
 import java.time.Clock;
@@ -15,15 +19,18 @@ import java.util.stream.Collectors;
 public class DocAssemblyTemplateBodyMapper {
 
     private Clock clock;
+    private final CourtFinderApi courtFinderApi;
 
     @Autowired
-    public DocAssemblyTemplateBodyMapper(Clock clock) {
+    public DocAssemblyTemplateBodyMapper(Clock clock, CourtFinderApi courtFinderApi) {
         this.clock = clock;
+        this.courtFinderApi = courtFinderApi;
     }
 
     public DocAssemblyTemplateBody from(CCDCase ccdCase,
                                         UserDetails userDetails) {
         CCDOrderGenerationData ccdOrderGenerationData = ccdCase.getOrderGenerationData();
+        HearingCourt hearingCourt = mapHearingCourt(ccdCase, ccdOrderGenerationData.getHearingCourt());
         return DocAssemblyTemplateBody.builder()
             .claimant(Party.builder()
                 .partyName(ccdCase.getApplicants()
@@ -57,10 +64,10 @@ public class DocAssemblyTemplateBodyMapper {
                 ccdOrderGenerationData.getEyewitnessUploadForParty())
             .hearingRequired(
                 ccdOrderGenerationData.getHearingIsRequired().toBoolean())
-            .preferredCourtName(
-                "Some court")    // will be populated when the acceptance criterias are refined
-            .preferredCourtAddress(
-                "this is an address EC2Y 3ND")
+            .hearingCourtName(
+                hearingCourt.getName())
+            .hearingCourtAddress(
+                hearingCourt.getAddress())
             .estimatedHearingDuration(
                 ccdOrderGenerationData.getEstimatedHearingDuration())
             .hearingStatement(
@@ -77,5 +84,30 @@ public class DocAssemblyTemplateBodyMapper {
                             .build()
                 ).collect(Collectors.toList()))
             .build();
+    }
+
+    private HearingCourt mapHearingCourt(CCDCase ccdCase, CCDHearingCourtType courtType) {
+        HearingCourt.HearingCourtBuilder courtBuilder = HearingCourt.builder();
+        switch (courtType) {
+            case CLAIMANT_COURT:
+                CCDApplicant applicant = ccdCase.getApplicants().get(0).getValue();
+                return courtBuilder.name(applicant.getPreferredCourtName())
+                    .address(applicant.getPreferredCourtAddress())
+                    .build();
+            case DEFENDANT_COURT:
+                CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
+                return courtBuilder.name(respondent.getPreferredCourtName())
+                    .address(respondent.getPreferredCourtAddress())
+                    .build();
+            default:
+                return courtFinderApi.findMoneyClaimCourtByPostcode(courtType.getPostcode())
+                    .stream()
+                    .findFirst()
+                    .map(court -> HearingCourt.builder()
+                        .name(court.getName())
+                        .address(court.getAddress().toString())
+                        .build())
+                    .orElseThrow(IllegalArgumentException::new);
+        }
     }
 }

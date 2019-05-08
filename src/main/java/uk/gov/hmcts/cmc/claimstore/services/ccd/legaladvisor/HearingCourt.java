@@ -5,7 +5,7 @@ import lombok.Value;
 
 @Builder
 @Value
-public class Judicial {
-    private String firstName;
-    private String lastName;
+public class HearingCourt {
+    String name;
+    String address;
 }

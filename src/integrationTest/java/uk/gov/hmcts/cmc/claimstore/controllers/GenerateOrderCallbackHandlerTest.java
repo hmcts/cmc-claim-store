@@ -66,7 +66,7 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
 
     @Test
     public void shouldPrepopulateFieldsOnAboutToStartEvent() throws Exception {
-        MvcResult mvcResult = makeRequest(CallbackType.ABOUT_TO_START.getValue())
+        MvcResult mvcResult = makeRequestGenerateOrder(CallbackType.ABOUT_TO_START.getValue())
             .andExpect(status().isOk())
             .andReturn();
 
@@ -75,13 +75,17 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
 
-        assertThat(responseData).hasSize(3);
+        assertThat(responseData).hasSize(4);
         assertThat(LocalDate.parse(responseData.get("docUploadDeadline").toString()))
             .isAfterOrEqualTo(LocalDate.now().plusDays(33));
         assertThat(LocalDate.parse(responseData.get("eyewitnessUploadDeadline").toString()))
             .isAfterOrEqualTo(LocalDate.now().plusDays(33));
         assertThat(responseData).flatExtracting("directionList")
             .containsExactlyInAnyOrder("DOCUMENTS", "EYEWITNESS");
+        assertThat(responseData.get("preferredCourt")).isEqualTo("Preferred court");
+        assertThat(responseData.get("newRequestedCourt")).isNull();
+        assertThat(responseData.get("preferredCourtObjectingParty")).isNull();
+        assertThat(responseData.get("preferredCourtObjectingReason")).isNull();
     }
 
     @Test
@@ -110,6 +114,10 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
 
     private ResultActions makeRequest(String callbackType) throws Exception {
         CaseDetails caseDetailsTemp =  successfulCoreCaseDataStoreSubmitResponse();
+        CaseDetails caseDetailsBefore = CaseDetails.builder()
+            .id(caseDetailsTemp.getId())
+            .data(caseDetailsTemp.getData())
+            .build();
         Map<String, Object> data = new HashMap<>(caseDetailsTemp.getData());
         data.put("hearingIsRequired", "Yes");
         data.put("docUploadDeadline", "2019-06-03");
@@ -131,11 +139,35 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
                     "otherDirection", "second",
                     "sendBy", "2019-06-04",
                     "forParty", "BOTH"))));
+        data.put("preferredCourt", "Preferred court");
         data.put("newRequestedCourt", "Another court");
         data.put("preferredCourtObjectingReason", "Because");
         data.put("hearingCourt", "CLERKENWELL");
         data.put("estimatedHearingDuration", "HALF_HOUR");
         data.put("hearingStatement", "some");
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(caseDetailsTemp.getId())
+            .data(data)
+            .build();
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .eventId(CaseEvent.GENERATE_ORDER.getValue())
+            .caseDetails(caseDetails)
+            .caseDetailsBefore(caseDetailsBefore)
+            .build();
+
+        return webClient
+            .perform(post("/cases/callbacks/" + callbackType)
+                .header(HttpHeaders.CONTENT_TYPE, "application/json")
+                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
+                .content(jsonMapper.toJson(callbackRequest))
+            );
+    }
+
+    private ResultActions makeRequestGenerateOrder(String callbackType) throws Exception {
+        CaseDetails caseDetailsTemp =  successfulCoreCaseDataStoreSubmitResponse();
+        Map<String, Object> data = new HashMap<>(caseDetailsTemp.getData());
+        data.put("preferredCourt", "Preferred court");
 
         CaseDetails caseDetails = CaseDetails.builder()
             .id(caseDetailsTemp.getId())
@@ -152,6 +184,5 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
                 .content(jsonMapper.toJson(callbackRequest))
             );
-
     }
 }

@@ -81,4 +81,8 @@ public class CCDRespondent {
     private LocalDateTime redeterminationRequestedDate;
     private CCDMadeBy redeterminationMadeBy;
 
+    private String preferredCourtName;
+    private String preferredCourtAddress;
+    private String preferredCourtReason;
+
 }
