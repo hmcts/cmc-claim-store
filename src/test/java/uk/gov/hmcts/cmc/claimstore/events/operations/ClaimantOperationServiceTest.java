@@ -8,6 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
+import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimCreationEventsStatusService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -36,10 +37,13 @@ public class ClaimantOperationServiceTest {
     private NotificationTemplates templates;
     @Mock
     private EmailTemplates emailTemplates;
+    @Mock
+    private ClaimCreationEventsStatusService eventsStatusService;
 
     @Before
     public void before() {
-        claimantOperationService = new ClaimantOperationService(claimIssuedNotificationService, notificationProperties);
+        claimantOperationService = new ClaimantOperationService(claimIssuedNotificationService,
+            notificationProperties, eventsStatusService);
 
         given(notificationProperties.getTemplates()).willReturn(templates);
         given(templates.getEmail()).willReturn(emailTemplates);
