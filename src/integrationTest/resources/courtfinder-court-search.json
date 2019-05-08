@@ -1,0 +1,81 @@
+{
+  "name": "Dudley County Court and Family Court",
+  "slug": "dudley-county-court-and-family-court",
+  "info": "",
+  "open": true,
+  "directions": null,
+  "lat": 52.5099197549453,
+  "lon": -2.08800732727642,
+  "crown_location_code": 189,
+  "county_location_code": 189,
+  "magistrates_location_code": null,
+  "areas_of_law": [
+    "Bankruptcy",
+    "Children",
+    "Divorce",
+    "Domestic violence",
+    "High Court District Registry",
+    "Housing possession",
+    "Money claims"
+  ],
+  "types": [
+    "County Court",
+    "Family Court"
+  ],
+  "emails": [
+    {
+      "address": "enquiries.dudley.countycourt@justice.gov.uk",
+      "description": "Enquiries",
+      "explanation": null
+    }
+  ],
+  "contacts": [
+    {
+      "number": "01384 211411",
+      "description": "Enquiries",
+      "explanation": ""
+    },
+    {
+      "number": "01384 217 110",
+      "description": "Enforcement",
+      "explanation": null
+    },
+    {
+      "number": "745750 Dudley 11",
+      "description": "DX",
+      "explanation": ""
+    }
+  ],
+  "opening_times": [
+    {
+      "description": "Court building open",
+      "hours": "Monday to Friday 9:15am to 4pm"
+    }
+  ],
+  "facilities": [
+    {
+      "description": "<p>Baby changing mat is available upon request.</p>",
+      "name": "Baby changing facility"
+    },
+    {
+      "description": "<p>4 interview rooms are available at this court.</p>",
+      "name": "Interview room"
+    },
+    {
+      "description": "<p>This court has disabled access.</p>",
+      "name": "Disabled access"
+    },
+    {
+      "description": "<p>Guide and/or Assistance dogs are welcome at this court.</p>",
+      "name": "Assistance dogs"
+    }
+  ],
+  "addresses": [
+    {
+      "type": "Visiting",
+      "address": "Dudley County Court\nThe Inhedge \n\nWest Midlands",
+      "town": "Dudley",
+      "postcode": "DY1 1RY"
+    }
+  ]
+}

@@ -48,4 +48,25 @@ public interface IdamApi {
         @RequestParam("client_id") final String clientId,
         @RequestParam("client_secret") final String clientSecret
     );
+
+    @RequestMapping(method = RequestMethod.POST, value = "/oauth2/authorize")
+    AuthenticateUserResponse upliftUser(
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
+        @RequestParam("upliftToken") String pinUserAuthorisation,
+        @RequestParam("response_type") final String responseType,
+        @RequestParam("client_id") final String clientId,
+        @RequestParam("redirect_uri") final String redirectUri
+    );
+
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/oauth2/authorize",
+        consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
+    )
+    AuthenticateUserResponse authenticatePinUser(
+        @RequestHeader(HttpHeaders.AUTHORIZATION) final String authorisation,
+        @RequestParam("response_type") final String responseType,
+        @RequestParam("client_id") final String clientId,
+        @RequestParam("redirect_uri") final String redirectUri
+    );
 }

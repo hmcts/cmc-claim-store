@@ -10,13 +10,14 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @Getter
 @EqualsAndHashCode
 public class ClaimIssuedEvent {
-    private final Claim claim;
-    private final String submitterName;
-    private final String authorisation;
+    protected final Claim claim;
+    protected final String submitterName;
+    protected final String authorisation;
 
-    public ClaimIssuedEvent(Claim claim,
-                            String submitterName,
-                            String authorisation
+    public ClaimIssuedEvent(
+        Claim claim,
+        String submitterName,
+        String authorisation
     ) {
         this.claim = claim;
         this.submitterName = submitterName;

@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.events.ccd;
 
 import feign.FeignException;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.event.TransactionalEventListener;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
@@ -23,13 +24,13 @@ import static org.springframework.transaction.event.TransactionPhase.BEFORE_COMM
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCUTORY_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REJECT_ORGANISATION_PAYMENT_PLAN;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
-
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.CCD_LINK_DEFENDANT_ID;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.CLAIM_EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCD_ASYNC_FAILURE;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isSettlePreJudgment;
 
+@Async("threadPoolTaskExecutor")
 public class CCDCaseHandler {
 
     private final CCDCaseRepository ccdCaseRepository;
@@ -49,7 +50,7 @@ public class CCDCaseHandler {
         this.userService = userService;
     }
 
-    @TransactionalEventListener
+    @EventListener
     @LogExecutionTime
     public void saveClaim(CCDClaimIssuedEvent event) {
         Claim claim = event.getClaim();
@@ -144,6 +145,26 @@ public class CCDCaseHandler {
         } catch (FeignException e) {
             String id = userService.getUserDetails(authorisation).getId();
             appInsights.trackEvent(CCD_ASYNC_FAILURE, CCD_LINK_DEFENDANT_ID, id);
+            throw e;
+        }
+    }
+
+    @TransactionalEventListener
+    @LogExecutionTime
+    public void saveClaimDocument(CCDSaveClaimDocumentEvent event) {
+        try {
+            Claim ccdClaim = ccdCaseRepository.getClaimByExternalId(
+                event.getClaim().getExternalId(),
+                event.getAuthorisation()
+            ).orElseThrow(IllegalStateException::new);
+
+            ccdCaseRepository.saveClaimDocuments(event.getAuthorisation(),
+                ccdClaim.getId(),
+                event.getClaimDocumentCollection(),
+                event.getClaimDocumentType()
+            );
+        } catch (FeignException e) {
+            appInsights.trackEvent(CCD_ASYNC_FAILURE, REFERENCE_NUMBER, event.getClaim().getReferenceNumber());
             throw e;
         }
     }

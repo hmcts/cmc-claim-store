@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -19,6 +20,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NOTIFICATION_FAILURE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CCJNotificationServiceTest extends BaseNotificationServiceTest {
@@ -26,12 +29,15 @@ public class CCJNotificationServiceTest extends BaseNotificationServiceTest {
     @Mock
     private NotificationClient notificationClient;
 
+    @Mock
+    private AppInsights appInsights;
+
     private CCJNotificationService ccjNotificationService;
 
     @Before
     public void setup() {
         ccjNotificationService = new CCJNotificationService(
-            notificationClient,
+            new NotificationService(notificationClient, appInsights),
             properties
         );
 
@@ -58,7 +64,7 @@ public class CCJNotificationServiceTest extends BaseNotificationServiceTest {
             );
     }
 
-    @Test (expected = NotificationException.class)
+    @Test(expected = NotificationException.class)
     public void shouldThrowExceptionWhenNotificationFails() throws Exception {
         when(emailTemplates.getClaimantCCJRequested()).thenReturn(CLAIMANT_CCJ_REQUESTED_TEMPLATE);
 
@@ -73,6 +79,8 @@ public class CCJNotificationServiceTest extends BaseNotificationServiceTest {
         ccjNotificationService.notifyClaimantForCCJRequest(claim);
 
         verify(notificationClient).sendEmail(anyString(), anyString(), anyMap(), anyString());
+        verify(appInsights)
+            .trackEvent(eq(NOTIFICATION_FAILURE), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 
     @Test
@@ -98,7 +106,7 @@ public class CCJNotificationServiceTest extends BaseNotificationServiceTest {
             );
     }
 
-    @Test (expected = NotificationException.class)
+    @Test(expected = NotificationException.class)
     public void shouldThrowExceptionWhenNotificationFailsCCJByAdmission() throws Exception {
         when(emailTemplates.getResponseByClaimantEmailToDefendant())
             .thenReturn(RESPONSE_BY_CLAIMANT_EMAIL_TO_DEFENDANT);
@@ -117,19 +125,7 @@ public class CCJNotificationServiceTest extends BaseNotificationServiceTest {
         ccjNotificationService.notifyDefendantForCCJRequested(claim);
 
         verify(notificationClient).sendEmail(anyString(), anyString(), anyMap(), anyString());
-    }
-
-    @Test
-    public void recoveryShouldNotLogPII() {
-        ccjNotificationService.logNotificationFailure(
-            new NotificationException("expected exception"),
-            "hidden@email.com",
-            null,
-            null,
-            "reference"
-        );
-
-        assertWasLogged("Failure: failed to send notification (reference) due to expected exception");
-        assertWasNotLogged("hidden@email.com");
+        verify(appInsights)
+            .trackEvent(eq(NOTIFICATION_FAILURE), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 }
