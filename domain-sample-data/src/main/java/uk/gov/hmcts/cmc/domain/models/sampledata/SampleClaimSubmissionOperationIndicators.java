@@ -7,10 +7,6 @@ import java.util.function.Supplier;
 
 public class SampleClaimSubmissionOperationIndicators {
 
-    private SampleClaimSubmissionOperationIndicators() {
-        //Do nothing constructor.
-    }
-
     public static Supplier<ClaimSubmissionOperationIndicators> withPinOperationSuccess =
         () -> getClaimSubmissionIndicatorBuilderByAction("PIN").build();
 
@@ -30,6 +26,10 @@ public class SampleClaimSubmissionOperationIndicators {
 
     public static Supplier<ClaimSubmissionOperationIndicators> withRpaOperationSuccess =
         () -> getClaimSubmissionIndicatorBuilderByAction("RPA").build();
+
+    private SampleClaimSubmissionOperationIndicators() {
+        //Do nothing constructor.
+    }
 
     @SuppressWarnings("checkstyle:FallThrough")
     private static ClaimSubmissionOperationIndicators.ClaimSubmissionOperationIndicatorsBuilder
