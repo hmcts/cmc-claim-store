@@ -865,7 +865,7 @@ public class CoreCaseDataService {
                                                         ClaimSubmissionOperationIndicators indicators,
                                                         String authorisation,
                                                         CaseEvent caseEvent) {
-        //TODO need to be fully implemented as part of ROC-5473
+        // need to be fully implemented as part of ROC-5473
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
 
@@ -885,7 +885,7 @@ public class CoreCaseDataService {
                 String.format(
                     CCD_UPDATE_FAILURE_MESSAGE,
                     caseId,
-                    SETTLED_PRE_JUDGMENT
+                    caseEvent
                 ), exception
             );
         }

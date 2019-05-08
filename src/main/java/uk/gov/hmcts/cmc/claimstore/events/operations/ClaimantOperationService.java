@@ -29,7 +29,6 @@ public class ClaimantOperationService {
     }
 
     public Claim notifyCitizen(Claim claim, String submitterName, String authorisation) {
-        //TODO check claim if operation already complete, if yes return claim else
 
         claimIssuedNotificationService.sendMail(
             claim,
@@ -51,7 +50,6 @@ public class ClaimantOperationService {
         String representativeEmail,
         String authorisation
     ) {
-
         claimIssuedNotificationService.sendMail(
             claim,
             representativeEmail,

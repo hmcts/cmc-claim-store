@@ -24,13 +24,15 @@ public class ClaimCreationEventsStatusService {
 
             switch (caseEvent) {
                 case PIN_GENERATION_OPERATIONS:
-                    updatedIndicator.defendantNotification(YesNoOption.YES).bulkPrint(YesNoOption.YES)
-                        .defendantPinLetterUpload(YesNoOption.YES);
+                    updatedIndicator.defendantNotification(YesNoOption.YES)
+                        .bulkPrint(YesNoOption.YES)
+                        .defendantPinLetterUpload(YesNoOption.YES)
+                        .staffNotification(YesNoOption.YES);
                     break;
                 case CLAIM_ISSUE_RECEIPT_UPLOAD:
                     updatedIndicator.claimIssueReceiptUpload(YesNoOption.YES);
                     break;
-                case LINK_SEALED_CLAIM:
+                case SEALED_CLAIM_UPLOAD:
                     updatedIndicator.sealedClaimUpload(YesNoOption.YES);
                     break;
                 case SENDING_RPA:
@@ -49,19 +51,6 @@ public class ClaimCreationEventsStatusService {
     @Autowired
     public ClaimCreationEventsStatusService(CaseRepository caseRepository) {
         this.caseRepository = caseRepository;
-    }
-
-    public Claim updateClaimOperationCompletion(
-        String authorisation,
-        Claim claim,
-        ClaimSubmissionOperationIndicators indicators,
-        CaseEvent caseEvent) {
-
-        return caseRepository.updateClaimSubmissionOperationStatus(
-            authorisation,
-            claim.getId(),
-            indicators,
-            caseEvent);
     }
 
     public Claim updateClaimOperationCompletion(

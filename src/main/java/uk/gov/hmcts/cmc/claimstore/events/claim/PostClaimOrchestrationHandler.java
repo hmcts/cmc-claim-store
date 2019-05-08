@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ClaimCreationEvent;
 import uk.gov.hmcts.cmc.claimstore.events.operations.ClaimantOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.NotifyStaffOperationService;
@@ -36,31 +37,26 @@ public class PostClaimOrchestrationHandler {
             indicators.getStaffNotification(), indicators.getDefendantNotification())
             .anyMatch(ind -> ind.equals(YesNoOption.NO));
     private final Predicate<ClaimSubmissionOperationIndicators> isUploadSealedClaimSuccess = indicators ->
-        Stream.of(indicators.getSealedClaimUpload())
-            .anyMatch(ind -> ind.equals(YesNoOption.NO));
+        indicators.getSealedClaimUpload().equals(YesNoOption.NO);
     private final Predicate<ClaimSubmissionOperationIndicators> isUploadClaimReceiptSuccess = indicators ->
-        Stream.of(indicators.getClaimIssueReceiptUpload())
-            .anyMatch(ind -> ind.equals(YesNoOption.NO));
+        indicators.getClaimIssueReceiptUpload().equals(YesNoOption.NO);
     private final Predicate<ClaimSubmissionOperationIndicators> isRpaOperationSuccess = indicators ->
-        Stream.of(indicators.getRpa())
-            .anyMatch(ind -> ind.equals(YesNoOption.NO));
+        indicators.getRpa().equals(YesNoOption.NO);
     private final Predicate<ClaimSubmissionOperationIndicators> isNotifyStaffSuccess = indicators ->
-        Stream.of(indicators.getStaffNotification())
-            .anyMatch(ind -> ind.equals(YesNoOption.NO));
+        indicators.getStaffNotification().equals(YesNoOption.NO);
     private final Predicate<ClaimSubmissionOperationIndicators> isNotifyCitizenSuccess = indicators ->
-        Stream.of(indicators.getClaimantNotification())
-            .anyMatch(ind -> ind.equals(YesNoOption.NO));
+        indicators.getClaimantNotification().equals(YesNoOption.NO);
 
     private final ClaimCreationOperation<Claim, ClaimCreationEvent, GeneratedDocuments, Claim> performPinOperations;
-    private final
-        ClaimCreationOperation<Claim, ClaimCreationEvent, GeneratedDocuments, Claim> uploadSealedClaimOperation;
-    private final
-        ClaimCreationOperation<Claim, ClaimCreationEvent, GeneratedDocuments, Claim> uploadClaimIssueReceiptOperation;
+    private final ClaimCreationOperation<Claim, ClaimCreationEvent, GeneratedDocuments, Claim>
+        uploadSealedClaimOperation;
+    private final ClaimCreationOperation<Claim, ClaimCreationEvent, GeneratedDocuments, Claim>
+        uploadClaimIssueReceiptOperation;
     private final ClaimCreationOperation<Claim, ClaimCreationEvent, GeneratedDocuments, Claim> rpaOperation;
     private final ClaimCreationOperation<Claim, ClaimCreationEvent, GeneratedDocuments, Claim> notifyStaffOperation;
     private final ClaimCreationOperation<Claim, ClaimCreationEvent, GeneratedDocuments, Claim> notifyCitizenOperation;
-    private final
-        ClaimCreationOperation<Claim, ClaimCreationEvent, GeneratedDocuments, Claim> notifyRepresentativeOperation;
+    private final ClaimCreationOperation<Claim, ClaimCreationEvent, GeneratedDocuments, Claim>
+        notifyRepresentativeOperation;
 
     @Autowired
     @SuppressWarnings("squid:S00107")
@@ -71,7 +67,6 @@ public class PostClaimOrchestrationHandler {
         ClaimantOperationService claimantOperationService,
         RpaOperationService rpaOperationService,
         NotifyStaffOperationService notifyStaffOperationService,
-        ClaimCreationEventsStatusService eventsStatusService,
         ClaimService claimService
     ) {
         this.documentOrchestrationService = documentOrchestrationService;
@@ -79,17 +74,19 @@ public class PostClaimOrchestrationHandler {
 
         performPinOperations = (claim, event, docs) ->
             isPinOperationSuccess.test(claim.getClaimSubmissionOperationIndicators())
-                ? pinOrchestrationService.process(claim, event.getAuthorisation(), event.getSubmitterName(), docs)
+                ? pinOrchestrationService.process(claim, event.getAuthorisation(), event.getSubmitterName())
                 : claim;
 
         uploadSealedClaimOperation = (claim, event, docs) ->
             isUploadSealedClaimSuccess.test(claim.getClaimSubmissionOperationIndicators())
-                ? uploadOperationService.uploadDocument(claim, event.getAuthorisation(), docs.getSealedClaim())
+                ? uploadOperationService.uploadDocument(claim, event.getAuthorisation(), docs.getSealedClaim(),
+                CaseEvent.SEALED_CLAIM_UPLOAD)
                 : claim;
 
         uploadClaimIssueReceiptOperation = (claim, event, docs) ->
             isUploadClaimReceiptSuccess.test(claim.getClaimSubmissionOperationIndicators())
-                ? uploadOperationService.uploadDocument(claim, event.getAuthorisation(), docs.getClaimIssueReceipt())
+                ? uploadOperationService.uploadDocument(claim, event.getAuthorisation(), docs.getClaimIssueReceipt(),
+                CaseEvent.CLAIM_ISSUE_RECEIPT_UPLOAD)
                 : claim;
 
         rpaOperation = (claim, event, docs) ->
@@ -122,7 +119,8 @@ public class PostClaimOrchestrationHandler {
             String authorisation = event.getAuthorisation();
             Claim updatedClaim;
 
-            GeneratedDocuments generatedDocuments = documentOrchestrationService.generateForCitizen(claim, authorisation);
+            GeneratedDocuments generatedDocuments =
+                documentOrchestrationService.generateForCitizen(claim, authorisation);
 
             updatedClaim = CompletableFuture
                 .supplyAsync(() -> performPinOperations.perform(claim, event, generatedDocuments))
@@ -149,7 +147,7 @@ public class PostClaimOrchestrationHandler {
             Claim claim = event.getClaim();
             String authorisation = event.getAuthorisation();
 
-            GeneratedDocuments generatedDocuments = documentOrchestrationService.generateForRepresentative(claim);
+            GeneratedDocuments generatedDocuments = documentOrchestrationService.getSealedClaimForRepresentative(claim);
 
             Claim updatedClaim = CompletableFuture
                 .supplyAsync(() -> uploadSealedClaimOperation.perform(claim, event, generatedDocuments))

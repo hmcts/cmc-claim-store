@@ -1,15 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.events.claim;
 
 import com.google.common.collect.ImmutableList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.PrintService;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentUploadHandler;
-import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -23,13 +20,11 @@ import static java.util.Collections.singletonList;
 public class PinOrchestrationService {
     private final ClaimIssuedNotificationService claimIssuedNotificationService;
     private final NotificationsProperties notificationsProperties;
+    private final DocumentOrchestrationService documentOrchestrationService;
     private final DocumentUploadHandler documentUploadHandler;
+    private final ClaimCreationEventsStatusService eventsStatusService;
     private final PrintService bulkPrintService;
     private final ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService;
-    private final ClaimCreationEventsStatusService eventsStatusService;
-
-    private final Logger logger = LoggerFactory.getLogger(ClaimService.class);
-
 
     public PinOrchestrationService(
         DocumentUploadHandler documentUploadHandler,
@@ -37,7 +32,8 @@ public class PinOrchestrationService {
         ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService,
         ClaimIssuedNotificationService claimIssuedNotificationService,
         NotificationsProperties notificationsProperties,
-        ClaimCreationEventsStatusService eventsStatusService
+        ClaimCreationEventsStatusService eventsStatusService,
+        DocumentOrchestrationService documentOrchestrationService
     ) {
         this.documentUploadHandler = documentUploadHandler;
         this.bulkPrintService = bulkPrintService;
@@ -45,43 +41,40 @@ public class PinOrchestrationService {
         this.claimIssuedNotificationService = claimIssuedNotificationService;
         this.notificationsProperties = notificationsProperties;
         this.eventsStatusService = eventsStatusService;
+        this.documentOrchestrationService = documentOrchestrationService;
     }
 
-    public Claim process(
-        Claim claim,
-        String authorisation,
-        String submitterName,
-        GeneratedDocuments generatedDocuments
-    ) {
+    public Claim process(Claim claim, String authorisation, String submitterName) {
         Claim updatedClaim = claim;
+        GeneratedDocuments documents = documentOrchestrationService.generateForCitizen(claim, authorisation);
+
         ClaimSubmissionOperationIndicators.ClaimSubmissionOperationIndicatorsBuilder updatedOperationIndicator =
             ClaimSubmissionOperationIndicators.builder();
 
-        logger.error("Before making documentupload handler");
         try {
             updatedClaim = documentUploadHandler.uploadToDocumentManagement(
                 updatedClaim,
                 authorisation,
-                singletonList(generatedDocuments.getDefendantLetter())
+                singletonList(documents.getDefendantLetter())
             );
             updatedOperationIndicator.defendantPinLetterUpload(YesNoOption.YES);
 
-            bulkPrintService.print(updatedClaim, generatedDocuments.getDefendantLetterDoc(),
-                generatedDocuments.getSealedClaimDoc());
+            bulkPrintService.print(updatedClaim, documents.getDefendantLetterDoc(),
+                documents.getSealedClaimDoc());
             updatedOperationIndicator.bulkPrint(YesNoOption.YES);
 
             claimIssuedStaffNotificationService.notifyStaffOfClaimIssue(
                 updatedClaim,
-                ImmutableList.of(generatedDocuments.getSealedClaim(), generatedDocuments.getDefendantLetter())
+                ImmutableList.of(documents.getSealedClaim(), documents.getDefendantLetter())
             );
             updatedOperationIndicator.staffNotification(YesNoOption.YES);
 
-            notifyDefendant(updatedClaim, submitterName, generatedDocuments);
+            notifyDefendant(updatedClaim, submitterName, documents);
             updatedOperationIndicator.defendantNotification(YesNoOption.YES);
 
         } finally {
             updatedClaim = eventsStatusService.updateClaimOperationCompletion(authorisation, updatedClaim,
-                updatedOperationIndicator.build(), CaseEvent.PIN_GENERATION_OPERATIONS);
+                CaseEvent.PIN_GENERATION_OPERATIONS);
         }
         return updatedClaim;
     }

@@ -90,17 +90,8 @@ public final class SampleClaim {
     private ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
     private LocalDate claimantResponseDeadline;
     private ClaimState state = null;
-    public static Supplier<ClaimSubmissionOperationIndicators> getDefaultClaimSubmissionOperationIndicators =
-        () -> ClaimSubmissionOperationIndicators.builder()
-            .claimantNotification(NO)
-            .defendantNotification(NO)
-            .bulkPrint(NO)
-            .rpa(NO)
-            .staffNotification(NO)
-            .sealedClaimUpload(NO)
-            .claimIssueReceiptUpload(NO)
-            .defendantPinLetterUpload(NO)
-            .build();
+    private static Supplier<ClaimSubmissionOperationIndicators> getDefaultClaimSubmissionOperationIndicators =
+        () -> ClaimSubmissionOperationIndicators.builder().build();
 
     private SampleClaim() {
     }
@@ -269,6 +260,12 @@ public final class SampleClaim {
         return builder()
             .withReferenceNumber("012LR345")
             .withClaimData(SampleClaimData.builder().withPayment(null).build())
+            .build();
+    }
+
+    public static Claim getCitizenClaim() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimantBuilder().withExternalId(RAND_UUID).build())
             .build();
     }
 
