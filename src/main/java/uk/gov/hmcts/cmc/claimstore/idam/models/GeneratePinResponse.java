@@ -2,8 +2,10 @@ package uk.gov.hmcts.cmc.claimstore.idam.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
 public class GeneratePinResponse {
 
     private final String pin;
