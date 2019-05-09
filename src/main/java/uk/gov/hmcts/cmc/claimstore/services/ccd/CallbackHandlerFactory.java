@@ -5,33 +5,26 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.GenerateOrderCallbackHandler;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.MoreTimeRequestedCallbackHandler;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
-
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.GENERATE_ORDER;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED_PAPER;
 
 @Service
 public class CallbackHandlerFactory {
 
-    private Map<String, CallbackHandler> handlers = new HashMap<>();
+    private HashMap<String, CallbackHandler> eventHandlers = new HashMap<>();
 
-    @Autowired
-    public CallbackHandlerFactory(
-        MoreTimeRequestedCallbackHandler moreTimeRequestedCallbackHandler,
-        Optional<GenerateOrderCallbackHandler> generateOrderCallbackHandler) {
-        handlers.put(MORE_TIME_REQUESTED_PAPER.getValue(), moreTimeRequestedCallbackHandler);
-        generateOrderCallbackHandler.ifPresent(h -> handlers.put(GENERATE_ORDER.getValue(), h));
+    @Autowired(required = false)
+    public CallbackHandlerFactory(List<CallbackHandler> beans) {
+        beans.forEach(bean -> bean.register(eventHandlers));
     }
 
     public CallbackResponse dispatch(CallbackParams callbackParams) {
-        return Optional.ofNullable(handlers.get(callbackParams.getRequest().getEventId()))
+        return Optional.ofNullable(eventHandlers.get(callbackParams.getRequest().getEventId()))
             .map(h -> h.handle(callbackParams))
-            .orElseThrow(() -> new CallbackException("Could not handle callback"));
+            .orElseThrow(() -> new CallbackException(
+                "Could not handle callback for event " + callbackParams.getRequest().getEventId()));
     }
 }

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
@@ -9,6 +10,12 @@ import java.util.Optional;
 public abstract class CallbackHandler {
 
     protected abstract Map<CallbackType, Callback> callbacks();
+
+    public abstract CaseEvent handledEvent();
+
+    public void register(Map<String, CallbackHandler> handlers) {
+        handlers.put(handledEvent().getValue(), this);
+    }
 
     public CallbackResponse handle(CallbackParams callbackParams) {
         return Optional.ofNullable(callbacks().get(callbackParams.getType()))

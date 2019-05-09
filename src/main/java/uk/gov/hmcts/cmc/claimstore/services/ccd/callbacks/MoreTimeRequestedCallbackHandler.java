@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
@@ -54,6 +55,11 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
             CallbackType.ABOUT_TO_SUBMIT, params -> requestMoreTimeOnPaper(params.getRequest()),
             CallbackType.SUBMITTED, this::requestMoreTimeOnPaperSubmitted
         );
+    }
+
+    @Override
+    public CaseEvent handledEvent() {
+        return CaseEvent.MORE_TIME_REQUESTED_PAPER;
     }
 
     private CallbackResponse requestMoreTimeOnPaperSubmitted(CallbackParams callbackParams) {
