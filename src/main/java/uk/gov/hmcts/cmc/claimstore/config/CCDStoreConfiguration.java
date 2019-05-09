@@ -30,9 +30,7 @@ import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import java.util.concurrent.Executor;
 
 @Configuration
-@EnableRetry
-@EnableAsync
-@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_async_enabled")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_async_enabled", havingValue = "true")
 public class CCDStoreConfiguration {
 
     @Bean(name = "threadPoolTaskExecutor")

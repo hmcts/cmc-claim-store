@@ -16,7 +16,7 @@ import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import static java.util.Collections.singletonList;
 
 @Service
-@ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled", havingValue = "true")
 public class PinOrchestrationService {
     private final ClaimIssuedNotificationService claimIssuedNotificationService;
     private final NotificationsProperties notificationsProperties;

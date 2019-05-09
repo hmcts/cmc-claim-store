@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 @Service("supportRepository")
-@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled", havingValue = "true")
 public class CCDTestingSupportRepository implements SupportRepository {
 
     private final UserService userService;
