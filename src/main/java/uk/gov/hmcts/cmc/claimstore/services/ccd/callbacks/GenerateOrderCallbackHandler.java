@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -81,9 +80,7 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
     private CallbackResponse generateOrder(CallbackParams callbackParams) {
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = jsonMapper.fromMap(
-            callbackRequest.getCaseDetailsBefore().getData(), CCDCase.class);
-        CCDOrderGenerationData ccdOrderGenerationData = jsonMapper.fromMap(
-            callbackRequest.getCaseDetails().getData(), CCDOrderGenerationData.class);
+            callbackRequest.getCaseDetails().getData(), CCDCase.class);
 
         String authorisation = callbackParams.getParams()
             .get(CallbackParams.Params.BEARER_TOKEN).toString();
@@ -91,7 +88,7 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
             .templateId(templateId)
             .outputType(OutputType.DOC)
             .formPayload(docAssemblyTemplateBodyMapper.from(
-                ccdCase, ccdOrderGenerationData, userService.getUserDetails(authorisation)))
+                ccdCase, ccdCase.getOrderGenerationData(), userService.getUserDetails(authorisation)))
             .build();
 
         DocAssemblyResponse docAssemblyResponse = docAssemblyClient.generateOrder(
