@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 
 @Async("threadPoolTaskExecutor")
 @Service
-@ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled", havingValue = "true")
 public class PostClaimOrchestrationHandler {
     private static final Logger logger = LoggerFactory.getLogger(PostClaimOrchestrationHandler.class);
     private final DocumentOrchestrationService documentOrchestrationService;

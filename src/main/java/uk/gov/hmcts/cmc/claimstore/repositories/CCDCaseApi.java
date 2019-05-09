@@ -35,7 +35,7 @@ import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATED;
 
 @Service
-@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled", havingValue = "true")
 public class CCDCaseApi {
 
     public static final String JURISDICTION_ID = "CMC";
