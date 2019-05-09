@@ -12,7 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import java.util.function.BiFunction;
 
 @Component
-@ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled", havingValue = "true")
 public class ClaimCreationEventsStatusService {
 
     private final CaseRepository caseRepository;
