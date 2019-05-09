@@ -14,7 +14,6 @@ import javax.validation.constraints.NotNull;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Getter
-@Builder
 @EqualsAndHashCode
 public class AmountRange implements Amount {
 
@@ -27,6 +26,7 @@ public class AmountRange implements Amount {
     @DecimalMin(value = "0.01")
     private final BigDecimal higherValue;
 
+    @Builder
     public AmountRange(BigDecimal lowerValue, BigDecimal higherValue) {
         this.lowerValue = lowerValue;
         this.higherValue = higherValue;
