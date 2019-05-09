@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,8 +14,8 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.MoreTimeRequestedCallb
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
-import java.util.Optional;
-
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.GENERATE_ORDER;
@@ -35,9 +36,14 @@ public class CallbackHandlerFactoryTest {
 
     @Before
     public void setUp() {
+        doCallRealMethod().when(moreTimeRequestedCallbackHandler).handledEvent();
+        doCallRealMethod().when(generateOrderCallbackHandler).handledEvent();
+        doCallRealMethod().when(moreTimeRequestedCallbackHandler).register(anyMap());
+        doCallRealMethod().when(generateOrderCallbackHandler).register(anyMap());
         callbackHandlerFactory = new CallbackHandlerFactory(
-            moreTimeRequestedCallbackHandler,
-            Optional.of(generateOrderCallbackHandler)
+            ImmutableList.of(
+                moreTimeRequestedCallbackHandler,
+                generateOrderCallbackHandler)
         );
     }
 

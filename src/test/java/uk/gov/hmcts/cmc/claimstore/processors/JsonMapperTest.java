@@ -228,6 +228,10 @@ public class JsonMapperTest {
             .submitterId("2")
             .submittedOn(timestamp)
             .externalId(uuid)
+            .orderGenerationData(
+                CCDOrderGenerationData
+                    .builder()
+                    .build())
             //.responseDeadline(date.plusDays(14))
             //.moreTimeRequested(CCDYesNoOption.NO)
             .build();

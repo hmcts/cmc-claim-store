@@ -110,10 +110,6 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
 
     private ResultActions makeRequest(String callbackType) throws Exception {
         CaseDetails caseDetailsTemp =  successfulCoreCaseDataStoreSubmitResponse();
-        CaseDetails caseDetailsBefore = CaseDetails.builder()
-            .id(caseDetailsTemp.getId())
-            .data(caseDetailsTemp.getData())
-            .build();
         Map<String, Object> data = new HashMap<>(caseDetailsTemp.getData());
         data.put("hearingIsRequired", "Yes");
         data.put("docUploadDeadline", "2019-06-03");
@@ -148,7 +144,6 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .eventId(CaseEvent.GENERATE_ORDER.getValue())
             .caseDetails(caseDetails)
-            .caseDetailsBefore(caseDetailsBefore)
             .build();
 
         return webClient
