@@ -1,10 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDCaseHandler;
@@ -25,19 +23,9 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 
-import java.util.concurrent.Executor;
-
 @Configuration
 @ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_async_enabled", havingValue = "true")
 public class CCDStoreConfiguration {
-
-    @Bean(name = "threadPoolTaskExecutor")
-    public Executor threadPoolTaskExecutor(@Value("${async.max.threadPool.size}") Integer maxThreadPoolSize) {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setMaxPoolSize(maxThreadPoolSize);
-        executor.initialize();
-        return executor;
-    }
 
     @Bean
     public ReferenceNumberService referenceNumberService(ReferenceNumberRepository referenceNumberRepository) {
