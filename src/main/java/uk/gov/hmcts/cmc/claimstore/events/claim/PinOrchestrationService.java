@@ -46,8 +46,6 @@ public class PinOrchestrationService {
             ClaimSubmissionOperationIndicators.builder();
 
         try {
-            updatedOperationIndicator.defendantPinLetterUpload(YesNoOption.YES);
-
             bulkPrintService.print(updatedClaim, documents.getDefendantPinLetterDoc(),
                 documents.getSealedClaimDoc());
             updatedOperationIndicator.bulkPrint(YesNoOption.YES);

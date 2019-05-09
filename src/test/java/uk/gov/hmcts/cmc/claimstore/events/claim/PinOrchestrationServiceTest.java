@@ -25,7 +25,9 @@ import static java.util.Collections.singletonList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
@@ -68,8 +70,8 @@ public class PinOrchestrationServiceTest {
     private DocumentOrchestrationService documentOrchestrationService;
 
     private GeneratedDocuments generatedDocuments = GeneratedDocuments.builder()
-        .defendantLetterDoc(defendantLetterDocument)
-        .defendantLetter(pinLetterClaim)
+        .defendantPinLetterDoc(defendantPinLetterDocument)
+        .defendantPinLetter(defendantPinLetter)
         .sealedClaimDoc(sealedClaimLetterDocument)
         .sealedClaim(sealedClaim)
         .pin(PIN)
@@ -127,40 +129,19 @@ public class PinOrchestrationServiceTest {
             eq(CaseEvent.PIN_GENERATION_OPERATIONS));
     }
 
-    @Test(expected = RuntimeException.class)
-    public void updatePinOperationStatusWhenDefendantPinLetterUploadFails() {
-        //given
-        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION)))
-            .willReturn(generatedDocuments);
-        given(documentUploadHandler
-            .uploadToDocumentManagement(any(), any(), any()))
-            .willThrow(new RuntimeException("Document Upload failed"));
-
-        //when
-        pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
-
-        //then
-        verify(documentUploadHandler)
-            .uploadToDocumentManagement(eq(CLAIM), eq(AUTHORISATION), eq(singletonList(pinLetterClaim)));
-        verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM),
-            eq(CaseEvent.PIN_GENERATION_OPERATIONS));
-    }
 
     @Test(expected = RuntimeException.class)
     public void updatePinOperationStatusWhenBulkPrintFails() {
         //given
         given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION)))
             .willReturn(generatedDocuments);
-        given(documentUploadHandler
-            .uploadToDocumentManagement(any(), any(), any()))
-            .willThrow(new RuntimeException("Document Upload failed"));
+
+        doThrow(new RuntimeException("bulk print failed")).when(bulkPrintService).print(any(),any(),any());
 
         //when
         pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
 
         //then
-        verify(documentUploadHandler)
-            .uploadToDocumentManagement(eq(CLAIM), eq(AUTHORISATION), eq(singletonList(pinLetterClaim)));
         verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM),
             eq(CaseEvent.PIN_GENERATION_OPERATIONS));
     }
@@ -170,16 +151,12 @@ public class PinOrchestrationServiceTest {
         //given
         given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION)))
             .willReturn(generatedDocuments);
-        given(documentUploadHandler
-            .uploadToDocumentManagement(any(), any(), any()))
-            .willThrow(new RuntimeException("Document Upload failed"));
-
+        doThrow(new RuntimeException("claim issue notification failed"))
+            .when(claimIssuedStaffNotificationService).notifyStaffOfClaimIssue(any(),any());
         //when
         pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
 
         //then
-        verify(documentUploadHandler)
-            .uploadToDocumentManagement(eq(CLAIM), eq(AUTHORISATION), eq(singletonList(pinLetterClaim)));
         verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM),
             eq(CaseEvent.PIN_GENERATION_OPERATIONS));
     }
@@ -189,16 +166,12 @@ public class PinOrchestrationServiceTest {
         //given
         given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION)))
             .willReturn(generatedDocuments);
-        given(documentUploadHandler
-            .uploadToDocumentManagement(any(), any(), any()))
-            .willThrow(new RuntimeException("Document Upload failed"));
-
+        doThrow(new RuntimeException("claim issue notification failed"))
+            .when(claimIssuedNotificationService).sendMail(any(),any(),any(),any(),any(),any());
         //when
         pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
 
         //then
-        verify(documentUploadHandler)
-            .uploadToDocumentManagement(eq(CLAIM), eq(AUTHORISATION), eq(singletonList(pinLetterClaim)));
         verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM),
             eq(CaseEvent.PIN_GENERATION_OPERATIONS));
     }
