@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
@@ -28,7 +29,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_DEFENDANT;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service("caseRepository")
-@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled", havingValue = "true")
 public class CCDCaseRepository implements CaseRepository {
     private final CCDCaseApi ccdCaseApi;
     private final CoreCaseDataService coreCaseDataService;
@@ -184,6 +185,14 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
+    public Claim updateClaimSubmissionOperationStatus(String authorisation, Long claimId,
+                                                      ClaimSubmissionOperationIndicators indicators,
+                                                      CaseEvent caseEvent) {
+        return
+            coreCaseDataService.saveClaimSubmissionOperationIndicators(claimId, indicators, authorisation, caseEvent);
+    }
+
+    @Override
     public void saveReDetermination(
         String authorisation,
         Claim claim,
@@ -199,6 +208,11 @@ public class CCDCaseRepository implements CaseRepository {
     @Override
     public void saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent) {
         coreCaseDataService.saveCaseEvent(authorisation, claim.getId(), caseEvent);
+    }
+
+    @Override
+    public void updateClaimState(String authorisation, Long claimId, String state) {
+        //TODO to be implemented as part of another PR.
     }
 
 }

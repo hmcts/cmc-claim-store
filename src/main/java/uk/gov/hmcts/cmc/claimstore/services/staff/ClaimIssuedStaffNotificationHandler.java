@@ -9,7 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
 import static java.util.Objects.requireNonNull;
 
 @Service
-@ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff", havingValue = "true")
 public class ClaimIssuedStaffNotificationHandler {
 
     private final ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService;
