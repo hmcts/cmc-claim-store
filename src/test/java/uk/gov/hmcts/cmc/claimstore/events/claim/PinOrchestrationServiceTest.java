@@ -21,13 +21,11 @@ import uk.gov.hmcts.reform.sendletter.api.Document;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.util.Collections.singletonList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
@@ -129,14 +127,13 @@ public class PinOrchestrationServiceTest {
             eq(CaseEvent.PIN_GENERATION_OPERATIONS));
     }
 
-
     @Test(expected = RuntimeException.class)
     public void updatePinOperationStatusWhenBulkPrintFails() {
         //given
         given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION)))
             .willReturn(generatedDocuments);
 
-        doThrow(new RuntimeException("bulk print failed")).when(bulkPrintService).print(any(),any(),any());
+        doThrow(new RuntimeException("bulk print failed")).when(bulkPrintService).print(any(), any(), any());
 
         //when
         pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
@@ -152,7 +149,7 @@ public class PinOrchestrationServiceTest {
         given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION)))
             .willReturn(generatedDocuments);
         doThrow(new RuntimeException("claim issue notification failed"))
-            .when(claimIssuedStaffNotificationService).notifyStaffOfClaimIssue(any(),any());
+            .when(claimIssuedStaffNotificationService).notifyStaffOfClaimIssue(any(), any());
         //when
         pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
 
@@ -167,7 +164,7 @@ public class PinOrchestrationServiceTest {
         given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION)))
             .willReturn(generatedDocuments);
         doThrow(new RuntimeException("claim issue notification failed"))
-            .when(claimIssuedNotificationService).sendMail(any(),any(),any(),any(),any(),any());
+            .when(claimIssuedNotificationService).sendMail(any(), any(), any(), any(), any(), any());
         //when
         pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
 
