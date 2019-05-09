@@ -8,7 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.DefendantResponseStaffNotifica
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 @Component
-@ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff", havingValue = "true")
 public class DefendantResponseStaffNotificationHandler {
 
     private final DefendantResponseStaffNotificationService defendantResponseStaffNotificationService;

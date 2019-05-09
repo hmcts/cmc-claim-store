@@ -55,7 +55,7 @@ import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_I
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service
-@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled", havingValue = "true")
 public class CoreCaseDataService {
 
     public static final String CMC_CASE_UPDATE_SUMMARY = "CMC case update";
