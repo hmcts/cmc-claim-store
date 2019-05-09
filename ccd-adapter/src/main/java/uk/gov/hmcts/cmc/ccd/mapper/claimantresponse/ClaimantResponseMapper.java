@@ -72,7 +72,7 @@ public class ClaimantResponseMapper {
         responseRejection.getMediationPhoneNumber()
             .ifPresent(phoneNo -> rejection.mediationPhoneNumber(telephoneMapper.to(phoneNo)));
 
-        rejection.amountPaid(responseRejection.getAmountPaid().map(moneyMapper::to).orElse(null));
+        responseRejection.getAmountPaid().map(moneyMapper::to).ifPresent(rejection::amountPaid);
 
         responseRejection.getReason().ifPresent(rejection::reason);
         responseRejection.getPaymentReceived()
@@ -89,7 +89,7 @@ public class ClaimantResponseMapper {
 
     private CCDClaimantResponse toAcceptation(Claim claim, ResponseAcceptation responseAcceptation) {
         CCDResponseAcceptation.CCDResponseAcceptationBuilder builder = CCDResponseAcceptation.builder();
-        builder.amountPaid(responseAcceptation.getAmountPaid().map(moneyMapper::to).orElse(null));
+        responseAcceptation.getAmountPaid().map(moneyMapper::to).ifPresent(builder::amountPaid);
 
         responseAcceptation.getFormaliseOption()
             .map(FormaliseOption::name)

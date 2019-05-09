@@ -15,7 +15,7 @@ public class AmountRangeMapper implements BuilderMapper<CCDCase, AmountRange, CC
 
     @Override
     public void to(AmountRange amountRange, CCDCase.CCDCaseBuilder builder) {
-        builder.amountLowerValue(amountRange.getLowerValue().map(moneyMapper::to).orElse(null));
+        amountRange.getLowerValue().map(moneyMapper::to).ifPresent(builder::amountLowerValue);
         builder.amountHigherValue(moneyMapper.to(amountRange.getHigherValue()));
     }
 

@@ -32,7 +32,8 @@ public class InterestMapper implements BuilderMapper<CCDCase, Interest, CCDCase.
             return;
         }
 
-        builder.interestSpecificDailyAmount(interest.getSpecificDailyAmount().map(moneyMapper::to).orElse(null));
+        interest.getSpecificDailyAmount().map(moneyMapper::to).ifPresent(builder::interestSpecificDailyAmount);
+
         interestBreakdownMapper.to(interest.getInterestBreakdown(), builder);
         interestDateMapper.to(interest.getInterestDate(), builder);
 

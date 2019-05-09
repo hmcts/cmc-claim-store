@@ -38,7 +38,7 @@ public class CountyCourtJudgmentMapper {
 
         CountyCourtJudgment countyCourtJudgment = claim.getCountyCourtJudgment();
         countyCourtJudgment.getDefendantDateOfBirth().ifPresent(builder::defendantDateOfBirth);
-        builder.paidAmount(countyCourtJudgment.getPaidAmount().map(moneyMapper::to).orElse(null));
+        countyCourtJudgment.getPaidAmount().map(moneyMapper::to).ifPresent(builder::paidAmount);
         builder.paymentOption(valueOf(countyCourtJudgment.getPaymentOption().name()));
         countyCourtJudgment.getRepaymentPlan().ifPresent(repaymentPlan -> {
             builder.repaymentPlanFirstPaymentDate(repaymentPlan.getFirstPaymentDate());
