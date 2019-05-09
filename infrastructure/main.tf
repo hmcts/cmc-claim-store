@@ -1,7 +1,3 @@
-provider "azurerm" {
-  version = "1.19.0"
-}
-
 locals {
   aseName = "core-compute-${var.env}"
 
@@ -172,6 +168,7 @@ module "claim-store-api" {
     RESPOND_TO_CLAIM_URL = "${var.respond_to_claim_url}"
     PDF_SERVICE_URL = "${local.pdfserviceUrl}"
     DOCUMENT_MANAGEMENT_URL = "${var.dm_url}"
+    DOC_ASSEMBLY_URL = "${var.doc_assembly_api_url}"
     CORE_CASE_DATA_API_URL = "${local.ccdCnpUrl}"
     SEND_LETTER_URL = "${var.env == "saat" || var.env == "sprod" ? "false" : local.sendLetterUrl}"
 
@@ -199,13 +196,14 @@ module "claim-store-api" {
     FEATURE_TOGGLES_EMAILTOSTAFF = "${var.enable_staff_email}"
     FEATURE_TOGGLES_CCD_ENABLED = "${var.ccd_enabled}"
     FEATURE_TOGGLES_CCD_ASYNC_ENABLED = "${var.ccd_async_enabled}"
+    FEATURE_TOGGLES_SAVE_CLAIM_STATE_ENABLED = "${var.save_claim_state_enabled}"
+    FEATURE_TOGGLES_ASYNC_EVENT_OPERATIONS_ENABLED = "${var.async_event_operations_enabled}"
 
     //thread pool configs
     ASYNC_MAX_THREADPOOL_SIZE = 50
 
     ROOT_APPENDER = "CMC"
 
-    DOCUMENT_MANAGEMENT_CITIZENROLE = "citizen"
-
+    DOCUMENT_MANAGEMENT_USERROLES = "caseworker-cmc"
   }
 }

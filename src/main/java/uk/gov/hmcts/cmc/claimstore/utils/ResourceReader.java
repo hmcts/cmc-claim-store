@@ -24,6 +24,8 @@ public class ResourceReader {
             return IOUtils.toByteArray(inputStream);
         } catch (IOException e) {
             throw new IllegalStateException(e);
+        } catch (NullPointerException e) {
+            throw new IllegalStateException("Unable to read resource: " + resourcePath, e);
         }
     }
 }

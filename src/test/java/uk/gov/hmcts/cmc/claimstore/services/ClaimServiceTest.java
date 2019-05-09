@@ -29,6 +29,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
@@ -97,6 +98,8 @@ public class ClaimServiceTest {
     @Mock
     private DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
     @Mock
+    private LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator;
+    @Mock
     private EventProducer eventProducer;
     @Mock
     private CCDEventProducer ccdEventProducer;
@@ -115,6 +118,7 @@ public class ClaimServiceTest {
             userService,
             issueDateCalculator,
             responseDeadlineCalculator,
+            legalOrderGenerationDeadlinesCalculator,
             directionsQuestionnaireDeadlineCalculator,
             new MoreTimeRequestRule(new ClaimDeadlineService()),
             eventProducer,
@@ -122,7 +126,9 @@ public class ClaimServiceTest {
             ccdCaseDataToClaim,
             new PaidInFullRule(),
             ccdEventProducer,
-            new ClaimAuthorisationRule(userService));
+            new ClaimAuthorisationRule(userService),
+            false
+        );
     }
 
     @Test
@@ -202,32 +208,47 @@ public class ClaimServiceTest {
     }
 
     @Test
-    public void saveClaimShouldProceedWhenDuplicated() {
-        ClaimData claimData = SampleClaimData.validDefaults();
-        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
-        when(caseRepository.getClaimByExternalId(anyString(), eq(USER)))
-            .thenReturn(Optional.of(claim));
+    public void saveClaimShouldFinishWithoutPinGenerationSuccessfully() {
+        //given
 
+        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
+        when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(ISSUE_DATE);
+        when(responseDeadlineCalculator.calculateResponseDeadline(eq(ISSUE_DATE))).thenReturn(RESPONSE_DEADLINE);
+        when(caseRepository.saveClaim(eq(USER), any())).thenReturn(claim);
+
+        claimService = new ClaimService(
+            claimRepository,
+            caseRepository,
+            userService,
+            issueDateCalculator,
+            responseDeadlineCalculator,
+            legalOrderGenerationDeadlinesCalculator,
+            directionsQuestionnaireDeadlineCalculator,
+            new MoreTimeRequestRule(new ClaimDeadlineService()),
+            eventProducer,
+            appInsights,
+            ccdCaseDataToClaim,
+            new PaidInFullRule(),
+            ccdEventProducer,
+            new ClaimAuthorisationRule(userService),
+            true
+        );
+
+        ClaimData claimData = SampleClaimData.validDefaults();
+
+        //when
         Claim createdClaim = claimService.saveClaim(USER_ID, claimData, AUTHORISATION, singletonList("admissions"));
 
-        assertThat(createdClaim.getClaimData()).isEqualTo(claim.getClaimData());
+        //verify
+        ClaimData outputClaimData = claim.getClaimData();
+        assertThat(createdClaim.getClaimData()).isEqualTo(outputClaimData);
 
-        verify(appInsights).trackEvent(
-            AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE,
-            AppInsights.CLAIM_EXTERNAL_ID,
-            claimData.getExternalId().toString()
-        );
-        verify(eventProducer).createClaimIssuedEvent(
-            eq(createdClaim),
-            eq(null),
-            anyString(),
-            eq(AUTHORISATION)
-        );
-        verify(appInsights).trackEvent(
-            AppInsightsEvent.CLAIM_ISSUED_CITIZEN,
-            AppInsights.REFERENCE_NUMBER,
-            claim.getReferenceNumber()
-        );
+        verify(userService, never()).generatePin(eq(outputClaimData.getDefendant().getName()), eq(AUTHORISATION));
+        verify(caseRepository, once()).saveClaim(any(User.class), any(Claim.class));
+        verify(eventProducer, once()).createClaimCreatedEvent(eq(createdClaim), eq(null),
+            anyString(), eq(AUTHORISATION));
+
+        verify(ccdEventProducer, once()).createCCDClaimIssuedEvent(eq(createdClaim), eq(USER));
     }
 
     @Test
@@ -428,11 +449,26 @@ public class ClaimServiceTest {
     }
 
     @Test(expected = ForbiddenActionException.class)
-    public void saveReDeterminationshouldThrowExceptionWhenCallerNotAuthorised() {
+    public void saveReDeterminationShouldThrowExceptionWhenCallerNotAuthorised() {
         when(userService.getUserDetails(AUTHORISATION))
             .thenReturn(SampleUserDetails.builder().withUserId("300").build());
 
         claimService.saveReDetermination(AUTHORISATION, claim, new ReDetermination("", MadeBy.CLAIMANT));
+    }
+
+    @Test
+    public void saveDefendantResponseShouldCalculateClaimantResponseDeadline() {
+        LocalDate deadline = now().plusDays(99);
+        when(responseDeadlineCalculator.calculateClaimantResponseDeadline(any(LocalDate.class)))
+            .thenReturn(deadline);
+        claimService.saveDefendantResponse(claim, DEFENDANT_EMAIL, SampleResponse.validDefaults(), AUTHORISATION);
+        verify(caseRepository).saveDefendantResponse(
+            any(Claim.class),
+            eq(DEFENDANT_EMAIL),
+            any(Response.class),
+            eq(deadline),
+            eq(AUTHORISATION)
+        );
     }
 
     private static Claim createClaimModel(ClaimData claimData, String letterHolderId) {

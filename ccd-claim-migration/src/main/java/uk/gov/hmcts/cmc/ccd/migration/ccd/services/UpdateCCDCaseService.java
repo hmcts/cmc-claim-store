@@ -57,9 +57,12 @@ public class UpdateCCDCaseService {
         } catch (Exception exception) {
             throw new OverwriteCaseException(
                 String.format(
-                    "Failed updating claim in CCD store for claim %s on event %s",
+                    "Failed updating claim in CCD store for claim %s on event %s due to %s",
                     claim.getReferenceNumber(),
-                    event), exception
+                    event,
+                    exception.getMessage()
+                ),
+                exception
             );
         }
     }
@@ -72,12 +75,8 @@ public class UpdateCCDCaseService {
         Claim claim,
         CaseEvent event
     ) {
-        String errorMessage = String.format(
-            "Failure: failed update for reference number ( %s for event %s) due to %s",
-            claim.getReferenceNumber(), event.getValue(), exception.getMessage()
-        );
-
-        logger.info(errorMessage, exception);
+        logger.info(exception.getMessage(), exception);
+        throw exception;
     }
 
 }

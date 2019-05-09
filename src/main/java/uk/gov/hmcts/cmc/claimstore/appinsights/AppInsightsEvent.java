@@ -34,6 +34,7 @@ public enum AppInsightsEvent {
     CCD_ASYNC_FAILURE("CCD Async handling - failure"),
     REDETERMINATION_REQUESTED("CCJ - Requested by re-determination "),
     PAID_IN_FULL("Paid in full"),
+    NOTIFICATION_FAILURE("Notification - failure"),
     DOCUMENT_MANAGEMENT_UPLOAD_FAILURE("Document management upload - failure"),
     DOCUMENT_MANAGEMENT_DOWNLOAD_FAILURE("Document management download - failure");
 

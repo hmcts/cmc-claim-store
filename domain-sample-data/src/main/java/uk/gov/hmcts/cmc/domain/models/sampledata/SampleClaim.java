@@ -4,6 +4,8 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.Interest;
@@ -13,7 +15,6 @@ import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
@@ -26,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
@@ -36,6 +38,7 @@ import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.DEFAULT;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.CLAIMANT;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.standardInterestBuilder;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
@@ -85,6 +88,10 @@ public final class SampleClaim {
     private LocalDateTime reDeterminationRequestedAt;
     private ReDetermination reDetermination = new ReDetermination("I feel defendant can pay", CLAIMANT);
     private ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
+    private LocalDate claimantResponseDeadline;
+    private ClaimState state = null;
+    private static Supplier<ClaimSubmissionOperationIndicators> getDefaultClaimSubmissionOperationIndicators =
+        () -> ClaimSubmissionOperationIndicators.builder().build();
 
     private SampleClaim() {
     }
@@ -100,9 +107,10 @@ public final class SampleClaim {
             ).withResponse(SampleResponse.FullDefence
                 .builder()
                 .withDefenceType(DefenceType.DISPUTE)
-                .withMediation(YesNoOption.YES)
+                .withMediation(YES)
                 .build()
-            ).build();
+            )
+            .build();
     }
 
     public static Claim withFullClaimData() {
@@ -249,7 +257,16 @@ public final class SampleClaim {
     }
 
     public static Claim getDefaultForLegal() {
-        return builder().build();
+        return builder()
+            .withReferenceNumber("012LR345")
+            .withClaimData(SampleClaimData.builder().withPayment(null).build())
+            .build();
+    }
+
+    public static Claim getCitizenClaim() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimantBuilder().withExternalId(RAND_UUID).build())
+            .build();
     }
 
     public static Claim getLegalDataWithReps() {
@@ -436,7 +453,10 @@ public final class SampleClaim {
             moneyReceivedOn,
             reDetermination,
             reDeterminationRequestedAt,
-            claimDocumentCollection
+            claimDocumentCollection,
+            claimantResponseDeadline,
+            state,
+            getDefaultClaimSubmissionOperationIndicators.get()
         );
     }
 
@@ -607,6 +627,11 @@ public final class SampleClaim {
 
     public SampleClaim withClaimantResponse(ClaimantResponse claimantResponse) {
         this.claimantResponse = claimantResponse;
+        return this;
+    }
+
+    public SampleClaim withClaimantResponseDeadline(LocalDate claimantResponseDeadline) {
+        this.claimantResponseDeadline = claimantResponseDeadline;
         return this;
     }
 

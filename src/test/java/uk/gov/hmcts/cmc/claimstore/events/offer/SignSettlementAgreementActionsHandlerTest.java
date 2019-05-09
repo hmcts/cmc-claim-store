@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -41,6 +42,8 @@ public class SignSettlementAgreementActionsHandlerTest {
     private NotificationTemplates templates;
     @Mock
     private EmailTemplates emailTemplates;
+    @Mock
+    private AppInsights appInsights;
 
     @Before
     public void setUp() {
@@ -53,7 +56,7 @@ public class SignSettlementAgreementActionsHandlerTest {
             .thenReturn(SETTLEMENT_SIGNED_TO_DEFENDANT);
 
         SettlementAgreementNotificationService notificationService =
-            new SettlementAgreementNotificationService(notificationClient, notificationsProperties);
+            new SettlementAgreementNotificationService(notificationClient, notificationsProperties, appInsights);
 
         handler = new SignSettlementAgreementActionsHandler(notificationService);
     }

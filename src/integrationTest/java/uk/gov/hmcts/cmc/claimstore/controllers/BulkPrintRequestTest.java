@@ -32,7 +32,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     properties = {
         "document_management.url=false",
         "core_case_data.api.url=false",
-        "send-letter.url=http://localhost:${wiremock.server.port}"
+        "send-letter.url=http://localhost:${wiremock.server.port}",
+        "feature_toggles.async_event_operations_enabled=false"
     }
 )
 @AutoConfigureWireMock(port = 0)
@@ -76,13 +77,13 @@ public class BulkPrintRequestTest extends BaseSaveTest {
             )
         );
 
-        MvcResult result = makeIssueClaimRequest(SampleClaimData.submittedByClaimant(), AUTHORISATION_TOKEN)
+        makeIssueClaimRequest(SampleClaimData.submittedByClaimant(), AUTHORISATION_TOKEN)
             .andExpect(status().isOk())
             .andReturn();
 
         verify(bulkPrintNotificationService)
             .notifyFailedBulkPrint(any(Document.class), any(Document.class),
-                eq(deserializeObjectFrom(result, Claim.class)));
+                any(Claim.class));
     }
 
     @Test
@@ -96,12 +97,12 @@ public class BulkPrintRequestTest extends BaseSaveTest {
                 .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .withBody("Internal server error occurred")));
 
-        MvcResult result = makeIssueClaimRequest(SampleClaimData.submittedByClaimant(), AUTHORISATION_TOKEN)
+        makeIssueClaimRequest(SampleClaimData.submittedByClaimant(), AUTHORISATION_TOKEN)
             .andExpect(status().isOk())
             .andReturn();
 
         verify(bulkPrintNotificationService)
             .notifyFailedBulkPrint(any(Document.class), any(Document.class),
-                eq(deserializeObjectFrom(result, Claim.class)));
+                any(Claim.class));
     }
 }
