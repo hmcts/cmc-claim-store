@@ -28,6 +28,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import static org.junit.Assert.assertEquals;
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;
 
 public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
 
@@ -79,10 +80,9 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
         assertResponse(ccdRespondent);
         PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse) actual;
 
-        if (!Objects.equals(partAdmissionResponse.getAmount(), ccdRespondent.getResponseAmount())) {
-            failWithMessage("Expected CCDRespondent.responseAmount to be <%s> but was <%s>",
-                ccdRespondent.getResponseAmount(), partAdmissionResponse.getAmount());
-        }
+        String message = String.format("Expected CCDRespondent.responseAmount to be <%s> but was <%s>",
+            ccdRespondent.getResponseAmount(), partAdmissionResponse.getAmount());
+        assertMoney(partAdmissionResponse.getAmount()).isEqualTo(ccdRespondent.getResponseAmount(), message);
 
         if (!Objects.equals(partAdmissionResponse.getDefence(), ccdRespondent.getResponseDefence())) {
             failWithMessage("Expected CCDRespondent.responseDefence to be <%s> but was <%s>",
@@ -173,7 +173,7 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
 
     private void assertPaymentDeclaration(CCDRespondent ccdRespondent, PaymentDeclaration paymentDeclaration) {
         paymentDeclaration.getPaidAmount().ifPresent(paidAmount ->
-            assertEquals(paidAmount, ccdRespondent.getPaymentDeclarationPaidAmount())
+            assertMoney(paidAmount).isEqualTo(ccdRespondent.getPaymentDeclarationPaidAmount())
         );
 
         if (!Objects.equals(paymentDeclaration.getPaidDate(), ccdRespondent.getPaymentDeclarationPaidDate())) {
