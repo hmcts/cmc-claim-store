@@ -24,7 +24,7 @@ public class Address {
     public String toString() {
         return Stream.of(addressLines, Arrays.asList(postcode, town))
             .flatMap(Collection::stream)
-            .map(s -> s.replaceAll("[\\r\\n]", ""))
+            .map(s -> s.replaceAll("\\r\\n|\\r|\\n", ""))
             .collect(Collectors.joining("\n"));
     }
 }
