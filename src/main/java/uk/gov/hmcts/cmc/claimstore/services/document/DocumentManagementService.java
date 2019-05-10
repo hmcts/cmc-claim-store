@@ -84,7 +84,7 @@ public class DocumentManagementService {
                 authorisation,
                 authTokenGenerator.generate(),
                 userDetails.getId(),
-                asList(userRoles),
+                asList(userRoles.split(",")),
                 Classification.RESTRICTED,
                 singletonList(file)
             );
