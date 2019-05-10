@@ -13,13 +13,13 @@ import uk.gov.hmcts.cmc.claimstore.documents.PdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
+import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
-import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.net.URI;
 import java.util.Optional;
@@ -52,6 +52,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
     private final SettlementAgreementCopyService settlementAgreementCopyService;
     private final DefendantPinLetterPdfService defendantPinLetterPdfService;
+    private final CCDEventProducer ccdEventProducer;
 
     @Autowired
     @SuppressWarnings("squid:S00107")
@@ -64,7 +65,9 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         DefendantResponseReceiptService defendantResponseReceiptService,
         CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
         SettlementAgreementCopyService settlementAgreementCopyService,
-        DefendantPinLetterPdfService defendantPinLetterPdfService) {
+        DefendantPinLetterPdfService defendantPinLetterPdfService,
+        CCDEventProducer ccdEventProducer
+    ) {
         this.claimService = claimService;
         this.documentManagementService = documentManagementService;
         this.sealedClaimPdfService = sealedClaimPdfService;
@@ -73,6 +76,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
         this.settlementAgreementCopyService = settlementAgreementCopyService;
         this.defendantPinLetterPdfService = defendantPinLetterPdfService;
+        this.ccdEventProducer = ccdEventProducer;
     }
 
     @Override
@@ -153,11 +157,13 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         }
     }
 
-    private byte[] processRequest(Claim claim,
-                                  String authorisation,
-                                  ClaimDocumentType claimDocumentType,
-                                  PdfService pdfService,
-                                  String baseFileName) {
+    private byte[] processRequest(
+        Claim claim,
+        String authorisation,
+        ClaimDocumentType claimDocumentType,
+        PdfService pdfService,
+        String baseFileName
+    ) {
         Optional<URI> claimDocument = claim.getClaimDocument(claimDocumentType);
         try {
             if (claimDocument.isPresent()) {
@@ -179,23 +185,26 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         PDF document,
         String authorisation,
         Claim claim) {
-        URI documentSelfPath = documentManagementService.uploadDocument(authorisation, document);
-        return claimService.saveClaimDocuments(authorisation,
+        ClaimDocument claimDocument = documentManagementService.uploadDocument(authorisation, document);
+        ClaimDocumentCollection claimDocumentCollection = getClaimDocumentCollection(claim, claimDocument);
+
+        Claim newClaim = claimService.saveClaimDocuments(authorisation,
             claim.getId(),
-            getClaimDocumentCollection(claim, document, documentSelfPath));
+            claimDocumentCollection,
+            document.getClaimDocumentType());
+
+        ccdEventProducer.saveClaimDocumentCCDEvent(authorisation,
+            claim,
+            claimDocumentCollection,
+            document.getClaimDocumentType());
+
+        return newClaim;
     }
 
-    private ClaimDocumentCollection getClaimDocumentCollection(Claim claim,
-                                                               PDF document, URI uri) {
+    private ClaimDocumentCollection getClaimDocumentCollection(Claim claim, ClaimDocument claimDocument) {
         ClaimDocumentCollection claimDocumentCollection = claim.getClaimDocumentCollection()
             .orElse(new ClaimDocumentCollection());
-        claimDocumentCollection.addClaimDocument(ClaimDocument.builder()
-            .documentManagementUrl(uri)
-            .documentName(document.getFilename())
-            .documentType(document.getClaimDocumentType())
-            .createdDatetime(LocalDateTimeFactory.nowInLocalZone())
-            .createdBy(OCMC)
-            .build());
+        claimDocumentCollection.addClaimDocument(claimDocument);
         return claimDocumentCollection;
     }
 }

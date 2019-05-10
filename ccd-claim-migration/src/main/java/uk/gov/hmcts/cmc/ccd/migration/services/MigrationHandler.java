@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.CreateCCDCaseService;
-import uk.gov.hmcts.cmc.ccd.migration.ccd.services.SearchCCDCaseService;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.UpdateCCDCaseService;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.stereotypes.LogExecutionTime;
@@ -29,29 +28,30 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
 import static uk.gov.hmcts.cmc.domain.models.response.DefenceType.ALREADY_PAID;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 
 @Service
 public class MigrationHandler {
     private static final Logger logger = LoggerFactory.getLogger(MigrationHandler.class);
-    public static final String ON_HOLD_STATE = "onhold";
     public static final String OPEN_STATE = "open";
 
-    private final SearchCCDCaseService searchCCDCaseService;
     private final CreateCCDCaseService createCCDCaseService;
     private final UpdateCCDCaseService updateCCDCaseService;
     private final long delayBetweenCasesLots;
     private final int casesLotsSize;
 
     public MigrationHandler(
-        SearchCCDCaseService searchCCDCaseService,
         CreateCCDCaseService createCCDCaseService,
         UpdateCCDCaseService updateCCDCaseService,
         @Value("${migration.delay.between.cases.lots}") long delayBetweenCasesLots,
         @Value("${migration.cases.lots.size}") int casesLotsSize
     ) {
-        this.searchCCDCaseService = searchCCDCaseService;
         this.createCCDCaseService = createCCDCaseService;
         this.updateCCDCaseService = updateCCDCaseService;
         this.delayBetweenCasesLots = delayBetweenCasesLots;
@@ -61,7 +61,8 @@ public class MigrationHandler {
     @LogExecutionTime
     public void migrateClaim(
         AtomicInteger migratedClaims,
-        AtomicInteger failedMigrations,
+        AtomicInteger failedOnCreateMigrations,
+        AtomicInteger failedOnUpdateMigrations,
         AtomicInteger updatedClaims,
         Claim claim,
         User user
@@ -69,9 +70,9 @@ public class MigrationHandler {
         try {
             delayMigrationWhenMigratedCaseLotsReachedAllowed(migratedClaims);
 
-            CaseDetails details = createCase(user, migratedClaims, failedMigrations, claim);
+            CaseDetails details = createCase(user, migratedClaims, failedOnCreateMigrations, claim);
             if (Optional.ofNullable(details).isPresent()) {
-                updateCase(user, updatedClaims, failedMigrations, claim, details);
+                updateCase(user, updatedClaims, failedOnUpdateMigrations, claim, details);
             }
 
         } catch (Exception e) {
@@ -80,7 +81,6 @@ public class MigrationHandler {
                 migratedClaims.get(),
                 e.getMessage()
             );
-            failedMigrations.incrementAndGet();
         }
     }
 
@@ -93,7 +93,7 @@ public class MigrationHandler {
                 logger.info("Sleeping for {}", delayBetweenCasesLots);
                 Thread.sleep(delayBetweenCasesLots);
             } catch (InterruptedException e) {
-                logger.info("failed sleeping between lots on count {}", migratedClaimsCount);
+                logger.error("Failed sleeping between lots on count {}", migratedClaimsCount);
             }
         }
     }
@@ -146,7 +146,7 @@ public class MigrationHandler {
             caseDetails = createCCDCaseService.createCase(user, claim, CaseEvent.CREATE_NEW_CASE);
             migratedClaims.incrementAndGet();
         } catch (Exception e) {
-            logger.info("Claim issue create failed for Claim reference "
+            logger.error("Claim issue create failed for Claim reference "
                     + claim.getReferenceNumber()
                     + " due to " + e.getMessage(),
                 e);
@@ -277,6 +277,22 @@ public class MigrationHandler {
                 return claim.getReDeterminationRequestedAt().isPresent()
                     && claim.getReDetermination().isPresent()
                     && claim.getReDetermination().get().getPartyType() == MadeBy.DEFENDANT;
+            case SEALED_CLAIM_UPLOAD:
+                return claim.getClaimDocument(SEALED_CLAIM).isPresent();
+            case CLAIM_ISSUE_RECEIPT_UPLOAD:
+                return !claim.getClaimData().isClaimantRepresented()
+                    && claim.getClaimDocument(CLAIM_ISSUE_RECEIPT).isPresent();
+            case DEFENDANT_RESPONSE_UPLOAD:
+                return claim.getDefendantId() != null
+                    && claim.getClaimDocument(DEFENDANT_RESPONSE_RECEIPT).isPresent();
+            case CCJ_REQUEST_UPLOAD:
+                return claim.getCountyCourtJudgmentRequestedAt() != null
+                    && claim.getCountyCourtJudgment() != null
+                    &&  claim.getClaimDocument(CCJ_REQUEST).isPresent();
+            case SETTLEMENT_AGREEMENT_UPLOAD:
+                return claim.getSettlementReachedAt() != null
+                    && claim.getSettlement().isPresent()
+                    && claim.getClaimDocument(SETTLEMENT_AGREEMENT).isPresent();
             default:
                 return false;
         }

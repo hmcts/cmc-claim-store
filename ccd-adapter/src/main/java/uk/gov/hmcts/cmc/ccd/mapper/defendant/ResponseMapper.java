@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.mapper.defendant;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
@@ -8,6 +9,7 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.ccd.mapper.EvidenceRowMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.MoneyMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.PaymentIntentionMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.TelephoneMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.TimelineEventMapper;
@@ -42,6 +44,7 @@ public class ResponseMapper {
     private final PaymentIntentionMapper paymentIntentionMapper;
     private final StatementOfMeansMapper statementOfMeansMapper;
     private final TelephoneMapper telephoneMapper;
+    private final MoneyMapper moneyMapper;
 
     public ResponseMapper(
         EvidenceRowMapper evidenceRowMapper,
@@ -49,7 +52,8 @@ public class ResponseMapper {
         DefendantPartyMapper defendantPartyMapper,
         PaymentIntentionMapper paymentIntentionMapper,
         StatementOfMeansMapper statementOfMeansMapper,
-        TelephoneMapper telephoneMapper
+        TelephoneMapper telephoneMapper,
+        MoneyMapper moneyMapper
     ) {
         this.evidenceRowMapper = evidenceRowMapper;
         this.timelineEventMapper = timelineEventMapper;
@@ -57,10 +61,14 @@ public class ResponseMapper {
         this.paymentIntentionMapper = paymentIntentionMapper;
         this.statementOfMeansMapper = statementOfMeansMapper;
         this.telephoneMapper = telephoneMapper;
+        this.moneyMapper = moneyMapper;
     }
 
-    public void to(CCDRespondent.CCDRespondentBuilder builder, Response response,
-                   CCDParty.CCDPartyBuilder partyDetail) {
+    public void to(
+        CCDRespondent.CCDRespondentBuilder builder,
+        Response response,
+        CCDParty.CCDPartyBuilder partyDetail
+    ) {
         requireNonNull(builder, "builder must not be null");
         requireNonNull(response, "response must not be null");
 
@@ -102,7 +110,8 @@ public class ResponseMapper {
         }
     }
 
-    public void from(Claim.ClaimBuilder claimBuilder, CCDRespondent respondent) {
+    public void from(Claim.ClaimBuilder claimBuilder, CCDCollectionElement<CCDRespondent> respondentElement) {
+        CCDRespondent respondent = respondentElement.getValue();
         requireNonNull(claimBuilder, "claimBuilder must not be null");
         requireNonNull(respondent, "respondent must not be null");
         if (respondent.getResponseType() == null) {
@@ -111,13 +120,13 @@ public class ResponseMapper {
 
         switch (respondent.getResponseType()) {
             case FULL_DEFENCE:
-                claimBuilder.response(extractFullDefence(respondent));
+                claimBuilder.response(extractFullDefence(respondentElement));
                 break;
             case FULL_ADMISSION:
-                claimBuilder.response(extractFullAdmission(respondent));
+                claimBuilder.response(extractFullAdmission(respondentElement));
                 break;
             case PART_ADMISSION:
-                claimBuilder.response(extractPartAdmission(respondent));
+                claimBuilder.response(extractPartAdmission(respondentElement));
                 break;
             default:
                 throw new MappingException("Invalid responseType");
@@ -126,7 +135,7 @@ public class ResponseMapper {
 
     private void toPartAdmissionResponse(CCDRespondent.CCDRespondentBuilder builder, PartAdmissionResponse response) {
 
-        builder.responseAmount(response.getAmount());
+        builder.responseAmount(moneyMapper.to(response.getAmount()));
         response.getPaymentDeclaration().ifPresent(
             mapPaymentDeclaration(builder)
         );
@@ -186,15 +195,18 @@ public class ResponseMapper {
 
     private Consumer<PaymentDeclaration> mapPaymentDeclaration(CCDRespondent.CCDRespondentBuilder builder) {
         return paymentDeclaration -> {
-            builder.paymentDeclarationExplanation(paymentDeclaration.getExplanation());
             builder.paymentDeclarationPaidDate(paymentDeclaration.getPaidDate());
+            builder.paymentDeclarationExplanation(paymentDeclaration.getExplanation());
+            builder.paymentDeclarationPaidAmount(paymentDeclaration.getPaidAmount().map(moneyMapper::to)
+                .orElse(null));
         };
     }
 
-    private FullDefenceResponse extractFullDefence(CCDRespondent respondent) {
+    private FullDefenceResponse extractFullDefence(CCDCollectionElement<CCDRespondent> respondentElement) {
+        CCDRespondent respondent = respondentElement.getValue();
 
         return FullDefenceResponse.builder()
-            .defendant(defendantPartyMapper.from(respondent))
+            .defendant(defendantPartyMapper.from(respondentElement))
             .statementOfTruth(extractStatementOfTruth(respondent))
             .moreTimeNeeded(getMoreTimeNeeded(respondent))
             .freeMediation(getFreeMediation(respondent))
@@ -222,7 +234,8 @@ public class ResponseMapper {
     private PaymentDeclaration extractPaymentDeclaration(CCDRespondent respondent) {
         LocalDate paidDate = respondent.getPaymentDeclarationPaidDate();
         String explanation = respondent.getPaymentDeclarationExplanation();
-        BigDecimal paidAmount = respondent.getResponseAmount();
+        BigDecimal paidAmount = moneyMapper.from(respondent.getPaymentDeclarationPaidAmount());
+
         if (paidDate == null && paidAmount == null && explanation == null) {
             return null;
         }
@@ -247,16 +260,19 @@ public class ResponseMapper {
         );
     }
 
-    private PartAdmissionResponse extractPartAdmission(CCDRespondent respondent) {
+    private PartAdmissionResponse extractPartAdmission(CCDCollectionElement<CCDRespondent> respondentElement) {
+        CCDRespondent respondent = respondentElement.getValue();
+
         return PartAdmissionResponse.builder()
-            .defendant(defendantPartyMapper.from(respondent))
+            .defendant(defendantPartyMapper.from(respondentElement))
+            .amount(moneyMapper.from(respondent.getResponseAmount()))
+            .defendant(defendantPartyMapper.from(respondentElement))
             .statementOfTruth(extractStatementOfTruth(respondent))
             .moreTimeNeeded(getMoreTimeNeeded(respondent))
             .freeMediation(getFreeMediation(respondent))
             .mediationPhoneNumber(telephoneMapper.from(
                 respondent.getResponseMediationPhoneNumber()))
             .mediationContactPerson(respondent.getResponseMediationContactPerson())
-            .amount(respondent.getResponseAmount())
             .paymentDeclaration(extractPaymentDeclaration(respondent))
             .paymentIntention(paymentIntentionMapper.from(respondent.getDefendantPaymentIntention()))
             .defence(respondent.getResponseDefence())
@@ -272,9 +288,11 @@ public class ResponseMapper {
             : null;
     }
 
-    private FullAdmissionResponse extractFullAdmission(CCDRespondent respondent) {
+    private FullAdmissionResponse extractFullAdmission(CCDCollectionElement<CCDRespondent> respondentElement) {
+        CCDRespondent respondent = respondentElement.getValue();
+
         return FullAdmissionResponse.builder()
-            .defendant(defendantPartyMapper.from(respondent))
+            .defendant(defendantPartyMapper.from(respondentElement))
             .statementOfTruth(extractStatementOfTruth(respondent))
             .moreTimeNeeded(getMoreTimeNeeded(respondent))
             .freeMediation(getFreeMediation(respondent))

@@ -169,7 +169,7 @@ public class EndpointErrorsTest extends MockSpringTest {
             .willReturn(USER);
 
         given(claimRepository.saveRepresented(anyString(), anyString(), any(LocalDate.class),
-            any(LocalDate.class), anyString(), anyString(), anyString()))
+            any(LocalDate.class), anyString(), anyString(), anyString(), anyString()))
             .willThrow(duplicateKeyError);
 
         webClient
@@ -191,7 +191,12 @@ public class EndpointErrorsTest extends MockSpringTest {
         given(caseRepository.getClaimByExternalId(externalId, any()))
             .willReturn(Optional.of(claim));
 
-        willThrow(UNEXPECTED_ERROR).given(claimRepository).saveDefendantResponse(anyString(), anyString(), anyString());
+        willThrow(UNEXPECTED_ERROR).given(claimRepository).saveDefendantResponse(
+            anyString(),
+            anyString(),
+            any(LocalDate.class),
+            anyString()
+        );
 
         webClient
             .perform(post("/responses/claim/" + externalId + "/defendant/" + DEFENDANT_ID)
