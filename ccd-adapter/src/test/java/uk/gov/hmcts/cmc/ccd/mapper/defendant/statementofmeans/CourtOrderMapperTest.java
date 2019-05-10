@@ -46,9 +46,9 @@ public class CourtOrderMapperTest {
     public void shouldMapCourtOrderFromCCD() {
         //given
         CCDCourtOrder ccdCourtOrder = CCDCourtOrder.builder()
-            .amountOwed(BigDecimal.TEN)
+            .amountOwed("1000")
             .claimNumber("Reference")
-            .monthlyInstalmentAmount(BigDecimal.ONE)
+            .monthlyInstalmentAmount("100")
             .build();
 
         String collectionId = UUID.randomUUID().toString();
