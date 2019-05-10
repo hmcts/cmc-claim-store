@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import org.apache.tomcat.jni.Local;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

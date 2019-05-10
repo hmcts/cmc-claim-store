@@ -95,7 +95,6 @@ public class MediationReportServiceTest {
         when(mediationCSVGenerator.createMediationCSV(anyString(), any(LocalDate.class)))
             .thenThrow(mock(MediationCSVGenerationException.class));
 
-
         assertThatThrownBy(() -> service.automatedMediationReport())
             .isInstanceOf(MediationCSVGenerationException.class);
 
