@@ -45,6 +45,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import static java.math.BigDecimal.ONE;
 import static java.math.BigDecimal.TEN;
@@ -73,6 +74,50 @@ import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
 
 public class SampleData {
+
+    private static Supplier<CCDCase.CCDCaseBuilder> ccdBuilderWithDefault = () -> CCDCase.builder()
+        .id(1L)
+        .submittedOn(LocalDateTime.of(2017, 11, 01, 10, 15, 30))
+        .issuedOn(LocalDate.of(2017, 11, 15))
+        .submitterEmail("my@email.com")
+        .submitterId("123")
+        .referenceNumber("ref no")
+        .externalId(UUID.randomUUID().toString())
+        .features("admissions")
+        .amountType(BREAK_DOWN)
+        .housingDisrepairCostOfRepairDamages(MORE_THAN_THOUSAND_POUNDS.name())
+        .housingDisrepairOtherDamages(THOUSAND_POUNDS_OR_LESS.name())
+        .personalInjuryGeneralDamages(MORE_THAN_THOUSAND_POUNDS.name())
+        .sotSignerName("name")
+        .sotSignerRole("role")
+        .externalReferenceNumber("external ref")
+        .externalId(UUID.randomUUID().toString())
+        .feeCode("X1202")
+        .feeAmountInPennies(BigInteger.valueOf(100))
+        .reason("Reason for the case")
+        .preferredCourt("London Court")
+        .interestType(CCDInterestType.DIFFERENT)
+        .interestReason("reason")
+        .interestRate(BigDecimal.valueOf(2))
+        .interestBreakDownAmount(BigDecimal.valueOf(210))
+        .interestBreakDownExplanation("Explanation")
+        .interestStartDateReason("start date reason")
+        .interestDateType(CCDInterestDateType.CUSTOM)
+        .interestClaimStartDate(LocalDate.now())
+        .interestSpecificDailyAmount(BigDecimal.valueOf(10))
+        .interestEndDateType(CCDInterestEndDateType.SUBMISSION)
+        .paymentStatus("success")
+        .paymentDateCreated(LocalDate.of(2019, 01, 01))
+        .paymentId("PaymentId")
+        .paymentAmount(BigDecimal.valueOf(4000))
+        .paymentReference("RC-1524-6488-1670-7520")
+        .timeline(singletonList(CCDCollectionElement.<CCDTimelineEvent>builder()
+            .value(CCDTimelineEvent.builder().date("some Date").description("description of event").build())
+            .build()))
+        .evidence(singletonList(CCDCollectionElement.<CCDEvidenceRow>builder()
+            .value(CCDEvidenceRow.builder().type(EXPERT_WITNESS).description("description of evidence").build())
+            .build()));
+
 
     //Utility class
     private SampleData() {
@@ -389,51 +434,10 @@ public class SampleData {
         List<CCDCollectionElement<CCDRespondent>> respondents
             = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(getCCDRespondentIndividual()).build());
 
-        return CCDCase.builder()
-            .id(1L)
-            .submittedOn(LocalDateTime.of(2017, 11, 01, 10, 15, 30))
-            .issuedOn(LocalDate.of(2017, 11, 15))
-            .submitterEmail("my@email.com")
-            .submitterId("123")
-            .referenceNumber("ref no")
-            .externalId(UUID.randomUUID().toString())
-            .features("admissions")
-            .amountType(BREAK_DOWN)
+        return ccdBuilderWithDefault.get()
             .amountBreakDown(amountBreakDown)
-            .housingDisrepairCostOfRepairDamages(MORE_THAN_THOUSAND_POUNDS.name())
-            .housingDisrepairOtherDamages(THOUSAND_POUNDS_OR_LESS.name())
-            .personalInjuryGeneralDamages(MORE_THAN_THOUSAND_POUNDS.name())
-            .sotSignerName("name")
-            .sotSignerRole("role")
-            .externalReferenceNumber("external ref")
-            .externalId(UUID.randomUUID().toString())
-            .feeCode("X1202")
-            .feeAmountInPennies(BigInteger.valueOf(100))
-            .reason("Reason for the case")
-            .preferredCourt("London Court")
-            .interestType(CCDInterestType.DIFFERENT)
-            .interestReason("reason")
-            .interestRate(BigDecimal.valueOf(2))
-            .interestBreakDownAmount(BigDecimal.valueOf(210))
-            .interestBreakDownExplanation("Explanation")
-            .interestStartDateReason("start date reason")
-            .interestDateType(CCDInterestDateType.CUSTOM)
-            .interestClaimStartDate(LocalDate.now())
-            .interestSpecificDailyAmount(BigDecimal.valueOf(10))
-            .interestEndDateType(CCDInterestEndDateType.SUBMISSION)
-            .paymentStatus("success")
-            .paymentDateCreated(LocalDate.of(2019, 01, 01))
-            .paymentId("PaymentId")
-            .paymentAmount(BigDecimal.valueOf(4000))
-            .paymentReference("RC-1524-6488-1670-7520")
             .applicants(applicants)
             .respondents(respondents)
-            .timeline(singletonList(CCDCollectionElement.<CCDTimelineEvent>builder()
-                .value(CCDTimelineEvent.builder().date("some Date").description("description of event").build())
-                .build()))
-            .evidence(singletonList(CCDCollectionElement.<CCDEvidenceRow>builder()
-                .value(CCDEvidenceRow.builder().type(EXPERT_WITNESS).description("description of evidence").build())
-                .build()))
             .build();
     }
 
@@ -544,4 +548,5 @@ public class SampleData {
             .retired(NO)
             .build();
     }
+
 }

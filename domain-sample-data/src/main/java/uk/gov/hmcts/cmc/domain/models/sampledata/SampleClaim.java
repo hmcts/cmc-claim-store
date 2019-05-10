@@ -5,6 +5,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.Interest;
@@ -26,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
@@ -88,6 +90,8 @@ public final class SampleClaim {
     private ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
     private LocalDate claimantResponseDeadline;
     private ClaimState state = null;
+    private static Supplier<ClaimSubmissionOperationIndicators> getDefaultClaimSubmissionOperationIndicators =
+        () -> ClaimSubmissionOperationIndicators.builder().build();
 
     private SampleClaim() {
     }
@@ -105,7 +109,8 @@ public final class SampleClaim {
                 .withDefenceType(DefenceType.DISPUTE)
                 .withMediation(YES)
                 .build()
-            ).build();
+            )
+            .build();
     }
 
     public static Claim withFullClaimData() {
@@ -461,7 +466,8 @@ public final class SampleClaim {
             reDeterminationRequestedAt,
             claimDocumentCollection,
             claimantResponseDeadline,
-            state
+            state,
+            getDefaultClaimSubmissionOperationIndicators.get()
         );
     }
 

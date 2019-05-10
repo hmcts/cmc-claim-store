@@ -54,7 +54,7 @@ import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseTy
 
 @RestController
 @RequestMapping("/support")
-@ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff", havingValue = "true")
 public class SupportController {
 
     private static final String CLAIM = "Claim ";
