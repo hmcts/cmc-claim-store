@@ -1,11 +1,20 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.domain.models.InterestBreakdown;
 
 @Component
 public class InterestBreakdownMapper implements BuilderMapper<CCDCase, InterestBreakdown, CCDCase.CCDCaseBuilder> {
+
+    private final MoneyMapper moneyMapper;
+
+    @Autowired
+    public InterestBreakdownMapper(MoneyMapper moneyMapper) {
+        this.moneyMapper = moneyMapper;
+    }
+
     @Override
     public void to(InterestBreakdown interestBreakdown, CCDCase.CCDCaseBuilder builder) {
         if (interestBreakdown == null) {
@@ -13,7 +22,7 @@ public class InterestBreakdownMapper implements BuilderMapper<CCDCase, InterestB
         }
 
         builder
-            .interestBreakDownAmount(interestBreakdown.getTotalAmount())
+            .interestBreakDownAmount(moneyMapper.to(interestBreakdown.getTotalAmount()))
             .interestBreakDownExplanation(interestBreakdown.getExplanation());
     }
 
@@ -24,7 +33,7 @@ public class InterestBreakdownMapper implements BuilderMapper<CCDCase, InterestB
         }
 
         return new InterestBreakdown(
-            ccdCase.getInterestBreakDownAmount(),
+            moneyMapper.from(ccdCase.getInterestBreakDownAmount()),
             ccdCase.getInterestBreakDownExplanation()
         );
     }

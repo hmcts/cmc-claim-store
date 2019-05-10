@@ -6,6 +6,9 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt;
 
 import java.util.Objects;
 
+import static java.lang.String.format;
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;
+
 public class PriorityDebtAssert extends AbstractAssert<PriorityDebtAssert, PriorityDebt> {
 
     public PriorityDebtAssert(PriorityDebt actual) {
@@ -25,10 +28,13 @@ public class PriorityDebtAssert extends AbstractAssert<PriorityDebtAssert, Prior
                 ccdPriorityDebt.getFrequency().name(), actual.getFrequency().name());
         }
 
-        if (!Objects.equals(actual.getAmount(), ccdPriorityDebt.getAmount())) {
-            failWithMessage("Expected PriorityDebt.amount to be <%s> but was <%s>",
-                ccdPriorityDebt.getAmount(), actual.getAmount());
-        }
+        assertMoney(actual.getAmount())
+            .isEqualTo(
+                ccdPriorityDebt.getAmount(),
+                format("Expected PriorityDebt.amount to be <%s> but was <%s>",
+                    ccdPriorityDebt.getAmount(), actual.getAmount()
+                )
+            );
 
         return this;
     }
