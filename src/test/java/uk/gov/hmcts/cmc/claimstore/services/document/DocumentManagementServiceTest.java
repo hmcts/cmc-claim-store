@@ -32,6 +32,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementDownloadResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementUploadResponse;
@@ -93,6 +94,9 @@ public class DocumentManagementServiceTest {
             .uploadDocument("authString", document).getDocumentManagementUrl();
         assertNotNull(documentSelfPath);
         assertEquals("/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4", documentSelfPath.getPath());
+
+        verify(documentUploadClient)
+            .upload(anyString(), anyString(), anyString(), eq(USER_ROLES), any(Classification.class), anyList());
     }
 
     @Test
@@ -133,6 +137,11 @@ public class DocumentManagementServiceTest {
         byte[] pdf = documentManagementService.downloadDocument("auth string", docUri, "0000-claim");
         assertNotNull(pdf);
         assertArrayEquals("test".getBytes(), pdf);
+
+        verify(documentMetadataDownloadClient)
+            .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString());
+        verify(documentDownloadClient)
+            .downloadBinary(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString());
     }
 
     @Test
