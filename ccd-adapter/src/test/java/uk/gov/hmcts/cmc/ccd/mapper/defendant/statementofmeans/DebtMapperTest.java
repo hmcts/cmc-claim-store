@@ -46,9 +46,9 @@ public class DebtMapperTest {
     public void shouldMapDebtFromCCD() {
         //given
         CCDDebt ccdDebt = CCDDebt.builder()
-            .totalOwed(BigDecimal.TEN)
+            .totalOwed("1000")
             .description("Reference")
-            .monthlyPayments(BigDecimal.ONE)
+            .monthlyPayments("100")
             .build();
 
         String collectionId = UUID.randomUUID().toString();
