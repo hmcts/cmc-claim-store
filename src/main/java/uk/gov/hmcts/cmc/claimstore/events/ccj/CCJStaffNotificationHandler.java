@@ -8,7 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.CCJStaffNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.InterlocutoryJudgmentStaffNotificationService;
 
 @Component
-@ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff", havingValue = "true")
 public class CCJStaffNotificationHandler {
 
     private final CCJStaffNotificationService ccjStaffNotificationService;

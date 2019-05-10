@@ -15,7 +15,7 @@ public class BulkPrintHandler {
     private final PrintService bulkPrintService;
 
     @Autowired
-    public BulkPrintHandler(BulkPrintService bulkPrintService) {
+    public BulkPrintHandler(PrintService bulkPrintService) {
         this.bulkPrintService = bulkPrintService;
     }
 

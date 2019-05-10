@@ -135,7 +135,7 @@ public class DocumentUploadHandler {
         uploadToDocumentManagement(claim, authorisation, singletonList(document));
     }
 
-    private void uploadToDocumentManagement(Claim claim, String authorisation, List<PDF> documents) {
+    public Claim uploadToDocumentManagement(Claim claim, String authorisation, List<PDF> documents) {
         Claim updatedClaim = claim;
         for (PDF document : documents) {
             try {
@@ -145,6 +145,6 @@ public class DocumentUploadHandler {
                     document.getFilename()), ex);
             }
         }
-
+        return updatedClaim;
     }
 }

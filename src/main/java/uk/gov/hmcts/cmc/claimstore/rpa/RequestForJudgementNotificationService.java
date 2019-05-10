@@ -23,7 +23,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestFo
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service("rpa/request-judgement-notification-service")
-@ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff", havingValue = "true")
 public class RequestForJudgementNotificationService {
 
     private final EmailService emailService;

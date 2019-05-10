@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
 
 @Service
-@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled", havingValue = "true")
 public class CCDCaseApi {
 
     public static enum CaseState {
