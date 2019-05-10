@@ -42,7 +42,7 @@ public class DocAssemblyTemplateBodyMapper {
                 .lastName(userDetails.getSurname().orElse(""))
                 .build())
             .currentDate(LocalDate.now(clock))
-            .referenceNumber(ccdCase.getReferenceNumber())
+            .referenceNumber(ccdCase.getPreviousServiceCaseReference())
             .hasFirstOrderDirections(
                 ccdOrderGenerationData.getDirectionList().contains(CCDOrderDirectionType.DOCUMENTS))
             .docUploadDeadline(
@@ -68,11 +68,11 @@ public class DocAssemblyTemplateBodyMapper {
             .otherDirectionList(
                 ccdOrderGenerationData.getOtherDirectionList().stream().map(
                     direction -> OtherDirection.builder()
-                            .extraOrderDirection(direction.getExtraOrderDirection())
-                            .directionComment(direction.getOtherDirection())
-                            .forParty(direction.getForParty())
-                            .sendBy(direction.getSendBy())
-                            .build()
+                        .extraOrderDirection(direction.getExtraOrderDirection())
+                        .directionComment(direction.getOtherDirection())
+                        .forParty(direction.getForParty())
+                        .sendBy(direction.getSendBy())
+                        .build()
                 ).collect(Collectors.toList()))
             .build();
     }
