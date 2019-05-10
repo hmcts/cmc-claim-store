@@ -186,7 +186,7 @@ dependencies {
 
   compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '10.2.0'
 
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.6'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.8'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.6'
 
   testCompile project(':domain-sample-data')
