@@ -187,6 +187,6 @@
     ],
     "previousServiceCaseReference": "000MC023",
     "paymentReference": "RC-1546-5072-4323-8255",
-    "feeAmountInPennies": 2500
+    "feeAmountInPennies": "2500"
   }
 }
