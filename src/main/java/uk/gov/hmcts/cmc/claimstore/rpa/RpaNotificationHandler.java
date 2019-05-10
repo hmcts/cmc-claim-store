@@ -11,7 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import static java.util.Objects.requireNonNull;
 
 @Component
-@ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff", havingValue = "true")
 public class RpaNotificationHandler {
     private final ClaimIssuedNotificationService rpaNotificationService;
 

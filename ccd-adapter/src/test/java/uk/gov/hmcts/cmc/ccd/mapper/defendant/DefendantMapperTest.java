@@ -63,7 +63,7 @@ public class DefendantMapperTest {
         // Given
         TheirDetails theirDetails = SampleTheirDetails.builder().organisationDetails();
         Claim claim = SampleClaim.claim(SampleClaimData.submittedByClaimantBuilder().build(),
-            "referenceNumber");
+            "previousServiceCaseReference");
 
         //When
         CCDCollectionElement<CCDRespondent> ccdRespondent = mapper.to(theirDetails, claim);

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
 
 @Service
-@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled", havingValue = "true")
 public class ReferenceNumberService {
 
     private final ReferenceNumberRepository referenceNumberRepository;
