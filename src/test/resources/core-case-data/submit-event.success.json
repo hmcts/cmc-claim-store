@@ -74,7 +74,7 @@
   "submittedOn": "2018-01-31T10:40:06.291985",
   "submitterId": "16",
   "submitterEmail": "sabah.irfan@HMCTS.NET",
-  "referenceNumber": "000MC002",
+  "previousServiceCaseReference": "000MC002",
   "features": "admissions",
   "countyCourtJudgment": {
     "paidAmount": 100,

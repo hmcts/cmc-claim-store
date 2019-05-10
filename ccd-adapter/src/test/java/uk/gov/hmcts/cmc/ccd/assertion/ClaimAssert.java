@@ -30,9 +30,9 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
     public ClaimAssert isEqualTo(CCDCase ccdCase) {
         isNotNull();
 
-        if (!Objects.equals(actual.getReferenceNumber(), ccdCase.getReferenceNumber())) {
-            failWithMessage("Expected CCDCase.referenceNumber to be <%s> but was <%s>",
-                ccdCase.getReferenceNumber(), actual.getReferenceNumber());
+        if (!Objects.equals(actual.getReferenceNumber(), ccdCase.getPreviousServiceCaseReference())) {
+            failWithMessage("Expected CCDCase.previousServiceCaseReference to be <%s> but was <%s>",
+                ccdCase.getPreviousServiceCaseReference(), actual.getReferenceNumber());
         }
 
         if (!Objects.equals(actual.getSubmitterId(), ccdCase.getSubmitterId())) {
