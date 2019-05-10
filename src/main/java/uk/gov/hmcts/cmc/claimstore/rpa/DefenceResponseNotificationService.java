@@ -22,7 +22,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseF
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service("rpa/defendant-response-notification-service")
-@ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff", havingValue = "true")
 public class DefenceResponseNotificationService {
 
     private final EmailService emailService;

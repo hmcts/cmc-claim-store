@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
+import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimCreationEventsStatusService;
 import uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -26,10 +27,12 @@ public class RpaOperationServiceTest {
     private RpaOperationService rpaOperationService;
     @Mock
     private ClaimIssuedNotificationService claimIssuedNotificationService;
+    @Mock
+    private ClaimCreationEventsStatusService eventsStatusService;
 
     @Before
     public void before() {
-        rpaOperationService = new RpaOperationService(claimIssuedNotificationService);
+        rpaOperationService = new RpaOperationService(claimIssuedNotificationService, eventsStatusService);
     }
 
     @Test
