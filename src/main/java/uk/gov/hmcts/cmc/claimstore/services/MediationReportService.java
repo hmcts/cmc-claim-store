@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
@@ -19,6 +21,7 @@ public class MediationReportService {
     private EmailService emailService;
     private MediationCSVGenerator mediationCSVGenerator;
     private UserService userService;
+    private AppInsights appInsights;
 
     private final String emailToAddress;
     private final String emailFromAddress;
@@ -28,28 +31,37 @@ public class MediationReportService {
         EmailService emailService,
         MediationCSVGenerator mediationCSVGenerator,
         UserService userService,
+        AppInsights appInsights,
         @Value("${milo.recipient}") String emailToAddress,
         @Value("${milo.sender}") String emailFromAddress
     ) {
         this.emailService = emailService;
         this.mediationCSVGenerator = mediationCSVGenerator;
         this.userService = userService;
+        this.appInsights = appInsights;
         this.emailToAddress = emailToAddress;
         this.emailFromAddress = emailFromAddress;
     }
 
     public void sendMediationReport(String authorisation, LocalDate mediationDate) {
-        emailService.sendEmail(emailFromAddress,
-            prepareMediationEmailData(mediationCSVGenerator.createMediationCSV(authorisation, mediationDate)));
+        try {
+            String csvData = mediationCSVGenerator.createMediationCSV(
+                authorisation,
+                mediationDate
+            );
+
+            emailService.sendEmail(emailFromAddress, prepareMediationEmailData(csvData));
+        } catch (RuntimeException e) {
+            reportMediationException(e, mediationDate);
+        }
     }
 
     @Scheduled(cron = "#{'${milo.schedule}' ?: '-'}")
     public void automatedMediationReport() {
-        final String csvData = mediationCSVGenerator.createMediationCSV(
+        sendMediationReport(
             userService.authenticateAnonymousCaseWorker().getAuthorisation(),
             LocalDate.now().minusDays(1)
         );
-        emailService.sendEmail(emailFromAddress, prepareMediationEmailData(csvData));
     }
 
     private EmailData prepareMediationEmailData(String mediationCSV) {
@@ -62,5 +74,14 @@ public class MediationReportService {
             "OCMC mediation" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm dd/mm/yyyy")),
             Lists.newArrayList(mediationCSVAttachment)
         );
+    }
+
+    private void reportMediationException(RuntimeException e, LocalDate reportDate) {
+        appInsights.trackEvent(
+            AppInsightsEvent.MEDIATION_REPORT_FAILURE,
+            "MILO report " + reportDate,
+            e.getMessage()
+        );
+        throw e;
     }
 }

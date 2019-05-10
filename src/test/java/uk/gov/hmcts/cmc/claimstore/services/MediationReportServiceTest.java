@@ -8,6 +8,9 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
+import uk.gov.hmcts.cmc.claimstore.exceptions.MediationCSVGenerationException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
@@ -19,6 +22,9 @@ import java.time.LocalDate;
 import java.util.Scanner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -37,6 +43,8 @@ public class MediationReportServiceTest {
     private MediationCSVGenerator mediationCSVGenerator;
     @Mock
     private UserService userService;
+    @Mock
+    private AppInsights appInsights;
     @Captor
     private ArgumentCaptor<EmailData> emailDataCaptor;
 
@@ -48,6 +56,7 @@ public class MediationReportServiceTest {
             emailService,
             mediationCSVGenerator,
             userService,
+            appInsights,
             TO_ADDRESS,
             FROM_ADDRESS
         );
@@ -75,6 +84,22 @@ public class MediationReportServiceTest {
         verify(mediationCSVGenerator).createMediationCSV(AUTHORISATION, LocalDate.now().minusDays(1));
 
         verifyEmailData();
+    }
+
+    @Test
+    public void shouldReportAppInsightsEventOnException() {
+        final User mockUser = mock(User.class);
+        when(userService.authenticateAnonymousCaseWorker()).thenReturn(mockUser);
+        when(mockUser.getAuthorisation()).thenReturn(AUTHORISATION);
+
+        when(mediationCSVGenerator.createMediationCSV(anyString(), any(LocalDate.class)))
+            .thenThrow(mock(MediationCSVGenerationException.class));
+
+
+        assertThatThrownBy(() -> service.automatedMediationReport())
+            .isInstanceOf(MediationCSVGenerationException.class);
+
+        verify(appInsights).trackEvent(eq(AppInsightsEvent.MEDIATION_REPORT_FAILURE), anyString(), any());
     }
 
     private static String inputStreamToString(InputStream is) {
