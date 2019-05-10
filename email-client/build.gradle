@@ -19,7 +19,7 @@ dependencies {
 
   compile group: 'org.hibernate', name: 'hibernate-validator', version: versions.hibernateValidator
 
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.6'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.8'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.6'
   compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: '5.0.1'
   compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: '5.0.1'
