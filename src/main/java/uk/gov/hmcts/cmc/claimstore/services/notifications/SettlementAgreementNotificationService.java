@@ -8,6 +8,8 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
@@ -19,6 +21,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.ClaimantResponseSubmitted.referenceForClaimant;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.ClaimantResponseSubmitted.referenceForDefendant;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
@@ -33,14 +36,17 @@ public class SettlementAgreementNotificationService {
 
     private final NotificationClient notificationClient;
     private final NotificationsProperties notificationsProperties;
+    private final AppInsights appInsights;
 
     @Autowired
     public SettlementAgreementNotificationService(
         NotificationClient notificationClient,
-        NotificationsProperties notificationsProperties
+        NotificationsProperties notificationsProperties,
+        AppInsights appInsights
     ) {
         this.notificationClient = notificationClient;
         this.notificationsProperties = notificationsProperties;
+        this.appInsights = appInsights;
     }
 
     public void notifyDefendant(Claim claim) {
@@ -99,6 +105,7 @@ public class SettlementAgreementNotificationService {
         );
 
         logger.warn(errorMessage, exception);
+        appInsights.trackEvent(AppInsightsEvent.NOTIFICATION_FAILURE, REFERENCE_NUMBER, reference);
     }
 
 }

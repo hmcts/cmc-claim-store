@@ -45,7 +45,7 @@ public class GenerateOrderCallbackTest extends MockSpringTest {
         assertThat(LocalDate.parse(responseData.get("eyewitnessUploadDeadline").toString()))
             .isAfterOrEqualTo(LocalDate.now().plusDays(33));
         assertThat(responseData).flatExtracting("directionList")
-            .containsExactlyInAnyOrder("DOCUMENTS", "EYEWITNESS", "MEDIATION");
+            .containsExactlyInAnyOrder("DOCUMENTS", "EYEWITNESS");
     }
 
     @Test

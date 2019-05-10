@@ -56,13 +56,15 @@ public class SearchCCDCaseService {
     }
 
     @Recover
-    public void recoverSearchFailure(RuntimeException exception, User user, String referenceNumber) {
+    public Optional<CaseDetails> recoverSearchFailure(RuntimeException exception, User user, String referenceNumber) {
         String errorMessage = String.format(
             "Failure: failed search by reference number ( %s for user %s ) due to %s",
             referenceNumber, user.getUserDetails().getId(), exception.getMessage()
         );
 
         logger.info(errorMessage, exception);
+
+        return Optional.empty();
     }
 
     private Optional<CaseDetails> search(User user, Map<String, String> searchString) {
