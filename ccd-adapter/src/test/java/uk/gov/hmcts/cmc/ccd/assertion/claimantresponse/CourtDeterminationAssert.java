@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 public class CourtDeterminationAssert extends AbstractAssert<CourtDeterminationAssert, CourtDetermination> {
@@ -22,12 +23,11 @@ public class CourtDeterminationAssert extends AbstractAssert<CourtDeterminationA
                 failWithMessage("Expected CourtDetermination.getRejectionReason to be <%s> but was <%s>",
                     ccdCourtDetermination.getRejectionReason(), rejectionReason);
             }
-
         });
 
         assertThat(actual.getCourtPaymentIntention()).isEqualTo(ccdCourtDetermination.getCourtIntention());
         assertThat(actual.getCourtDecision()).isEqualTo(ccdCourtDetermination.getCourtDecision());
-        assertThat(actual.getDisposableIncome()).isEqualTo(ccdCourtDetermination.getDisposableIncome());
+        assertMoney(actual.getDisposableIncome()).isEqualTo(ccdCourtDetermination.getDisposableIncome());
         assertThat(actual.getDecisionType().name()).isEqualTo(ccdCourtDetermination.getDecisionType().name());
         return this;
     }

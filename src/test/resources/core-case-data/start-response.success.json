@@ -98,7 +98,7 @@
       ],
       "referenceNumber": "000MC023",
       "paymentReference": "RC-1546-4419-9390-7385",
-      "feeAmountInPennies": 2500
+      "feeAmountInPennies": "2500"
     },
     "security_classification": null
   },
