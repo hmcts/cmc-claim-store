@@ -71,7 +71,6 @@ public class SupportController {
     private final PostClaimOrchestrationHandler postClaimOrchestrationHandler;
 
     @SuppressWarnings("squid:S00107")
-    @Autowired(required = false)
     public SupportController(
         ClaimService claimService,
         UserService userService,
@@ -82,7 +81,7 @@ public class SupportController {
         AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler,
         ClaimantResponseStaffNotificationHandler claimantResponseStaffNotificationHandler,
         DocumentsService documentsService,
-        PostClaimOrchestrationHandler postClaimOrchestrationHandler
+        @Autowired(required = false) PostClaimOrchestrationHandler postClaimOrchestrationHandler
     ) {
         this.claimService = claimService;
         this.userService = userService;
