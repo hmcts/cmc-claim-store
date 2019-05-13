@@ -77,6 +77,9 @@ cmc-citizen-frontend:
       releaseNameOverride: ${SERVICE_NAME}-ftr-tgl-api
       environment:
         FEATURES_DB_HOST: ${SERVICE_NAME}-ccd-postgres
+        FEATURES_DB_NAME: features
+        FEATURES_DB_USER_NAME: features
+        FEATURES_DB_PASSWORD: features
   idam-pr:
     service:
       name: Money Claims - Citizen
