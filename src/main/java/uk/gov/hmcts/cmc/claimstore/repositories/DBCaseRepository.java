@@ -64,8 +64,7 @@ public class DBCaseRepository implements CaseRepository {
 
     @LogExecutionTime
     public Optional<Claim> getClaimByExternalId(String externalId, User user) {
-        return claimRepository.getClaimByExternalId(externalId)
-            .map(fetchedClaim -> fetchedClaim.toBuilder().id(null).build());
+        return claimRepository.getClaimByExternalId(externalId);
     }
 
     public Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation) {
@@ -223,7 +222,6 @@ public class DBCaseRepository implements CaseRepository {
 
         return claimRepository
             .getClaimByExternalId(claim.getExternalId())
-            .map(fetchedClaim -> fetchedClaim.toBuilder().id(null).build())
             .orElseThrow(() -> new NotFoundException("Claim not found by id " + claim.getExternalId()));
     }
 

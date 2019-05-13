@@ -63,7 +63,8 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             toNullableLocalDateFromUTC(result.getTimestamp("claimant_response_deadline")),
             toNullableClaimState(result.getString("state")),
             toNullableEntity(result.getString("submission_operation_indicators"),
-                ClaimSubmissionOperationIndicators.class)
+                ClaimSubmissionOperationIndicators.class),
+            null
         );
     }
 

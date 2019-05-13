@@ -24,7 +24,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 // Create these fields in JSON when serialize Java object, ignore them when deserialize.
 @JsonIgnoreProperties(
-    value = {"totalAmountTillToday", "totalAmountTillDateOfIssue",
+    value = {"id", "totalAmountTillToday", "totalAmountTillDateOfIssue",
         "amountWithInterestUntilIssueDate", "totalInterestTillDateOfIssue", "totalInterest",
         "serviceDate", "amountWithInterest", "directionsQuestionnaireDeadline", "claimSubmissionOperationIndicators"},
     allowGetters = true
@@ -66,6 +66,7 @@ public class Claim {
     private final LocalDate claimantResponseDeadline;
     private final ClaimState state;
     private final ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
+    private final Long ccdClaimId;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     public Claim(
@@ -98,7 +99,8 @@ public class Claim {
         ClaimDocumentCollection claimDocumentCollection,
         LocalDate claimantResponseDeadline,
         ClaimState state,
-        ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
+        ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators,
+        Long ccdClaimId
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -130,6 +132,7 @@ public class Claim {
         this.claimSubmissionOperationIndicators = claimSubmissionOperationIndicators;
         this.claimantResponseDeadline = claimantResponseDeadline;
         this.state = state;
+        this.ccdClaimId = ccdClaimId;
     }
 
     public Optional<Response> getResponse() {
