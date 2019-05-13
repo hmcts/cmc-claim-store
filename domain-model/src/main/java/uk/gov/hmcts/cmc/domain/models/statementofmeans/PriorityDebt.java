@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
 import uk.gov.hmcts.cmc.domain.models.CollectionId;
@@ -12,6 +13,7 @@ import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@Getter
 @EqualsAndHashCode(callSuper = true)
 public class PriorityDebt extends CollectionId {
 
@@ -57,18 +59,6 @@ public class PriorityDebt extends CollectionId {
         this.type = type;
         this.frequency = frequency;
         this.amount = amount;
-    }
-
-    public PriorityDebtType getType() {
-        return type;
-    }
-
-    public PaymentFrequency getFrequency() {
-        return frequency;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
     }
 
     @Override

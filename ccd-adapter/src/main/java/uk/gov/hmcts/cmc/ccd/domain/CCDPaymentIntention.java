@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Value;
 import org.apache.commons.lang3.StringUtils;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Builder
@@ -13,7 +12,7 @@ import java.time.LocalDate;
 public class CCDPaymentIntention {
     private CCDPaymentOption paymentOption;
     private LocalDate paymentDate;
-    private BigDecimal instalmentAmount;
+    private String instalmentAmount;
     private LocalDate firstPaymentDate;
     private CCDPaymentSchedule paymentSchedule;
     private LocalDate completionDate;

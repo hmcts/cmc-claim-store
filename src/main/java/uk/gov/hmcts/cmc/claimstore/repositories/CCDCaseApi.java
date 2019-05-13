@@ -82,7 +82,7 @@ public class CCDCaseApi {
     }
 
     public Optional<Claim> getByReferenceNumber(String referenceNumber, String authorisation) {
-        return getCaseBy(authorisation, ImmutableMap.of("case.referenceNumber", referenceNumber));
+        return getCaseBy(authorisation, ImmutableMap.of("case.previousServiceCaseReference", referenceNumber));
     }
 
     public Optional<Claim> getByExternalId(String externalId, User user) {

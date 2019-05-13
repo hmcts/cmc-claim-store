@@ -6,7 +6,6 @@ import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTelephone;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Value
@@ -20,7 +19,7 @@ public class CCDResponseRejection extends CCDClaimantResponse {
 
     @Builder
     public CCDResponseRejection(
-        BigDecimal amountPaid,
+        String amountPaid,
         LocalDateTime submittedOn,
         CCDYesNoOption freeMediationOption,
         CCDTelephone mediationPhoneNumber,
