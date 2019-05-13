@@ -71,7 +71,7 @@ public class SupportController {
     private final PostClaimOrchestrationHandler postClaimOrchestrationHandler;
 
     @SuppressWarnings("squid:S00107")
-    @Autowired
+    @Autowired(required = false)
     public SupportController(
         ClaimService claimService,
         UserService userService,
