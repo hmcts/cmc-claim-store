@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDisabilityStatu
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDResidenceType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
 import uk.gov.hmcts.cmc.ccd.mapper.Mapper;
+import uk.gov.hmcts.cmc.ccd.mapper.MoneyMapper;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
@@ -33,7 +34,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
@@ -52,6 +52,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
     private final ChildCategoryMapper childCategoryMapper;
     private final LivingPartnerMapper livingPartnerMapper;
     private final PriorityDebtMapper priorityDebtMapper;
+    private final MoneyMapper moneyMapper;
 
     @Autowired
     @SuppressWarnings("squid:S00107")
@@ -64,7 +65,8 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
         EmployerMapper employerMapper,
         ChildCategoryMapper childCategoryMapper,
         LivingPartnerMapper livingPartnerMapper,
-        PriorityDebtMapper priorityDebtMapper
+        PriorityDebtMapper priorityDebtMapper,
+        MoneyMapper moneyMapper
     ) {
         this.bankAccountMapper = bankAccountMapper;
         this.debtMapper = debtMapper;
@@ -75,6 +77,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
         this.childCategoryMapper = childCategoryMapper;
         this.livingPartnerMapper = livingPartnerMapper;
         this.priorityDebtMapper = priorityDebtMapper;
+        this.moneyMapper = moneyMapper;
     }
 
     @Override
@@ -160,10 +163,10 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
     private Consumer<SelfEmployment> toSelfEmploymentConsumer(CCDStatementOfMeans.CCDStatementOfMeansBuilder builder) {
         return selfEmployment -> {
             builder.selfEmploymentJobTitle(selfEmployment.getJobTitle());
-            builder.selfEmploymentAnnualTurnover(selfEmployment.getAnnualTurnover());
+            builder.selfEmploymentAnnualTurnover(moneyMapper.to(selfEmployment.getAnnualTurnover()));
 
             selfEmployment.getOnTaxPayments().ifPresent(onTaxPayments -> {
-                builder.taxYouOwe(onTaxPayments.getAmountYouOwe());
+                builder.taxYouOwe(moneyMapper.to(onTaxPayments.getAmountYouOwe()));
                 builder.taxPaymentsReason(onTaxPayments.getReason());
             });
         };
@@ -281,7 +284,6 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
             .build();
     }
 
-    @Valid
     private Unemployed extractUnemployed(CCDStatementOfMeans ccdStatementOfMeans) {
         Integer noOfMonths = ccdStatementOfMeans.getUnEmployedNoOfMonths();
         Integer noOfYears = ccdStatementOfMeans.getUnEmployedNoOfYears();
@@ -297,7 +299,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
 
     private SelfEmployment extractSelfEmployment(CCDStatementOfMeans ccdStatementOfMeans) {
         String jobTitle = ccdStatementOfMeans.getSelfEmploymentJobTitle();
-        BigDecimal annualTurnover = ccdStatementOfMeans.getSelfEmploymentAnnualTurnover();
+        BigDecimal annualTurnover = moneyMapper.from(ccdStatementOfMeans.getSelfEmploymentAnnualTurnover());
         if (isBlank(jobTitle) && annualTurnover == null) {
             return null;
         }
@@ -309,7 +311,7 @@ public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, State
     }
 
     private OnTaxPayments extractOnTaxPayments(CCDStatementOfMeans ccdStatementOfMeans) {
-        BigDecimal taxYouOwe = ccdStatementOfMeans.getTaxYouOwe();
+        BigDecimal taxYouOwe = moneyMapper.from(ccdStatementOfMeans.getTaxYouOwe());
         String reason = ccdStatementOfMeans.getTaxPaymentsReason();
         if (isBlank(reason) && taxYouOwe == null) {
             return null;
