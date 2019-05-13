@@ -15,7 +15,6 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMean
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.ccd.domain.offers.CCDMadeBy;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -46,8 +45,8 @@ public class CCDRespondent {
     private CCDParty partyDetail;
     private LocalDateTime responseSubmittedOn;
     private CCDResponseType responseType;
-    private BigDecimal responseAmount;
-    private BigDecimal paymentDeclarationPaidAmount;
+    private String responseAmount;
+    private String paymentDeclarationPaidAmount;
     private LocalDate paymentDeclarationPaidDate;
     private String paymentDeclarationExplanation;
     private List<CCDCollectionElement<CCDTimelineEvent>> defendantTimeLineEvents;

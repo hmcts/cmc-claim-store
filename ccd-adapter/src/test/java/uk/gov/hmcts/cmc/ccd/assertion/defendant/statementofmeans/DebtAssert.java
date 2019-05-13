@@ -6,6 +6,9 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Debt;
 
 import java.util.Objects;
 
+import static java.lang.String.format;
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;
+
 public class DebtAssert extends AbstractAssert<DebtAssert, Debt> {
 
     public DebtAssert(Debt actual) {
@@ -20,15 +23,21 @@ public class DebtAssert extends AbstractAssert<DebtAssert, Debt> {
                 ccdDebt.getDescription(), actual.getDescription());
         }
 
-        if (!Objects.equals(actual.getTotalOwed(), ccdDebt.getTotalOwed())) {
-            failWithMessage("Expected Debt.totalOwed to be <%s> but was <%s>",
-                ccdDebt.getTotalOwed(), actual.getTotalOwed());
-        }
+        assertMoney(actual.getTotalOwed())
+            .isEqualTo(
+                ccdDebt.getTotalOwed(),
+                format("Expected Debt.totalOwed to be <%s> but was <%s>",
+                    ccdDebt.getTotalOwed(), actual.getTotalOwed()
+                )
+            );
 
-        if (!Objects.equals(actual.getMonthlyPayments(), ccdDebt.getMonthlyPayments())) {
-            failWithMessage("Expected Debt.monthlyPayments to be <%s> but was <%s>",
-                ccdDebt.getMonthlyPayments(), actual.getMonthlyPayments());
-        }
+        assertMoney(actual.getMonthlyPayments())
+            .isEqualTo(
+                ccdDebt.getMonthlyPayments(),
+                format("Expected Debt.monthlyPayments to be <%s> but was <%s>",
+                    ccdDebt.getMonthlyPayments(), actual.getMonthlyPayments()
+                )
+            );
 
         return this;
     }

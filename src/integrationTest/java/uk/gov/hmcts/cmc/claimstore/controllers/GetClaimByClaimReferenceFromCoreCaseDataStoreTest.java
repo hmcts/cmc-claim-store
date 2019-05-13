@@ -43,7 +43,7 @@ public class GetClaimByClaimReferenceFromCoreCaseDataStoreTest extends BaseGetTe
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("case.referenceNumber", referenceNumber))
+            eq(ImmutableMap.of("case.previousServiceCaseReference", referenceNumber))
             )
         ).willReturn(listOfCaseDetails());
 
@@ -58,7 +58,7 @@ public class GetClaimByClaimReferenceFromCoreCaseDataStoreTest extends BaseGetTe
                 eq(USER_ID),
                 eq(JURISDICTION_ID),
                 eq(CASE_TYPE_ID),
-                eq(ImmutableMap.of("case.referenceNumber", referenceNumber))
+                eq(ImmutableMap.of("case.previousServiceCaseReference", referenceNumber))
             );
     }
 
@@ -72,7 +72,7 @@ public class GetClaimByClaimReferenceFromCoreCaseDataStoreTest extends BaseGetTe
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("case.referenceNumber", nonExistingReferenceNumber))
+            eq(ImmutableMap.of("case.previousServiceCaseReference", nonExistingReferenceNumber))
             )
         ).willReturn(Collections.emptyList());
 
@@ -86,7 +86,7 @@ public class GetClaimByClaimReferenceFromCoreCaseDataStoreTest extends BaseGetTe
                 eq(USER_ID),
                 eq(JURISDICTION_ID),
                 eq(CASE_TYPE_ID),
-                eq(ImmutableMap.of("case.referenceNumber", nonExistingReferenceNumber))
+                eq(ImmutableMap.of("case.previousServiceCaseReference", nonExistingReferenceNumber))
             );
     }
 }

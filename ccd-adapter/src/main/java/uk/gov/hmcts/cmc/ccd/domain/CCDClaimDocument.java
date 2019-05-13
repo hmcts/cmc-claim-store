@@ -15,4 +15,5 @@ public class CCDClaimDocument {
     private LocalDateTime authoredDatetime;
     private LocalDateTime createdDatetime;
     private String createdBy;
+    private long size;
 }

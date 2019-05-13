@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
+import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimCreationEventsStatusService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -27,10 +28,13 @@ public class NotifyStaffOperationServiceTest {
 
     @Mock
     private ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService;
+    @Mock
+    private ClaimCreationEventsStatusService eventsStatusService;
 
     @Before
     public void before() {
-        notifyStaffOperationService = new NotifyStaffOperationService(claimIssuedStaffNotificationService);
+        notifyStaffOperationService = new NotifyStaffOperationService(claimIssuedStaffNotificationService,
+            eventsStatusService);
     }
 
     @Test

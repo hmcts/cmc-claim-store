@@ -12,11 +12,11 @@ import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SamplePayment;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static java.time.format.DateTimeFormatter.ISO_DATE;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -40,7 +40,7 @@ public class PaymentMapperTest {
         assertThat(LocalDate.parse(payment.getDateCreated(), ISO_DATE))
             .isEqualTo(ccdCase.getPaymentDateCreated());
         assertThat(payment.getId()).isEqualTo(ccdCase.getPaymentId());
-        assertThat(payment.getAmount()).isEqualTo(ccdCase.getPaymentAmount());
+        assertMoney(payment.getAmount()).isEqualTo(ccdCase.getPaymentAmount());
         assertThat(payment.getReference()).isEqualTo(ccdCase.getPaymentReference());
         assertThat(payment.getStatus()).isEqualTo(ccdCase.getPaymentStatus());
     }
@@ -58,7 +58,7 @@ public class PaymentMapperTest {
         //then
         assertThat(ccdCase.getPaymentDateCreated()).isNull();
         assertThat(payment.getId()).isEqualTo(ccdCase.getPaymentId());
-        assertThat(payment.getAmount()).isEqualTo(ccdCase.getPaymentAmount());
+        assertMoney(payment.getAmount()).isEqualTo(ccdCase.getPaymentAmount());
         assertThat(payment.getReference()).isEqualTo(ccdCase.getPaymentReference());
         assertThat(payment.getStatus()).isEqualTo(ccdCase.getPaymentStatus());
     }
@@ -77,7 +77,7 @@ public class PaymentMapperTest {
         assertThat(LocalDateTimeFactory.fromLong(Long.valueOf(payment.getDateCreated())))
             .isEqualTo(ccdCase.getPaymentDateCreated());
         assertThat(payment.getId()).isEqualTo(ccdCase.getPaymentId());
-        assertThat(payment.getAmount()).isEqualTo(ccdCase.getPaymentAmount());
+        assertMoney(payment.getAmount()).isEqualTo(ccdCase.getPaymentAmount());
         assertThat(payment.getReference()).isEqualTo(ccdCase.getPaymentReference());
         assertThat(payment.getStatus()).isEqualTo(ccdCase.getPaymentStatus());
     }
@@ -86,7 +86,7 @@ public class PaymentMapperTest {
     public void shouldMapPaymentFromCCD() {
         //given
         CCDCase ccdCase = CCDCase.builder()
-            .paymentAmount(BigDecimal.valueOf(4000))
+            .paymentAmount("400000")
             .paymentReference("RC-1524-6488-1670-7520")
             .paymentId("PaymentId")
             .paymentStatus("success")
@@ -100,7 +100,7 @@ public class PaymentMapperTest {
         assertThat(LocalDate.parse(payment.getDateCreated(), ISO_DATE))
             .isEqualTo(ccdCase.getPaymentDateCreated());
         assertThat(payment.getId()).isEqualTo(ccdCase.getPaymentId());
-        assertThat(payment.getAmount()).isEqualTo(ccdCase.getPaymentAmount());
+        assertMoney(payment.getAmount()).isEqualTo(ccdCase.getPaymentAmount());
         assertThat(payment.getReference()).isEqualTo(ccdCase.getPaymentReference());
         assertThat(payment.getStatus()).isEqualTo(ccdCase.getPaymentStatus());
     }
@@ -109,7 +109,7 @@ public class PaymentMapperTest {
     public void shouldMapPaymentFromCCDWhenNoDateCreatedProvided() {
         //given
         CCDCase ccdCase = CCDCase.builder()
-            .paymentAmount(BigDecimal.valueOf(4000))
+            .paymentAmount("400000")
             .paymentReference("RC-1524-6488-1670-7520")
             .paymentId("PaymentId")
             .paymentStatus("success")
@@ -122,7 +122,7 @@ public class PaymentMapperTest {
         //then
         assertThat(payment.getDateCreated()).isBlank();
         assertThat(payment.getId()).isEqualTo(ccdCase.getPaymentId());
-        assertThat(payment.getAmount()).isEqualTo(ccdCase.getPaymentAmount());
+        assertMoney(payment.getAmount()).isEqualTo(ccdCase.getPaymentAmount());
         assertThat(payment.getReference()).isEqualTo(ccdCase.getPaymentReference());
         assertThat(payment.getStatus()).isEqualTo(ccdCase.getPaymentStatus());
     }

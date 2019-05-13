@@ -19,8 +19,8 @@ dependencies {
   compile group: 'org.springframework.retry', name: 'spring-retry'
 
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.3.1'
-  compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '2.0.0'
-  compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '10.0.1'
+  compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '2.0.1'
+  compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '10.2.0'
 
   compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
 }
