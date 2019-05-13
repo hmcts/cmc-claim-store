@@ -6,6 +6,9 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
 
 import java.util.Objects;
 
+import static java.lang.String.format;
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;
+
 public class ExpenseAssert extends AbstractAssert<ExpenseAssert, Expense> {
 
     public ExpenseAssert(Expense actual) {
@@ -25,10 +28,13 @@ public class ExpenseAssert extends AbstractAssert<ExpenseAssert, Expense> {
                 ccdExpense.getFrequency().name(), actual.getFrequency().name());
         }
 
-        if (!Objects.equals(actual.getAmount(), ccdExpense.getAmountPaid())) {
-            failWithMessage("Expected Expense.amount to be <%s> but was <%s>",
-                ccdExpense.getAmountPaid(), actual.getAmount());
-        }
+        assertMoney(actual.getAmount())
+            .isEqualTo(
+                ccdExpense.getAmountPaid(),
+                format("Expected Expense.amount to be <%s> but was <%s>",
+                    ccdExpense.getAmountPaid(), actual.getAmount()
+                )
+            );
 
         if (!Objects.equals(actual.getOtherName().orElse(null), ccdExpense.getDescription())) {
             failWithMessage("Expected Expense.description to be <%s> but was <%s>",

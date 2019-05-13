@@ -6,7 +6,6 @@ import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentIntention;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Value
@@ -23,7 +22,7 @@ public class CCDResponseAcceptation extends CCDClaimantResponse {
 
     @Builder
     public CCDResponseAcceptation(
-        BigDecimal amountPaid,
+        String amountPaid,
         LocalDateTime submittedOn,
         CCDPaymentIntention claimantPaymentIntention,
         CCDFormaliseOption formaliseOption,

@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimSubmissionOperationIndicators;
-import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
@@ -17,34 +16,36 @@ import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.getDefaultClaimSubmissionOperationIndicators;
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.mapClaimSubmissionOperationIndicators;
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.toCaseName;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @Component
 public class CaseMapper {
 
     private final ClaimMapper claimMapper;
     private final boolean isMigrated;
+    private final ClaimDocumentCollectionMapper claimDocumentCollectionMapper;
 
-    public CaseMapper(ClaimMapper claimMapper, @Value("${migration.cases.flag:false}") boolean isMigrated) {
+    public CaseMapper(
+        ClaimMapper claimMapper,
+        @Value("${migration.cases.flag:false}") boolean isMigrated,
+        ClaimDocumentCollectionMapper claimDocumentCollectionMapper
+    ) {
         this.claimMapper = claimMapper;
         this.isMigrated = isMigrated;
+        this.claimDocumentCollectionMapper = claimDocumentCollectionMapper;
     }
 
     public CCDCase to(Claim claim) {
         final CCDCase.CCDCaseBuilder builder = CCDCase.builder();
 
-        claim.getClaimDocument(SEALED_CLAIM).ifPresent(document -> builder
-            .sealedClaimDocument(CCDDocument.builder()
-                .documentUrl(document.toString())
-                .build())
-        );
-
         claimMapper.to(claim, builder);
+
+        claim.getClaimDocumentCollection()
+            .ifPresent(claimDocumentCollection -> claimDocumentCollectionMapper.to(claimDocumentCollection, builder));
 
         return builder
             .id(claim.getId())
             .externalId(claim.getExternalId())
-            .referenceNumber(claim.getReferenceNumber())
+            .previousServiceCaseReference(claim.getReferenceNumber())
             .submitterId(claim.getSubmitterId())
             .submitterEmail(claim.getSubmitterEmail())
             .issuedOn(claim.getIssuedOn())
@@ -63,11 +64,13 @@ public class CaseMapper {
         Claim.ClaimBuilder builder = Claim.builder();
         claimMapper.from(ccdCase, builder);
 
+        claimDocumentCollectionMapper.from(ccdCase, builder);
+
         builder
             .id(ccdCase.getId())
             .submitterId(ccdCase.getSubmitterId())
             .externalId(ccdCase.getExternalId())
-            .referenceNumber(ccdCase.getReferenceNumber())
+            .referenceNumber(ccdCase.getPreviousServiceCaseReference())
             .createdAt(ccdCase.getSubmittedOn())
             .issuedOn(ccdCase.getIssuedOn())
             .submitterEmail(ccdCase.getSubmitterEmail())

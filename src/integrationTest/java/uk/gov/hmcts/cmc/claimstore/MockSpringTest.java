@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
@@ -86,6 +87,9 @@ public abstract class MockSpringTest {
 
     @MockBean
     protected CaseAccessApi caseAccessApi;
+
+    @MockBean
+    protected CourtFinderApi courtFinderApi;
 
     @MockBean
     protected ServiceAuthorisationApi serviceAuthorisationApi;

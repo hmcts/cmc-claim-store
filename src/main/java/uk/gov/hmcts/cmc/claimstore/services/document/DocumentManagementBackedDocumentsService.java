@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.PdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
+import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -42,6 +43,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
 
     private static final Logger logger = LoggerFactory.getLogger(DocumentManagementBackedDocumentsService.class);
 
+    private static final String OCMC = "OCMC";
     private final ClaimService claimService;
     private final DocumentManagementService documentManagementService;
     private final SealedClaimPdfService sealedClaimPdfService;
@@ -50,6 +52,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
     private final SettlementAgreementCopyService settlementAgreementCopyService;
     private final DefendantPinLetterPdfService defendantPinLetterPdfService;
+    private final CCDEventProducer ccdEventProducer;
 
     @Autowired
     @SuppressWarnings("squid:S00107")
@@ -62,7 +65,8 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         DefendantResponseReceiptService defendantResponseReceiptService,
         CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
         SettlementAgreementCopyService settlementAgreementCopyService,
-        DefendantPinLetterPdfService defendantPinLetterPdfService
+        DefendantPinLetterPdfService defendantPinLetterPdfService,
+        CCDEventProducer ccdEventProducer
     ) {
         this.claimService = claimService;
         this.documentManagementService = documentManagementService;
@@ -72,6 +76,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
         this.settlementAgreementCopyService = settlementAgreementCopyService;
         this.defendantPinLetterPdfService = defendantPinLetterPdfService;
+        this.ccdEventProducer = ccdEventProducer;
     }
 
     @Override
@@ -179,12 +184,21 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     public Claim uploadToDocumentManagement(
         PDF document,
         String authorisation,
-        Claim claim
-    ) {
+        Claim claim) {
         ClaimDocument claimDocument = documentManagementService.uploadDocument(authorisation, document);
-        return claimService.saveClaimDocuments(authorisation,
+        ClaimDocumentCollection claimDocumentCollection = getClaimDocumentCollection(claim, claimDocument);
+
+        Claim newClaim = claimService.saveClaimDocuments(authorisation,
             claim.getId(),
-            getClaimDocumentCollection(claim, claimDocument));
+            claimDocumentCollection,
+            document.getClaimDocumentType());
+
+        ccdEventProducer.saveClaimDocumentCCDEvent(authorisation,
+            claim,
+            claimDocumentCollection,
+            document.getClaimDocumentType());
+
+        return newClaim;
     }
 
     private ClaimDocumentCollection getClaimDocumentCollection(Claim claim, ClaimDocument claimDocument) {

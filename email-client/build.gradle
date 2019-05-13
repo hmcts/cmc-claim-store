@@ -19,15 +19,15 @@ dependencies {
 
   compile group: 'org.hibernate', name: 'hibernate-validator', version: versions.hibernateValidator
 
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.6'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.8'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.6'
   compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: '5.0.1'
   compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: '5.0.1'
 
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
   testCompile group: 'commons-io', name: 'commons-io', version: '2.6'
-  testCompile group: 'com.icegreen', name: 'greenmail', version: '1.5.9'
+  testCompile group: 'com.icegreen', name: 'greenmail', version: '1.5.10'
 
-  testCompile group: 'org.mockito', name: 'mockito-core', version: '2.25.0'
+  testCompile group: 'org.mockito', name: 'mockito-core', version: '2.27.0'
 }
 

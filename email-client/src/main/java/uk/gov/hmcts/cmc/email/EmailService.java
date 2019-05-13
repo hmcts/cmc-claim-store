@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.email;
 
+import com.microsoft.applicationinsights.TelemetryClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.MailException;
@@ -8,21 +9,25 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
+import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+import static java.util.Collections.singletonMap;
+
+@Service
 public class EmailService {
 
     public static final String NOTIFICATION_FAILURE = "Notification - failure";
     public static final String EMAIL_SUBJECT = "EmailSubject";
     private final Logger logger = LoggerFactory.getLogger(EmailService.class);
 
-    private final AppInsightsService appInsightsService;
+    private final TelemetryClient telemetryClient;
     private final JavaMailSender sender;
 
-    public EmailService(AppInsightsService appInsightsService, JavaMailSender sender) {
-        this.appInsightsService = appInsightsService;
+    public EmailService(TelemetryClient telemetryClient, JavaMailSender sender) {
+        this.telemetryClient = telemetryClient;
         this.sender = sender;
     }
 
@@ -50,13 +55,17 @@ public class EmailService {
     }
 
     @Recover
-    public void logSendMessageWithAttachmentFailure(RuntimeException exception, String from, EmailData emailData) {
+    public void logSendMessageWithAttachmentFailure(
+        EmailSendFailedException exception,
+        String from,
+        EmailData emailData
+    ) {
         String errorMessage = String.format(
             "sendEmail failure:  failed to send email with details: %s due to %s",
             emailData.toString(), exception.getMessage()
         );
         logger.error(errorMessage, exception);
 
-        appInsightsService.trackEvent(NOTIFICATION_FAILURE, EMAIL_SUBJECT, emailData.getSubject());
+        telemetryClient.trackEvent(NOTIFICATION_FAILURE, singletonMap(EMAIL_SUBJECT, emailData.getSubject()), null);
     }
 }

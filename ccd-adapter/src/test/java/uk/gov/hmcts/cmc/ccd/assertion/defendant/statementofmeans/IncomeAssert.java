@@ -6,6 +6,9 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
 
 import java.util.Objects;
 
+import static java.lang.String.format;
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;
+
 public class IncomeAssert extends AbstractAssert<IncomeAssert, Income> {
 
     public IncomeAssert(Income actual) {
@@ -25,10 +28,13 @@ public class IncomeAssert extends AbstractAssert<IncomeAssert, Income> {
                 ccdIncome.getFrequency().name(), actual.getFrequency().name());
         }
 
-        if (!Objects.equals(actual.getAmount(), ccdIncome.getAmountReceived())) {
-            failWithMessage("Expected Income.amount to be <%s> but was <%s>",
-                ccdIncome.getAmountReceived(), actual.getAmount());
-        }
+        assertMoney(actual.getAmount())
+            .isEqualTo(
+                ccdIncome.getAmountReceived(),
+                format("Expected Income.amount to be <%s> but was <%s>",
+                    ccdIncome.getAmountReceived(), actual.getAmount()
+                )
+            );
 
         if (!Objects.equals(actual.getOtherSource().orElse(null), ccdIncome.getOtherSource())) {
             failWithMessage("Expected Income.otherSource to be <%s> but was <%s>",

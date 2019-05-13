@@ -13,4 +13,5 @@ public class CCDApplicant {
     private String representativeOrganisationPhone;
     private String representativeOrganisationEmail;
     private String representativeOrganisationDxAddress;
+    private CCDYesNoOption leadApplicantIndicator;
 }

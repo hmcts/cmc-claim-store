@@ -6,7 +6,6 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,7 +15,7 @@ import java.util.List;
 public class CCDCase {
 
     private Long id;
-    private String referenceNumber;
+    private String previousServiceCaseReference;
     private String submitterId;
     private String externalId;
     private LocalDateTime submittedOn;
@@ -25,27 +24,26 @@ public class CCDCase {
     private String reason;
     private String feeCode;
     private String feeAccountNumber;
-    private BigInteger feeAmountInPennies;
+    private String feeAmountInPennies;
     private String externalReferenceNumber;
     private AmountType amountType;
-    private BigDecimal amountLowerValue;
-    private BigDecimal amountHigherValue;
+    private String amountLowerValue;
+    private String amountHigherValue;
     private List<CCDCollectionElement<CCDAmountRow>> amountBreakDown;
-    private BigDecimal totalAmount;
-    private CCDNotKnown notKnown;
+    private String totalAmount;
     private CCDInterestType interestType;
-    private BigDecimal interestBreakDownAmount;
+    private String interestBreakDownAmount;
     private String interestBreakDownExplanation;
     private BigDecimal interestRate;
     private String interestReason;
-    private BigDecimal interestSpecificDailyAmount;
+    private String interestSpecificDailyAmount;
     private CCDInterestDateType interestDateType;
     private String currentInterestAmount;
     private LocalDate interestClaimStartDate;
     private String interestStartDateReason;
     private CCDInterestEndDateType interestEndDateType;
     private String paymentId;
-    private BigDecimal paymentAmount;
+    private String paymentAmount;
     private String paymentReference;
     private String paymentStatus;
     private LocalDate paymentDateCreated;
@@ -59,9 +57,9 @@ public class CCDCase {
     private List<CCDCollectionElement<CCDRespondent>> respondents;
     private List<CCDCollectionElement<CCDTimelineEvent>> timeline;
     private List<CCDCollectionElement<CCDEvidenceRow>> evidence;
-    private CCDDocument sealedClaimDocument;
     private String features;
     private CCDYesNoOption migratedFromClaimStore;
+    private List<CCDCollectionElement<CCDClaimDocument>> caseDocuments;
     private String caseName;
     private CCDClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
 }

@@ -14,10 +14,12 @@ import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
+import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
@@ -59,6 +61,8 @@ public class DocumentManagementBackedDocumentsServiceTest {
     private SettlementAgreementCopyService settlementAgreementCopyService;
     @Mock
     private DefendantPinLetterPdfService defendantPinLetterPdfService;
+    @Mock
+    private CCDEventProducer ccdEventProducer;
 
     @Before
     public void setUp() {
@@ -70,7 +74,8 @@ public class DocumentManagementBackedDocumentsServiceTest {
             defendantResponseReceiptService,
             countyCourtJudgmentPdfService,
             settlementAgreementCopyService,
-            defendantPinLetterPdfService);
+            defendantPinLetterPdfService,
+            ccdEventProducer);
     }
 
     @Test
@@ -174,10 +179,6 @@ public class DocumentManagementBackedDocumentsServiceTest {
             "pin",
             AUTHORISATION);
         verify(documentManagementService).uploadDocument(anyString(), any(PDF.class));
-        verify(claimService).saveClaimDocuments(
-            eq(AUTHORISATION),
-            eq(claim.getId()),
-            any(ClaimDocumentCollection.class));
     }
 
     @Test
@@ -191,15 +192,12 @@ public class DocumentManagementBackedDocumentsServiceTest {
         verify(claimService, never()).saveClaimDocuments(
             eq(AUTHORISATION),
             eq(claim.getId()),
-            any(ClaimDocumentCollection.class));
+            any(ClaimDocumentCollection.class),
+            any(ClaimDocumentType.class));
     }
 
     private void verifyCommon(byte[] pdf, Long claimId) {
         assertEquals(PDF_BYTES, pdf);
         verify(documentManagementService).uploadDocument(anyString(), any(PDF.class));
-        verify(claimService).saveClaimDocuments(
-            eq(AUTHORISATION),
-            eq(claimId),
-            any(ClaimDocumentCollection.class));
     }
 }

@@ -32,7 +32,11 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
 
     @Before
     public void beforeEachTest() {
-        service = new NotificationToDefendantService(notificationClient, properties, appInsights);
+        service = new NotificationToDefendantService(
+            new NotificationService(notificationClient, appInsights),
+            properties
+        );
+
         claim = SampleClaim.builder()
             .withDefendantEmail(DEFENDANT_EMAIL)
             .build();
@@ -110,19 +114,5 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
             anyMap(),
             eq(REFERENCE)
         );
-    }
-
-    @Test
-    public void recoveryShouldNotLogPII() {
-        service.logNotificationFailure(
-            new NotificationException("expected exception"),
-            null,
-            "hidden@email.com",
-            null,
-            "reference"
-        );
-
-        assertWasLogged("Failure: failed to send notification (reference) due to expected exception");
-        assertWasNotLogged("hidden@email.com");
     }
 }

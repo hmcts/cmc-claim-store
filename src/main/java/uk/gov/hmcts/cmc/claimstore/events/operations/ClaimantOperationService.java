@@ -11,7 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 @Component
-@ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled", havingValue = "true")
 public class ClaimantOperationService {
     private final ClaimIssuedNotificationService claimIssuedNotificationService;
     private final NotificationsProperties notificationsProperties;
@@ -29,7 +29,6 @@ public class ClaimantOperationService {
     }
 
     public Claim notifyCitizen(Claim claim, String submitterName, String authorisation) {
-        //TODO check claim if operation already complete, if yes return claim else
 
         claimIssuedNotificationService.sendMail(
             claim,
@@ -51,8 +50,6 @@ public class ClaimantOperationService {
         String representativeEmail,
         String authorisation
     ) {
-        //TODO check claim if operation already complete, if yes return claim else
-
         claimIssuedNotificationService.sendMail(
             claim,
             representativeEmail,
@@ -62,7 +59,7 @@ public class ClaimantOperationService {
             submitterName
         );
 
-        //TODO update claim and return updated claim, below is placeholder
-        return claim;
+        return eventsStatusService.updateClaimOperationCompletion(authorisation, claim,
+            CaseEvent.SENDING_CLAIMANT_NOTIFICATION);
     }
 }

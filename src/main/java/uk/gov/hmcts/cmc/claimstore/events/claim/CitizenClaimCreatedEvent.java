@@ -10,7 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Getter
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 @Value
 public class CitizenClaimCreatedEvent extends ClaimCreationEvent {
 
@@ -19,7 +19,7 @@ public class CitizenClaimCreatedEvent extends ClaimCreationEvent {
         String submitterName,
         String authorisation
     ) {
-        super(claim,submitterName,authorisation);
+        super(claim, submitterName, authorisation);
     }
 
     @Override

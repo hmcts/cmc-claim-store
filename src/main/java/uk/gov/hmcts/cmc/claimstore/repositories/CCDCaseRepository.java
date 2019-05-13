@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
@@ -28,7 +29,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_DEFENDANT;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service("caseRepository")
-@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled", havingValue = "true")
 public class CCDCaseRepository implements CaseRepository {
     private final CCDCaseApi ccdCaseApi;
     private final CoreCaseDataService coreCaseDataService;
@@ -171,9 +172,11 @@ public class CCDCaseRepository implements CaseRepository {
     public Claim saveClaimDocuments(
         String authorisation,
         Long claimId,
-        ClaimDocumentCollection claimDocumentCollection
+        ClaimDocumentCollection claimDocumentCollection,
+        ClaimDocumentType claimDocumentType
     ) {
-        return coreCaseDataService.saveClaimDocuments(authorisation, claimId, claimDocumentCollection);
+        return coreCaseDataService
+            .saveClaimDocuments(authorisation, claimId, claimDocumentCollection, claimDocumentType);
     }
 
     @Override
@@ -185,7 +188,8 @@ public class CCDCaseRepository implements CaseRepository {
     public Claim updateClaimSubmissionOperationStatus(String authorisation, Long claimId,
                                                       ClaimSubmissionOperationIndicators indicators,
                                                       CaseEvent caseEvent) {
-        return coreCaseDataService.saveClaimSubmissionOperationIndicators(claimId, indicators,authorisation, caseEvent);
+        return
+            coreCaseDataService.saveClaimSubmissionOperationIndicators(claimId, indicators, authorisation, caseEvent);
     }
 
     @Override
