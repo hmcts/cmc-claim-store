@@ -402,6 +402,6 @@ public class CCDCaseApi {
     }
 
     private boolean isCreatedState(CaseDetails caseDetails) {
-        return caseDetails.getState().equals(CREATED.getValue());
+        return CREATED.getValue().equals(caseDetails.getState());
     }
 }
