@@ -40,7 +40,7 @@ public class CaseMapper {
         return builder
             .id(claim.getId())
             .externalId(claim.getExternalId())
-            .referenceNumber(claim.getReferenceNumber())
+            .previousServiceCaseReference(claim.getReferenceNumber())
             .submitterId(claim.getSubmitterId())
             .submitterEmail(claim.getSubmitterEmail())
             .issuedOn(claim.getIssuedOn())
@@ -65,7 +65,7 @@ public class CaseMapper {
             .id(ccdCase.getId())
             .submitterId(ccdCase.getSubmitterId())
             .externalId(ccdCase.getExternalId())
-            .referenceNumber(ccdCase.getReferenceNumber())
+            .referenceNumber(ccdCase.getPreviousServiceCaseReference())
             .createdAt(ccdCase.getSubmittedOn())
             .issuedOn(ccdCase.getIssuedOn())
             .submitterEmail(ccdCase.getSubmitterEmail());

@@ -1,12 +1,21 @@
 package uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDebt;
+import uk.gov.hmcts.cmc.ccd.mapper.MoneyMapper;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Debt;
 
 @Component
 public class DebtMapper {
+
+    private final MoneyMapper moneyMapper;
+
+    @Autowired
+    public DebtMapper(MoneyMapper moneyMapper) {
+        this.moneyMapper = moneyMapper;
+    }
 
     public CCDCollectionElement<CCDDebt> to(Debt debt) {
         if (debt == null) {
@@ -15,8 +24,8 @@ public class DebtMapper {
         return CCDCollectionElement.<CCDDebt>builder()
             .value(CCDDebt.builder()
                 .description(debt.getDescription())
-                .totalOwed(debt.getTotalOwed())
-                .monthlyPayments(debt.getMonthlyPayments())
+                .totalOwed(moneyMapper.to(debt.getTotalOwed()))
+                .monthlyPayments(moneyMapper.to(debt.getMonthlyPayments()))
                 .build())
             .id(debt.getId())
             .build();
@@ -32,8 +41,8 @@ public class DebtMapper {
         return Debt.builder()
             .id(collectionElement.getId())
             .description(ccdDebt.getDescription())
-            .totalOwed(ccdDebt.getTotalOwed())
-            .monthlyPayments(ccdDebt.getMonthlyPayments())
+            .totalOwed(moneyMapper.from(ccdDebt.getTotalOwed()))
+            .monthlyPayments(moneyMapper.from(ccdDebt.getMonthlyPayments()))
             .build();
     }
 }
