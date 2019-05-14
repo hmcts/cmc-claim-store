@@ -54,9 +54,9 @@ public class PostClaimOrchestrationHandler {
     private final PDFBasedOperation<Claim, String, PDF, Claim> uploadClaimIssueReceiptOperation;
     private final PDFBasedOperation<Claim, String, PDF, Claim> rpaOperation;
     private final PDFBasedOperation<Claim, String, PDF, Claim> notifyStaffOperation;
-    private final NotificationOperation<Claim, String, String, Claim> generatePinOperation;
-    private final NotificationOperation<Claim, String, String, Claim> notifyClaimantOperation;
-    private final RepNotificationOperation<Claim, String, String, String, Claim> notifyRepresentativeOperation;
+    private final NotificationOperation<Claim, CitizenClaimCreatedEvent, Claim> generatePinOperation;
+    private final NotificationOperation<Claim, CitizenClaimCreatedEvent, Claim> notifyClaimantOperation;
+    private final RepNotificationOperation<Claim, RepresentedClaimCreatedEvent, Claim> notifyRepresentativeOperation;
 
     @Autowired
     @SuppressWarnings("squid:S00107")
@@ -72,9 +72,9 @@ public class PostClaimOrchestrationHandler {
         this.documentOrchestrationService = documentOrchestrationService;
         this.claimService = claimService;
 
-        generatePinOperation = (claim, authorisation, submitterName) ->
+        generatePinOperation = (claim, event) ->
             isPinOperationSuccess.test(claim.getClaimSubmissionOperationIndicators())
-                ? pinOrchestrationService.process(claim, authorisation, submitterName)
+                ? pinOrchestrationService.process(claim, event.getAuthorisation(), event.getAuthorisation())
                 : claim;
 
         uploadSealedClaimOperation = (claim, authorisation, sealedClaim) ->
@@ -99,15 +99,18 @@ public class PostClaimOrchestrationHandler {
                 ? notifyStaffOperationService.notify(claim, authorisation, sealedClaim)
                 : claim;
 
-        notifyClaimantOperation = (claim, submitterName, authorisation) ->
+        notifyClaimantOperation = (claim, event) ->
             isNotifyCitizenSuccess.test(claim.getClaimSubmissionOperationIndicators())
-                ? claimantOperationService.notifyCitizen(claim, submitterName, authorisation)
+                ? claimantOperationService.notifyCitizen(claim, event.getSubmitterName(), event.getAuthorisation())
                 : claim;
 
-        notifyRepresentativeOperation = (claim, submitterName, representativeEmail, authorisation) ->
+        notifyRepresentativeOperation = (claim, event) ->
             isNotifyCitizenSuccess.test(claim.getClaimSubmissionOperationIndicators())
-                ? claimantOperationService
-                .confirmRepresentative(claim, submitterName, representativeEmail, authorisation)
+                ? claimantOperationService.confirmRepresentative(
+                claim,
+                event.getSubmitterName(),
+                event.getRepresentativeEmail(),
+                event.getAuthorisation())
                 : claim;
     }
 
@@ -116,9 +119,8 @@ public class PostClaimOrchestrationHandler {
         try {
             Claim claim = event.getClaim();
             String authorisation = event.getAuthorisation();
-            String submitterName = event.getSubmitterName();
 
-            Function<Claim, Claim> doPinOperation = c -> generatePinOperation.perform(c, authorisation, submitterName);
+            Function<Claim, Claim> doPinOperation = c -> generatePinOperation.perform(c, event);
 
             PDF sealedClaimPdf = documentOrchestrationService.getSealedClaimPdf(claim);
             PDF claimIssueReceiptPdf = documentOrchestrationService.getClaimIssueReceiptPdf(claim);
@@ -128,7 +130,7 @@ public class PostClaimOrchestrationHandler {
                     .andThen(c -> uploadSealedClaimOperation.perform(c, authorisation, sealedClaimPdf))
                     .andThen(c -> uploadClaimIssueReceiptOperation.perform(c, authorisation, claimIssueReceiptPdf))
                     .andThen(c -> rpaOperation.perform(c, authorisation, sealedClaimPdf))
-                    .andThen(c -> notifyClaimantOperation.perform(c, submitterName, authorisation))
+                    .andThen(c -> notifyClaimantOperation.perform(c, event))
                     .apply(claim);
 
             claimService.updateClaimState(authorisation, updatedClaim.get(), ClaimState.ISSUED);
@@ -143,8 +145,6 @@ public class PostClaimOrchestrationHandler {
         try {
             Claim claim = event.getClaim();
             String authorisation = event.getAuthorisation();
-            String submitterName = event.getRepresentativeName().orElse(null);
-            String representativeEmail = event.getRepresentativeEmail();
 
             GeneratedDocuments generatedDocuments = documentOrchestrationService.getSealedClaimForRepresentative(claim);
             PDF sealedClaim = generatedDocuments.getSealedClaim();
@@ -156,9 +156,7 @@ public class PostClaimOrchestrationHandler {
                 doUploadSealedClaim
                     .andThen(c -> rpaOperation.perform(c, authorisation, sealedClaim))
                     .andThen(c -> notifyStaffOperation.perform(c, authorisation, sealedClaim))
-                    .andThen(c -> notifyRepresentativeOperation
-                        .perform(c, submitterName, representativeEmail, authorisation)
-                    )
+                    .andThen(c -> notifyRepresentativeOperation.perform(c, event))
                     .apply(claim);
 
             claimService.updateClaimState(authorisation, updatedClaim.get(), ClaimState.ISSUED);
