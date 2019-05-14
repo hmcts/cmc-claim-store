@@ -50,10 +50,10 @@ public class PostClaimOrchestrationHandler {
     private final Predicate<ClaimSubmissionOperationIndicators> isNotifyCitizenSuccess = indicators ->
         indicators.getClaimantNotification().equals(YesNoOption.NO);
 
-    private final PDFUploadOperation<Claim, String, PDF, Claim> uploadSealedClaimOperation;
-    private final PDFUploadOperation<Claim, String, PDF, Claim> uploadClaimIssueReceiptOperation;
-    private final PDFUploadOperation<Claim, String, PDF, Claim> rpaOperation;
-    private final PDFUploadOperation<Claim, String, PDF, Claim> notifyStaffOperation;
+    private final PDFBasedOperation<Claim, String, PDF, Claim> uploadSealedClaimOperation;
+    private final PDFBasedOperation<Claim, String, PDF, Claim> uploadClaimIssueReceiptOperation;
+    private final PDFBasedOperation<Claim, String, PDF, Claim> rpaOperation;
+    private final PDFBasedOperation<Claim, String, PDF, Claim> notifyStaffOperation;
     private final NotificationOperation<Claim, String, String, Claim> generatePinOperation;
     private final NotificationOperation<Claim, String, String, Claim> notifyClaimantOperation;
     private final RepNotificationOperation<Claim, String, String, String, Claim> notifyRepresentativeOperation;
