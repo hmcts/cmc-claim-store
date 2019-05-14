@@ -18,6 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getWithClaimantResponseRejectionForPartAdmissionAndMediation;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.withNoResponse;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MediationCSVGeneratorTest {
@@ -34,7 +35,7 @@ public class MediationCSVGeneratorTest {
     @Before
     public void setUp() {
         mediationClaims = new ArrayList<>();
-        mediationCSVGenerator = new MediationCSVGenerator(mockCaseRepository);
+        mediationCSVGenerator = new MediationCSVGenerator(mockCaseRepository, LocalDate.now(), AUTHORISATION);
 
         when(mockCaseRepository.getMediationClaims(AUTHORISATION, LocalDate.now()))
             .thenReturn(mediationClaims);
@@ -46,16 +47,31 @@ public class MediationCSVGeneratorTest {
 
         String expected = "4,000CM001,1,80.89,1,Mediation Contact Person,null,07999999999,4,5\r\n"
             + "4,000CM001,1,80.89,2,Mediation Contact Person,null,07999999999,4,5\r\n";
-        String mediationCSV = mediationCSVGenerator.createMediationCSV(AUTHORISATION, LocalDate.now());
+        mediationCSVGenerator.createMediationCSV();
+        String mediationCSV = mediationCSVGenerator.getCsvData();
         assertThat(mediationCSV).isEqualTo(expected);
     }
 
     @Test
     public void shouldCreateMediationCSVEvenWhenNoClaimsWithMediation() {
-
         String expected = "null,null,null,null,null,null,null,null,null,null\r\n";
-        String mediationCSV = mediationCSVGenerator.createMediationCSV(AUTHORISATION, LocalDate.now());
+        mediationCSVGenerator.createMediationCSV();
+        String mediationCSV = mediationCSVGenerator.getCsvData();
         assertThat(mediationCSV).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldReportSuccessfulDataWhenAnyFail() {
+        mediationClaims.add(getWithClaimantResponseRejectionForPartAdmissionAndMediation());
+        mediationClaims.add(withNoResponse());
+        mediationClaims.add(getWithClaimantResponseRejectionForPartAdmissionAndMediation());
+
+        mediationCSVGenerator.createMediationCSV();
+        String mediationCSV = mediationCSVGenerator.getCsvData();
+        String[] csvLines = mediationCSV.split("[\\r\\n]+");
+
+        assertThat(csvLines).hasSize(4);
+        assertThat(mediationCSVGenerator.getProblematicRecords()).hasSize(1);
     }
 
     @Test(expected = MediationCSVGenerationException.class)
@@ -63,6 +79,6 @@ public class MediationCSVGeneratorTest {
         when(mockCaseRepository.getMediationClaims(anyString(), any(LocalDate.class)))
             .thenThrow(new RuntimeException());
 
-        mediationCSVGenerator.createMediationCSV(AUTHORISATION, LocalDate.now());
+        mediationCSVGenerator.createMediationCSV();
     }
 }

@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import com.google.common.collect.ImmutableMap;
+import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MediationCSVGenerationException;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -13,6 +13,8 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -22,7 +24,7 @@ import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.domain.models.MediationRow.MediationRowBuilder;
 
-@Component
+@RequiredArgsConstructor
 public class MediationCSVGenerator {
     private static final String SITE_ID = "4";
     private static final String CASE_TYPE = "1";
@@ -38,12 +40,12 @@ public class MediationCSVGenerator {
             claim -> claim.getClaimantResponse()
                 .filter(ResponseRejection.class::isInstance)
                 .map(ResponseRejection.class::cast)
-                .orElseThrow(invalidMediationStateException())
+                .orElseThrow(invalidMediationStateException("Missing rejection response"))
                 .getMediationContactPerson(),
 
             DEFENDANT_PARTY_TYPE,
             claim -> claim.getResponse()
-                .orElseThrow(invalidMediationStateException())
+                .orElseThrow(invalidMediationStateException("Missing response data"))
                 .getMediationContactPerson()
         );
 
@@ -53,42 +55,45 @@ public class MediationCSVGenerator {
             claim -> claim.getClaimantResponse()
                 .filter(ResponseRejection.class::isInstance)
                 .map(ResponseRejection.class::cast)
-                .orElseThrow(invalidMediationStateException())
+                .orElseThrow(invalidMediationStateException("Missing rejection response"))
                 .getMediationPhoneNumber(),
 
             DEFENDANT_PARTY_TYPE,
             claim -> claim.getResponse()
-                .orElseThrow(invalidMediationStateException())
+                .orElseThrow(invalidMediationStateException("Missing response data"))
                 .getMediationPhoneNumber()
         );
 
     private static final String NULL_STRING = "null";
 
-    private CaseRepository caseRepository;
+    private final CaseRepository caseRepository;
 
-    @Autowired
-    public MediationCSVGenerator(CaseRepository caseRepository) {
-        this.caseRepository = caseRepository;
-    }
+    private final LocalDate mediationDate;
 
-    public String createMediationCSV(String authorisation, LocalDate mediationDate) {
+    private final String authorisation;
+
+    @Getter
+    private String csvData;
+
+    @Getter
+    private Map<String, String> problematicRecords = new HashMap<>();
+
+    public void createMediationCSV() {
+        problematicRecords.clear();
         StringBuilder stringBuilder = new StringBuilder();
         try (CSVPrinter csvPrinter = new CSVPrinter(stringBuilder, CSVFormat.DEFAULT.withNullString(NULL_STRING))) {
-            csvPrinter.printRecords(createMediationRowForEachParty(authorisation, mediationDate));
+            csvPrinter.printRecords(createMediationRowForEachParty());
             csvPrinter.flush();
-            return stringBuilder.toString();
+            csvData = stringBuilder.toString();
         } catch (Exception e) {
             throw new MediationCSVGenerationException("Error generating Mediation CSV", e);
         }
     }
 
-    private List<MediationRow> createMediationRowForEachParty(String authorisation, LocalDate reportDate) {
-        List<MediationRow> result = caseRepository.getMediationClaims(authorisation, reportDate)
+    private List<MediationRow> createMediationRowForEachParty() {
+        List<MediationRow> result = caseRepository.getMediationClaims(authorisation, mediationDate)
             .stream()
-            .map(claim -> Arrays.asList(
-                createMediationRow(claim, CLAIMANT_PARTY_TYPE),
-                createMediationRow(claim, DEFENDANT_PARTY_TYPE)
-            ))
+            .map(this::createMediationRows)
             .flatMap(List::stream)
             .collect(Collectors.toList());
 
@@ -99,6 +104,18 @@ public class MediationCSVGenerator {
         return result;
     }
 
+    private List<MediationRow> createMediationRows(Claim claim) {
+        try {
+            return Arrays.asList(
+                createMediationRow(claim, CLAIMANT_PARTY_TYPE),
+                createMediationRow(claim, DEFENDANT_PARTY_TYPE)
+            );
+        } catch (MediationCSVGenerationException e) {
+            problematicRecords.put(claim.getReferenceNumber(), e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
     private MediationRow createMediationRow(Claim claim, int partyType) {
         MediationRowBuilder mediationRowBuilder = MediationRow.builder()
             .siteId(SITE_ID)
@@ -106,7 +123,8 @@ public class MediationCSVGenerator {
             .checkList(CHECK_LIST)
             .partyStatus(PARTY_STATUS)
             .caseNumber(claim.getReferenceNumber())
-            .amount(String.valueOf(claim.getTotalAmountTillToday().orElseThrow(RuntimeException::new)))
+            .amount(String.valueOf(claim.getTotalAmountTillToday()
+                .orElseThrow(invalidMediationStateException("Unable to find total amount of claim"))))
             .partyType(String.valueOf(partyType));
 
         CONTACT_PERSON_EXTRACTORS.get(partyType)
@@ -119,7 +137,7 @@ public class MediationCSVGenerator {
         return mediationRowBuilder.build();
     }
 
-    private static Supplier<RuntimeException> invalidMediationStateException() {
-        return () -> new MediationCSVGenerationException("Invalid mediation state");
+    private static Supplier<RuntimeException> invalidMediationStateException(String reason) {
+        return () -> new MediationCSVGenerationException(reason);
     }
 }

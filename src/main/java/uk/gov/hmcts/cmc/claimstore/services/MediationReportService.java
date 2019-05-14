@@ -1,12 +1,13 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
+import uk.gov.hmcts.cmc.claimstore.exceptions.MediationCSVGenerationException;
+import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
@@ -14,12 +15,14 @@ import uk.gov.hmcts.cmc.email.EmailService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.Map;
 
 @Service
 public class MediationReportService {
 
     private EmailService emailService;
-    private MediationCSVGenerator mediationCSVGenerator;
+    private CaseRepository caseRepository;
     private UserService userService;
     private AppInsights appInsights;
 
@@ -29,14 +32,14 @@ public class MediationReportService {
     @Autowired
     public MediationReportService(
         EmailService emailService,
-        MediationCSVGenerator mediationCSVGenerator,
+        CaseRepository caseRepository,
         UserService userService,
         AppInsights appInsights,
         @Value("${milo.recipient}") String emailToAddress,
         @Value("${milo.sender}") String emailFromAddress
     ) {
         this.emailService = emailService;
-        this.mediationCSVGenerator = mediationCSVGenerator;
+        this.caseRepository = caseRepository;
         this.userService = userService;
         this.appInsights = appInsights;
         this.emailToAddress = emailToAddress;
@@ -45,13 +48,17 @@ public class MediationReportService {
 
     public void sendMediationReport(String authorisation, LocalDate mediationDate) {
         try {
-            String csvData = mediationCSVGenerator.createMediationCSV(
-                authorisation,
-                mediationDate
-            );
+            MediationCSVGenerator generator = new MediationCSVGenerator(caseRepository, mediationDate, authorisation);
+            generator.createMediationCSV();
+            String csvData = generator.getCsvData();
 
             emailService.sendEmail(emailFromAddress, prepareMediationEmailData(csvData));
-        } catch (RuntimeException e) {
+
+            Map<String, String> problematicRecords = generator.getProblematicRecords();
+            if (!problematicRecords.isEmpty()) {
+                reportMediationExceptions(mediationDate, problematicRecords);
+            }
+        } catch (MediationCSVGenerationException e) {
             reportMediationException(e, mediationDate);
         }
     }
@@ -72,7 +79,7 @@ public class MediationReportService {
             emailToAddress,
             "MediationCSV " + LocalDate.now().toString(),
             "OCMC mediation" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm dd/mm/yyyy")),
-            Lists.newArrayList(mediationCSVAttachment)
+            Collections.singletonList(mediationCSVAttachment)
         );
     }
 
@@ -83,5 +90,13 @@ public class MediationReportService {
             e.getMessage()
         );
         throw e;
+    }
+
+    private void reportMediationExceptions(LocalDate reportDate, Map<String, String> problems) {
+        appInsights.trackEvent(
+            AppInsightsEvent.MEDIATION_REPORT_FAILURE,
+            "MILO report " + reportDate,
+            problems.toString()
+        );
     }
 }

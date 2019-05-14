@@ -6,12 +6,16 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MediationCSVGenerationException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
@@ -19,6 +23,7 @@ import uk.gov.hmcts.cmc.email.EmailService;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Scanner;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,12 +40,16 @@ public class MediationReportServiceTest {
     private static final String FROM_ADDRESS = "sender@mail.com";
     private static final String TO_ADDRESS = "recipient@mail.com";
     private static final String AUTHORISATION = "Authorisation";
-    private static final String SAMPLE_CSV = "I,Am,A,Teapot";
+
+    private static final Claim SAMPLE_CLAIM = SampleClaim.builder()
+        .withResponse(SampleResponse.FullDefence.validDefaults())
+        .withClaimantResponse(SampleClaimantResponse.validDefaultRejection())
+        .build();
 
     @Mock
     private EmailService emailService;
     @Mock
-    private MediationCSVGenerator mediationCSVGenerator;
+    private CaseRepository caseRepository;
     @Mock
     private UserService userService;
     @Mock
@@ -54,21 +63,21 @@ public class MediationReportServiceTest {
     public void setUp() {
         this.service = new MediationReportService(
             emailService,
-            mediationCSVGenerator,
+            caseRepository,
             userService,
             appInsights,
             TO_ADDRESS,
             FROM_ADDRESS
         );
-        when(mediationCSVGenerator.createMediationCSV(Mockito.anyString(), Mockito.any(LocalDate.class)))
-            .thenReturn(SAMPLE_CSV);
+        when(caseRepository.getMediationClaims(anyString(), any(LocalDate.class)))
+            .thenReturn(Collections.singletonList(SAMPLE_CLAIM));
     }
 
     @Test
     public void shouldPrepareCSVDataAndInvokeEmailService() throws IOException {
         service.sendMediationReport(AUTHORISATION, LocalDate.now());
 
-        verify(mediationCSVGenerator).createMediationCSV(AUTHORISATION, LocalDate.now());
+        verify(caseRepository).getMediationClaims(AUTHORISATION, LocalDate.now());
         verifyEmailData();
     }
 
@@ -81,7 +90,7 @@ public class MediationReportServiceTest {
         service.automatedMediationReport();
 
         verify(userService).authenticateAnonymousCaseWorker();
-        verify(mediationCSVGenerator).createMediationCSV(AUTHORISATION, LocalDate.now().minusDays(1));
+        verify(caseRepository).getMediationClaims(AUTHORISATION, LocalDate.now().minusDays(1));
 
         verifyEmailData();
     }
@@ -92,8 +101,8 @@ public class MediationReportServiceTest {
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(mockUser);
         when(mockUser.getAuthorisation()).thenReturn(AUTHORISATION);
 
-        when(mediationCSVGenerator.createMediationCSV(anyString(), any(LocalDate.class)))
-            .thenThrow(mock(MediationCSVGenerationException.class));
+        when(caseRepository.getMediationClaims(anyString(), any(LocalDate.class)))
+            .thenThrow(mock(RuntimeException.class));
 
         assertThatThrownBy(() -> service.automatedMediationReport())
             .isInstanceOf(MediationCSVGenerationException.class);
@@ -120,6 +129,9 @@ public class MediationReportServiceTest {
         assertThat(attachment.getFilename()).endsWith(".csv");
         assertThat(attachment.getContentType()).isEqualTo("text/csv");
 
-        assertThat(inputStreamToString(attachment.getData().getInputStream())).isEqualTo(SAMPLE_CSV);
+        //noinspection OptionalGetWithoutIsPresent
+        assertThat(inputStreamToString(attachment.getData().getInputStream()))
+            .contains(SAMPLE_CLAIM.getReferenceNumber())
+            .contains(SAMPLE_CLAIM.getTotalAmountTillToday().get().toString());
     }
 }
