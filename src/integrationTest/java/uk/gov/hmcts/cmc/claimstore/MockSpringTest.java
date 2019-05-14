@@ -13,6 +13,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
+import uk.gov.hmcts.cmc.claimstore.events.claim.PostClaimOrchestrationHandler;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
@@ -88,6 +90,9 @@ public abstract class MockSpringTest {
     protected CaseAccessApi caseAccessApi;
 
     @MockBean
+    protected CourtFinderApi courtFinderApi;
+
+    @MockBean
     protected ServiceAuthorisationApi serviceAuthorisationApi;
 
     @MockBean
@@ -107,6 +112,9 @@ public abstract class MockSpringTest {
 
     @MockBean
     protected TelemetryClient telemetry;
+
+    @MockBean
+    private PostClaimOrchestrationHandler postClaimOrchestrationHandler;
 
     protected <T> T deserializeObjectFrom(MvcResult result, Class<T> targetClass) throws UnsupportedEncodingException {
         return jsonMapper.fromJson(result.getResponse().getContentAsString(), targetClass);

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
@@ -11,6 +12,7 @@ import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
+@Getter
 @EqualsAndHashCode
 public class InterestBreakdown {
     @NotNull
@@ -24,14 +26,6 @@ public class InterestBreakdown {
     public InterestBreakdown(BigDecimal totalAmount, String explanation) {
         this.totalAmount = totalAmount;
         this.explanation = explanation;
-    }
-
-    public BigDecimal getTotalAmount() {
-        return totalAmount;
-    }
-
-    public String getExplanation() {
-        return explanation;
     }
 
     @Override

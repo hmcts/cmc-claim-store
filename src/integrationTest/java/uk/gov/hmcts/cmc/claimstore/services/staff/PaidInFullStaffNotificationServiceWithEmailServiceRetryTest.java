@@ -12,6 +12,7 @@ import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.hmcts.cmc.claimstore.events.claim.PostClaimOrchestrationHandler;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
@@ -45,6 +46,9 @@ public class PaidInFullStaffNotificationServiceWithEmailServiceRetryTest {
     private JavaMailSenderImpl javaMailSender;
     @MockBean
     protected TelemetryClient telemetry;
+    @MockBean
+    protected PostClaimOrchestrationHandler postClaimOrchestrationHandler;
+    
     @Autowired
     private PaidInFullStaffNotificationService service;
 

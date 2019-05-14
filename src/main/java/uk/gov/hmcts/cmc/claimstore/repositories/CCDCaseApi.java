@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
 
 @Service
-@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled", havingValue = "true")
 public class CCDCaseApi {
 
     public static enum CaseState {
@@ -95,7 +95,7 @@ public class CCDCaseApi {
     }
 
     public Optional<Claim> getByReferenceNumber(String referenceNumber, String authorisation) {
-        return getCaseBy(authorisation, ImmutableMap.of("case.referenceNumber", referenceNumber));
+        return getCaseBy(authorisation, ImmutableMap.of("case.previousServiceCaseReference", referenceNumber));
     }
 
     public Optional<Claim> getByExternalId(String externalId, User user) {

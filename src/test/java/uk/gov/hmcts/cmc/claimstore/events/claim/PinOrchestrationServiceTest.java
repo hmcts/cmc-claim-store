@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -22,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Collections.singletonList;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -64,7 +66,17 @@ public class PinOrchestrationServiceTest {
     @Mock
     private EmailTemplates emailTemplates;
     @Mock
+    private ClaimCreationEventsStatusService eventsStatusService;
+    @Mock
     private DocumentOrchestrationService documentOrchestrationService;
+
+    private GeneratedDocuments generatedDocuments = GeneratedDocuments.builder()
+        .defendantLetterDoc(defendantLetterDocument)
+        .defendantLetter(pinLetterClaim)
+        .sealedClaimDoc(sealedClaimLetterDocument)
+        .sealedClaim(sealedClaim)
+        .pin(PIN)
+        .build();
 
     @Before
     public void before() {
@@ -74,6 +86,7 @@ public class PinOrchestrationServiceTest {
             claimIssuedStaffNotificationService,
             claimIssuedNotificationService,
             notificationsProperties,
+            eventsStatusService,
             documentOrchestrationService
         );
 
@@ -89,14 +102,6 @@ public class PinOrchestrationServiceTest {
     @Test
     public void shouldProcessPinBased() {
         //given
-        GeneratedDocuments generatedDocuments = GeneratedDocuments.builder()
-            .defendantLetterDoc(defendantLetterDocument)
-            .defendantLetter(pinLetterClaim)
-            .sealedClaimDoc(sealedClaimLetterDocument)
-            .sealedClaim(sealedClaim)
-            .pin(PIN)
-            .build();
-
         given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION)))
             .willReturn(generatedDocuments);
 
@@ -120,5 +125,84 @@ public class PinOrchestrationServiceTest {
             eq("defendant-issue-notification-" + CLAIM.getReferenceNumber()),
             eq(SUBMITTER_NAME)
         );
+
+        verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM),
+            eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void updatePinOperationStatusWhenDefendantPinLetterUploadFails() {
+        //given
+        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION)))
+            .willReturn(generatedDocuments);
+        given(documentUploadHandler
+            .uploadToDocumentManagement(any(), any(), any()))
+            .willThrow(new RuntimeException("Document Upload failed"));
+
+        //when
+        pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
+
+        //then
+        verify(documentUploadHandler)
+            .uploadToDocumentManagement(eq(CLAIM), eq(AUTHORISATION), eq(singletonList(pinLetterClaim)));
+        verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM),
+            eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void updatePinOperationStatusWhenBulkPrintFails() {
+        //given
+        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION)))
+            .willReturn(generatedDocuments);
+        given(documentUploadHandler
+            .uploadToDocumentManagement(any(), any(), any()))
+            .willThrow(new RuntimeException("Document Upload failed"));
+
+        //when
+        pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
+
+        //then
+        verify(documentUploadHandler)
+            .uploadToDocumentManagement(eq(CLAIM), eq(AUTHORISATION), eq(singletonList(pinLetterClaim)));
+        verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM),
+            eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void updatePinOperationStatusWhenClaimIssueNotificationFails() {
+        //given
+        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION)))
+            .willReturn(generatedDocuments);
+        given(documentUploadHandler
+            .uploadToDocumentManagement(any(), any(), any()))
+            .willThrow(new RuntimeException("Document Upload failed"));
+
+        //when
+        pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
+
+        //then
+        verify(documentUploadHandler)
+            .uploadToDocumentManagement(eq(CLAIM), eq(AUTHORISATION), eq(singletonList(pinLetterClaim)));
+        verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM),
+            eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void updatePinOperationStatusWhenNoifyDefendantFails() {
+        //given
+        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION)))
+            .willReturn(generatedDocuments);
+        given(documentUploadHandler
+            .uploadToDocumentManagement(any(), any(), any()))
+            .willThrow(new RuntimeException("Document Upload failed"));
+
+        //when
+        pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
+
+        //then
+        verify(documentUploadHandler)
+            .uploadToDocumentManagement(eq(CLAIM), eq(AUTHORISATION), eq(singletonList(pinLetterClaim)));
+        verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM),
+            eq(CaseEvent.PIN_GENERATION_OPERATIONS));
     }
 }

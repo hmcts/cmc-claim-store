@@ -5,7 +5,6 @@ import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -15,9 +14,9 @@ public class CCDCountyCourtJudgment {
 
     private LocalDateTime requestedDate;
     private LocalDate defendantDateOfBirth;
-    private BigDecimal paidAmount;
+    private String paidAmount;
     private CCDPaymentOption paymentOption;
-    private BigDecimal repaymentPlanInstalmentAmount;
+    private String repaymentPlanInstalmentAmount;
     private LocalDate repaymentPlanFirstPaymentDate;
     private LocalDate repaymentPlanCompletionDate;
     private String repaymentPlanPaymentLength;
