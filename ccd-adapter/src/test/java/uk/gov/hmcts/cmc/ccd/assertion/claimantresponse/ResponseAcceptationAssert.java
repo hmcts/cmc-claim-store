@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 
 import java.util.Objects;
 
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 public class ResponseAcceptationAssert extends AbstractAssert<ResponseAcceptationAssert, ResponseAcceptation> {
@@ -29,10 +30,9 @@ public class ResponseAcceptationAssert extends AbstractAssert<ResponseAcceptatio
         }
 
         actual.getAmountPaid().ifPresent(amountPaid -> {
-            if (!Objects.equals(amountPaid, ccdResponseAcceptation.getAmountPaid())) {
-                failWithMessage("Expected ResponseAcceptation.amountPaid to be <%s> but was <%s>",
-                    ccdResponseAcceptation.getAmountPaid(), amountPaid);
-            }
+            String message = String.format("Expected ResponseAcceptation.amountPaid to be <%s> but was <%s>",
+                ccdResponseAcceptation.getAmountPaid(), amountPaid);
+            assertMoney(amountPaid).isEqualTo(ccdResponseAcceptation.getAmountPaid(), message);
         });
 
         actual.getCourtDetermination().ifPresent(courtDetermination -> {

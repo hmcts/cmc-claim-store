@@ -7,6 +7,9 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 
 import java.util.Objects;
 
+import static java.lang.String.format;
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;
+
 public class CountyCourtJudgmentAssert extends AbstractAssert<CountyCourtJudgmentAssert, CountyCourtJudgment> {
 
     public CountyCourtJudgmentAssert(CountyCourtJudgment actual) {
@@ -31,11 +34,13 @@ public class CountyCourtJudgmentAssert extends AbstractAssert<CountyCourtJudgmen
             }
         });
 
-        if (!Objects.equals(actual.getPaidAmount().orElse(null),
-            ccdCountyCourtJudgment.getPaidAmount())) {
-            failWithMessage("Expected CountyCourtJudgment.paidAmount to be <%s> but was <%s>",
-                ccdCountyCourtJudgment.getPaidAmount(), actual.getPaidAmount());
-        }
+        assertMoney(actual.getPaidAmount().orElse(null))
+            .isEqualTo(
+                ccdCountyCourtJudgment.getPaidAmount(),
+                format("Expected CountyCourtJudgment.paidAmount to be <%s> but was <%s>",
+                    ccdCountyCourtJudgment.getPaidAmount(), actual.getPaidAmount()
+                )
+            );
 
         if (!Objects.equals(actual.getPaymentOption().name(), ccdCountyCourtJudgment.getPaymentOption().name())) {
             failWithMessage("Expected CountyCourtJudgment.paymentOption to be <%s> but was <%s>",
@@ -48,8 +53,10 @@ public class CountyCourtJudgmentAssert extends AbstractAssert<CountyCourtJudgmen
                     ccdCountyCourtJudgment.getRepaymentPlanCompletionDate());
                 Assert.assertEquals(repaymentPlan.getFirstPaymentDate(),
                     ccdCountyCourtJudgment.getRepaymentPlanFirstPaymentDate());
-                Assert.assertEquals(repaymentPlan.getInstalmentAmount(),
-                    ccdCountyCourtJudgment.getRepaymentPlanInstalmentAmount());
+                assertMoney(repaymentPlan.getInstalmentAmount())
+                    .isEqualTo(ccdCountyCourtJudgment.getRepaymentPlanInstalmentAmount());
+                assertMoney(repaymentPlan.getInstalmentAmount())
+                    .isEqualTo(ccdCountyCourtJudgment.getRepaymentPlanInstalmentAmount());
                 Assert.assertEquals(repaymentPlan.getPaymentLength(),
                     ccdCountyCourtJudgment.getRepaymentPlanPaymentLength());
                 Assert.assertEquals(repaymentPlan.getPaymentSchedule().getDescription(),

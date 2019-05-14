@@ -6,6 +6,8 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
 
 import java.util.Objects;
 
+import static java.lang.String.format;
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 
@@ -18,10 +20,13 @@ public class BankAccountAssert extends AbstractAssert<BankAccountAssert, BankAcc
     public BankAccountAssert isEqualTo(CCDBankAccount ccdBankAccount) {
         isNotNull();
 
-        if (!Objects.equals(actual.getBalance(), ccdBankAccount.getBalance())) {
-            failWithMessage("Expected BankAccount.balance to be <%s> but was <%s>",
-                ccdBankAccount.getBalance(), actual.getBalance());
-        }
+        assertMoney(actual.getBalance())
+            .isEqualTo(
+                ccdBankAccount.getBalance(),
+                format("Expected BankAccount.balance to be <%s> but was <%s>",
+                    ccdBankAccount.getBalance(), actual.getBalance()
+                )
+            );
 
         if (actual.isJoint() && ccdBankAccount.getJoint() == NO) {
             failWithMessage("Expected BankAccount.joint to be <%s> but was <%s>",

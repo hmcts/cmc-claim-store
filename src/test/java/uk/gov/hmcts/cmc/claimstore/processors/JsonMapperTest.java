@@ -206,7 +206,7 @@ public class JsonMapperTest {
 
         Map<String, Object> data = new HashMap<>();
         data.put("id", "1");
-        data.put("referenceNumber", "000MC001");
+        data.put("previousServiceCaseReference", "000MC001");
         data.put("submitterId", "2");
         data.put("submittedOn", timestamp);
         data.put("externalId", uuid);
@@ -215,7 +215,7 @@ public class JsonMapperTest {
 
         CCDCase expected = CCDCase.builder()
             .id(1L)
-            .referenceNumber("000MC001")
+            .previousServiceCaseReference("000MC001")
             .submitterId("2")
             .submittedOn(timestamp)
             .externalId(uuid)
