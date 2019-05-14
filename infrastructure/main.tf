@@ -191,7 +191,7 @@ module "claim-store-api" {
     // MILO
     MILO_CSV_SENDER = "noreply@reform.hmcts.net"
     MILO_CSV_RECIPIENT = "${data.azurerm_key_vault_secret.milo_recipient.value}"
-    MILO_CSV_SCHEDULE = "0 0 6 * * ?"
+    MILO_CSV_SCHEDULE = "-"
 
     // robot notifications
     RPA_NOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"
