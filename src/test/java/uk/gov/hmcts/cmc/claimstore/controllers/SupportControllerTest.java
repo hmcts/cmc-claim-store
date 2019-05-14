@@ -9,11 +9,14 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.controllers.support.SupportController;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
+import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimCreatedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
+import uk.gov.hmcts.cmc.claimstore.events.claim.PostClaimOrchestrationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedStaffNotificationHandler;
+import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimCreatedEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
@@ -86,6 +89,9 @@ public class SupportControllerTest {
     @Mock
     private DocumentsService documentsService;
 
+    @Mock
+    private PostClaimOrchestrationHandler postClaimOrchestrationHandler;
+
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
 
@@ -98,7 +104,7 @@ public class SupportControllerTest {
         controller = new SupportController(claimService, userService, documentGenerator,
             moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
             ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
-            claimantResponseStaffNotificationHandler, documentsService
+            claimantResponseStaffNotificationHandler, documentsService, postClaimOrchestrationHandler
         );
         sampleClaim = SampleClaim.getDefault();
     }
@@ -201,7 +207,7 @@ public class SupportControllerTest {
             )
             .withClaimantResponse(
                 SampleClaimantResponse.ClaimantResponseAcceptation.builder()
-                .buildAcceptationReferToJudgeWithCourtDetermination()
+                    .buildAcceptationReferToJudgeWithCourtDetermination()
             )
             .build();
 
@@ -218,7 +224,7 @@ public class SupportControllerTest {
             .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionImmediately())
             .withClaimantResponse(
                 SampleClaimantResponse.ClaimantResponseAcceptation.builder()
-                .buildAcceptationReferToJudgeWithCourtDetermination()
+                    .buildAcceptationReferToJudgeWithCourtDetermination()
             )
             .build();
 
@@ -237,7 +243,7 @@ public class SupportControllerTest {
             )
             .withClaimantResponse(
                 SampleClaimantResponse.ClaimantResponseAcceptation.builder()
-                .buildAcceptationIssueSettlementWithClaimantPaymentIntention()
+                    .buildAcceptationIssueSettlementWithClaimantPaymentIntention()
             )
             .build();
 
@@ -319,6 +325,24 @@ public class SupportControllerTest {
         exceptionRule.expect(BadRequestException.class);
         exceptionRule.expectMessage("Authorisation is required");
         controller.uploadDocumentToDocumentManagement(CLAIMREFERENCENUMBER, SEALED_CLAIM, "");
+    }
+
+    @Test
+    public void shouldRecoverCitizenClaimIssueOperations() {
+        Claim claim = SampleClaim.getDefault();
+        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
+            .thenReturn(Optional.of(claim));
+        controller.recoverClaimIssueOperations(CLAIMREFERENCENUMBER, AUTHORISATION);
+        verify(postClaimOrchestrationHandler).citizenIssueHandler(any(CitizenClaimCreatedEvent.class));
+    }
+
+    @Test
+    public void shouldRecoverRepresentativeClaimIssueOperations() {
+        Claim claim = SampleClaim.getDefaultForLegal();
+        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
+            .thenReturn(Optional.of(claim));
+        controller.recoverClaimIssueOperations(CLAIMREFERENCENUMBER, AUTHORISATION);
+        verify(postClaimOrchestrationHandler).representativeIssueHandler(any(RepresentedClaimCreatedEvent.class));
     }
 
 }
