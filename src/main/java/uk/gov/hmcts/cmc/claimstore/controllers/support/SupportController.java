@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
+import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimCreatedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
+import uk.gov.hmcts.cmc.claimstore.events.claim.PostClaimOrchestrationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
@@ -25,6 +27,7 @@ import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedStaffNotificationHandler;
+import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimCreatedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -69,10 +72,10 @@ public class SupportController {
     private final AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler;
     private final ClaimantResponseStaffNotificationHandler claimantResponseStaffNotificationHandler;
     private final DocumentsService documentsService;
+    private final PostClaimOrchestrationHandler postClaimOrchestrationHandler;
     private final MediationReportService mediationReportService;
 
     @SuppressWarnings("squid:S00107")
-    @Autowired
     public SupportController(
         ClaimService claimService,
         UserService userService,
@@ -81,9 +84,10 @@ public class SupportController {
         DefendantResponseStaffNotificationHandler defendantResponseStaffNotificationHandler,
         CCJStaffNotificationHandler ccjStaffNotificationHandler,
         AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler,
+        ClaimantResponseStaffNotificationHandler claimantResponseStaffNotificationHandler,
         DocumentsService documentsService,
-        MediationReportService mediationReportService,
-        ClaimantResponseStaffNotificationHandler claimantResponseStaffNotificationHandler
+        @Autowired(required = false) PostClaimOrchestrationHandler postClaimOrchestrationHandler,
+        MediationReportService mediationReportService
     ) {
         this.claimService = claimService;
         this.userService = userService;
@@ -92,9 +96,10 @@ public class SupportController {
         this.defendantResponseStaffNotificationHandler = defendantResponseStaffNotificationHandler;
         this.ccjStaffNotificationHandler = ccjStaffNotificationHandler;
         this.agreementCountersignedStaffNotificationHandler = agreementCountersignedStaffNotificationHandler;
-        this.documentsService = documentsService;
-        this.mediationReportService = mediationReportService;
         this.claimantResponseStaffNotificationHandler = claimantResponseStaffNotificationHandler;
+        this.documentsService = documentsService;
+        this.postClaimOrchestrationHandler = postClaimOrchestrationHandler;
+        this.mediationReportService = mediationReportService;
     }
 
     @PutMapping("/claim/{referenceNumber}/event/{event}/resend-staff-notifications")
@@ -166,6 +171,29 @@ public class SupportController {
         claimService.getClaimByReferenceAnonymous(referenceNumber)
             .ifPresent(updatedClaim -> updatedClaim.getClaimDocument(claimDocumentType)
                 .orElseThrow(() -> new NotFoundException("Unable to upload the document. Please try again later")));
+    }
+
+    @PutMapping("/claims/{referenceNumber}/recover-operations")
+    @ApiOperation("Recovers the failed operations which are mandatory to issue a claim.")
+    public void recoverClaimIssueOperations(
+        @PathVariable("referenceNumber") String referenceNumber,
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
+            .orElseThrow(() -> new NotFoundException(String.format(CLAIM_DOES_NOT_EXIST, referenceNumber)));
+
+        if (claim.getClaimData().isClaimantRepresented()) {
+            String submitterName = claim.getClaimData().getClaimant()
+                .getRepresentative().orElseThrow(IllegalArgumentException::new)
+                .getOrganisationName();
+
+            this.postClaimOrchestrationHandler
+                .representativeIssueHandler(new RepresentedClaimCreatedEvent(claim, submitterName, authorisation));
+        } else {
+            String submitterName = claim.getClaimData().getClaimant().getName();
+            this.postClaimOrchestrationHandler
+                .citizenIssueHandler(new CitizenClaimCreatedEvent(claim, submitterName, authorisation));
+        }
     }
 
     @PutMapping("/claim/resend-rpa-notifications")
