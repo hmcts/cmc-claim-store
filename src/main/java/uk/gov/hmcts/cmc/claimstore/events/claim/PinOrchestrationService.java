@@ -6,14 +6,11 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.PrintService;
-import uk.gov.hmcts.cmc.claimstore.events.DocumentUploadHandler;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
-
-import static java.util.Collections.singletonList;
 
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled", havingValue = "true")
@@ -21,13 +18,11 @@ public class PinOrchestrationService {
     private final ClaimIssuedNotificationService claimIssuedNotificationService;
     private final NotificationsProperties notificationsProperties;
     private final DocumentOrchestrationService documentOrchestrationService;
-    private final DocumentUploadHandler documentUploadHandler;
     private final ClaimCreationEventsStatusService eventsStatusService;
     private final PrintService bulkPrintService;
     private final ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService;
 
     public PinOrchestrationService(
-        DocumentUploadHandler documentUploadHandler,
         PrintService bulkPrintService,
         ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService,
         ClaimIssuedNotificationService claimIssuedNotificationService,
@@ -35,7 +30,6 @@ public class PinOrchestrationService {
         ClaimCreationEventsStatusService eventsStatusService,
         DocumentOrchestrationService documentOrchestrationService
     ) {
-        this.documentUploadHandler = documentUploadHandler;
         this.bulkPrintService = bulkPrintService;
         this.claimIssuedStaffNotificationService = claimIssuedStaffNotificationService;
         this.claimIssuedNotificationService = claimIssuedNotificationService;
@@ -52,20 +46,13 @@ public class PinOrchestrationService {
             ClaimSubmissionOperationIndicators.builder();
 
         try {
-            updatedClaim = documentUploadHandler.uploadToDocumentManagement(
-                updatedClaim,
-                authorisation,
-                singletonList(documents.getDefendantLetter())
-            );
-            updatedOperationIndicator.defendantPinLetterUpload(YesNoOption.YES);
-
-            bulkPrintService.print(updatedClaim, documents.getDefendantLetterDoc(),
+            bulkPrintService.print(updatedClaim, documents.getDefendantPinLetterDoc(),
                 documents.getSealedClaimDoc());
             updatedOperationIndicator.bulkPrint(YesNoOption.YES);
 
             claimIssuedStaffNotificationService.notifyStaffOfClaimIssue(
                 updatedClaim,
-                ImmutableList.of(documents.getSealedClaim(), documents.getDefendantLetter())
+                ImmutableList.of(documents.getSealedClaim(), documents.getDefendantPinLetter())
             );
             updatedOperationIndicator.staffNotification(YesNoOption.YES);
 

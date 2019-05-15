@@ -36,8 +36,8 @@ public class PostClaimOrchestrationHandler {
     private final ClaimService claimService;
 
     private final Predicate<ClaimSubmissionOperationIndicators> isPinOperationSuccess = indicators ->
-        Stream.of(indicators.getDefendantPinLetterUpload(), indicators.getBulkPrint(),
-            indicators.getStaffNotification(), indicators.getDefendantNotification())
+        Stream.of(indicators.getBulkPrint(), indicators.getStaffNotification(),
+            indicators.getDefendantNotification())
             .anyMatch(ind -> ind.equals(YesNoOption.NO));
     private final Predicate<ClaimSubmissionOperationIndicators> isUploadSealedClaimSuccess = indicators ->
         indicators.getSealedClaimUpload().equals(YesNoOption.NO);
