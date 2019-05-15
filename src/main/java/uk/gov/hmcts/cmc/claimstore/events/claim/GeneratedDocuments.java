@@ -14,24 +14,24 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @Builder
 public class GeneratedDocuments {
     private PDF claimIssueReceipt;
-    private PDF defendantLetter;
+    private PDF defendantPinLetter;
     private PDF sealedClaim;
-    private Document defendantLetterDoc;
+    private Document defendantPinLetterDoc;
     private Document sealedClaimDoc;
     private String pin;
 
     public GeneratedDocuments(
         PDF claimIssueReceipt,
-        PDF defendantLetter,
+        PDF defendantPinLetter,
         PDF sealedClaim,
-        Document defendantLetterDoc,
+        Document defendantPinLetterDoc,
         Document sealedClaimDoc,
         String pin
     ) {
         this.claimIssueReceipt = claimIssueReceipt;
-        this.defendantLetter = defendantLetter;
+        this.defendantPinLetter = defendantPinLetter;
         this.sealedClaim = sealedClaim;
-        this.defendantLetterDoc = defendantLetterDoc;
+        this.defendantPinLetterDoc = defendantPinLetterDoc;
         this.sealedClaimDoc = sealedClaimDoc;
         this.pin = pin;
     }

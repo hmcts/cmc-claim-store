@@ -35,12 +35,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.DOCUMENT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DOCUMENT_MANAGEMENT_UPLOAD_FAILURE;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimIssueReceiptFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementUploadResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.unsuccessfulDocumentManagementUploadResponse;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @TestPropertySource(
@@ -72,20 +70,14 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
             MediaType.APPLICATION_PDF_VALUE,
             PDF_BYTES
         );
-        InMemoryMultipartFile defendantPinLetter = new InMemoryMultipartFile(
-            "files",
-            buildDefendantLetterFileBaseName(claim.getReferenceNumber()) + EXTENSION,
-            MediaType.APPLICATION_PDF_VALUE,
-            PDF_BYTES
-        );
         InMemoryMultipartFile claimIssueReceipt = new InMemoryMultipartFile(
             "files",
             buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber()) + EXTENSION,
             MediaType.APPLICATION_PDF_VALUE,
             PDF_BYTES
         );
-        List<InMemoryMultipartFile> files = Arrays.asList(sealedClaimForm, defendantPinLetter, claimIssueReceipt);
-        verify(documentUploadClient, times(3)).upload(
+        List<InMemoryMultipartFile> files = Arrays.asList(sealedClaimForm, claimIssueReceipt);
+        verify(documentUploadClient, times(2)).upload(
             eq(AUTHORISATION_TOKEN),
             any(),
             any(),
@@ -138,14 +130,6 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
             AUTHORISATION_TOKEN,
             SEALED_CLAIM,
             "claim-form.pdf");
-    }
-
-    @Test
-    public void shouldLinkDefendantPinLetterAfterUpload() throws Exception {
-        assertDocumentIsLinked(SampleClaimData.submittedByClaimant(),
-            AUTHORISATION_TOKEN,
-            DEFENDANT_PIN_LETTER,
-            "defendant-pin-letter.pdf");
     }
 
     @Test
