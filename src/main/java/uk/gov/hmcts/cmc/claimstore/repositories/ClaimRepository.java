@@ -66,6 +66,9 @@ public interface ClaimRepository {
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim->'payment'->>'reference' = :payReference")
     List<Claim> getByPaymentReference(@Bind("payReference") String payReference);
 
+    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.state = :state")
+    List<Claim> getClaimsByState(@Bind("state") ClaimState state);
+
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.id = :id")
     Optional<Claim> getById(@Bind("id") Long id);

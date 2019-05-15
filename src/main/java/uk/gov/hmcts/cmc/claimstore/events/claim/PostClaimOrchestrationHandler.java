@@ -133,7 +133,7 @@ public class PostClaimOrchestrationHandler {
                     .andThen(c -> notifyClaimantOperation.perform(c, event))
                     .apply(claim);
 
-            claimService.updateClaimState(authorisation, updatedClaim.get(), ClaimState.ISSUED);
+            claimService.updateClaimState(authorisation, updatedClaim.get(), ClaimState.OPEN);
 
         } catch (Exception e) {
             logger.error("failed operation processing for event ()", event, e);
@@ -159,7 +159,7 @@ public class PostClaimOrchestrationHandler {
                     .andThen(c -> notifyRepresentativeOperation.perform(c, event))
                     .apply(claim);
 
-            claimService.updateClaimState(authorisation, updatedClaim.get(), ClaimState.ISSUED);
+            claimService.updateClaimState(authorisation, updatedClaim.get(), ClaimState.OPEN);
 
         } catch (Exception e) {
             logger.error("failed operation processing for event ()", event, e);
