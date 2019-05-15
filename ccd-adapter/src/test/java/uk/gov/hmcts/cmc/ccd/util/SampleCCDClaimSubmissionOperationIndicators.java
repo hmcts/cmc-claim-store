@@ -19,7 +19,7 @@ public interface SampleCCDClaimSubmissionOperationIndicators<S,T, U, V, W, X, Y,
             .staffNotification(U)
             .defendantNotification(V)
             .claimantNotification(W)
-            .RPA(X)
+            .rpa(X)
             .sealedClaimUpload(Y)
             .claimIssueReceiptUpload(Z)
             .build();

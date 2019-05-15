@@ -14,7 +14,8 @@ import java.util.Optional;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.getDefaultClaimSubmissionOperationIndicators;
-import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.mapClaimSubmissionOperationIndicators;
+import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.mapClaimSubmissionOperationIndicatorsToCCD;
+import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.mapFromCCDClaimSubmissionOperationIndicators;
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.toCaseName;
 
 @Component
@@ -57,6 +58,8 @@ public class CaseMapper {
             .features(claim.getFeatures() != null ? String.join(",", claim.getFeatures()) : null)
             .migratedFromClaimStore(isMigrated ? YES : NO)
             .caseName(toCaseName.apply(claim))
+            .claimSubmissionOperationIndicators(
+                mapClaimSubmissionOperationIndicatorsToCCD.apply(claim.getClaimSubmissionOperationIndicators()))
             .build();
     }
 
@@ -88,7 +91,7 @@ public class CaseMapper {
         CCDClaimSubmissionOperationIndicators ccdClaimSubmissionOperationIndicators) {
 
         return Optional.ofNullable(ccdClaimSubmissionOperationIndicators)
-            .map(ccdIndicators -> mapClaimSubmissionOperationIndicators.apply(ccdIndicators))
+            .map(ccdIndicators -> mapFromCCDClaimSubmissionOperationIndicators.apply(ccdIndicators))
             .orElseGet(getDefaultClaimSubmissionOperationIndicators);
 
     }

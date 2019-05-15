@@ -9,7 +9,7 @@ public class CCDClaimSubmissionOperationIndicators {
     private CCDYesNoOption claimantNotification;
     private CCDYesNoOption defendantNotification;
     private CCDYesNoOption bulkPrint;
-    private CCDYesNoOption RPA;
+    private CCDYesNoOption rpa;
     private CCDYesNoOption staffNotification;
     private CCDYesNoOption sealedClaimUpload;
     private CCDYesNoOption claimIssueReceiptUpload;

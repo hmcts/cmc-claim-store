@@ -42,7 +42,7 @@ import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_REQUESTED;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_NEW_CASE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_LETTER_HOLDER;
@@ -115,7 +115,7 @@ public class CoreCaseDataService {
                 .userId(user.getUserDetails().getId())
                 .jurisdictionId(JURISDICTION_ID)
                 .caseTypeId(CASE_TYPE_ID)
-                .eventId(CREATE_NEW_CASE.getValue())
+                .eventId(CREATE_CLAIM.getValue())
                 .ignoreWarning(true)
                 .build();
 
@@ -150,7 +150,7 @@ public class CoreCaseDataService {
                 String.format(
                     CCD_STORING_FAILURE_MESSAGE,
                     ccdCase.getPreviousServiceCaseReference(),
-                    CREATE_NEW_CASE
+                    CREATE_CLAIM
                 ), exception
             );
         }

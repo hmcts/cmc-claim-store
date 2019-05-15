@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.util;
 
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimSubmissionOperationIndicators;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
@@ -27,16 +28,29 @@ public class MapperUtil {
     }
 
     public static Function<CCDClaimSubmissionOperationIndicators, ClaimSubmissionOperationIndicators>
-        mapClaimSubmissionOperationIndicators = claimSubmissionOperationIndicators ->
+        mapFromCCDClaimSubmissionOperationIndicators = claimSubmissionOperationIndicators ->
         ClaimSubmissionOperationIndicators.builder()
-            .claimantNotification(YesNoOption.valueOf(claimSubmissionOperationIndicators.getClaimantNotification().name()))
-            .defendantNotification(YesNoOption.valueOf(claimSubmissionOperationIndicators.getDefendantNotification().name()))
-            .bulkPrint(YesNoOption.valueOf(claimSubmissionOperationIndicators.getBulkPrint().name()))
-            .rpa(YesNoOption.valueOf(claimSubmissionOperationIndicators.getRPA().name()))
-            .staffNotification(YesNoOption.valueOf(claimSubmissionOperationIndicators.getStaffNotification().name()))
-            .sealedClaimUpload(YesNoOption.valueOf(claimSubmissionOperationIndicators.getSealedClaimUpload().name()))
-            .claimIssueReceiptUpload(YesNoOption.valueOf(claimSubmissionOperationIndicators.getClaimIssueReceiptUpload().name()))
-            .defendantPinLetterUpload(YesNoOption.valueOf(claimSubmissionOperationIndicators.getDefendantPinLetterUpload().name()))
+            .claimantNotification(YesNoOption.fromValue(claimSubmissionOperationIndicators.getClaimantNotification().name()))
+            .defendantNotification(YesNoOption.fromValue(claimSubmissionOperationIndicators.getDefendantNotification().name()))
+            .bulkPrint(YesNoOption.fromValue(claimSubmissionOperationIndicators.getBulkPrint().name()))
+            .rpa(YesNoOption.fromValue(claimSubmissionOperationIndicators.getRpa().name()))
+            .staffNotification(YesNoOption.fromValue(claimSubmissionOperationIndicators.getStaffNotification().name()))
+            .sealedClaimUpload(YesNoOption.fromValue(claimSubmissionOperationIndicators.getSealedClaimUpload().name()))
+            .claimIssueReceiptUpload(YesNoOption.fromValue(claimSubmissionOperationIndicators.getClaimIssueReceiptUpload().name()))
+            .defendantPinLetterUpload(YesNoOption.fromValue(claimSubmissionOperationIndicators.getDefendantPinLetterUpload().name()))
+            .build();
+
+    public static Function<ClaimSubmissionOperationIndicators, CCDClaimSubmissionOperationIndicators>
+        mapClaimSubmissionOperationIndicatorsToCCD = claimSubmissionOperationIndicators ->
+        CCDClaimSubmissionOperationIndicators.builder()
+            .claimantNotification(CCDYesNoOption.valueOf(claimSubmissionOperationIndicators.getClaimantNotification().name()))
+            .defendantNotification(CCDYesNoOption.valueOf(claimSubmissionOperationIndicators.getDefendantNotification().name()))
+            .bulkPrint(CCDYesNoOption.valueOf(claimSubmissionOperationIndicators.getBulkPrint().name()))
+            .rpa(CCDYesNoOption.valueOf(claimSubmissionOperationIndicators.getRpa().name()))
+            .staffNotification(CCDYesNoOption.valueOf(claimSubmissionOperationIndicators.getStaffNotification().name()))
+            .sealedClaimUpload(CCDYesNoOption.valueOf(claimSubmissionOperationIndicators.getSealedClaimUpload().name()))
+            .claimIssueReceiptUpload(CCDYesNoOption.valueOf(claimSubmissionOperationIndicators.getClaimIssueReceiptUpload().name()))
+            .defendantPinLetterUpload(CCDYesNoOption.valueOf(claimSubmissionOperationIndicators.getDefendantPinLetterUpload().name()))
             .build();
 
     public static Supplier<ClaimSubmissionOperationIndicators> getDefaultClaimSubmissionOperationIndicators =

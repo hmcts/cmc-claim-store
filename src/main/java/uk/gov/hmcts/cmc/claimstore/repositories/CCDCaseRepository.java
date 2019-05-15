@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
@@ -211,8 +212,11 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void updateClaimState(String authorisation, Long claimId, String state){
-        //TODO to be implemented as part of another PR.
+    public void updateClaimState(String authorisation, Long claimId, ClaimState state){
+        if(state == ClaimState.ISSUED) {
+            coreCaseDataService.saveCaseEvent(authorisation, claimId, CaseEvent.ISSUE_CLAIM);
+        }else{
+            throw new UnsupportedOperationException("State transition not allowed for " + state.name());
+        }
     }
-
 }
