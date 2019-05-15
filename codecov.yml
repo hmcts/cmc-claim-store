@@ -17,3 +17,4 @@ ignore:
   - "**/EmailData.java"
   - "**/CCDCaseHandler.java"
   - "**/GeneratedDocuments.java"
+  - "**/CCDCaseApi.java"
