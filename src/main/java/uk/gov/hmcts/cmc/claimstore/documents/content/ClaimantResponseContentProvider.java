@@ -91,7 +91,8 @@ public class ClaimantResponseContentProvider {
                             selectedOption -> content.put("formaliseOption", selectedOption)
                         );
 
-                    if (claim.getReDeterminationRequestedAt().isPresent()) {
+                    if (claim.getReDeterminationRequestedAt().isPresent() ||
+                        responseAcceptation.getFormaliseOption().equals(FormaliseOption.REFER_TO_JUDGE)) {
                         admissionStatus = getDefendantAdmissionStatus(defendantResponse);
                     }
                 }
