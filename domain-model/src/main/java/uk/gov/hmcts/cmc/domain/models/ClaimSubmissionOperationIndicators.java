@@ -17,7 +17,6 @@ public class ClaimSubmissionOperationIndicators {
     private YesNoOption staffNotification;
     private YesNoOption sealedClaimUpload;
     private YesNoOption claimIssueReceiptUpload;
-    private YesNoOption defendantPinLetterUpload;
 
     public static ClaimSubmissionOperationIndicatorsBuilder builder() {
         return new ClaimSubmissionOperationIndicatorsBuilder() {
@@ -30,7 +29,6 @@ public class ClaimSubmissionOperationIndicators {
                 super.staffNotification = setDefaultIfNull(super.staffNotification);
                 super.sealedClaimUpload = setDefaultIfNull(super.sealedClaimUpload);
                 super.claimIssueReceiptUpload = setDefaultIfNull(super.claimIssueReceiptUpload);
-                super.defendantPinLetterUpload = setDefaultIfNull(super.defendantPinLetterUpload);
 
                 return super.build();
             }
