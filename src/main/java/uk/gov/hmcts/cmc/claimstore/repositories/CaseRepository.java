@@ -5,6 +5,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
@@ -54,6 +55,8 @@ public interface CaseRepository {
     List<Claim> getByDefendantEmail(String email, String authorisation);
 
     List<Claim> getByPaymentReference(String payReference, String authorisation);
+
+    List<Claim> getClaimsByState(ClaimState claimState, User user);
 
     Optional<Claim> getByLetterHolderId(String id, String authorisation);
 
