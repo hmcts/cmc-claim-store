@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
@@ -59,7 +60,9 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             toNullableLocalDateTimeFromUTC(result.getTimestamp("re_determination_requested_at")),
             toNullableEntity(result.getString("claim_documents"), ClaimDocumentCollection.class),
             toNullableLocalDateFromUTC(result.getTimestamp("claimant_response_deadline")),
-            toNullableClaimState(result.getString("state"))
+            toNullableClaimState(result.getString("state")),
+            toNullableEntity(result.getString("submission_operation_indicators"),
+                ClaimSubmissionOperationIndicators.class)
         );
     }
 

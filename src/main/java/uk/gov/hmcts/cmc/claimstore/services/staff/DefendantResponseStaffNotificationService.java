@@ -45,7 +45,8 @@ public class DefendantResponseStaffNotificationService {
         StaffEmailProperties emailProperties,
         FullDefenceStaffEmailContentProvider fullDefenceStaffEmailContentProvider,
         DefendantAdmissionStaffEmailContentProvider defendantAdmissionStaffEmailContentProvider,
-        DefendantResponseReceiptService defendantResponseReceiptService) {
+        DefendantResponseReceiptService defendantResponseReceiptService
+    ) {
         this.emailService = emailService;
         this.emailProperties = emailProperties;
         this.fullDefenceStaffEmailContentProvider = fullDefenceStaffEmailContentProvider;

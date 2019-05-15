@@ -26,7 +26,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @JsonIgnoreProperties(
     value = {"totalAmountTillToday", "totalAmountTillDateOfIssue",
         "amountWithInterestUntilIssueDate", "totalInterestTillDateOfIssue", "totalInterest",
-        "serviceDate", "amountWithInterest", "directionsQuestionnaireDeadline"},
+        "serviceDate", "amountWithInterest", "directionsQuestionnaireDeadline", "claimSubmissionOperationIndicators"},
     allowGetters = true
 )
 @Getter
@@ -65,6 +65,7 @@ public class Claim {
     private final ClaimDocumentCollection claimDocumentCollection;
     private final LocalDate claimantResponseDeadline;
     private final ClaimState state;
+    private final ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -98,7 +99,8 @@ public class Claim {
         LocalDateTime reDeterminationRequestedAt,
         ClaimDocumentCollection claimDocumentCollection,
         LocalDate claimantResponseDeadline,
-        ClaimState state
+        ClaimState state,
+        ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -130,6 +132,7 @@ public class Claim {
         this.claimDocumentCollection = claimDocumentCollection;
         this.claimantResponseDeadline = claimantResponseDeadline;
         this.state = state;
+        this.claimSubmissionOperationIndicators = claimSubmissionOperationIndicators;
     }
 
     public Optional<Response> getResponse() {

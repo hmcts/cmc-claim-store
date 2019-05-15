@@ -22,12 +22,15 @@ import static java.lang.String.format;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NOTIFICATION_FAILURE;
 
 @TestPropertySource(
     properties = {
@@ -104,6 +107,18 @@ public class MakeOfferTest extends BaseIntegrationTest {
             .sendEmail(any(), any(), anyMap(), contains("claimant-offer-made-notification-"));
         verify(notificationClient, times(3))
             .sendEmail(any(), any(), anyMap(), contains("defendant-offer-made-notification-"));
+
+        verify(appInsights).trackEvent(
+            eq(NOTIFICATION_FAILURE),
+            eq(REFERENCE_NUMBER),
+            eq("claimant-offer-made-notification-" + claim.getReferenceNumber())
+        );
+
+        verify(appInsights).trackEvent(
+            eq(NOTIFICATION_FAILURE),
+            eq(REFERENCE_NUMBER),
+            eq("defendant-offer-made-notification-" + claim.getReferenceNumber())
+        );
     }
 
     private ResultActions makeOffer(String authToken, Offer offer, String party) throws Exception {

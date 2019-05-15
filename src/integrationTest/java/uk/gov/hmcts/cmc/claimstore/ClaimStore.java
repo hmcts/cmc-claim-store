@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -74,7 +75,8 @@ public class ClaimStore {
             externalId.toString(),
             SampleClaim.SUBMITTER_EMAIL,
             "[\"admissions\"]",
-            CREATED
+            CREATED,
+            jsonMapper.toJson(ClaimSubmissionOperationIndicators.builder().build())
         );
 
         logger.debug("Saved claim for externalId {}.", externalId);

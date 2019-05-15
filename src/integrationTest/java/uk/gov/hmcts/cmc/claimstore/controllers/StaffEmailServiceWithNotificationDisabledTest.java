@@ -42,7 +42,8 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.Sample
     properties = {
         "document_management.url=false",
         "feature_toggles.ccd_enabled=false",
-        "feature_toggles.emailToStaff=false"
+        "feature_toggles.emailToStaff=false",
+        "feature_toggles.async_event_operations_enabled=false"
     }
 )
 public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest {

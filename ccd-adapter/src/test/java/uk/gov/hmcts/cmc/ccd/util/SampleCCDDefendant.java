@@ -13,7 +13,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static java.math.BigDecimal.TEN;
 import static java.time.LocalDate.now;
 import static java.util.Arrays.asList;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.COMPANY;
@@ -163,7 +162,7 @@ public class SampleCCDDefendant {
     public static CCDRespondent.CCDRespondentBuilder withPartAdmissionResponse() {
         return withResponse()
             .responseType(PART_ADMISSION)
-            .responseAmount(TEN)
+            .responseAmount("1000")
             .paymentDeclarationPaidDate(now())
             .paymentDeclarationExplanation("Payment declaration explanation")
             .defendantPaymentIntention(getCCDPaymentIntention())

@@ -28,6 +28,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATED;
 
 @TestPropertySource(
     properties = {
@@ -200,6 +201,19 @@ public class GetMetadataTest extends BaseGetTest {
 
         assertThat(deserializeMetadataListFrom(result))
             .isEmpty();
+    }
+
+    @Test
+    public void shouldReturn200HttpStatusAndClaimMetadataWhenClaimsExistForCreatedState() throws Exception {
+        claimStore.saveClaim(SampleClaimData.builder().build(), "1", LocalDate.now());
+
+        MvcResult result = makeRequest("/claims/filters/created")
+            .andExpect(status().isOk())
+            .andReturn();
+
+        List<CaseMetadata> actual = deserializeMetadataListFrom(result);
+        assertThat(actual).isNotEmpty();
+        assertThat(actual).extracting(CaseMetadata::getState).containsOnly(CREATED);
     }
 
     private List<CaseMetadata> deserializeMetadataListFrom(MvcResult result) throws UnsupportedEncodingException {

@@ -22,7 +22,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service("rpa/claim-issued-notification-service")
-@ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff", havingValue = "true")
 public class ClaimIssuedNotificationService {
 
     public static final String JSON_EXTENSION = ".json";

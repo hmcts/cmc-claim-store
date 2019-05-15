@@ -52,7 +52,7 @@ public class PriorityDebtMapperTest {
         CCDPriorityDebt ccdPriorityDebt = CCDPriorityDebt.builder()
             .type(COUNCIL_TAX_COMMUNITY_CHARGE)
             .frequency(CCDPaymentFrequency.MONTH)
-            .amount(BigDecimal.TEN)
+            .amount("1000")
             .build();
 
         String collectionId = UUID.randomUUID().toString();

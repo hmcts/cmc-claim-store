@@ -52,17 +52,19 @@ public class SearchCCDCaseService {
     )
     @LogExecutionTime
     public Optional<CaseDetails> getCcdIdByReferenceNumber(User user, String referenceNumber) {
-        return search(user, ImmutableMap.of("case.referenceNumber", referenceNumber));
+        return search(user, ImmutableMap.of("case.previousServiceCaseReference", referenceNumber));
     }
 
     @Recover
-    public void recoverSearchFailure(RuntimeException exception, User user, String referenceNumber) {
+    public Optional<CaseDetails> recoverSearchFailure(RuntimeException exception, User user, String referenceNumber) {
         String errorMessage = String.format(
             "Failure: failed search by reference number ( %s for user %s ) due to %s",
             referenceNumber, user.getUserDetails().getId(), exception.getMessage()
         );
 
         logger.info(errorMessage, exception);
+
+        return Optional.empty();
     }
 
     private Optional<CaseDetails> search(User user, Map<String, String> searchString) {
