@@ -5,7 +5,6 @@ import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Value
@@ -22,9 +21,9 @@ public class CCDStatementOfMeans {
     private CCDYesNoOption otherDependantAnyDisabled;
     private List<CCDCollectionElement<CCDEmployer>> employers;
     private String taxPaymentsReason;
-    private BigDecimal taxYouOwe;
+    private String taxYouOwe;
     private String selfEmploymentJobTitle;
-    private BigDecimal selfEmploymentAnnualTurnover;
+    private String selfEmploymentAnnualTurnover;
     private Integer unEmployedNoOfYears;
     private Integer unEmployedNoOfMonths;
     private String employmentDetails;

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentIntention;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;
@@ -12,6 +13,13 @@ import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 @Component
 public class PaymentIntentionMapper implements Mapper<CCDPaymentIntention, PaymentIntention> {
 
+    private final MoneyMapper moneyMapper;
+
+    @Autowired
+    public PaymentIntentionMapper(MoneyMapper moneyMapper) {
+        this.moneyMapper = moneyMapper;
+    }
+
     @Override
     public CCDPaymentIntention to(PaymentIntention paymentIntention) {
         if (null == paymentIntention) {
@@ -21,7 +29,7 @@ public class PaymentIntentionMapper implements Mapper<CCDPaymentIntention, Payme
         builder.paymentOption(CCDPaymentOption.valueOf(paymentIntention.getPaymentOption().name()));
         builder.paymentDate(paymentIntention.getPaymentDate().orElse(null));
         paymentIntention.getRepaymentPlan().ifPresent(repaymentPlan ->
-            builder.instalmentAmount(repaymentPlan.getInstalmentAmount())
+            builder.instalmentAmount(moneyMapper.to(repaymentPlan.getInstalmentAmount()))
                 .firstPaymentDate(repaymentPlan.getFirstPaymentDate())
                 .paymentSchedule(CCDPaymentSchedule.valueOf(repaymentPlan.getPaymentSchedule().name()))
                 .completionDate(repaymentPlan.getCompletionDate())
@@ -40,7 +48,7 @@ public class PaymentIntentionMapper implements Mapper<CCDPaymentIntention, Payme
             builder.repaymentPlan(RepaymentPlan.builder()
                 .paymentSchedule(PaymentSchedule.valueOf(ccdPaymentIntention.getPaymentSchedule().name()))
                 .firstPaymentDate(ccdPaymentIntention.getFirstPaymentDate())
-                .instalmentAmount(ccdPaymentIntention.getInstalmentAmount())
+                .instalmentAmount(moneyMapper.from(ccdPaymentIntention.getInstalmentAmount()))
                 .completionDate(ccdPaymentIntention.getCompletionDate())
                 .paymentLength(ccdPaymentIntention.getPaymentLength())
                 .build());
