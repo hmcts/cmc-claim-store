@@ -457,6 +457,6 @@ public class ClaimService {
     }
 
     public void updateClaimState(String authorisation, Claim claim, ClaimState state) {
-        claimRepository.updateClaimState(claim.getId(), state.name());
+        caseRepository.updateClaimState(authorisation, claim.getId(), state);
     }
 }

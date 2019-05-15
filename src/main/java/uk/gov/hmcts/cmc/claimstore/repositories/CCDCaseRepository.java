@@ -217,8 +217,11 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void updateClaimState(String authorisation, Long claimId, String state) {
-        //TODO to be implemented as part of another PR.
+    public void updateClaimState(String authorisation, Long claimId, ClaimState state) {
+        if (state == ClaimState.OPEN) {
+            coreCaseDataService.saveCaseEvent(authorisation, claimId, CaseEvent.ISSUE_CLAIM);
+        } else {
+            throw new UnsupportedOperationException("State transition not allowed for " + state.name());
+        }
     }
-
 }
