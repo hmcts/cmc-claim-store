@@ -13,14 +13,14 @@ import java.time.LocalDateTime;
 public class DirectionsQuestionnaireDeadlineCalculator {
 
     private final WorkingDayIndicator workingDayIndicator;
-    private final int serviceDays;
-    private final int timeForResponseInDays;
+    private final long serviceDays;
+    private final long timeForResponseInDays;
     private final int endOfBusinessDayHour;
 
     public DirectionsQuestionnaireDeadlineCalculator(
         WorkingDayIndicator workingDayIndicator,
-        @Value("${dateCalculations.serviceDays}") int serviceDays,
-        @Value("${dateCalculations.responseDays}") int timeForResponseInDays,
+        @Value("${dateCalculations.serviceDays}") long serviceDays,
+        @Value("${dateCalculations.responseDays}") long timeForResponseInDays,
         @Value("${dateCalculations.endOfBusinessDayHour}") int endOfBusinessDayHour) {
 
         this.workingDayIndicator = workingDayIndicator;
@@ -30,13 +30,9 @@ public class DirectionsQuestionnaireDeadlineCalculator {
     }
 
     public LocalDate calculateDirectionsQuestionnaireDeadlineCalculator(LocalDateTime respondedAt) {
-        return calculateFirstWorkingDayAndAddOffset(respondedAt, serviceDays + timeForResponseInDays);
-    }
+        LocalDate date = respondedAt.toLocalDate().plusDays(serviceDays + timeForResponseInDays);
 
-    private LocalDate calculateFirstWorkingDayAndAddOffset(LocalDateTime dateTime, int offset) {
-        LocalDate date = dateTime.toLocalDate();
-
-        if (isTooLateForToday(dateTime.getHour())) {
+        if (isTooLateForToday(respondedAt.getHour())) {
             date = date.plusDays(1);
         }
 
@@ -44,7 +40,7 @@ public class DirectionsQuestionnaireDeadlineCalculator {
             date = date.plusDays(1);
         }
 
-        return date.plusDays(offset);
+        return date;
     }
 
     private boolean isTooLateForToday(int hour) {

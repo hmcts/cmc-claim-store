@@ -3,7 +3,9 @@ package uk.gov.hmcts.cmc.ccd.migration.services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.idam.services.UserService;
 import uk.gov.hmcts.cmc.ccd.migration.repositories.ClaimRepository;
@@ -20,19 +22,23 @@ public class ClaimMigrator {
 
     private static final Logger logger = LoggerFactory.getLogger(ClaimMigrator.class);
 
-    private ClaimRepository claimRepository;
-    private UserService userService;
+    private final ClaimRepository claimRepository;
+    private final UserService userService;
     private final MigrationHandler migrationHandler;
+    private final List<String> casesToMigrate;
 
     @Autowired
     public ClaimMigrator(
         ClaimRepository claimRepository,
         UserService userService,
-        MigrationHandler migrationHandler
+        MigrationHandler migrationHandler,
+        @Value("${migration.cases.references}") List<String> casesToMigrate
+
     ) {
         this.claimRepository = claimRepository;
         this.userService = userService;
         this.migrationHandler = migrationHandler;
+        this.casesToMigrate = casesToMigrate;
     }
 
     @LogExecutionTime
@@ -40,7 +46,7 @@ public class ClaimMigrator {
         logger.info("===== MIGRATE CLAIMS TO CCD =====");
 
         User user = userService.authenticateSystemUpdateUser();
-        List<Claim> notMigratedClaims = claimRepository.getAllNotMigratedClaims();
+        List<Claim> claimsToMigrate = getClaimsToMigrate();
 
         logger.info("User token: " + user.getAuthorisation());
 
@@ -48,23 +54,31 @@ public class ClaimMigrator {
         AtomicInteger updatedClaims = new AtomicInteger(0);
         AtomicInteger failedMigrations = new AtomicInteger(0);
 
-        ForkJoinPool forkJoinPool = new ForkJoinPool(10);
+        ForkJoinPool forkJoinPool = new ForkJoinPool(25);
 
         try {
             forkJoinPool
-                .submit(() -> migrateClaims(user, notMigratedClaims, migratedClaims, updatedClaims, failedMigrations))
+                .submit(() -> migrateClaims(user, claimsToMigrate, migratedClaims, updatedClaims, failedMigrations))
                 .get();
         } catch (InterruptedException | ExecutionException e) {
-            logger.info("failed migration due to fork join pool interruption");
+            logger.error("Failed migration due to fork join pool interruption");
         } finally {
             forkJoinPool.shutdown();
         }
 
-        logger.info("Total Claims in database: " + notMigratedClaims.size());
+        logger.info("Total Claims in database: " + claimsToMigrate.size());
         logger.info("Successful creates: " + migratedClaims.toString());
         logger.info("Successful updates: " + updatedClaims.toString());
         logger.info("Total ccd calls: " + (updatedClaims.intValue() + migratedClaims.intValue()));
         logger.info("Failed ccd calls: " + failedMigrations.toString());
+    }
+
+    private List<Claim> getClaimsToMigrate() {
+        if (CollectionUtils.isEmpty(casesToMigrate)) {
+            return claimRepository.getAllNotMigratedClaims();
+        } else {
+            return claimRepository.getClaims(casesToMigrate);
+        }
     }
 
     private void migrateClaims(
