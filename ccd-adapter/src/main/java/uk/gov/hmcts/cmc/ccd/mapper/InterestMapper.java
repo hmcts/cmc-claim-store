@@ -11,16 +11,19 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @Component
 public class InterestMapper implements BuilderMapper<CCDCase, Interest, CCDCase.CCDCaseBuilder> {
 
-    private InterestBreakdownMapper interestBreakdownMapper;
-    private InterestDateMapper interestDateMapper;
+    private final InterestBreakdownMapper interestBreakdownMapper;
+    private final InterestDateMapper interestDateMapper;
+    private final MoneyMapper moneyMapper;
 
     @Autowired
     public InterestMapper(
         InterestBreakdownMapper interestBreakdownMapper,
-        InterestDateMapper interestDateMapper
+        InterestDateMapper interestDateMapper,
+        MoneyMapper moneyMapper
     ) {
         this.interestBreakdownMapper = interestBreakdownMapper;
         this.interestDateMapper = interestDateMapper;
+        this.moneyMapper = moneyMapper;
     }
 
     @Override
@@ -29,7 +32,8 @@ public class InterestMapper implements BuilderMapper<CCDCase, Interest, CCDCase.
             return;
         }
 
-        interest.getSpecificDailyAmount().ifPresent(builder::interestSpecificDailyAmount);
+        interest.getSpecificDailyAmount().map(moneyMapper::to).ifPresent(builder::interestSpecificDailyAmount);
+
         interestBreakdownMapper.to(interest.getInterestBreakdown(), builder);
         interestDateMapper.to(interest.getInterestDate(), builder);
 
@@ -57,7 +61,7 @@ public class InterestMapper implements BuilderMapper<CCDCase, Interest, CCDCase.
             interestBreakdownMapper.from(ccdCase),
             ccdCase.getInterestRate(),
             ccdCase.getInterestReason(),
-            ccdCase.getInterestSpecificDailyAmount(),
+            moneyMapper.from(ccdCase.getInterestSpecificDailyAmount()),
             interestDateMapper.from(ccdCase)
         );
     }

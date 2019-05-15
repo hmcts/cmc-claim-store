@@ -52,7 +52,7 @@ public class ExpenseMapperTest {
         CCDExpense ccdExpense = CCDExpense.builder()
             .type(COUNCIL_TAX)
             .frequency(CCDPaymentFrequency.MONTH)
-            .amountPaid(BigDecimal.TEN)
+            .amountPaid("1000")
             .build();
 
         String collectionId = UUID.randomUUID().toString();
