@@ -85,7 +85,7 @@ allprojects {
     }
     dependencies {
       // CVE-2019-0232 - command line injections on windows - fixed on spring boot master but not released
-      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.19') {
+      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.20') {
         entry 'tomcat-embed-core'
         entry 'tomcat-embed-el'
         entry 'tomcat-embed-websocket'
