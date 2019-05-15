@@ -39,6 +39,7 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_REQUESTED;
@@ -46,7 +47,6 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_LETTER_HOLDER;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED_ONLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
@@ -293,7 +293,7 @@ public class CoreCaseDataService {
                 String.format(
                     CCD_UPDATE_FAILURE_MESSAGE,
                     caseId,
-                    LINK_SEALED_CLAIM
+                    CaseEventMapper.map(claimDocumentType)
                 ), exception
             );
         }
@@ -896,7 +896,7 @@ public class CoreCaseDataService {
                 String.format(
                     CCD_UPDATE_FAILURE_MESSAGE,
                     caseId,
-                    SETTLED_PRE_JUDGMENT
+                    caseEvent
                 ), exception
             );
         }
@@ -934,7 +934,10 @@ public class CoreCaseDataService {
             );
 
             ccdCreateCaseService.grantAccessToCase(caseId.toString(), letterHolderId);
-            ccdCreateCaseService.removeAccessToCase(caseId.toString(), claim.getLetterHolderId());
+            Optional.ofNullable(claim.getLetterHolderId()).ifPresent(
+                previousLetterHolderId ->
+                    ccdCreateCaseService.removeAccessToCase(caseId.toString(), previousLetterHolderId)
+            );
 
             return extractClaim(caseDetails);
         } catch (Exception exception) {

@@ -8,31 +8,30 @@ import java.util.function.Supplier;
 @FunctionalInterface
 public interface SampleCCDClaimSubmissionOperationIndicators<S,T, U, V, W, X, Y, Z, R> {
      R get(S claimantNotification, T defendantNotification, U bulkPrint, V RPA,
-           W staffNotification, X sealedClaimUpload, Y claimIssueReceiptUpload, Z defendantPinLetterUpload);
+           W staffNotification, X sealedClaimUpload, Y claimIssueReceiptUpload);
 
     SampleCCDClaimSubmissionOperationIndicators<CCDYesNoOption, CCDYesNoOption, CCDYesNoOption, CCDYesNoOption,
         CCDYesNoOption, CCDYesNoOption, CCDYesNoOption, CCDYesNoOption, CCDClaimSubmissionOperationIndicators>
-        getClaimSubmissionIndicatorWithVaue = (S, T, U, V, W, X, Y, Z) ->
+        getClaimSubmissionIndicatorWithVaue = (S, T, U, V, W, X, Y) ->
         CCDClaimSubmissionOperationIndicators.builder()
-            .defendantPinLetterUpload(S)
-            .bulkPrint(T)
-            .staffNotification(U)
-            .defendantNotification(V)
-            .claimantNotification(W)
-            .rpa(X)
-            .sealedClaimUpload(Y)
-            .claimIssueReceiptUpload(Z)
+            .claimantNotification(S)
+            .defendantNotification(T)
+            .bulkPrint(U)
+            .rpa(V)
+            .staffNotification(W)
+            .sealedClaimUpload(X)
+            .claimIssueReceiptUpload(Y)
             .build();
 
      Supplier<CCDClaimSubmissionOperationIndicators> getDefaultCCDClaimSubmissionOperationIndicators =
          () -> getClaimSubmissionIndicatorWithVaue.get(CCDYesNoOption.NO, CCDYesNoOption.NO,
              CCDYesNoOption.NO, CCDYesNoOption.NO, CCDYesNoOption.NO, CCDYesNoOption.NO,
-             CCDYesNoOption.NO, CCDYesNoOption.NO);
+             CCDYesNoOption.NO);
 
     Supplier<CCDClaimSubmissionOperationIndicators> getCCDClaimSubmissionOperationIndicatorsWithPinSuccess =
         () -> getClaimSubmissionIndicatorWithVaue.get(CCDYesNoOption.YES, CCDYesNoOption.YES,
             CCDYesNoOption.YES, CCDYesNoOption.YES, CCDYesNoOption.NO, CCDYesNoOption.NO,
-            CCDYesNoOption.NO, CCDYesNoOption.NO);
+            CCDYesNoOption.NO);
 
     Supplier<CCDClaimSubmissionOperationIndicators>     getNullCCDClaimSubmissionOperationIndicators =
         () -> null;

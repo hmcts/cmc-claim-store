@@ -13,5 +13,4 @@ public class CCDClaimSubmissionOperationIndicators {
     private CCDYesNoOption staffNotification;
     private CCDYesNoOption sealedClaimUpload;
     private CCDYesNoOption claimIssueReceiptUpload;
-    private CCDYesNoOption defendantPinLetterUpload;
 }

@@ -112,6 +112,11 @@ public class CCDCreateCaseService {
     @LogExecutionTime
     public void removeAccessToCase(String caseId, String letterHolderId) {
         User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
+        System.out.println("AnonymouseCaseWorker authorisation "+ anonymousCaseWorker.getAuthorisation());
+        System.out.println("AnonymouseCaseWorker getId "+ anonymousCaseWorker.getUserDetails().getId());
+        System.out.println("letterHolderId details "+ letterHolderId);
+        System.out.println("caseId details "+ caseId);
+
         caseAccessApi.revokeAccessToCase(anonymousCaseWorker.getAuthorisation(),
             authTokenGenerator.generate(),
             anonymousCaseWorker.getUserDetails().getId(),

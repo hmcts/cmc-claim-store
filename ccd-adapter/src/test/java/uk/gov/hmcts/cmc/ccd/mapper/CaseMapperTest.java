@@ -172,7 +172,6 @@ public class CaseMapperTest {
 
         //then
         assertNotNull(claim.getClaimSubmissionOperationIndicators());
-        assertEquals(YesNoOption.YES, claim.getClaimSubmissionOperationIndicators().getDefendantPinLetterUpload());
         assertEquals(YesNoOption.YES, claim.getClaimSubmissionOperationIndicators().getBulkPrint());
         assertEquals(YesNoOption.YES, claim.getClaimSubmissionOperationIndicators().getStaffNotification());
         assertEquals(YesNoOption.YES, claim.getClaimSubmissionOperationIndicators().getDefendantNotification());

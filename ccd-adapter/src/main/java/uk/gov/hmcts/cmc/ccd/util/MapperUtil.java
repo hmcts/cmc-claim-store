@@ -37,7 +37,6 @@ public class MapperUtil {
             .staffNotification(YesNoOption.fromValue(claimSubmissionOperationIndicators.getStaffNotification().name()))
             .sealedClaimUpload(YesNoOption.fromValue(claimSubmissionOperationIndicators.getSealedClaimUpload().name()))
             .claimIssueReceiptUpload(YesNoOption.fromValue(claimSubmissionOperationIndicators.getClaimIssueReceiptUpload().name()))
-            .defendantPinLetterUpload(YesNoOption.fromValue(claimSubmissionOperationIndicators.getDefendantPinLetterUpload().name()))
             .build();
 
     public static Function<ClaimSubmissionOperationIndicators, CCDClaimSubmissionOperationIndicators>
@@ -50,7 +49,6 @@ public class MapperUtil {
             .staffNotification(CCDYesNoOption.valueOf(claimSubmissionOperationIndicators.getStaffNotification().name()))
             .sealedClaimUpload(CCDYesNoOption.valueOf(claimSubmissionOperationIndicators.getSealedClaimUpload().name()))
             .claimIssueReceiptUpload(CCDYesNoOption.valueOf(claimSubmissionOperationIndicators.getClaimIssueReceiptUpload().name()))
-            .defendantPinLetterUpload(CCDYesNoOption.valueOf(claimSubmissionOperationIndicators.getDefendantPinLetterUpload().name()))
             .build();
 
     public static Supplier<ClaimSubmissionOperationIndicators> getDefaultClaimSubmissionOperationIndicators =
@@ -62,7 +60,6 @@ public class MapperUtil {
             .staffNotification(YesNoOption.NO)
             .sealedClaimUpload(YesNoOption.NO)
             .claimIssueReceiptUpload(YesNoOption.NO)
-            .defendantPinLetterUpload(YesNoOption.NO)
             .build();
 
     private static String fetchDefendantName(Claim claim) {
