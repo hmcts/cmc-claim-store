@@ -10,8 +10,7 @@ public enum YesNoOption {
     @JsonProperty("no")
     NO;
 
-
-    public static YesNoOption fromValue(String value){
+    public static YesNoOption fromValue(String value) {
         return Arrays.stream(YesNoOption.values())
             .filter(val -> val.name().equalsIgnoreCase(value))
             .findFirst().orElseThrow(IllegalArgumentException::new);
