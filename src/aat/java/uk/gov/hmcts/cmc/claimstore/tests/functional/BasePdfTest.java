@@ -27,7 +27,7 @@ public abstract class BasePdfTest extends BaseTest {
         assertionsOnPdf(createdCase, pdfAsText);
     }
 
-    protected Claim createCase(){
+    protected Claim createCase() {
         ClaimData claimData = getSampleClaimDataBuilder().get().build();
         return commonOperations.submitClaim(user.getAuthorisation(), user.getUserDetails().getId(), claimData);
     }
