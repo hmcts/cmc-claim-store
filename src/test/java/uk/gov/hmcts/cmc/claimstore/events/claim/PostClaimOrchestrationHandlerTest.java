@@ -14,7 +14,6 @@ import uk.gov.hmcts.cmc.claimstore.events.operations.NotifyStaffOperationService
 import uk.gov.hmcts.cmc.claimstore.events.operations.RpaOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.UploadOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimCreatedEvent;
-import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -32,22 +31,15 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PostClaimOrchestrationHandlerTest {
     public static final Claim CLAIM = SampleClaim.getDefault();
-    private static final String PIN = "PIN";
     private static final String SUBMITTER_NAME = "submitter-name";
     public static final String AUTHORISATION = "AUTHORISATION";
-    private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
-    private static final String LETTER_HOLDER_ID = "LetterHolderId";
-
-    private Map<String, Object> pinContents = new HashMap<>();
-    private String pinTemplate = "pinTemplate";
-    private Document defendantLetterDocument = new Document(pinTemplate, pinContents);
+    private static final byte[] PDF_BYTES = new byte[] {1, 2, 3, 4};
 
     private Map<String, Object> claimContents = new HashMap<>();
     private String claimTemplate = "claimTemplate";
@@ -98,14 +90,6 @@ public class PostClaimOrchestrationHandlerTest {
             claimService
         );
 
-        given(userService.generatePin(eq(CLAIM.getClaimData().getDefendant().getName()), eq(AUTHORISATION)))
-            .willReturn(GeneratePinResponse.builder()
-                .pin(PIN)
-                .userId(LETTER_HOLDER_ID)
-                .build()
-            );
-
-        given(citizenServiceDocumentsService.pinLetterDocument(any(), eq(PIN))).willReturn(defendantLetterDocument);
         given(citizenServiceDocumentsService.sealedClaimDocument(any())).willReturn(sealedClaimLetterDocument);
         given(sealedClaimPdfService.createPdf(any())).willReturn(PDF_BYTES);
         given(pdfServiceClient.generateFromHtml(any(), anyMap())).willReturn(PDF_BYTES);
@@ -128,7 +112,7 @@ public class PostClaimOrchestrationHandlerTest {
 
         //then
         verify(citizenServiceDocumentsService).sealedClaimDocument(eq(CLAIM));
-        verify(pdfServiceClient, times(2)).generateFromHtml(any(), anyMap());
+        verify(pdfServiceClient).generateFromHtml(any(), anyMap());
         verify(claimIssueReceiptService).createPdf(eq(CLAIM));
         verify(pinOrchestrationService).process(eq(CLAIM), anyString(), anyString());
         verify(claimantOperationService).notifyCitizen(eq(CLAIM), any(), eq(AUTHORISATION));
@@ -166,7 +150,7 @@ public class PostClaimOrchestrationHandlerTest {
 
         //then
         verify(citizenServiceDocumentsService).sealedClaimDocument(eq(claimWithOnePinOperationFailure));
-        verify(pdfServiceClient, times(2)).generateFromHtml(any(), anyMap());
+        verify(pdfServiceClient).generateFromHtml(any(), anyMap());
         verify(claimIssueReceiptService).createPdf(eq(claimWithOnePinOperationFailure));
         verify(pinOrchestrationService).process(eq(claimWithOnePinOperationFailure), anyString(), anyString());
         verify(claimantOperationService).notifyCitizen(eq(claimWithOnePinOperationFailure), any(), eq(AUTHORISATION));
@@ -205,7 +189,7 @@ public class PostClaimOrchestrationHandlerTest {
         //then
         verifyZeroInteractions(pinOrchestrationService);
         verify(citizenServiceDocumentsService).sealedClaimDocument(eq(claimWithPinOperationSucceededIndicator));
-        verify(pdfServiceClient, times(2)).generateFromHtml(any(), anyMap());
+        verify(pdfServiceClient).generateFromHtml(any(), anyMap());
         verify(claimIssueReceiptService).createPdf(eq(claimWithPinOperationSucceededIndicator));
         verify(claimantOperationService).notifyCitizen(eq(claimWithPinOperationSucceededIndicator), any(),
             eq(AUTHORISATION));
@@ -267,7 +251,7 @@ public class PostClaimOrchestrationHandlerTest {
 
         //then
         verify(citizenServiceDocumentsService).sealedClaimDocument(eq(claimWithUploadSealedClaimSuccess));
-        verify(pdfServiceClient, times(2)).generateFromHtml(any(), anyMap());
+        verify(pdfServiceClient).generateFromHtml(any(), anyMap());
         verify(claimIssueReceiptService).createPdf(eq(claimWithUploadSealedClaimSuccess));
         verify(claimantOperationService).notifyCitizen(eq(claimWithUploadSealedClaimSuccess), any(), eq(AUTHORISATION));
         verify(rpaOperationService).notify(eq(claimWithUploadSealedClaimSuccess), eq(AUTHORISATION), any());
@@ -303,7 +287,7 @@ public class PostClaimOrchestrationHandlerTest {
         //then
         //then
         verify(citizenServiceDocumentsService).sealedClaimDocument(eq(claimWithClaimReceiptUploadSuccess));
-        verify(pdfServiceClient, times(2)).generateFromHtml(any(), anyMap());
+        verify(pdfServiceClient).generateFromHtml(any(), anyMap());
         verify(claimIssueReceiptService).createPdf(eq(claimWithClaimReceiptUploadSuccess));
         verify(claimantOperationService).notifyCitizen(eq(claimWithClaimReceiptUploadSuccess),
             any(), eq(AUTHORISATION));
@@ -335,7 +319,7 @@ public class PostClaimOrchestrationHandlerTest {
 
         //then
         verify(citizenServiceDocumentsService).sealedClaimDocument(eq(claimWithRpaSuccess));
-        verify(pdfServiceClient, times(2)).generateFromHtml(any(), anyMap());
+        verify(pdfServiceClient).generateFromHtml(any(), anyMap());
         verify(claimIssueReceiptService).createPdf(eq(claimWithRpaSuccess));
         verify(claimantOperationService).notifyCitizen(eq(claimWithRpaSuccess), any(), eq(AUTHORISATION));
         verifyZeroInteractions(rpaOperationService);

@@ -203,6 +203,10 @@ public class ClaimService {
         return caseRepository.getByPaymentReference(payReference, authorisation);
     }
 
+    public List<Claim> getClaimsByState(ClaimState claimState, User user) {
+        return caseRepository.getClaimsByState(claimState, user);
+    }
+
     public CaseReference savePrePayment(String externalId, String authorisation) {
         return caseRepository.savePrePaymentClaim(externalId, authorisation);
     }

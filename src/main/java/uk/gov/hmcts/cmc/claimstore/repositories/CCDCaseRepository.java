@@ -94,6 +94,11 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
+    public List<Claim> getClaimsByState(ClaimState claimState, User user) {
+        return ccdCaseApi.getClaimsByState(claimState, user);
+    }
+
+    @Override
     public Optional<Claim> getByLetterHolderId(String id, String authorisation) {
         return ccdCaseApi.getByLetterHolderId(id, authorisation);
     }
