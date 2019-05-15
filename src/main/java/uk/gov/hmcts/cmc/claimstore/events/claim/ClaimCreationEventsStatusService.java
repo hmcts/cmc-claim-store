@@ -26,7 +26,6 @@ public class ClaimCreationEventsStatusService {
                 case PIN_GENERATION_OPERATIONS:
                     updatedIndicator.defendantNotification(YesNoOption.YES)
                         .bulkPrint(YesNoOption.YES)
-                        .defendantPinLetterUpload(YesNoOption.YES)
                         .staffNotification(YesNoOption.YES);
                     break;
                 case CLAIM_ISSUE_RECEIPT_UPLOAD:
