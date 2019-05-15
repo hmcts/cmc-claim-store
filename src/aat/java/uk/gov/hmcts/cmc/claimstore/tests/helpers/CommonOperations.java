@@ -26,14 +26,17 @@ public class CommonOperations {
 
     private final JsonMapper jsonMapper;
     private final TestData testData;
+    private final ClaimOperation claimOperation;
 
     @Autowired
     public CommonOperations(
         JsonMapper jsonMapper,
-        TestData testData
+        TestData testData,
+        ClaimOperation claimOperation
     ) {
         this.jsonMapper = jsonMapper;
         this.testData = testData;
+        this.claimOperation = claimOperation;
     }
 
     public Claim submitClaimWithDefendantCollectionId(String userAuthentication, String userId, String collectionId) {
@@ -45,15 +48,17 @@ public class CommonOperations {
     }
 
     public Claim submitClaim(String userAuthentication, String userId) {
-        UUID externalId = UUID.randomUUID();
-        return submitClaim(userAuthentication, userId, testData.submittedByClaimantBuilder()
-            .withExternalId(externalId)
-            .build());
+        return submitClaim(
+            userAuthentication,
+            userId,
+            testData.submittedByClaimantBuilder().withExternalId(UUID.randomUUID()).build()
+        );
     }
 
     public Claim submitClaim(String userAuthentication, String userId, ClaimData claimData) {
         submitPrePaymentClaim(claimData.getExternalId().toString(), userAuthentication);
-        return saveClaim(claimData, userAuthentication, userId).then().extract().body().as(Claim.class);
+        Claim claim = saveClaim(claimData, userAuthentication, userId).then().extract().body().as(Claim.class);
+        return claimOperation.getClaimWithLetterHolder(claim.getExternalId(), userAuthentication);
     }
 
     public Response submitPrePaymentClaim(String externalId, String userAuthentication) {
@@ -65,7 +70,7 @@ public class CommonOperations {
             .post("/claims/" + externalId + "/pre-payment");
     }
 
-    private Response saveClaim(ClaimData claimData, String userAuthentication, String userId) {
+    public Response saveClaim(ClaimData claimData, String userAuthentication, String userId) {
 
         return RestAssured
             .given()
