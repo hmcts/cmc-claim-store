@@ -37,7 +37,6 @@ public class ClaimCreationEventsStatusServiceTest {
         ClaimSubmissionOperationIndicators operationIndicatorWithPinCompletion =
             ClaimSubmissionOperationIndicators.builder().defendantNotification(YES)
                 .bulkPrint(YES)
-                .defendantPinLetterUpload(YES)
                 .staffNotification(YES).build();
 
         when(caseRepository.updateClaimSubmissionOperationStatus(any(), any(), any(), any())).thenReturn(CLAIM);

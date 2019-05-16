@@ -169,19 +169,6 @@ public class DocumentManagementBackedDocumentsServiceTest {
     }
 
     @Test
-    public void shouldGenerateDefendantPinLetter() {
-        Claim claim = SampleClaim.getDefault();
-        when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(AUTHORISATION)))
-            .thenReturn(claim);
-        when(defendantPinLetterPdfService.createPdf(any(Claim.class), anyString())).thenReturn(PDF_BYTES);
-        documentManagementBackedDocumentsService.generateDefendantPinLetter(
-            claim.getExternalId(),
-            "pin",
-            AUTHORISATION);
-        verify(documentManagementService).uploadDocument(anyString(), any(PDF.class));
-    }
-
-    @Test
     public void shouldNotUploadDocumentIfItAlreadyExists() {
         Claim claim = SampleClaim.getWithSealedClaimDocument();
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(AUTHORISATION)))
