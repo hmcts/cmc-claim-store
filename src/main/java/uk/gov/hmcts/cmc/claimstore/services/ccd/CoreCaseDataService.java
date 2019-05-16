@@ -139,7 +139,7 @@ public class CoreCaseDataService {
                 user.isRepresented()
             );
 
-            if (!user.isRepresented()) {
+            if (!user.isRepresented() && claim.getLetterHolderId() != null) {
                 ccdCreateCaseService.grantAccessToCase(caseDetails.getId().toString(), claim.getLetterHolderId());
             }
 

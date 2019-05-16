@@ -86,5 +86,6 @@
     },
     "defendantDateOfBirth": "1990-01-01"
   },
-  "countyCourtJudgmentRequestedAt": "2018-02-01T11:18:00.59"
+  "countyCourtJudgmentRequestedAt": "2018-02-01T11:18:00.59",
+  "claimSubmissionOperationIndicators": {"rpa": "YES", "bulkPrint": "YES", "sealedClaimUpload": "YES", "staffNotification": "YES", "claimantNotification": "YES", "defendantNotification": "YES", "claimIssueReceiptUpload": "YES"}
 }
