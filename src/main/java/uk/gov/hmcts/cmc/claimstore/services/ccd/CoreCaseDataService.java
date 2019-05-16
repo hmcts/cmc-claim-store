@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.ccd.mapper.CaseEventMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
@@ -17,6 +18,8 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
@@ -52,7 +55,7 @@ import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_I
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service
-@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled", havingValue = "true")
 public class CoreCaseDataService {
 
     public static final String CMC_CASE_UPDATE_SUMMARY = "CMC case update";
@@ -104,7 +107,7 @@ public class CoreCaseDataService {
         CCDCase ccdCase = caseMapper.to(claim);
 
         if (StringUtils.isBlank(claim.getReferenceNumber())) {
-            ccdCase.setReferenceNumber(referenceNumberService.getReferenceNumber(user.isRepresented()));
+            ccdCase.setPreviousServiceCaseReference(referenceNumberService.getReferenceNumber(user.isRepresented()));
         }
 
         try {
@@ -146,7 +149,7 @@ public class CoreCaseDataService {
             throw new CoreCaseDataStoreException(
                 String.format(
                     CCD_STORING_FAILURE_MESSAGE,
-                    ccdCase.getReferenceNumber(),
+                    ccdCase.getPreviousServiceCaseReference(),
                     CREATE_NEW_CASE
                 ), exception
             );
@@ -255,12 +258,15 @@ public class CoreCaseDataService {
     public Claim saveClaimDocuments(
         String authorisation,
         Long caseId,
-        ClaimDocumentCollection claimDocumentCollection
+        ClaimDocumentCollection claimDocumentCollection,
+        ClaimDocumentType claimDocumentType
     ) {
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
 
-            EventRequestData eventRequestData = eventRequest(LINK_SEALED_CLAIM, userDetails.getId());
+            EventRequestData eventRequestData = eventRequest(
+                CaseEventMapper.map(claimDocumentType), userDetails.getId()
+            );
 
             StartEventResponse startEventResponse = startUpdate(
                 authorisation,
@@ -629,7 +635,7 @@ public class CoreCaseDataService {
             throw new CoreCaseDataStoreException(
                 String.format(
                     "Failed updating claim in CCD store for claim %s on event %s",
-                    ccdCase.getReferenceNumber(),
+                    ccdCase.getPreviousServiceCaseReference(),
                     caseEvent
                 ), exception
             );
@@ -850,6 +856,36 @@ public class CoreCaseDataService {
                     CCD_UPDATE_FAILURE_MESSAGE,
                     caseId,
                     SETTLED_PRE_JUDGMENT
+                ), exception
+            );
+        }
+    }
+
+    public Claim saveClaimSubmissionOperationIndicators(Long caseId,
+                                                        ClaimSubmissionOperationIndicators indicators,
+                                                        String authorisation,
+                                                        CaseEvent caseEvent) {
+        // need to be fully implemented as part of ROC-5473
+        try {
+            UserDetails userDetails = userService.getUserDetails(authorisation);
+
+            EventRequestData eventRequestData = eventRequest(caseEvent, userDetails.getId());
+
+            StartEventResponse startEventResponse = startUpdate(
+                authorisation,
+                eventRequestData,
+                caseId,
+                userDetails.isSolicitor() || userDetails.isCaseworker()
+            );
+
+            return toClaimBuilder(startEventResponse).build();
+
+        } catch (Exception exception) {
+            throw new CoreCaseDataStoreException(
+                String.format(
+                    CCD_UPDATE_FAILURE_MESSAGE,
+                    caseId,
+                    caseEvent
                 ), exception
             );
         }

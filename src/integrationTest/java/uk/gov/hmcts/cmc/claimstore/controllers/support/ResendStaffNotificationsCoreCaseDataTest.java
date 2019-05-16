@@ -49,7 +49,8 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
     properties = {
         "document_management.url=false",
         "feature_toggles.ccd_async_enabled=false",
-        "feature_toggles.ccd_enabled=true"
+        "feature_toggles.ccd_enabled=true",
+        "feature_toggles.async_event_operations_enabled=false"
     }
 )
 public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTest {
@@ -247,7 +248,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
             any(),
             any(),
             any(),
-            eq(ImmutableMap.of("case.referenceNumber", caseReference,
+            eq(ImmutableMap.of("case.previousServiceCaseReference", caseReference,
                 "page", PAGE,
                 "sortDirection", "desc"))
             )

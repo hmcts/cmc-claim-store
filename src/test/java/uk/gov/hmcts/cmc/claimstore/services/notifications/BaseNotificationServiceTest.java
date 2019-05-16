@@ -10,6 +10,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.slf4j.LoggerFactory;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -25,6 +26,10 @@ import static org.mockito.Mockito.verify;
 public abstract class BaseNotificationServiceTest {
 
     protected static final String CLAIMANT_CLAIM_ISSUED_TEMPLATE = "claimantClaimIssued";
+
+    protected static final String CLAIMANT_SIGNED_SETTLEMENT_AGREEMENT_TO_CLAIMANT_TEMPLATE
+        = "claimantSignedSettlementAgreementToClaimant";
+
     protected static final String RESPONSE_BY_CLAIMANT_EMAIL_TO_DEFENDANT = "responseByClaimantEmailToDefendant";
     protected static final String DEFENDANT_RESPONSE_TEMPLATE = "fullDefence";
     protected static final String DEFENDANT_RESPONSE_NO_MEDIATION_TEMPLATE = "fullDefence-noMediation";
@@ -54,6 +59,9 @@ public abstract class BaseNotificationServiceTest {
 
     @Captor
     protected ArgumentCaptor<LoggingEvent> captorLoggingEvent;
+    @Mock
+    protected AppInsights appInsights;
+
     @Captor
     protected ArgumentCaptor<Map<String, String>> templateParameters;
 

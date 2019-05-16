@@ -18,26 +18,26 @@ public class ReDeterminationMapper {
 
         claim.getReDetermination().ifPresent(reDetermination -> {
             builder
-                .reDeterminationExplanation(reDetermination.getExplanation())
-                .reDeterminationMadeBy(CCDMadeBy.valueOf(reDetermination.getPartyType().name()));
+                .redeterminationExplanation(reDetermination.getExplanation())
+                .redeterminationMadeBy(CCDMadeBy.valueOf(reDetermination.getPartyType().name()));
         });
 
-        claim.getReDeterminationRequestedAt().ifPresent(builder::reDeterminationRequestedDate);
+        claim.getReDeterminationRequestedAt().ifPresent(builder::redeterminationRequestedDate);
     }
 
     public void from(Claim.ClaimBuilder builder, CCDRespondent respondent) {
-        if (StringUtils.isBlank(respondent.getReDeterminationExplanation())
-            && respondent.getReDeterminationMadeBy() == null
-            && respondent.getReDeterminationRequestedDate() == null
+        if (StringUtils.isBlank(respondent.getRedeterminationExplanation())
+            && respondent.getRedeterminationMadeBy() == null
+            && respondent.getRedeterminationRequestedDate() == null
         ) {
             return;
         }
 
         builder.reDetermination(ReDetermination.builder()
-            .explanation(respondent.getReDeterminationExplanation())
-            .partyType(MadeBy.valueOf(respondent.getReDeterminationMadeBy().name()))
+            .explanation(respondent.getRedeterminationExplanation())
+            .partyType(MadeBy.valueOf(respondent.getRedeterminationMadeBy().name()))
             .build())
-            .reDeterminationRequestedAt(respondent.getReDeterminationRequestedDate());
+            .reDeterminationRequestedAt(respondent.getRedeterminationRequestedDate());
 
     }
 }

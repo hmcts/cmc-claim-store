@@ -4,6 +4,9 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
@@ -53,6 +56,8 @@ public interface CaseRepository {
 
     List<Claim> getByPaymentReference(String payReference, String authorisation);
 
+    List<Claim> getClaimsByState(ClaimState claimState, User user);
+
     Optional<Claim> getByLetterHolderId(String id, String authorisation);
 
     void requestMoreTimeForResponse(String authorisation, Claim claim, LocalDate newResponseDeadline);
@@ -69,7 +74,20 @@ public interface CaseRepository {
 
     void saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent);
 
-    Claim saveClaimDocuments(String authorisation, Long claimId, ClaimDocumentCollection claimDocumentCollection);
+    Claim saveClaimDocuments(
+        String authorisation,
+        Long claimId,
+        ClaimDocumentCollection claimDocumentCollection,
+        ClaimDocumentType claimDocumentType
+    );
+
+    Claim updateClaimSubmissionOperationStatus(
+        String authorisation,
+        Long claimId,
+        ClaimSubmissionOperationIndicators indicators,
+        CaseEvent caseEvent);
+
+    void updateClaimState(String authorisation, Long claimId, String state);
 
     Claim linkLetterHolder(Long claimId, String letterHolderId);
 }

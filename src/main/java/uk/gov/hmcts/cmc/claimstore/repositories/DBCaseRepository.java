@@ -13,7 +13,9 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
@@ -171,6 +173,11 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
+    public List<Claim> getClaimsByState(ClaimState claimState, User user) {
+        return claimRepository.getClaimsByState(claimState);
+    }
+
+    @Override
     public Optional<Claim> getByLetterHolderId(String id, String authorisation) {
         return claimRepository.getByLetterHolderId(id);
     }
@@ -214,15 +221,17 @@ public class DBCaseRepository implements CaseRepository {
     public Claim saveClaim(User user, Claim claim) {
         String claimDataString = jsonMapper.toJson(claim.getClaimData());
         String features = jsonMapper.toJson(claim.getFeatures());
+        String claimSubmissionOperationIndicator = jsonMapper.toJson(claim.getClaimSubmissionOperationIndicators());
         if (claim.getClaimData().isClaimantRepresented()) {
             claimRepository.saveRepresented(claimDataString, claim.getSubmitterId(), claim.getIssuedOn(),
-                claim.getResponseDeadline(), claim.getExternalId(), claim.getSubmitterEmail(), features);
+                claim.getResponseDeadline(), claim.getExternalId(), claim.getSubmitterEmail(), features,
+                claimSubmissionOperationIndicator);
         } else {
             ClaimState state = this.saveClaimStateEnabled ? CREATED : null;
             claimRepository.saveSubmittedByClaimant(claimDataString,
                 claim.getSubmitterId(), claim.getLetterHolderId(),
                 claim.getIssuedOn(), claim.getResponseDeadline(), claim.getExternalId(),
-                claim.getSubmitterEmail(), features, state);
+                claim.getSubmitterEmail(), features, state, claimSubmissionOperationIndicator);
         }
 
         return claimRepository
@@ -248,7 +257,8 @@ public class DBCaseRepository implements CaseRepository {
     public Claim saveClaimDocuments(
         String authorisation,
         Long claimId,
-        ClaimDocumentCollection claimDocumentCollection
+        ClaimDocumentCollection claimDocumentCollection,
+        ClaimDocumentType claimDocumentType
     ) {
         claimRepository.saveClaimDocuments(claimId, jsonMapper.toJson(claimDocumentCollection));
         return getClaimById(claimId);
@@ -263,5 +273,20 @@ public class DBCaseRepository implements CaseRepository {
     private Claim getClaimById(Long claimId) {
         return claimRepository.getById(claimId).orElseThrow(() ->
             new NotFoundException(String.format("Claim not found by primary key %s.", claimId)));
+    }
+
+    @Override
+    public Claim updateClaimSubmissionOperationStatus(
+        String authorisation,
+        Long claimId,
+        ClaimSubmissionOperationIndicators indicators,
+        CaseEvent caseEvent) {
+        claimRepository.updateClaimSubmissionOperationStatus(claimId, jsonMapper.toJson(indicators));
+        return getClaimById(claimId);
+    }
+
+    @Override
+    public void updateClaimState(String authorisation, Long claimId, String state) {
+        claimRepository.updateClaimState(claimId, state);
     }
 }

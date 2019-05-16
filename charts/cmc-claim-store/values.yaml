@@ -31,6 +31,7 @@ java:
     FEATURE_TOGGLES_EMAILTOSTAFF: true
     FEATURE_TOGGLES_CCD_ENABLED: false
     FEATURE_TOGGLES_CCD_ASYNC_ENABLED: false
+    FEATURE_TOGGLES_ASYNC_EVENT_OPERATIONS_ENABLED: true
     DOCUMENT_MANAGEMENT_CITIZENROLE: citizen
     FRONTEND_BASE_URL: https://FRONTEND_BASE_URL
     RESPOND_TO_CLAIM_URL: https://RESPOND_TO_CLAIM_URL/first-contact/start
@@ -42,3 +43,4 @@ java:
     RPA_NOTIFICATIONS_RESPONSERECIPIENT: civilmoneyclaims+rpa-defence-response@gmail.com
     RPA_NOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT: civilmoneyclaims+rpa-county-court-judgement@gmail.com
     RPA_NOTIFICATIONS_PAIDINFULLRECIPIENT: civilmoneyclaims+rpa-paid-in-full@gmail.com
+    DOCUMENT_MANAGEMENT_USERROLES: caseworker-cmc

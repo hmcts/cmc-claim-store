@@ -50,6 +50,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATED;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.CLAIM_ID;
@@ -126,7 +127,9 @@ public class ClaimServiceTest {
             ccdCaseDataToClaim,
             new PaidInFullRule(),
             ccdEventProducer,
-            new ClaimAuthorisationRule(userService));
+            new ClaimAuthorisationRule(userService),
+            false
+        );
     }
 
     @Test
@@ -206,6 +209,50 @@ public class ClaimServiceTest {
     }
 
     @Test
+    public void saveClaimShouldFinishWithoutPinGenerationSuccessfully() {
+        //given
+
+        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
+        when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(ISSUE_DATE);
+        when(responseDeadlineCalculator.calculateResponseDeadline(eq(ISSUE_DATE))).thenReturn(RESPONSE_DEADLINE);
+        when(caseRepository.saveClaim(eq(USER), any())).thenReturn(claim);
+
+        claimService = new ClaimService(
+            claimRepository,
+            caseRepository,
+            userService,
+            issueDateCalculator,
+            responseDeadlineCalculator,
+            legalOrderGenerationDeadlinesCalculator,
+            directionsQuestionnaireDeadlineCalculator,
+            new MoreTimeRequestRule(new ClaimDeadlineService()),
+            eventProducer,
+            appInsights,
+            ccdCaseDataToClaim,
+            new PaidInFullRule(),
+            ccdEventProducer,
+            new ClaimAuthorisationRule(userService),
+            true
+        );
+
+        ClaimData claimData = SampleClaimData.validDefaults();
+
+        //when
+        Claim createdClaim = claimService.saveClaim(USER_ID, claimData, AUTHORISATION, singletonList("admissions"));
+
+        //verify
+        ClaimData outputClaimData = claim.getClaimData();
+        assertThat(createdClaim.getClaimData()).isEqualTo(outputClaimData);
+
+        verify(userService, never()).generatePin(eq(outputClaimData.getDefendant().getName()), eq(AUTHORISATION));
+        verify(caseRepository, once()).saveClaim(any(User.class), any(Claim.class));
+        verify(eventProducer, once()).createClaimCreatedEvent(eq(createdClaim), eq(null),
+            anyString(), eq(AUTHORISATION));
+
+        verify(ccdEventProducer, once()).createCCDClaimIssuedEvent(eq(createdClaim), eq(USER));
+    }
+
+    @Test
     public void requestMoreTimeToRespondShouldFinishSuccessfully() {
 
         LocalDate newDeadline = RESPONSE_DEADLINE.plusDays(20);
@@ -271,6 +318,16 @@ public class ClaimServiceTest {
             .thenReturn(singletonList(claim));
 
         List<Claim> claims = claimService.getClaimByDefendantEmail(claim.getDefendantEmail(), AUTHORISATION);
+
+        assertThat(claims).containsExactly(claim);
+    }
+
+    @Test
+    public void getClaimsByStateShouldCallCaseRepository() {
+        when(caseRepository.getClaimsByState(eq(CREATED), any()))
+            .thenReturn(singletonList(claim));
+
+        List<Claim> claims = claimService.getClaimsByState(CREATED, USER);
 
         assertThat(claims).containsExactly(claim);
     }

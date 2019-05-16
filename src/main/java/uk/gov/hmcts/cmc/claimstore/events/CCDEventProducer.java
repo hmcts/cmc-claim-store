@@ -9,23 +9,24 @@ import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDCountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDDefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDInterlocutoryJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDLinkDefendantEvent;
-import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDLinkSealedClaimDocumentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDMoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDPaidInFullEvent;
-import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDReDetermination;
+import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDReDeterminationEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDRejectOrganisationPaymentPlanEvent;
+import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDSaveClaimDocumentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDSettlementEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDTestingLinkDefendantEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDTestingResponseDeadlineEvent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 
-import java.net.URI;
 import java.time.LocalDate;
 
 @Component
@@ -60,9 +61,17 @@ public class CCDEventProducer {
         publisher.publishEvent(new CCDCountyCourtJudgmentEvent(authorisation, claim, countyCourtJudgment));
     }
 
-    public void linkSealedClaimDocumentCCDEvent(String authorisation, Claim claim, URI sealedClaimDocument) {
-        publisher.publishEvent(new CCDLinkSealedClaimDocumentEvent(authorisation, claim, sealedClaimDocument));
-
+    public void saveClaimDocumentCCDEvent(
+        String authorisation,
+        Claim claim,
+        ClaimDocumentCollection claimDocumentCollection,
+        ClaimDocumentType claimDocumentType
+    ) {
+        publisher.publishEvent(new CCDSaveClaimDocumentEvent(authorisation,
+            claim,
+            claimDocumentCollection,
+            claimDocumentType)
+        );
     }
 
     public void linkDefendantCCDEvent(String authorisation) {
@@ -108,7 +117,7 @@ public class CCDEventProducer {
         String authorisation,
         ReDetermination redetermination
     ) {
-        publisher.publishEvent(new CCDReDetermination(claim, authorisation, redetermination));
+        publisher.publishEvent(new CCDReDeterminationEvent(claim, authorisation, redetermination));
     }
 
     public void createCCDPaidInFullEvent(String authorisation, Claim claim, PaidInFull paidInFull) {

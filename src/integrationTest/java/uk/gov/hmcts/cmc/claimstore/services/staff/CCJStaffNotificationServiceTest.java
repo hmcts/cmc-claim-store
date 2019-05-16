@@ -199,7 +199,7 @@ public class CCJStaffNotificationServiceTest extends MockSpringTest {
             + "re-determination by District Judge.");
 
         assertThat(emailDataArgument.getValue()
-            .getMessage()).contains("Reason for request: " + explanation + ".");
+            .getMessage()).contains("Reason for request: " + explanation);
 
         List<EmailAttachment> attachments = emailDataArgument.getValue().getAttachments();
         assertThat(attachments.size()).isEqualTo(3);

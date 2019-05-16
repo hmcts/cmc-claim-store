@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
@@ -28,6 +29,9 @@ import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
@@ -47,9 +51,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED;
@@ -75,7 +79,12 @@ public class ClaimService {
     private final CCDCaseDataToClaim ccdCaseDataToClaim;
     private final PaidInFullRule paidInFullRule;
     private final ClaimAuthorisationRule claimAuthorisationRule;
+    private final boolean asyncEventOperationEnabled;
     private CCDEventProducer ccdEventProducer;
+
+    private static Supplier<ClaimSubmissionOperationIndicators> getDefaultClaimSubmissionOperationIndicators =
+        () -> ClaimSubmissionOperationIndicators.builder()
+            .build();
 
     @SuppressWarnings("squid:S00107") //Constructor need all parameters
     @Autowired
@@ -93,7 +102,8 @@ public class ClaimService {
         CCDCaseDataToClaim ccdCaseDataToClaim,
         PaidInFullRule paidInFullRule,
         CCDEventProducer ccdEventProducer,
-        ClaimAuthorisationRule claimAuthorisationRule
+        ClaimAuthorisationRule claimAuthorisationRule,
+        @Value("${feature_toggles.async_event_operations_enabled:false}") boolean asyncEventOperationEnabled
     ) {
         this.claimRepository = claimRepository;
         this.userService = userService;
@@ -109,6 +119,7 @@ public class ClaimService {
         this.paidInFullRule = paidInFullRule;
         this.ccdEventProducer = ccdEventProducer;
         this.claimAuthorisationRule = claimAuthorisationRule;
+        this.asyncEventOperationEnabled = asyncEventOperationEnabled;
     }
 
     public Claim getClaimById(long claimId) {
@@ -191,6 +202,10 @@ public class ClaimService {
         return caseRepository.getByPaymentReference(payReference, authorisation);
     }
 
+    public List<Claim> getClaimsByState(ClaimState claimState, User user) {
+        return caseRepository.getClaimsByState(claimState, user);
+    }
+
     public CaseReference savePrePayment(String externalId, String authorisation) {
         return caseRepository.savePrePaymentClaim(externalId, authorisation);
     }
@@ -227,26 +242,34 @@ public class ClaimService {
             .createdAt(nowInUTC())
             .letterHolderId(letterHolderId.orElse(null))
             .features(features)
+            .claimSubmissionOperationIndicators(getDefaultClaimSubmissionOperationIndicators.get())
             .build();
 
         Claim savedClaim = caseRepository.saveClaim(user, claim);
         ccdEventProducer.createCCDClaimIssuedEvent(savedClaim, user);
 
-        eventProducer.createClaimIssuedEvent(
-            savedClaim,
-            pinResponse.map(GeneratePinResponse::getPin).orElse(null),
-            user.getUserDetails().getFullName(),
-            authorisation
-        );
-
+        if (asyncEventOperationEnabled) {
+            eventProducer.createClaimCreatedEvent(
+                savedClaim,
+                pinResponse.map(GeneratePinResponse::getPin).orElse(null),
+                user.getUserDetails().getFullName(),
+                authorisation
+            );
+        } else {
+            eventProducer.createClaimIssuedEvent(
+                savedClaim,
+                pinResponse.map(GeneratePinResponse::getPin).orElse(null),
+                user.getUserDetails().getFullName(),
+                authorisation
+            );
+        }
         trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
 
         return savedClaim;
-
     }
 
     private Optional<GeneratePinResponse> getPinResponse(ClaimData claimData, String authorisation) {
-        if (!claimData.isClaimantRepresented()) {
+        if (!claimData.isClaimantRepresented() && !asyncEventOperationEnabled) {
             return Optional.of(userService.generatePin(claimData.getDefendant().getName(), authorisation));
         }
 
@@ -284,8 +307,7 @@ public class ClaimService {
         data.put("eyewitnessUploadDeadline", deadline);
         data.put("directionList", ImmutableList.of(
             CCDOrderDirectionType.DOCUMENTS.name(),
-            CCDOrderDirectionType.EYEWITNESS.name(),
-            CCDOrderDirectionType.MEDIATION.name()));
+            CCDOrderDirectionType.EYEWITNESS.name()));
         return AboutToStartOrSubmitCallbackResponse
             .builder()
             .data(data)
@@ -360,9 +382,10 @@ public class ClaimService {
     public Claim saveClaimDocuments(
         String authorisation,
         Long claimId,
-        ClaimDocumentCollection claimDocumentCollection
+        ClaimDocumentCollection claimDocumentCollection,
+        ClaimDocumentType claimDocumentType
     ) {
-        return caseRepository.saveClaimDocuments(authorisation, claimId, claimDocumentCollection);
+        return caseRepository.saveClaimDocuments(authorisation, claimId, claimDocumentCollection, claimDocumentType);
     }
 
     public Claim linkLetterHolder(Long claimId, String letterHolderId) {
@@ -377,7 +400,6 @@ public class ClaimService {
         claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorisation);
         caseRepository.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
         ccdEventProducer.createCCDCountyCourtJudgmentEvent(claim, authorisation, countyCourtJudgment);
-        appInsights.trackEvent(CCJ_REQUESTED, REFERENCE_NUMBER, claim.getReferenceNumber());
     }
 
     public void saveDefendantResponse(
@@ -423,6 +445,9 @@ public class ClaimService {
         claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorisation);
         caseRepository.saveReDetermination(authorisation, claim, redetermination);
         ccdEventProducer.createCCDReDetermination(claim, authorisation, redetermination);
+    }
 
+    public void updateClaimState(String authorisation, Claim claim, ClaimState state) {
+        claimRepository.updateClaimState(claim.getId(), state.name());
     }
 }

@@ -6,6 +6,9 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
 
 import java.util.Objects;
 
+import static java.lang.String.format;
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;
+
 public class CourtOrderAssert extends AbstractAssert<CourtOrderAssert, CourtOrder> {
 
     public CourtOrderAssert(CourtOrder actual) {
@@ -20,15 +23,19 @@ public class CourtOrderAssert extends AbstractAssert<CourtOrderAssert, CourtOrde
                 ccdCourtOrder.getClaimNumber(), actual.getClaimNumber());
         }
 
-        if (!Objects.equals(actual.getAmountOwed(), ccdCourtOrder.getAmountOwed())) {
-            failWithMessage("Expected CourtOrder.amountOwed to be <%s> but was <%s>",
-                ccdCourtOrder.getAmountOwed(), actual.getAmountOwed());
-        }
+        assertMoney(actual.getAmountOwed())
+            .isEqualTo(
+                ccdCourtOrder.getAmountOwed(),
+                format("Expected CourtOrder.amountOwed to be <%s> but was <%s>",
+                    ccdCourtOrder.getAmountOwed(), actual.getAmountOwed())
+            );
 
-        if (!Objects.equals(actual.getMonthlyInstalmentAmount(), ccdCourtOrder.getMonthlyInstalmentAmount())) {
-            failWithMessage("Expected CourtOrder.monthlyInstalmentAmount to be <%s> but was <%s>",
-                ccdCourtOrder.getMonthlyInstalmentAmount(), actual.getMonthlyInstalmentAmount());
-        }
+        assertMoney(actual.getMonthlyInstalmentAmount())
+            .isEqualTo(
+                ccdCourtOrder.getMonthlyInstalmentAmount(),
+                format("Expected CourtOrder.monthlyInstalmentAmount to be <%s> but was <%s>",
+                    ccdCourtOrder.getMonthlyInstalmentAmount(), actual.getMonthlyInstalmentAmount())
+            );
 
         return this;
     }
