@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
@@ -9,10 +10,12 @@ import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
+import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Address;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -86,6 +89,21 @@ public class DocAssemblyTemplateBodyMapper {
             .build();
     }
 
+    private CCDAddress mapHearingAddress(Address address) {
+        CCDAddress.CCDAddressBuilder ccdAddressBuilder = CCDAddress.builder()
+            .postTown(address.getTown())
+            .postCode(address.getPostcode());
+
+        try {
+            ccdAddressBuilder.addressLine1(address.getAddressLines().get(0));
+            ccdAddressBuilder.addressLine2(address.getAddressLines().get(1));
+            ccdAddressBuilder.addressLine3(address.getAddressLines().get(2));
+        } catch (ArrayIndexOutOfBoundsException exc) {
+            //the address line out of bounds is going to be set as null, which is ok
+        }
+        return ccdAddressBuilder.build();
+    }
+
     private HearingCourt mapHearingCourt(CCDCase ccdCase, CCDHearingCourtType courtType) {
         HearingCourt.HearingCourtBuilder courtBuilder = HearingCourt.builder();
         switch (courtType) {
@@ -105,7 +123,7 @@ public class DocAssemblyTemplateBodyMapper {
                     .findFirst()
                     .map(court -> HearingCourt.builder()
                         .name(court.getName())
-                        .address(court.getAddress().toString())
+                        .address(mapHearingAddress(court.getAddress()))
                         .build())
                     .orElseThrow(IllegalArgumentException::new);
         }
