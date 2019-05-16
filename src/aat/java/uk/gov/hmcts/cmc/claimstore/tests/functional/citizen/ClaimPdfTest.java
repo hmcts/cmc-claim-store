@@ -22,12 +22,12 @@ public class ClaimPdfTest extends BasePdfTest {
 
     @Test
     public void shouldBeAbleToFindTestClaimDataInClaimIssueReceiptPdf() throws IOException {
-        shouldBeAbleToFindTestClaimDataInPdf("claimIssueReceipt");
+        shouldBeAbleToFindTestClaimDataInPdf("claimIssueReceipt", createCase());
     }
 
     @Test
     public void shouldBeAbleToFindTestClaimDataInSealedClaimPdf() throws IOException {
-        shouldBeAbleToFindTestClaimDataInPdf("sealedClaim");
+        shouldBeAbleToFindTestClaimDataInPdf("sealedClaim", createCase());
     }
 
     @Override

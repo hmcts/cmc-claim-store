@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.math.NumberUtils.createBigInteger;
+import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
 
 @Component
 public class ClaimMapper {
@@ -109,8 +110,7 @@ public class ClaimMapper {
     public void from(CCDCase ccdCase, Claim.ClaimBuilder claimBuilder) {
         Objects.requireNonNull(ccdCase, "ccdCase must not be null");
 
-        List<Party> claimants = ccdCase.getApplicants()
-            .stream()
+        List<Party> claimants = asStream(ccdCase.getApplicants())
             .map(claimantMapper::from)
             .collect(Collectors.toList());
 
@@ -139,7 +139,7 @@ public class ClaimMapper {
 
     private List<TheirDetails> getDefendants(CCDCase ccdCase, Claim.ClaimBuilder claimBuilder) {
 
-        return ccdCase.getRespondents().stream()
+        return asStream(ccdCase.getRespondents())
             .map(respondent -> defendantMapper.from(claimBuilder, respondent))
             .collect(Collectors.toList());
     }

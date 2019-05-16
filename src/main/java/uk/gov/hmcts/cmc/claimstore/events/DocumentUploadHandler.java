@@ -20,8 +20,8 @@ import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
@@ -32,6 +32,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSettlemen
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
 
 @Component
@@ -67,8 +68,9 @@ public class DocumentUploadHandler {
     public void uploadCitizenClaimDocument(DocumentGeneratedEvent event) {
         Claim claim = event.getClaim();
         requireNonNull(claim, CLAIM_MUST_NOT_BE_NULL);
-
-        List<PDF> documents = new ArrayList<>(event.getDocuments());
+        List<PDF> documents = event.getDocuments().stream()
+            .filter(document -> document.getClaimDocumentType() == SEALED_CLAIM)
+            .collect(Collectors.toList());
 
         if (!claim.getClaimData().isClaimantRepresented()) {
             documents.add(
