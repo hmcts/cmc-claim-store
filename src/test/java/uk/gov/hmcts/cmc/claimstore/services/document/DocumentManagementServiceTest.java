@@ -10,6 +10,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
@@ -31,6 +32,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementDownloadResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementUploadResponse;
@@ -39,6 +41,9 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class DocumentManagementServiceTest {
+
+    public static final ImmutableList<String> USER_ROLES = ImmutableList.of("caseworker-cmc", "citizen");
+    public static final String USER_ROLES_JOINED = "caseworker-cmc,citizen";
 
     @Mock
     private DocumentMetadataDownloadClientApi documentMetadataDownloadClient;
@@ -64,9 +69,15 @@ public class DocumentManagementServiceTest {
     @Before
     public void setUp() {
         when(authTokenGenerator.generate()).thenReturn("authString");
-        documentManagementService = new DocumentManagementService(documentMetadataDownloadClient,
-            documentDownloadClient, documentUploadClient, authTokenGenerator, userService, appInsights,
-            "caseworker-cmc");
+        documentManagementService = new DocumentManagementService(
+            documentMetadataDownloadClient,
+            documentDownloadClient,
+            documentUploadClient,
+            authTokenGenerator,
+            userService,
+            appInsights,
+            USER_ROLES
+        );
     }
 
     @Test
@@ -76,13 +87,16 @@ public class DocumentManagementServiceTest {
         when(userService.getUserDetails(anyString())).thenReturn(userDetails);
 
         when(documentUploadClient
-            .upload(anyString(), anyString(), anyString(), anyList(), any(Classification.class), anyList())
+            .upload(anyString(), anyString(), anyString(), eq(USER_ROLES), any(Classification.class), anyList())
         ).thenReturn(successfulDocumentManagementUploadResponse());
 
         URI documentSelfPath = documentManagementService
             .uploadDocument("authString", document).getDocumentManagementUrl();
         assertNotNull(documentSelfPath);
         assertEquals("/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4", documentSelfPath.getPath());
+
+        verify(documentUploadClient)
+            .upload(anyString(), anyString(), anyString(), eq(USER_ROLES), any(Classification.class), anyList());
     }
 
     @Test
@@ -97,7 +111,7 @@ public class DocumentManagementServiceTest {
         when(userService.getUserDetails(eq(authorisation))).thenReturn(userDetails);
 
         when(documentUploadClient
-            .upload(anyString(), anyString(), anyString(), anyList(), any(Classification.class), anyList()))
+            .upload(anyString(), anyString(), anyString(), eq(USER_ROLES), any(Classification.class), anyList()))
             .thenReturn(unsuccessfulDocumentManagementUploadResponse());
 
         documentManagementService.uploadDocument(authorisation, document);
@@ -108,7 +122,7 @@ public class DocumentManagementServiceTest {
         URI docUri = URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4");
 
         when(documentMetadataDownloadClient
-            .getDocumentMetadata(anyString(), anyString(), anyString(), anyString(), anyString())
+            .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString())
         ).thenReturn(successfulDocumentManagementDownloadResponse());
 
         UserDetails userDetails = new UserDetails("id", "mail@mail.com",
@@ -116,12 +130,18 @@ public class DocumentManagementServiceTest {
         when(userService.getUserDetails(anyString())).thenReturn(userDetails);
         when(responseEntity.getBody()).thenReturn(new ByteArrayResource("test".getBytes()));
 
-        when(documentDownloadClient.downloadBinary(anyString(), anyString(), anyString(), anyString(), anyString()))
-            .thenReturn(responseEntity);
+        when(documentDownloadClient
+            .downloadBinary(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString())
+        ).thenReturn(responseEntity);
 
         byte[] pdf = documentManagementService.downloadDocument("auth string", docUri, "0000-claim");
         assertNotNull(pdf);
         assertArrayEquals("test".getBytes(), pdf);
+
+        verify(documentMetadataDownloadClient)
+            .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString());
+        verify(documentDownloadClient)
+            .downloadBinary(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString());
     }
 
     @Test
@@ -135,7 +155,7 @@ public class DocumentManagementServiceTest {
         when(userService.getUserDetails(anyString())).thenReturn(userDetails);
 
         when(documentMetadataDownloadClient
-            .getDocumentMetadata(anyString(), anyString(), anyString(), anyString(), anyString())
+            .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString())
         ).thenReturn(null);
 
         documentManagementService.downloadDocument("auth string", docUri, "0000-claim");
