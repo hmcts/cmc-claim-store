@@ -219,7 +219,7 @@ public class CCDCaseRepository implements CaseRepository {
     @Override
     public void updateClaimState(String authorisation, Long claimId, ClaimState state) {
         if (state == ClaimState.OPEN) {
-            coreCaseDataService.saveCaseEvent(authorisation, claimId, CaseEvent.ISSUE_CLAIM);
+            coreCaseDataService.saveCaseEvent(authorisation, claimId, CaseEvent.ISSUE_CASE);
         } else {
             throw new UnsupportedOperationException("State transition not allowed for " + state.name());
         }

@@ -3,19 +3,15 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
-import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.getDefaultClaimSubmissionOperationIndicators;
-import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.mapClaimSubmissionOperationIndicatorsToCCD;
-import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.mapFromCCDClaimSubmissionOperationIndicators;
+import static uk.gov.hmcts.cmc.ccd.mapper.ClaimSubmissionOperationIndicatorMapper.mapClaimSubmissionOperationIndicatorsToCCD;
+import static uk.gov.hmcts.cmc.ccd.mapper.ClaimSubmissionOperationIndicatorMapper.mapFromCCDClaimSubmissionOperationIndicators;
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.toCaseName;
 
 @Component
@@ -78,21 +74,12 @@ public class CaseMapper {
             .issuedOn(ccdCase.getIssuedOn())
             .submitterEmail(ccdCase.getSubmitterEmail())
             .claimSubmissionOperationIndicators(
-                checkAndApplyClaimSubmission(ccdCase.getClaimSubmissionOperationIndicators()));
+                mapFromCCDClaimSubmissionOperationIndicators.apply(ccdCase.getClaimSubmissionOperationIndicators()));
 
         if (ccdCase.getFeatures() != null) {
             builder.features(Arrays.asList(ccdCase.getFeatures().split(",")));
         }
 
         return builder.build();
-    }
-
-    private ClaimSubmissionOperationIndicators checkAndApplyClaimSubmission(
-        CCDClaimSubmissionOperationIndicators ccdClaimSubmissionOperationIndicators) {
-
-        return Optional.ofNullable(ccdClaimSubmissionOperationIndicators)
-            .map(ccdIndicators -> mapFromCCDClaimSubmissionOperationIndicators.apply(ccdIndicators))
-            .orElseGet(getDefaultClaimSubmissionOperationIndicators);
-
     }
 }

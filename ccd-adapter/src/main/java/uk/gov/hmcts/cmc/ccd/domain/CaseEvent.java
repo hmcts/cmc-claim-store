@@ -3,8 +3,8 @@ package uk.gov.hmcts.cmc.ccd.domain;
 import java.util.Arrays;
 
 public enum CaseEvent {
-    CREATE_CLAIM("CreateClaim"),
-    ISSUE_CLAIM("IssueClaim"),
+    CREATE_CASE("CreateClaim"),
+    ISSUE_CASE("IssueClaim"),
     MORE_TIME_REQUESTED_PAPER("MoreTimeRequestedPaper"),
     TEST_SUPPORT_UPDATE("TestSupportUpdate"),
     LINK_SEALED_CLAIM("LinkSealedClaimDocument"),
