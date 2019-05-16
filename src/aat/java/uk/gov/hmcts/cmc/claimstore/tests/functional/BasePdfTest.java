@@ -1,12 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional;
 
 import io.restassured.RestAssured;
-import io.restassured.response.Response;
 import org.pdfbox.pdmodel.PDDocument;
 import org.pdfbox.util.PDFTextStripper;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Address;
@@ -25,31 +22,14 @@ public abstract class BasePdfTest extends BaseTest {
 
     protected abstract Supplier<SampleClaimData> getSampleClaimDataBuilder();
 
-    protected void shouldBeAbleToFindTestClaimDataInPdf(String pdfName) throws IOException {
-        Claim createdCase = createCase();
+    protected void shouldBeAbleToFindTestClaimDataInPdf(String pdfName, Claim createdCase) throws IOException {
         String pdfAsText = textContentOf(retrievePdf(pdfName, createdCase.getExternalId()));
         assertionsOnPdf(createdCase, pdfAsText);
     }
 
     protected Claim createCase() {
         ClaimData claimData = getSampleClaimDataBuilder().get().build();
-        commonOperations.submitPrePaymentClaim(claimData.getExternalId().toString(), user.getAuthorisation());
-
-        return submitClaim(claimData)
-            .then()
-            .statusCode(HttpStatus.OK.value())
-            .and()
-            .extract().body().as(Claim.class);
-    }
-
-    private Response submitClaim(ClaimData claimData) {
-        return RestAssured
-            .given()
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .header(HttpHeaders.AUTHORIZATION, user.getAuthorisation())
-            .body(jsonMapper.toJson(claimData))
-            .when()
-            .post("/claims/" + user.getUserDetails().getId());
+        return commonOperations.submitClaim(user.getAuthorisation(), user.getUserDetails().getId(), claimData);
     }
 
     private InputStream retrievePdf(String pdfName, String externalId) {
