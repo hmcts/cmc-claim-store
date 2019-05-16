@@ -21,7 +21,7 @@ public class MapperUtil {
     public static final Function<Claim, String> toCaseName = claim ->
         fetchClaimantName(claim) + " Vs " + fetchDefendantName(claim);
 
-    public static Function<CCDClaimSubmissionOperationIndicators, ClaimSubmissionOperationIndicators>
+    public static final Function<CCDClaimSubmissionOperationIndicators, ClaimSubmissionOperationIndicators>
         mapFromCCDClaimSubmissionOperationIndicators = claimSubmissionOperationIndicators ->
         ClaimSubmissionOperationIndicators.builder()
             .claimantNotification(fromValue(claimSubmissionOperationIndicators.getClaimantNotification().name()))
@@ -33,7 +33,7 @@ public class MapperUtil {
             .claimIssueReceiptUpload(fromValue(claimSubmissionOperationIndicators.getClaimIssueReceiptUpload().name()))
             .build();
 
-    public static Function<ClaimSubmissionOperationIndicators, CCDClaimSubmissionOperationIndicators>
+    public static final Function<ClaimSubmissionOperationIndicators, CCDClaimSubmissionOperationIndicators>
         mapClaimSubmissionOperationIndicatorsToCCD = claimSubmissionOperationIndicators ->
         CCDClaimSubmissionOperationIndicators.builder()
             .claimantNotification(valueOf(claimSubmissionOperationIndicators.getClaimantNotification().name()))
@@ -45,7 +45,7 @@ public class MapperUtil {
             .claimIssueReceiptUpload(valueOf(claimSubmissionOperationIndicators.getClaimIssueReceiptUpload().name()))
             .build();
 
-    public static Supplier<ClaimSubmissionOperationIndicators> getDefaultClaimSubmissionOperationIndicators =
+    public static final Supplier<ClaimSubmissionOperationIndicators> getDefaultClaimSubmissionOperationIndicators =
         () -> ClaimSubmissionOperationIndicators.builder()
             .claimantNotification(YesNoOption.NO)
             .defendantNotification(YesNoOption.NO)
