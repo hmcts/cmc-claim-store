@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.ccd.domain;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Value;
+import org.apache.logging.log4j.util.Strings;
 
 @Value
 @Builder
@@ -20,4 +21,29 @@ public class CCDAddress {
     private String postCode;
     @JsonProperty("Country")
     private String country;
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        if (addressLine1 != null) {
+            stringBuilder.append(addressLine1);
+            stringBuilder.append("\n");
+        }
+        if (addressLine2 != null) {
+            stringBuilder.append(addressLine2);
+            stringBuilder.append("\n");
+        }
+        if (addressLine3 != null) {
+            stringBuilder.append(addressLine3);
+            stringBuilder.append("\n");
+        }
+        if (postCode != null) {
+            stringBuilder.append(postCode);
+            stringBuilder.append("\n");
+        }
+        if (postTown != null) {
+            stringBuilder.append(postTown);
+        }
+        return stringBuilder.toString();
+    }
 }

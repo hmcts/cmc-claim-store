@@ -143,7 +143,7 @@ public class GenerateOrderCallbackHandlerTest {
             entry("eyewitnessUploadDeadline", DEADLINE),
             entry("preferredCourt", ccdCase.getPreferredCourt()),
             entry("newRequestedCourt", "Claimant Court"),
-            entry("preferredCourtObjectingParty", "CLAIMANT"),
+            entry("preferredCourtObjectingParty", "Res_CLAIMANT"),
             entry("preferredCourtObjectingReason", "As a claimant I like this court more")
         );
     }
@@ -172,15 +172,18 @@ public class GenerateOrderCallbackHandlerTest {
             entry("eyewitnessUploadDeadline", DEADLINE),
             entry("preferredCourt", ccdCase.getPreferredCourt()),
             entry("newRequestedCourt", "Defendant Court"),
-            entry("preferredCourtObjectingParty", "DEFENDANT"),
+            entry("preferredCourtObjectingParty", "Res_DEFENDANT"),
             entry("preferredCourtObjectingReason", "As a defendant I like this court more")
         );
     }
 
     @Test
     public void shouldPrepopulateFieldsOnAboutToStartEventForActionReviewComments() {
+        when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
+
         CallbackRequest callbackRequest = CallbackRequest
             .builder()
+            .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
             .eventId(ACTION_REVIEW_COMMENTS.getValue())
             .build();
         CallbackParams callbackParams = CallbackParams.builder()
@@ -201,6 +204,8 @@ public class GenerateOrderCallbackHandlerTest {
 
     @Test
     public void shouldGenerateDocumentOnMidEvent() {
+        when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
+
         CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData();
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
             .templateId("testTemplateId")

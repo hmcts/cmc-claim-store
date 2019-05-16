@@ -346,7 +346,11 @@ public class SampleData {
             .representativeOrganisationEmail("my@email.com")
             .representativeOrganisationDxAddress("dx123")
             .preferredCourtName("Claimant Court")
-            .preferredCourtAddress("Claimant Court address")
+            .preferredCourtAddress(CCDAddress.builder()
+                .addressLine1("Claimant Court address")
+                .postCode("SW1P4BB")
+                .postTown("London")
+                .build())
             .preferredCourtReason("As a claimant I like this court more")
             .build();
     }
@@ -369,7 +373,11 @@ public class SampleData {
             .claimantProvidedRepresentativeOrganisationPhone("my@email.com")
             .claimantProvidedRepresentativeOrganisationDxAddress("dx123")
             .preferredCourtName("Defendant Court")
-            .preferredCourtAddress("Defendant Court address")
+            .preferredCourtAddress(CCDAddress.builder()
+                .addressLine1("Defendant Court address")
+                .postCode("SW1P4BB")
+                .postTown("London")
+                .build())
             .preferredCourtReason("As a defendant I like this court more")
             .build();
     }

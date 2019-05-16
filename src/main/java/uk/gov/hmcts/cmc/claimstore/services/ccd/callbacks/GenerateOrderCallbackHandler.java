@@ -148,11 +148,11 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
 
         if (StringUtils.isNotBlank(applicant.getPreferredCourtReason())) {
             newRequestedCourt = applicant.getPreferredCourtName();
-            preferredCourtObjectingParty = "CLAIMANT";
+            preferredCourtObjectingParty = "Res_CLAIMANT";
             preferredCourtObjectingReason = applicant.getPreferredCourtReason();
         } else if (StringUtils.isNotBlank(respondent.getPreferredCourtReason())) {
             newRequestedCourt = respondent.getPreferredCourtName();
-            preferredCourtObjectingParty = "DEFENDANT";
+            preferredCourtObjectingParty = "Res_DEFENDANT";
             preferredCourtObjectingReason = respondent.getPreferredCourtReason();
         }
 

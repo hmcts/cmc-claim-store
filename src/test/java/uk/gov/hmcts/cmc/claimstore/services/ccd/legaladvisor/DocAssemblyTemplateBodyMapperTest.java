@@ -20,6 +20,8 @@ import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
+import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Address;
+import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
@@ -50,7 +52,7 @@ public class DocAssemblyTemplateBodyMapperTest  {
     private CCDOrderGenerationData ccdOrderGenerationData;
     private UserDetails userDetails;
 
-    DocAssemblyTemplateBody.DocAssemblyTemplateBodyBuilder docAssemblyTemplateBodyBuilder;
+    private DocAssemblyTemplateBody.DocAssemblyTemplateBodyBuilder docAssemblyTemplateBodyBuilder;
 
     @Before
     public void setUp() {
@@ -79,8 +81,8 @@ public class DocAssemblyTemplateBodyMapperTest  {
             .defendant(Party.builder().partyName("Mary Richards").build())
             .judicial(Judicial.builder().firstName("Judge").lastName("McJudge").build())
             .referenceNumber("ref no")
-            .preferredCourtName("Some court")
-            .preferredCourtAddress("this is an address EC2Y 3ND")
+            .hearingCourtName("Defendant Court")
+            .hearingCourtAddress("Defendant Court address\nSW1P4BB\nLondon")
             .docUploadForParty(CCDDirectionPartyType.CLAIMANT)
             .eyewitnessUploadForParty(CCDDirectionPartyType.DEFENDANT)
             .estimatedHearingDuration(CCDHearingDurationType.FOUR_HOURS)
@@ -93,7 +95,6 @@ public class DocAssemblyTemplateBodyMapperTest  {
                     .build()
             ));
         //when
-        when(clock.instant()).thenReturn(LocalDate.parse("2019-04-24")
         when(clock.instant()).thenReturn(LocalDate.parse("2019-04-24")
             .atStartOfDay().toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
@@ -133,14 +134,57 @@ public class DocAssemblyTemplateBodyMapperTest  {
             .hearingIsRequired(YES)
             .docUploadDeadline(LocalDate.parse("2020-10-11"))
             .eyewitnessUploadDeadline(LocalDate.parse("2020-10-11"))
+            .hearingCourt(CCDHearingCourtType.DEFENDANT_COURT)
+            .preferredCourtObjectingReason("I like this court more")
+            .hearingStatement("No idea")
+            .newRequestedCourt("Another court")
+            .docUploadForParty(CCDDirectionPartyType.CLAIMANT)
+            .eyewitnessUploadForParty(CCDDirectionPartyType.DEFENDANT)
+            .estimatedHearingDuration(CCDHearingDurationType.FOUR_HOURS)
+            .build();
+        DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
+            ccdCase,
+            ccdOrderGenerationData,
+            userDetails);
+
+        docAssemblyTemplateBodyBuilder.otherDirectionList(Collections.emptyList());
+        DocAssemblyTemplateBody expectedBody = docAssemblyTemplateBodyBuilder.build();
+
+        assertThat(requestBody).isEqualTo(expectedBody);
+    }
+
+    @Test
+    public void shouldMapAddressFromCourtFinder() {
+        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData();
+        ccdOrderGenerationData.setHearingCourt(CCDHearingCourtType.BIRMINGHAM);
+        when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString()))
+            .thenReturn(ImmutableList.of(Court.builder()
+            .name("Birmingham Court")
+            .slug("birmingham-court")
+            .address(Address.builder()
+                .addressLines(ImmutableList.of("line1", "line2"))
+                .postcode("SW1P4BB")
+                .town("Birmingham").build()).build()));
+
+        DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
+            ccdCase,
+            ccdOrderGenerationData,
+            userDetails);
+
+        DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
+            .hearingRequired(true)
+            .hasFirstOrderDirections(true)
+            .hasSecondOrderDirections(true)
+            .docUploadDeadline(LocalDate.parse("2020-10-11"))
+            .eyewitnessUploadDeadline(LocalDate.parse("2020-10-11"))
             .currentDate(LocalDate.parse("2019-04-24"))
             .hearingStatement("No idea")
             .claimant(Party.builder().partyName("Individual").build())
             .defendant(Party.builder().partyName("Mary Richards").build())
             .judicial(Judicial.builder().firstName("Judge").lastName("McJudge").build())
             .referenceNumber("ref no")
-            .hearingCourtName("Defendant Court")
-            .hearingCourtAddress("Defendant Court address")
+            .hearingCourtName("Birmingham Court")
+            .hearingCourtAddress("line1\nline2\nSW1P4BB\nBirmingham")
             .docUploadForParty(CCDDirectionPartyType.CLAIMANT)
             .eyewitnessUploadForParty(CCDDirectionPartyType.DEFENDANT)
             .estimatedHearingDuration(CCDHearingDurationType.FOUR_HOURS)

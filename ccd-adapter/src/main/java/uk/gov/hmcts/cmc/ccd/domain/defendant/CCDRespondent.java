@@ -81,7 +81,7 @@ public class CCDRespondent {
     private CCDMadeBy redeterminationMadeBy;
 
     private String preferredCourtName;
-    private String preferredCourtAddress;
+    private CCDAddress preferredCourtAddress;
     private String preferredCourtReason;
 
 }
