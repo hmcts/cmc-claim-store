@@ -26,12 +26,15 @@ public class UploadOperationService {
     }
 
     public Claim uploadDocument(Claim claim, String authorisation, PDF document, CaseEvent caseEvent) {
+        Claim updatedClaim = uploadDocument(claim, authorisation, document);
+        return eventsStatusService.updateClaimOperationCompletion(authorisation, updatedClaim, caseEvent);
+    }
+
+    private Claim uploadDocument(Claim claim, String authorisation, PDF document) {
         if (claim.getClaimDocument(document.getClaimDocumentType()).isPresent()) {
             return claim;
         }
 
-        Claim updatedClaim = documentUploadHandler.uploadToDocumentManagement(
-            claim, authorisation, singletonList(document));
-        return eventsStatusService.updateClaimOperationCompletion(authorisation, updatedClaim, caseEvent);
+        return documentUploadHandler.uploadToDocumentManagement(claim, authorisation, singletonList(document));
     }
 }
