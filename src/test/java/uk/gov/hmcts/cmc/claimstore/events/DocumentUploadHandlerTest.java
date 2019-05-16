@@ -116,11 +116,10 @@ public class DocumentUploadHandlerTest {
 
         documentUploadHandler.uploadCitizenClaimDocument(event);
 
-        verify(documentService, times(3))
+        verify(documentService, times(2))
             .uploadToDocumentManagement(argumentCaptor.capture(), anyString(), any());
         List<PDF> capturedDocuments = argumentCaptor.getAllValues();
         List<ClaimDocumentType> expectedClaimDocumentTypes = Arrays.asList(SEALED_CLAIM,
-            DEFENDANT_PIN_LETTER,
             CLAIM_ISSUE_RECEIPT);
 
         List<ClaimDocumentType> actualDocumentTypes = capturedDocuments.stream()
