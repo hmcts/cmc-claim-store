@@ -200,4 +200,18 @@ public class NotificationReferenceBuilder {
             return reference("settlement-rejected-%s", DEFENDANT, claimReferenceNumber);
         }
     }
+
+    public static class LegalOrderDrawn {
+        private LegalOrderDrawn() {
+            // do not instantiate
+        }
+
+        public static String referenceForClaimant(String claimReferenceNumber) {
+            return reference("to-%s-legal-order-drawn-%s", CLAIMANT, claimReferenceNumber);
+        }
+
+        public static String referenceForDefendant(String claimReferenceNumber) {
+            return reference("to-%s-legal-order-drawn-%s", DEFENDANT, claimReferenceNumber);
+        }
+    }
 }

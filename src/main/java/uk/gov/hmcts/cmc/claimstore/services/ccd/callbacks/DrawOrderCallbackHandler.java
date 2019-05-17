@@ -11,9 +11,11 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -26,19 +28,33 @@ import java.util.Optional;
 public class DrawOrderCallbackHandler extends CallbackHandler {
     private final Clock clock;
     private final JsonMapper jsonMapper;
+    private final OrderDrawnNotificationService orderDrawnNotificationService;
 
     @Autowired
     public DrawOrderCallbackHandler(
-        Clock clock, JsonMapper jsonMapper) {
+        Clock clock, JsonMapper jsonMapper, OrderDrawnNotificationService orderDrawnNotificationService) {
         this.clock = clock;
         this.jsonMapper = jsonMapper;
+        this.orderDrawnNotificationService = orderDrawnNotificationService;
     }
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
-            CallbackType.ABOUT_TO_START, this::copyDraftToCaseDocument
+            CallbackType.ABOUT_TO_START, this::copyDraftToCaseDocument,
+            CallbackType.SUBMITTED, this::notifyParties
         );
+    }
+
+    private CallbackResponse notifyParties(CallbackParams callbackParams) {
+        CallbackRequest callbackRequest = callbackParams.getRequest();
+        CCDCase ccdCase = jsonMapper.fromMap(
+            callbackRequest.getCaseDetails().getData(), CCDCase.class);
+       orderDrawnNotificationService.notifyClaimant(ccdCase);
+       orderDrawnNotificationService.notifyDefendant(ccdCase);
+        return SubmittedCallbackResponse
+            .builder()
+            .build();
     }
 
     private CallbackResponse copyDraftToCaseDocument(CallbackParams callbackParams) {

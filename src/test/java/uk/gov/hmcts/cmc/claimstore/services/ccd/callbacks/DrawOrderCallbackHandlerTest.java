@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
@@ -17,6 +16,7 @@ import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -28,6 +28,7 @@ import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.MapEntry.entry;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DRAW_ORDER;
 
@@ -41,8 +42,12 @@ public class DrawOrderCallbackHandlerTest {
     private JsonMapper jsonMapper;
     @Mock
     private Clock clock;
+    @Mock
+    private OrderDrawnNotificationService orderDrawnNotificationService;
 
     private CallbackParams callbackParams;
+
+    private CallbackRequest callbackRequest;
 
     private DrawOrderCallbackHandler drawOrderCallbackHandler;
 
@@ -59,28 +64,29 @@ public class DrawOrderCallbackHandlerTest {
                 .documentType(CCDClaimDocumentType.ORDER_DIRECTIONS)
                 .build())
             .build();
+
     @Before
     public void setUp() {
         drawOrderCallbackHandler = new DrawOrderCallbackHandler(
             clock,
-            jsonMapper
-        );
+            jsonMapper,
+            orderDrawnNotificationService);
         when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
-        CallbackRequest callbackRequest = CallbackRequest
+        callbackRequest = CallbackRequest
             .builder()
             .eventId(DRAW_ORDER.getValue())
             .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
-            .build();
-        callbackParams = CallbackParams.builder()
-            .type(CallbackType.ABOUT_TO_START)
-            .request(callbackRequest)
-            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
     }
 
     @Test
     public void shouldAddDraftDocumentToEmptyCaseDocumentsOnEventStart() {
+        callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_START)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
         CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         ccdCase.setOrderGenerationData(
             CCDOrderGenerationData.builder()
@@ -101,6 +107,11 @@ public class DrawOrderCallbackHandlerTest {
 
     @Test
     public void shouldAddDraftDocumentToExistingCaseDocumentsOnEventStart() {
+        callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_START)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
         CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         ccdCase.setOrderGenerationData(
             CCDOrderGenerationData.builder()
@@ -132,11 +143,33 @@ public class DrawOrderCallbackHandlerTest {
 
     @Test(expected = CallbackException.class)
     public void shouldThrowIfDraftOrderIsNotPresent() {
+        callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_START)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
         CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class))
             .thenReturn(ccdCase);
 
         drawOrderCallbackHandler
             .handle(callbackParams);
+    }
+
+    @Test
+    public void shouldNotifyPartiesOnEventSubmitted() {
+        callbackParams = CallbackParams.builder()
+            .type(CallbackType.SUBMITTED)
+            .request(callbackRequest)
+            .build();
+        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
+        when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class))
+            .thenReturn(ccdCase);
+
+        drawOrderCallbackHandler
+            .handle(callbackParams);
+
+        verify(orderDrawnNotificationService).notifyDefendant(ccdCase);
+        verify(orderDrawnNotificationService).notifyClaimant(ccdCase);
     }
 }
