@@ -143,24 +143,14 @@ public class CaseMapperTest {
         assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getStaffNotification());
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void shouldMapSubmissionIndicatorsFromCCDCaseWithNullIndicators() {
         //given
         CCDCase ccdCase =
             SampleData.getCCDCitizenCaseWithOperationIndicators(getNullCCDClaimSubmissionOperationIndicators);
 
         //when
-        Claim claim = ccdCaseMapper.from(ccdCase);
-
-        //then
-        assertNotNull(claim.getClaimSubmissionOperationIndicators());
-        assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getClaimIssueReceiptUpload());
-        assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getBulkPrint());
-        assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getClaimantNotification());
-        assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getDefendantNotification());
-        assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getRpa());
-        assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getSealedClaimUpload());
-        assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getStaffNotification());
+        ccdCaseMapper.from(ccdCase);
     }
 
     @Test
