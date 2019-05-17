@@ -4,7 +4,6 @@ import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.mail.MailException;
@@ -22,13 +21,14 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.email.EmailService.EMAIL_SUBJECT;
+import static uk.gov.hmcts.cmc.email.EmailService.NOTIFICATION_FAILURE;
 
 @RunWith(MockitoJUnitRunner.class)
 @ContextConfiguration
 public class EmailServiceTest {
 
     private static final String EMAIL_TO = "user@example.com";
-    private static final String EMAIL_SUBJECT = "My Test Subject";
     private static final String EMAIL_MESSAGE = "My Test Message";
 
     @Mock
@@ -37,7 +37,6 @@ public class EmailServiceTest {
     @Mock
     private TelemetryClient telemetryClient;
 
-    @InjectMocks
     private EmailService emailService;
 
     @Mock
@@ -45,6 +44,7 @@ public class EmailServiceTest {
 
     @Before
     public void beforeEachTest() {
+        emailService = new EmailService(telemetryClient, javaMailSender, false);
         when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
     }
 
@@ -63,7 +63,7 @@ public class EmailServiceTest {
         emailService.sendEmail("no-reply@example.com", emailData);
 
         verify(telemetryClient)
-            .trackEvent(EmailService.NOTIFICATION_FAILURE, singletonMap(EMAIL_SUBJECT, emailData.getSubject()), null);
+            .trackEvent(NOTIFICATION_FAILURE, singletonMap(EMAIL_SUBJECT, emailData.getSubject()), null);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -76,6 +76,24 @@ public class EmailServiceTest {
     public void testSendEmailThrowsInvalidArgumentExceptionForInvalidSubject() {
         EmailData emailData = SampleEmailData.getWithSubjectNull();
         emailService.sendEmail("no-reply@example.com", emailData);
+    }
+
+    @Test(expected = EmailSendFailedException.class)
+    public void shouldLogAndRaiseAppInsightWithAsyncEnabled() {
+        EmailData emailData = SampleEmailData.getDefault();
+        try {
+            emailService = new EmailService(telemetryClient, javaMailSender, true);
+            emailService.logSendMessageWithAttachmentFailure(
+                new EmailSendFailedException(new RuntimeException("Failed sending")),
+                "no-reply@example.com",
+                emailData
+            );
+        } finally {
+            verify(telemetryClient).trackEvent(
+                NOTIFICATION_FAILURE,
+                singletonMap(EMAIL_SUBJECT, emailData.getSubject()),
+                null);
+        }
     }
 
     public static class SampleEmailData {
