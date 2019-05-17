@@ -452,7 +452,7 @@ public class SampleData {
                 CCDCollectionElement.<CCDOrderDirection>builder().value(
                     CCDOrderDirection.builder()
                         .extraOrderDirection(CCDOrderDirectionType.OTHER)
-                        .directionComment("a direction")
+                        .otherDirection("a direction")
                         .forParty(BOTH)
                         .sendBy(LocalDate.parse("2020-10-11"))
                         .build())
