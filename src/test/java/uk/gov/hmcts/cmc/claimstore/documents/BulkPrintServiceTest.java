@@ -23,6 +23,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BULK_PRINT_FAILED;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.ADDITIONAL_DATA_CASE_IDENTIFIER_KEY;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.ADDITIONAL_DATA_LETTER_TYPE_KEY;
@@ -48,6 +50,7 @@ public class BulkPrintServiceTest {
     @Mock
     private AuthTokenGenerator authTokenGenerator;
     private BulkPrintService bulkPrintService;
+    @Mock
     private BulkPrintStaffNotificationService bulkPrintStaffNotificationService;
     private Letter letter;
 
@@ -95,7 +98,7 @@ public class BulkPrintServiceTest {
             authTokenGenerator,
             bulkPrintStaffNotificationService,
             appInsights,
-            true
+            false
         );
 
         try {
@@ -103,11 +106,35 @@ public class BulkPrintServiceTest {
         } finally {
             //then
             verify(sendLetterApi).sendLetter(eq(AUTH_VALUE), eq(letter));
+        }
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void recoveryThrowWhenAsyncEnabled() {
+        //given
+        RuntimeException exception = new RuntimeException("send Letter failed");
+
+        //when
+        bulkPrintService = new BulkPrintService(
+            sendLetterApi,
+            authTokenGenerator,
+            bulkPrintStaffNotificationService,
+            appInsights,
+            true
+        );
+
+        try {
+            bulkPrintService
+                .notifyStaffForBulkPrintFailure(exception, CLAIM, defendantLetterDocument, sealedClaimDocument);
+        } finally {
+            //then
             verify(bulkPrintStaffNotificationService).notifyFailedBulkPrint(
-                defendantLetterDocument,
-                sealedClaimDocument,
-                CLAIM
+                eq(defendantLetterDocument),
+                eq(sealedClaimDocument),
+                eq(CLAIM)
             );
+
+            verify(appInsights).trackEvent(eq(BULK_PRINT_FAILED), eq(REFERENCE_NUMBER), eq(CLAIM.getReferenceNumber()));
         }
     }
 }
