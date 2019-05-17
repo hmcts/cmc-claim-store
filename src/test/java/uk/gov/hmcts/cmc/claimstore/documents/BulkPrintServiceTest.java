@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.ADDITIONAL_DATA_CASE_IDENTIFIER_KEY;
@@ -30,6 +31,14 @@ import static uk.gov.hmcts.cmc.claimstore.documents.BulkPrintService.XEROX_TYPE_
 
 @RunWith(MockitoJUnitRunner.class)
 public class BulkPrintServiceTest {
+    private static final String AUTH_VALUE = "AuthValue";
+    private static final Claim CLAIM = SampleClaim.getDefault();
+    private static final Map<String, Object> additionalData = new HashMap<>();
+    private static final Map<String, Object> pinContents = new HashMap<>();
+    private static final Document defendantLetterDocument = new Document("pinTemplate", pinContents);
+    private static final Map<String, Object> claimContents = new HashMap<>();
+    private static final Document sealedClaimDocument = new Document("sealedClaimTemplate", claimContents);
+
     @Mock
     private SendLetterApi sendLetterApi;
 
@@ -40,35 +49,65 @@ public class BulkPrintServiceTest {
     private AuthTokenGenerator authTokenGenerator;
     private BulkPrintService bulkPrintService;
     private BulkPrintStaffNotificationService bulkPrintStaffNotificationService;
+    private Letter letter;
 
     @Before
     public void beforeEachTest() {
-        bulkPrintService = new BulkPrintService(
-            sendLetterApi, authTokenGenerator, bulkPrintStaffNotificationService, appInsights,
-            false);
+        when(authTokenGenerator.generate()).thenReturn(AUTH_VALUE);
+        additionalData.put(ADDITIONAL_DATA_LETTER_TYPE_KEY, ADDITIONAL_DATA_LETTER_TYPE_VALUE);
+        additionalData.put(ADDITIONAL_DATA_CASE_IDENTIFIER_KEY, CLAIM.getId());
+        additionalData.put(ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY, CLAIM.getReferenceNumber());
+
+        List<Document> documents = Arrays.asList(defendantLetterDocument, sealedClaimDocument);
+        letter = new Letter(documents, XEROX_TYPE_PARAMETER, additionalData);
     }
 
     @Test
     public void shouldSendLetterWithDocumentsAsInGivenOrder() {
         //given
-        String authValue = "AuthValue";
-        when(authTokenGenerator.generate()).thenReturn(authValue);
-        Claim claim = SampleClaim.getDefault();
-        Map<String, Object> additionalData = new HashMap<>();
-        additionalData.put(ADDITIONAL_DATA_LETTER_TYPE_KEY, ADDITIONAL_DATA_LETTER_TYPE_VALUE);
-        additionalData.put(ADDITIONAL_DATA_CASE_IDENTIFIER_KEY, claim.getId());
-        additionalData.put(ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY, claim.getReferenceNumber());
-        Map<String, Object> pinContents = new HashMap<>();
-        Document defendantLetterDocument = new Document("pinTemplate", pinContents);
-        Map<String, Object> claimContents = new HashMap<>();
-        Document sealedClaimDocument = new Document("sealedClaimTemplate", claimContents);
+        bulkPrintService = new BulkPrintService(
+            sendLetterApi,
+            authTokenGenerator,
+            bulkPrintStaffNotificationService,
+            appInsights,
+            false
+        );
 
         //when
-        bulkPrintService.print(claim, defendantLetterDocument, sealedClaimDocument);
+        bulkPrintService.print(CLAIM, defendantLetterDocument, sealedClaimDocument);
         //then
         List<Document> documents = Arrays.asList(defendantLetterDocument, sealedClaimDocument);
 
-        verify(sendLetterApi).sendLetter(eq(authValue),
+        verify(sendLetterApi).sendLetter(eq(AUTH_VALUE),
             eq(new Letter(documents, XEROX_TYPE_PARAMETER, additionalData)));
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldNotifyStaffOnPrintFailure() {
+        //given
+        doThrow(new RuntimeException("send Letter failed"))
+            .when(sendLetterApi)
+            .sendLetter(eq(AUTH_VALUE), eq(letter));
+
+        //when
+        bulkPrintService = new BulkPrintService(
+            sendLetterApi,
+            authTokenGenerator,
+            bulkPrintStaffNotificationService,
+            appInsights,
+            true
+        );
+
+        try {
+            bulkPrintService.print(CLAIM, defendantLetterDocument, sealedClaimDocument);
+        } finally {
+            //then
+            verify(sendLetterApi).sendLetter(eq(AUTH_VALUE), eq(letter));
+            verify(bulkPrintStaffNotificationService).notifyFailedBulkPrint(
+                defendantLetterDocument,
+                sealedClaimDocument,
+                CLAIM
+            );
+        }
     }
 }
