@@ -2,9 +2,9 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -15,7 +15,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDResponseSubjectType;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -148,11 +148,11 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
 
         if (StringUtils.isNotBlank(applicant.getPreferredCourtReason())) {
             newRequestedCourt = applicant.getPreferredCourtName();
-            preferredCourtObjectingParty = "CLAIMANT";
+            preferredCourtObjectingParty = CCDResponseSubjectType.RES_CLAIMANT.getValue();
             preferredCourtObjectingReason = applicant.getPreferredCourtReason();
         } else if (StringUtils.isNotBlank(respondent.getPreferredCourtReason())) {
             newRequestedCourt = respondent.getPreferredCourtName();
-            preferredCourtObjectingParty = "DEFENDANT";
+            preferredCourtObjectingParty = CCDResponseSubjectType.RES_DEFENDANT.getValue();
             preferredCourtObjectingReason = respondent.getPreferredCourtReason();
         }
 

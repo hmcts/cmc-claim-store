@@ -10,10 +10,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
-import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
-import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
@@ -26,7 +23,6 @@ import uk.gov.hmcts.cmc.ccd.util.SampleData;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Address;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Address;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
@@ -40,7 +36,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DocAssemblyTemplateBodyMapperTest  {
@@ -73,7 +68,6 @@ public class DocAssemblyTemplateBodyMapperTest  {
             .withForename("Judge")
             .withSurname("McJudge")
             .build();
-        ccdOrderGenerationData = SampleData.getCCDOrderGenerationData();
         docAssemblyTemplateBodyBuilder = DocAssemblyTemplateBody.builder()
             .hearingRequired(true)
             .hasFirstOrderDirections(true)
@@ -87,11 +81,7 @@ public class DocAssemblyTemplateBodyMapperTest  {
             .judicial(Judicial.builder().firstName("Judge").lastName("McJudge").build())
             .referenceNumber("ref no")
             .hearingCourtName("Defendant Court")
-            .hearingCourtAddress((CCDAddress.builder()
-                .addressLine1("Defendant Court address")
-                .postCode("SW1P4BB")
-                .postTown("London")
-                .build()))
+            .hearingCourtAddress("Defendant Court address\nSW1P4BB\nLondon")
             .docUploadForParty(CCDDirectionPartyType.CLAIMANT)
             .eyewitnessUploadForParty(CCDDirectionPartyType.DEFENDANT)
             .estimatedHearingDuration(CCDHearingDurationType.FOUR_HOURS)
@@ -121,9 +111,9 @@ public class DocAssemblyTemplateBodyMapperTest  {
                 .postcode("SW1P4BB")
                 .town("Birmingham").build()).build()));
 
+        ccdCase.setOrderGenerationData(ccdOrderGenerationData);
         DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
             ccdCase,
-            ccdOrderGenerationData,
             userDetails);
 
         DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
@@ -139,12 +129,7 @@ public class DocAssemblyTemplateBodyMapperTest  {
             .judicial(Judicial.builder().firstName("Judge").lastName("McJudge").build())
             .referenceNumber("ref no")
             .hearingCourtName("Birmingham Court")
-            .hearingCourtAddress((CCDAddress.builder()
-                .addressLine1("line1")
-                .addressLine2("line2")
-                .postCode("SW1P4BB")
-                .postTown("Birmingham")
-                .build()))
+            .hearingCourtAddress("line1\nline2\nSW1P4BB\nBirmingham")
             .docUploadForParty(CCDDirectionPartyType.CLAIMANT)
             .eyewitnessUploadForParty(CCDDirectionPartyType.DEFENDANT)
             .estimatedHearingDuration(CCDHearingDurationType.FOUR_HOURS)
@@ -184,28 +169,31 @@ public class DocAssemblyTemplateBodyMapperTest  {
 
     @Test
     public void shouldMapTemplateBodyWhenOtherDirectionIsNull() {
-        CCDOrderGenerationData ccdOrderGenerationData = CCDOrderGenerationData.builder()
-            .directionList(ImmutableList.of(
-                CCDOrderDirectionType.DOCUMENTS, CCDOrderDirectionType.EYEWITNESS))
-            .otherDirectionList(ImmutableList.of(
-                CCDCollectionElement.<CCDOrderDirection>builder().value(null).build()))
-            .hearingIsRequired(YES)
-            .docUploadDeadline(LocalDate.parse("2020-10-11"))
-            .eyewitnessUploadDeadline(LocalDate.parse("2020-10-11"))
-            .hearingCourt(CCDHearingCourtType.DEFENDANT_COURT)
-            .preferredCourtObjectingReason("I like this court more")
-            .hearingStatement("No idea")
-            .newRequestedCourt("Another court")
-            .docUploadForParty(CCDDirectionPartyType.CLAIMANT)
-            .eyewitnessUploadForParty(CCDDirectionPartyType.DEFENDANT)
-            .estimatedHearingDuration(CCDHearingDurationType.FOUR_HOURS)
-            .build();
+        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData();
+        ccdOrderGenerationData.setOtherDirectionList(ImmutableList.of(
+            CCDCollectionElement.<CCDOrderDirection>builder().value(null).build()));
         ccdCase.setOrderGenerationData(ccdOrderGenerationData);
         DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
             ccdCase,
             userDetails);
 
         docAssemblyTemplateBodyBuilder.otherDirectionList(Collections.emptyList());
+        DocAssemblyTemplateBody expectedBody = docAssemblyTemplateBodyBuilder.build();
+
+        assertThat(requestBody).isEqualTo(expectedBody);
+    }
+
+    @Test
+    public void shouldMapTemplateBodyWhenHearingCourtIsNull() {
+        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData();
+        ccdOrderGenerationData.setHearingCourt(null);
+        ccdCase.setOrderGenerationData(ccdOrderGenerationData);
+        DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
+            ccdCase,
+            userDetails);
+
+        docAssemblyTemplateBodyBuilder.hearingCourtAddress(null);
+        docAssemblyTemplateBodyBuilder.hearingCourtName(null);
         DocAssemblyTemplateBody expectedBody = docAssemblyTemplateBodyBuilder.build();
 
         assertThat(requestBody).isEqualTo(expectedBody);

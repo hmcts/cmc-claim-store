@@ -11,6 +11,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
+import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Address;
+import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -55,6 +57,16 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
         String serviceToken = "serviceToken";
         DocAssemblyResponse docAssemblyResponse = Mockito.mock(DocAssemblyResponse.class);
         when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOCUMENT_URL);
+        given(courtFinderApi.findMoneyClaimCourtByPostcode(anyString()))
+            .willReturn(ImmutableList.of(Court.builder()
+                .name("Clerkenwell Court")
+                .slug("clerkenwell-court")
+                .address(Address.builder()
+                    .addressLines(ImmutableList.of("line1", "line2"))
+                    .postcode("SW1P4BB")
+                    .town("Clerkenwell").build())
+                .build()
+            ));
         given(authTokenGenerator.generate()).willReturn(serviceToken);
         given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(USER_DETAILS);
         given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(new User(AUTHORISATION_TOKEN, USER_DETAILS));

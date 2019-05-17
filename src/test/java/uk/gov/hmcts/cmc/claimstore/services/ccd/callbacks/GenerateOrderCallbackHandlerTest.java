@@ -36,7 +36,6 @@ import java.util.Collections;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.MapEntry.entry;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ACTION_REVIEW_COMMENTS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.GENERATE_ORDER;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -144,7 +143,7 @@ public class GenerateOrderCallbackHandlerTest {
             entry("eyewitnessUploadDeadline", DEADLINE),
             entry("preferredCourt", ccdCase.getPreferredCourt()),
             entry("newRequestedCourt", "Claimant Court"),
-            entry("preferredCourtObjectingParty", "CLAIMANT"),
+            entry("preferredCourtObjectingParty", "Res_CLAIMANT"),
             entry("preferredCourtObjectingReason", "As a claimant I like this court more")
         );
     }
@@ -173,7 +172,7 @@ public class GenerateOrderCallbackHandlerTest {
             entry("eyewitnessUploadDeadline", DEADLINE),
             entry("preferredCourt", ccdCase.getPreferredCourt()),
             entry("newRequestedCourt", "Defendant Court"),
-            entry("preferredCourtObjectingParty", "DEFENDANT"),
+            entry("preferredCourtObjectingParty", "Res_DEFENDANT"),
             entry("preferredCourtObjectingReason", "As a defendant I like this court more")
         );
     }

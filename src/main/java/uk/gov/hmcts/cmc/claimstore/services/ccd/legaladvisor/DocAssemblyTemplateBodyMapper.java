@@ -33,7 +33,11 @@ public class DocAssemblyTemplateBodyMapper {
     public DocAssemblyTemplateBody from(CCDCase ccdCase,
                                         UserDetails userDetails) {
         CCDOrderGenerationData ccdOrderGenerationData = ccdCase.getOrderGenerationData();
-        HearingCourt hearingCourt = mapHearingCourt(ccdCase, ccdOrderGenerationData.getHearingCourt());
+
+        HearingCourt hearingCourt = Optional.ofNullable(ccdOrderGenerationData.getHearingCourt())
+                .map(court -> mapHearingCourt(ccdCase, court))
+                .orElseGet(() -> HearingCourt.builder().build());
+
         return DocAssemblyTemplateBody.builder()
             .claimant(Party.builder()
                 .partyName(ccdCase.getApplicants()
@@ -70,7 +74,7 @@ public class DocAssemblyTemplateBodyMapper {
             .hearingCourtName(
                 hearingCourt.getName())
             .hearingCourtAddress(
-                hearingCourt.getAddress())
+                convertAddressToString(hearingCourt.getAddress()))
             .estimatedHearingDuration(
                 ccdOrderGenerationData.getEstimatedHearingDuration())
             .hearingStatement(
@@ -89,6 +93,34 @@ public class DocAssemblyTemplateBodyMapper {
             .build();
     }
 
+    //this will be removed once the template is updated
+    private String convertAddressToString(CCDAddress ccdAddress) {
+        if (ccdAddress != null) {
+            StringBuilder stringBuilder = new StringBuilder();
+            if (ccdAddress.getAddressLine1() != null) {
+                stringBuilder.append(ccdAddress.getAddressLine1());
+                stringBuilder.append("\n");
+            }
+            if (ccdAddress.getAddressLine2() != null) {
+                stringBuilder.append(ccdAddress.getAddressLine2());
+                stringBuilder.append("\n");
+            }
+            if (ccdAddress.getAddressLine3() != null) {
+                stringBuilder.append(ccdAddress.getAddressLine3());
+                stringBuilder.append("\n");
+            }
+            if (ccdAddress.getPostCode() != null) {
+                stringBuilder.append(ccdAddress.getPostCode());
+                stringBuilder.append("\n");
+            }
+            if (ccdAddress.getPostTown() != null) {
+                stringBuilder.append(ccdAddress.getPostTown());
+            }
+            return stringBuilder.toString();
+        }
+        return null;
+    }
+    
     private CCDAddress mapHearingAddress(Address address) {
         CCDAddress.CCDAddressBuilder ccdAddressBuilder = CCDAddress.builder()
             .postTown(address.getTown())
