@@ -2,6 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -29,6 +31,8 @@ import java.util.Map;
 @Service
 @ConditionalOnProperty(prefix = "doc_assembly", name = "url")
 public class GenerateOrderCallbackHandler extends CallbackHandler {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     @Value("${doc_assembly.templateId}")
     private String templateId;
 
@@ -69,6 +73,7 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
     }
 
     private CallbackResponse prepopulateOrder() {
+        logger.info("Generate order callback: prepopulating order fields");
         LocalDate deadline = legalOrderGenerationDeadlinesCalculator.calculateOrderGenerationDeadlines();
         return AboutToStartOrSubmitCallbackResponse
             .builder()
@@ -84,12 +89,16 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
     }
 
     private CallbackResponse generateOrder(CallbackParams callbackParams) {
+        logger.info("Generate order callback: creating order document");
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = jsonMapper.fromMap(
             callbackRequest.getCaseDetails().getData(), CCDCase.class);
 
         String authorisation = callbackParams.getParams()
             .get(CallbackParams.Params.BEARER_TOKEN).toString();
+
+        logger.info("Generate order callback: creating request for doc assembly");
+
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
             .templateId(templateId)
             .outputType(OutputType.DOC)
@@ -97,11 +106,16 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
                 ccdCase, ccdCase.getOrderGenerationData(), userService.getUserDetails(authorisation)))
             .build();
 
+        logger.info("Generate order callback: sending request to doc assembly");
+
         DocAssemblyResponse docAssemblyResponse = docAssemblyClient.generateOrder(
             authorisation,
             authTokenGenerator.generate(),
             docAssemblyRequest
         );
+
+        logger.info("Generate order callback: received response from doc assembly");
+        
         return AboutToStartOrSubmitCallbackResponse
             .builder()
             .data(ImmutableMap.of(
