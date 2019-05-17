@@ -161,10 +161,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         }
     }
 
-    public Claim uploadToDocumentManagement(
-        PDF document,
-        String authorisation,
-        Claim claim) {
+    public Claim uploadToDocumentManagement(PDF document, String authorisation, Claim claim) {
         ClaimDocument claimDocument = documentManagementService.uploadDocument(authorisation, document);
         ClaimDocumentCollection claimDocumentCollection = getClaimDocumentCollection(claim, claimDocument);
 
