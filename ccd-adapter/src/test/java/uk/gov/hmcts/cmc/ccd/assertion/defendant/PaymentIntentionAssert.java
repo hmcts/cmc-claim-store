@@ -6,6 +6,8 @@ import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
 import java.util.Objects;
 
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;
+
 public class PaymentIntentionAssert extends AbstractAssert<PaymentIntentionAssert, PaymentIntention> {
 
     public PaymentIntentionAssert(PaymentIntention actual) {
@@ -21,10 +23,11 @@ public class PaymentIntentionAssert extends AbstractAssert<PaymentIntentionAsser
         }
 
         actual.getRepaymentPlan().ifPresent(repaymentPlan -> {
-                if (!Objects.equals(repaymentPlan.getInstalmentAmount(), paymentIntention.getInstalmentAmount())) {
-                    failWithMessage("Expected PaymentIntention.instalmentAmount to be <%s> but was <%s>",
-                        paymentIntention.getInstalmentAmount(), repaymentPlan.getInstalmentAmount());
-                }
+                String message = String.format("Expected PaymentIntention.instalmentAmount to be <%s> but was <%s>",
+                    paymentIntention.getInstalmentAmount(), repaymentPlan.getInstalmentAmount());
+                assertMoney(repaymentPlan.getInstalmentAmount())
+                    .isEqualTo(paymentIntention.getInstalmentAmount(), message);
+
                 if (!Objects.equals(repaymentPlan.getFirstPaymentDate(), paymentIntention.getFirstPaymentDate())) {
                     failWithMessage("Expected PaymentIntention.firstPaymentDate to be <%s> but was <%s>",
                         paymentIntention.getFirstPaymentDate(), repaymentPlan.getFirstPaymentDate());

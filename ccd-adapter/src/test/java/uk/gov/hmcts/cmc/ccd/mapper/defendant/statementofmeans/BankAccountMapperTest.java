@@ -49,7 +49,7 @@ public class BankAccountMapperTest {
     public void shouldMapBankAccountFromCCD() {
         //given
         CCDBankAccount ccdBankAccount = CCDBankAccount.builder()
-            .balance(BigDecimal.valueOf(100))
+            .balance("10000")
             .joint(CCDYesNoOption.NO)
             .type(SAVINGS_ACCOUNT)
             .build();

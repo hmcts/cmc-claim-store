@@ -24,7 +24,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LET
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @Service
-@ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled")
+@ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled", havingValue = "true")
 public class DocumentOrchestrationService {
 
     private final CitizenServiceDocumentsService citizenServiceDocumentsService;
@@ -57,10 +57,10 @@ public class DocumentOrchestrationService {
             .map(GeneratePinResponse::getPin)
             .orElseThrow(() -> new IllegalArgumentException("Pin generation failed"));
 
-        Document defendantLetterDoc = citizenServiceDocumentsService.pinLetterDocument(claim, pin);
+        Document defendantPinLetterDoc = citizenServiceDocumentsService.pinLetterDocument(claim, pin);
 
-        PDF defendantLetter = new PDF(buildDefendantLetterFileBaseName(claim.getReferenceNumber()),
-            pdfServiceClient.generateFromHtml(defendantLetterDoc.template.getBytes(), defendantLetterDoc.values),
+        PDF defendantPinLetter = new PDF(buildDefendantLetterFileBaseName(claim.getReferenceNumber()),
+            pdfServiceClient.generateFromHtml(defendantPinLetterDoc.template.getBytes(), defendantPinLetterDoc.values),
             DEFENDANT_PIN_LETTER);
 
         String letterHolderId = pinResponse.map(GeneratePinResponse::getUserId)
@@ -71,9 +71,9 @@ public class DocumentOrchestrationService {
 
         return GeneratedDocuments.builder()
             .claimIssueReceipt(getClaimIssueReceiptPdf(claim))
-            .defendantLetter(defendantLetter)
+            .defendantPinLetter(defendantPinLetter)
             .sealedClaim(getClaimPdf(claim, sealedClaimDoc))
-            .defendantLetterDoc(defendantLetterDoc)
+            .defendantPinLetterDoc(defendantPinLetterDoc)
             .sealedClaimDoc(sealedClaimDoc)
             .pin(pin)
             .build();

@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
+import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -60,6 +61,8 @@ public class DocumentManagementBackedDocumentsServiceTest {
     private SettlementAgreementCopyService settlementAgreementCopyService;
     @Mock
     private DefendantPinLetterPdfService defendantPinLetterPdfService;
+    @Mock
+    private CCDEventProducer ccdEventProducer;
 
     @Before
     public void setUp() {
@@ -71,7 +74,8 @@ public class DocumentManagementBackedDocumentsServiceTest {
             defendantResponseReceiptService,
             countyCourtJudgmentPdfService,
             settlementAgreementCopyService,
-            defendantPinLetterPdfService);
+            defendantPinLetterPdfService,
+            ccdEventProducer);
     }
 
     @Test
@@ -162,19 +166,6 @@ public class DocumentManagementBackedDocumentsServiceTest {
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(AUTHORISATION)))
             .thenReturn(claim);
         documentManagementBackedDocumentsService.generateSettlementAgreement(claim.getExternalId(), AUTHORISATION);
-    }
-
-    @Test
-    public void shouldGenerateDefendantPinLetter() {
-        Claim claim = SampleClaim.getDefault();
-        when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(AUTHORISATION)))
-            .thenReturn(claim);
-        when(defendantPinLetterPdfService.createPdf(any(Claim.class), anyString())).thenReturn(PDF_BYTES);
-        documentManagementBackedDocumentsService.generateDefendantPinLetter(
-            claim.getExternalId(),
-            "pin",
-            AUTHORISATION);
-        verify(documentManagementService).uploadDocument(anyString(), any(PDF.class));
     }
 
     @Test

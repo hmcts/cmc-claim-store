@@ -30,6 +30,8 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
@@ -49,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.CLAIM_EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
@@ -79,6 +82,10 @@ public class ClaimService {
     private final ClaimAuthorisationRule claimAuthorisationRule;
     private final boolean asyncEventOperationEnabled;
     private CCDEventProducer ccdEventProducer;
+
+    private static Supplier<ClaimSubmissionOperationIndicators> getDefaultClaimSubmissionOperationIndicators =
+        () -> ClaimSubmissionOperationIndicators.builder()
+            .build();
 
     @SuppressWarnings("squid:S00107") //Constructor need all parameters
     @Autowired
@@ -196,6 +203,10 @@ public class ClaimService {
         return caseRepository.getByPaymentReference(payReference, authorisation);
     }
 
+    public List<Claim> getClaimsByState(ClaimState claimState, User user) {
+        return caseRepository.getClaimsByState(claimState, user);
+    }
+
     public CaseReference savePrePayment(String externalId, String authorisation) {
         return caseRepository.savePrePaymentClaim(externalId, authorisation);
     }
@@ -234,6 +245,7 @@ public class ClaimService {
                 .createdAt(nowInUTC())
                 .letterHolderId(letterHolderId.orElse(null))
                 .features(features)
+                .claimSubmissionOperationIndicators(getDefaultClaimSubmissionOperationIndicators.get())
                 .build();
 
             issuedClaim = caseRepository.saveClaim(user, claim);
@@ -442,5 +454,9 @@ public class ClaimService {
         claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorisation);
         caseRepository.saveReDetermination(authorisation, claim, redetermination);
         ccdEventProducer.createCCDReDetermination(claim, authorisation, redetermination);
+    }
+
+    public void updateClaimState(String authorisation, Claim claim, ClaimState state) {
+        claimRepository.updateClaimState(claim.getId(), state.name());
     }
 }
