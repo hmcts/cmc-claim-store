@@ -30,7 +30,7 @@ public class NotificationServiceTest extends BaseNotificationServiceTest {
 
     @Before
     public void beforeEachTest() {
-        service = new NotificationService(notificationClient, appInsights);
+        service = new NotificationService(notificationClient, appInsights, false);
     }
 
     @Test(expected = NotificationException.class)

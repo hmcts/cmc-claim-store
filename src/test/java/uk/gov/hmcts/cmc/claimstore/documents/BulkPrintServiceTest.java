@@ -44,8 +44,8 @@ public class BulkPrintServiceTest {
     @Before
     public void beforeEachTest() {
         bulkPrintService = new BulkPrintService(
-            sendLetterApi, authTokenGenerator, bulkPrintStaffNotificationService, appInsights
-        );
+            sendLetterApi, authTokenGenerator, bulkPrintStaffNotificationService, appInsights,
+            false);
     }
 
     @Test

@@ -39,8 +39,8 @@ public class PinOrchestrationService {
     }
 
     public Claim process(Claim claim, String authorisation, String submitterName) {
-        Claim updatedClaim = claim;
         GeneratedDocuments documents = documentOrchestrationService.generateForCitizen(claim, authorisation);
+        Claim updatedClaim = documents.getClaim();
 
         ClaimSubmissionOperationIndicators.ClaimSubmissionOperationIndicatorsBuilder updatedOperationIndicator =
             ClaimSubmissionOperationIndicators.builder();
@@ -60,8 +60,8 @@ public class PinOrchestrationService {
             updatedOperationIndicator.defendantNotification(YesNoOption.YES);
 
         } finally {
-            updatedClaim = eventsStatusService.updateClaimOperationCompletion(authorisation, updatedClaim,
-                CaseEvent.PIN_GENERATION_OPERATIONS);
+            updatedClaim = eventsStatusService.updateClaimOperationCompletion(authorisation, updatedClaim.getId(),
+                updatedOperationIndicator.build(), CaseEvent.PIN_GENERATION_OPERATIONS);
         }
         return updatedClaim;
     }

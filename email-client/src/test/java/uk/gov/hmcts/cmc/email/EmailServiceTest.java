@@ -4,7 +4,6 @@ import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.mail.MailException;
@@ -37,7 +36,6 @@ public class EmailServiceTest {
     @Mock
     private TelemetryClient telemetryClient;
 
-    @InjectMocks
     private EmailService emailService;
 
     @Mock
@@ -45,6 +43,7 @@ public class EmailServiceTest {
 
     @Before
     public void beforeEachTest() {
+        emailService = new EmailService(telemetryClient, javaMailSender, false);
         when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
     }
 
