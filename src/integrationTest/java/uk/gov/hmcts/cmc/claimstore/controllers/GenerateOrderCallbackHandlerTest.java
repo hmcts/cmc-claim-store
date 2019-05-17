@@ -128,7 +128,7 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
                 "id", "",
                 "value", ImmutableMap.of(
                     "extraOrderDirection", "OTHER",
-                    "directionComment", "second",
+                    "otherDirection", "second",
                     "sendBy", "2019-06-04",
                     "forParty", "BOTH"))));
         data.put("newRequestedCourt", "Another court");
