@@ -178,30 +178,6 @@ public class DocumentUploadHandlerTest {
     }
 
     @Test
-    public void countyCourtJudgmentEventTriggersDocumentUpload() {
-        documentUploadHandler.uploadCountyCourtJudgmentDocument(ccjWithoutAdmission);
-        assertCommon(CCJ_REQUEST);
-    }
-
-    @Test
-    public void countyCourtJudgmentEventForDocumentUploadThrowsExceptionWhenClaimNotPresent() {
-        exceptionRule.expect(NullPointerException.class);
-        exceptionRule.expectMessage(CLAIM_MUST_NOT_BE_NULL);
-        documentUploadHandler.uploadCountyCourtJudgmentDocument(
-            new CountyCourtJudgmentEvent(null, AUTHORISATION)
-        );
-    }
-
-    @Test
-    public void countyCourtJudgmentEventForDocumentUploadThrowsNotFoundExceptionWhenCCJNotPresent() {
-        exceptionRule.expect(NotFoundException.class);
-        exceptionRule.expectMessage("County Court Judgment does not exist for this claim");
-        documentUploadHandler.uploadCountyCourtJudgmentDocument(
-            new CountyCourtJudgmentEvent(SampleClaim.withFullClaimData(), AUTHORISATION)
-        );
-    }
-
-    @Test
     public void agreementCountersignedEventShouldTriggersDocumentUpload() {
         documentUploadHandler.uploadSettlementAgreementDocument(offerMadeByClaimant);
         assertCommon(SETTLEMENT_AGREEMENT);

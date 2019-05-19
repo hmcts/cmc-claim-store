@@ -152,9 +152,6 @@ public class SupportController {
             case DEFENDANT_RESPONSE_RECEIPT:
                 documentsService.generateDefendantResponseReceipt(claim.getExternalId(), authorisation);
                 break;
-            case CCJ_REQUEST:
-                documentsService.generateCountyCourtJudgement(claim.getExternalId(), authorisation);
-                break;
             case SETTLEMENT_AGREEMENT:
                 documentsService.generateSettlementAgreement(claim.getExternalId(), authorisation);
                 break;
