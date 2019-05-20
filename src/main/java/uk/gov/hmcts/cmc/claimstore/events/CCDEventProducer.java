@@ -126,6 +126,6 @@ public class CCDEventProducer {
     }
 
     public void createCCDLinkLetterHolderEvent(Claim claim, String letterHolderId, String authorisation) {
-        publisher.publishEvent(new CCDLinkLetterHolderEvent(claim, letterHolderId,authorisation));
+        publisher.publishEvent(new CCDLinkLetterHolderEvent(claim, letterHolderId, authorisation));
     }
 }

@@ -286,12 +286,8 @@ public class SupportController {
         ClaimantResponse claimantResponse = claim.getClaimantResponse()
             .orElseThrow(IllegalArgumentException::new);
         Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
-        if (!isSettlementAgreement(claim, claimantResponse)
-            && (!isReferredToJudge(claimantResponse)
-            || (isReferredToJudge(claimantResponse)
-            && PartyUtils.isCompanyOrOrganisation(response.getDefendant())
-        )
-        )
+        if (!isSettlementAgreement(claim, claimantResponse) && (!isReferredToJudge(claimantResponse)
+            || (isReferredToJudge(claimantResponse) && PartyUtils.isCompanyOrOrganisation(response.getDefendant())))
         ) {
             claimantResponseStaffNotificationHandler.onClaimantResponse(new ClaimantResponseEvent(claim));
         }
