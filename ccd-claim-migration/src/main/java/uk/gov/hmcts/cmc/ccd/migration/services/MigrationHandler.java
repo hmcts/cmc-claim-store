@@ -28,7 +28,6 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
@@ -285,10 +284,6 @@ public class MigrationHandler {
             case DEFENDANT_RESPONSE_UPLOAD:
                 return claim.getDefendantId() != null
                     && claim.getClaimDocument(DEFENDANT_RESPONSE_RECEIPT).isPresent();
-            case CCJ_REQUEST_UPLOAD:
-                return claim.getCountyCourtJudgmentRequestedAt() != null
-                    && claim.getCountyCourtJudgment() != null
-                    &&  claim.getClaimDocument(CCJ_REQUEST).isPresent();
             case SETTLEMENT_AGREEMENT_UPLOAD:
                 return claim.getSettlementReachedAt() != null
                     && claim.getSettlement().isPresent()
