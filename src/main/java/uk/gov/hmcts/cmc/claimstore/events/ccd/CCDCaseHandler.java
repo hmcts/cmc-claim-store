@@ -200,6 +200,21 @@ public class CCDCaseHandler {
         }
     }
 
+    @EventListener
+    @LogExecutionTime
+    public void linkLetterHolder(CCDLinkLetterHolderEvent event) {
+        try {
+            Claim ccdClaim = ccdCaseRepository.getClaimByExternalId(
+                event.getClaim().getExternalId(), event.getAuthorization()
+            ).orElseThrow(IllegalStateException::new);
+
+            ccdCaseRepository.linkLetterHolder(ccdClaim.getId(), event.getLetterHolderId());
+        } catch (FeignException e) {
+            appInsights.trackEvent(CCD_ASYNC_FAILURE, REFERENCE_NUMBER, event.getClaim().getReferenceNumber());
+            throw e;
+        }
+    }
+
     @TransactionalEventListener
     @LogExecutionTime
     public void saveInterlocutoryJudgment(CCDInterlocutoryJudgmentEvent event) {

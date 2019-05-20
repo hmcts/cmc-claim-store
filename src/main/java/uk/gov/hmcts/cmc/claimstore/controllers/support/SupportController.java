@@ -222,7 +222,7 @@ public class SupportController {
 
             String fullName = userService.getUserDetails(authorisation).getFullName();
 
-            claimService.linkLetterHolder(claim.getId(), pinResponse.getUserId());
+            claimService.linkLetterHolder(claim, pinResponse.getUserId(), authorisation);
 
             documentGenerator.generateForNonRepresentedClaim(
                 new CitizenClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation)
@@ -274,7 +274,7 @@ public class SupportController {
 
             String fullName = userService.getUserDetails(authorisation).getFullName();
 
-            claimService.linkLetterHolder(claim.getId(), pinResponse.getUserId());
+            claimService.linkLetterHolder(claim, pinResponse.getUserId(), authorisation);
 
             documentGenerator.generateForCitizenRPA(
                 new CitizenClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation)
@@ -288,10 +288,10 @@ public class SupportController {
         Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
         if (!isSettlementAgreement(claim, claimantResponse)
             && (!isReferredToJudge(claimantResponse)
-                || (isReferredToJudge(claimantResponse)
-                    && PartyUtils.isCompanyOrOrganisation(response.getDefendant())
-                )
-            )
+            || (isReferredToJudge(claimantResponse)
+            && PartyUtils.isCompanyOrOrganisation(response.getDefendant())
+        )
+        )
         ) {
             claimantResponseStaffNotificationHandler.onClaimantResponse(new ClaimantResponseEvent(claim));
         }
