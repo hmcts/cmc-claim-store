@@ -73,7 +73,7 @@ public class ClaimCreationEventsStatusService {
         return caseRepository.updateClaimSubmissionOperationStatus(
             authorisation,
             claimId,
-            updateClaimSubmissionIndicatorWithEvent.apply(claimSubmissionOperationIndicators, caseEvent),
+            claimSubmissionOperationIndicators,
             caseEvent);
     }
 }
