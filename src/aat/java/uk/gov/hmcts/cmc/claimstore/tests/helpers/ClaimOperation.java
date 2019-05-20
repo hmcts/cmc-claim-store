@@ -14,7 +14,7 @@ import java.util.Optional;
 @Service
 public class ClaimOperation {
 
-    @Retryable(value = RuntimeException.class, backoff = @Backoff(delay = 1500, maxDelay = 3000))
+    @Retryable(value = RuntimeException.class, maxAttempts = 6, backoff = @Backoff(delay = 500, maxDelay = 3000))
     public Claim getClaimWithLetterHolder(String externalId, String userAuthentication) {
 
         Claim claim = retrieveClaim(externalId, userAuthentication);
