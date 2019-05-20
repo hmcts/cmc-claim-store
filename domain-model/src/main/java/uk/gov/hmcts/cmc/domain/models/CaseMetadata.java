@@ -34,6 +34,8 @@ public class CaseMetadata {
     private final URI sealedClaimDocument;
     private final String paymentReference;
     private final LocalDate moneyReceivedOn;
+    private final ClaimState state;
+    private final ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
 
     public static CaseMetadata fromClaim(Claim claim) {
         return new CaseMetadata(
@@ -54,7 +56,9 @@ public class CaseMetadata {
             Optional.ofNullable(claim.getClaimData().getPayment())
                 .map(Payment::getReference)
                 .orElse(null),
-            claim.getMoneyReceivedOn().orElse(null)
+            claim.getMoneyReceivedOn().orElse(null),
+            claim.getState().orElse(null),
+            claim.getClaimSubmissionOperationIndicators()
         );
     }
 
