@@ -32,7 +32,7 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
     @Before
     public void beforeEachTest() {
         service = new DefendantResponseNotificationService(
-            new NotificationService(notificationClient, appInsights),
+            new NotificationService(notificationClient, appInsights, false),
             new FreeMediationDecisionDateCalculator(28),
             properties
         );
