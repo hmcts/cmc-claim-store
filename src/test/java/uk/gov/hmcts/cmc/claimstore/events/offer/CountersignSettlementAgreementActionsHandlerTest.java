@@ -56,7 +56,7 @@ public class CountersignSettlementAgreementActionsHandlerTest {
         when(emailTemplates.getDefendantSignedSettlementAgreementToDefendant())
             .thenReturn(SETTLEMENT_SIGNED_TO_DEFENDANT);
 
-        NotificationService notificationService = new NotificationService(notificationClient, appInsights);
+        NotificationService notificationService = new NotificationService(notificationClient, appInsights, false);
 
         handler = new CountersignSettlementAgreementActionsHandler(notificationService, notificationsProperties);
     }

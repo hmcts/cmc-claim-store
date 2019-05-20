@@ -15,6 +15,8 @@ import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
@@ -73,6 +75,7 @@ public class PinOrchestrationServiceTest {
         .sealedClaimDoc(sealedClaimLetterDocument)
         .sealedClaim(sealedClaim)
         .pin(PIN)
+        .claim(CLAIM)
         .build();
 
     @Before
@@ -94,14 +97,6 @@ public class PinOrchestrationServiceTest {
     @Test
     public void shouldProcessPinBased() {
         //given
-        GeneratedDocuments generatedDocuments = GeneratedDocuments.builder()
-            .defendantPinLetterDoc(defendantPinLetterDocument)
-            .defendantPinLetter(defendantPinLetter)
-            .sealedClaimDoc(sealedClaimLetterDocument)
-            .sealedClaim(sealedClaim)
-            .pin(PIN)
-            .build();
-
         given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION)))
             .willReturn(generatedDocuments);
 
@@ -123,8 +118,14 @@ public class PinOrchestrationServiceTest {
             eq(SUBMITTER_NAME)
         );
 
-        verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM),
-            eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+        ClaimSubmissionOperationIndicators operationIndicators = ClaimSubmissionOperationIndicators.builder()
+            .bulkPrint(YesNoOption.YES)
+            .staffNotification(YesNoOption.YES)
+            .defendantNotification(YesNoOption.YES)
+            .build();
+
+        verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM.getId()),
+            eq(operationIndicators), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
     }
 
     @Test(expected = RuntimeException.class)
@@ -136,11 +137,14 @@ public class PinOrchestrationServiceTest {
         doThrow(new RuntimeException("bulk print failed")).when(bulkPrintService).print(any(), any(), any());
 
         //when
-        pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
+        try {
+            pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
 
-        //then
-        verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM),
-            eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+        } finally {
+            //then
+            verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM.getId()),
+                eq(ClaimSubmissionOperationIndicators.builder().build()), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+        }
     }
 
     @Test(expected = RuntimeException.class)
@@ -151,25 +155,38 @@ public class PinOrchestrationServiceTest {
         doThrow(new RuntimeException("claim issue notification failed"))
             .when(claimIssuedStaffNotificationService).notifyStaffOfClaimIssue(any(), any());
         //when
-        pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
+        try {
+            pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
+        } finally {
+            //then
+            ClaimSubmissionOperationIndicators operationIndicators = ClaimSubmissionOperationIndicators.builder()
+                .bulkPrint(YesNoOption.YES)
+                .build();
 
-        //then
-        verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM),
-            eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+            verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM.getId()),
+                eq(operationIndicators), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+        }
     }
 
     @Test(expected = RuntimeException.class)
-    public void updatePinOperationStatusWhenNoifyDefendantFails() {
+    public void updatePinOperationStatusWhenNotifyDefendantFails() {
         //given
         given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION)))
             .willReturn(generatedDocuments);
         doThrow(new RuntimeException("claim issue notification failed"))
             .when(claimIssuedNotificationService).sendMail(any(), any(), any(), any(), any(), any());
         //when
-        pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
+        try {
+            pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
+        } finally {
+            //then
+            ClaimSubmissionOperationIndicators operationIndicators = ClaimSubmissionOperationIndicators.builder()
+                .bulkPrint(YesNoOption.YES)
+                .staffNotification(YesNoOption.YES)
+                .build();
 
-        //then
-        verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM),
-            eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+            verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM.getId()),
+                eq(operationIndicators), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+        }
     }
 }
