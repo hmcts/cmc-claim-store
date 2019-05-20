@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.documents.CitizenServiceDocumentsService;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
+import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.operations.ClaimantOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.NotifyStaffOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.RpaOperationService;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimCreatedEvent
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
@@ -31,6 +33,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
@@ -203,9 +207,8 @@ public class PostClaimOrchestrationHandlerTest {
     public void reSubmitCitizenIssueHandlerWhenAllOperationPassed() {
         //given
         Claim claimWithPinOperationSucceededIndicator = CLAIM.toBuilder()
-            .claimSubmissionOperationIndicators(
-                SampleClaimSubmissionOperationIndicators.withAllOperationSuccess.get()
-            ).build();
+            .claimSubmissionOperationIndicators(SampleClaimSubmissionOperationIndicators.withAllOperationSuccess.get())
+            .build();
 
         CitizenClaimCreatedEvent event = new CitizenClaimCreatedEvent(
             claimWithPinOperationSucceededIndicator,
@@ -326,6 +329,102 @@ public class PostClaimOrchestrationHandlerTest {
         verifyZeroInteractions(uploadOperationService);
         verifyZeroInteractions(pinOrchestrationService);
 
+    }
+
+    @Test
+    public void noOperationPerformedWhenPinOperationFails() {
+        //given
+        CitizenClaimCreatedEvent event = new CitizenClaimCreatedEvent(CLAIM, SUBMITTER_NAME, AUTHORISATION);
+        doThrow(new RuntimeException("bulk print failed")).when(pinOrchestrationService).process(any(), any(), any());
+
+        //when
+        try {
+            postClaimOrchestrationHandler.citizenIssueHandler(event);
+
+        } finally {
+            //then
+            verify(uploadOperationService, never())
+                .uploadDocument(any(Claim.class), eq(AUTHORISATION), any(PDF.class), any(CaseEvent.class));
+
+            verify(rpaOperationService, never()).notify(any(Claim.class), eq(AUTHORISATION), any(PDF.class));
+            verify(claimantOperationService, never())
+                .notifyCitizen(any(Claim.class), eq(SUBMITTER_NAME), eq(AUTHORISATION));
+
+            verify(claimService, never()).updateClaimState(eq(AUTHORISATION), any(Claim.class), eq(ClaimState.OPEN));
+        }
+    }
+
+    @Test
+    public void noOperationPerformedWhenRpaOperationFails() {
+        //given
+        CitizenClaimCreatedEvent event = new CitizenClaimCreatedEvent(CLAIM, SUBMITTER_NAME, AUTHORISATION);
+        doThrow(new RuntimeException("notification failed"))
+            .when(rpaOperationService).notify(any(Claim.class), eq(AUTHORISATION), any(PDF.class));
+
+        //when
+        try {
+            postClaimOrchestrationHandler.citizenIssueHandler(event);
+
+        } finally {
+            //then
+            verify(uploadOperationService, atLeast(2))
+                .uploadDocument(any(Claim.class), eq(AUTHORISATION), any(PDF.class), any(CaseEvent.class));
+
+            verify(claimantOperationService, never())
+                .notifyCitizen(any(Claim.class), eq(SUBMITTER_NAME), eq(AUTHORISATION));
+
+            verify(claimService, never()).updateClaimState(eq(AUTHORISATION), any(Claim.class), eq(ClaimState.OPEN));
+        }
+    }
+
+    @Test
+    public void noOperationPerformedWhenUploadOperationFails() {
+        //given
+        CitizenClaimCreatedEvent event = new CitizenClaimCreatedEvent(CLAIM, SUBMITTER_NAME, AUTHORISATION);
+
+        doThrow(new RuntimeException("notification failed"))
+            .when(uploadOperationService)
+            .uploadDocument(any(Claim.class), eq(AUTHORISATION), any(PDF.class), any(CaseEvent.class));
+
+        //when
+        try {
+            postClaimOrchestrationHandler.citizenIssueHandler(event);
+
+        } finally {
+            //then
+
+            verify(rpaOperationService, never()).notify(any(Claim.class), eq(AUTHORISATION), any(PDF.class));
+
+            verify(claimantOperationService, never())
+                .notifyCitizen(any(Claim.class), eq(SUBMITTER_NAME), eq(AUTHORISATION));
+
+            verify(claimService, never()).updateClaimState(eq(AUTHORISATION), any(Claim.class), eq(ClaimState.OPEN));
+        }
+    }
+
+    @Test
+    public void noOperationPerformedWhenClaimantNotifyOperationFails() {
+        //given
+        CitizenClaimCreatedEvent event = new CitizenClaimCreatedEvent(CLAIM, SUBMITTER_NAME, AUTHORISATION);
+
+        doThrow(new RuntimeException("notification failed"))
+            .when(claimantOperationService)
+            .notifyCitizen(any(Claim.class), eq(SUBMITTER_NAME), eq(AUTHORISATION));
+
+        //when
+        try {
+            postClaimOrchestrationHandler.citizenIssueHandler(event);
+
+        } finally {
+            //then
+
+            verify(uploadOperationService, atLeast(2))
+                .uploadDocument(any(Claim.class), eq(AUTHORISATION), any(PDF.class), any(CaseEvent.class));
+
+            verify(rpaOperationService).notify(any(Claim.class), eq(AUTHORISATION), any(PDF.class));
+
+            verify(claimService, never()).updateClaimState(eq(AUTHORISATION), any(Claim.class), eq(ClaimState.OPEN));
+        }
     }
 
     @Test
