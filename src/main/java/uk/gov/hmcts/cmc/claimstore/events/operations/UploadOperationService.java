@@ -5,23 +5,23 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
-import uk.gov.hmcts.cmc.claimstore.events.DocumentUploadHandler;
 import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimCreationEventsStatusService;
+import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-
-import static java.util.Collections.singletonList;
 
 @Component
 @ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled", havingValue = "true")
 public class UploadOperationService {
 
-    private final DocumentUploadHandler documentUploadHandler;
+    private final DocumentsService documentService;
     private final ClaimCreationEventsStatusService eventsStatusService;
 
     @Autowired
-    public UploadOperationService(DocumentUploadHandler documentUploadHandler,
-                                  ClaimCreationEventsStatusService eventsStatusService) {
-        this.documentUploadHandler = documentUploadHandler;
+    public UploadOperationService(
+        DocumentsService documentService,
+        ClaimCreationEventsStatusService eventsStatusService
+    ) {
+        this.documentService = documentService;
         this.eventsStatusService = eventsStatusService;
     }
 
@@ -35,6 +35,6 @@ public class UploadOperationService {
             return claim;
         }
 
-        return documentUploadHandler.uploadToDocumentManagement(claim, authorisation, singletonList(document));
+        return documentService.uploadToDocumentManagement(document, authorisation, claim);
     }
 }

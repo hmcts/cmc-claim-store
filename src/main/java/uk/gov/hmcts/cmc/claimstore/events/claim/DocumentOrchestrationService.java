@@ -66,7 +66,7 @@ public class DocumentOrchestrationService {
         String letterHolderId = pinResponse.map(GeneratePinResponse::getUserId)
             .orElseThrow(() -> new IllegalArgumentException("Pin generation failed"));
 
-        claimService.linkLetterHolder(claim.getId(), letterHolderId);
+        Claim updated = claimService.linkLetterHolder(claim.getId(), letterHolderId);
         Document sealedClaimDoc = citizenServiceDocumentsService.sealedClaimDocument(claim);
 
         return GeneratedDocuments.builder()
@@ -76,6 +76,7 @@ public class DocumentOrchestrationService {
             .defendantPinLetterDoc(defendantPinLetterDoc)
             .sealedClaimDoc(sealedClaimDoc)
             .pin(pin)
+            .claim(updated)
             .build();
     }
 
