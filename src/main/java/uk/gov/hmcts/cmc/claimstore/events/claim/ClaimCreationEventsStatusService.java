@@ -63,4 +63,17 @@ public class ClaimCreationEventsStatusService {
             updateClaimSubmissionIndicatorWithEvent.apply(claim.getClaimSubmissionOperationIndicators(), caseEvent),
             caseEvent);
     }
+
+    public Claim updateClaimOperationCompletion(
+        String authorisation,
+        Long claimId,
+        ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators,
+        CaseEvent caseEvent
+    ) {
+        return caseRepository.updateClaimSubmissionOperationStatus(
+            authorisation,
+            claimId,
+            claimSubmissionOperationIndicators,
+            caseEvent);
+    }
 }
