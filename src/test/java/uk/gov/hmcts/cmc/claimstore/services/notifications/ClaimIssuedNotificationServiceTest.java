@@ -30,7 +30,7 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
 
     @Before
     public void beforeEachTest() {
-        service = new ClaimIssuedNotificationService(notificationClient, properties, appInsights);
+        service = new ClaimIssuedNotificationService(notificationClient, properties, appInsights, false);
         when(properties.getFrontendBaseUrl()).thenReturn(FRONTEND_BASE_URL);
         when(properties.getRespondToClaimUrl()).thenReturn(RESPOND_TO_CLAIM_URL);
     }
@@ -149,5 +149,24 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
 
         assertWasLogged("Failure: failed to send notification (reference) due to expected exception");
         assertWasNotLogged("hidden@email.com");
+    }
+
+    @Test(expected = NotificationException.class)
+    public void recoveryThrowWhenAsyncEnabled() {
+        service = new ClaimIssuedNotificationService(notificationClient, properties, appInsights, true);
+        try {
+            service.logNotificationFailure(
+                new NotificationException("expected exception"),
+                null,
+                "hidden@email.com",
+                null,
+                null,
+                "reference",
+                null
+            );
+        } finally {
+            assertWasLogged("Failure: failed to send notification (reference) due to expected exception");
+            assertWasNotLogged("hidden@email.com");
+        }
     }
 }

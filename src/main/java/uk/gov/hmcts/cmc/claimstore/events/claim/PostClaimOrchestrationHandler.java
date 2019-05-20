@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.claimstore.events.operations.RpaOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.UploadOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimCreatedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
@@ -114,6 +115,7 @@ public class PostClaimOrchestrationHandler {
                 : claim;
     }
 
+    @LogExecutionTime
     @EventListener
     public void citizenIssueHandler(CitizenClaimCreatedEvent event) {
         try {
@@ -140,6 +142,7 @@ public class PostClaimOrchestrationHandler {
         }
     }
 
+    @LogExecutionTime
     @EventListener
     public void representativeIssueHandler(RepresentedClaimCreatedEvent event) {
         try {
