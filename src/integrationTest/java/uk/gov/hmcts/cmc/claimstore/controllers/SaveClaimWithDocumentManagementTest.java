@@ -45,8 +45,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
     properties = {
         "document_management.url=http://localhost:8085",
         "feature_toggles.ccd_async_enabled=false",
-        "feature_toggles.ccd_enabled=false",
-        "feature_toggles.async_event_operations_enabled=false"
+        "feature_toggles.ccd_enabled=false"
     }
 )
 public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
