@@ -66,8 +66,10 @@ public class DocAssemblyTemplateBodyMapper {
             .hearingStatement(
                 ccdOrderGenerationData.getHearingStatement())
             .otherDirectionList(
-                ccdOrderGenerationData.getOtherDirectionList().stream().map(
-                    direction -> OtherDirection.builder()
+                ccdOrderGenerationData.getOtherDirectionList()
+                    .stream()
+                    .filter(direction -> direction != null && direction.getValue() != null)
+                    .map(direction -> OtherDirection.builder()
                             .extraOrderDirection(direction.getValue().getExtraOrderDirection())
                             .directionComment(direction.getValue().getOtherDirection())
                             .forParty(direction.getValue().getForParty())
