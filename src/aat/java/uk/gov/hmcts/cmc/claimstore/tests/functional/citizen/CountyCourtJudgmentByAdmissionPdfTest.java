@@ -51,7 +51,7 @@ public class CountyCourtJudgmentByAdmissionPdfTest extends BaseCCJPdfTest {
         String pdfAsText = textContentOf(retrieveCCJPdf(commonOperations.retrieveClaim(claim.getExternalId(),
             user.getAuthorisation())));
 
-        assertionsOnPdf(claim, pdfAsText);
+        assertionsOnPdf(claim, pdfAsText); 
     }
 
     @Test
