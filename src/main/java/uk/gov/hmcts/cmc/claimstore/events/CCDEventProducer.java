@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDCountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDDefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDInterlocutoryJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDLinkDefendantEvent;
+import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDLinkLetterHolderEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDMoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDPaidInFullEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDReDeterminationEvent;
@@ -122,5 +123,9 @@ public class CCDEventProducer {
 
     public void createCCDPaidInFullEvent(String authorisation, Claim claim, PaidInFull paidInFull) {
         publisher.publishEvent(new CCDPaidInFullEvent(authorisation, claim, paidInFull));
+    }
+
+    public void createCCDLinkLetterHolderEvent(Claim claim, String letterHolderId, String authorisation) {
+        publisher.publishEvent(new CCDLinkLetterHolderEvent(claim, letterHolderId, authorisation));
     }
 }
