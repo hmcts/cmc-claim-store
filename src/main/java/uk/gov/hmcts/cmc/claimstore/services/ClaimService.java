@@ -398,8 +398,10 @@ public class ClaimService {
         return caseRepository.saveClaimDocuments(authorisation, claimId, claimDocumentCollection, claimDocumentType);
     }
 
-    public Claim linkLetterHolder(Long claimId, String letterHolderId) {
-        return caseRepository.linkLetterHolder(claimId, letterHolderId);
+    public Claim linkLetterHolder(Claim claim, String letterHolderId, String authorisation) {
+        Claim updated = caseRepository.linkLetterHolder(claim.getId(), letterHolderId);
+        ccdEventProducer.createCCDLinkLetterHolderEvent(claim, letterHolderId, authorisation);
+        return updated;
     }
 
     public void saveCountyCourtJudgment(
