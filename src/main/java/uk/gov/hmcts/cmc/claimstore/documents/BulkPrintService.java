@@ -1,12 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.documents;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.services.staff.BulkPrintStaffNotificationService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
@@ -41,22 +41,26 @@ public class BulkPrintService implements PrintService {
     private final AuthTokenGenerator authTokenGenerator;
     private final BulkPrintStaffNotificationService bulkPrintStaffNotificationService;
     private final AppInsights appInsights;
+    private final boolean asyncEventProcessingEnabled;
 
+    @Autowired
     public BulkPrintService(
         SendLetterApi sendLetterApi,
         AuthTokenGenerator authTokenGenerator,
         BulkPrintStaffNotificationService bulkPrintStaffNotificationService,
-        AppInsights appInsights
+        AppInsights appInsights,
+        @Value("${feature_toggles.async_event_operations_enabled:false}") boolean asyncEventProcessingEnabled
     ) {
         this.sendLetterApi = sendLetterApi;
         this.authTokenGenerator = authTokenGenerator;
         this.bulkPrintStaffNotificationService = bulkPrintStaffNotificationService;
         this.appInsights = appInsights;
+        this.asyncEventProcessingEnabled = asyncEventProcessingEnabled;
     }
 
     @LogExecutionTime
     @Retryable(
-        value = {HttpClientErrorException.class, HttpServerErrorException.class},
+        value = RuntimeException.class,
         backoff = @Backoff(delay = 200)
     )
     @Override
@@ -87,6 +91,9 @@ public class BulkPrintService implements PrintService {
         );
 
         appInsights.trackEvent(BULK_PRINT_FAILED, REFERENCE_NUMBER, claim.getReferenceNumber());
+        if (asyncEventProcessingEnabled) {
+            throw exception;
+        }
     }
 
     private static Map<String, Object> wrapInMap(Claim claim) {

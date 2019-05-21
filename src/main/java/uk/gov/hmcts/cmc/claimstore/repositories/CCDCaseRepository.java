@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
@@ -89,6 +90,11 @@ public class CCDCaseRepository implements CaseRepository {
     @Override
     public List<Claim> getByPaymentReference(String payReference, String authorisation) {
         return ccdCaseApi.getByPaymentReference(payReference, authorisation);
+    }
+
+    @Override
+    public List<Claim> getClaimsByState(ClaimState claimState, User user) {
+        return ccdCaseApi.getClaimsByState(claimState, user);
     }
 
     @Override

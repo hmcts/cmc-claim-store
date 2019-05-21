@@ -7,13 +7,11 @@ import org.junit.runners.JUnit4;
 import static org.junit.Assert.assertEquals;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_REQUEST_UPLOAD;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CLAIM_ISSUE_RECEIPT_UPLOAD;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFENDANT_PIN_LETTER_UPLOAD;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFENDANT_RESPONSE_UPLOAD;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SEALED_CLAIM_UPLOAD;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLEMENT_AGREEMENT_UPLOAD;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
@@ -46,8 +44,4 @@ public class CaseEventMapperTest {
         assertEquals(CaseEventMapper.map(SETTLEMENT_AGREEMENT), SETTLEMENT_AGREEMENT_UPLOAD);
     }
 
-    @Test
-    public void testDefendantPinLetterCaseEvent() {
-        assertEquals(CaseEventMapper.map(DEFENDANT_PIN_LETTER), DEFENDANT_PIN_LETTER_UPLOAD);
-    }
 }

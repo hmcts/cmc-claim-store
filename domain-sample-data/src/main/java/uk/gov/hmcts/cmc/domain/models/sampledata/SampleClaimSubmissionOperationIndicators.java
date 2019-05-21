@@ -11,7 +11,6 @@ public class SampleClaimSubmissionOperationIndicators {
 
     public static Supplier<ClaimSubmissionOperationIndicators> withPinOperationSuccess =
         () -> ClaimSubmissionOperationIndicators.builder()
-            .defendantPinLetterUpload(YES)
             .bulkPrint(YES)
             .staffNotification(YES)
             .defendantNotification(YES)

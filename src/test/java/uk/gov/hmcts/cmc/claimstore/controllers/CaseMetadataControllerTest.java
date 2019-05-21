@@ -21,10 +21,12 @@ import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATED;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseMetadataControllerTest {
@@ -157,6 +159,21 @@ public class CaseMetadataControllerTest {
         // then
         assertNotNull(output);
         assertValid(sampleRepresentedClaim, output);
+    }
+
+    @Test
+    public void shouldReturnClaimsWithCreatedState() {
+        // given
+        when(claimService.getClaimsByState(eq(CREATED), any()))
+            .thenReturn(singletonList(SampleClaim.builder().withState(CREATED).build()));
+
+        // when
+        List<CaseMetadata> cases = controller.getCreatedCases();
+
+        // then
+        assertEquals(1, cases.size());
+        assertEquals(CREATED, cases.get(0).getState());
+        assertValid(sampleClaim, cases.get(0));
     }
 
     private static void assertValid(Claim dto, CaseMetadata metadata) {
