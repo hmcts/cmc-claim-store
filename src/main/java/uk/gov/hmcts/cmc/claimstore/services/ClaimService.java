@@ -236,6 +236,7 @@ public class ClaimService {
             .claimData(claimData)
             .submitterId(submitterId)
             .issuedOn(issuedOn)
+            .serviceDate(issuedOn.plusDays(5))
             .responseDeadline(responseDeadline)
             .externalId(externalId)
             .submitterEmail(submitterEmail)
