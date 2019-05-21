@@ -61,4 +61,5 @@ public class CCDCase {
     private CCDYesNoOption migratedFromClaimStore;
     private List<CCDCollectionElement<CCDClaimDocument>> caseDocuments;
     private String caseName;
+    private CCDClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
 }
