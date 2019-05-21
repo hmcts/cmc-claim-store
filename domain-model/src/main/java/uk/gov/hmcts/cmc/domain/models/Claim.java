@@ -24,7 +24,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 // Create these fields in JSON when serialize Java object, ignore them when deserialize.
 @JsonIgnoreProperties(
-    value = {"id", "totalAmountTillToday", "totalAmountTillDateOfIssue",
+    value = {"totalAmountTillToday", "totalAmountTillDateOfIssue",
         "amountWithInterestUntilIssueDate", "totalInterestTillDateOfIssue", "totalInterest",
         "serviceDate", "amountWithInterest", "directionsQuestionnaireDeadline", "claimSubmissionOperationIndicators"},
     allowGetters = true
