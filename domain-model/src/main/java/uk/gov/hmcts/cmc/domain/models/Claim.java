@@ -111,7 +111,7 @@ public class Claim {
         this.claimData = claimData;
         this.createdAt = createdAt;
         this.issuedOn = issuedOn;
-        this.serviceDate = serviceDate == null ? issuedOn.plusDays(5) : serviceDate;
+        this.serviceDate = serviceDate;
         this.responseDeadline = responseDeadline;
         this.moreTimeRequested = moreTimeRequested;
         this.submitterEmail = submitterEmail;
