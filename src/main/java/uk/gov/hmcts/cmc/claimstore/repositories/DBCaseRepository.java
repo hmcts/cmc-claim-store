@@ -277,7 +277,7 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void updateClaimState(String authorisation, Long claimId, String state) {
-        claimRepository.updateClaimState(claimId, state);
+    public void updateClaimState(String authorisation, Long claimId, ClaimState state) {
+        claimRepository.updateClaimState(claimId, state.name());
     }
 }

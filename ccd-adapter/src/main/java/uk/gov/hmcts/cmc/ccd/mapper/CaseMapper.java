@@ -10,6 +10,8 @@ import java.util.Arrays;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
+import static uk.gov.hmcts.cmc.ccd.mapper.ClaimSubmissionOperationIndicatorMapper.mapClaimSubmissionOperationIndicatorsToCCD;
+import static uk.gov.hmcts.cmc.ccd.mapper.ClaimSubmissionOperationIndicatorMapper.mapFromCCDClaimSubmissionOperationIndicators;
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.toCaseName;
 
 @Component
@@ -52,6 +54,8 @@ public class CaseMapper {
             .features(claim.getFeatures() != null ? String.join(",", claim.getFeatures()) : null)
             .migratedFromClaimStore(isMigrated ? YES : NO)
             .caseName(toCaseName.apply(claim))
+            .claimSubmissionOperationIndicators(
+                mapClaimSubmissionOperationIndicatorsToCCD.apply(claim.getClaimSubmissionOperationIndicators()))
             .build();
     }
 
@@ -68,7 +72,9 @@ public class CaseMapper {
             .referenceNumber(ccdCase.getPreviousServiceCaseReference())
             .createdAt(ccdCase.getSubmittedOn())
             .issuedOn(ccdCase.getIssuedOn())
-            .submitterEmail(ccdCase.getSubmitterEmail());
+            .submitterEmail(ccdCase.getSubmitterEmail())
+            .claimSubmissionOperationIndicators(
+                mapFromCCDClaimSubmissionOperationIndicators.apply(ccdCase.getClaimSubmissionOperationIndicators()));
 
         if (ccdCase.getFeatures() != null) {
             builder.features(Arrays.asList(ccdCase.getFeatures().split(",")));

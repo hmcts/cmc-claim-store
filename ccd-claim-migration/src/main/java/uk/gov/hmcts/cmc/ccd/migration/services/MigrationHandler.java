@@ -141,9 +141,9 @@ public class MigrationHandler {
             logger.info("start migrating claim: "
                 + claim.getReferenceNumber()
                 + " for event: "
-                + CaseEvent.CREATE_NEW_CASE.getValue());
+                + CaseEvent.CREATE_CASE.getValue());
 
-            caseDetails = createCCDCaseService.createCase(user, claim, CaseEvent.CREATE_NEW_CASE);
+            caseDetails = createCCDCaseService.createCase(user, claim, CaseEvent.CREATE_CASE);
             migratedClaims.incrementAndGet();
         } catch (Exception e) {
             logger.error("Claim issue create failed for Claim reference "
