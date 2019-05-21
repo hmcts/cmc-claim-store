@@ -112,6 +112,7 @@ public class CCDCreateCaseService {
     @LogExecutionTime
     public void removeAccessToCase(String caseId, String letterHolderId) {
         User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
+
         caseAccessApi.revokeAccessToCase(anonymousCaseWorker.getAuthorisation(),
             authTokenGenerator.generate(),
             anonymousCaseWorker.getUserDetails().getId(),

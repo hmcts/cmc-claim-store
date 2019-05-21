@@ -110,6 +110,8 @@
       "payBySetDate": "2100-10-10"
     },
     "countyCourtJudgmentRequestedAt": "2018-02-17T11:45:55.944",
-    "features": "admissions"
+    "features": "admissions",
+    "claimSubmissionOperationIndicators": {"rpa": "YES", "bulkPrint": "YES", "sealedClaimUpload": "YES", "staffNotification": "YES", "claimantNotification": "YES", "defendantNotification": "YES", "claimIssueReceiptUpload": "YES"}
+
   }
 }
