@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
 import static uk.gov.hmcts.cmc.claimstore.repositories.mapping.MappingUtils.toLocalDateTimeFromUTC;
@@ -28,7 +29,7 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
 
     @Override
     public Claim map(int index, ResultSet result, StatementContext ctx) throws SQLException {
-
+        LocalDate issuedOn = result.getTimestamp("issued_on").toLocalDateTime().toLocalDate();
         return new Claim(
             result.getLong("id"),
             result.getString("submitter_id"),
@@ -38,7 +39,8 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             result.getString("reference_number"),
             toClaimData(result.getString("claim")),
             toLocalDateTimeFromUTC(result.getTimestamp("created_at")),
-            result.getTimestamp("issued_on").toLocalDateTime().toLocalDate(),
+            issuedOn,
+            issuedOn.plusDays(5),
             result.getTimestamp("response_deadline").toLocalDateTime().toLocalDate(),
             result.getBoolean("more_time_requested"),
             result.getString("submitter_email"),
