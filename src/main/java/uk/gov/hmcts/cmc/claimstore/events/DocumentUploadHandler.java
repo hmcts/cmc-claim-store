@@ -11,7 +11,6 @@ import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
-import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.settlement.CountersignSettlementAgreementEvent;
@@ -26,10 +25,8 @@ import java.util.stream.Collectors;
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimIssueReceiptFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForJudgementFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSettlementReachedFileBaseName;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
@@ -96,22 +93,6 @@ public class DocumentUploadHandler {
             defendantResponseReceiptService.createPdf(claim),
             DEFENDANT_RESPONSE_RECEIPT);
         uploadToDocumentManagement(claim, event.getAuthorization(), singletonList(defendantResponseDocument));
-    }
-
-    @EventListener
-    @LogExecutionTime
-    public void uploadCountyCourtJudgmentDocument(CountyCourtJudgmentEvent event) {
-        Claim claim = event.getClaim();
-        requireNonNull(claim, CLAIM_MUST_NOT_BE_NULL);
-        if (null == claim.getCountyCourtJudgment() && null == claim.getCountyCourtJudgmentRequestedAt()) {
-            throw new NotFoundException("County Court Judgment does not exist for this claim");
-        }
-        PDF document = new PDF(buildRequestForJudgementFileBaseName(claim.getReferenceNumber(),
-            claim.getClaimData().getDefendant().getName()),
-            countyCourtJudgmentPdfService.createPdf(claim),
-            CCJ_REQUEST);
-
-        uploadToDocumentManagement(claim, event.getAuthorisation(), singletonList(document));
     }
 
     @EventListener
