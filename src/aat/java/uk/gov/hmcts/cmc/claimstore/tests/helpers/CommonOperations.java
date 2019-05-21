@@ -60,7 +60,7 @@ public class CommonOperations {
         return claimOperation.getClaimWithLetterHolder(claim.getExternalId(), userAuthentication);
     }
 
-    private Response saveClaim(ClaimData claimData, String userAuthentication, String userId) {
+    public Response saveClaim(ClaimData claimData, String userAuthentication, String userId) {
 
         return RestAssured
             .given()
