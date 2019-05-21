@@ -157,7 +157,7 @@ public class Claim {
     }
 
     public LocalDate getServiceDate() {
-        return serviceDate;
+        return serviceDate == null ? issuedOn.plusDays(5) : serviceDate;
     }
 
     public Optional<BigDecimal> getAmountWithInterest() {
