@@ -436,6 +436,7 @@ public final class SampleClaim {
             claimData,
             createdAt,
             issuedOn,
+            issuedOn.plusDays(5),
             responseDeadline,
             isMoreTimeRequested,
             submitterEmail,
@@ -562,6 +563,11 @@ public final class SampleClaim {
 
     public SampleClaim withReDeterminationRequestedAt(LocalDateTime reDeterminationRequestedAt) {
         this.reDeterminationRequestedAt = reDeterminationRequestedAt;
+        return this;
+    }
+
+    public SampleClaim withState(ClaimState claimState) {
+        this.state = claimState;
         return this;
     }
 

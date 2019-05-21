@@ -12,20 +12,21 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationT
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.PrintService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
-import uk.gov.hmcts.cmc.claimstore.events.DocumentUploadHandler;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.util.Collections.singletonList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
@@ -37,13 +38,13 @@ public class PinOrchestrationServiceTest {
     public static final String SUBMITTER_NAME = "submitter-name";
     public static final String PIN = "PIN";
 
-    public static final PDF pinLetterClaim = new PDF("0000-pin", "test".getBytes(), DEFENDANT_PIN_LETTER);
+    public static final PDF defendantPinLetter = new PDF("0000-pin", "test".getBytes(), DEFENDANT_PIN_LETTER);
     public static final PDF sealedClaim = new PDF("0000-sealed-claim", "test".getBytes(), SEALED_CLAIM);
     public static final String DEFENDANT_EMAIL_TEMPLATE = "Defendant Email Template";
 
     private Map<String, Object> pinContents = new HashMap<>();
     private String pinTemplate = "pinTemplate";
-    private Document defendantLetterDocument = new Document(pinTemplate, pinContents);
+    private Document defendantPinLetterDocument = new Document(pinTemplate, pinContents);
 
     private Map<String, Object> claimContents = new HashMap<>();
     private String claimTemplate = "claimTemplate";
@@ -51,8 +52,6 @@ public class PinOrchestrationServiceTest {
 
     private PinOrchestrationService pinOrchestrationService;
 
-    @Mock
-    private DocumentUploadHandler documentUploadHandler;
     @Mock
     private PrintService bulkPrintService;
     @Mock
@@ -71,17 +70,17 @@ public class PinOrchestrationServiceTest {
     private DocumentOrchestrationService documentOrchestrationService;
 
     private GeneratedDocuments generatedDocuments = GeneratedDocuments.builder()
-        .defendantLetterDoc(defendantLetterDocument)
-        .defendantLetter(pinLetterClaim)
+        .defendantPinLetterDoc(defendantPinLetterDocument)
+        .defendantPinLetter(defendantPinLetter)
         .sealedClaimDoc(sealedClaimLetterDocument)
         .sealedClaim(sealedClaim)
         .pin(PIN)
+        .claim(CLAIM)
         .build();
 
     @Before
     public void before() {
         pinOrchestrationService = new PinOrchestrationService(
-            documentUploadHandler,
             bulkPrintService,
             claimIssuedStaffNotificationService,
             claimIssuedNotificationService,
@@ -89,10 +88,6 @@ public class PinOrchestrationServiceTest {
             eventsStatusService,
             documentOrchestrationService
         );
-
-        given(documentUploadHandler
-            .uploadToDocumentManagement(eq(CLAIM), eq(AUTHORISATION), eq(singletonList(pinLetterClaim))))
-            .willReturn(CLAIM);
 
         given(notificationsProperties.getTemplates()).willReturn(templates);
         given(templates.getEmail()).willReturn(emailTemplates);
@@ -109,13 +104,10 @@ public class PinOrchestrationServiceTest {
         pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
 
         //then
-        verify(documentUploadHandler)
-            .uploadToDocumentManagement(eq(CLAIM), eq(AUTHORISATION), eq(singletonList(pinLetterClaim)));
-
-        verify(bulkPrintService).print(eq(CLAIM), eq(defendantLetterDocument), eq(sealedClaimLetterDocument));
+        verify(bulkPrintService).print(eq(CLAIM), eq(defendantPinLetterDocument), eq(sealedClaimLetterDocument));
 
         verify(claimIssuedStaffNotificationService)
-            .notifyStaffOfClaimIssue(eq(CLAIM), eq(ImmutableList.of(sealedClaim, pinLetterClaim)));
+            .notifyStaffOfClaimIssue(eq(CLAIM), eq(ImmutableList.of(sealedClaim, defendantPinLetter)));
 
         verify(claimIssuedNotificationService).sendMail(
             eq(CLAIM),
@@ -126,27 +118,14 @@ public class PinOrchestrationServiceTest {
             eq(SUBMITTER_NAME)
         );
 
-        verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM),
-            eq(CaseEvent.PIN_GENERATION_OPERATIONS));
-    }
+        ClaimSubmissionOperationIndicators operationIndicators = ClaimSubmissionOperationIndicators.builder()
+            .bulkPrint(YesNoOption.YES)
+            .staffNotification(YesNoOption.YES)
+            .defendantNotification(YesNoOption.YES)
+            .build();
 
-    @Test(expected = RuntimeException.class)
-    public void updatePinOperationStatusWhenDefendantPinLetterUploadFails() {
-        //given
-        given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION)))
-            .willReturn(generatedDocuments);
-        given(documentUploadHandler
-            .uploadToDocumentManagement(any(), any(), any()))
-            .willThrow(new RuntimeException("Document Upload failed"));
-
-        //when
-        pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
-
-        //then
-        verify(documentUploadHandler)
-            .uploadToDocumentManagement(eq(CLAIM), eq(AUTHORISATION), eq(singletonList(pinLetterClaim)));
-        verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM),
-            eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+        verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM.getId()),
+            eq(operationIndicators), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
     }
 
     @Test(expected = RuntimeException.class)
@@ -154,18 +133,18 @@ public class PinOrchestrationServiceTest {
         //given
         given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION)))
             .willReturn(generatedDocuments);
-        given(documentUploadHandler
-            .uploadToDocumentManagement(any(), any(), any()))
-            .willThrow(new RuntimeException("Document Upload failed"));
+
+        doThrow(new RuntimeException("bulk print failed")).when(bulkPrintService).print(any(), any(), any());
 
         //when
-        pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
+        try {
+            pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
 
-        //then
-        verify(documentUploadHandler)
-            .uploadToDocumentManagement(eq(CLAIM), eq(AUTHORISATION), eq(singletonList(pinLetterClaim)));
-        verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM),
-            eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+        } finally {
+            //then
+            verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM.getId()),
+                eq(ClaimSubmissionOperationIndicators.builder().build()), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+        }
     }
 
     @Test(expected = RuntimeException.class)
@@ -173,36 +152,41 @@ public class PinOrchestrationServiceTest {
         //given
         given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION)))
             .willReturn(generatedDocuments);
-        given(documentUploadHandler
-            .uploadToDocumentManagement(any(), any(), any()))
-            .willThrow(new RuntimeException("Document Upload failed"));
-
+        doThrow(new RuntimeException("claim issue notification failed"))
+            .when(claimIssuedStaffNotificationService).notifyStaffOfClaimIssue(any(), any());
         //when
-        pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
+        try {
+            pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
+        } finally {
+            //then
+            ClaimSubmissionOperationIndicators operationIndicators = ClaimSubmissionOperationIndicators.builder()
+                .bulkPrint(YesNoOption.YES)
+                .build();
 
-        //then
-        verify(documentUploadHandler)
-            .uploadToDocumentManagement(eq(CLAIM), eq(AUTHORISATION), eq(singletonList(pinLetterClaim)));
-        verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM),
-            eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+            verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM.getId()),
+                eq(operationIndicators), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+        }
     }
 
     @Test(expected = RuntimeException.class)
-    public void updatePinOperationStatusWhenNoifyDefendantFails() {
+    public void updatePinOperationStatusWhenNotifyDefendantFails() {
         //given
         given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION)))
             .willReturn(generatedDocuments);
-        given(documentUploadHandler
-            .uploadToDocumentManagement(any(), any(), any()))
-            .willThrow(new RuntimeException("Document Upload failed"));
-
+        doThrow(new RuntimeException("claim issue notification failed"))
+            .when(claimIssuedNotificationService).sendMail(any(), any(), any(), any(), any(), any());
         //when
-        pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
+        try {
+            pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
+        } finally {
+            //then
+            ClaimSubmissionOperationIndicators operationIndicators = ClaimSubmissionOperationIndicators.builder()
+                .bulkPrint(YesNoOption.YES)
+                .staffNotification(YesNoOption.YES)
+                .build();
 
-        //then
-        verify(documentUploadHandler)
-            .uploadToDocumentManagement(eq(CLAIM), eq(AUTHORISATION), eq(singletonList(pinLetterClaim)));
-        verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM),
-            eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+            verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM.getId()),
+                eq(operationIndicators), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+        }
     }
 }
