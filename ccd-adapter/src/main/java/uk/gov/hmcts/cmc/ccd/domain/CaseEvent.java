@@ -41,7 +41,8 @@ public enum CaseEvent {
     PIN_GENERATION_OPERATIONS("PinGenerationOperations"),
     SENDING_CLAIMANT_NOTIFICATION("SendingClaimantNotification"),
     SENDING_RPA("SendingRPA"),
-    GENERATE_ORDER("GenerateOrder");
+    GENERATE_ORDER("GenerateOrder"),
+    ACTION_REVIEW_COMMENTS("ActionReviewComments");
 
     private String value;
 

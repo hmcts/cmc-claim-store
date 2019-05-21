@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,8 +59,8 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
     }
 
     @Override
-    public CaseEvent handledEvent() {
-        return CaseEvent.MORE_TIME_REQUESTED_PAPER;
+    public List<CaseEvent> handledEvents() {
+        return Collections.singletonList(CaseEvent.MORE_TIME_REQUESTED_PAPER);
     }
 
     private CallbackResponse requestMoreTimeOnPaperSubmitted(CallbackParams callbackParams) {
