@@ -14,7 +14,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_NEW_CASE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreStartResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitRepresentativeResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponse;
@@ -39,7 +39,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(CREATE_NEW_CASE.getValue())
+            eq(CREATE_CASE.getValue())
             )
         ).willReturn(successfulCoreCaseDataStoreStartResponse());
 
@@ -67,7 +67,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
                 eq(USER_ID),
                 eq(JURISDICTION_ID),
                 eq(CASE_TYPE_ID),
-                eq(CREATE_NEW_CASE.getValue())
+                eq(CREATE_CASE.getValue())
             );
 
         verify(coreCaseDataApi)
@@ -92,7 +92,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(CREATE_NEW_CASE.getValue())
+            eq(CREATE_CASE.getValue())
             )
         ).willReturn(successfulCoreCaseDataStoreStartResponse());
 
@@ -120,7 +120,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
                 eq(USER_ID),
                 eq(JURISDICTION_ID),
                 eq(CASE_TYPE_ID),
-                eq(CREATE_NEW_CASE.getValue())
+                eq(CREATE_CASE.getValue())
             );
 
         verify(coreCaseDataApi)
@@ -145,7 +145,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(CREATE_NEW_CASE.getValue())
+            eq(CREATE_CASE.getValue())
             )
         ).willThrow(FeignException.class);
 
@@ -156,7 +156,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             .andReturn();
 
         assertThat(result.getResolvedException().getMessage())
-            .isEqualTo("Failed storing claim in CCD store for case id 000LR001 on event CREATE_NEW_CASE");
+            .isEqualTo("Failed storing claim in CCD store for case id 000LR001 on event CREATE_CASE");
     }
 
     @Test
@@ -169,7 +169,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(CREATE_NEW_CASE.getValue())
+            eq(CREATE_CASE.getValue())
             )
         ).willReturn(successfulCoreCaseDataStoreStartResponse());
 
@@ -191,6 +191,6 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             .andReturn();
 
         assertThat(result.getResolvedException().getMessage())
-            .isEqualTo("Failed storing claim in CCD store for case id 000LR001 on event CREATE_NEW_CASE");
+            .isEqualTo("Failed storing claim in CCD store for case id 000LR001 on event CREATE_CASE");
     }
 }
