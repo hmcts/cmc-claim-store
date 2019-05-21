@@ -47,7 +47,7 @@ public class DefaultCountyCourtJudgmentPdfTest extends BaseCCJPdfTest {
             .build();
 
         claim = submitCCJ(countyCourtJudgment);
-        String pdfAsText = textContentOf(retrieveCCJPdf(claim.getExternalId()));
+        String pdfAsText = textContentOf(retrieveCCJPdf(claim));
         assertionsOnPdf(claim, pdfAsText);
     }
 
@@ -61,7 +61,7 @@ public class DefaultCountyCourtJudgmentPdfTest extends BaseCCJPdfTest {
             .build();
 
         claim = submitCCJ(countyCourtJudgment);
-        String pdfAsText = textContentOf(retrieveCCJPdf(claim.getExternalId()));
+        String pdfAsText = textContentOf(retrieveCCJPdf(claim));
         assertionsOnPdf(claim, pdfAsText);
     }
 
@@ -76,7 +76,7 @@ public class DefaultCountyCourtJudgmentPdfTest extends BaseCCJPdfTest {
             .build();
 
         claim = submitCCJ(countyCourtJudgment);
-        String pdfAsText = textContentOf(retrieveCCJPdf(claim.getExternalId()));
+        String pdfAsText = textContentOf(retrieveCCJPdf(claim));
         assertionsOnPdf(claim, pdfAsText);
     }
 
@@ -90,7 +90,7 @@ public class DefaultCountyCourtJudgmentPdfTest extends BaseCCJPdfTest {
             .build();
 
         claim = submitCCJ(countyCourtJudgment);
-        String pdfAsText = textContentOf(retrieveCCJPdf(claim.getExternalId()));
+        String pdfAsText = textContentOf(retrieveCCJPdf(claim));
         assertionsOnPdf(claim, pdfAsText);
     }
 
