@@ -26,6 +26,7 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDet
 import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
@@ -479,6 +480,17 @@ public class ClaimServiceTest {
             any(Response.class),
             eq(deadline),
             eq(AUTHORISATION)
+        );
+    }
+
+    @Test
+    public void updateStateShouldCallCaseRepository() {
+        claimService.updateClaimState(AUTHORISATION, claim, ClaimState.OPEN);
+
+        verify(caseRepository).updateClaimState(
+            eq(AUTHORISATION),
+            eq(claim.getId()),
+            eq(ClaimState.OPEN)
         );
     }
 
