@@ -14,7 +14,7 @@ import java.util.Optional;
 @Service
 public class ClaimOperation {
 
-    @Retryable(value = RuntimeException.class, maxAttempts = 6, backoff = @Backoff(delay = 500, maxDelay = 3000))
+    @Retryable(value = RuntimeException.class, maxAttempts = 10, backoff = @Backoff(delay = 300, maxDelay = 3000))
     public Claim getClaimWithLetterHolder(String externalId, String userAuthentication) {
 
         Claim claim = retrieveClaim(externalId, userAuthentication);
@@ -25,8 +25,9 @@ public class ClaimOperation {
     }
 
     @Recover
-    public void recover(RuntimeException e, String externalId, String userAuthentication) {
+    public Claim recover(RuntimeException e, String externalId, String userAuthentication) {
         // do nothing
+        throw new RuntimeException("Exhausted all retries, pin process not complete, please try again");
     }
 
     public Claim retrieveClaim(String externalId, String userAuthentication) {
