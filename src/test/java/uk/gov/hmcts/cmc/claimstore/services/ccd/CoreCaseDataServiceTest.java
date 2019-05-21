@@ -58,6 +58,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CLAIMANT_RESPONSE_ACCEPTATION;
@@ -187,6 +188,42 @@ public class CoreCaseDataServiceTest {
         assertEquals(expectedClaim, returnedClaim);
         verify(jsonMapper).fromMap(caseDataCaptor.capture(), eq(CCDCase.class));
         assertEquals(SampleClaim.CLAIM_ID, caseDataCaptor.getValue().get("id"));
+    }
+
+    @Test
+    public void submitClaimShouldNotCallAuthoriseIfLetterHolderIsNull() {
+        Claim providedClaim = SampleClaim.getDefault().toBuilder().letterHolderId(null).build();
+        Claim expectedClaim = SampleClaim.claim(providedClaim.getClaimData(), "000MC001");
+
+        when(ccdCreateCaseService.startCreate(
+            eq(AUTHORISATION),
+            any(EventRequestData.class),
+            eq(false)
+        ))
+            .thenReturn(StartEventResponse.builder()
+                .caseDetails(CaseDetails.builder().build())
+                .eventId("eventId")
+                .token("token")
+                .build());
+
+        when(ccdCreateCaseService.submitCreate(
+            eq(AUTHORISATION),
+            any(EventRequestData.class),
+            any(CaseDataContent.class),
+            eq(false)
+        ))
+            .thenReturn(CaseDetails.builder()
+                .id(SampleClaim.CLAIM_ID)
+                .data(new HashMap<>())
+                .build());
+
+        when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
+        when(jsonMapper.fromMap(anyMap(), eq(CCDCase.class))).thenReturn(CCDCase.builder().build());
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(expectedClaim);
+
+        service.createNewCase(USER, providedClaim);
+
+        verify(ccdCreateCaseService, never()).grantAccessToCase(any(), any());
     }
 
     @Test
