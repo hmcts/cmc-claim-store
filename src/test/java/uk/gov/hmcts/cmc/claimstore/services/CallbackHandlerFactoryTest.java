@@ -36,8 +36,8 @@ public class CallbackHandlerFactoryTest {
 
     @Before
     public void setUp() {
-        doCallRealMethod().when(moreTimeRequestedCallbackHandler).handledEvent();
-        doCallRealMethod().when(generateOrderCallbackHandler).handledEvent();
+        doCallRealMethod().when(moreTimeRequestedCallbackHandler).handledEvents();
+        doCallRealMethod().when(generateOrderCallbackHandler).handledEvents();
         doCallRealMethod().when(moreTimeRequestedCallbackHandler).register(anyMap());
         doCallRealMethod().when(generateOrderCallbackHandler).register(anyMap());
         callbackHandlerFactory = new CallbackHandlerFactory(

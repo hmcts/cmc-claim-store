@@ -26,7 +26,11 @@ import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 import uk.gov.hmcts.reform.docassembly.domain.OutputType;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ACTION_REVIEW_COMMENTS;
 
 @Service
 @ConditionalOnProperty(prefix = "doc_assembly", name = "url")
@@ -68,8 +72,8 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
     }
 
     @Override
-    public CaseEvent handledEvent() {
-        return CaseEvent.GENERATE_ORDER;
+    public List<CaseEvent> handledEvents() {
+        return Arrays.asList(CaseEvent.GENERATE_ORDER, ACTION_REVIEW_COMMENTS);
     }
 
     private CallbackResponse prepopulateOrder() {

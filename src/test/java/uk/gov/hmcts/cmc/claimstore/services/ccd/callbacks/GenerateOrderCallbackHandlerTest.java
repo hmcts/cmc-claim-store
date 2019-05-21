@@ -34,6 +34,7 @@ import java.util.Collections;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.MapEntry.entry;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ACTION_REVIEW_COMMENTS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.GENERATE_ORDER;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -90,6 +91,28 @@ public class GenerateOrderCallbackHandlerTest {
 
     @Test
     public void shouldPrepopulateFieldsOnAboutToStartEvent() {
+        CallbackParams callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_START)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+        AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
+            generateOrderCallbackHandler
+                .handle(callbackParams);
+
+        assertThat(response.getData()).contains(
+            entry("directionList", ImmutableList.of("DOCUMENTS", "EYEWITNESS")),
+            entry("docUploadDeadline", DEADLINE),
+            entry("eyewitnessUploadDeadline", DEADLINE)
+        );
+    }
+
+    @Test
+    public void shouldPrepopulateFieldsOnAboutToStartEventForActionReviewComments() {
+        CallbackRequest callbackRequest = CallbackRequest
+            .builder()
+            .eventId(ACTION_REVIEW_COMMENTS.getValue())
+            .build();
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_START)
             .request(callbackRequest)

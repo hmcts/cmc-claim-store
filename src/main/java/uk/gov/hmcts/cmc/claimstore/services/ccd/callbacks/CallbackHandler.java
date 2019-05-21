@@ -4,6 +4,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -11,10 +12,11 @@ public abstract class CallbackHandler {
 
     protected abstract Map<CallbackType, Callback> callbacks();
 
-    public abstract CaseEvent handledEvent();
+    public abstract List<CaseEvent> handledEvents();
 
     public void register(Map<String, CallbackHandler> handlers) {
-        handlers.put(handledEvent().getValue(), this);
+        handledEvents().forEach(
+            handledEvent -> handlers.put(handledEvent.getValue(), this));
     }
 
     public CallbackResponse handle(CallbackParams callbackParams) {
