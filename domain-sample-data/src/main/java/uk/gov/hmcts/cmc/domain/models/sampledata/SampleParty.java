@@ -15,6 +15,8 @@ import java.util.List;
 public class SampleParty {
 
     private String name = "John Rambo";
+    private String firstName = "John";
+    private String lastName = "Rambo";
     private String businessName = "Trading as name";
     private String contactPerson = "Steven Seagal";
     private Address address = SampleAddress.builder().build();
@@ -86,12 +88,12 @@ public class SampleParty {
     }
 
     public Party party() {
-        return new Individual(collectionId, name, address, correspondenceAddress, mobilePhone,
+        return new Individual(collectionId, name, title, firstName, lastName, address, correspondenceAddress, mobilePhone,
             representative, dateOfBirth);
     }
 
     public Individual individual() {
-        return new Individual(collectionId, name, address, correspondenceAddress, mobilePhone,
+        return new Individual(collectionId, name, title, firstName, lastName, address, correspondenceAddress, mobilePhone,
             representative, dateOfBirth);
     }
 
@@ -99,7 +101,7 @@ public class SampleParty {
         List<Party> individualDetailsList = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             individualDetailsList.add(
-                new Individual(collectionId, name, address, correspondenceAddress, mobilePhone,
+                new Individual(collectionId, name, title, firstName, lastName, address, correspondenceAddress, mobilePhone,
                     representative, dateOfBirth)
             );
         }
@@ -108,7 +110,7 @@ public class SampleParty {
 
     public SoleTrader soleTrader() {
         return new SoleTrader(collectionId, name, address, correspondenceAddress, mobilePhone,
-            representative, title, businessName);
+            representative, title, firstName, lastName, businessName);
     }
 
     public Company company() {
