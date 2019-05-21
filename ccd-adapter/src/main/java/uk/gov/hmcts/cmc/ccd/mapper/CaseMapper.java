@@ -66,6 +66,7 @@ public class CaseMapper {
         claimDocumentCollectionMapper.from(ccdCase, builder);
 
         builder
+            .id(ccdCase.getId())
             .ccdClaimId(ccdCase.getId())
             .submitterId(ccdCase.getSubmitterId())
             .externalId(ccdCase.getExternalId())
