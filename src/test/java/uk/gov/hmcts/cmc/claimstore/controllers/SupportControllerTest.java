@@ -48,7 +48,6 @@ import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
@@ -291,15 +290,6 @@ public class SupportControllerTest {
             .thenReturn(Optional.of(claim));
         controller.uploadDocumentToDocumentManagement(CLAIMREFERENCENUMBER, DEFENDANT_RESPONSE_RECEIPT, AUTHORISATION);
         verify(documentsService).generateDefendantResponseReceipt(claim.getExternalId(), AUTHORISATION);
-    }
-
-    @Test
-    public void shouldUploadCCJDocument() {
-        Claim claim = SampleClaim.getWithCCJRequestDocument();
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
-            .thenReturn(Optional.of(claim));
-        controller.uploadDocumentToDocumentManagement(CLAIMREFERENCENUMBER, CCJ_REQUEST, AUTHORISATION);
-        verify(documentsService).generateCountyCourtJudgement(claim.getExternalId(), AUTHORISATION);
     }
 
     @Test
