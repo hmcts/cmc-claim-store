@@ -88,13 +88,6 @@ public class SaveClaimAsynchronouslyAtCCDTest extends BaseSaveTest {
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
 
-        MvcResult prepayment = makePrePaymentRequest(claimData.getExternalId().toString())
-            .andExpect(status().isOk())
-            .andReturn();
-
-        assertThat(prepayment.getResponse().getContentAsString())
-            .isEqualTo(String.format("{\"case_reference\":\"%s\"}", claimData.getExternalId()));
-
         MvcResult result = makeIssueClaimRequest(claimData, AUTHORISATION_TOKEN)
             .andExpect(status().isOk())
             .andReturn();

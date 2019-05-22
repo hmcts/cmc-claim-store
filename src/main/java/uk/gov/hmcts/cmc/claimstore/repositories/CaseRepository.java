@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
-import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.time.LocalDate;
@@ -65,8 +64,6 @@ public interface CaseRepository {
     void updateSettlement(Claim claim, Settlement settlement, String authorisation, CaseEvent caseEvent);
 
     void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, CaseEvent caseEvent);
-
-    CaseReference savePrePaymentClaim(String externalId, String authorisation);
 
     Claim saveClaim(User user, Claim claim);
 

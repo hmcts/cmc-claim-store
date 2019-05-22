@@ -56,18 +56,8 @@ public class CommonOperations {
     }
 
     public Claim submitClaim(String userAuthentication, String userId, ClaimData claimData) {
-        submitPrePaymentClaim(claimData.getExternalId().toString(), userAuthentication);
         Claim claim = saveClaim(claimData, userAuthentication, userId).then().extract().body().as(Claim.class);
         return claimOperation.getClaimWithLetterHolder(claim.getExternalId(), userAuthentication);
-    }
-
-    public Response submitPrePaymentClaim(String externalId, String userAuthentication) {
-        return RestAssured
-            .given()
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .header(HttpHeaders.AUTHORIZATION, userAuthentication)
-            .when()
-            .post("/claims/" + externalId + "/pre-payment");
     }
 
     public Response saveClaim(ClaimData claimData, String userAuthentication, String userId) {

@@ -18,7 +18,6 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
-import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
 
 import java.util.List;
@@ -119,17 +118,10 @@ public class ClaimController {
     @GetMapping("/{caseReference}/defendant-link-status")
     @ApiOperation("Check whether a claim is linked to a defendant")
     public DefendantLinkStatus isDefendantLinked(@PathVariable("caseReference") String caseReference) {
-        Boolean linked = claimService.getClaimByReferenceAnonymous(caseReference)
+        boolean linked = claimService.getClaimByReferenceAnonymous(caseReference)
             .filter(claim -> claim.getDefendantId() != null)
             .isPresent();
         return new DefendantLinkStatus(linked);
-    }
-
-    @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/pre-payment")
-    @ApiOperation("Submit Pre Payment claim")
-    public CaseReference preSubmit(@PathVariable("externalId") String externalId,
-                                   @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
-        return claimService.savePrePayment(externalId, authorisation);
     }
 
     @PutMapping(value = "/{externalId:" + UUID_PATTERN + "}/paid-in-full")

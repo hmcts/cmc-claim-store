@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.ccd.migration.ccd.services.UpdateCCDCaseService;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
@@ -38,7 +39,6 @@ import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 @Service
 public class MigrationHandler {
     private static final Logger logger = LoggerFactory.getLogger(MigrationHandler.class);
-    public static final String OPEN_STATE = "open";
 
     private final CreateCCDCaseService createCCDCaseService;
     private final UpdateCCDCaseService updateCCDCaseService;
@@ -155,11 +155,13 @@ public class MigrationHandler {
     }
 
     private boolean eventNeedToBePerformedOnClaim(CaseEvent event, Claim claim, String state) {
-        if (StringUtils.isBlank(state) || !state.equals(OPEN_STATE)) {
+        if (StringUtils.isBlank(state) || state.equals(ClaimState.CREATED.getValue())) {
             return false;
         }
 
         switch (event) {
+            case ISSUE_CASE:
+                return true; // defaulted as db migration has set this for all claim
             case LINK_DEFENDANT:
                 return StringUtils.isNotBlank(claim.getDefendantId());
             case MORE_TIME_REQUESTED_ONLINE:
