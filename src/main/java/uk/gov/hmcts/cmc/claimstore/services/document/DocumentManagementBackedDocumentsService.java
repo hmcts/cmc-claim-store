@@ -25,11 +25,9 @@ import java.net.URI;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimIssueReceiptFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForJudgementFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSettlementReachedFileBaseName;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
@@ -108,20 +106,6 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
             DEFENDANT_RESPONSE_RECEIPT,
             defendantResponseReceiptService,
             buildResponseFileBaseName(claim.getReferenceNumber()));
-    }
-
-    @Override
-    public byte[] generateCountyCourtJudgement(String externalId, String authorisation) {
-        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        if (null == claim.getCountyCourtJudgment() && null == claim.getCountyCourtJudgmentRequestedAt()) {
-            throw new NotFoundException("County Court Judgment does not exist for this claim");
-        }
-        return processRequest(claim,
-            authorisation,
-            CCJ_REQUEST,
-            countyCourtJudgmentPdfService,
-            buildRequestForJudgementFileBaseName(claim.getReferenceNumber(),
-                claim.getClaimData().getDefendant().getName()));
     }
 
     @Override
