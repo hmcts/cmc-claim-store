@@ -46,7 +46,7 @@ public class AmountContentProviderTest {
             .build();
 
         assertThat(amountContentProvider.create(claim).getRemainingAmount())
-            .isEqualTo("£80.89");
+            .isEqualTo("£81.90");
     }
 
     @Test
@@ -86,7 +86,7 @@ public class AmountContentProviderTest {
     @Test
     public void calculateWithNoInterest() {
         assertThat(amountContentProvider.create(noInterest).getRemainingAmount())
-            .isEqualTo("£80");
+            .isEqualTo("£80.99");
     }
 
     @Test
@@ -99,7 +99,7 @@ public class AmountContentProviderTest {
             .build();
 
         assertThat(amountContentProvider.create(claim).getRemainingAmount())
-            .isEqualTo("£70.89");
+            .isEqualTo("£71.90");
     }
 
     @Test(expected = NullPointerException.class)
