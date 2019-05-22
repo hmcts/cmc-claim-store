@@ -57,6 +57,7 @@ public class DrawOrderCallbackHandlerTest extends MockSpringTest {
                 entry("documentType", "ORDER_DIRECTIONS")
             );
     }
+
     private ResultActions makeRequest(String callbackType) throws Exception {
         CaseDetails caseDetailsTemp =  successfulCoreCaseDataStoreSubmitResponse();
         Map<String, Object> data = new HashMap<>(caseDetailsTemp.getData());

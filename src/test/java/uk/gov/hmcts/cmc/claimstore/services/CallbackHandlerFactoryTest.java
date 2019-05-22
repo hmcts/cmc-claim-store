@@ -100,7 +100,6 @@ public class CallbackHandlerFactoryTest {
         verify(generateOrderCallbackHandler).handle(params);
     }
 
-
     @Test
     public void shouldDispatchCallbackForDrawOrder() {
         CallbackRequest callbackRequest = CallbackRequest

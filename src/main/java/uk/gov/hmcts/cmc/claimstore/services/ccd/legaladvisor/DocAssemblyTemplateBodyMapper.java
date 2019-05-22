@@ -15,7 +15,6 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 
 import java.time.Clock;
 import java.time.LocalDate;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component

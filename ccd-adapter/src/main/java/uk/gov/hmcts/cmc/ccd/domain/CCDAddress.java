@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.ccd.domain;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Value;
-import org.apache.logging.log4j.util.Strings;
 
 @Value
 @Builder

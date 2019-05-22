@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,6 +59,7 @@ public class DrawOrderCallbackHandlerTest {
                 .documentType(CCDClaimDocumentType.ORDER_DIRECTIONS)
                 .build())
             .build();
+
     @Before
     public void setUp() {
         drawOrderCallbackHandler = new DrawOrderCallbackHandler(
@@ -123,7 +124,6 @@ public class DrawOrderCallbackHandlerTest {
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
             drawOrderCallbackHandler
                 .handle(callbackParams);
-
 
         assertThat(response.getData()).contains(
             entry("caseDocuments", ImmutableList.of(existingDocument, CLAIM_DOCUMENT))
