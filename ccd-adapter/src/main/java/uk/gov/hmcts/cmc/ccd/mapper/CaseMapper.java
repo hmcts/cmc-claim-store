@@ -67,6 +67,7 @@ public class CaseMapper {
 
         builder
             .id(ccdCase.getId())
+            .ccdCaseId(ccdCase.getId())
             .submitterId(ccdCase.getSubmitterId())
             .externalId(ccdCase.getExternalId())
             .referenceNumber(ccdCase.getPreviousServiceCaseReference())
