@@ -48,9 +48,10 @@ public class CountyCourtJudgmentByAdmissionPdfTest extends BaseCCJPdfTest {
             .submitClaimantResponse(claimantResponse, claim.getExternalId(), user);
         responseReceived.then().statusCode(HttpStatus.CREATED.value());
 
-        String pdfAsText = textContentOf(retrieveCCJPdf(claim.getExternalId()));
+        String pdfAsText = textContentOf(retrieveCCJPdf(commonOperations.retrieveClaim(claim.getExternalId(),
+            user.getAuthorisation())));
 
-        assertionsOnPdf(claim, pdfAsText);
+        assertionsOnPdf(claim, pdfAsText); 
     }
 
     @Test
@@ -68,7 +69,8 @@ public class CountyCourtJudgmentByAdmissionPdfTest extends BaseCCJPdfTest {
             .submitClaimantResponse(claimantResponse, claim.getExternalId(), user);
         responseReceived.then().statusCode(HttpStatus.CREATED.value());
 
-        String pdfAsText = textContentOf(retrieveCCJPdf(claim.getExternalId()));
+        String pdfAsText = textContentOf(retrieveCCJPdf(commonOperations.retrieveClaim(claim.getExternalId(),
+            user.getAuthorisation())));
 
         assertionsOnPdf(claim, pdfAsText);
     }
@@ -88,7 +90,8 @@ public class CountyCourtJudgmentByAdmissionPdfTest extends BaseCCJPdfTest {
             .submitClaimantResponse(claimantResponse, claim.getExternalId(), user);
         responseReceived.then().statusCode(HttpStatus.CREATED.value());
 
-        String pdfAsText = textContentOf(retrieveCCJPdf(claim.getExternalId()));
+        String pdfAsText = textContentOf(retrieveCCJPdf(commonOperations.retrieveClaim(claim.getExternalId(),
+            user.getAuthorisation())));
 
         assertionsOnPdf(claim, pdfAsText);
     }
@@ -108,7 +111,8 @@ public class CountyCourtJudgmentByAdmissionPdfTest extends BaseCCJPdfTest {
             .submitClaimantResponse(claimantResponse, claim.getExternalId(), user);
         responseReceived.then().statusCode(HttpStatus.CREATED.value());
 
-        String pdfAsText = textContentOf(retrieveCCJPdf(claim.getExternalId()));
+        String pdfAsText = textContentOf(retrieveCCJPdf(commonOperations.retrieveClaim(claim.getExternalId(),
+            user.getAuthorisation())));
 
         assertionsOnPdf(claim, pdfAsText);
     }
@@ -127,7 +131,8 @@ public class CountyCourtJudgmentByAdmissionPdfTest extends BaseCCJPdfTest {
             .submitClaimantResponse(claimantResponse, claim.getExternalId(), user);
         responseReceived.then().statusCode(HttpStatus.CREATED.value());
 
-        String pdfAsText = textContentOf(retrieveCCJPdf(claim.getExternalId()));
+        String pdfAsText = textContentOf(retrieveCCJPdf(commonOperations.retrieveClaim(claim.getExternalId(),
+            user.getAuthorisation())));
 
         assertionsOnPdf(claim, pdfAsText);
     }
@@ -146,7 +151,8 @@ public class CountyCourtJudgmentByAdmissionPdfTest extends BaseCCJPdfTest {
             .submitClaimantResponse(claimantResponse, claim.getExternalId(), user);
         responseReceived.then().statusCode(HttpStatus.CREATED.value());
 
-        String pdfAsText = textContentOf(retrieveCCJPdf(claim.getExternalId()));
+        String pdfAsText = textContentOf(retrieveCCJPdf(commonOperations.retrieveClaim(claim.getExternalId(),
+            user.getAuthorisation())));
 
         assertionsOnPdf(claim, pdfAsText);
     }
