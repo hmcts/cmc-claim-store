@@ -92,7 +92,7 @@ public final class SampleClaim {
     private ClaimState state = null;
     private static Supplier<ClaimSubmissionOperationIndicators> getDefaultClaimSubmissionOperationIndicators =
         () -> ClaimSubmissionOperationIndicators.builder().build();
-    private Long ccdClaimId = 1023467890123456L;
+    private Long ccdCaseId = 1023467890123456L;
 
     private SampleClaim() {
     }
@@ -459,7 +459,7 @@ public final class SampleClaim {
             claimantResponseDeadline,
             state,
             getDefaultClaimSubmissionOperationIndicators.get(),
-            ccdClaimId
+            ccdCaseId
         );
     }
 
