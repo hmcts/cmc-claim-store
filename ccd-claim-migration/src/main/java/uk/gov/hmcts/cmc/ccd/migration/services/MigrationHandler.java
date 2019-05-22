@@ -28,7 +28,6 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
@@ -141,9 +140,9 @@ public class MigrationHandler {
             logger.info("start migrating claim: "
                 + claim.getReferenceNumber()
                 + " for event: "
-                + CaseEvent.CREATE_NEW_CASE.getValue());
+                + CaseEvent.CREATE_CASE.getValue());
 
-            caseDetails = createCCDCaseService.createCase(user, claim, CaseEvent.CREATE_NEW_CASE);
+            caseDetails = createCCDCaseService.createCase(user, claim, CaseEvent.CREATE_CASE);
             migratedClaims.incrementAndGet();
         } catch (Exception e) {
             logger.error("Claim issue create failed for Claim reference "
@@ -285,10 +284,6 @@ public class MigrationHandler {
             case DEFENDANT_RESPONSE_UPLOAD:
                 return claim.getDefendantId() != null
                     && claim.getClaimDocument(DEFENDANT_RESPONSE_RECEIPT).isPresent();
-            case CCJ_REQUEST_UPLOAD:
-                return claim.getCountyCourtJudgmentRequestedAt() != null
-                    && claim.getCountyCourtJudgment() != null
-                    &&  claim.getClaimDocument(CCJ_REQUEST).isPresent();
             case SETTLEMENT_AGREEMENT_UPLOAD:
                 return claim.getSettlementReachedAt() != null
                     && claim.getSettlement().isPresent()
