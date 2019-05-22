@@ -32,7 +32,6 @@ public abstract class BaseSubmitClaimTest extends BaseTest {
     @Test
     public void shouldSuccessfullySubmitClaimDataAndReturnCreatedCase() {
         ClaimData claimData = getSampleClaimDataBuilder().get().build();
-        commonOperations.submitPrePaymentClaim(claimData.getExternalId().toString(), user.getAuthorisation());
 
         Claim createdCase = submitClaim(claimData)
             .then()
