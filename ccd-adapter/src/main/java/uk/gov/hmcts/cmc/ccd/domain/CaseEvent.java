@@ -37,7 +37,6 @@ public enum CaseEvent {
     SEALED_CLAIM_UPLOAD("SealedClaimUpload"),
     CLAIM_ISSUE_RECEIPT_UPLOAD("ClaimIssueReceiptUpload"),
     DEFENDANT_RESPONSE_UPLOAD("DefendantResponseReceiptUpload"),
-    CCJ_REQUEST_UPLOAD("CCJRequestUpload"),
     SETTLEMENT_AGREEMENT_UPLOAD("SettlementAgreementUpload"),
     PIN_GENERATION_OPERATIONS("PinGenerationOperations"),
     SENDING_CLAIMANT_NOTIFICATION("SendingClaimantNotification"),
