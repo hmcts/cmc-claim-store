@@ -37,6 +37,16 @@ public class SampleParty {
         return this;
     }
 
+    public SampleParty withFirstName(String firstName) {
+        this.firstName = firstName;
+        return this;
+    }
+
+    public SampleParty withLastName(String lastName) {
+        this.lastName = lastName;
+        return this;
+    }
+
     public SampleParty withDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
         return this;

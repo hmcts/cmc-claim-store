@@ -48,7 +48,7 @@ public class PaidInFullStaffNotificationServiceWithEmailServiceRetryTest {
     protected TelemetryClient telemetry;
     @MockBean
     protected PostClaimOrchestrationHandler postClaimOrchestrationHandler;
-    
+
     @Autowired
     private PaidInFullStaffNotificationService service;
 
@@ -88,7 +88,7 @@ public class PaidInFullStaffNotificationServiceWithEmailServiceRetryTest {
         verify(javaMailSender, atLeast(3)).createMimeMessage();
         verify(telemetry).trackEvent(
             eq("Notification - failure"),
-            eq(singletonMap("EmailSubject", "Paid in Full 000CM001: John Rambo v Dr. John Smith")),
+            eq(singletonMap("EmailSubject", "Paid in Full 000CM001: Dr. John Rambo v Dr. John Smith")),
             eq(null)
         );
     }

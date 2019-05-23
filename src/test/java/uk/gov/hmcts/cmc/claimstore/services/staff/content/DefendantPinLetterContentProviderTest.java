@@ -71,7 +71,7 @@ public class DefendantPinLetterContentProviderTest {
     public void shouldProvideClaimantName() {
         Map<String, Object> content = provider.createContent(claim, DEFENDANT_PIN);
 
-        assertThat(content).containsEntry("claimantFullName", "John Rambo");
+        assertThat(content).containsEntry("claimantFullName", "Dr. John Rambo");
     }
 
     @Test

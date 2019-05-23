@@ -205,7 +205,7 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
         assertThat(emailDataArgument.getValue().getTo()).isEqualTo("recipient@example.com");
         assertThat(emailDataArgument.getValue().getSubject())
             .isEqualTo(
-                "Civil Money Claim defence submitted: John Rambo v Dr. John Smith " + claim.getReferenceNumber());
+                "Civil Money Claim defence submitted: Dr. John Rambo v Dr. John Smith " + claim.getReferenceNumber());
         assertThat(emailDataArgument.getValue().getMessage()).contains(
             "The defendant has submitted an already paid defence which is attached as a PDF",
             "Email: j.smith@example.com",
