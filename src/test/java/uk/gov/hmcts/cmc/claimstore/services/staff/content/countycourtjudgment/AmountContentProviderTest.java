@@ -61,9 +61,9 @@ public class AmountContentProviderTest {
             .build();
 
         AmountContent amountContent = amountContentProvider.create(claim);
-        assertThat(amountContent.getAdmittedAmount()).isEqualTo("£120");
-        assertThat(amountContent.getSubTotalAmount()).isEqualTo("£160");
-        assertThat(amountContent.getRemainingAmount()).isEqualTo("£160");
+        assertThat(amountContent.getAdmittedAmount()).isEqualTo("£120.99");
+        assertThat(amountContent.getSubTotalAmount()).isEqualTo("£160.99");
+        assertThat(amountContent.getRemainingAmount()).isEqualTo("£160.99");
     }
 
     @Test
@@ -78,9 +78,9 @@ public class AmountContentProviderTest {
             .build();
 
         AmountContent amountContent = amountContentProvider.create(claim);
-        assertThat(amountContent.getAdmittedAmount()).isEqualTo("£120");
-        assertThat(amountContent.getSubTotalAmount()).isEqualTo("£160");
-        assertThat(amountContent.getRemainingAmount()).isEqualTo("£150");
+        assertThat(amountContent.getAdmittedAmount()).isEqualTo("£120.99");
+        assertThat(amountContent.getSubTotalAmount()).isEqualTo("£160.99");
+        assertThat(amountContent.getRemainingAmount()).isEqualTo("£150.99");
     }
 
     @Test

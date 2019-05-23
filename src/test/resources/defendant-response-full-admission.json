@@ -61,31 +61,31 @@
       "id": "5adfe417-0611-4e54-8751-4fb8ed600bf1",
       "type": "SAVINGS_ACCOUNT",
       "joint": true,
-      "balance": 10
+      "balance": 10.99
     }],
     "debts": [{
       "id": "d354b56d-8ec1-49ef-9650-57bca975e283",
       "description": "Reference",
-      "totalOwed": 10,
-      "monthlyPayments": 1
+      "totalOwed": 10.99,
+      "monthlyPayments": 1.99
     }],
     "incomes": [{
       "id": "c4fc229d-87db-43ff-8201-acafc136b7e8",
       "type": "JOB",
       "frequency": "MONTH",
-      "amount": 10
+      "amount": 10.99
     }],
     "expenses": [{
       "id": "60a0179b-7f14-4a8c-a7cc-170877eadc76",
       "type": "COUNCIL_TAX",
       "frequency": "MONTH",
-      "amount": 10
+      "amount": 10.99
     }],
     "courtOrders": [{
       "id": "fffb3d88-6b67-4be3-a835-0df2db49f7f7",
       "claimNumber": "Reference",
-      "amountOwed": 10,
-      "monthlyInstalmentAmount": 1
+      "amountOwed": 10.99,
+      "monthlyInstalmentAmount": 1.99
     }],
     "partner": {
       "disability": "NO",
