@@ -15,13 +15,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UploadOperationServiceTest {
     public static final Claim CLAIM = SampleClaim.getDefault();
     public static final String AUTHORISATION = "AUTHORISATION";
-    private static final PDF pinLetterClaim = new PDF("0000-pin", "test".getBytes(), DEFENDANT_PIN_LETTER);
+    private static final PDF SEALED_CLAIM_PDF = new PDF("000MC001-claim", "test".getBytes(), SEALED_CLAIM);
 
     @Mock
     private DocumentsService documentsService;
@@ -37,24 +37,24 @@ public class UploadOperationServiceTest {
         //when
         when(documentsService.uploadToDocumentManagement(any(), eq(AUTHORISATION), eq(CLAIM))).thenReturn(CLAIM);
 
-        uploadOperationService.uploadDocument(CLAIM, AUTHORISATION, pinLetterClaim);
+        uploadOperationService.uploadDocument(CLAIM, AUTHORISATION, SEALED_CLAIM_PDF);
         //verify
 
-        verify(documentsService).uploadToDocumentManagement(eq(pinLetterClaim), eq(AUTHORISATION), eq(CLAIM));
+        verify(documentsService).uploadToDocumentManagement(eq(SEALED_CLAIM_PDF), eq(AUTHORISATION), eq(CLAIM));
     }
 
     @Test(expected = DocumentManagementException.class)
     public void shouldNotUpdateFlagWhenUploadDocumentFails() {
         //when
-        when(documentsService.uploadToDocumentManagement(eq(pinLetterClaim), eq(AUTHORISATION), eq(CLAIM)))
+        when(documentsService.uploadToDocumentManagement(eq(SEALED_CLAIM_PDF), eq(AUTHORISATION), eq(CLAIM)))
             .thenThrow(new DocumentManagementException("bad files"));
 
         try {
-            uploadOperationService.uploadDocument(CLAIM, AUTHORISATION, pinLetterClaim);
+            uploadOperationService.uploadDocument(CLAIM, AUTHORISATION, SEALED_CLAIM_PDF);
         } finally {
 
             //verify
-            verify(documentsService).uploadToDocumentManagement(eq(pinLetterClaim), eq(AUTHORISATION), eq(CLAIM));
+            verify(documentsService).uploadToDocumentManagement(eq(SEALED_CLAIM_PDF), eq(AUTHORISATION), eq(CLAIM));
         }
     }
 }
