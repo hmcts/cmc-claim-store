@@ -12,6 +12,8 @@ import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
+import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
@@ -29,13 +31,15 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
     private final Clock clock;
     private final JsonMapper jsonMapper;
     private final OrderDrawnNotificationService orderDrawnNotificationService;
+    private final CCDCaseDataToClaim ccdCaseDataToClaim;
 
     @Autowired
     public DrawOrderCallbackHandler(
-        Clock clock, JsonMapper jsonMapper, OrderDrawnNotificationService orderDrawnNotificationService) {
+        Clock clock, JsonMapper jsonMapper, OrderDrawnNotificationService orderDrawnNotificationService, CCDCaseDataToClaim ccdCaseDataToClaim) {
         this.clock = clock;
         this.jsonMapper = jsonMapper;
         this.orderDrawnNotificationService = orderDrawnNotificationService;
+        this.ccdCaseDataToClaim = ccdCaseDataToClaim;
     }
 
     @Override
@@ -48,10 +52,10 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
 
     private CallbackResponse notifyParties(CallbackParams callbackParams) {
         CallbackRequest callbackRequest = callbackParams.getRequest();
-        CCDCase ccdCase = jsonMapper.fromMap(
-            callbackRequest.getCaseDetails().getData(), CCDCase.class);
-       orderDrawnNotificationService.notifyClaimant(ccdCase);
-       orderDrawnNotificationService.notifyDefendant(ccdCase);
+        Claim claim = ccdCaseDataToClaim.to(callbackRequest.getCaseDetails().getId(),
+            callbackRequest.getCaseDetails().getData());
+        orderDrawnNotificationService.notifyClaimant(claim);
+        orderDrawnNotificationService.notifyDefendant(claim);
         return SubmittedCallbackResponse
             .builder()
             .build();

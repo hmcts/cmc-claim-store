@@ -7,12 +7,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.util.SampleData;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.BaseNotificationServiceTest;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
-import java.util.Collections;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.eq;
@@ -41,33 +41,33 @@ public class OrderDrawnNotificationServiceTest extends BaseNotificationServiceTe
 
     @Test
     public void shouldSendEmailToClaimantUsingPredefinedTemplate() {
-        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
+        Claim claim = SampleClaim.builder().build();
         Map<String, String> expectedParams = ImmutableMap.of(
-            "claimReferenceNumber", ccdCase.getPreviousServiceCaseReference(),
-            "claimantName", ccdCase.getApplicants().get(0).getValue().getPartyName(),
+            "claimReferenceNumber", claim.getReferenceNumber(),
+            "claimantName", claim.getClaimData().getClaimant().getName(),
             "frontendBaseUrl", FRONTEND_BASE_URL
         );
-        service.notifyClaimant(ccdCase);
+        service.notifyClaimant(claim);
         verify(notificationService).sendMail(
-            eq(ccdCase.getApplicants().get(0).getValue().getPartyDetail().getEmailAddress()),
+            eq(SampleClaim.SUBMITTER_EMAIL),
             eq("claimantTemplate"),
             eq(expectedParams),
-            eq(String.format(reference, "claimant", ccdCase.getPreviousServiceCaseReference())));
+            eq(String.format(reference, "claimant", claim.getReferenceNumber())));
     }
 
     @Test
     public void shouldSendEmailToDefendantUsingPredefinedTemplate() {
-        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
+        Claim claim = SampleClaim.builder().build();
         Map<String, String> expectedParams = ImmutableMap.of(
-            "claimReferenceNumber", ccdCase.getPreviousServiceCaseReference(),
-            "defendantName", ccdCase.getRespondents().get(0).getValue().getPartyName(),
+            "claimReferenceNumber", claim.getReferenceNumber(),
+            "defendantName", claim.getClaimData().getDefendant().getName(),
             "frontendBaseUrl", FRONTEND_BASE_URL
         );
-        service.notifyDefendant(ccdCase);
+        service.notifyDefendant(claim);
         verify(notificationService).sendMail(
-            eq(ccdCase.getRespondents().get(0).getValue().getPartyDetail().getEmailAddress()),
+            eq(SampleTheirDetails.DEFENDANT_EMAIL),
             eq("defendantTemplate"),
             eq(expectedParams),
-            eq(String.format(reference, "defendant", ccdCase.getPreviousServiceCaseReference())));
+            eq(String.format(reference, "defendant", claim.getReferenceNumber())));
     }
 }

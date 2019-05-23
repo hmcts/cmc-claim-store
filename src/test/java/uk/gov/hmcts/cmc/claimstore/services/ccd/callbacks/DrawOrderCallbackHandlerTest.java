@@ -17,6 +17,9 @@ import uk.gov.hmcts.cmc.ccd.util.SampleData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
+import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -28,6 +31,8 @@ import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.MapEntry.entry;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DRAW_ORDER;
@@ -40,6 +45,8 @@ public class DrawOrderCallbackHandlerTest {
 
     @Mock
     private JsonMapper jsonMapper;
+    @Mock
+    private CCDCaseDataToClaim ccdCaseDataToClaim;
     @Mock
     private Clock clock;
     @Mock
@@ -70,13 +77,17 @@ public class DrawOrderCallbackHandlerTest {
         drawOrderCallbackHandler = new DrawOrderCallbackHandler(
             clock,
             jsonMapper,
-            orderDrawnNotificationService);
+            orderDrawnNotificationService,
+            ccdCaseDataToClaim);
         when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
         callbackRequest = CallbackRequest
             .builder()
             .eventId(DRAW_ORDER.getValue())
-            .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
+            .caseDetails(CaseDetails.builder()
+                .id(3L)
+                .data(Collections.emptyMap())
+                .build())
             .build();
     }
 
@@ -162,14 +173,12 @@ public class DrawOrderCallbackHandlerTest {
             .type(CallbackType.SUBMITTED)
             .request(callbackRequest)
             .build();
-        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
-        when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class))
-            .thenReturn(ccdCase);
-
+        Claim claim = SampleClaim.builder().build();
+        when(ccdCaseDataToClaim.to(anyLong(), anyMap())).thenReturn(claim);
         drawOrderCallbackHandler
             .handle(callbackParams);
 
-        verify(orderDrawnNotificationService).notifyDefendant(ccdCase);
-        verify(orderDrawnNotificationService).notifyClaimant(ccdCase);
+        verify(orderDrawnNotificationService).notifyDefendant(claim);
+        verify(orderDrawnNotificationService).notifyClaimant(claim);
     }
 }

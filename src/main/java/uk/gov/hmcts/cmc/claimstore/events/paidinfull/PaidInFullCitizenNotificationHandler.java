@@ -7,11 +7,13 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.utils.EmailUtils;
 
 import java.util.Map;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.PaidInFull.referenceForDefendant;
+import static uk.gov.hmcts.cmc.domain.utils.EmailUtils.*;
 
 @Component
 public class PaidInFullCitizenNotificationHandler {
@@ -46,13 +48,7 @@ public class PaidInFullCitizenNotificationHandler {
         );
     }
 
-    private Optional<String> getDefendantEmail(Claim claim) {
-        if (StringUtils.isNotBlank(claim.getDefendantEmail())) {
-            return Optional.of(claim.getDefendantEmail());
-        } else {
-            return claim.getClaimData().getDefendant().getEmail();
-        }
-    }
+
 
     private Map<String, String> aggregateParams(Claim claim) {
         return ImmutableMap.<String, String>builder()
