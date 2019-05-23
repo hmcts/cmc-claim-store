@@ -25,9 +25,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CLAIM_ISSUE_RECEIPT_UPLOAD;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SEALED_CLAIM_UPLOAD;
-
 @Async("threadPoolTaskExecutor")
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled", havingValue = "true")
@@ -81,13 +78,13 @@ public class PostClaimOrchestrationHandler {
         uploadSealedClaimOperation = (claim, authorisation, sealedClaim) ->
             isUploadSealedClaimSuccess.test(claim.getClaimSubmissionOperationIndicators())
                 ? uploadOperationService
-                .uploadDocument(claim, authorisation, sealedClaim, SEALED_CLAIM_UPLOAD)
+                .uploadDocument(claim, authorisation, sealedClaim)
                 : claim;
 
         uploadClaimIssueReceiptOperation = (claim, authorisation, claimIssueReceipt) ->
             isUploadClaimReceiptSuccess.test(claim.getClaimSubmissionOperationIndicators())
                 ? uploadOperationService
-                .uploadDocument(claim, authorisation, claimIssueReceipt, CLAIM_ISSUE_RECEIPT_UPLOAD)
+                .uploadDocument(claim, authorisation, claimIssueReceipt)
                 : claim;
 
         rpaOperation = (claim, authorisation, sealedClaim) ->
