@@ -84,15 +84,15 @@ public class CoreCaseDataService {
 
     private static BiFunction<ClaimSubmissionOperationIndicators, ClaimDocumentType, ClaimSubmissionOperationIndicators>
         updateClaimSubmissionIndicatorByDocumentType = (indicator, docType) -> {
-        ClaimSubmissionOperationIndicators.ClaimSubmissionOperationIndicatorsBuilder updatedIndicator
-            = indicator.toBuilder();
+            ClaimSubmissionOperationIndicators.ClaimSubmissionOperationIndicatorsBuilder updatedIndicator
+                = indicator.toBuilder();
 
-        if (docType == SEALED_CLAIM) {
-            updatedIndicator.sealedClaimUpload(YesNoOption.YES);
-        } else if (docType == CLAIM_ISSUE_RECEIPT) {
-            updatedIndicator.claimIssueReceiptUpload(YesNoOption.YES);
-        }
-        return updatedIndicator.build();
+            if (docType == SEALED_CLAIM) {
+                updatedIndicator.sealedClaimUpload(YesNoOption.YES);
+            } else if (docType == CLAIM_ISSUE_RECEIPT) {
+                updatedIndicator.claimIssueReceiptUpload(YesNoOption.YES);
+            }
+            return updatedIndicator.build();
     };
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
