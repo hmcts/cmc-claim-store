@@ -17,7 +17,6 @@ public class ClaimDocumentCollectionMapperTest {
 
     @Test
     public void to() {
-        ClaimDocumentCollectionMapper mapper = new ClaimDocumentCollectionMapper(new ClaimDocumentMapper());
 
         CCDCase.CCDCaseBuilder builder = CCDCase.builder();
         ClaimDocumentCollection collection = new ClaimDocumentCollection();
@@ -31,6 +30,8 @@ public class ClaimDocumentCollectionMapperTest {
             .documentType(ClaimDocumentType.SEALED_CLAIM).build());
         collection.addClaimDocument(ClaimDocument.builder().documentManagementUrl(URI.create("someurl"))
             .documentType(ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT).build());
+
+        ClaimDocumentCollectionMapper mapper = new ClaimDocumentCollectionMapper(new ClaimDocumentMapper());
 
         mapper.to(collection, builder);
 

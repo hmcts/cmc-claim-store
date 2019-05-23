@@ -62,15 +62,15 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 @ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled", havingValue = "true")
 public class CoreCaseDataService {
 
-    public static final String CMC_CASE_UPDATE_SUMMARY = "CMC case update";
-    public static final String CMC_CASE_CREATE_SUMMARY = "CMC case issue";
-    public static final String SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION = "Submitting CMC case update";
-    public static final String SUBMITTING_CMC_CASE_ISSUE_DESCRIPTION = "Submitting CMC case issue";
+    private static final String CMC_CASE_UPDATE_SUMMARY = "CMC case update";
+    private static final String CMC_CASE_CREATE_SUMMARY = "CMC case issue";
+    private static final String SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION = "Submitting CMC case update";
+    private static final String SUBMITTING_CMC_CASE_ISSUE_DESCRIPTION = "Submitting CMC case issue";
 
-    public static final String CCD_UPDATE_FAILURE_MESSAGE
+    private static final String CCD_UPDATE_FAILURE_MESSAGE
         = "Failed updating claim in CCD store for case id %s on event %s";
 
-    public static final String CCD_STORING_FAILURE_MESSAGE
+    private static final String CCD_STORING_FAILURE_MESSAGE
         = "Failed storing claim in CCD store for case id %s on event %s";
 
     private final CaseMapper caseMapper;
@@ -81,6 +81,19 @@ public class CoreCaseDataService {
     private final AuthTokenGenerator authTokenGenerator;
     private final JobSchedulerService jobSchedulerService;
     private final CCDCreateCaseService ccdCreateCaseService;
+
+    private static BiFunction<ClaimSubmissionOperationIndicators, ClaimDocumentType, ClaimSubmissionOperationIndicators>
+        updateClaimSubmissionIndicatorByDocumentType = (indicator, docType) -> {
+        ClaimSubmissionOperationIndicators.ClaimSubmissionOperationIndicatorsBuilder updatedIndicator
+            = indicator.toBuilder();
+
+        if (docType == SEALED_CLAIM) {
+            updatedIndicator.sealedClaimUpload(YesNoOption.YES);
+        } else if (docType == CLAIM_ISSUE_RECEIPT) {
+            updatedIndicator.claimIssueReceiptUpload(YesNoOption.YES);
+        }
+        return updatedIndicator.build();
+    };
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     @Autowired
@@ -103,19 +116,6 @@ public class CoreCaseDataService {
         this.jobSchedulerService = jobSchedulerService;
         this.ccdCreateCaseService = ccdCreateCaseService;
     }
-
-    private static BiFunction<ClaimSubmissionOperationIndicators, ClaimDocumentType, ClaimSubmissionOperationIndicators>
-        updateClaimSubmissionIndicatorByDocumentType = (indicator, docType) -> {
-            ClaimSubmissionOperationIndicators.ClaimSubmissionOperationIndicatorsBuilder updatedIndicator
-                = indicator.toBuilder();
-
-            if (docType == SEALED_CLAIM) {
-                updatedIndicator.sealedClaimUpload(YesNoOption.YES);
-            } else if (docType == CLAIM_ISSUE_RECEIPT) {
-                updatedIndicator.claimIssueReceiptUpload(YesNoOption.YES);
-            }
-            return updatedIndicator.build();
-        };
 
     @LogExecutionTime
     public Claim createNewCase(User user, Claim claim) {
