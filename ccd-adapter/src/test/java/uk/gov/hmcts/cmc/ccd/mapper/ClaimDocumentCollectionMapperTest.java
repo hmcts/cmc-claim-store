@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ClaimDocumentCollectionMapperTest {
 
     @Test
-    public void to() {
+    public void shouldFilterOutPinAndCCJDocuments() {
 
         CCDCase.CCDCaseBuilder builder = CCDCase.builder();
         ClaimDocumentCollection collection = new ClaimDocumentCollection();
@@ -32,7 +32,6 @@ public class ClaimDocumentCollectionMapperTest {
             .documentType(ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT).build());
 
         ClaimDocumentCollectionMapper mapper = new ClaimDocumentCollectionMapper(new ClaimDocumentMapper());
-
         mapper.to(collection, builder);
 
         CCDCase build = builder.build();
