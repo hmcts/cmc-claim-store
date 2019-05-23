@@ -93,7 +93,7 @@ public class CoreCaseDataService {
                 updatedIndicator.claimIssueReceiptUpload(YesNoOption.YES);
             }
             return updatedIndicator.build();
-    };
+        };
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     @Autowired
