@@ -25,7 +25,7 @@
     "paymentType":"INSTALMENTS",
     "fullPaymentDeadline":null,
     "instalments":{
-      "amount":100,
+      "amount":100.99,
       "firstPayment":"10-Oct-2100",
       "frequency":"EACH_WEEK"
     }

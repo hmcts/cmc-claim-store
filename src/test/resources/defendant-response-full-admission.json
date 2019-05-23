@@ -25,7 +25,7 @@
   "paymentIntention": {
     "paymentOption": "INSTALMENTS",
     "repaymentPlan": {
-      "instalmentAmount": 100,
+      "instalmentAmount": 100.99,
       "firstPaymentDate": "2100-10-10",
       "paymentSchedule": "EACH_WEEK",
       "completionDate": "2101-06-10",
