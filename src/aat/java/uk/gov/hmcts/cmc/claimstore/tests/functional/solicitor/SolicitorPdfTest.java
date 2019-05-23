@@ -50,7 +50,6 @@ public class SolicitorPdfTest extends BasePdfTest {
     @Override
     protected Claim createCase() {
         ClaimData claimData = getSampleClaimDataBuilder().get().build();
-        commonOperations.submitPrePaymentClaim(claimData.getExternalId().toString(), user.getAuthorisation());
         return commonOperations.saveClaim(claimData, user.getAuthorisation(), user.getUserDetails().getId())
             .then().extract().body().as(Claim.class);
     }
