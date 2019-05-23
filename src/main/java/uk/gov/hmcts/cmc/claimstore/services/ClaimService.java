@@ -35,7 +35,6 @@ import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
-import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
@@ -204,10 +203,6 @@ public class ClaimService {
 
     public List<Claim> getClaimsByState(ClaimState claimState, User user) {
         return caseRepository.getClaimsByState(claimState, user);
-    }
-
-    public CaseReference savePrePayment(String externalId, String authorisation) {
-        return caseRepository.savePrePaymentClaim(externalId, authorisation);
     }
 
     @LogExecutionTime
