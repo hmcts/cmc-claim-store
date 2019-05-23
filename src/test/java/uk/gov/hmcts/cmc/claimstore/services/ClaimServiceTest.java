@@ -26,6 +26,7 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDet
 import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
@@ -50,6 +51,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATED;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.CLAIM_ID;
@@ -322,6 +324,16 @@ public class ClaimServiceTest {
     }
 
     @Test
+    public void getClaimsByStateShouldCallCaseRepository() {
+        when(caseRepository.getClaimsByState(eq(CREATED), any()))
+            .thenReturn(singletonList(claim));
+
+        List<Claim> claims = claimService.getClaimsByState(CREATED, USER);
+
+        assertThat(claims).containsExactly(claim);
+    }
+
+    @Test
     public void saveDefendantResponseShouldUpdateDQDeadlineWhenFullDefenceAndNoMediation() {
         claimService.saveDefendantResponse(
             claim, DEFENDANT_EMAIL, SampleResponse.FullDefence.builder().withMediation(NO).build(), AUTHORISATION
@@ -468,6 +480,17 @@ public class ClaimServiceTest {
             any(Response.class),
             eq(deadline),
             eq(AUTHORISATION)
+        );
+    }
+
+    @Test
+    public void updateStateShouldCallCaseRepository() {
+        claimService.updateClaimState(AUTHORISATION, claim, ClaimState.OPEN);
+
+        verify(caseRepository).updateClaimState(
+            eq(AUTHORISATION),
+            eq(claim.getId()),
+            eq(ClaimState.OPEN)
         );
     }
 

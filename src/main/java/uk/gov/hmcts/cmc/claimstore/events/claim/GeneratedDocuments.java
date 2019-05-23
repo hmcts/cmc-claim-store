@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
@@ -14,26 +15,29 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @Builder
 public class GeneratedDocuments {
     private PDF claimIssueReceipt;
-    private PDF defendantLetter;
+    private PDF defendantPinLetter;
     private PDF sealedClaim;
-    private Document defendantLetterDoc;
+    private Document defendantPinLetterDoc;
     private Document sealedClaimDoc;
     private String pin;
+    private final Claim claim;
 
     public GeneratedDocuments(
         PDF claimIssueReceipt,
-        PDF defendantLetter,
+        PDF defendantPinLetter,
         PDF sealedClaim,
-        Document defendantLetterDoc,
+        Document defendantPinLetterDoc,
         Document sealedClaimDoc,
-        String pin
+        String pin,
+        Claim claim
     ) {
         this.claimIssueReceipt = claimIssueReceipt;
-        this.defendantLetter = defendantLetter;
+        this.defendantPinLetter = defendantPinLetter;
         this.sealedClaim = sealedClaim;
-        this.defendantLetterDoc = defendantLetterDoc;
+        this.defendantPinLetterDoc = defendantPinLetterDoc;
         this.sealedClaimDoc = sealedClaimDoc;
         this.pin = pin;
+        this.claim = claim;
     }
 
     @Override

@@ -14,6 +14,9 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.math.NumberUtils.createBigInteger;
+import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
+
 @Component
 public class ClaimMapper {
 
@@ -27,6 +30,7 @@ public class ClaimMapper {
     private final InterestMapper interestMapper;
     private final TimelineMapper timelineMapper;
     private final EvidenceMapper evidenceMapper;
+    private final MoneyMapper moneyMapper;
 
     @SuppressWarnings("squid:S00107") //Constructor need all mapper for claim data  mapping
     public ClaimMapper(
@@ -39,7 +43,8 @@ public class ClaimMapper {
         PaymentMapper paymentMapper,
         InterestMapper interestMapper,
         TimelineMapper timelineMapper,
-        EvidenceMapper evidenceMapper
+        EvidenceMapper evidenceMapper,
+        MoneyMapper moneyMapper
     ) {
         this.personalInjuryMapper = personalInjuryMapper;
         this.housingDisrepairMapper = housingDisrepairMapper;
@@ -51,6 +56,7 @@ public class ClaimMapper {
         this.interestMapper = interestMapper;
         this.timelineMapper = timelineMapper;
         this.evidenceMapper = evidenceMapper;
+        this.moneyMapper = moneyMapper;
     }
 
     public void to(Claim claim, CCDCase.CCDCaseBuilder builder) {
@@ -91,11 +97,10 @@ public class ClaimMapper {
         interestMapper.to(claimData.getInterest(), builder);
         amountMapper.to(claimData.getAmount(), builder);
 
-        claim.getTotalAmountTillDateOfIssue().ifPresent(builder::totalAmount);
-
+        claim.getTotalAmountTillDateOfIssue().map(moneyMapper::to).ifPresent(builder::totalAmount);
         builder
             .reason(claimData.getReason())
-            .feeAmountInPennies(claimData.getFeeAmountInPennies());
+            .feeAmountInPennies(claimData.getFeeAmountInPennies().toString());
     }
 
     private boolean isLeadApplicant(Claim claim, int applicantIndex) {
@@ -105,8 +110,7 @@ public class ClaimMapper {
     public void from(CCDCase ccdCase, Claim.ClaimBuilder claimBuilder) {
         Objects.requireNonNull(ccdCase, "ccdCase must not be null");
 
-        List<Party> claimants = ccdCase.getApplicants()
-            .stream()
+        List<Party> claimants = asStream(ccdCase.getApplicants())
             .map(claimantMapper::from)
             .collect(Collectors.toList());
 
@@ -117,7 +121,7 @@ public class ClaimMapper {
                 getDefendants(ccdCase, claimBuilder),
                 paymentMapper.from(ccdCase),
                 amountMapper.from(ccdCase),
-                ccdCase.getFeeAmountInPennies(),
+                createBigInteger(ccdCase.getFeeAmountInPennies()),
                 interestMapper.from(ccdCase),
                 personalInjuryMapper.from(ccdCase),
                 housingDisrepairMapper.from(ccdCase),
@@ -135,7 +139,7 @@ public class ClaimMapper {
 
     private List<TheirDetails> getDefendants(CCDCase ccdCase, Claim.ClaimBuilder claimBuilder) {
 
-        return ccdCase.getRespondents().stream()
+        return asStream(ccdCase.getRespondents())
             .map(respondent -> defendantMapper.from(claimBuilder, respondent))
             .collect(Collectors.toList());
     }

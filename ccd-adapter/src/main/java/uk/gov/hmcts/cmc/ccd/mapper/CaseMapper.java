@@ -10,6 +10,8 @@ import java.util.Arrays;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
+import static uk.gov.hmcts.cmc.ccd.mapper.ClaimSubmissionOperationIndicatorMapper.mapClaimSubmissionOperationIndicatorsToCCD;
+import static uk.gov.hmcts.cmc.ccd.mapper.ClaimSubmissionOperationIndicatorMapper.mapFromCCDClaimSubmissionOperationIndicators;
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.toCaseName;
 
 @Component
@@ -40,7 +42,7 @@ public class CaseMapper {
         return builder
             .id(claim.getId())
             .externalId(claim.getExternalId())
-            .referenceNumber(claim.getReferenceNumber())
+            .previousServiceCaseReference(claim.getReferenceNumber())
             .submitterId(claim.getSubmitterId())
             .submitterEmail(claim.getSubmitterEmail())
             .issuedOn(claim.getIssuedOn())
@@ -52,6 +54,8 @@ public class CaseMapper {
             .features(claim.getFeatures() != null ? String.join(",", claim.getFeatures()) : null)
             .migratedFromClaimStore(isMigrated ? YES : NO)
             .caseName(toCaseName.apply(claim))
+            .claimSubmissionOperationIndicators(
+                mapClaimSubmissionOperationIndicatorsToCCD.apply(claim.getClaimSubmissionOperationIndicators()))
             .build();
     }
 
@@ -63,12 +67,15 @@ public class CaseMapper {
 
         builder
             .id(ccdCase.getId())
+            .ccdCaseId(ccdCase.getId())
             .submitterId(ccdCase.getSubmitterId())
             .externalId(ccdCase.getExternalId())
-            .referenceNumber(ccdCase.getReferenceNumber())
+            .referenceNumber(ccdCase.getPreviousServiceCaseReference())
             .createdAt(ccdCase.getSubmittedOn())
             .issuedOn(ccdCase.getIssuedOn())
-            .submitterEmail(ccdCase.getSubmitterEmail());
+            .submitterEmail(ccdCase.getSubmitterEmail())
+            .claimSubmissionOperationIndicators(
+                mapFromCCDClaimSubmissionOperationIndicators.apply(ccdCase.getClaimSubmissionOperationIndicators()));
 
         if (ccdCase.getFeatures() != null) {
             builder.features(Arrays.asList(ccdCase.getFeatures().split(",")));

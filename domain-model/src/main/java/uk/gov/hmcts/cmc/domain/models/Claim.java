@@ -30,7 +30,6 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
     allowGetters = true
 )
 @Getter
-@Builder(toBuilder = true)
 @EqualsAndHashCode
 public class Claim {
 
@@ -44,6 +43,7 @@ public class Claim {
     private final ClaimData claimData;
     private final LocalDateTime createdAt;
     private final LocalDate issuedOn;
+    private LocalDate serviceDate;
     private final LocalDate responseDeadline;
     private final boolean moreTimeRequested;
     private final String submitterEmail;
@@ -66,8 +66,10 @@ public class Claim {
     private final LocalDate claimantResponseDeadline;
     private final ClaimState state;
     private final ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
+    private final Long ccdCaseId;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
+    @Builder(toBuilder = true)
     public Claim(
         Long id,
         String submitterId,
@@ -78,6 +80,7 @@ public class Claim {
         ClaimData claimData,
         LocalDateTime createdAt,
         LocalDate issuedOn,
+        LocalDate serviceDate,
         LocalDate responseDeadline,
         boolean moreTimeRequested,
         String submitterEmail,
@@ -98,7 +101,8 @@ public class Claim {
         ClaimDocumentCollection claimDocumentCollection,
         LocalDate claimantResponseDeadline,
         ClaimState state,
-        ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
+        ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators,
+        Long ccdCaseId
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -109,6 +113,7 @@ public class Claim {
         this.claimData = claimData;
         this.createdAt = createdAt;
         this.issuedOn = issuedOn;
+        this.serviceDate = serviceDate;
         this.responseDeadline = responseDeadline;
         this.moreTimeRequested = moreTimeRequested;
         this.submitterEmail = submitterEmail;
@@ -127,9 +132,10 @@ public class Claim {
         this.reDetermination = reDetermination;
         this.reDeterminationRequestedAt = reDeterminationRequestedAt;
         this.claimDocumentCollection = claimDocumentCollection;
-        this.claimSubmissionOperationIndicators = claimSubmissionOperationIndicators;
         this.claimantResponseDeadline = claimantResponseDeadline;
         this.state = state;
+        this.ccdCaseId = ccdCaseId;
+        this.claimSubmissionOperationIndicators = claimSubmissionOperationIndicators;
     }
 
     public Optional<Response> getResponse() {
@@ -154,7 +160,7 @@ public class Claim {
     }
 
     public LocalDate getServiceDate() {
-        return issuedOn.plusDays(5);
+        return serviceDate == null ? issuedOn.plusDays(5) : serviceDate;
     }
 
     public Optional<BigDecimal> getAmountWithInterest() {

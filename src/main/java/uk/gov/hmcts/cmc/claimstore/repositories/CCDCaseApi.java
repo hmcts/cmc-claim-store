@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
@@ -31,25 +32,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATED;
 
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled", havingValue = "true")
 public class CCDCaseApi {
-
-    public static enum CaseState {
-        ONHOLD("onhold"),
-        OPEN("open");
-
-        private final String state;
-
-        CaseState(String state) {
-            this.state = state;
-        }
-
-        public String getValue() {
-            return state;
-        }
-    }
 
     public static final String JURISDICTION_ID = "CMC";
     public static final String CASE_TYPE_ID = "MoneyClaimCase";
@@ -95,7 +82,7 @@ public class CCDCaseApi {
     }
 
     public Optional<Claim> getByReferenceNumber(String referenceNumber, String authorisation) {
-        return getCaseBy(authorisation, ImmutableMap.of("case.referenceNumber", referenceNumber));
+        return getCaseBy(authorisation, ImmutableMap.of("case.previousServiceCaseReference", referenceNumber));
     }
 
     public Optional<Claim> getByExternalId(String externalId, User user) {
@@ -130,6 +117,10 @@ public class CCDCaseApi {
     public List<Claim> getByPaymentReference(String payReference, String authorisation) {
         User user = userService.getUser(authorisation);
         return getAllCasesBy(user, ImmutableMap.of("case.paymentReference", payReference));
+    }
+
+    public List<Claim> getClaimsByState(ClaimState claimState, User user) {
+        return extractClaims(searchAll(user, claimState));
     }
 
     /**
@@ -180,7 +171,7 @@ public class CCDCaseApi {
     private List<Claim> getAllCasesBy(User user, ImmutableMap<String, String> searchString) {
         List<CaseDetails> validCases = searchAll(user, searchString)
             .stream()
-            .filter(c -> !isCaseOnHold(c))
+            .filter(caseDetails -> !isCreatedState(caseDetails))
             .collect(Collectors.toList());
 
         return extractClaims(validCases);
@@ -194,7 +185,7 @@ public class CCDCaseApi {
     private Optional<Claim> getCaseBy(User user, Map<String, String> searchString) {
         List<CaseDetails> result = searchAll(user, searchString);
 
-        if (result.size() == 1 && isCaseOnHold(result.get(0))) {
+        if (result.size() == 1 && isCreatedState(result.get(0))) {
             return Optional.empty();
         }
 
@@ -309,6 +300,10 @@ public class CCDCaseApi {
         return ccdCaseDataToClaim.to(caseDetails.getId(), caseDetails.getData());
     }
 
+    private List<CaseDetails> searchAll(User user, ClaimState state) {
+        return search(user, ImmutableMap.of(), 1, new ArrayList<>(), null, state);
+    }
+
     private List<CaseDetails> searchAll(User user, Map<String, String> searchString) {
         return search(user, searchString, 1, new ArrayList<>(), null, null);
     }
@@ -320,7 +315,7 @@ public class CCDCaseApi {
         Integer page,
         List<CaseDetails> results,
         Integer numOfPages,
-        CaseState state
+        ClaimState state
     ) {
         Map<String, String> searchCriteria = new HashMap<>(searchString);
         searchCriteria.put("page", page.toString());
@@ -406,7 +401,7 @@ public class CCDCaseApi {
             .collect(Collectors.toList());
     }
 
-    private boolean isCaseOnHold(CaseDetails caseDetails) {
-        return caseDetails.getState().equals(CaseState.ONHOLD.getValue());
+    private boolean isCreatedState(CaseDetails caseDetails) {
+        return CREATED.getValue().equals(caseDetails.getState());
     }
 }

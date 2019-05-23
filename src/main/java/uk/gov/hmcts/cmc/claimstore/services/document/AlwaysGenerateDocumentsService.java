@@ -56,21 +56,10 @@ public class AlwaysGenerateDocumentsService implements DocumentsService {
     }
 
     @Override
-    public byte[] generateCountyCourtJudgement(String externalId, String authorisation) {
-        return countyCourtJudgmentPdfService.createPdf(getClaimByExternalId(externalId, authorisation));
-    }
-
-    @Override
     public byte[] generateSettlementAgreement(String externalId, String authorisation) {
         return settlementAgreementCopyService.createPdf(getClaimByExternalId(externalId, authorisation));
     }
-
-    @Override
-    public void generateDefendantPinLetter(String externalId, String pin, String authorisation) {
-        throw new UnsupportedOperationException(
-            "This method is not supported when Document Management is turned off");
-    }
-
+    
     @Override
     public Claim uploadToDocumentManagement(PDF document, String authorisation, Claim claim) {
         throw new UnsupportedOperationException(

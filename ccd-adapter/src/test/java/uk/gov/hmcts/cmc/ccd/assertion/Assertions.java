@@ -41,6 +41,8 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.LivingPartner;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
+import java.math.BigDecimal;
+
 public class Assertions {
 
     private Assertions() {
@@ -146,4 +148,7 @@ public class Assertions {
         return new EmployerAssert(employer);
     }
 
+    public static MoneyAssert assertMoney(BigDecimal amount) {
+        return new MoneyAssert(amount);
+    }
 }

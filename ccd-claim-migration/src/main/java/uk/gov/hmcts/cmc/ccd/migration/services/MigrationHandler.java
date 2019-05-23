@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.ccd.migration.ccd.services.UpdateCCDCaseService;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
@@ -28,7 +29,6 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
@@ -39,7 +39,6 @@ import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 @Service
 public class MigrationHandler {
     private static final Logger logger = LoggerFactory.getLogger(MigrationHandler.class);
-    public static final String OPEN_STATE = "open";
 
     private final CreateCCDCaseService createCCDCaseService;
     private final UpdateCCDCaseService updateCCDCaseService;
@@ -141,9 +140,9 @@ public class MigrationHandler {
             logger.info("start migrating claim: "
                 + claim.getReferenceNumber()
                 + " for event: "
-                + CaseEvent.CREATE_NEW_CASE.getValue());
+                + CaseEvent.CREATE_CASE.getValue());
 
-            caseDetails = createCCDCaseService.createCase(user, claim, CaseEvent.CREATE_NEW_CASE);
+            caseDetails = createCCDCaseService.createCase(user, claim, CaseEvent.CREATE_CASE);
             migratedClaims.incrementAndGet();
         } catch (Exception e) {
             logger.error("Claim issue create failed for Claim reference "
@@ -156,11 +155,13 @@ public class MigrationHandler {
     }
 
     private boolean eventNeedToBePerformedOnClaim(CaseEvent event, Claim claim, String state) {
-        if (StringUtils.isBlank(state) || !state.equals(OPEN_STATE)) {
+        if (StringUtils.isBlank(state) || state.equals(ClaimState.CREATED.getValue())) {
             return false;
         }
 
         switch (event) {
+            case ISSUE_CASE:
+                return true; // defaulted as db migration has set this for all claim
             case LINK_DEFENDANT:
                 return StringUtils.isNotBlank(claim.getDefendantId());
             case MORE_TIME_REQUESTED_ONLINE:
@@ -285,10 +286,6 @@ public class MigrationHandler {
             case DEFENDANT_RESPONSE_UPLOAD:
                 return claim.getDefendantId() != null
                     && claim.getClaimDocument(DEFENDANT_RESPONSE_RECEIPT).isPresent();
-            case CCJ_REQUEST_UPLOAD:
-                return claim.getCountyCourtJudgmentRequestedAt() != null
-                    && claim.getCountyCourtJudgment() != null
-                    &&  claim.getClaimDocument(CCJ_REQUEST).isPresent();
             case SETTLEMENT_AGREEMENT_UPLOAD:
                 return claim.getSettlementReachedAt() != null
                     && claim.getSettlement().isPresent()

@@ -5,6 +5,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRow;
 import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestDateType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestEndDateType;
@@ -40,15 +41,12 @@ import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-import static java.math.BigDecimal.ONE;
-import static java.math.BigDecimal.TEN;
 import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.BREAK_DOWN;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.RANGE;
@@ -70,10 +68,13 @@ import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriority
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDResidenceType.JOINT_OWN_HOME;
 import static uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceType.EXPERT_WITNESS;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOTH;
+import static uk.gov.hmcts.cmc.ccd.util.SampleCCDClaimSubmissionOperationIndicators.getDefaultCCDClaimSubmissionOperationIndicators;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
 
 public class SampleData {
+
+    public static final String AMOUNT = "12398";
 
     private static Supplier<CCDCase.CCDCaseBuilder> ccdBuilderWithDefault = () -> CCDCase.builder()
         .id(1L)
@@ -81,7 +82,7 @@ public class SampleData {
         .issuedOn(LocalDate.of(2017, 11, 15))
         .submitterEmail("my@email.com")
         .submitterId("123")
-        .referenceNumber("ref no")
+        .previousServiceCaseReference("ref no")
         .externalId(UUID.randomUUID().toString())
         .features("admissions")
         .amountType(BREAK_DOWN)
@@ -93,24 +94,25 @@ public class SampleData {
         .externalReferenceNumber("external ref")
         .externalId(UUID.randomUUID().toString())
         .feeCode("X1202")
-        .feeAmountInPennies(BigInteger.valueOf(100))
+        .feeAmountInPennies("100")
         .reason("Reason for the case")
         .preferredCourt("London Court")
         .interestType(CCDInterestType.DIFFERENT)
         .interestReason("reason")
         .interestRate(BigDecimal.valueOf(2))
-        .interestBreakDownAmount(BigDecimal.valueOf(210))
+        .interestBreakDownAmount("21000")
         .interestBreakDownExplanation("Explanation")
         .interestStartDateReason("start date reason")
         .interestDateType(CCDInterestDateType.CUSTOM)
         .interestClaimStartDate(LocalDate.now())
-        .interestSpecificDailyAmount(BigDecimal.valueOf(10))
+        .interestSpecificDailyAmount("1000")
         .interestEndDateType(CCDInterestEndDateType.SUBMISSION)
         .paymentStatus("success")
         .paymentDateCreated(LocalDate.of(2019, 01, 01))
         .paymentId("PaymentId")
-        .paymentAmount(BigDecimal.valueOf(4000))
+        .paymentAmount("400000")
         .paymentReference("RC-1524-6488-1670-7520")
+        .claimSubmissionOperationIndicators(getDefaultCCDClaimSubmissionOperationIndicators.get())
         .timeline(singletonList(CCDCollectionElement.<CCDTimelineEvent>builder()
             .value(CCDTimelineEvent.builder().date("some Date").description("description of event").build())
             .build()))
@@ -125,7 +127,7 @@ public class SampleData {
 
     public static CCDResponseAcceptation getResponseAcceptation(CCDFormaliseOption formaliseOption) {
         return CCDResponseAcceptation.builder()
-            .amountPaid(BigDecimal.valueOf(123.98))
+            .amountPaid(AMOUNT)
             .claimantPaymentIntention(getCCDPaymentIntention())
             .submittedOn(LocalDateTimeFactory.nowInLocalZone())
             .formaliseOption(formaliseOption)
@@ -134,7 +136,7 @@ public class SampleData {
 
     public static CCDResponseAcceptation getResponseAcceptationWithClaimantPaymentIntentionImmediately() {
         return CCDResponseAcceptation.builder()
-            .amountPaid(BigDecimal.valueOf(123.98))
+            .amountPaid(AMOUNT)
             .claimantPaymentIntention(getCCDPaymentIntentionImmediately())
             .submittedOn(LocalDateTimeFactory.nowInLocalZone())
             .formaliseOption(SETTLEMENT)
@@ -143,7 +145,7 @@ public class SampleData {
 
     public static CCDResponseAcceptation getResponseAcceptationWithClaimantPaymentIntentionPayBySetDate() {
         return CCDResponseAcceptation.builder()
-            .amountPaid(BigDecimal.valueOf(123.98))
+            .amountPaid(AMOUNT)
             .claimantPaymentIntention(getCCDPaymentIntentionPayBySetDate())
             .submittedOn(LocalDateTimeFactory.nowInLocalZone())
             .formaliseOption(SETTLEMENT)
@@ -152,7 +154,7 @@ public class SampleData {
 
     public static CCDResponseRejection getResponseRejection() {
         return CCDResponseRejection.builder()
-            .amountPaid(BigDecimal.valueOf(123.98))
+            .amountPaid(AMOUNT)
             .submittedOn(LocalDateTimeFactory.nowInLocalZone())
             .freeMediationOption(YES)
             .mediationPhoneNumber(CCDTelephone.builder().telephoneNumber("07999999999").build())
@@ -166,7 +168,7 @@ public class SampleData {
             .rejectionReason("Rejection reason")
             .courtIntention(getCCDPaymentIntention())
             .courtDecision(getCCDPaymentIntention())
-            .disposableIncome(BigDecimal.valueOf(300))
+            .disposableIncome("30000")
             .decisionType(COURT)
             .build();
     }
@@ -176,7 +178,7 @@ public class SampleData {
             .rejectionReason("Rejection reason")
             .courtIntention(getCCDPaymentIntentionImmediately())
             .courtDecision(getCCDPaymentIntention())
-            .disposableIncome(BigDecimal.valueOf(300))
+            .disposableIncome("30000")
             .decisionType(COURT)
             .build();
     }
@@ -186,7 +188,7 @@ public class SampleData {
             .rejectionReason("Rejection reason")
             .courtIntention(getCCDPaymentIntentionPayBySetDate())
             .courtDecision(getCCDPaymentIntentionPayBySetDate())
-            .disposableIncome(BigDecimal.valueOf(300))
+            .disposableIncome("30000")
             .decisionType(COURT)
             .build();
     }
@@ -196,7 +198,7 @@ public class SampleData {
             .paymentDate(LocalDate.of(2017, 10, 12))
             .paymentOption(CCDPaymentOption.INSTALMENTS)
             .firstPaymentDate(LocalDate.of(2017, 10, 12))
-            .instalmentAmount(BigDecimal.valueOf(123.98))
+            .instalmentAmount(AMOUNT)
             .paymentSchedule(CCDPaymentSchedule.EACH_WEEK)
             .completionDate(LocalDate.of(2018, 10, 12))
             .build();
@@ -218,7 +220,7 @@ public class SampleData {
 
     public static List<CCDCollectionElement<CCDAmountRow>> getAmountBreakDown() {
         return singletonList(CCDCollectionElement.<CCDAmountRow>builder().value(CCDAmountRow.builder()
-            .amount(BigDecimal.valueOf(50))
+            .amount("5000")
             .reason("payment")
             .build()).build());
     }
@@ -406,12 +408,12 @@ public class SampleData {
             .issuedOn(LocalDate.of(2017, 11, 15))
             .submitterEmail("my@email.com")
             .submitterId("123")
-            .referenceNumber("ref no")
+            .previousServiceCaseReference("ref no")
             .externalId(UUID.randomUUID().toString())
             .features("admissions")
             .amountType(RANGE)
-            .amountLowerValue(BigDecimal.valueOf(50))
-            .amountHigherValue(BigDecimal.valueOf(500))
+            .amountLowerValue("5000")
+            .amountHigherValue("50000")
             .housingDisrepairCostOfRepairDamages(MORE_THAN_THOUSAND_POUNDS.name())
             .housingDisrepairOtherDamages(THOUSAND_POUNDS_OR_LESS.name())
             .personalInjuryGeneralDamages(MORE_THAN_THOUSAND_POUNDS.name())
@@ -425,6 +427,7 @@ public class SampleData {
             .preferredCourt("London Court")
             .applicants(applicants)
             .respondents(respondents)
+            .claimSubmissionOperationIndicators(getDefaultCCDClaimSubmissionOperationIndicators.get())
             .build();
     }
 
@@ -475,9 +478,9 @@ public class SampleData {
             .otherDependantDetails("other details")
             .otherDependantAnyDisabled(NO)
             .taxPaymentsReason("reason")
-            .taxYouOwe(TEN)
+            .taxYouOwe("1000")
             .selfEmploymentJobTitle("Job title")
-            .selfEmploymentAnnualTurnover(TEN)
+            .selfEmploymentAnnualTurnover("1000")
             .unEmployedNoOfMonths(2)
             .employmentDetails("Details")
             .unEmployedNoOfYears(0)
@@ -493,7 +496,7 @@ public class SampleData {
                 CCDCollectionElement.<CCDIncome>builder().value(CCDIncome.builder()
                     .type(JOB)
                     .frequency(MONTH)
-                    .amountReceived(TEN)
+                    .amountReceived("1000")
                     .build()
                 ).build()
             ))
@@ -501,21 +504,21 @@ public class SampleData {
                 CCDCollectionElement.<CCDExpense>builder().value(CCDExpense.builder()
                     .type(COUNCIL_TAX)
                     .frequency(MONTH)
-                    .amountPaid(TEN)
+                    .amountPaid("1000")
                     .build()
                 ).build()
             ))
             .debts(singletonList(
                 CCDCollectionElement.<CCDDebt>builder().value(CCDDebt.builder()
-                    .totalOwed(TEN)
+                    .totalOwed("1000")
                     .description("Reference")
-                    .monthlyPayments(ONE)
+                    .monthlyPayments("100")
                     .build()
                 ).build()
             ))
             .bankAccounts(singletonList(
                 CCDCollectionElement.<CCDBankAccount>builder().value(CCDBankAccount.builder()
-                    .balance(BigDecimal.valueOf(100))
+                    .balance("10000")
                     .joint(NO)
                     .type(SAVINGS_ACCOUNT)
                     .build()
@@ -523,16 +526,16 @@ public class SampleData {
             ))
             .courtOrders(singletonList(
                 CCDCollectionElement.<CCDCourtOrder>builder().value(CCDCourtOrder.builder()
-                    .amountOwed(TEN)
+                    .amountOwed("1000")
                     .claimNumber("Reference")
-                    .monthlyInstalmentAmount(ONE)
+                    .monthlyInstalmentAmount("100")
                     .build()
                 ).build()
             ))
             .priorityDebts(singletonList(
                 CCDCollectionElement.<CCDPriorityDebt>builder().value(CCDPriorityDebt.builder()
                     .frequency(MONTH)
-                    .amount(BigDecimal.valueOf(132.89))
+                    .amount(AMOUNT)
                     .type(ELECTRICITY)
                     .build()
                 ).build()
@@ -549,4 +552,18 @@ public class SampleData {
             .build();
     }
 
+    public static CCDCase getCCDCitizenCaseWithOperationIndicators(
+                 Supplier<CCDClaimSubmissionOperationIndicators> claimIndicatorSupplier) {
+        List<CCDCollectionElement<CCDApplicant>> applicants
+            = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
+        List<CCDCollectionElement<CCDRespondent>> respondents
+            = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(getCCDRespondentIndividual()).build());
+
+        return ccdBuilderWithDefault.get()
+            .amountBreakDown(getAmountBreakDown())
+            .applicants(applicants)
+            .respondents(respondents)
+            .claimSubmissionOperationIndicators(claimIndicatorSupplier.get())
+            .build();
+    }
 }

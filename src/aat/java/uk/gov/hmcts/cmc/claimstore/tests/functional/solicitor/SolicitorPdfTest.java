@@ -24,7 +24,7 @@ public class SolicitorPdfTest extends BasePdfTest {
 
     @Test
     public void shouldBeAbleToFindTestClaimDataInSolicitorSealedClaimPdf() throws IOException {
-        shouldBeAbleToFindTestClaimDataInPdf("legalSealedClaim");
+        shouldBeAbleToFindTestClaimDataInPdf("legalSealedClaim", createCase());
     }
 
     @Override
@@ -45,6 +45,13 @@ public class SolicitorPdfTest extends BasePdfTest {
     @Override
     protected Supplier<SampleClaimData> getSampleClaimDataBuilder() {
         return testData::submittedBySolicitorBuilder;
+    }
+
+    @Override
+    protected Claim createCase() {
+        ClaimData claimData = getSampleClaimDataBuilder().get().build();
+        return commonOperations.saveClaim(claimData, user.getAuthorisation(), user.getUserDetails().getId())
+            .then().extract().body().as(Claim.class);
     }
 
 }

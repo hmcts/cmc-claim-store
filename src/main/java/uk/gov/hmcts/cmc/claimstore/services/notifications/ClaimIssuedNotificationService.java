@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
@@ -45,16 +46,19 @@ public class ClaimIssuedNotificationService {
     private final NotificationClient notificationClient;
     private final NotificationsProperties notificationsProperties;
     private final AppInsights appInsights;
+    private final boolean asyncEventOperationEnabled;
 
     @Autowired
     public ClaimIssuedNotificationService(
         NotificationClient notificationClient,
         NotificationsProperties notificationsProperties,
-        AppInsights appInsights
+        AppInsights appInsights,
+        @Value("${feature_toggles.async_event_operations_enabled:false}") boolean asyncEventOperationEnabled
     ) {
         this.notificationClient = notificationClient;
         this.notificationsProperties = notificationsProperties;
         this.appInsights = appInsights;
+        this.asyncEventOperationEnabled = asyncEventOperationEnabled;
     }
 
     @LogExecutionTime
@@ -93,6 +97,10 @@ public class ClaimIssuedNotificationService {
 
         logger.info(errorMessage, exception);
         appInsights.trackEvent(AppInsightsEvent.NOTIFICATION_FAILURE, REFERENCE_NUMBER, reference);
+
+        if (asyncEventOperationEnabled) {
+            throw exception;
+        }
     }
 
     private Map<String, String> aggregateParams(Claim claim, String pin,

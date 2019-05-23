@@ -21,7 +21,6 @@ import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
-import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.time.LocalDate;
@@ -173,6 +172,11 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
+    public List<Claim> getClaimsByState(ClaimState claimState, User user) {
+        return claimRepository.getClaimsByState(claimState);
+    }
+
+    @Override
     public Optional<Claim> getByLetterHolderId(String id, String authorisation) {
         return claimRepository.getByLetterHolderId(id);
     }
@@ -201,14 +205,6 @@ public class DBCaseRepository implements CaseRepository {
             jsonMapper.toJson(settlement),
             nowInUTC()
         );
-    }
-
-    /**
-     * For non-CCD datastore it always new CaseReference(externalId) as there is no pre payment step for non-ccd env.
-     */
-    @Override
-    public CaseReference savePrePaymentClaim(String externalId, String authorisation) {
-        return new CaseReference(externalId);
     }
 
     @Override
@@ -281,7 +277,7 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void updateClaimState(String authorisation, Long claimId, String state) {
-        claimRepository.updateClaimState(claimId, state);
+    public void updateClaimState(String authorisation, Long claimId, ClaimState state) {
+        claimRepository.updateClaimState(claimId, state.name());
     }
 }

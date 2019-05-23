@@ -39,14 +39,14 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_REQUESTED;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_NEW_CASE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_LETTER_HOLDER;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED_ONLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
@@ -107,7 +107,7 @@ public class CoreCaseDataService {
         CCDCase ccdCase = caseMapper.to(claim);
 
         if (StringUtils.isBlank(claim.getReferenceNumber())) {
-            ccdCase.setReferenceNumber(referenceNumberService.getReferenceNumber(user.isRepresented()));
+            ccdCase.setPreviousServiceCaseReference(referenceNumberService.getReferenceNumber(user.isRepresented()));
         }
 
         try {
@@ -115,7 +115,7 @@ public class CoreCaseDataService {
                 .userId(user.getUserDetails().getId())
                 .jurisdictionId(JURISDICTION_ID)
                 .caseTypeId(CASE_TYPE_ID)
-                .eventId(CREATE_NEW_CASE.getValue())
+                .eventId(CREATE_CASE.getValue())
                 .ignoreWarning(true)
                 .build();
 
@@ -139,7 +139,7 @@ public class CoreCaseDataService {
                 user.isRepresented()
             );
 
-            if (!user.isRepresented()) {
+            if (!user.isRepresented() && StringUtils.isNotBlank(claim.getLetterHolderId())) {
                 ccdCreateCaseService.grantAccessToCase(caseDetails.getId().toString(), claim.getLetterHolderId());
             }
 
@@ -149,8 +149,8 @@ public class CoreCaseDataService {
             throw new CoreCaseDataStoreException(
                 String.format(
                     CCD_STORING_FAILURE_MESSAGE,
-                    ccdCase.getReferenceNumber(),
-                    CREATE_NEW_CASE
+                    ccdCase.getPreviousServiceCaseReference(),
+                    CREATE_CASE
                 ), exception
             );
         }
@@ -293,7 +293,7 @@ public class CoreCaseDataService {
                 String.format(
                     CCD_UPDATE_FAILURE_MESSAGE,
                     caseId,
-                    LINK_SEALED_CLAIM
+                    CaseEventMapper.map(claimDocumentType)
                 ), exception
             );
         }
@@ -635,7 +635,7 @@ public class CoreCaseDataService {
             throw new CoreCaseDataStoreException(
                 String.format(
                     "Failed updating claim in CCD store for claim %s on event %s",
-                    ccdCase.getReferenceNumber(),
+                    ccdCase.getPreviousServiceCaseReference(),
                     caseEvent
                 ), exception
             );
@@ -865,7 +865,6 @@ public class CoreCaseDataService {
                                                         ClaimSubmissionOperationIndicators indicators,
                                                         String authorisation,
                                                         CaseEvent caseEvent) {
-        // need to be fully implemented as part of ROC-5473
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
 
@@ -878,8 +877,20 @@ public class CoreCaseDataService {
                 userDetails.isSolicitor() || userDetails.isCaseworker()
             );
 
-            return toClaimBuilder(startEventResponse).build();
+            Claim updatedClaim = toClaimBuilder(startEventResponse)
+                .claimSubmissionOperationIndicators(indicators)
+                .build();
 
+            CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);
+
+            CaseDetails caseDetails = submitUpdate(authorisation,
+                eventRequestData,
+                caseDataContent,
+                caseId,
+                userDetails.isSolicitor() || userDetails.isCaseworker()
+            );
+
+            return extractClaim(caseDetails);
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(
@@ -923,7 +934,10 @@ public class CoreCaseDataService {
             );
 
             ccdCreateCaseService.grantAccessToCase(caseId.toString(), letterHolderId);
-            ccdCreateCaseService.removeAccessToCase(caseId.toString(), claim.getLetterHolderId());
+            Optional.ofNullable(claim.getLetterHolderId()).ifPresent(
+                previousLetterHolderId ->
+                    ccdCreateCaseService.removeAccessToCase(caseId.toString(), previousLetterHolderId)
+            );
 
             return extractClaim(caseDetails);
         } catch (Exception exception) {

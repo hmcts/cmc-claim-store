@@ -1,12 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional;
 
 import io.restassured.RestAssured;
-import io.restassured.response.Response;
 import org.pdfbox.pdmodel.PDDocument;
 import org.pdfbox.util.PDFTextStripper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Address;
@@ -14,42 +13,28 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.function.Supplier;
 
 public abstract class BasePdfTest extends BaseTest {
     protected User user;
+    @Autowired
+    private CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
 
     protected abstract void assertionsOnPdf(Claim createdCase, String pdfAsText);
 
     protected abstract Supplier<SampleClaimData> getSampleClaimDataBuilder();
 
-    protected void shouldBeAbleToFindTestClaimDataInPdf(String pdfName) throws IOException {
-        Claim createdCase = createCase();
+    protected void shouldBeAbleToFindTestClaimDataInPdf(String pdfName, Claim createdCase) throws IOException {
         String pdfAsText = textContentOf(retrievePdf(pdfName, createdCase.getExternalId()));
         assertionsOnPdf(createdCase, pdfAsText);
     }
 
     protected Claim createCase() {
         ClaimData claimData = getSampleClaimDataBuilder().get().build();
-        commonOperations.submitPrePaymentClaim(claimData.getExternalId().toString(), user.getAuthorisation());
-
-        return submitClaim(claimData)
-            .then()
-            .statusCode(HttpStatus.OK.value())
-            .and()
-            .extract().body().as(Claim.class);
-    }
-
-    private Response submitClaim(ClaimData claimData) {
-        return RestAssured
-            .given()
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .header(HttpHeaders.AUTHORIZATION, user.getAuthorisation())
-            .body(jsonMapper.toJson(claimData))
-            .when()
-            .post("/claims/" + user.getUserDetails().getId());
+        return commonOperations.submitClaim(user.getAuthorisation(), user.getUserDetails().getId(), claimData);
     }
 
     private InputStream retrievePdf(String pdfName, String externalId) {
@@ -60,12 +45,8 @@ public abstract class BasePdfTest extends BaseTest {
             .asInputStream();
     }
 
-    protected InputStream retrieveCCJPdf(String externalId) {
-        return RestAssured
-            .given()
-            .header(HttpHeaders.AUTHORIZATION, user.getAuthorisation())
-            .get("/documents/ccj/" + externalId)
-            .asInputStream();
+    protected InputStream retrieveCCJPdf(Claim claim) {
+        return new ByteArrayInputStream(countyCourtJudgmentPdfService.createPdf(claim));
     }
 
     protected static String textContentOf(InputStream inputStream) throws IOException {

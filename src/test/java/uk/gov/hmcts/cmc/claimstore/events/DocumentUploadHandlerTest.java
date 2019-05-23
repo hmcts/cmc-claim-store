@@ -41,7 +41,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
@@ -116,11 +115,10 @@ public class DocumentUploadHandlerTest {
 
         documentUploadHandler.uploadCitizenClaimDocument(event);
 
-        verify(documentService, times(3))
+        verify(documentService, times(2))
             .uploadToDocumentManagement(argumentCaptor.capture(), anyString(), any());
         List<PDF> capturedDocuments = argumentCaptor.getAllValues();
         List<ClaimDocumentType> expectedClaimDocumentTypes = Arrays.asList(SEALED_CLAIM,
-            DEFENDANT_PIN_LETTER,
             CLAIM_ISSUE_RECEIPT);
 
         List<ClaimDocumentType> actualDocumentTypes = capturedDocuments.stream()
@@ -176,30 +174,6 @@ public class DocumentUploadHandlerTest {
         exceptionRule.expect(NullPointerException.class);
         exceptionRule.expectMessage(CLAIM_MUST_NOT_BE_NULL);
         documentUploadHandler.uploadDefendantResponseDocument(new DefendantResponseEvent(null, AUTHORISATION));
-    }
-
-    @Test
-    public void countyCourtJudgmentEventTriggersDocumentUpload() {
-        documentUploadHandler.uploadCountyCourtJudgmentDocument(ccjWithoutAdmission);
-        assertCommon(CCJ_REQUEST);
-    }
-
-    @Test
-    public void countyCourtJudgmentEventForDocumentUploadThrowsExceptionWhenClaimNotPresent() {
-        exceptionRule.expect(NullPointerException.class);
-        exceptionRule.expectMessage(CLAIM_MUST_NOT_BE_NULL);
-        documentUploadHandler.uploadCountyCourtJudgmentDocument(
-            new CountyCourtJudgmentEvent(null, AUTHORISATION)
-        );
-    }
-
-    @Test
-    public void countyCourtJudgmentEventForDocumentUploadThrowsNotFoundExceptionWhenCCJNotPresent() {
-        exceptionRule.expect(NotFoundException.class);
-        exceptionRule.expectMessage("County Court Judgment does not exist for this claim");
-        documentUploadHandler.uploadCountyCourtJudgmentDocument(
-            new CountyCourtJudgmentEvent(SampleClaim.withFullClaimData(), AUTHORISATION)
-        );
     }
 
     @Test

@@ -63,7 +63,7 @@ public class DefendantMapperTest {
         // Given
         TheirDetails theirDetails = SampleTheirDetails.builder().organisationDetails();
         Claim claim = SampleClaim.claim(SampleClaimData.submittedByClaimantBuilder().build(),
-            "referenceNumber");
+            "previousServiceCaseReference");
 
         //When
         CCDCollectionElement<CCDRespondent> ccdRespondent = mapper.to(theirDetails, claim);
@@ -71,6 +71,9 @@ public class DefendantMapperTest {
 
         //Then
         Assertions.assertThat(theirDetails.getId()).isEqualTo(ccdRespondent.getId());
+
+        assertEquals("Response served date is not mapped properly",
+            respondent.getServedDate(), claim.getServiceDate());
 
         assertEquals("Claim response deadline is not mapped properly",
             respondent.getResponseDeadline(), claim.getResponseDeadline());
@@ -101,6 +104,9 @@ public class DefendantMapperTest {
         CCDCollectionElement<CCDRespondent> ccdRespondent = mapper.to(theirDetails, claim);
         CCDRespondent respondent = ccdRespondent.getValue();
         //Then
+        assertEquals("Response served date is not mapped properly",
+            respondent.getServedDate(), claim.getServiceDate());
+
         assertEquals("Claim response deadline is not mapped properly",
             respondent.getResponseDeadline(), claim.getResponseDeadline());
 
@@ -136,13 +142,16 @@ public class DefendantMapperTest {
     public void mapTheirDetailsFromCCDClaimWithNoResponse() {
         //Given
         CCDRespondent ccdRespondent = SampleCCDDefendant.withResponseMoreTimeNeededOption().build();
-        Claim.ClaimBuilder claimBuilder = Claim.builder();
+        Claim.ClaimBuilder claimBuilder = Claim.builder().serviceDate(now());
 
         //when
         mapper.from(claimBuilder, CCDCollectionElement.<CCDRespondent>builder().value(ccdRespondent).build());
         Claim finalClaim = claimBuilder.build();
 
         // Then
+        assertEquals("Response served date is not mapped properly",
+            finalClaim.getServiceDate(), ccdRespondent.getServedDate());
+
         assertEquals("response deadline is not mapped properly",
             finalClaim.getResponseDeadline(), ccdRespondent.getResponseDeadline());
 
@@ -182,7 +191,7 @@ public class DefendantMapperTest {
         CCDCollectionElement<CCDRespondent> defendant
             = CCDCollectionElement.<CCDRespondent>builder().value(ccdRespondent).build();
 
-        Claim.ClaimBuilder claimBuilder = Claim.builder();
+        Claim.ClaimBuilder claimBuilder = Claim.builder().issuedOn(now());
 
         //when
         TheirDetails party = mapper.from(claimBuilder, defendant);
@@ -190,6 +199,9 @@ public class DefendantMapperTest {
 
         // Then
         assertThat(party, instanceOf(IndividualDetails.class));
+
+        assertEquals("Response served date is not mapped properly",
+            finalClaim.getServiceDate(), ccdRespondent.getServedDate());
 
         assertEquals("Response deadline is not mapped properly",
             finalClaim.getResponseDeadline(), ccdRespondent.getResponseDeadline());

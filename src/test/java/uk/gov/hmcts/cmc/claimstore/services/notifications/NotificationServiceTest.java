@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -17,7 +16,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationServiceTest extends BaseNotificationServiceTest {
@@ -30,7 +28,7 @@ public class NotificationServiceTest extends BaseNotificationServiceTest {
 
     @Before
     public void beforeEachTest() {
-        service = new NotificationService(notificationClient, appInsights);
+        service = new NotificationService(notificationClient, appInsights, false);
     }
 
     @Test(expected = NotificationException.class)
@@ -38,8 +36,11 @@ public class NotificationServiceTest extends BaseNotificationServiceTest {
         when(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
             .thenThrow(mock(NotificationClientException.class));
 
-        service.sendMail(USER_EMAIL, TEMPLATE_ID, PARAMETERS, REFERENCE);
-        verify(appInsights).trackEvent(AppInsightsEvent.NOTIFICATION_FAILURE, REFERENCE_NUMBER, REFERENCE);
+        try {
+            service.sendMail(USER_EMAIL, TEMPLATE_ID, PARAMETERS, REFERENCE);
+        } finally {
+            verify(notificationClient).sendEmail(anyString(), anyString(), anyMap(), anyString());
+        }
     }
 
     @Test
@@ -51,6 +52,21 @@ public class NotificationServiceTest extends BaseNotificationServiceTest {
 
     @Test
     public void recoveryShouldNotLogPII() {
+        service.logNotificationFailure(
+            new NotificationException("expected exception"),
+            null,
+            "hidden@email.com",
+            null,
+            "reference"
+        );
+
+        assertWasLogged("Failure: failed to send notification (reference) due to expected exception");
+        assertWasNotLogged("hidden@email.com");
+    }
+
+    @Test(expected = NotificationException.class)
+    public void recoveryThrowWhenAsyncEnabled() {
+        service = new NotificationService(notificationClient, appInsights, true);
         service.logNotificationFailure(
             new NotificationException("expected exception"),
             null,

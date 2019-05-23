@@ -13,8 +13,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
-import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetails;
 
 @TestPropertySource(
@@ -43,7 +41,7 @@ public class GetClaimByClaimReferenceFromCoreCaseDataStoreTest extends BaseGetTe
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("case.referenceNumber", referenceNumber))
+            eq(ImmutableMap.of("case.previousServiceCaseReference", referenceNumber))
             )
         ).willReturn(listOfCaseDetails());
 
@@ -58,7 +56,7 @@ public class GetClaimByClaimReferenceFromCoreCaseDataStoreTest extends BaseGetTe
                 eq(USER_ID),
                 eq(JURISDICTION_ID),
                 eq(CASE_TYPE_ID),
-                eq(ImmutableMap.of("case.referenceNumber", referenceNumber))
+                eq(ImmutableMap.of("case.previousServiceCaseReference", referenceNumber))
             );
     }
 
@@ -72,7 +70,7 @@ public class GetClaimByClaimReferenceFromCoreCaseDataStoreTest extends BaseGetTe
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(ImmutableMap.of("case.referenceNumber", nonExistingReferenceNumber))
+            eq(ImmutableMap.of("case.previousServiceCaseReference", nonExistingReferenceNumber))
             )
         ).willReturn(Collections.emptyList());
 
@@ -86,7 +84,7 @@ public class GetClaimByClaimReferenceFromCoreCaseDataStoreTest extends BaseGetTe
                 eq(USER_ID),
                 eq(JURISDICTION_ID),
                 eq(CASE_TYPE_ID),
-                eq(ImmutableMap.of("case.referenceNumber", nonExistingReferenceNumber))
+                eq(ImmutableMap.of("case.previousServiceCaseReference", nonExistingReferenceNumber))
             );
     }
 }

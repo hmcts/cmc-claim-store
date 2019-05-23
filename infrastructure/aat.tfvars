@@ -6,4 +6,5 @@ respond_to_claim_url = "https://moneyclaims.aat.platform.hmcts.net/first-contact
 ccd_enabled = "false"
 ccd_async_enabled = "false"
 dm_url = "http://dm-store-aat.service.core-compute-aat.internal"
-async_event_operations_enabled = "false"
+async_event_operations_enabled = "true"
+save_claim_state_enabled = "true"
