@@ -364,10 +364,7 @@ public class ClaimService {
     }
 
     private Claim convertCallbackToClaim(CallbackRequest caseDetails) {
-        return ccdCaseDataToClaim.to(
-            caseDetails.getCaseDetails().getId(),
-            caseDetails.getCaseDetails().getData()
-        );
+        return ccdCaseDataToClaim.to(caseDetails.getCaseDetails());
     }
 
     public void linkDefendantToClaim(String authorisation) {

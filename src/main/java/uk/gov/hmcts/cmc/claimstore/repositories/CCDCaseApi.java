@@ -211,7 +211,7 @@ public class CCDCaseApi {
         CaseDetails caseDetails = this.updateDefendantIdAndEmail(defendantUser, caseId, defendantId, defendantEmail);
 
         if (!ccdAsyncEnabled) {
-            Claim claim = ccdCaseDataToClaim.to(caseDetails.getId(), caseDetails.getData());
+            Claim claim = ccdCaseDataToClaim.to(caseDetails);
             jobSchedulerService.scheduleEmailNotificationsForDefendantResponse(claim);
         }
     }
@@ -297,7 +297,7 @@ public class CCDCaseApi {
             CASE_TYPE_ID,
             caseId
         );
-        return ccdCaseDataToClaim.to(caseDetails.getId(), caseDetails.getData());
+        return ccdCaseDataToClaim.to(caseDetails);
     }
 
     private List<CaseDetails> searchAll(User user, ClaimState state) {
@@ -397,7 +397,7 @@ public class CCDCaseApi {
     private List<Claim> extractClaims(List<CaseDetails> result) {
         return result
             .stream()
-            .map(entry -> ccdCaseDataToClaim.to(entry.getId(), entry.getData()))
+            .map(entry -> ccdCaseDataToClaim.to(entry))
             .collect(Collectors.toList());
     }
 
