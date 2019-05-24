@@ -28,6 +28,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
@@ -40,6 +41,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_REQUESTED;
@@ -52,21 +54,23 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled", havingValue = "true")
 public class CoreCaseDataService {
 
-    public static final String CMC_CASE_UPDATE_SUMMARY = "CMC case update";
-    public static final String CMC_CASE_CREATE_SUMMARY = "CMC case issue";
-    public static final String SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION = "Submitting CMC case update";
-    public static final String SUBMITTING_CMC_CASE_ISSUE_DESCRIPTION = "Submitting CMC case issue";
+    private static final String CMC_CASE_UPDATE_SUMMARY = "CMC case update";
+    private static final String CMC_CASE_CREATE_SUMMARY = "CMC case issue";
+    private static final String SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION = "Submitting CMC case update";
+    private static final String SUBMITTING_CMC_CASE_ISSUE_DESCRIPTION = "Submitting CMC case issue";
 
-    public static final String CCD_UPDATE_FAILURE_MESSAGE
+    private static final String CCD_UPDATE_FAILURE_MESSAGE
         = "Failed updating claim in CCD store for case id %s on event %s";
 
-    public static final String CCD_STORING_FAILURE_MESSAGE
+    private static final String CCD_STORING_FAILURE_MESSAGE
         = "Failed storing claim in CCD store for case id %s on event %s";
 
     private final CaseMapper caseMapper;
@@ -77,6 +81,19 @@ public class CoreCaseDataService {
     private final AuthTokenGenerator authTokenGenerator;
     private final JobSchedulerService jobSchedulerService;
     private final CCDCreateCaseService ccdCreateCaseService;
+
+    private static BiFunction<ClaimSubmissionOperationIndicators, ClaimDocumentType, ClaimSubmissionOperationIndicators>
+        updateClaimSubmissionIndicatorByDocumentType = (indicator, docType) -> {
+            ClaimSubmissionOperationIndicators.ClaimSubmissionOperationIndicatorsBuilder updatedIndicator
+                = indicator.toBuilder();
+
+            if (docType == SEALED_CLAIM) {
+                updatedIndicator.sealedClaimUpload(YesNoOption.YES);
+            } else if (docType == CLAIM_ISSUE_RECEIPT) {
+                updatedIndicator.claimIssueReceiptUpload(YesNoOption.YES);
+            }
+            return updatedIndicator.build();
+        };
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     @Autowired
@@ -275,8 +292,13 @@ public class CoreCaseDataService {
                 userDetails.isSolicitor() || userDetails.isCaseworker()
             );
 
-            Claim updatedClaim = toClaimBuilder(startEventResponse)
+            Claim updatedClaim = toClaim(startEventResponse);
+
+            updatedClaim = updatedClaim.toBuilder()
                 .claimDocumentCollection(claimDocumentCollection)
+                .claimSubmissionOperationIndicators(
+                    updateClaimSubmissionIndicatorByDocumentType.apply(
+                        updatedClaim.getClaimSubmissionOperationIndicators(), claimDocumentType))
                 .build();
 
             CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);
@@ -569,9 +591,11 @@ public class CoreCaseDataService {
     }
 
     private Claim.ClaimBuilder toClaimBuilder(StartEventResponse startEventResponse) {
-        CCDCase ccdCase = extractCase(startEventResponse.getCaseDetails());
-        Claim claim = caseMapper.from(ccdCase);
-        return claim.toBuilder();
+        return toClaim(startEventResponse).toBuilder();
+    }
+
+    private Claim toClaim(StartEventResponse startEventResponse) {
+        return caseMapper.from(extractCase(startEventResponse.getCaseDetails()));
     }
 
     private CaseDataContent caseDataContent(StartEventResponse startEventResponse, Claim ccdClaim) {
