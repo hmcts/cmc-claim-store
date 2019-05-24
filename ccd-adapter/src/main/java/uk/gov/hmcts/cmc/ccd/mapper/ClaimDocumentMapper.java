@@ -15,11 +15,11 @@ public class ClaimDocumentMapper {
     private static final String BINARY = "/binary";
 
     public CCDCollectionElement<CCDClaimDocument> to(ClaimDocument claimDocument) {
-        CCDClaimDocument.CCDClaimDocumentBuilder builder =  CCDClaimDocument.builder();
+        CCDClaimDocument.CCDClaimDocumentBuilder builder = CCDClaimDocument.builder();
         final String documentUrl = claimDocument.getDocumentManagementUrl().toString();
         builder.documentName(claimDocument.getDocumentName())
             .documentLink(new CCDDocument(documentUrl,
-                documentUrl+BINARY,
+                documentUrl + BINARY,
                 claimDocument.getDocumentName()))
             .documentType(CCDClaimDocumentType.valueOf(claimDocument.getDocumentType().name()))
             .authoredDatetime(claimDocument.getAuthoredDatetime())
