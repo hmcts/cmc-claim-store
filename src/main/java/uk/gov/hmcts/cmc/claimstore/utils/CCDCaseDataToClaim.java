@@ -23,12 +23,15 @@ public class CCDCaseDataToClaim {
     }
 
     public Claim to(CaseDetails caseDetails) {
+        return caseMapper.from(convertToCCDCase(caseDetails));
+    }
+
+    public CCDCase convertToCCDCase(CaseDetails caseDetails) {
         Map<String, Object> tempData = new HashMap<>(caseDetails.getData());
         tempData.put("id", caseDetails.getId());
         tempData.put("state", caseDetails.getState());
 
-        CCDCase ccdCase = convertToCCDCase(tempData);
-        return caseMapper.from(ccdCase);
+        return convertToCCDCase(tempData);
     }
 
     private CCDCase convertToCCDCase(Map<String, Object> mapData) {
