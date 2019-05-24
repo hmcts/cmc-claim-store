@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.documents.CitizenServiceDocumentsService;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
@@ -43,7 +42,7 @@ public class PostClaimOrchestrationHandlerTest {
     public static final Claim CLAIM = SampleClaim.getDefault();
     private static final String SUBMITTER_NAME = "submitter-name";
     public static final String AUTHORISATION = "AUTHORISATION";
-    private static final byte[] PDF_BYTES = new byte[] {1, 2, 3, 4};
+    private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
 
     private Map<String, Object> claimContents = new HashMap<>();
     private String claimTemplate = "claimTemplate";
@@ -103,7 +102,7 @@ public class PostClaimOrchestrationHandlerTest {
         given(claimantOperationService.notifyCitizen(eq(CLAIM), any(), eq(AUTHORISATION))).willReturn(CLAIM);
         given(rpaOperationService.notify(eq(CLAIM), eq(AUTHORISATION), any())).willReturn(CLAIM);
         given(notifyStaffOperationService.notify(eq(CLAIM), eq(AUTHORISATION), any())).willReturn(CLAIM);
-        given(uploadOperationService.uploadDocument(eq(CLAIM), eq(AUTHORISATION), any(), any())).willReturn(CLAIM);
+        given(uploadOperationService.uploadDocument(eq(CLAIM), eq(AUTHORISATION), any())).willReturn(CLAIM);
     }
 
     @Test
@@ -122,7 +121,7 @@ public class PostClaimOrchestrationHandlerTest {
         verify(claimantOperationService).notifyCitizen(eq(CLAIM), any(), eq(AUTHORISATION));
         verify(rpaOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
         verify(uploadOperationService, atLeast(2)).uploadDocument(eq(CLAIM),
-            eq(AUTHORISATION), any(), any());
+            eq(AUTHORISATION), any());
 
     }
 
@@ -143,7 +142,7 @@ public class PostClaimOrchestrationHandlerTest {
             .notify(eq(claimWithOnePinOperationFailure), eq(AUTHORISATION), any()))
             .willReturn(claimWithOnePinOperationFailure);
         given(uploadOperationService
-            .uploadDocument(eq(claimWithOnePinOperationFailure), eq(AUTHORISATION), any(), any()))
+            .uploadDocument(eq(claimWithOnePinOperationFailure), eq(AUTHORISATION), any()))
             .willReturn(claimWithOnePinOperationFailure);
 
         CitizenClaimCreatedEvent event = new CitizenClaimCreatedEvent(claimWithOnePinOperationFailure,
@@ -160,7 +159,7 @@ public class PostClaimOrchestrationHandlerTest {
         verify(claimantOperationService).notifyCitizen(eq(claimWithOnePinOperationFailure), any(), eq(AUTHORISATION));
         verify(rpaOperationService).notify(eq(claimWithOnePinOperationFailure), eq(AUTHORISATION), any());
         verify(uploadOperationService, atLeast(2))
-            .uploadDocument(eq(claimWithOnePinOperationFailure), eq(AUTHORISATION), any(), any());
+            .uploadDocument(eq(claimWithOnePinOperationFailure), eq(AUTHORISATION), any());
 
     }
 
@@ -179,7 +178,7 @@ public class PostClaimOrchestrationHandlerTest {
             .notify(eq(claimWithPinOperationSucceededIndicator), eq(AUTHORISATION), any()))
             .willReturn(claimWithPinOperationSucceededIndicator);
         given(uploadOperationService
-            .uploadDocument(eq(claimWithPinOperationSucceededIndicator), eq(AUTHORISATION), any(), any()))
+            .uploadDocument(eq(claimWithPinOperationSucceededIndicator), eq(AUTHORISATION), any()))
             .willReturn(claimWithPinOperationSucceededIndicator);
 
         CitizenClaimCreatedEvent event = new CitizenClaimCreatedEvent(
@@ -200,7 +199,7 @@ public class PostClaimOrchestrationHandlerTest {
         verify(rpaOperationService).notify(eq(claimWithPinOperationSucceededIndicator), eq(AUTHORISATION), any());
         verify(uploadOperationService, atLeast(2))
             .uploadDocument(eq(claimWithPinOperationSucceededIndicator),
-                eq(AUTHORISATION), any(), any());
+                eq(AUTHORISATION), any());
     }
 
     @Test
@@ -241,7 +240,7 @@ public class PostClaimOrchestrationHandlerTest {
             .notify(eq(claimWithUploadSealedClaimSuccess), eq(AUTHORISATION), any()))
             .willReturn(claimWithUploadSealedClaimSuccess);
         given(uploadOperationService
-            .uploadDocument(eq(claimWithUploadSealedClaimSuccess), eq(AUTHORISATION), any(), any()))
+            .uploadDocument(eq(claimWithUploadSealedClaimSuccess), eq(AUTHORISATION), any()))
             .willReturn(claimWithUploadSealedClaimSuccess);
 
         CitizenClaimCreatedEvent event = new CitizenClaimCreatedEvent(
@@ -259,7 +258,7 @@ public class PostClaimOrchestrationHandlerTest {
         verify(claimantOperationService).notifyCitizen(eq(claimWithUploadSealedClaimSuccess), any(), eq(AUTHORISATION));
         verify(rpaOperationService).notify(eq(claimWithUploadSealedClaimSuccess), eq(AUTHORISATION), any());
         verify(uploadOperationService).uploadDocument(eq(claimWithUploadSealedClaimSuccess),
-            eq(AUTHORISATION), any(), eq(CaseEvent.CLAIM_ISSUE_RECEIPT_UPLOAD));
+            eq(AUTHORISATION), any());
         verifyZeroInteractions(pinOrchestrationService);
 
     }
@@ -344,7 +343,7 @@ public class PostClaimOrchestrationHandlerTest {
         } finally {
             //then
             verify(uploadOperationService, never())
-                .uploadDocument(any(Claim.class), eq(AUTHORISATION), any(PDF.class), any(CaseEvent.class));
+                .uploadDocument(any(Claim.class), eq(AUTHORISATION), any(PDF.class));
 
             verify(rpaOperationService, never()).notify(any(Claim.class), eq(AUTHORISATION), any(PDF.class));
             verify(claimantOperationService, never())
@@ -368,7 +367,7 @@ public class PostClaimOrchestrationHandlerTest {
         } finally {
             //then
             verify(uploadOperationService, atLeast(2))
-                .uploadDocument(any(Claim.class), eq(AUTHORISATION), any(PDF.class), any(CaseEvent.class));
+                .uploadDocument(any(Claim.class), eq(AUTHORISATION), any(PDF.class));
 
             verify(claimantOperationService, never())
                 .notifyCitizen(any(Claim.class), eq(SUBMITTER_NAME), eq(AUTHORISATION));
@@ -384,7 +383,7 @@ public class PostClaimOrchestrationHandlerTest {
 
         doThrow(new RuntimeException("notification failed"))
             .when(uploadOperationService)
-            .uploadDocument(any(Claim.class), eq(AUTHORISATION), any(PDF.class), any(CaseEvent.class));
+            .uploadDocument(any(Claim.class), eq(AUTHORISATION), any(PDF.class));
 
         //when
         try {
@@ -419,7 +418,7 @@ public class PostClaimOrchestrationHandlerTest {
             //then
 
             verify(uploadOperationService, atLeast(2))
-                .uploadDocument(any(Claim.class), eq(AUTHORISATION), any(PDF.class), any(CaseEvent.class));
+                .uploadDocument(any(Claim.class), eq(AUTHORISATION), any(PDF.class));
 
             verify(rpaOperationService).notify(any(Claim.class), eq(AUTHORISATION), any(PDF.class));
 
@@ -442,6 +441,6 @@ public class PostClaimOrchestrationHandlerTest {
 
         verify(rpaOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
         verify(notifyStaffOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
-        verify(uploadOperationService).uploadDocument(eq(CLAIM), eq(AUTHORISATION), any(), any());
+        verify(uploadOperationService).uploadDocument(eq(CLAIM), eq(AUTHORISATION), any());
     }
 }
