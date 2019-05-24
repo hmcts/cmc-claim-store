@@ -8,14 +8,21 @@ import lombok.Value;
 
 @Value
 @Builder
-@JsonIgnoreProperties(value = {"document_filename", "document_binary_url"})
 public class CCDDocument {
 
     @JsonProperty("document_url")
     private String documentUrl;
 
+    @JsonProperty("document_binary_url")
+    private String documentBinaryUrl;
+
+    @JsonProperty("document_filename")
+    private String documentFileName;
+
     @JsonCreator
-    public CCDDocument(String documentUrl) {
+    public CCDDocument(String documentUrl, String documentBinaryUrl, String documentFileName) {
         this.documentUrl = documentUrl;
+        this.documentBinaryUrl = documentBinaryUrl;
+        this.documentFileName = documentFileName;
     }
 }

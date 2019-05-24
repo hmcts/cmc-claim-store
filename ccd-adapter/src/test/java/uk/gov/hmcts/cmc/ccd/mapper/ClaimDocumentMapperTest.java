@@ -55,6 +55,10 @@ public class ClaimDocumentMapperTest {
         assertEquals(claimDocument.getDocumentName(), ccdCollectionElement.getValue().getDocumentName());
         assertEquals(claimDocument.getDocumentManagementUrl(),
             URI.create(ccdCollectionElement.getValue().getDocumentLink().getDocumentUrl()));
+        assertEquals(claimDocument.getDocumentManagementUrl().toString()+"/binary",
+            ccdCollectionElement.getValue().getDocumentLink().getDocumentBinaryUrl());
+        assertEquals(claimDocument.getDocumentName(),
+            ccdCollectionElement.getValue().getDocumentLink().getDocumentFileName());
         assertEquals(CCDClaimDocumentType.CLAIM_ISSUE_RECEIPT, ccdCollectionElement.getValue().getDocumentType());
         assertEquals(claimDocument.getAuthoredDatetime(), ccdCollectionElement.getValue().getAuthoredDatetime());
         assertEquals(claimDocument.getCreatedDatetime(), ccdCollectionElement.getValue().getCreatedDatetime());
