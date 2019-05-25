@@ -28,7 +28,6 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
@@ -41,7 +40,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiFunction;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_REQUESTED;
@@ -56,6 +54,7 @@ import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service
@@ -81,19 +80,6 @@ public class CoreCaseDataService {
     private final AuthTokenGenerator authTokenGenerator;
     private final JobSchedulerService jobSchedulerService;
     private final CCDCreateCaseService ccdCreateCaseService;
-
-    private static BiFunction<ClaimSubmissionOperationIndicators, ClaimDocumentType, ClaimSubmissionOperationIndicators>
-        updateClaimSubmissionIndicatorByDocumentType = (indicator, docType) -> {
-            ClaimSubmissionOperationIndicators.ClaimSubmissionOperationIndicatorsBuilder updatedIndicator
-                = indicator.toBuilder();
-
-            if (docType == SEALED_CLAIM) {
-                updatedIndicator.sealedClaimUpload(YesNoOption.YES);
-            } else if (docType == CLAIM_ISSUE_RECEIPT) {
-                updatedIndicator.claimIssueReceiptUpload(YesNoOption.YES);
-            }
-            return updatedIndicator.build();
-        };
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     @Autowired
@@ -297,8 +283,11 @@ public class CoreCaseDataService {
             updatedClaim = updatedClaim.toBuilder()
                 .claimDocumentCollection(claimDocumentCollection)
                 .claimSubmissionOperationIndicators(
-                    updateClaimSubmissionIndicatorByDocumentType.apply(
-                        updatedClaim.getClaimSubmissionOperationIndicators(), claimDocumentType))
+                    updateClaimSubmissionIndicatorByDocumentType(
+                        updatedClaim.getClaimSubmissionOperationIndicators(),
+                        claimDocumentType
+                    )
+                )
                 .build();
 
             CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);
@@ -319,6 +308,21 @@ public class CoreCaseDataService {
                 ), exception
             );
         }
+    }
+
+    private ClaimSubmissionOperationIndicators updateClaimSubmissionIndicatorByDocumentType(
+        ClaimSubmissionOperationIndicators indicators,
+        ClaimDocumentType documentType
+    ) {
+        ClaimSubmissionOperationIndicators.ClaimSubmissionOperationIndicatorsBuilder updatedIndicator
+            = indicators.toBuilder();
+
+        if (documentType == SEALED_CLAIM) {
+            updatedIndicator.sealedClaimUpload(YES);
+        } else if (documentType == CLAIM_ISSUE_RECEIPT) {
+            updatedIndicator.claimIssueReceiptUpload(YES);
+        }
+        return updatedIndicator.build();
     }
 
     public CaseDetails saveDefendantResponse(
