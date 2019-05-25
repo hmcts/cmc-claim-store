@@ -10,47 +10,57 @@ import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 public class ClaimSubmissionOperationIndicatorsTest {
 
     @Test
-    public void shouldReturnTrueWhenAllOperationsAreYes() {
+    public void shouldReturnTrueWhenAllPinOperationsAreYes() {
         ClaimSubmissionOperationIndicators indicators = ClaimSubmissionOperationIndicators.builder()
-            .claimantNotification(YES)
-            .defendantNotification(YES)
             .bulkPrint(YES)
-            .rpa(YES)
             .staffNotification(YES)
-            .sealedClaimUpload(YES)
-            .claimIssueReceiptUpload(YES)
+            .defendantNotification(YES)
             .build();
 
-        assertTrue(indicators.isAllSuccess());
+        assertTrue(indicators.isPinOperationSuccess());
     }
 
     @Test
-    public void shouldReturnFalseWhenAllOperationsAreNo() {
+    public void shouldReturnFalseWhenBulkPrintInPinOperationsIsNo() {
         ClaimSubmissionOperationIndicators indicators = ClaimSubmissionOperationIndicators.builder()
-            .claimantNotification(NO)
-            .defendantNotification(NO)
             .bulkPrint(NO)
-            .rpa(NO)
-            .staffNotification(NO)
-            .sealedClaimUpload(NO)
-            .claimIssueReceiptUpload(NO)
+            .staffNotification(YES)
+            .defendantNotification(YES)
             .build();
 
-        assertFalse(indicators.isAllSuccess());
+        assertFalse(indicators.isPinOperationSuccess());
     }
 
     @Test
-    public void shouldReturnFalseWhenAnyOperationsIsNo() {
+    public void shouldReturnFalseWhenStaffNotificationInPinOperationsIsNo() {
         ClaimSubmissionOperationIndicators indicators = ClaimSubmissionOperationIndicators.builder()
-            .claimantNotification(NO)
-            .defendantNotification(YES)
             .bulkPrint(YES)
-            .rpa(YES)
-            .staffNotification(YES)
-            .sealedClaimUpload(YES)
-            .claimIssueReceiptUpload(YES)
+            .staffNotification(NO)
+            .defendantNotification(YES)
             .build();
 
-        assertFalse(indicators.isAllSuccess());
+        assertFalse(indicators.isPinOperationSuccess());
+    }
+
+    @Test
+    public void shouldReturnFalseWhenDefendantNotificationInPinOperationsIsNo() {
+        ClaimSubmissionOperationIndicators indicators = ClaimSubmissionOperationIndicators.builder()
+            .bulkPrint(YES)
+            .staffNotification(YES)
+            .defendantNotification(NO)
+            .build();
+
+        assertFalse(indicators.isPinOperationSuccess());
+    }
+
+    @Test
+    public void shouldReturnFalseWhenAllPinOperationsAreNo() {
+        ClaimSubmissionOperationIndicators indicators = ClaimSubmissionOperationIndicators.builder()
+            .bulkPrint(NO)
+            .staffNotification(NO)
+            .defendantNotification(NO)
+            .build();
+
+        assertFalse(indicators.isPinOperationSuccess());
     }
 }

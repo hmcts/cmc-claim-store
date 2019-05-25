@@ -44,15 +44,11 @@ public class ClaimSubmissionOperationIndicators {
     }
 
     @JsonIgnore
-    public boolean isAllSuccess() {
+    public boolean isPinOperationSuccess() {
         return Stream.of(
-            claimantNotification,
-            defendantNotification,
             bulkPrint,
-            rpa,
             staffNotification,
-            sealedClaimUpload,
-            claimIssueReceiptUpload
-        ).allMatch(option -> option == YES);
+            defendantNotification
+        ).allMatch(ind -> ind.equals(YES));
     }
 }
