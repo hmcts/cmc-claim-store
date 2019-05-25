@@ -81,7 +81,7 @@ public class TotalAmountCalculatorTest {
             ).build();
 
         assertThat(TotalAmountCalculator.totalTillToday(claimNoInterest))
-            .isEqualTo(Optional.of(format(new BigDecimal("60"))));
+            .isEqualTo(Optional.of(format(new BigDecimal("60.99"))));
     }
 
     @Test
@@ -96,7 +96,7 @@ public class TotalAmountCalculatorTest {
             ).build();
 
         assertThat(TotalAmountCalculator.totalTillDateOfIssue(claimNoInterest))
-            .isEqualTo(Optional.of(format(new BigDecimal("60"))));
+            .isEqualTo(Optional.of(format(new BigDecimal("60.99"))));
     }
 
     @Test
@@ -115,7 +115,7 @@ public class TotalAmountCalculatorTest {
                 .build();
 
         assertThat(TotalAmountCalculator.totalTillDateOfIssue(claimStandardInterest))
-            .isEqualTo(Optional.of(format(new BigDecimal("60"))));
+            .isEqualTo(Optional.of(format(new BigDecimal("60.99"))));
     }
 
     @Test
@@ -135,7 +135,7 @@ public class TotalAmountCalculatorTest {
             .build();
 
         assertThat(TotalAmountCalculator.totalTillToday(claimStandardInterest))
-            .isEqualTo(Optional.of(format(new BigDecimal("60"))));
+            .isEqualTo(Optional.of(format(new BigDecimal("60.99"))));
     }
 
     @Test
@@ -155,7 +155,7 @@ public class TotalAmountCalculatorTest {
             .build();
 
         assertThat(TotalAmountCalculator.totalTillToday(claimStandardInterest))
-            .isEqualTo(Optional.of(format(new BigDecimal("60"))));
+            .isEqualTo(Optional.of(format(new BigDecimal("60.99"))));
     }
 
     @Test
@@ -175,7 +175,7 @@ public class TotalAmountCalculatorTest {
             .build();
 
         assertThat(TotalAmountCalculator.totalTillToday(claimStandardInterest))
-            .isEqualTo(Optional.of(format(new BigDecimal("60.01"))));
+            .isEqualTo(Optional.of(format(new BigDecimal("61.00"))));
     }
 
     @Test
@@ -203,7 +203,7 @@ public class TotalAmountCalculatorTest {
         assertThat(TotalAmountCalculator.totalTillToday(claim))
             .isPresent()
             .get()
-            .isEqualTo(new BigDecimal("100.00"));
+            .isEqualTo(new BigDecimal("100.99"));
     }
 
     @Test
@@ -227,7 +227,7 @@ public class TotalAmountCalculatorTest {
         assertThat(TotalAmountCalculator.totalTillToday(claim))
             .isPresent()
             .get()
-            .isEqualTo(new BigDecimal("130.00"));
+            .isEqualTo(new BigDecimal("130.99"));
     }
 
     @Test
@@ -251,7 +251,7 @@ public class TotalAmountCalculatorTest {
         assertThat(TotalAmountCalculator.totalTillToday(claim))
             .isPresent()
             .get()
-            .isEqualTo(new BigDecimal("100.03"));
+            .isEqualTo(new BigDecimal("101.02"));
     }
 
     @Test
@@ -273,7 +273,7 @@ public class TotalAmountCalculatorTest {
         assertThat(TotalAmountCalculator.totalTillDateOfIssue(claim))
             .isPresent()
             .get()
-            .isEqualTo(new BigDecimal("100.00"));
+            .isEqualTo(new BigDecimal("100.99"));
     }
 
     @Test
@@ -297,7 +297,7 @@ public class TotalAmountCalculatorTest {
         assertThat(TotalAmountCalculator.totalTillDateOfIssue(claim))
             .isPresent()
             .get()
-            .isEqualTo(new BigDecimal("100.00"));
+            .isEqualTo(new BigDecimal("100.99"));
     }
 
     @Test
@@ -321,7 +321,7 @@ public class TotalAmountCalculatorTest {
         assertThat(TotalAmountCalculator.totalTillDateOfIssue(claim))
             .isPresent()
             .get()
-            .isEqualTo(new BigDecimal("100.00"));
+            .isEqualTo(new BigDecimal("100.99"));
     }
 
     @Test
@@ -443,7 +443,7 @@ public class TotalAmountCalculatorTest {
             .build();
 
         assertThat(TotalAmountCalculator.amountWithInterest(claimStandardInterest))
-            .isEqualTo(Optional.of(format(new BigDecimal("40.01"))));
+            .isEqualTo(Optional.of(format(new BigDecimal("41.00"))));
     }
 
     @Test
@@ -463,7 +463,7 @@ public class TotalAmountCalculatorTest {
             .build();
 
         assertThat(TotalAmountCalculator.amountWithInterestUntilIssueDate(claimStandardInterest))
-            .isEqualTo(Optional.of(format(new BigDecimal("40.00"))));
+            .isEqualTo(Optional.of(format(new BigDecimal("40.99"))));
     }
 
     @Test
@@ -484,19 +484,19 @@ public class TotalAmountCalculatorTest {
             .build();
 
         assertThat(TotalAmountCalculator.amountWithInterestUntilIssueDate(claimStandardInterest))
-            .isEqualTo(Optional.of(format(new BigDecimal("40.01"))));
+            .isEqualTo(Optional.of(format(new BigDecimal("41.00"))));
     }
 
     @Test
     public void totalTillTodayShouldStopAtCCJRequestDate() {
         assertThat(TotalAmountCalculator.totalTillToday(claimWithCCJ()))
-            .isEqualTo(Optional.of(format(new BigDecimal("60.01"))));
+            .isEqualTo(Optional.of(format(new BigDecimal("61.00"))));
     }
 
     @Test
     public void amountWithInterestShouldStopAtCCJRequestDate() {
         assertThat(TotalAmountCalculator.amountWithInterest(claimWithCCJ()))
-            .isEqualTo(Optional.of(format(new BigDecimal("40.01"))));
+            .isEqualTo(Optional.of(format(new BigDecimal("41.00"))));
     }
 
     @Test

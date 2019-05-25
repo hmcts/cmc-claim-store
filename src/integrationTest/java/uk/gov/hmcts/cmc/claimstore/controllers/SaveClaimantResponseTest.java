@@ -102,7 +102,7 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
         ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
             .orElseThrow(AssertionError::new);
 
-        assertThat(claimantResponse.getAmountPaid().orElse(null)).isEqualTo(BigDecimal.TEN);
+        assertThat(claimantResponse.getAmountPaid().orElse(null)).isEqualByComparingTo(BigDecimal.TEN);
     }
 
     @Test

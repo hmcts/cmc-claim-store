@@ -151,7 +151,7 @@ public class LinkDefendantToClaimWithWithCoreCaseDataTest extends BaseIntegratio
     private List<Claim> extractClaims(List<CaseDetails> result) {
         return result
             .stream()
-            .map(entry -> ccdCaseDataToClaim.to(entry.getId(), entry.getData()))
+            .map(entry -> ccdCaseDataToClaim.to(entry))
             .collect(Collectors.toList());
     }
 }
