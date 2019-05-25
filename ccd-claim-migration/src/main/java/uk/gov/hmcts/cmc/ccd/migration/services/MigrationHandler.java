@@ -215,8 +215,6 @@ public class MigrationHandler {
                     && claim.getSettlement().get().getLastStatement().getType() == StatementType.REJECTION
                     && claim.getSettlement().get().getLastStatement().getMadeBy() == MadeBy.CLAIMANT
                     && !claim.getClaimantResponse().isPresent();
-            case SETTLED_PRE_JUDGMENT:
-                return claim.getMoneyReceivedOn().isPresent();
             case CLAIMANT_RESPONSE_REJECTION:
                 return claim.getClaimantRespondedAt().isPresent()
                     && claim.getClaimantResponse().isPresent()
@@ -290,6 +288,8 @@ public class MigrationHandler {
                 return claim.getSettlementReachedAt() != null
                     && claim.getSettlement().isPresent()
                     && claim.getClaimDocument(SETTLEMENT_AGREEMENT).isPresent();
+            case SETTLED_PRE_JUDGMENT:
+                return claim.getMoneyReceivedOn().isPresent();
             default:
                 return false;
         }
