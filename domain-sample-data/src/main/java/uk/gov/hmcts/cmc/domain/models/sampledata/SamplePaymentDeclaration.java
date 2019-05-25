@@ -15,7 +15,7 @@ public class SamplePaymentDeclaration {
     public static PaymentDeclarationBuilder builder() {
         return PaymentDeclaration.builder()
             .paidDate(LocalDate.of(2016, 1, 2))
-            .paidAmount(new BigDecimal(100))
+            .paidAmount(new BigDecimal("100.99"))
             .explanation("Paid cash");
     }
 }

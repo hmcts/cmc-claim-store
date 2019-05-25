@@ -61,8 +61,6 @@ public class CountyCourtJudgementTest extends BaseTest {
             claimantId
         );
 
-        updateResponseDeadlineToEnableCCJ(createdCase.getReferenceNumber());
-
         CountyCourtJudgment invalidCCJ = SampleCountyCourtJudgment.builder()
             .paymentOption(null)
             .build();

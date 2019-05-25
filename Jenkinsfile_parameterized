@@ -27,8 +27,6 @@ static Map<String, Object> secret(String secretName, String envVar) {
   ]
 }
 
-env.PDF_SERVICE_URL = 'http://cmc-pdf-service-sprod.service.core-compute-sprod.internal'
-
 withParameterizedPipeline('java', 'cmc', 'claim-store', params.ENVIRONMENT, 'sandbox') {
   loadVaultSecrets(secrets)
 }

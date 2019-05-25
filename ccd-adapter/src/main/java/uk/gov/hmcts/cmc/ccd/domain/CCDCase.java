@@ -62,4 +62,5 @@ public class CCDCase {
     private List<CCDCollectionElement<CCDClaimDocument>> caseDocuments;
     private String caseName;
     private CCDClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
+    private String state;
 }
