@@ -50,7 +50,7 @@ public class MigrateCoreCaseDataService {
         this.caseMapper = caseMapper;
     }
 
-    public void update(
+    public CaseDetails update(
         String authorisation,
         EventRequestData eventRequestData,
         Long ccdId,
@@ -71,7 +71,7 @@ public class MigrateCoreCaseDataService {
             ).data(ccdCase)
             .build();
 
-        submitEvent(authorisation, eventRequestData, caseDataContent, ccdId);
+        return submitEvent(authorisation, eventRequestData, caseDataContent, ccdId);
     }
 
     public CaseDetails save(String authorisation, EventRequestData eventRequestData, Claim claim) {
