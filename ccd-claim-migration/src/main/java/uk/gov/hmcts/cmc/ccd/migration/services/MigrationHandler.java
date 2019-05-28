@@ -155,7 +155,7 @@ public class MigrationHandler {
     }
 
     private boolean eventNeedToBePerformedOnClaim(CaseEvent event, Claim claim, String state) {
-        if (StringUtils.isBlank(state) || state.equals(ClaimState.CREATE.getValue())) {
+        if (StringUtils.isBlank(state) || !state.equals(ClaimState.CREATE.getValue())) {
             return false;
         }
 
