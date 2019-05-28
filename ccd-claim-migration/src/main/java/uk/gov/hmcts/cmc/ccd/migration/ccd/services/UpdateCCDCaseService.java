@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.ccd.migration.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 
 @Service
@@ -42,7 +43,7 @@ public class UpdateCCDCaseService {
 
     @Retryable(value = {OverwriteCaseException.class}, maxAttempts = 5, backoff = @Backoff(delay = 400, maxDelay = 800))
     @LogExecutionTime
-    public void updateCase(User user, Long caseId, Claim claim, CaseEvent event) {
+    public CaseDetails updateCase(User user, Long caseId, Claim claim, CaseEvent event) {
 
         try {
             EventRequestData eventRequestData = EventRequestData.builder()
@@ -53,7 +54,7 @@ public class UpdateCCDCaseService {
                 .ignoreWarning(true)
                 .build();
 
-            migrateCoreCaseDataService.update(user.getAuthorisation(), eventRequestData, caseId, claim);
+            return migrateCoreCaseDataService.update(user.getAuthorisation(), eventRequestData, caseId, claim);
         } catch (Exception exception) {
             throw new OverwriteCaseException(
                 String.format(
@@ -68,7 +69,7 @@ public class UpdateCCDCaseService {
     }
 
     @Recover
-    public void recoverUpdateFailure(
+    public CaseDetails recoverUpdateFailure(
         OverwriteCaseException exception,
         User user,
         Long caseId,
