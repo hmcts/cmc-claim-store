@@ -54,7 +54,7 @@ public class LinkDefendantToClaimWithWithCoreCaseDataTest extends BaseIntegratio
     private static final String ANONYMOUS_USER_ID = "3";
 
     @Autowired
-    private CaseDetailsConverter ccdCaseDataToClaim;
+    private CaseDetailsConverter caseDetailsConverter;
 
     @Before
     public void init() {
@@ -151,7 +151,7 @@ public class LinkDefendantToClaimWithWithCoreCaseDataTest extends BaseIntegratio
     private List<Claim> extractClaims(List<CaseDetails> result) {
         return result
             .stream()
-            .map(entry -> ccdCaseDataToClaim.extractClaim(entry))
+            .map(entry -> caseDetailsConverter.extractClaim(entry))
             .collect(Collectors.toList());
     }
 }

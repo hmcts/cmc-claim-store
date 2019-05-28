@@ -162,7 +162,7 @@ public class CCDCaseApi {
         User anonymousCaseWorker,
         String caseId
     ) {
-        LOGGER.debug("Granting access extractClaim case {} for defendant {}", caseId, defendantId);
+        LOGGER.debug("Granting access to case {} for defendant {}", caseId, defendantId);
         this.grantAccessToCase(anonymousCaseWorker, caseId, defendantId);
 
         this.updateDefendantIdAndEmail(anonymousCaseWorker, caseId, defendantId, defendantEmail);

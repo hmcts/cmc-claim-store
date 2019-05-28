@@ -76,7 +76,7 @@ public class ClaimService {
     private final CaseRepository caseRepository;
     private final MoreTimeRequestRule moreTimeRequestRule;
     private final AppInsights appInsights;
-    private final CaseDetailsConverter ccdCaseDataToClaim;
+    private final CaseDetailsConverter caseDetailsConverter;
     private final PaidInFullRule paidInFullRule;
     private final ClaimAuthorisationRule claimAuthorisationRule;
     private final boolean asyncEventOperationEnabled;
@@ -99,7 +99,7 @@ public class ClaimService {
         MoreTimeRequestRule moreTimeRequestRule,
         EventProducer eventProducer,
         AppInsights appInsights,
-        CaseDetailsConverter ccdCaseDataToClaim,
+        CaseDetailsConverter caseDetailsConverter,
         PaidInFullRule paidInFullRule,
         CCDEventProducer ccdEventProducer,
         ClaimAuthorisationRule claimAuthorisationRule,
@@ -114,7 +114,7 @@ public class ClaimService {
         this.caseRepository = caseRepository;
         this.moreTimeRequestRule = moreTimeRequestRule;
         this.appInsights = appInsights;
-        this.ccdCaseDataToClaim = ccdCaseDataToClaim;
+        this.caseDetailsConverter = caseDetailsConverter;
         this.directionsQuestionnaireDeadlineCalculator = directionsQuestionnaireDeadlineCalculator;
         this.paidInFullRule = paidInFullRule;
         this.ccdEventProducer = ccdEventProducer;
@@ -366,7 +366,7 @@ public class ClaimService {
     }
 
     private Claim convertCallbackToClaim(CallbackRequest caseDetails) {
-        return ccdCaseDataToClaim.extractClaim(caseDetails.getCaseDetails());
+        return caseDetailsConverter.extractClaim(caseDetails.getCaseDetails());
     }
 
     public void linkDefendantToClaim(String authorisation) {
