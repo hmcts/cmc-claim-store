@@ -5,10 +5,12 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.domain.models.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.math.BigDecimal;
 import java.util.Optional;
+import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
@@ -28,6 +30,9 @@ public class ResponseRejection extends ClaimantResponse {
     @Size(max = 99000)
     private final String reason;
 
+    @Valid
+    private final DirectionsQuestionnaire directionsQuestionnaire;
+
     @Builder
     @JsonCreator
     public ResponseRejection(BigDecimal amountPaid,
@@ -36,12 +41,14 @@ public class ResponseRejection extends ClaimantResponse {
                              YesNoOption freeMediation,
                              String mediationPhoneNumber,
                              String mediationContactPerson,
-                             String reason) {
+                             String reason,
+                             DirectionsQuestionnaire directionsQuestionnaire) {
         super(ClaimantResponseType.REJECTION, amountPaid, paymentReceived, settleForAmount);
         this.freeMediation = freeMediation;
         this.mediationPhoneNumber = mediationPhoneNumber;
         this.mediationContactPerson = mediationContactPerson;
         this.reason = reason;
+        this.directionsQuestionnaire = directionsQuestionnaire;
     }
 
     public Optional<YesNoOption> getFreeMediation() {
@@ -63,5 +70,9 @@ public class ResponseRejection extends ClaimantResponse {
     @Override
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ourStyle());
+    }
+
+    public Optional<DirectionsQuestionnaire> getDirectionsQuestionnaire() {
+        return Optional.ofNullable(directionsQuestionnaire);
     }
 }
