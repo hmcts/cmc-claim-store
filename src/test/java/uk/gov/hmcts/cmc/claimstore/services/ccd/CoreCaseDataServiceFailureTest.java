@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
@@ -89,6 +90,9 @@ public class CoreCaseDataServiceFailureTest {
     private CaseAccessApi caseAccessApi;
     @Mock
     private JobSchedulerService jobSchedulerService;
+    @Mock
+    private CaseDetailsConverter caseDetailsConverter;
+
     @Captor
     private ArgumentCaptor<Map<String, Object>> caseDataCaptor;
 
@@ -129,12 +133,12 @@ public class CoreCaseDataServiceFailureTest {
         this.service = new CoreCaseDataService(
             caseMapper,
             userService,
-            jsonMapper,
             referenceNumberService,
             coreCaseDataApi,
             authTokenGenerator,
             jobSchedulerService,
-            ccdCreateCaseService
+            ccdCreateCaseService,
+            caseDetailsConverter
         );
     }
 

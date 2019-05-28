@@ -25,7 +25,7 @@ import uk.gov.hmcts.cmc.claimstore.rules.ClaimAuthorisationRule;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.rules.PaidInFullRule;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
-import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
+import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
@@ -76,7 +76,7 @@ public class ClaimService {
     private final CaseRepository caseRepository;
     private final MoreTimeRequestRule moreTimeRequestRule;
     private final AppInsights appInsights;
-    private final CCDCaseDataToClaim ccdCaseDataToClaim;
+    private final CaseDetailsConverter ccdCaseDataToClaim;
     private final PaidInFullRule paidInFullRule;
     private final ClaimAuthorisationRule claimAuthorisationRule;
     private final boolean asyncEventOperationEnabled;
@@ -99,7 +99,7 @@ public class ClaimService {
         MoreTimeRequestRule moreTimeRequestRule,
         EventProducer eventProducer,
         AppInsights appInsights,
-        CCDCaseDataToClaim ccdCaseDataToClaim,
+        CaseDetailsConverter ccdCaseDataToClaim,
         PaidInFullRule paidInFullRule,
         CCDEventProducer ccdEventProducer,
         ClaimAuthorisationRule claimAuthorisationRule,
@@ -366,7 +366,7 @@ public class ClaimService {
     }
 
     private Claim convertCallbackToClaim(CallbackRequest caseDetails) {
-        return ccdCaseDataToClaim.to(caseDetails.getCaseDetails());
+        return ccdCaseDataToClaim.extractClaim(caseDetails.getCaseDetails());
     }
 
     public void linkDefendantToClaim(String authorisation) {

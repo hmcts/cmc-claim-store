@@ -14,7 +14,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
-import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
+import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -46,7 +46,7 @@ public class CCDCaseApi {
     private final UserService userService;
     private final CaseAccessApi caseAccessApi;
     private final CoreCaseDataService coreCaseDataService;
-    private final CCDCaseDataToClaim ccdCaseDataToClaim;
+    private final CaseDetailsConverter ccdCaseDataToClaim;
     private final JobSchedulerService jobSchedulerService;
     private final boolean ccdAsyncEnabled;
 
@@ -62,7 +62,7 @@ public class CCDCaseApi {
         UserService userService,
         CaseAccessApi caseAccessApi,
         CoreCaseDataService coreCaseDataService,
-        CCDCaseDataToClaim ccdCaseDataToClaim,
+        CaseDetailsConverter ccdCaseDataToClaim,
         JobSchedulerService jobSchedulerService,
         @Value("${feature_toggles.ccd_async_enabled}") boolean ccdAsyncEnabled
     ) {
@@ -162,7 +162,7 @@ public class CCDCaseApi {
         User anonymousCaseWorker,
         String caseId
     ) {
-        LOGGER.debug("Granting access to case {} for defendant {}", caseId, defendantId);
+        LOGGER.debug("Granting access extractClaim case {} for defendant {}", caseId, defendantId);
         this.grantAccessToCase(anonymousCaseWorker, caseId, defendantId);
 
         this.updateDefendantIdAndEmail(anonymousCaseWorker, caseId, defendantId, defendantEmail);
@@ -211,7 +211,7 @@ public class CCDCaseApi {
         CaseDetails caseDetails = this.updateDefendantIdAndEmail(defendantUser, caseId, defendantId, defendantEmail);
 
         if (!ccdAsyncEnabled) {
-            Claim claim = ccdCaseDataToClaim.to(caseDetails);
+            Claim claim = ccdCaseDataToClaim.extractClaim(caseDetails);
             jobSchedulerService.scheduleEmailNotificationsForDefendantResponse(claim);
         }
     }
@@ -297,7 +297,7 @@ public class CCDCaseApi {
             CASE_TYPE_ID,
             caseId
         );
-        return ccdCaseDataToClaim.to(caseDetails);
+        return ccdCaseDataToClaim.extractClaim(caseDetails);
     }
 
     private List<CaseDetails> searchAll(User user, ClaimState state) {
@@ -397,7 +397,7 @@ public class CCDCaseApi {
     private List<Claim> extractClaims(List<CaseDetails> result) {
         return result
             .stream()
-            .map(entry -> ccdCaseDataToClaim.to(entry))
+            .map(entry -> ccdCaseDataToClaim.extractClaim(entry))
             .collect(Collectors.toList());
     }
 
