@@ -32,7 +32,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
-import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATED;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
 
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled", havingValue = "true")
@@ -402,6 +402,6 @@ public class CCDCaseApi {
     }
 
     private boolean isCreatedState(CaseDetails caseDetails) {
-        return CREATED.getValue().equals(caseDetails.getState());
+        return CREATE.getValue().equals(caseDetails.getState());
     }
 }

@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models;
 
 public enum ClaimState {
-    CREATED("created"),
+    CREATE("create"),
     OPEN("open"),
     CLOSED("closed"),
     SETTLED("settled");
