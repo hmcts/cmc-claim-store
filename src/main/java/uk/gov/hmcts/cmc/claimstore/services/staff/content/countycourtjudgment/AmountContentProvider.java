@@ -5,6 +5,7 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.content.InterestContentProvide
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
@@ -31,7 +32,10 @@ public class AmountContentProvider {
         Response response = claim.getResponse().orElse(null);
 
         boolean isPartAdmissionResponse = response instanceof PartAdmissionResponse;
-        BigDecimal admittedAmount = isPartAdmissionResponse
+        boolean usePartAdmitAmount = isPartAdmissionResponse && claim.getClaimantResponse()
+            .filter(claimantResponse -> ClaimantResponseType.ACCEPTATION.equals(claimantResponse.getType()))
+            .isPresent();
+        BigDecimal admittedAmount = usePartAdmitAmount
             ? ((PartAdmissionResponse) response).getAmount()
             : claimAmount;
 
