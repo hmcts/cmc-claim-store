@@ -84,6 +84,8 @@ public class ClaimantResponseMapper {
             .map(CCDYesNoOption::valueOf)
             .ifPresent(rejection::settleForAmount);
         claim.getClaimantRespondedAt().ifPresent(rejection::submittedOn);
+        responseRejection.getDirectionsQuestionnaire().ifPresent(rejection::directionsQuestionnaire);
+
         return rejection.build();
     }
 

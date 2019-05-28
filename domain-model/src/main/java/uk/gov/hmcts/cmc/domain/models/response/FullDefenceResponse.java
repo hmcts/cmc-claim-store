@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.domain.models.response;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.domain.models.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
@@ -34,6 +35,9 @@ public class FullDefenceResponse extends Response {
     @Valid
     private final DefendantEvidence evidence;
 
+    @Valid
+    private final DirectionsQuestionnaire directionsQuestionnaire;
+
     @Builder
     public FullDefenceResponse(
         YesNoOption freeMediation,
@@ -46,7 +50,8 @@ public class FullDefenceResponse extends Response {
         String defence,
         PaymentDeclaration paymentDeclaration,
         DefendantTimeline timeline,
-        DefendantEvidence evidence
+        DefendantEvidence evidence,
+        DirectionsQuestionnaire directionsQuestionnaire
     ) {
         super(
             FULL_DEFENCE,
@@ -62,6 +67,7 @@ public class FullDefenceResponse extends Response {
         this.paymentDeclaration = paymentDeclaration;
         this.timeline = timeline;
         this.evidence = evidence;
+        this.directionsQuestionnaire = directionsQuestionnaire;
     }
 
     public DefenceType getDefenceType() {
@@ -87,5 +93,9 @@ public class FullDefenceResponse extends Response {
     @Override
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ourStyle());
+    }
+
+    public Optional<DirectionsQuestionnaire> getDirectionsQuestionnaire() {
+        return Optional.ofNullable(directionsQuestionnaire);
     }
 }

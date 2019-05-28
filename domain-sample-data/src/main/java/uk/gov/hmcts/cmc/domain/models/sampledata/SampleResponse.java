@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
+import uk.gov.hmcts.cmc.domain.models.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
@@ -195,6 +196,21 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
                 .build();
         }
+
+        public PartAdmissionResponse buildWithDirectionsQuestionnaire() {
+            return PartAdmissionResponse.builder()
+                .defendant(SampleParty.builder().individual())
+                .defence(USER_DEFENCE)
+                .freeMediation(YesNoOption.YES)
+                .mediationPhoneNumber(MEDIATION_PHONE_NUMBER)
+                .mediationContactPerson(MEDIATION_CONTACT_PERSON)
+                .moreTimeNeeded(YesNoOption.NO)
+                .amount(BigDecimal.valueOf(120))
+                .paymentIntention(SamplePaymentIntention.instalments())
+                .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder().build())
+                .build();
+        }
     }
 
     public static class FullDefence extends SampleResponse<FullDefence> {
@@ -204,7 +220,8 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         private DefendantTimeline timeline = SampleDefendantTimeline.validDefaults();
         private DefendantEvidence evidence = SampleDefendantEvidence.validDefaults();
         private String mediationPhoneNumber = MEDIATION_PHONE_NUMBER;
-        private String mediationContectPerson = MEDIATION_CONTACT_PERSON;
+        private String mediationContactPerson = MEDIATION_CONTACT_PERSON;
+        private DirectionsQuestionnaire directionsQuestionnaire = SampleDirectionsQuestionnaire.builder().build();
 
         public static FullDefence builder() {
             return new FullDefence();
@@ -241,15 +258,20 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         }
 
         public FullDefence withMediationContactPerson(String mediationContactPerson) {
-            this.mediationContectPerson = mediationContactPerson;
+            this.mediationContactPerson = mediationContactPerson;
+            return this;
+        }
+
+        public FullDefence withDirectionsQuestionnaire(DirectionsQuestionnaire directionsQuestionnaire) {
+            this.directionsQuestionnaire = directionsQuestionnaire;
             return this;
         }
 
         public FullDefenceResponse build() {
             return new FullDefenceResponse(
-                freeMediationOption, mediationPhoneNumber, mediationContectPerson,
+                freeMediationOption, mediationPhoneNumber, mediationContactPerson,
                 moreTimeNeededOption, defendantDetails, statementOfTruth,
-                defenceType, defence, paymentDeclaration, timeline, evidence
+                defenceType, defence, paymentDeclaration, timeline, evidence, directionsQuestionnaire
             );
         }
     }
