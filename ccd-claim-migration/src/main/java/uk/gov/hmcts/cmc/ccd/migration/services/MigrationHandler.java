@@ -11,7 +11,6 @@ import uk.gov.hmcts.cmc.ccd.migration.ccd.services.UpdateCCDCaseService;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
@@ -155,13 +154,13 @@ public class MigrationHandler {
     }
 
     private boolean eventNeedToBePerformedOnClaim(CaseEvent event, Claim claim, String state) {
-        if (StringUtils.isBlank(state) || state.equals(ClaimState.CREATE.getValue())) {
+        if (StringUtils.isBlank(state)) {
             return false;
         }
 
         switch (event) {
             case ISSUE_CASE:
-                return true; // defaulted as db migration has set this for all claim
+                return claim.getClaimSubmissionOperationIndicators().isAllSuccess();
             case LINK_DEFENDANT:
                 return StringUtils.isNotBlank(claim.getDefendantId());
             case MORE_TIME_REQUESTED_ONLINE:
