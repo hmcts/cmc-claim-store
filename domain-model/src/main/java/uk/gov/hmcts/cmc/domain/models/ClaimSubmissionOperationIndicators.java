@@ -51,4 +51,17 @@ public class ClaimSubmissionOperationIndicators {
             defendantNotification
         ).allMatch(ind -> ind.equals(YES));
     }
+
+    @JsonIgnore
+    public boolean isAllSuccess() {
+        return Stream.of(
+            claimantNotification,
+            defendantNotification,
+            bulkPrint,
+            rpa,
+            staffNotification,
+            sealedClaimUpload,
+            claimIssueReceiptUpload
+        ).allMatch(option -> option == YES);
+    }
 }
