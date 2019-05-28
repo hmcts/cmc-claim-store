@@ -35,9 +35,10 @@ public class AmountContentProvider {
         boolean usePartAdmitAmount = isPartAdmissionResponse && claim.getClaimantResponse()
             .filter(claimantResponse -> ClaimantResponseType.ACCEPTATION.equals(claimantResponse.getType()))
             .isPresent();
-        BigDecimal admittedAmount = usePartAdmitAmount
+        BigDecimal admittedAmount = isPartAdmissionResponse
             ? ((PartAdmissionResponse) response).getAmount()
             : claimAmount;
+        BigDecimal ccjAmount = usePartAdmitAmount ? admittedAmount : claimAmount;
 
         requireNonNull(claim.getCountyCourtJudgment());
 
@@ -58,13 +59,13 @@ public class AmountContentProvider {
 
         return new AmountContent(
             formatMoney(claimAmount),
-            formatMoney(admittedAmount
+            formatMoney(ccjAmount
                 .add(claim.getClaimData().getFeesPaidInPound())
                 .add(interestRealValue)),
             interestContent,
             formatMoney(claim.getClaimData().getFeesPaidInPound()),
             formatMoney(paidAmount),
-            formatMoney(admittedAmount
+            formatMoney(ccjAmount
                 .add(claim.getClaimData().getFeesPaidInPound())
                 .add(interestRealValue)
                 .subtract(paidAmount)),
