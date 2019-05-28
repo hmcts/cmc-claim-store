@@ -1,3 +1,3 @@
 update claim
-set state = 'CREATED'
-where state = 'CREATE';
+set state = 'CREATE'
+where state = 'CREATED';
