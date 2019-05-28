@@ -51,7 +51,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
-import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATED;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.CLAIM_ID;
@@ -325,10 +325,10 @@ public class ClaimServiceTest {
 
     @Test
     public void getClaimsByStateShouldCallCaseRepository() {
-        when(caseRepository.getClaimsByState(eq(CREATED), any()))
+        when(caseRepository.getClaimsByState(eq(CREATE), any()))
             .thenReturn(singletonList(claim));
 
-        List<Claim> claims = claimService.getClaimsByState(CREATED, USER);
+        List<Claim> claims = claimService.getClaimsByState(CREATE, USER);
 
         assertThat(claims).containsExactly(claim);
     }

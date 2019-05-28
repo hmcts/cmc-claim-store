@@ -23,7 +23,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATED;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
 
 @Component
 public class ClaimStore {
@@ -75,7 +75,7 @@ public class ClaimStore {
             externalId.toString(),
             SampleClaim.SUBMITTER_EMAIL,
             "[\"admissions\"]",
-            CREATED,
+            CREATE,
             jsonMapper.toJson(ClaimSubmissionOperationIndicators.builder().build())
         );
 
