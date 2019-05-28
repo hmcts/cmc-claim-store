@@ -26,7 +26,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
-import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATED;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseMetadataControllerTest {
@@ -164,15 +164,15 @@ public class CaseMetadataControllerTest {
     @Test
     public void shouldReturnClaimsWithCreatedState() {
         // given
-        when(claimService.getClaimsByState(eq(CREATED), any()))
-            .thenReturn(singletonList(SampleClaim.builder().withState(CREATED).build()));
+        when(claimService.getClaimsByState(eq(CREATE), any()))
+            .thenReturn(singletonList(SampleClaim.builder().withState(CREATE).build()));
 
         // when
         List<CaseMetadata> cases = controller.getCreatedCases();
 
         // then
         assertEquals(1, cases.size());
-        assertEquals(CREATED, cases.get(0).getState());
+        assertEquals(CREATE, cases.get(0).getState());
         assertValid(sampleClaim, cases.get(0));
     }
 
