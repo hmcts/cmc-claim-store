@@ -83,9 +83,8 @@ public class ClaimantResponseMapper {
             .map(YesNoOption::name)
             .map(CCDYesNoOption::valueOf)
             .ifPresent(rejection::settleForAmount);
-        claim.getClaimantRespondedAt().ifPresent(rejection::submittedOn);
         responseRejection.getDirectionsQuestionnaire().ifPresent(rejection::directionsQuestionnaire);
-
+        claim.getClaimantRespondedAt().ifPresent(rejection::submittedOn);
         return rejection.build();
     }
 
@@ -150,6 +149,10 @@ public class ClaimantResponseMapper {
 
         if (ccdResponseRejection.getSettleForAmount() != null) {
             builder.settleForAmount(YesNoOption.valueOf(ccdResponseRejection.getSettleForAmount().name()));
+        }
+
+        if (ccdResponseRejection.getDirectionsQuestionnaire() != null) {
+            builder.directionsQuestionnaire(ccdResponseRejection.getDirectionsQuestionnaire());
         }
 
         claimBuilder.claimantResponse(builder.build())
