@@ -179,6 +179,17 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
                 .reason("Some valid reason")
                 .build();
         }
+
+        public ClaimantResponse buildRejectionWithDirectionsQuestionnaire() {
+            return ResponseRejection.builder()
+                .amountPaid(TEN)
+                .freeMediation(YES)
+                .mediationPhoneNumber("07999999999")
+                .mediationContactPerson("Mediation Contact Person")
+                .reason("Some valid reason")
+                .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder().build())
+                .build();
+        }
     }
 
     public abstract ClaimantResponse build();
