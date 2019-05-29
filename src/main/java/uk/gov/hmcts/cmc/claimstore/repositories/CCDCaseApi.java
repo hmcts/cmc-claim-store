@@ -185,10 +185,6 @@ public class CCDCaseApi {
     private Optional<Claim> getCaseBy(User user, Map<String, String> searchString) {
         List<CaseDetails> result = searchAll(user, searchString);
 
-        if (result.size() == 1 && isCreatedState(result.get(0))) {
-            return Optional.empty();
-        }
-
         List<Claim> claims = extractClaims(result);
 
         if (claims.size() > 1) {
