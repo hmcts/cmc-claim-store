@@ -71,7 +71,11 @@ public class MoreTimeRequestedCallbackHandlerTest {
                     .data(Collections.emptyMap())
                     .build())
                 .build();
-        when(ccdCaseDataToClaim.to(10L, Collections.emptyMap())).thenReturn(claim);
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(10L)
+            .data(Collections.emptyMap())
+            .build();
+        when(ccdCaseDataToClaim.to(caseDetails)).thenReturn(claim);
 
     }
 

@@ -11,7 +11,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -132,13 +131,13 @@ public class GenerateOrderCallbackHandlerTest {
     @Test
     public void shouldGenerateDocumentOnMidEvent() {
         CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
-        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData();
+        ccdCase.setOrderGenerationData(SampleData.getCCDOrderGenerationData());
         when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
             .templateId("testTemplateId")
             .outputType(OutputType.DOC)
             .formPayload(docAssemblyTemplateBodyMapper
-                .from(ccdCase, ccdOrderGenerationData, userService.getUserDetails(BEARER_TOKEN)))
+                .from(ccdCase, userService.getUserDetails(BEARER_TOKEN)))
             .build();
 
         CallbackRequest callbackRequest = CallbackRequest

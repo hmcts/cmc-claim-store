@@ -42,16 +42,15 @@ public class DocAssemblyTemplateBodyMapperTest  {
 
     private DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
     private CCDCase ccdCase;
-    private CCDOrderGenerationData getCCDOrderGenerationData;
     private UserDetails userDetails;
 
-    DocAssemblyTemplateBody.DocAssemblyTemplateBodyBuilder docAssemblyTemplateBodyBuilder;
+    private DocAssemblyTemplateBody.DocAssemblyTemplateBodyBuilder docAssemblyTemplateBodyBuilder;
 
     @Before
     public void setUp() {
         docAssemblyTemplateBodyMapper = new DocAssemblyTemplateBodyMapper(clock);
         ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
-        getCCDOrderGenerationData = SampleData.getCCDOrderGenerationData();
+        ccdCase.setOrderGenerationData(SampleData.getCCDOrderGenerationData());
         userDetails = SampleUserDetails.builder()
             .withForename("Judge")
             .withSurname("McJudge")
@@ -92,9 +91,7 @@ public class DocAssemblyTemplateBodyMapperTest  {
         String output = objectMapper.writeValueAsString(
             docAssemblyTemplateBodyMapper.from(
                 ccdCase,
-                getCCDOrderGenerationData,
                 userDetails));
-        //then
         assertThat(output).isNotNull();
         String expected = new ResourceReader().read("/doc-assembly-template.json");
         JSONAssert.assertEquals(expected, output, STRICT);
@@ -104,7 +101,6 @@ public class DocAssemblyTemplateBodyMapperTest  {
     public void shouldMapTemplateBody() {
         DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
             ccdCase,
-            getCCDOrderGenerationData,
             userDetails);
 
         DocAssemblyTemplateBody expectedBody = docAssemblyTemplateBodyBuilder.build();
@@ -130,10 +126,9 @@ public class DocAssemblyTemplateBodyMapperTest  {
             .eyewitnessUploadForParty(CCDDirectionPartyType.DEFENDANT)
             .estimatedHearingDuration(CCDHearingDurationType.FOUR_HOURS)
             .build();
-
+        ccdCase.setOrderGenerationData(ccdOrderGenerationData);
         DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
             ccdCase,
-            ccdOrderGenerationData,
             userDetails);
 
         docAssemblyTemplateBodyBuilder.otherDirectionList(Collections.emptyList());

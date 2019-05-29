@@ -107,7 +107,8 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
             .templateId(templateId)
             .outputType(OutputType.DOC)
             .formPayload(docAssemblyTemplateBodyMapper.from(
-                ccdCase, ccdCase.getOrderGenerationData(), userService.getUserDetails(authorisation)))
+                ccdCase,
+                userService.getUserDetails(authorisation)))
             .build();
 
         logger.info("Generate order callback: sending request to doc assembly");
