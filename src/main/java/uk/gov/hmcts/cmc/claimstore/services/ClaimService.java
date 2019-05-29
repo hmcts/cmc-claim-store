@@ -44,7 +44,6 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMB
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED_PAPER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
@@ -275,78 +274,6 @@ public class ClaimService {
 
         appInsights.trackEvent(RESPONSE_MORE_TIME_REQUESTED, REFERENCE_NUMBER, claim.getReferenceNumber());
         return claim;
-    }
-
-    public AboutToStartOrSubmitCallbackResponse prepopulateFields(CallbackRequest callbackRequest) {
-        logger.info("Prepopulating fields for callback {}", callbackRequest.getEventId());
-        LocalDate deadline = legalOrderGenerationDeadlinesCalculator.calculateOrderGenerationDeadlines();
-        Map<String, Object> data = new HashMap<>();
-        data.put("docUploadDeadline", deadline);
-        data.put("eyewitnessUploadDeadline", deadline);
-        data.put("directionList", ImmutableList.of(
-            CCDOrderDirectionType.DOCUMENTS.name(),
-            CCDOrderDirectionType.EYEWITNESS.name()));
-        return AboutToStartOrSubmitCallbackResponse
-            .builder()
-            .data(data)
-            .build();
-    }
-
-    public AboutToStartOrSubmitCallbackResponse requestMoreTimeOnPaperValidateOnly(
-        CallbackRequest callbackRequest
-    ) {
-        return requestMoreTimeOnPaper(callbackRequest, true);
-    }
-
-    public AboutToStartOrSubmitCallbackResponse requestMoreTimeOnPaper(
-        CallbackRequest callbackRequest
-    ) {
-        return requestMoreTimeOnPaper(callbackRequest, false);
-    }
-
-    private AboutToStartOrSubmitCallbackResponse requestMoreTimeOnPaper(
-        CallbackRequest callbackRequest,
-        boolean validateOnly
-    ) {
-        Claim claim = convertCallbackToClaim(callbackRequest);
-
-        List<String> validationResult = this.moreTimeRequestRule.validateMoreTimeCanBeRequested(claim);
-        AboutToStartOrSubmitCallbackResponseBuilder builder = AboutToStartOrSubmitCallbackResponse
-            .builder();
-
-        if (validateOnly || !validationResult.isEmpty()) {
-            return builder
-                .errors(validationResult)
-                .build();
-        }
-
-        LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
-
-        Map<String, Object> data = new HashMap<>(callbackRequest.getCaseDetails().getData());
-        data.put("moreTimeRequested", CCDYesNoOption.YES);
-        data.put("responseDeadline", newDeadline);
-
-        return builder
-            .data(data)
-            .build();
-    }
-
-    public SubmittedCallbackResponse requestMoreTimeOnPaperSubmitted(CallbackRequest callbackRequest) {
-        Claim claim = convertCallbackToClaim(callbackRequest);
-
-        eventProducer.createMoreTimeForResponseRequestedEvent(
-            claim,
-            claim.getResponseDeadline(),
-            claim.getClaimData().getDefendant().getEmail().orElse(null)
-        );
-        appInsights.trackEvent(RESPONSE_MORE_TIME_REQUESTED_PAPER, REFERENCE_NUMBER, claim.getReferenceNumber());
-
-        return SubmittedCallbackResponse.builder()
-            .build();
-    }
-
-    private Claim convertCallbackToClaim(CallbackRequest caseDetails) {
-        return ccdCaseDataToClaim.to(caseDetails.getCaseDetails());
     }
 
     public void linkDefendantToClaim(String authorisation) {
