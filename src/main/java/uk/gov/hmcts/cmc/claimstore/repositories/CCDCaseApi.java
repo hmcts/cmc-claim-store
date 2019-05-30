@@ -78,7 +78,10 @@ public class CCDCaseApi {
 
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
         User user = userService.getUser(authorisation);
-        return getAllCasesBy(user, ImmutableMap.of("case.submitterId", submitterId));
+
+        return asStream(getAllCasesBy(user, ImmutableMap.of()))
+            .filter(claim -> submitterId.equals(claim.getSubmitterId()))
+            .collect(Collectors.toList());
     }
 
     public Optional<Claim> getByReferenceNumber(String referenceNumber, String authorisation) {
