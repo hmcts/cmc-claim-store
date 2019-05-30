@@ -14,9 +14,9 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import static java.util.function.Predicate.isEqual;
 
@@ -42,62 +42,63 @@ class ClaimantResponseMetadata {
 
         final ClaimantResponse claimantResponse = optionalClaimantResponse.get();
         final LocalDateTime claimantRespondedAt = claim.getClaimantRespondedAt().orElse(null);
-        final Optional<YesNoOption> optionalSettleForAmount = claimantResponse.getSettleForAmount();
-        final Boolean settleForAmount = optionalSettleForAmount.isPresent()
-            ? optionalSettleForAmount.filter(isEqual(YesNoOption.YES)).isPresent()
-            : null;
-        final Optional<BigDecimal> optionalAmountPaid = claimantResponse.getAmountPaid();
-        final Boolean fullPaymentReceived = optionalAmountPaid.isPresent()
-            ? optionalAmountPaid.filter(isEqual(claim.getTotalAmountTillToday())).isPresent()
-            : null;
+        final Boolean settleForAmount = extractBooleanOrNull(claimantResponse::getSettleForAmount, YesNoOption.YES);
+        final Boolean fullPaymentReceived = extractBooleanOrNull(
+            claimantResponse::getAmountPaid,
+            claim.getTotalAmountTillToday().orElse(null)
+        );
         final ClaimantResponseType claimantResponseType = claimantResponse.getType();
 
-        if (claimantResponse instanceof ResponseAcceptation) {
-            final ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponse;
-            final PaymentPlanMetadata claimantPaymentPlan = responseAcceptation.getClaimantPaymentIntention()
-                .map(PaymentPlanMetadata::fromPaymentIntention)
-                .orElse(null);
-            final PaymentPlanMetadata courtPaymentPlan = responseAcceptation.getCourtDetermination()
-                .map(CourtDetermination::getCourtPaymentIntention)
-                .map(PaymentPlanMetadata::fromPaymentIntention)
-                .orElse(null);
-            final DecisionType courtDecision = responseAcceptation.getCourtDetermination()
-                .map(CourtDetermination::getDecisionType)
-                .orElse(null);
-            final FormaliseOption formaliseOption = responseAcceptation.getFormaliseOption().orElse(null);
+        switch (claimantResponseType) {
+            case ACCEPTATION:
+                final ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponse;
+                final PaymentPlanMetadata claimantPaymentPlan = responseAcceptation.getClaimantPaymentIntention()
+                    .map(PaymentPlanMetadata::fromPaymentIntention)
+                    .orElse(null);
+                final PaymentPlanMetadata courtPaymentPlan = responseAcceptation.getCourtDetermination()
+                    .map(CourtDetermination::getCourtPaymentIntention)
+                    .map(PaymentPlanMetadata::fromPaymentIntention)
+                    .orElse(null);
+                final DecisionType courtDecision = responseAcceptation.getCourtDetermination()
+                    .map(CourtDetermination::getDecisionType)
+                    .orElse(null);
+                final FormaliseOption formaliseOption = responseAcceptation.getFormaliseOption().orElse(null);
 
-            return new ClaimantResponseMetadata(
-                claimantRespondedAt,
-                claimantResponseType,
-                fullPaymentReceived,
-                settleForAmount,
-                claimantPaymentPlan,
-                courtPaymentPlan,
-                courtDecision,
-                formaliseOption,
-                null
-            );
-        }
+                return new ClaimantResponseMetadata(
+                    claimantRespondedAt,
+                    claimantResponseType,
+                    fullPaymentReceived,
+                    settleForAmount,
+                    claimantPaymentPlan,
+                    courtPaymentPlan,
+                    courtDecision,
+                    formaliseOption,
+                    null
+                );
 
-        if (claimantResponse instanceof ResponseRejection) {
-            final ResponseRejection responseRejection = (ResponseRejection) claimantResponse;
-            final Optional<YesNoOption> optionalMediation = responseRejection.getFreeMediation();
-            final Boolean mediation = optionalMediation.isPresent()
-                ? optionalMediation.filter(isEqual(YesNoOption.YES)).isPresent()
-                : null;
-            return new ClaimantResponseMetadata(
-                claimantRespondedAt,
-                claimantResponseType,
-                fullPaymentReceived,
-                settleForAmount,
-                null,
-                null,
-                null,
-                null,
-                mediation
-            );
+            case REJECTION:
+                final ResponseRejection responseRejection = (ResponseRejection) claimantResponse;
+                final Boolean mediation = extractBooleanOrNull(responseRejection::getFreeMediation, YesNoOption.YES);
+                return new ClaimantResponseMetadata(
+                    claimantRespondedAt,
+                    claimantResponseType,
+                    fullPaymentReceived,
+                    settleForAmount,
+                    null,
+                    null,
+                    null,
+                    null,
+                    mediation
+                );
         }
 
         return null;
+    }
+
+    private static <T> Boolean extractBooleanOrNull(Supplier<Optional<T>> supplier, T compare) {
+        Optional<T> optional = supplier.get();
+        return optional.isPresent()
+            ? optional.filter(isEqual(compare)).isPresent()
+            : null;
     }
 }
