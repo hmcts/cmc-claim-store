@@ -78,7 +78,10 @@ public class CCDCaseApi {
 
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
         User user = userService.getUser(authorisation);
-        return getAllCasesBy(user, ImmutableMap.of("case.submitterId", submitterId));
+
+        return asStream(getAllCasesBy(user, ImmutableMap.of()))
+            .filter(claim -> submitterId.equals(claim.getSubmitterId()))
+            .collect(Collectors.toList());
     }
 
     public Optional<Claim> getByReferenceNumber(String referenceNumber, String authorisation) {
@@ -184,10 +187,6 @@ public class CCDCaseApi {
 
     private Optional<Claim> getCaseBy(User user, Map<String, String> searchString) {
         List<CaseDetails> result = searchAll(user, searchString);
-
-        if (result.size() == 1 && isCreatedState(result.get(0))) {
-            return Optional.empty();
-        }
 
         List<Claim> claims = extractClaims(result);
 
