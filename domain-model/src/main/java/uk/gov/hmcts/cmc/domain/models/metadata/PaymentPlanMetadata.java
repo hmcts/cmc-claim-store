@@ -25,15 +25,15 @@ class PaymentPlanMetadata {
     private final PaymentSchedule frequency;
 
     static PaymentPlanMetadata fromResponse(Response response) {
-        if (response instanceof FullAdmissionResponse) {
-            final FullAdmissionResponse fullAdmissionResponse = (FullAdmissionResponse) response;
-            return fromPaymentIntention(fullAdmissionResponse.getPaymentIntention());
-        }
+        switch (response.getResponseType()) {
+            case FULL_ADMISSION:
+                final FullAdmissionResponse fullAdmissionResponse = (FullAdmissionResponse) response;
+                return fromPaymentIntention(fullAdmissionResponse.getPaymentIntention());
 
-        if (response instanceof PartAdmissionResponse) {
-            final PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse) response;
-            final Optional<PaymentIntention> optionalPaymentIntention = partAdmissionResponse.getPaymentIntention();
-            return optionalPaymentIntention.map(PaymentPlanMetadata::fromPaymentIntention).orElse(null);
+            case PART_ADMISSION:
+                final PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse) response;
+                final Optional<PaymentIntention> optionalPaymentIntention = partAdmissionResponse.getPaymentIntention();
+                return optionalPaymentIntention.map(PaymentPlanMetadata::fromPaymentIntention).orElse(null);
         }
 
         return null;

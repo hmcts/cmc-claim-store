@@ -29,14 +29,14 @@ class StatesPaidMetadata {
         }
         final Response response = optionalResponse.get();
 
-        if (response instanceof FullDefenceResponse) {
-            final FullDefenceResponse fullDefenceResponse = (FullDefenceResponse) response;
-            return extractStatesPaidMetadata(claim, fullDefenceResponse::getPaymentDeclaration);
-        }
+        switch (response.getResponseType()) {
+            case FULL_DEFENCE:
+                final FullDefenceResponse fullDefenceResponse = (FullDefenceResponse) response;
+                return extractStatesPaidMetadata(claim, fullDefenceResponse::getPaymentDeclaration);
 
-        if (response instanceof PartAdmissionResponse) {
-            final PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse) response;
-            return extractStatesPaidMetadata(claim, partAdmissionResponse::getPaymentDeclaration);
+            case PART_ADMISSION:
+                final PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse) response;
+                return extractStatesPaidMetadata(claim, partAdmissionResponse::getPaymentDeclaration);
         }
 
         return null;
