@@ -34,9 +34,10 @@ class PaymentPlanMetadata {
                 final PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse) response;
                 final Optional<PaymentIntention> optionalPaymentIntention = partAdmissionResponse.getPaymentIntention();
                 return optionalPaymentIntention.map(PaymentPlanMetadata::fromPaymentIntention).orElse(null);
-        }
 
-        return null;
+            default:
+                return null;
+        }
     }
 
     static PaymentPlanMetadata fromPaymentIntention(PaymentIntention paymentIntention) {

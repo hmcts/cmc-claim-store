@@ -37,9 +37,10 @@ class StatesPaidMetadata {
             case PART_ADMISSION:
                 final PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse) response;
                 return extractStatesPaidMetadata(claim, partAdmissionResponse::getPaymentDeclaration);
-        }
 
-        return null;
+            default:
+                return null;
+        }
     }
 
     private static StatesPaidMetadata extractStatesPaidMetadata(

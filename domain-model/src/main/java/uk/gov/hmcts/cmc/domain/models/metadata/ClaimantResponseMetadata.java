@@ -90,9 +90,10 @@ class ClaimantResponseMetadata {
                     null,
                     mediation
                 );
-        }
 
-        return null;
+            default:
+                return null;
+        }
     }
 
     private static <T> Boolean extractBooleanOrNull(Supplier<Optional<T>> supplier, T compare) {
