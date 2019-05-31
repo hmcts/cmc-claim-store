@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.domain.models;
+package uk.gov.hmcts.cmc.domain.models.DirectionsQuestionnaire;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
@@ -25,6 +25,8 @@ public class DirectionsQuestionnaire {
 
     private final String hearingLocation;
 
+    private final String hearingLocationSlug;
+
     private final String exceptionalCircumstancesReason;
 
     private final List<LocalDate> unavailableDates;
@@ -42,7 +44,7 @@ public class DirectionsQuestionnaire {
 
     private final String otherSupportRequired ;
 
-    private final Map<String, LocalDate> expertReportsRows;
+    private final List<ExpertReportRow> expertReportsRows;
 
     private final String expertEvidenceToExamine;
 

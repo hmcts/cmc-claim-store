@@ -15,7 +15,6 @@ import uk.gov.hmcts.cmc.ccd.mapper.TelephoneMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.TimelineEventMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans.StatementOfMeansMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
