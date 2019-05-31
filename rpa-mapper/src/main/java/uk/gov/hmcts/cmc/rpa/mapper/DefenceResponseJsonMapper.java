@@ -1,8 +1,10 @@
 package uk.gov.hmcts.cmc.rpa.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.codec.multipart.Part;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
@@ -47,6 +49,7 @@ public class DefenceResponseJsonMapper {
             .add("mediation", isMediationSelected(response))
             .add("amountAdmitted", getAmountAdmitted(response))
             .add("payment", mapPayment(response))
+            .add("hearingRequirements", areHearingRequirementsRequested(claim, response))
             .build();
     }
 
@@ -121,6 +124,26 @@ public class DefenceResponseJsonMapper {
             }
         }
         return false;
+    }
+
+    private boolean areHearingRequirementsRequested(Claim claim, Response response) {
+        if (!claim.getFeatures().contains("directionsQuestionnaire")){
+            return false;
+        }
+
+        switch (response.getResponseType()) {
+            case FULL_DEFENCE:
+                FullDefenceResponse fullDefenceResponse = (FullDefenceResponse)response;
+                return fullDefenceResponse.getDirectionsQuestionnaire().isPresent() &&
+                    fullDefenceResponse.getDirectionsQuestionnaire().get().isDisabledAccessSelected();
+            case PART_ADMISSION:
+                PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse)response;
+                return partAdmissionResponse.getDirectionsQuestionnaire().isPresent() &&
+                    partAdmissionResponse.getDirectionsQuestionnaire().get().isDisabledAccessSelected();
+            case FULL_ADMISSION:
+            default:
+                return false;
+        }
     }
 
 }
