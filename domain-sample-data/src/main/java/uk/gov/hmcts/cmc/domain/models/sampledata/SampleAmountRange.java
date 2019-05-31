@@ -13,7 +13,7 @@ public class SampleAmountRange {
 
     public static AmountRangeBuilder builder() {
         return AmountRange.builder()
-            .lowerValue(BigDecimal.valueOf(100L))
-            .higherValue(BigDecimal.valueOf(99000L));
+            .lowerValue(BigDecimal.valueOf(100.99))
+            .higherValue(BigDecimal.valueOf(99000.99));
     }
 }

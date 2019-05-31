@@ -3,7 +3,7 @@
   "defenceType": "DISPUTE",
   "paymentDeclaration": {
     "paidDate": "2016-01-02",
-    "paidAmount": "100",
+    "paidAmount": "100.99",
     "explanation": "Paid cash"
   },
   "defence": "defence string",

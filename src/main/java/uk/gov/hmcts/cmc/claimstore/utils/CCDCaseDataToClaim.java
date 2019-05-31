@@ -5,6 +5,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,12 +22,16 @@ public class CCDCaseDataToClaim {
         this.jsonMapper = jsonMapper;
     }
 
-    public Claim to(Long caseId, Map<String, Object> data) {
-        Map<String, Object> tempData = new HashMap<>(data);
-        tempData.put("id", caseId);
+    public Claim to(CaseDetails caseDetails) {
+        return caseMapper.from(convertToCCDCase(caseDetails));
+    }
 
-        CCDCase ccdCase = convertToCCDCase(tempData);
-        return caseMapper.from(ccdCase);
+    public CCDCase convertToCCDCase(CaseDetails caseDetails) {
+        Map<String, Object> tempData = new HashMap<>(caseDetails.getData());
+        tempData.put("id", caseDetails.getId());
+        tempData.put("state", caseDetails.getState());
+
+        return convertToCCDCase(tempData);
     }
 
     private CCDCase convertToCCDCase(Map<String, Object> mapData) {

@@ -4,8 +4,6 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment.CountyCourtJudgmentBuilder;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 
-import java.math.BigDecimal;
-
 public class SampleCountyCourtJudgment {
 
     private SampleCountyCourtJudgment() {
@@ -14,7 +12,6 @@ public class SampleCountyCourtJudgment {
 
     public static CountyCourtJudgmentBuilder builder() {
         return CountyCourtJudgment.builder()
-            .paidAmount(BigDecimal.ZERO)
             .paymentOption(PaymentOption.IMMEDIATELY);
     }
 }
