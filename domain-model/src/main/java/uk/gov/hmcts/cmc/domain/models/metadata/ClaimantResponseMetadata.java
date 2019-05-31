@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.models.metadata;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -23,6 +24,7 @@ import static java.util.function.Predicate.isEqual;
 @Getter
 @EqualsAndHashCode
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 class ClaimantResponseMetadata {
     private final LocalDateTime claimantRespondedAt;
     private final ClaimantResponseType claimantResponseType;
@@ -33,6 +35,10 @@ class ClaimantResponseMetadata {
     private final DecisionType courtDecision;
     private final FormaliseOption formaliseOption;
     private final Boolean mediation;
+
+    private static ClaimantResponseMetadataBuilder builder() {
+        return new ClaimantResponseMetadataBuilder();
+    }
 
     static ClaimantResponseMetadata fromClaim(Claim claim) {
         final Optional<ClaimantResponse> optionalClaimantResponse = claim.getClaimantResponse();
@@ -64,32 +70,27 @@ class ClaimantResponseMetadata {
                     .orElse(null);
                 final FormaliseOption formaliseOption = responseAcceptation.getFormaliseOption().orElse(null);
 
-                return new ClaimantResponseMetadata(
-                    claimantRespondedAt,
-                    claimantResponseType,
-                    fullPaymentReceived,
-                    settleForAmount,
-                    claimantPaymentPlan,
-                    courtPaymentPlan,
-                    courtDecision,
-                    formaliseOption,
-                    null
-                );
+                return ClaimantResponseMetadata.builder()
+                    .claimantRespondedAt(claimantRespondedAt)
+                    .claimantResponseType(claimantResponseType)
+                    .fullPaymentReceived(fullPaymentReceived)
+                    .settleForAmount(settleForAmount)
+                    .claimantPaymentPlan(claimantPaymentPlan)
+                    .courtPaymentPlan(courtPaymentPlan)
+                    .courtDecision(courtDecision)
+                    .formaliseOption(formaliseOption)
+                    .build();
 
             case REJECTION:
                 final ResponseRejection responseRejection = (ResponseRejection) claimantResponse;
                 final Boolean mediation = extractBooleanOrNull(responseRejection::getFreeMediation, YesNoOption.YES);
-                return new ClaimantResponseMetadata(
-                    claimantRespondedAt,
-                    claimantResponseType,
-                    fullPaymentReceived,
-                    settleForAmount,
-                    null,
-                    null,
-                    null,
-                    null,
-                    mediation
-                );
+                return ClaimantResponseMetadata.builder()
+                    .claimantRespondedAt(claimantRespondedAt)
+                    .claimantResponseType(claimantResponseType)
+                    .fullPaymentReceived(fullPaymentReceived)
+                    .settleForAmount(settleForAmount)
+                    .mediation(mediation)
+                    .build();
 
             default:
                 return null;
