@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import uk.gov.hmcts.cmc.domain.models.DirectionsQuestionnaire;
+import uk.gov.hmcts.cmc.domain.models.DirectionsQuestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.math.BigDecimal;
