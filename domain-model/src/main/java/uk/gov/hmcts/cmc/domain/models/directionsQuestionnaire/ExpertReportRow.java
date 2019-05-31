@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.domain.models.DirectionsQuestionnaire;
+package uk.gov.hmcts.cmc.domain.models.directionsQuestionnaire;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
