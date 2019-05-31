@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
-import uk.gov.hmcts.cmc.domain.models.directionsQuestionnaire.DirectionsQuestionnaire;
-import uk.gov.hmcts.cmc.domain.models.directionsQuestionnaire.ExpertReportRow;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReportRow;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.time.LocalDate;
