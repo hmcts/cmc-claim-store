@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,6 +28,7 @@ public class CountyCourtJudgmentSerializationTest {
         CompanyDetails defendant = SampleTheirDetails.builder().companyDetails();
         CountyCourtJudgment expected = SampleCountyCourtJudgment.builder()
             .paymentOption(PaymentOption.INSTALMENTS)
+            .paidAmount(BigDecimal.ZERO)
             .repaymentPlan(SampleRepaymentPlan.builder().build())
             .statementOfTruth(new StatementOfTruth(defendant.getContactPerson().get(), "Director"))
             .build();

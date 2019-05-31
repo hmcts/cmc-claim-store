@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATED;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service("caseRepository")
@@ -218,7 +218,7 @@ public class DBCaseRepository implements CaseRepository {
                 claim.getResponseDeadline(), claim.getExternalId(), claim.getSubmitterEmail(), features,
                 claimSubmissionOperationIndicator);
         } else {
-            ClaimState state = this.saveClaimStateEnabled ? CREATED : null;
+            ClaimState state = this.saveClaimStateEnabled ? CREATE : null;
             claimRepository.saveSubmittedByClaimant(claimDataString,
                 claim.getSubmitterId(), claim.getLetterHolderId(),
                 claim.getIssuedOn(), claim.getResponseDeadline(), claim.getExternalId(),

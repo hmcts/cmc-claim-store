@@ -1,9 +1,11 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
+import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
 
 import java.util.Arrays;
@@ -67,6 +69,7 @@ public class CaseMapper {
 
         builder
             .id(ccdCase.getId())
+            .state(EnumUtils.getEnumIgnoreCase(ClaimState.class, ccdCase.getState()))
             .ccdCaseId(ccdCase.getId())
             .submitterId(ccdCase.getSubmitterId())
             .externalId(ccdCase.getExternalId())
