@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.domain.models.DirectionsQuestionnaire;
+package uk.gov.hmcts.cmc.domain.models.directionsQuestionnaire;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,6 @@ import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 @Builder
 @Getter

@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTelephone;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
-import uk.gov.hmcts.cmc.domain.models.DirectionsQuestionnaire.DirectionsQuestionnaire;
+import uk.gov.hmcts.cmc.domain.models.directionsQuestionnaire.DirectionsQuestionnaire;
 
 import java.time.LocalDateTime;
 
