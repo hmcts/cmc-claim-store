@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.domain.models.directionsQuestionnaire;
+package uk.gov.hmcts.cmc.domain.models.directionsquestionnaire;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
