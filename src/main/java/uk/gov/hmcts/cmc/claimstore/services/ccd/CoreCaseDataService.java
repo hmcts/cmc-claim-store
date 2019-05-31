@@ -52,21 +52,24 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled", havingValue = "true")
 public class CoreCaseDataService {
 
-    public static final String CMC_CASE_UPDATE_SUMMARY = "CMC case update";
-    public static final String CMC_CASE_CREATE_SUMMARY = "CMC case issue";
-    public static final String SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION = "Submitting CMC case update";
-    public static final String SUBMITTING_CMC_CASE_ISSUE_DESCRIPTION = "Submitting CMC case issue";
+    private static final String CMC_CASE_UPDATE_SUMMARY = "CMC case update";
+    private static final String CMC_CASE_CREATE_SUMMARY = "CMC case issue";
+    private static final String SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION = "Submitting CMC case update";
+    private static final String SUBMITTING_CMC_CASE_ISSUE_DESCRIPTION = "Submitting CMC case issue";
 
-    public static final String CCD_UPDATE_FAILURE_MESSAGE
+    private static final String CCD_UPDATE_FAILURE_MESSAGE
         = "Failed updating claim in CCD store for case id %s on event %s";
 
-    public static final String CCD_STORING_FAILURE_MESSAGE
+    private static final String CCD_STORING_FAILURE_MESSAGE
         = "Failed storing claim in CCD store for case id %s on event %s";
 
     private final CaseMapper caseMapper;
@@ -275,8 +278,16 @@ public class CoreCaseDataService {
                 userDetails.isSolicitor() || userDetails.isCaseworker()
             );
 
-            Claim updatedClaim = toClaimBuilder(startEventResponse)
+            Claim updatedClaim = toClaim(startEventResponse);
+
+            updatedClaim = updatedClaim.toBuilder()
                 .claimDocumentCollection(claimDocumentCollection)
+                .claimSubmissionOperationIndicators(
+                    updateClaimSubmissionIndicatorByDocumentType(
+                        updatedClaim.getClaimSubmissionOperationIndicators(),
+                        claimDocumentType
+                    )
+                )
                 .build();
 
             CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);
@@ -297,6 +308,21 @@ public class CoreCaseDataService {
                 ), exception
             );
         }
+    }
+
+    private ClaimSubmissionOperationIndicators updateClaimSubmissionIndicatorByDocumentType(
+        ClaimSubmissionOperationIndicators indicators,
+        ClaimDocumentType documentType
+    ) {
+        ClaimSubmissionOperationIndicators.ClaimSubmissionOperationIndicatorsBuilder updatedIndicator
+            = indicators.toBuilder();
+
+        if (documentType == SEALED_CLAIM) {
+            updatedIndicator.sealedClaimUpload(YES);
+        } else if (documentType == CLAIM_ISSUE_RECEIPT) {
+            updatedIndicator.claimIssueReceiptUpload(YES);
+        }
+        return updatedIndicator.build();
     }
 
     public CaseDetails saveDefendantResponse(
@@ -569,9 +595,11 @@ public class CoreCaseDataService {
     }
 
     private Claim.ClaimBuilder toClaimBuilder(StartEventResponse startEventResponse) {
-        CCDCase ccdCase = extractCase(startEventResponse.getCaseDetails());
-        Claim claim = caseMapper.from(ccdCase);
-        return claim.toBuilder();
+        return toClaim(startEventResponse).toBuilder();
+    }
+
+    private Claim toClaim(StartEventResponse startEventResponse) {
+        return caseMapper.from(extractCase(startEventResponse.getCaseDetails()));
     }
 
     private CaseDataContent caseDataContent(StartEventResponse startEventResponse, Claim ccdClaim) {
