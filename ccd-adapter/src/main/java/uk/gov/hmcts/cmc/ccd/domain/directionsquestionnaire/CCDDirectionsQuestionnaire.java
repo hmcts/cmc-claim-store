@@ -1,8 +1,10 @@
-package uk.gov.hmcts.cmc.domain.models.directionsquestionnaire;
+package uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Value;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import uk.gov.hmcts.cmc.domain.constraints.FutureDate;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
@@ -10,8 +12,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Builder
-@Value
-public class DirectionsQuestionnaire {
+@Getter
+@EqualsAndHashCode
+@AllArgsConstructor
+public class CCDDirectionsQuestionnaire {
 
     @JsonUnwrapped
     private final YesNoOption selfWitness;
@@ -39,7 +43,7 @@ public class DirectionsQuestionnaire {
 
     private final String otherSupportRequired ;
 
-    private final List<ExpertReportRow> expertReportsRows;
+    private final List<CCDExpertReportRow> expertReportsRows;
 
     private final String expertEvidenceToExamine;
 

@@ -12,9 +12,9 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDClaimantResponse;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
+import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.ccd.domain.offers.CCDMadeBy;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -81,5 +81,5 @@ public class CCDRespondent {
     private String redeterminationExplanation;
     private LocalDateTime redeterminationRequestedDate;
     private CCDMadeBy redeterminationMadeBy;
-    private DirectionsQuestionnaire directionsQuestionnaire;
+    private CCDDirectionsQuestionnaire directionsQuestionnaire;
 }

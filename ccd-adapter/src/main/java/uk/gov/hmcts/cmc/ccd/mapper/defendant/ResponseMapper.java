@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
+import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.ccd.mapper.EvidenceRowMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.MoneyMapper;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.cmc.ccd.mapper.TimelineEventMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans.StatementOfMeansMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
@@ -169,7 +171,7 @@ public class ResponseMapper {
         fullDefenceResponse.getPaymentDeclaration().ifPresent(mapPaymentDeclaration(builder));
         fullDefenceResponse.getEvidence().ifPresent(mapDefendantEvidence(builder));
         fullDefenceResponse.getTimeline().ifPresent(mapDefendantTimeline(builder));
-        fullDefenceResponse.getDirectionsQuestionnaire().ifPresent(builder::directionsQuestionnaire);
+        fullDefenceResponse.getDirectionsQuestionnaire().ifPresent(mapDirectionsQuestionnaire(builder));
     }
 
     private Consumer<DefendantTimeline> mapDefendantTimeline(CCDRespondent.CCDRespondentBuilder builder) {
@@ -201,6 +203,25 @@ public class ResponseMapper {
             builder.paymentDeclarationPaidAmount(paymentDeclaration.getPaidAmount().map(moneyMapper::to)
                 .orElse(null));
         };
+    }
+
+    private Consumer<DirectionsQuestionnaire> mapDirectionsQuestionnaire(
+        CCDDirectionsQuestionnaire.CCDDirectionsQuestionnaireBuilder builder
+    ) {
+        return directionsQuestionnaire -> builder.selfWitness(directionsQuestionnaire.getSelfWitness())
+            .howManyOtherWitness(directionsQuestionnaire.getHowManyOtherWitness())
+            .hearingLocation(directionsQuestionnaire.getHearingLocation())
+            .hearingLocationSlug(directionsQuestionnaire.getHearingLocationSlug())
+            .exceptionalCircumstancesReason(directionsQuestionnaire.getExceptionalCircumstancesReason())
+            .unavailableDates(directionsQuestionnaire.getUnavailableDates())
+            .availableDate(directionsQuestionnaire.getAvailableDate())
+            .languageInterpreted(directionsQuestionnaire.getLanguageInterpreted())
+            .signLanguageInterpreted(directionsQuestionnaire.getSignLanguageInterpreted())
+            .otherSupportRequired(directionsQuestionnaire.getOtherSupportRequired())
+            .expertReportsRows(directionsQuestionnaire.getExpertReportsRows())
+            .expertEvidenceToExamine(directionsQuestionnaire.getExpertEvidenceToExamine())
+            .whyExpertIsNeeded(directionsQuestionnaire.getWhyExpertIsNeeded())
+            .build();
     }
 
     private FullDefenceResponse extractFullDefence(CCDCollectionElement<CCDRespondent> respondentElement) {
