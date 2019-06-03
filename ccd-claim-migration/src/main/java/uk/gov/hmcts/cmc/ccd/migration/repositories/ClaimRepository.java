@@ -16,7 +16,7 @@ import java.util.List;
 @UseStringTemplate3StatementLocator
 public interface ClaimRepository {
 
-    @SqlQuery("SELECT * FROM claim order by id desc limit 100 offset 100")
+    @SqlQuery("SELECT * FROM claim order by id asc limit 100 offset 100")
     List<Claim> getAllNotMigratedClaims();
 
     @SqlQuery("SELECT * FROM claim WHERE reference_number in (<references>) order by id asc")
