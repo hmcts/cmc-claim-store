@@ -39,7 +39,7 @@ public class UpdateCCDCaseService {
         this.authTokenGenerator = authTokenGenerator;
     }
 
-    @Retryable(value = {OverwriteCaseException.class}, maxAttempts = 5, backoff = @Backoff(delay = 400, maxDelay = 800))
+    @Retryable(value = {OverwriteCaseException.class}, maxAttempts = 1, backoff = @Backoff(delay = 400, maxDelay = 800))
     @LogExecutionTime
     public CaseDetails updateCase(User user, Long caseId, Claim claim, CaseEvent event) {
 
