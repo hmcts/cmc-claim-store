@@ -52,7 +52,7 @@ public class Income extends CollectionId {
 
     @NotNull
     @Money
-    @DecimalMin(value = "0.01")
+    @DecimalMin(value = "0.00")
     private final BigDecimal amount;
 
     @Builder
