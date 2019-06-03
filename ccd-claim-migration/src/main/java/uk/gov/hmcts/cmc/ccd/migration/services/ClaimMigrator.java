@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.ccd.migration.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.ccd.migration.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Interest;
-import uk.gov.hmcts.cmc.domain.models.InterestDate;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
