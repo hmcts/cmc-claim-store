@@ -47,7 +47,7 @@ public class DataFixHandler {
 
             if (!dryRun) {
                 Optional<CaseDetails> caseDetails
-                    = searchCCDCaseService.getCcdIdByReferenceNumber(user, claim.getReferenceNumber());
+                    = searchCCDCaseService.getCcdCaseByExternalId(user, claim.getExternalId());
 
                 caseDetails
                     .ifPresent(details -> updateCase(user, updatedClaims, failedOnUpdateMigrations, claim, details));
