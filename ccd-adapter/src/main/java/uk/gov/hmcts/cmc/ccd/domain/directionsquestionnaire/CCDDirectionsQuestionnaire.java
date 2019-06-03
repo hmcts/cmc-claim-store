@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import uk.gov.hmcts.cmc.domain.constraints.FutureDate;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.time.LocalDate;
@@ -28,9 +28,8 @@ public class CCDDirectionsQuestionnaire {
 
     private final String exceptionalCircumstancesReason;
 
-    private final List<LocalDate> unavailableDates;
+    private final List<CCDCollectionElement<CCDUnavailableDate>> unavailableDates;
 
-    @FutureDate
     private final LocalDate availableDate;
 
     private final String languageInterpreted;
@@ -43,7 +42,7 @@ public class CCDDirectionsQuestionnaire {
 
     private final String otherSupportRequired ;
 
-    private final List<CCDExpertReportRow> expertReportsRows;
+    private final List<CCDCollectionElement<CCDExpertReportRow>> expertReportsRows;
 
     private final String expertEvidenceToExamine;
 

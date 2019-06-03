@@ -21,9 +21,6 @@ public class ExpertRowMapper {
     }
 
     public ExpertReportRow from(CCDCollectionElement<CCDExpertReportRow> ccdExpertReportRow) {
-        if (ccdExpertReportRow == null) {
-            return null;
-        }
 
         return ExpertReportRow
             .builder()

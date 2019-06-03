@@ -24,7 +24,7 @@ public class DirectionsQuestionnaire {
 
     private final String exceptionalCircumstancesReason;
 
-    private final List<LocalDate> unavailableDates;
+    private final List<UnavailableDate> unavailableDates;
 
     @FutureDate
     private final LocalDate availableDate;
