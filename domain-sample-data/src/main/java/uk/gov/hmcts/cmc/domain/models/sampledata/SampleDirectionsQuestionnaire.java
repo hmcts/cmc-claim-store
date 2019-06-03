@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReportRow;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.UnavailableDate;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.time.LocalDate;
@@ -14,8 +15,16 @@ public class SampleDirectionsQuestionnaire {
     public static SampleDirectionsQuestionnaire builder() { return new SampleDirectionsQuestionnaire(); }
 
     public DirectionsQuestionnaire build() {
-    List<LocalDate> unavailableDates = asList(LocalDate.of(2050,1,1));
-    List<ExpertReportRow> expertReportRowsData = asList(new ExpertReportRow("expert1", LocalDate.of(2040,1,1)));
+    List<UnavailableDate> unavailableDates = asList(UnavailableDate
+        .builder()
+        .unavailableDate(LocalDate.of(2050,1,1))
+        .build());
+
+    List<ExpertReportRow> expertReportRowsData = asList(ExpertReportRow
+        .builder()
+        .expertName("expert1")
+        .expertReportDate(LocalDate.of(2040,1,1))
+        .build());
 
         return DirectionsQuestionnaire.builder()
             .selfWitness(YesNoOption.YES)

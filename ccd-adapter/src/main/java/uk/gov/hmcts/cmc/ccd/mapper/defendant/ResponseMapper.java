@@ -7,8 +7,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
-import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
+import uk.gov.hmcts.cmc.ccd.mapper.DirectionsQuestionnaireMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.EvidenceRowMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.MoneyMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.PaymentIntentionMapper;
@@ -17,7 +17,6 @@ import uk.gov.hmcts.cmc.ccd.mapper.TimelineEventMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.defendant.statementofmeans.StatementOfMeansMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
@@ -47,6 +46,7 @@ public class ResponseMapper {
     private final StatementOfMeansMapper statementOfMeansMapper;
     private final TelephoneMapper telephoneMapper;
     private final MoneyMapper moneyMapper;
+    private final DirectionsQuestionnaireMapper directionsQuestionnaireMapper;
 
     public ResponseMapper(
         EvidenceRowMapper evidenceRowMapper,
@@ -55,7 +55,8 @@ public class ResponseMapper {
         PaymentIntentionMapper paymentIntentionMapper,
         StatementOfMeansMapper statementOfMeansMapper,
         TelephoneMapper telephoneMapper,
-        MoneyMapper moneyMapper
+        MoneyMapper moneyMapper,
+        DirectionsQuestionnaireMapper directionsQuestionnaireMapper
     ) {
         this.evidenceRowMapper = evidenceRowMapper;
         this.timelineEventMapper = timelineEventMapper;
@@ -64,6 +65,7 @@ public class ResponseMapper {
         this.statementOfMeansMapper = statementOfMeansMapper;
         this.telephoneMapper = telephoneMapper;
         this.moneyMapper = moneyMapper;
+        this.directionsQuestionnaireMapper = directionsQuestionnaireMapper;
     }
 
     public void to(
@@ -151,6 +153,10 @@ public class ResponseMapper {
         response.getStatementOfMeans().ifPresent(
             statementOfMeans -> builder.statementOfMeans(statementOfMeansMapper.to(statementOfMeans))
         );
+
+        response.getDirectionsQuestionnaire().ifPresent(
+            dq -> builder.directionsQuestionnaire(directionsQuestionnaireMapper.to(dq))
+        );
     }
 
     private void toFullAdmissionResponse(CCDRespondent.CCDRespondentBuilder builder, FullAdmissionResponse response) {
@@ -171,7 +177,8 @@ public class ResponseMapper {
         fullDefenceResponse.getPaymentDeclaration().ifPresent(mapPaymentDeclaration(builder));
         fullDefenceResponse.getEvidence().ifPresent(mapDefendantEvidence(builder));
         fullDefenceResponse.getTimeline().ifPresent(mapDefendantTimeline(builder));
-        fullDefenceResponse.getDirectionsQuestionnaire().ifPresent(mapDirectionsQuestionnaire(builder));
+        fullDefenceResponse.getDirectionsQuestionnaire()
+            .ifPresent(dq -> builder.directionsQuestionnaire(directionsQuestionnaireMapper.to(dq)));
     }
 
     private Consumer<DefendantTimeline> mapDefendantTimeline(CCDRespondent.CCDRespondentBuilder builder) {
@@ -205,25 +212,6 @@ public class ResponseMapper {
         };
     }
 
-    private Consumer<DirectionsQuestionnaire> mapDirectionsQuestionnaire(
-        CCDDirectionsQuestionnaire.CCDDirectionsQuestionnaireBuilder builder
-    ) {
-        return directionsQuestionnaire -> builder.selfWitness(directionsQuestionnaire.getSelfWitness())
-            .howManyOtherWitness(directionsQuestionnaire.getHowManyOtherWitness())
-            .hearingLocation(directionsQuestionnaire.getHearingLocation())
-            .hearingLocationSlug(directionsQuestionnaire.getHearingLocationSlug())
-            .exceptionalCircumstancesReason(directionsQuestionnaire.getExceptionalCircumstancesReason())
-            .unavailableDates(directionsQuestionnaire.getUnavailableDates())
-            .availableDate(directionsQuestionnaire.getAvailableDate())
-            .languageInterpreted(directionsQuestionnaire.getLanguageInterpreted())
-            .signLanguageInterpreted(directionsQuestionnaire.getSignLanguageInterpreted())
-            .otherSupportRequired(directionsQuestionnaire.getOtherSupportRequired())
-            .expertReportsRows(directionsQuestionnaire.getExpertReportsRows())
-            .expertEvidenceToExamine(directionsQuestionnaire.getExpertEvidenceToExamine())
-            .whyExpertIsNeeded(directionsQuestionnaire.getWhyExpertIsNeeded())
-            .build();
-    }
-
     private FullDefenceResponse extractFullDefence(CCDCollectionElement<CCDRespondent> respondentElement) {
         CCDRespondent respondent = respondentElement.getValue();
 
@@ -240,7 +228,7 @@ public class ResponseMapper {
             .evidence(extractDefendantEvidence(respondent))
             .timeline(extractDefendantTimeline(respondent))
             .paymentDeclaration(extractPaymentDeclaration(respondent))
-            .directionsQuestionnaire(respondent.getDirectionsQuestionnaire())
+            .directionsQuestionnaire(directionsQuestionnaireMapper.from(respondent.getDirectionsQuestionnaire()))
             .build();
     }
 
@@ -302,7 +290,7 @@ public class ResponseMapper {
             .evidence(extractDefendantEvidence(respondent))
             .timeline(extractDefendantTimeline(respondent))
             .statementOfMeans(statementOfMeansMapper.from(respondent.getStatementOfMeans()))
-            .directionsQuestionnaire(respondent.getDirectionsQuestionnaire())
+            .directionsQuestionnaire(directionsQuestionnaireMapper.from(respondent.getDirectionsQuestionnaire()))
             .build();
     }
 
