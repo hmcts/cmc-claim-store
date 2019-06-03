@@ -43,7 +43,7 @@ public class DataFixHandler {
         User user
     ) {
         try {
-            logger.info("fix case for: {} for event: {}", claim.getReferenceNumber(), SUPPORT_UPDATE);
+            logger.info("fix case for: {}", claim.getReferenceNumber());
 
             if (!dryRun) {
                 Optional<CaseDetails> caseDetails

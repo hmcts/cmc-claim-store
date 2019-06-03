@@ -44,14 +44,14 @@ public class SearchCCDCaseService {
         this.authTokenGenerator = authTokenGenerator;
     }
 
-    @Retryable(include = {SocketTimeoutException.class, FeignException.class, IOException.class},
-        maxAttempts = 5,
-        backoff = @Backoff(delay = 400, maxDelay = 800)
-    )
-    @LogExecutionTime
-    public Optional<CaseDetails> getCcdCaseByReferenceNumber(User user, String referenceNumber) {
-        return search(user, ImmutableMap.of("case.previousServiceCaseReference", referenceNumber));
-    }
+//    @Retryable(include = {SocketTimeoutException.class, FeignException.class, IOException.class},
+//        maxAttempts = 5,
+//        backoff = @Backoff(delay = 400, maxDelay = 800)
+//    )
+//    @LogExecutionTime
+//    public Optional<CaseDetails> getCcdCaseByReferenceNumber(User user, String referenceNumber) {
+//        return search(user, ImmutableMap.of("case.previousServiceCaseReference", referenceNumber));
+//    }
 
 
     @Retryable(include = {SocketTimeoutException.class, FeignException.class, IOException.class},
@@ -59,15 +59,15 @@ public class SearchCCDCaseService {
         backoff = @Backoff(delay = 400, maxDelay = 800)
     )
     @LogExecutionTime
-    public Optional<CaseDetails> getCcdCaseByExternalId(User user, String referenceNumber) {
-        return search(user, ImmutableMap.of("case.externalId", referenceNumber));
+    public Optional<CaseDetails> getCcdCaseByExternalId(User user, String externalId) {
+        return search(user, ImmutableMap.of("case.externalId", externalId));
     }
 
     @Recover
-    public Optional<CaseDetails> recoverSearchFailure(RuntimeException exception, User user, String referenceNumber) {
+    public Optional<CaseDetails> recoverSearchFailure(RuntimeException exception, User user, String externalId) {
         String errorMessage = String.format(
             "Failure: failed search by reference number ( %s for user %s ) due to %s",
-            referenceNumber, user.getUserDetails().getId(), exception.getMessage()
+            externalId, user.getUserDetails().getId(), exception.getMessage()
         );
 
         logger.info(errorMessage, exception);
