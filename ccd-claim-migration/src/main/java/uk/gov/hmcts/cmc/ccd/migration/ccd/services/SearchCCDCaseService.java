@@ -5,7 +5,6 @@ import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
@@ -23,7 +22,6 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
-@ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class SearchCCDCaseService {
 
     public static final String JURISDICTION_ID = "CMC";

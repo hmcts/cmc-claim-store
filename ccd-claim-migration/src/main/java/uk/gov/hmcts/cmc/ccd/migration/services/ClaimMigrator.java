@@ -11,11 +11,15 @@ import uk.gov.hmcts.cmc.ccd.migration.idam.services.UserService;
 import uk.gov.hmcts.cmc.ccd.migration.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.ccd.migration.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.Interest;
+import uk.gov.hmcts.cmc.domain.models.InterestDate;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static uk.gov.hmcts.cmc.domain.models.InterestDate.InterestEndDateType.SETTLED_OR_JUDGMENT;
 
 @Service
 public class ClaimMigrator {
@@ -25,20 +29,25 @@ public class ClaimMigrator {
     private final ClaimRepository claimRepository;
     private final UserService userService;
     private final MigrationHandler migrationHandler;
+    private final DataFixHandler dataFixHandler;
     private final List<String> casesToMigrate;
+    private final boolean fixDataIssues;
 
     @Autowired
     public ClaimMigrator(
         ClaimRepository claimRepository,
         UserService userService,
         MigrationHandler migrationHandler,
-        @Value("${migration.cases.references}") List<String> casesToMigrate
-
+        DataFixHandler dataFixHandler,
+        @Value("${migration.cases.references}") List<String> casesToMigrate,
+        @Value("${migration.fixDataIssues}") boolean fixDataIssues
     ) {
         this.claimRepository = claimRepository;
         this.userService = userService;
         this.migrationHandler = migrationHandler;
+        this.dataFixHandler = dataFixHandler;
         this.casesToMigrate = casesToMigrate;
+        this.fixDataIssues = fixDataIssues;
     }
 
     @LogExecutionTime
@@ -100,14 +109,26 @@ public class ClaimMigrator {
         AtomicInteger failedOnUpdateMigrations
     ) {
         notMigratedClaims.parallelStream().forEach(claim -> {
-            migrationHandler.migrateClaim(
-                migratedClaims,
-                failedOnCreateMigrations,
-                failedOnUpdateMigrations,
-                updatedClaims,
-                claim,
-                user
-            );
+            if (fixDataIssues && isSettledOrJudgement(claim)) {
+                dataFixHandler.fixClaim(migratedClaims, failedOnUpdateMigrations, updatedClaims, claim, user);
+            } else {
+                migrationHandler.migrateClaim(
+                    migratedClaims,
+                    failedOnCreateMigrations,
+                    failedOnUpdateMigrations,
+                    updatedClaims,
+                    claim,
+                    user
+                );
+            }
         });
+    }
+
+    private boolean isSettledOrJudgement(Claim claim) {
+        Interest interest = claim.getClaimData().getInterest();
+        return interest != null
+            && interest.getInterestDate() != null
+            && interest.getInterestDate().getEndDateType() != null
+            && interest.getInterestDate().getEndDateType() == SETTLED_OR_JUDGMENT;
     }
 }
