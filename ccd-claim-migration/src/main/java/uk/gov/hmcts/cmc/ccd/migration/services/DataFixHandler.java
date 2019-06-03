@@ -43,10 +43,15 @@ public class DataFixHandler {
         User user
     ) {
         try {
-            Optional<CaseDetails> caseDetails
-                = searchCCDCaseService.getCcdIdByReferenceNumber(user, claim.getReferenceNumber());
+            logger.info("fix case for: {} for event: {}", claim.getReferenceNumber(), SUPPORT_UPDATE);
 
-            caseDetails.ifPresent(details -> updateCase(user, updatedClaims, failedOnUpdateMigrations, claim, details));
+            if (!dryRun) {
+                Optional<CaseDetails> caseDetails
+                    = searchCCDCaseService.getCcdIdByReferenceNumber(user, claim.getReferenceNumber());
+                caseDetails.ifPresent(details -> updateCase(user, updatedClaims, failedOnUpdateMigrations, claim, details));
+            } else {
+                updatedClaims.incrementAndGet();
+            }
         } catch (Exception e) {
             logger.info("Data Fix failed for claim for reference {} for the migrated count {} due to {}",
                 claim.getReferenceNumber(),
@@ -66,9 +71,7 @@ public class DataFixHandler {
         String referenceNumber = claim.getReferenceNumber();
         try {
             logger.info("start updating case for: {} for event: {}", referenceNumber, SUPPORT_UPDATE);
-            if (!dryRun) {
-                updateCCDCaseService.updateCase(user, caseDetails.getId(), claim, SUPPORT_UPDATE);
-            }
+            updateCCDCaseService.updateCase(user, caseDetails.getId(), claim, SUPPORT_UPDATE);
             updatedClaims.incrementAndGet();
 
         } catch (Exception e) {
