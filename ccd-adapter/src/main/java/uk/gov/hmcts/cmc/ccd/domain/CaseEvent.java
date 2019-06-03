@@ -41,6 +41,7 @@ public enum CaseEvent {
     REFER_TO_JUDGE_BY_CLAIMANT("ReferToJudgeByClaimant"),
     REFER_TO_JUDGE_BY_DEFENDANT("ReferToJudgeByDefendant"),
     SETTLED_PRE_JUDGMENT("SettledPreJudgment"),
+    SUPPORT_UPDATE("SupportUpdate"),
     GENERATE_ORDER("GenerateOrder");
 
     private String value;

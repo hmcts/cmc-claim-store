@@ -109,8 +109,10 @@ public class ClaimMigrator {
         AtomicInteger failedOnUpdateMigrations
     ) {
         notMigratedClaims.parallelStream().forEach(claim -> {
-            if (fixDataIssues && isSettledOrJudgement(claim)) {
-                dataFixHandler.fixClaim(migratedClaims, failedOnUpdateMigrations, updatedClaims, claim, user);
+            if (fixDataIssues) {
+                if (isSettledOrJudgement(claim)) {
+                    dataFixHandler.fixClaim(migratedClaims, failedOnUpdateMigrations, updatedClaims, claim, user);
+                }
             } else {
                 migrationHandler.migrateClaim(
                     migratedClaims,
