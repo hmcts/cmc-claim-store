@@ -67,6 +67,8 @@ public class DataFixHandler {
         User user
     ) {
         try {
+            AtomicInteger skippedClaimsCount = new AtomicInteger();
+
             logger.info("fix case for: {}", claim.getReferenceNumber());
 
             Optional<CaseDetails> caseDetails
@@ -77,11 +79,23 @@ public class DataFixHandler {
                     List<CaseEventDetails> events
                         = searchCCDEventsService.getCcdCaseEventsForCase(user, Long.toString(details.getId()));
 
-                    CaseEventDetails event = findLastSuccessfullEventDetails(events)
-                        .orElseThrow(IllegalStateException::new);
-
-                    CCDCase ccdCase = extractCaseFromEvent(event, Long.toString(details.getId()));
-                    updateCase(user, updatedClaims, failedOnUpdateMigrations, claim, ccdCase);
+                    CaseEventDetails lastEventDetails = findLastEventDetails(events);
+                    if (lastEventDetails.getEventName().equals(SUPPORT_UPDATE)) {
+                        CaseEventDetails event = findLastSuccessfullEventDetails(events)
+                            .orElseThrow(IllegalStateException::new);
+                        CCDCase ccdCase = extractCaseFromEvent(event, Long.toString(details.getId()));
+                        updateCase(user, updatedClaims, failedOnUpdateMigrations, claim, ccdCase);
+                    } else {
+                        logger.info("Data Fix can not be applied on this claim as already progressed." +
+                                "claim reference: {} ccd id: {} last event: {} event created date: {} " +
+                                " Skipped so for: {}",
+                            claim.getReferenceNumber(),
+                            details.getId(),
+                            lastEventDetails.getEventName(),
+                            lastEventDetails.getCreatedDate(),
+                            skippedClaimsCount.incrementAndGet()
+                        );
+                    }
                 });
 
         } catch (Exception e) {
@@ -107,6 +121,14 @@ public class DataFixHandler {
         }
 
         return Optional.ofNullable(lastSuccessfulEvent);
+    }
+
+
+    private CaseEventDetails findLastEventDetails(List<CaseEventDetails> events) {
+        return events.stream()
+            .sorted(Comparator.comparing(CaseEventDetails::getCreatedDate).reversed())
+            .collect(Collectors.toList())
+            .get(0);
     }
 
     private CCDCase applyInterestDatePatch(final CCDCase ccdCase, final Claim claim) {
