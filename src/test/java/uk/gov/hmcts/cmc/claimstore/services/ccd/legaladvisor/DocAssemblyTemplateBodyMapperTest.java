@@ -11,8 +11,11 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
@@ -27,6 +30,7 @@ import java.util.Collections;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DocAssemblyTemplateBodyMapperTest  {
@@ -38,45 +42,20 @@ public class DocAssemblyTemplateBodyMapperTest  {
 
     private DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
     private CCDCase ccdCase;
-    private CCDOrderGenerationData getCCDOrderGenerationData;
     private UserDetails userDetails;
+
+    private DocAssemblyTemplateBody.DocAssemblyTemplateBodyBuilder docAssemblyTemplateBodyBuilder;
 
     @Before
     public void setUp() {
         docAssemblyTemplateBodyMapper = new DocAssemblyTemplateBodyMapper(clock);
         ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
-        getCCDOrderGenerationData = SampleData.getCCDOrderGenerationData();
+        ccdCase.setOrderGenerationData(SampleData.getCCDOrderGenerationData());
         userDetails = SampleUserDetails.builder()
             .withForename("Judge")
             .withSurname("McJudge")
             .build();
-        //when
-        Mockito.when(clock.instant()).thenReturn(LocalDate.parse("2019-04-24")
-            .atStartOfDay().toInstant(ZoneOffset.UTC));
-        Mockito.when(clock.getZone()).thenReturn(ZoneOffset.UTC);
-    }
-
-    @Test
-    public void shouldSerialiseTemplateBodyToExpectedJson() throws JsonProcessingException {
-        String output = objectMapper.writeValueAsString(
-            docAssemblyTemplateBodyMapper.from(
-                ccdCase,
-                getCCDOrderGenerationData,
-                userDetails));
-        //then
-        assertThat(output).isNotNull();
-        String expected = new ResourceReader().read("/doc-assembly-template.json");
-        JSONAssert.assertEquals(expected, output, STRICT);
-    }
-
-    @Test
-    public void shouldMapTemplateBody() {
-        DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
-            ccdCase,
-            getCCDOrderGenerationData,
-            userDetails);
-
-        DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
+        docAssemblyTemplateBodyBuilder = DocAssemblyTemplateBody.builder()
             .hearingRequired(true)
             .hasFirstOrderDirections(true)
             .hasSecondOrderDirections(true)
@@ -100,7 +79,60 @@ public class DocAssemblyTemplateBodyMapperTest  {
                     .extraOrderDirection(CCDOrderDirectionType.OTHER)
                     .forParty(CCDDirectionPartyType.BOTH)
                     .build()
-            )).build();
+            ));
+        //when
+        Mockito.when(clock.instant()).thenReturn(LocalDate.parse("2019-04-24")
+            .atStartOfDay().toInstant(ZoneOffset.UTC));
+        Mockito.when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+    }
+
+    @Test
+    public void shouldSerialiseTemplateBodyToExpectedJson() throws JsonProcessingException {
+        String output = objectMapper.writeValueAsString(
+            docAssemblyTemplateBodyMapper.from(
+                ccdCase,
+                userDetails));
+        assertThat(output).isNotNull();
+        String expected = new ResourceReader().read("/doc-assembly-template.json");
+        JSONAssert.assertEquals(expected, output, STRICT);
+    }
+
+    @Test
+    public void shouldMapTemplateBody() {
+        DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
+            ccdCase,
+            userDetails);
+
+        DocAssemblyTemplateBody expectedBody = docAssemblyTemplateBodyBuilder.build();
+
+        assertThat(requestBody).isEqualTo(expectedBody);
+    }
+
+    @Test
+    public void shouldMapTemplateBodyWhenOtherDirectionIsNull() {
+        CCDOrderGenerationData ccdOrderGenerationData = CCDOrderGenerationData.builder()
+            .directionList(ImmutableList.of(
+                CCDOrderDirectionType.DOCUMENTS, CCDOrderDirectionType.EYEWITNESS))
+            .otherDirectionList(ImmutableList.of(
+                CCDCollectionElement.<CCDOrderDirection>builder().value(null).build()))
+            .hearingIsRequired(YES)
+            .docUploadDeadline(LocalDate.parse("2020-10-11"))
+            .eyewitnessUploadDeadline(LocalDate.parse("2020-10-11"))
+            .hearingCourt(CCDHearingCourtType.DEFENDANT_COURT)
+            .preferredCourtObjectingReason("I like this court more")
+            .hearingStatement("No idea")
+            .newRequestedCourt("Another court")
+            .docUploadForParty(CCDDirectionPartyType.CLAIMANT)
+            .eyewitnessUploadForParty(CCDDirectionPartyType.DEFENDANT)
+            .estimatedHearingDuration(CCDHearingDurationType.FOUR_HOURS)
+            .build();
+        ccdCase.setOrderGenerationData(ccdOrderGenerationData);
+        DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
+            ccdCase,
+            userDetails);
+
+        docAssemblyTemplateBodyBuilder.otherDirectionList(Collections.emptyList());
+        DocAssemblyTemplateBody expectedBody = docAssemblyTemplateBodyBuilder.build();
 
         assertThat(requestBody).isEqualTo(expectedBody);
     }
