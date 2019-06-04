@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.events.paidinfull;
 
 import com.google.common.collect.ImmutableMap;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -9,9 +8,9 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.PaidInFull.referenceForDefendant;
+import static uk.gov.hmcts.cmc.domain.utils.EmailUtils.getDefendantEmail;
 
 @Component
 public class PaidInFullCitizenNotificationHandler {
@@ -44,14 +43,6 @@ public class PaidInFullCitizenNotificationHandler {
                 referenceForDefendant(claim.getReferenceNumber())
             )
         );
-    }
-
-    private Optional<String> getDefendantEmail(Claim claim) {
-        if (StringUtils.isNotBlank(claim.getDefendantEmail())) {
-            return Optional.of(claim.getDefendantEmail());
-        } else {
-            return claim.getClaimData().getDefendant().getEmail();
-        }
     }
 
     private Map<String, String> aggregateParams(Claim claim) {
