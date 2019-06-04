@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.InterestDate;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -81,10 +82,12 @@ public class DataFixHandler {
                         = searchCCDEventsService.getCcdCaseEventsForCase(user, Long.toString(details.getId()));
 
                     CaseEventDetails lastEventDetails = findLastEventDetails(events);
-                        CCDCase ccdCase = extractCaseFromEvent(lastEventDetails, Long.toString(details.getId()));
+                    CCDCase ccdCase = extractCaseFromEvent(lastEventDetails, Long.toString(details.getId()));
                     if (lastEventDetails.getCreatedDate().isBefore(details.getLastModified())) {
                         updateCase(user, updatedClaims, failedOnUpdateMigrations, claim, ccdCase);
                     } else {
+                        printEventProcessedEarlierToMigrationPatch(events);
+
                         InterestDate interestDate = claim.getClaimData().getInterest().getInterestDate();
                         logger.info("Data Fix can not be applied on this claim as already progressed."
                                 + "claim reference: {} ccd id: {} last event: {} event created date: {} " +
@@ -108,6 +111,20 @@ public class DataFixHandler {
                 e.getMessage()
             );
         }
+    }
+
+    private void printEventProcessedEarlierToMigrationPatch(List<CaseEventDetails> events) {
+        events.stream()
+            .filter(event -> event.getCreatedDate()
+                .isBefore(LocalDateTime.of(2019, 06, 03, 23, 00, 00)))
+            .filter(event -> event.getCreatedDate()
+                .isAfter(LocalDateTime.of(2019, 05, 29, 23, 00, 00)))
+            .forEach(event -> logger.info("event processed  with name '{}' and at '{}' for claim ref '{}' created by {}",
+                event.getEventName(),
+                event.getCreatedDate(),
+                extractCaseFromEvent(event, "").getPreviousServiceCaseReference(),
+                event.getUserFirstName() + " " + event.getUserLastName()
+            ));
     }
 
     private Optional<CaseEventDetails> findLastSuccessfullEventDetails(List<CaseEventDetails> events) {
