@@ -31,6 +31,7 @@ public class ClaimMigrator {
     private final DataFixHandler dataFixHandler;
     private final List<String> casesToMigrate;
     private final boolean fixDataIssues;
+    private final boolean dryRun;
 
     @Autowired
     public ClaimMigrator(
@@ -39,7 +40,8 @@ public class ClaimMigrator {
         MigrationHandler migrationHandler,
         DataFixHandler dataFixHandler,
         @Value("${migration.cases.references}") List<String> casesToMigrate,
-        @Value("${migration.fixDataIssues}") boolean fixDataIssues
+        @Value("${migration.fixDataIssues}") boolean fixDataIssues,
+        @Value("${migration.dryRun}") boolean dryRun
     ) {
         this.claimRepository = claimRepository;
         this.userService = userService;
@@ -47,6 +49,7 @@ public class ClaimMigrator {
         this.dataFixHandler = dataFixHandler;
         this.casesToMigrate = casesToMigrate;
         this.fixDataIssues = fixDataIssues;
+        this.dryRun = dryRun;
     }
 
     @LogExecutionTime
@@ -56,7 +59,7 @@ public class ClaimMigrator {
         User user = userService.authenticateSystemUpdateUser();
         List<Claim> claimsToMigrate = getClaimsToMigrate();
 
-        logger.info("User token: " + user.getAuthorisation());
+        logger.info("DRY RUN Enabled: " + dryRun);
 
         AtomicInteger migratedClaims = new AtomicInteger(0);
         AtomicInteger updatedClaims = new AtomicInteger(0);
@@ -126,6 +129,8 @@ public class ClaimMigrator {
                 );
             }
         });
+        logger.info("skipped claims counts: " + skippedClaimsCount.toString());
+
     }
 
     private boolean isSettledOrJudgement(Claim claim) {

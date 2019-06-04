@@ -155,7 +155,7 @@ public class DataFixHandler {
 
         try {
             logger.info("start updating case for: {} for event: {} counter: {}", referenceNumber, SUPPORT_UPDATE,
-                updatedClaims.get());
+                updatedClaims.toString());
             if (!dryRun) {
                 updateCCDCaseService.updateCase(
                     user,
