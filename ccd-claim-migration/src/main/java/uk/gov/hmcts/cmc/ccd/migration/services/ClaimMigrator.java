@@ -107,10 +107,13 @@ public class ClaimMigrator {
         AtomicInteger failedOnCreateMigrations,
         AtomicInteger failedOnUpdateMigrations
     ) {
+        AtomicInteger skippedClaimsCount = new AtomicInteger();
+
         notMigratedClaims.parallelStream().forEach(claim -> {
             if (fixDataIssues) {
                 if (isSettledOrJudgement(claim)) {
-                    dataFixHandler.fixClaim(migratedClaims, failedOnUpdateMigrations, updatedClaims, claim, user);
+                    dataFixHandler.fixClaim(migratedClaims, failedOnUpdateMigrations, updatedClaims, claim, user,
+                        skippedClaimsCount);
                 }
             } else {
                 migrationHandler.migrateClaim(

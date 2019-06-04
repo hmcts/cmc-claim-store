@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.mappers.JsonMapper;
 import uk.gov.hmcts.cmc.ccd.migration.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.InterestDate;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.util.Comparator;
@@ -64,10 +65,10 @@ public class DataFixHandler {
         AtomicInteger failedOnUpdateMigrations,
         AtomicInteger updatedClaims,
         Claim claim,
-        User user
+        User user,
+        AtomicInteger skippedClaimsCount
     ) {
         try {
-            AtomicInteger skippedClaimsCount = new AtomicInteger();
 
             logger.info("fix case for: {}", claim.getReferenceNumber());
 
@@ -80,21 +81,21 @@ public class DataFixHandler {
                         = searchCCDEventsService.getCcdCaseEventsForCase(user, Long.toString(details.getId()));
 
                     CaseEventDetails lastEventDetails = findLastEventDetails(events);
-                    if (lastEventDetails.getEventName().equals(SUPPORT_UPDATE)) {
-
-                        CaseEventDetails event = findLastSuccessfullEventDetails(events)
-                            .orElseThrow(IllegalStateException::new);
-
-                        CCDCase ccdCase = extractCaseFromEvent(event, Long.toString(details.getId()));
+                        CCDCase ccdCase = extractCaseFromEvent(lastEventDetails, Long.toString(details.getId()));
+                    if (lastEventDetails.getCreatedDate().isBefore(details.getLastModified())) {
                         updateCase(user, updatedClaims, failedOnUpdateMigrations, claim, ccdCase);
                     } else {
+                        InterestDate interestDate = claim.getClaimData().getInterest().getInterestDate();
                         logger.info("Data Fix can not be applied on this claim as already progressed."
-                                + "claim reference: {} ccd id: {} last event: {} event created date: {} "
-                                + " Skipped so for: {}",
+                                + "claim reference: {} ccd id: {} last event: {} event created date: {} " +
+                                " case modifiedDate {}"
+                                + " with date type {} Skipped so for: {}",
                             claim.getReferenceNumber(),
                             details.getId(),
                             lastEventDetails.getEventName(),
                             lastEventDetails.getCreatedDate(),
+                            details.getLastModified(),
+                            interestDate.getType() != null ? interestDate.getType() : "no interestDateType present",
                             skippedClaimsCount.incrementAndGet()
                         );
                     }
@@ -127,9 +128,9 @@ public class DataFixHandler {
 
     private CaseEventDetails findLastEventDetails(List<CaseEventDetails> events) {
         return events.stream()
-            .sorted(Comparator.comparing(CaseEventDetails::getCreatedDate).reversed())
+            .sorted(Comparator.comparing(CaseEventDetails::getCreatedDate))
             .collect(Collectors.toList())
-            .get(0);
+            .get(events.size() - 1);
     }
 
     private CCDCase applyInterestDatePatch(final CCDCase ccdCase, final Claim claim) {
@@ -153,7 +154,8 @@ public class DataFixHandler {
         CCDCase patchedCase = applyInterestDatePatch(ccdCase, claim);
 
         try {
-            logger.info("start updating case for: {} for event: {}", referenceNumber, SUPPORT_UPDATE);
+            logger.info("start updating case for: {} for event: {} counter: {}", referenceNumber, SUPPORT_UPDATE,
+                updatedClaims.get());
             if (!dryRun) {
                 updateCCDCaseService.updateCase(
                     user,
@@ -183,7 +185,7 @@ public class DataFixHandler {
 
     private CCDCase extractCaseFromEvent(CaseEventDetails caseDetails, String caseId) {
         Map<String, Object> caseData = caseDetails.getData();
-        caseData.put("id", caseId);
+//        caseData.put("id", caseId);
         return jsonMapper.fromMap(caseData, CCDCase.class);
     }
 }
