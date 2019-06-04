@@ -449,11 +449,13 @@ public class SampleData {
             .directionList(ImmutableList.of(
                 CCDOrderDirectionType.DOCUMENTS, CCDOrderDirectionType.EYEWITNESS))
             .otherDirectionList(ImmutableList.of(
-                CCDOrderDirection.builder()
-                    .extraOrderDirection(CCDOrderDirectionType.OTHER)
-                    .otherDirection("a direction")
-                    .forParty(BOTH)
-                    .sendBy(LocalDate.parse("2020-10-11"))
+                CCDCollectionElement.<CCDOrderDirection>builder().value(
+                    CCDOrderDirection.builder()
+                        .extraOrderDirection(CCDOrderDirectionType.OTHER)
+                        .otherDirection("a direction")
+                        .forParty(BOTH)
+                        .sendBy(LocalDate.parse("2020-10-11"))
+                        .build())
                     .build()))
             .hearingIsRequired(YES)
             .docUploadDeadline(LocalDate.parse("2020-10-11"))
