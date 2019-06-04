@@ -1,5 +1,8 @@
 package uk.gov.hmcts.cmc.ccd.domain.legaladvisor;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 // value will be removed once we change the docmosis template
 public enum CCDHearingDurationType {
     HALF_HOUR("THIRTY_MIN"),
@@ -16,6 +19,12 @@ public enum CCDHearingDurationType {
         this.value = value;
     }
 
+    @JsonCreator
+    public static CCDHearingDurationType fromValue(String value) {
+        return CCDHearingDurationType.valueOf(value);
+    }
+
+    @JsonValue
     public String getValue() {
         return value;
     }
