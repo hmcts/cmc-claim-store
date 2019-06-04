@@ -13,7 +13,7 @@ import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReportRow;
 
 import java.time.LocalDate;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -37,7 +37,23 @@ public class ExpertRowMapperTest {
 
         //then
         assertThat(expertReportRow).isEqualTo(ccdExpertReportRow.getValue());
-        assertThat(expertReportRow.getId()).isEqualTo(ccdExpertReportRow.getId());
+    }
+
+    @Test
+    public void shouldMapExpertRowMapperFromCCD() {
+        //given
+        CCDExpertReportRow ccdExpertReportRow = CCDExpertReportRow
+            .builder()
+            .expertName("expert1")
+            .expertReportDate(LocalDate.of(2050,1,1))
+            .build();
+
+        //when
+        ExpertReportRow expertReportRow = mapper.from(CCDCollectionElement.<CCDExpertReportRow>builder()
+            .value(ccdExpertReportRow).build());
+
+        //then
+        assertThat(expertReportRow).isEqualTo(ccdExpertReportRow);
     }
 
 }
