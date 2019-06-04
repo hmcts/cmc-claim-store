@@ -8,11 +8,11 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.migration.client.CaseEventDetails;
+import uk.gov.hmcts.cmc.ccd.migration.client.CaseEventsApi;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.client.CaseEventsApi;
-import uk.gov.hmcts.reform.ccd.client.model.CaseEventDetails;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;

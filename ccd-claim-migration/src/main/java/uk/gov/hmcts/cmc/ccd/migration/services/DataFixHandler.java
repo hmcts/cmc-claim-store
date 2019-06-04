@@ -11,12 +11,12 @@ import uk.gov.hmcts.cmc.ccd.mapper.InterestDateMapper;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.SearchCCDCaseService;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.SearchCCDEventsService;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.UpdateCCDCaseService;
+import uk.gov.hmcts.cmc.ccd.migration.client.CaseEventDetails;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.mappers.JsonMapper;
 import uk.gov.hmcts.cmc.ccd.migration.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.ccd.client.model.CaseEventDetails;
 
 import java.util.Comparator;
 import java.util.List;
@@ -81,8 +81,10 @@ public class DataFixHandler {
 
                     CaseEventDetails lastEventDetails = findLastEventDetails(events);
                     if (lastEventDetails.getEventName().equals(SUPPORT_UPDATE)) {
+
                         CaseEventDetails event = findLastSuccessfullEventDetails(events)
                             .orElseThrow(IllegalStateException::new);
+
                         CCDCase ccdCase = extractCaseFromEvent(event, Long.toString(details.getId()));
                         updateCase(user, updatedClaims, failedOnUpdateMigrations, claim, ccdCase);
                     } else {
