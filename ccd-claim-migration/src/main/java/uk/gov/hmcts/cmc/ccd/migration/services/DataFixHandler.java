@@ -5,9 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDInterestEndDateType;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.InterestDateMapper;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.SearchCCDCaseService;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.SearchCCDEventsService;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.UpdateCCDCaseService;
@@ -37,6 +37,7 @@ public class DataFixHandler {
     private final boolean dryRun;
     private final CaseMapper caseMapper;
     private final JsonMapper jsonMapper;
+    private final InterestDateMapper interestDateMapper;
 
     public DataFixHandler(
         SearchCCDCaseService searchCCDCaseService,
@@ -44,7 +45,9 @@ public class DataFixHandler {
         SearchCCDEventsService searchCCDEventsService,
         @Value("${migration.dryRun}") boolean dryRun,
         CaseMapper caseMapper,
-        JsonMapper jsonMapper
+        JsonMapper jsonMapper,
+        InterestDateMapper interestDateMapper
+
     ) {
         this.searchCCDCaseService = searchCCDCaseService;
         this.updateCCDCaseService = updateCCDCaseService;
@@ -52,6 +55,7 @@ public class DataFixHandler {
         this.dryRun = dryRun;
         this.caseMapper = caseMapper;
         this.jsonMapper = jsonMapper;
+        this.interestDateMapper = interestDateMapper;
     }
 
     @LogExecutionTime
@@ -73,7 +77,9 @@ public class DataFixHandler {
                     List<CaseEventDetails> events
                         = searchCCDEventsService.getCcdCaseEventsForCase(user, Long.toString(details.getId()));
 
-                    CaseEventDetails event = findtheEarliestSuccessfullEvent(events);
+                    CaseEventDetails event = findLastSuccessfullEventDetails(events)
+                        .orElseThrow(IllegalStateException::new);
+
                     CCDCase ccdCase = extractCaseFromEvent(event, Long.toString(details.getId()));
                     updateCase(user, updatedClaims, failedOnUpdateMigrations, claim, ccdCase);
                 });
@@ -87,12 +93,30 @@ public class DataFixHandler {
         }
     }
 
-    private CaseEventDetails findtheEarliestSuccessfullEvent(List<CaseEventDetails> events) {
-        return events.stream()
-            .filter(event -> !event.getEventName().equals(CaseEvent.TEST_SUPPORT_UPDATE.getValue()))
-            .sorted(Comparator.comparing(CaseEventDetails::getCreatedDate).reversed())
-            .collect(Collectors.toList())
-            .get(0);
+    private Optional<CaseEventDetails> findLastSuccessfullEventDetails(List<CaseEventDetails> events) {
+        List<CaseEventDetails> sortedEvents = events.stream()
+            .sorted(Comparator.comparing(CaseEventDetails::getCreatedDate))
+            .collect(Collectors.toList());
+
+        CaseEventDetails lastSuccessfulEvent = null;
+        for (CaseEventDetails event : sortedEvents) {
+            if (event.getEventName().equals(CaseEvent.SUPPORT_UPDATE.getValue())) {
+                break;
+            }
+            lastSuccessfulEvent = event;
+        }
+
+        return Optional.ofNullable(lastSuccessfulEvent);
+    }
+
+    private CCDCase applyInterestDatePatch(final CCDCase ccdCase, final Claim claim) {
+        CCDCase.CCDCaseBuilder builder = ccdCase.toBuilder();
+        if (claim.getClaimData().getInterest() != null) {
+            interestDateMapper.to(claim.getClaimData().getInterest().getInterestDate(), builder);
+        } else {
+            logger.error("Claim with reference {} has no Interest object!", claim.getReferenceNumber());
+        }
+        return builder.build();
     }
 
     private void updateCase(
@@ -103,30 +127,25 @@ public class DataFixHandler {
         CCDCase ccdCase
     ) {
         String referenceNumber = claim.getReferenceNumber();
-
-        CCDCase updatedCase = ccdCase
-            .toBuilder()
-            .interestEndDateType(CCDInterestEndDateType
-                .valueOf(claim.getClaimData().getInterest().getInterestDate().getEndDateType().name()))
-            .build();
+        CCDCase patchedCase = applyInterestDatePatch(ccdCase, claim);
 
         try {
             logger.info("start updating case for: {} for event: {}", referenceNumber, SUPPORT_UPDATE);
             if (!dryRun) {
                 updateCCDCaseService.updateCase(
                     user,
-                    ccdCase.getId(),
-                    caseMapper.from(updatedCase),
+                    patchedCase.getId(),
+                    caseMapper.from(patchedCase),
                     SUPPORT_UPDATE
                 );
             }
             updatedClaims.incrementAndGet();
 
-        } catch (Exception e) {
+        } catch (Exception exception) {
             logger.info("Claim update for events failed for Claim reference {} due to {}",
                 referenceNumber,
-                e.getMessage(),
-                e
+                exception.getMessage(),
+                exception
             );
             failedMigrations.incrementAndGet();
         }

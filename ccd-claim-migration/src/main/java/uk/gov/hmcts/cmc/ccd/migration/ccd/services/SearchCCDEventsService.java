@@ -32,20 +32,14 @@ public class SearchCCDEventsService {
 
     private static final Logger logger = LoggerFactory.getLogger(SearchCCDEventsService.class);
 
-    private final CoreCaseDataApi coreCaseDataApi;
     private final CaseEventsApi caseEventsApi;
     private final AuthTokenGenerator authTokenGenerator;
-    private final MigrateCoreCaseDataService migrateCoreCaseDataService;
 
     @Autowired
     public SearchCCDEventsService(
-        MigrateCoreCaseDataService migrateCoreCaseDataService,
-        CoreCaseDataApi coreCaseDataApi,
         CaseEventsApi caseEventsApi,
         AuthTokenGenerator authTokenGenerator
     ) {
-        this.migrateCoreCaseDataService = migrateCoreCaseDataService;
-        this.coreCaseDataApi = coreCaseDataApi;
         this.caseEventsApi = caseEventsApi;
         this.authTokenGenerator = authTokenGenerator;
     }
@@ -67,14 +61,13 @@ public class SearchCCDEventsService {
     }
 
     @Recover
-    public Optional<CaseDetails> recoverCaseEventsFailure(RuntimeException exception, User user, String caseId) {
+    public List<CaseEventDetails> recoverCaseEventsFailure(RuntimeException exception, User user, String caseId) {
         String errorMessage = String.format(
             "Failure: failed search by reference number ( %s for user %s ) due to %s",
             caseId, user.getUserDetails().getId(), exception.getMessage()
         );
 
         logger.info(errorMessage, exception);
-
-        return Optional.empty();
+        return null;
     }
 }
