@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse.AboutToStartOrSubmitCallbackResponseBuilder;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.LocalDate;
@@ -62,7 +63,7 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
         return Collections.singletonList(CaseEvent.MORE_TIME_REQUESTED_PAPER);
     }
 
-    public SubmittedCallbackResponse requestMoreTimeOnPaperSubmitted(CallbackParams callbackParams) {
+    public CallbackResponse requestMoreTimeOnPaperSubmitted(CallbackParams callbackParams) {
         Claim claim = convertCallbackToClaim(callbackParams.getRequest());
 
         eventProducer.createMoreTimeForResponseRequestedEvent(
@@ -102,8 +103,7 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
     }
 
     private AboutToStartOrSubmitCallbackResponse validateMoreTimeOnPaper(
-        CallbackParams callbackParams
-    ) {
+        CallbackParams callbackParams) {
         Claim claim = convertCallbackToClaim(callbackParams.getRequest());
 
         List<String> validationResult = moreTimeRequestRule.validateMoreTimeCanBeRequested(claim);
@@ -113,7 +113,9 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
             .build();
     }
 
-    private Claim convertCallbackToClaim(CallbackRequest caseDetails) {
-        return ccdCaseDataToClaim.to(caseDetails.getCaseDetails());
+    private Claim convertCallbackToClaim(CallbackRequest callbackRequest) {
+        return ccdCaseDataToClaim.to(
+            callbackRequest.getCaseDetails()
+        );
     }
 }
