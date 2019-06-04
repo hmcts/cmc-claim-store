@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
-import java.util.Arrays;
-
 public enum CaseEvent {
     CREATE_CASE("CreateClaim"),
     ISSUE_CASE("IssueClaim"),
@@ -42,7 +40,9 @@ public enum CaseEvent {
     REFER_TO_JUDGE_BY_DEFENDANT("ReferToJudgeByDefendant"),
     SETTLED_PRE_JUDGMENT("SettledPreJudgment"),
     SUPPORT_UPDATE("SupportUpdate"),
-    GENERATE_ORDER("GenerateOrder");
+    GENERATE_ORDER("GenerateOrder"),
+    ACTION_REVIEW_COMMENTS("ActionReviewComments"),
+    DRAW_ORDER("DrawOrder");
 
     private String value;
 
@@ -52,11 +52,5 @@ public enum CaseEvent {
 
     public String getValue() {
         return value;
-    }
-
-    public static CaseEvent fromValue(String value) {
-        return Arrays.stream(values()).filter(event -> event.value.equals(value))
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("Unknown Case Event: " + value));
     }
 }
