@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.ccd.migration.ccd.services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
@@ -25,7 +24,6 @@ import static uk.gov.hmcts.cmc.ccd.migration.ccd.services.SearchCCDCaseService.C
 import static uk.gov.hmcts.cmc.ccd.migration.ccd.services.SearchCCDCaseService.JURISDICTION_ID;
 
 @Service
-@ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class MigrateCoreCaseDataService {
     private static final Logger logger = LoggerFactory.getLogger(MigrateCoreCaseDataService.class);
 
