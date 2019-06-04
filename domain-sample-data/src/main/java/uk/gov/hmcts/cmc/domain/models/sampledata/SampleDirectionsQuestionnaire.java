@@ -36,12 +36,12 @@ public class SampleDirectionsQuestionnaire {
             .availableDate(LocalDate.of(2050,1,2))
             .languageInterpreted("some language")
             .signLanguageInterpreted("yes")
-            .hearingLoopSelected(Boolean.FALSE)
-            .disabledAccessSelected(Boolean.TRUE)
+            .hearingLoop(YesNoOption.NO)
+            .disabledAccess(YesNoOption.YES)
             .otherSupportRequired("maybe")
             .expertReportsRows(expertReportRowsData)
             .expertEvidenceToExamine("nothing")
-            .whyExpertIsNeeded("for specified reason")
+            .reasonForExpertAdvice("for specified reason")
             .build();
     }
 }
