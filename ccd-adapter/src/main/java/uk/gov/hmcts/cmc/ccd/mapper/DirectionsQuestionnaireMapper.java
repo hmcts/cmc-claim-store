@@ -2,8 +2,11 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
+
 import java.util.stream.Collectors;
 
 @Component
@@ -21,7 +24,7 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
     @Override
     public CCDDirectionsQuestionnaire to(DirectionsQuestionnaire directionsQuestionnaire) {
         return CCDDirectionsQuestionnaire.builder()
-            .selfWitness(directionsQuestionnaire.getSelfWitness())
+            .selfWitness(CCDYesNoOption.valueOf(directionsQuestionnaire.getSelfWitness().name()))
             .howManyOtherWitness(directionsQuestionnaire.getHowManyOtherWitness())
             .hearingLocation(directionsQuestionnaire.getHearingLocation())
             .exceptionalCircumstancesReason(directionsQuestionnaire.getExceptionalCircumstancesReason())
@@ -32,22 +35,22 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
             .availableDate(directionsQuestionnaire.getAvailableDate())
             .languageInterpreted(directionsQuestionnaire.getLanguageInterpreted())
             .signLanguageInterpreted(directionsQuestionnaire.getSignLanguageInterpreted())
-            .hearingLoopSelected(directionsQuestionnaire.isHearingLoopSelected())
-            .disabledAccessSelected(directionsQuestionnaire.isDisabledAccessSelected())
+            .hearingLoop(CCDYesNoOption.valueOf(directionsQuestionnaire.getHearingLoop().name()))
+            .disabledAccess(CCDYesNoOption.valueOf(directionsQuestionnaire.getDisabledAccess().name()))
             .otherSupportRequired(directionsQuestionnaire.getOtherSupportRequired())
             .expertEvidenceToExamine(directionsQuestionnaire.getExpertEvidenceToExamine())
             .expertReportsRows(directionsQuestionnaire.getExpertReportsRows()
                 .stream()
                 .map(expertRowMapper::to)
                 .collect(Collectors.toList()))
-            .whyExpertIsNeeded(directionsQuestionnaire.getWhyExpertIsNeeded())
+            .reasonForExpertAdvice(directionsQuestionnaire.getReasonForExpertAdvice())
             .build();
     }
 
     @Override
     public DirectionsQuestionnaire from(CCDDirectionsQuestionnaire ccdDirectionsQuestionnaire) {
         return DirectionsQuestionnaire.builder()
-            .selfWitness(ccdDirectionsQuestionnaire.getSelfWitness())
+            .selfWitness(YesNoOption.valueOf(ccdDirectionsQuestionnaire.getSelfWitness().name()))
             .howManyOtherWitness(ccdDirectionsQuestionnaire.getHowManyOtherWitness())
             .hearingLocation(ccdDirectionsQuestionnaire.getHearingLocation())
             .exceptionalCircumstancesReason(ccdDirectionsQuestionnaire.getExceptionalCircumstancesReason())
@@ -58,15 +61,15 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
             .availableDate(ccdDirectionsQuestionnaire.getAvailableDate())
             .languageInterpreted(ccdDirectionsQuestionnaire.getLanguageInterpreted())
             .signLanguageInterpreted(ccdDirectionsQuestionnaire.getSignLanguageInterpreted())
-            .hearingLoopSelected(ccdDirectionsQuestionnaire.isHearingLoopSelected())
-            .disabledAccessSelected(ccdDirectionsQuestionnaire.isDisabledAccessSelected())
+            .hearingLoop(YesNoOption.valueOf(ccdDirectionsQuestionnaire.getHearingLoop().name()))
+            .disabledAccess(YesNoOption.valueOf(ccdDirectionsQuestionnaire.getDisabledAccess().name()))
             .otherSupportRequired(ccdDirectionsQuestionnaire.getOtherSupportRequired())
             .expertEvidenceToExamine(ccdDirectionsQuestionnaire.getExpertEvidenceToExamine())
             .expertReportsRows(ccdDirectionsQuestionnaire.getExpertReportsRows()
                 .stream()
                 .map(expertRowMapper::from)
                 .collect(Collectors.toList()))
-            .whyExpertIsNeeded(ccdDirectionsQuestionnaire.getWhyExpertIsNeeded())
+            .reasonForExpertAdvice(ccdDirectionsQuestionnaire.getReasonForExpertAdvice())
             .build();
     }
 

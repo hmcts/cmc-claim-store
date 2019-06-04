@@ -1,12 +1,11 @@
 package uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire;
 
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,8 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CCDDirectionsQuestionnaire {
 
-    @JsonUnwrapped
-    private final YesNoOption selfWitness;
+    private final CCDYesNoOption selfWitness;
 
     private final int howManyOtherWitness;
 
@@ -36,16 +34,16 @@ public class CCDDirectionsQuestionnaire {
 
     private final String signLanguageInterpreted;
 
-    private final boolean hearingLoopSelected;
+    private final CCDYesNoOption hearingLoop;
 
-    private final boolean disabledAccessSelected;
+    private final CCDYesNoOption disabledAccess;
 
-    private final String otherSupportRequired ;
+    private final String otherSupportRequired;
 
     private final List<CCDCollectionElement<CCDExpertReportRow>> expertReportsRows;
 
     private final String expertEvidenceToExamine;
 
-    private final String whyExpertIsNeeded;
+    private final String reasonForExpertAdvice;
 
 }
