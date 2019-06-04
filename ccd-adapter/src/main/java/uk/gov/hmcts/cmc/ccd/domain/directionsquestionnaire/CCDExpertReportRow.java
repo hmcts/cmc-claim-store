@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Value;
 import uk.gov.hmcts.cmc.domain.models.CollectionId;
 
 import java.time.LocalDate;
