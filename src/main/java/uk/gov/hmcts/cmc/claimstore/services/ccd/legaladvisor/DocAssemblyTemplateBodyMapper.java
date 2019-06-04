@@ -22,8 +22,8 @@ public class DocAssemblyTemplateBodyMapper {
     }
 
     public DocAssemblyTemplateBody from(CCDCase ccdCase,
-                                        CCDOrderGenerationData ccdOrderGenerationData,
                                         UserDetails userDetails) {
+        CCDOrderGenerationData ccdOrderGenerationData = ccdCase.getOrderGenerationData();
         return DocAssemblyTemplateBody.builder()
             .claimant(Party.builder()
                 .partyName(ccdCase.getApplicants()
@@ -66,13 +66,15 @@ public class DocAssemblyTemplateBodyMapper {
             .hearingStatement(
                 ccdOrderGenerationData.getHearingStatement())
             .otherDirectionList(
-                ccdOrderGenerationData.getOtherDirectionList().stream().map(
-                    direction -> OtherDirection.builder()
-                        .extraOrderDirection(direction.getExtraOrderDirection())
-                        .directionComment(direction.getOtherDirection())
-                        .forParty(direction.getForParty())
-                        .sendBy(direction.getSendBy())
-                        .build()
+                ccdOrderGenerationData.getOtherDirectionList()
+                    .stream()
+                    .filter(direction -> direction != null && direction.getValue() != null)
+                    .map(direction -> OtherDirection.builder()
+                            .extraOrderDirection(direction.getValue().getExtraOrderDirection())
+                            .directionComment(direction.getValue().getOtherDirection())
+                            .forParty(direction.getValue().getForParty())
+                            .sendBy(direction.getValue().getSendBy())
+                            .build()
                 ).collect(Collectors.toList()))
             .build();
     }
