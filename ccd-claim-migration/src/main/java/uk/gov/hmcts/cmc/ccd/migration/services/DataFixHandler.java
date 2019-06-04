@@ -122,7 +122,7 @@ public class DataFixHandler {
 
         return Optional.ofNullable(lastSuccessfulEvent);
     }
-    
+
     private CaseEventDetails findLastEventDetails(List<CaseEventDetails> events) {
         return events.stream()
             .sorted(Comparator.comparing(CaseEventDetails::getCreatedDate).reversed())

@@ -31,28 +31,24 @@ public class SearchCCDCaseService {
 
     private final CoreCaseDataApi coreCaseDataApi;
     private final AuthTokenGenerator authTokenGenerator;
-    private final MigrateCoreCaseDataService migrateCoreCaseDataService;
 
     @Autowired
     public SearchCCDCaseService(
-        MigrateCoreCaseDataService migrateCoreCaseDataService,
         CoreCaseDataApi coreCaseDataApi,
         AuthTokenGenerator authTokenGenerator
     ) {
-        this.migrateCoreCaseDataService = migrateCoreCaseDataService;
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;
     }
 
-//    @Retryable(include = {SocketTimeoutException.class, FeignException.class, IOException.class},
-//        maxAttempts = 5,
-//        backoff = @Backoff(delay = 400, maxDelay = 800)
-//    )
-//    @LogExecutionTime
-//    public Optional<CaseDetails> getCcdCaseByReferenceNumber(User user, String referenceNumber) {
-//        return search(user, ImmutableMap.of("case.previousServiceCaseReference", referenceNumber));
-//    }
-
+    @Retryable(include = {SocketTimeoutException.class, FeignException.class, IOException.class},
+        maxAttempts = 5,
+        backoff = @Backoff(delay = 400, maxDelay = 800)
+    )
+    @LogExecutionTime
+    public Optional<CaseDetails> getCcdCaseByReferenceNumber(User user, String referenceNumber) {
+        return search(user, ImmutableMap.of("case.previousServiceCaseReference", referenceNumber));
+    }
 
     @Retryable(include = {SocketTimeoutException.class, FeignException.class, IOException.class},
         maxAttempts = 5,
