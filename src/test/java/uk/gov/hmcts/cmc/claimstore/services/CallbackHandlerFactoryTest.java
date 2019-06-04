@@ -9,6 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CallbackHandlerFactory;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.DrawOrderCallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.GenerateOrderCallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.MoreTimeRequestedCallbackHandler;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
@@ -18,6 +19,7 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DRAW_ORDER;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.GENERATE_ORDER;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED_PAPER;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SEALED_CLAIM_UPLOAD;
@@ -28,6 +30,8 @@ public class CallbackHandlerFactoryTest {
     @Mock
     private MoreTimeRequestedCallbackHandler moreTimeRequestedCallbackHandler;
     @Mock
+    private DrawOrderCallbackHandler drawOrderCallbackHandler;
+    @Mock
     private GenerateOrderCallbackHandler generateOrderCallbackHandler;
     @Mock
     private CallbackResponse callbackResponse;
@@ -37,13 +41,16 @@ public class CallbackHandlerFactoryTest {
     @Before
     public void setUp() {
         doCallRealMethod().when(moreTimeRequestedCallbackHandler).handledEvents();
-        doCallRealMethod().when(generateOrderCallbackHandler).handledEvents();
         doCallRealMethod().when(moreTimeRequestedCallbackHandler).register(anyMap());
+        doCallRealMethod().when(generateOrderCallbackHandler).handledEvents();
         doCallRealMethod().when(generateOrderCallbackHandler).register(anyMap());
+        doCallRealMethod().when(drawOrderCallbackHandler).handledEvents();
+        doCallRealMethod().when(drawOrderCallbackHandler).register(anyMap());
         callbackHandlerFactory = new CallbackHandlerFactory(
             ImmutableList.of(
                 moreTimeRequestedCallbackHandler,
-                generateOrderCallbackHandler)
+                generateOrderCallbackHandler,
+                drawOrderCallbackHandler)
         );
     }
 
@@ -75,7 +82,21 @@ public class CallbackHandlerFactoryTest {
         callbackHandlerFactory
             .dispatch(params);
         verify(generateOrderCallbackHandler).handle(params);
+    }
 
+    @Test
+    public void shouldDispatchCallbackForDrawOrder() {
+        CallbackRequest callbackRequest = CallbackRequest
+            .builder()
+            .eventId(DRAW_ORDER.getValue())
+            .build();
+        CallbackParams params = CallbackParams.builder()
+            .request(callbackRequest)
+            .build();
+        when(drawOrderCallbackHandler.handle(params)).thenReturn(callbackResponse);
+        callbackHandlerFactory
+            .dispatch(params);
+        verify(drawOrderCallbackHandler).handle(params);
     }
 
     @Test(expected = CallbackException.class)

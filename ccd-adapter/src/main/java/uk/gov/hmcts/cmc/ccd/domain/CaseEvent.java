@@ -40,7 +40,8 @@ public enum CaseEvent {
     REFER_TO_JUDGE_BY_DEFENDANT("ReferToJudgeByDefendant"),
     SETTLED_PRE_JUDGMENT("SettledPreJudgment"),
     GENERATE_ORDER("GenerateOrder"),
-    ACTION_REVIEW_COMMENTS("ActionReviewComments");
+    ACTION_REVIEW_COMMENTS("ActionReviewComments"),
+    DRAW_ORDER("DrawOrder");
 
     private String value;
 
