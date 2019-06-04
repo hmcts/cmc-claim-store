@@ -1,9 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 
@@ -11,9 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Builder
-@Getter
-@EqualsAndHashCode
-@AllArgsConstructor
+@Value
 public class CCDDirectionsQuestionnaire {
 
     private final CCDYesNoOption selfWitness;
