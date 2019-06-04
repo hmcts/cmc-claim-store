@@ -86,9 +86,9 @@ public class DataFixHandler {
                         CCDCase ccdCase = extractCaseFromEvent(event, Long.toString(details.getId()));
                         updateCase(user, updatedClaims, failedOnUpdateMigrations, claim, ccdCase);
                     } else {
-                        logger.info("Data Fix can not be applied on this claim as already progressed." +
-                                "claim reference: {} ccd id: {} last event: {} event created date: {} " +
-                                " Skipped so for: {}",
+                        logger.info("Data Fix can not be applied on this claim as already progressed."
+                                + "claim reference: {} ccd id: {} last event: {} event created date: {} "
+                                + " Skipped so for: {}",
                             claim.getReferenceNumber(),
                             details.getId(),
                             lastEventDetails.getEventName(),
@@ -122,8 +122,7 @@ public class DataFixHandler {
 
         return Optional.ofNullable(lastSuccessfulEvent);
     }
-
-
+    
     private CaseEventDetails findLastEventDetails(List<CaseEventDetails> events) {
         return events.stream()
             .sorted(Comparator.comparing(CaseEventDetails::getCreatedDate).reversed())
