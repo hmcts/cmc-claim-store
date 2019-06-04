@@ -129,6 +129,7 @@ public class ClaimMigrator {
         Interest interest = claim.getClaimData().getInterest();
         return interest != null
             && interest.getInterestDate() != null
+            && interest.getInterestDate().getType() == null
             && interest.getInterestDate().getEndDateType() != null
             && interest.getInterestDate().getEndDateType() == SETTLED_OR_JUDGMENT;
     }
