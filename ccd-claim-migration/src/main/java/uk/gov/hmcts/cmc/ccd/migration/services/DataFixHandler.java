@@ -16,7 +16,6 @@ import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.mappers.JsonMapper;
 import uk.gov.hmcts.cmc.ccd.migration.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.InterestDate;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.time.LocalDateTime;
@@ -83,26 +82,11 @@ public class DataFixHandler {
 
                     CaseEventDetails lastEventDetails = findLastEventDetails(events);
                     CCDCase ccdCase = extractCaseFromEvent(lastEventDetails, Long.toString(details.getId()));
+                    boolean hasProgressed = listEventsCreatedBetweenMigrationAndDataPatch(events).size() > 1;
                     if (lastEventDetails.getCreatedDate().isBefore(details.getLastModified())) {
-                        StringBuilder logMessage = new StringBuilder("Bucket A with fix ");
-                        printEventProcessedEarlierToMigrationPatch(events, logMessage);
-                        updateCase(user, updatedClaims, failedOnUpdateMigrations, claim, ccdCase);
+                        logMessageForCsv("A", hasProgressed, ccdCase, details, lastEventDetails);
                     } else {
-                        StringBuilder logMessage = new StringBuilder("Bucket B without fix ");
-                        printEventProcessedEarlierToMigrationPatch(events, logMessage);
-                        InterestDate interestDate = claim.getClaimData().getInterest().getInterestDate();
-                        logger.info("Data Fix can not be applied on this claim as already progressed."
-                                + "claim reference: {} ccd id: {} last event: {} event created date: {} " +
-                                " case modifiedDate {}"
-                                + " with date type {} Skipped so for: {}",
-                            claim.getReferenceNumber(),
-                            details.getId(),
-                            lastEventDetails.getEventName(),
-                            lastEventDetails.getCreatedDate(),
-                            details.getLastModified(),
-                            interestDate.getType() != null ? interestDate.getType() : "no interestDateType present",
-                            skippedClaimsCount.incrementAndGet()
-                        );
+                        logMessageForCsv("B", hasProgressed, ccdCase, details, lastEventDetails);
                     }
                 });
 
@@ -115,26 +99,43 @@ public class DataFixHandler {
         }
     }
 
-    private void printEventProcessedEarlierToMigrationPatch(List<CaseEventDetails> events, StringBuilder logMessage) {
+    private void logMessageForCsv(
+        String bucketType,
+        Boolean hasProgressed,
+        CCDCase ccdCase,
+        CaseDetails details,
+        CaseEventDetails lastEventDetails
+    ) {
+        logger.info(new StringBuilder("CSV")
+            .append(",")
+            .append(bucketType)
+            .append(",")
+            .append(ccdCase.getPreviousServiceCaseReference())
+            .append(",")
+            .append(ccdCase.getId())
+            .append(",")
+            .append(details.getLastModified())
+            .append(",")
+            .append(lastEventDetails.getEventName())
+            .append(",")
+            .append(lastEventDetails.getCreatedDate())
+            .append(",")
+            .append(lastEventDetails.getUserFirstName())
+            .append(" ")
+            .append(lastEventDetails.getUserLastName())
+            .append(",")
+            .append(hasProgressed)
+            .toString()
+        );
+    }
 
-        events.stream()
+    private List<CaseEventDetails> listEventsCreatedBetweenMigrationAndDataPatch(List<CaseEventDetails> events) {
+        return events.stream()
             .filter(event -> event.getCreatedDate()
                 .isBefore(LocalDateTime.of(2019, 06, 03, 19, 03, 00)))
             .filter(event -> event.getCreatedDate()
                 .isAfter(LocalDateTime.of(2019, 05, 29, 23, 00, 00)))
-            .forEach(event ->
-                logMessage.append(" with event names ")
-                    .append(event.getEventName())
-                    .append(" and at ")
-                    .append(event.getCreatedDate())
-                    .append(" for claim ref ")
-                    .append(extractCaseFromEvent(event, "").getPreviousServiceCaseReference())
-                    .append(" created by ")
-                    .append(event.getUserFirstName())
-                    .append(" ")
-                    .append(event.getUserLastName())
-            );
-        logger.info(logMessage.toString());
+            .collect(Collectors.toList());
     }
 
     private Optional<CaseEventDetails> findLastSuccesdfullEventDetails(List<CaseEventDetails> events) {

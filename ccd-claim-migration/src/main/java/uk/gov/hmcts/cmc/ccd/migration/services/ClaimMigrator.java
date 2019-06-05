@@ -55,18 +55,18 @@ public class ClaimMigrator {
     @LogExecutionTime
     public void migrate() {
         logger.info("===== MIGRATE CLAIMS TO CCD =====");
+        logger.info("DRY RUN Enabled: " + dryRun);
 
         User user = userService.authenticateSystemUpdateUser();
         List<Claim> claimsToMigrate = getClaimsToMigrate();
 
-        logger.info("DRY RUN Enabled: " + dryRun);
 
         AtomicInteger migratedClaims = new AtomicInteger(0);
         AtomicInteger updatedClaims = new AtomicInteger(0);
         AtomicInteger failedOnCreateMigrations = new AtomicInteger(0);
         AtomicInteger failedOnUpdateMigrations = new AtomicInteger(0);
 
-        ForkJoinPool forkJoinPool = new ForkJoinPool(10);
+        ForkJoinPool forkJoinPool = new ForkJoinPool(2);
 
         try {
             forkJoinPool
