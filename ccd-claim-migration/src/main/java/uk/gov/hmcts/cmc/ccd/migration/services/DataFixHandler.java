@@ -127,7 +127,7 @@ public class DataFixHandler {
                     .append(event.getEventName())
                     .append(" and at ")
                     .append(event.getCreatedDate())
-                    .append("for claim ref ")
+                    .append(" for claim ref ")
                     .append(extractCaseFromEvent(event, "").getPreviousServiceCaseReference())
                     .append(" created by ")
                     .append(event.getUserFirstName())
