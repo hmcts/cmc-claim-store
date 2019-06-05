@@ -219,7 +219,7 @@ public class DataFixHandler {
 
     private CCDCase extractCaseFromEvent(CaseEventDetails caseDetails, String caseId) {
         Map<String, Object> caseData = caseDetails.getData();
-//        caseData.put("id", caseId);
+        caseData.put("id", caseId);
         return jsonMapper.fromMap(caseData, CCDCase.class);
     }
 }
