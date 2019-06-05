@@ -16,9 +16,9 @@ public class DirectionsQuestionnaireAssert extends AbstractAssert<DirectionsQues
         isNotNull();
 
 
-        if (!Objects.equals(actual.getSelfWitness(), ccdDirectionsQuestionnaire.getSelfWitness())) {
+        if (!Objects.equals(actual.isSelfWitness(), ccdDirectionsQuestionnaire.getSelfWitness().toBoolean())) {
             failWithMessage("Expected self witness to be <%s> but was <%s>",
-                ccdDirectionsQuestionnaire.getSelfWitness(), actual.getSelfWitness());
+                ccdDirectionsQuestionnaire.getSelfWitness(), actual.isSelfWitness());
         }
 
         if (!Objects.equals(actual.getHowManyOtherWitness(), ccdDirectionsQuestionnaire.getHowManyOtherWitness())) {
@@ -56,14 +56,14 @@ public class DirectionsQuestionnaireAssert extends AbstractAssert<DirectionsQues
                 ccdDirectionsQuestionnaire.getSignLanguageInterpreted(), actual.getSignLanguageInterpreted());
         }
 
-        if (!Objects.equals(actual.getHearingLoop(), ccdDirectionsQuestionnaire.getHearingLoop())) {
+        if (!Objects.equals(actual.isHearingLoop(), ccdDirectionsQuestionnaire.getHearingLoop().toBoolean())) {
             failWithMessage("Expected hearing loop to be <%s> but was <%s>",
-                ccdDirectionsQuestionnaire.getHearingLoop(), actual.getHearingLoop());
+                ccdDirectionsQuestionnaire.getHearingLoop(), actual.isHearingLoop());
         }
 
-        if (!Objects.equals(actual.getDisabledAccess(), ccdDirectionsQuestionnaire.getDisabledAccess())) {
+        if (!Objects.equals(actual.isDisabledAccess(), ccdDirectionsQuestionnaire.getDisabledAccess().toBoolean())) {
             failWithMessage("Expected disabled access to be <%s> but was <%s>",
-                ccdDirectionsQuestionnaire.getDisabledAccess(), actual.getDisabledAccess());
+                ccdDirectionsQuestionnaire.getDisabledAccess(), actual.isDisabledAccess());
         }
 
         if (!Objects.equals(actual.getOtherSupportRequired(), ccdDirectionsQuestionnaire.getOtherSupportRequired())) {

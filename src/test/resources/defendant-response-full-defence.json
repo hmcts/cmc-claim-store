@@ -55,7 +55,7 @@
     "comment": "More information"
   },
   "directionsQuestionnaire": {
-    "selfWitness": "YES",
+    "selfWitness": true,
     "howManyOtherWitness": 1,
     "hearingLocation": "London",
     "hearingLocationSlug": "London-Court",
@@ -66,9 +66,9 @@
     }],
     "availableDate": "2050-01-02",
     "languageInterpreted": "some language",
-    "signLanguageInterpreted": "yes",
-    "hearingLoop": "NO",
-    "disabledAccess": "YES",
+    "signLanguageInterpreted": "some sign language",
+    "hearingLoop": false,
+    "disabledAccess": true,
     "otherSupportRequired": "maybe",
     "expertReportsRows": [
       {

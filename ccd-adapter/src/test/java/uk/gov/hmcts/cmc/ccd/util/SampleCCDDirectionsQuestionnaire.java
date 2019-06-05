@@ -46,7 +46,7 @@ public class SampleCCDDirectionsQuestionnaire {
                     .unavailableDates(unavailableDates)
                     .availableDate(LocalDate.of(2050,1,2))
                     .languageInterpreted("some language")
-                    .signLanguageInterpreted("yes")
+                    .signLanguageInterpreted("some sign language")
                     .hearingLoop(NO)
                     .disabledAccess(YES)
                     .otherSupportRequired("maybe")
