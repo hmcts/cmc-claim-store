@@ -110,13 +110,10 @@ public class ClaimMigrator {
         AtomicInteger failedOnCreateMigrations,
         AtomicInteger failedOnUpdateMigrations
     ) {
-        AtomicInteger skippedClaimsCount = new AtomicInteger();
-
         notMigratedClaims.parallelStream().forEach(claim -> {
             if (fixDataIssues) {
                 if (isSettledOrJudgement(claim)) {
-                    dataFixHandler.fixClaim(migratedClaims, failedOnUpdateMigrations, updatedClaims, claim, user,
-                        skippedClaimsCount);
+                    dataFixHandler.fixClaim(migratedClaims, failedOnUpdateMigrations, updatedClaims, claim, user);
                 }
             } else {
                 migrationHandler.migrateClaim(
@@ -129,7 +126,6 @@ public class ClaimMigrator {
                 );
             }
         });
-        logger.info("skipped claims counts: " + skippedClaimsCount.toString());
 
     }
 
