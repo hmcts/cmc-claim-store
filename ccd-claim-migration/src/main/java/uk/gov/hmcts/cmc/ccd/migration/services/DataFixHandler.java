@@ -123,7 +123,7 @@ public class DataFixHandler {
             .filter(event -> event.getCreatedDate()
                 .isAfter(LocalDateTime.of(2019, 05, 29, 23, 00, 00)))
             .forEach(event ->
-                logMessage.append("with event names ")
+                logMessage.append(" with event names ")
                     .append(event.getEventName())
                     .append(" and at ")
                     .append(event.getCreatedDate())
