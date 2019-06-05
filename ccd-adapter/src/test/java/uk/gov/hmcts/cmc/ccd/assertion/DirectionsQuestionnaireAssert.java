@@ -8,7 +8,7 @@ import java.util.Objects;
 
 public class DirectionsQuestionnaireAssert extends AbstractAssert<DirectionsQuestionnaireAssert, DirectionsQuestionnaire> {
     public DirectionsQuestionnaireAssert(DirectionsQuestionnaire actual) {
-        super(actual, DirectionsQuestionnaire.class);
+        super(actual, DirectionsQuestionnaireAssert.class);
     }
 
     public DirectionsQuestionnaireAssert isEqualTo(CCDDirectionsQuestionnaire ccdDirectionsQuestionnaire) {
