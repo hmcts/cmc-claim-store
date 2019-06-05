@@ -61,18 +61,18 @@
     "hearingLocationSlug": "London-Court",
     "exceptionalCircumstancesReason": "disabled",
     "unavailableDates": [{
-      "id": "d839f2f0-025f-4ee9-9a98-16bbe6ab3b35",
+      "id": "1",
       "unavailableDate": "2050-01-01"
     }],
     "availableDate": "2050-01-02",
     "languageInterpreted": "some language",
-    "signLanguageInterpreted": "YES",
+    "signLanguageInterpreted": "yes",
     "hearingLoop": "NO",
     "disabledAccess": "YES",
     "otherSupportRequired": "maybe",
     "expertReportsRows": [
       {
-        "id": "d839f2f0-025f-4ee9-9a98-16bbe6ab3b35",
+        "id": "1",
         "expertName": "expert1",
         "expertReportDate": "2040-01-01"
       }

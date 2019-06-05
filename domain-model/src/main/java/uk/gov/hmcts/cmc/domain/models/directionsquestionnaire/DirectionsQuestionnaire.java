@@ -2,11 +2,14 @@ package uk.gov.hmcts.cmc.domain.models.directionsquestionnaire;
 
 import lombok.Builder;
 import lombok.Value;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.FutureDate;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.time.LocalDate;
 import java.util.List;
+
+import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Builder
 @Value
@@ -42,5 +45,10 @@ public class DirectionsQuestionnaire {
     private final String expertEvidenceToExamine;
 
     private final String reasonForExpertAdvice;
+
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ourStyle());
+    }
 
 }

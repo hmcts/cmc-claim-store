@@ -15,16 +15,11 @@ public class SampleDirectionsQuestionnaire {
     public static SampleDirectionsQuestionnaire builder() { return new SampleDirectionsQuestionnaire(); }
 
     public DirectionsQuestionnaire build() {
-    List<UnavailableDate> unavailableDates = asList(UnavailableDate
-        .builder()
-        .unavailableDate(LocalDate.of(2050,1,1))
-        .build());
+    List<UnavailableDate> unavailableDates = asList(new UnavailableDate
+        ("1", LocalDate.of(2050,1,1)));
 
-    List<ExpertReportRow> expertReportRowsData = asList(ExpertReportRow
-        .builder()
-        .expertName("expert1")
-        .expertReportDate(LocalDate.of(2040,1,1))
-        .build());
+    List<ExpertReportRow> expertReportRowsData = asList(
+        new ExpertReportRow("1", "expert1", LocalDate.of(2040,1,1)));
 
         return DirectionsQuestionnaire.builder()
             .selfWitness(YesNoOption.YES)
