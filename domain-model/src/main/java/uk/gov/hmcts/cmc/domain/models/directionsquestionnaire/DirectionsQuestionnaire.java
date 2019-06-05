@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.Value;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.FutureDate;
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,7 +14,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @Value
 public class DirectionsQuestionnaire {
 
-    private final YesNoOption selfWitness;
+    private final boolean selfWitness;
 
     private final int howManyOtherWitness;
 
@@ -34,9 +33,9 @@ public class DirectionsQuestionnaire {
 
     private final String signLanguageInterpreted;
 
-    private final YesNoOption hearingLoop;
+    private final boolean hearingLoop;
 
-    private final YesNoOption disabledAccess;
+    private final boolean disabledAccess;
 
     private final String otherSupportRequired;
 

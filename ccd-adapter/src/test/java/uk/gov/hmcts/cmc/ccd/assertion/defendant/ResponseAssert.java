@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.assertion.defendant;
 
 import org.assertj.core.api.AbstractAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.Assertions;
 import uk.gov.hmcts.cmc.ccd.assertion.EvidenceRowAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.TimelineEventAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.StatementOfMeansAssert;
@@ -107,6 +108,9 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
 
         partAdmissionResponse.getStatementOfMeans()
             .ifPresent(statementOfMeans -> assertThat(statementOfMeans).isEqualTo(ccdRespondent.getStatementOfMeans()));
+
+        partAdmissionResponse.getDirectionsQuestionnaire().ifPresent(Assertions::assertThat);
+
     }
 
     private void assertFullAdmissionResponse(CCDRespondent ccdRespondent) {
@@ -142,6 +146,8 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
         fullDefenceResponse.getTimeline().ifPresent(assertDefendantTimelineConsumer(respondent));
 
         fullDefenceResponse.getEvidence().ifPresent(assertDefendantEvidenceConsumer(respondent));
+
+        fullDefenceResponse.getDirectionsQuestionnaire().ifPresent(Assertions::assertThat);
     }
 
     private Consumer<DefendantEvidence> assertDefendantEvidenceConsumer(CCDRespondent ccdRespondent) {

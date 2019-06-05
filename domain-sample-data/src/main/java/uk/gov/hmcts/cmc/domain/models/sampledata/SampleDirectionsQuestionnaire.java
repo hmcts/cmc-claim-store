@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.domain.models.sampledata;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReportRow;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.UnavailableDate;
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,7 +21,7 @@ public class SampleDirectionsQuestionnaire {
         new ExpertReportRow("1", "expert1", LocalDate.of(2040,1,1)));
 
         return DirectionsQuestionnaire.builder()
-            .selfWitness(YesNoOption.YES)
+            .selfWitness(true)
             .howManyOtherWitness(1)
             .hearingLocation("London")
             .hearingLocationSlug("London-Court")
@@ -30,9 +29,9 @@ public class SampleDirectionsQuestionnaire {
             .unavailableDates(unavailableDates)
             .availableDate(LocalDate.of(2050,1,2))
             .languageInterpreted("some language")
-            .signLanguageInterpreted("yes")
-            .hearingLoop(YesNoOption.NO)
-            .disabledAccess(YesNoOption.YES)
+            .signLanguageInterpreted("some sign language")
+            .hearingLoop(false)
+            .disabledAccess(true)
             .otherSupportRequired("maybe")
             .expertReportsRows(expertReportRowsData)
             .expertEvidenceToExamine("nothing")
