@@ -84,10 +84,12 @@ public class DataFixHandler {
                     CaseEventDetails lastEventDetails = findLastEventDetails(events);
                     CCDCase ccdCase = extractCaseFromEvent(lastEventDetails, Long.toString(details.getId()));
                     if (lastEventDetails.getCreatedDate().isBefore(details.getLastModified())) {
+                        StringBuilder logMessage = new StringBuilder("Bucket A with fix ");
+                        printEventProcessedEarlierToMigrationPatch(events, logMessage);
                         updateCase(user, updatedClaims, failedOnUpdateMigrations, claim, ccdCase);
                     } else {
-                        printEventProcessedEarlierToMigrationPatch(events);
-
+                        StringBuilder logMessage = new StringBuilder("Bucket B without fix ");
+                        printEventProcessedEarlierToMigrationPatch(events, logMessage);
                         InterestDate interestDate = claim.getClaimData().getInterest().getInterestDate();
                         logger.info("Data Fix can not be applied on this claim as already progressed."
                                 + "claim reference: {} ccd id: {} last event: {} event created date: {} " +
@@ -113,21 +115,29 @@ public class DataFixHandler {
         }
     }
 
-    private void printEventProcessedEarlierToMigrationPatch(List<CaseEventDetails> events) {
+    private void printEventProcessedEarlierToMigrationPatch(List<CaseEventDetails> events, StringBuilder logMessage) {
+
         events.stream()
             .filter(event -> event.getCreatedDate()
-                .isBefore(LocalDateTime.of(2019, 06, 03, 23, 00, 00)))
+                .isBefore(LocalDateTime.of(2019, 06, 03, 19, 03, 00)))
             .filter(event -> event.getCreatedDate()
                 .isAfter(LocalDateTime.of(2019, 05, 29, 23, 00, 00)))
-            .forEach(event -> logger.info("event processed  with name '{}' and at '{}' for claim ref '{}' created by {}",
-                event.getEventName(),
-                event.getCreatedDate(),
-                extractCaseFromEvent(event, "").getPreviousServiceCaseReference(),
-                event.getUserFirstName() + " " + event.getUserLastName()
-            ));
+            .forEach(event ->
+                logMessage.append("with event names ")
+                    .append(event.getEventName())
+                    .append(" and at ")
+                    .append(event.getCreatedDate())
+                    .append("for claim ref ")
+                    .append(extractCaseFromEvent(event, "").getPreviousServiceCaseReference())
+                    .append(" created by ")
+                    .append(event.getUserFirstName())
+                    .append(" ")
+                    .append(event.getUserLastName())
+            );
+        logger.info(logMessage.toString());
     }
 
-    private Optional<CaseEventDetails> findLastSuccessfullEventDetails(List<CaseEventDetails> events) {
+    private Optional<CaseEventDetails> findLastSuccesdfullEventDetails(List<CaseEventDetails> events) {
         List<CaseEventDetails> sortedEvents = events.stream()
             .sorted(Comparator.comparing(CaseEventDetails::getCreatedDate))
             .collect(Collectors.toList());
@@ -152,12 +162,19 @@ public class DataFixHandler {
 
     private CCDCase applyInterestDatePatch(final CCDCase ccdCase, final Claim claim) {
         CCDCase.CCDCaseBuilder builder = ccdCase.toBuilder();
-        if (claim.getClaimData().getInterest() != null) {
-            interestDateMapper.to(claim.getClaimData().getInterest().getInterestDate(), builder);
-        } else {
-            logger.error("Claim with reference {} has no Interest object!", claim.getReferenceNumber());
-        }
-        return builder.build();
+        interestDateMapper.to(claim.getClaimData().getInterest().getInterestDate(), builder);
+
+        CCDCase aCase = builder.build();
+
+        logger.info("updated case interest end date type from {} to {} for ref no {}",
+            ccdCase.getInterestEndDateType(),
+            aCase.getInterestEndDateType(),
+            claim.getReferenceNumber());
+        logger.info("updated case interest date type from {} to {} for ref no {}",
+            ccdCase.getInterestDateType(),
+            aCase.getInterestDateType(),
+            claim.getReferenceNumber());
+        return aCase;
     }
 
     private void updateCase(
