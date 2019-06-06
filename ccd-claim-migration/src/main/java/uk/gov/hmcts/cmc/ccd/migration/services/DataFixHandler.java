@@ -79,7 +79,10 @@ public class DataFixHandler {
             caseDetails
                 .ifPresent(details -> {
                     CCDCase ccdCase = extractCase(details);
-                    if (isReponsedDeadlineWithinDownTime(ccdCase) && !isResponded(ccdCase)) {
+                    if (!claim.getClaimData().isClaimantRepresented()
+                        && isReponsedDeadlineWithinDownTime(ccdCase)
+                        && !isResponded(ccdCase)
+                    ) {
                         Claim.ClaimBuilder claimBuilder = caseMapper.from(ccdCase).toBuilder();
                         claimBuilder.responseDeadline(LocalDate.of(2019, 06, 10));
                         CCDCase updatedCase = caseMapper.to(claimBuilder.build());
