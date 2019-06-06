@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Getter
 public class CCDUnavailableDate extends CollectionId {
 
-    private LocalDate unavailableDate;
+    private final LocalDate unavailableDate;
 
     @Builder
     public CCDUnavailableDate(String id, LocalDate unavailableDate) {

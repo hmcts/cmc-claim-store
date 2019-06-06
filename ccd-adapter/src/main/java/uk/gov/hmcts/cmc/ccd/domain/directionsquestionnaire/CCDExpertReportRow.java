@@ -10,8 +10,8 @@ import java.time.LocalDate;
 @EqualsAndHashCode(callSuper = true)
 @Getter
 public class CCDExpertReportRow extends CollectionId {
-    private String expertName;
-    private LocalDate expertReportDate;
+    private final String expertName;
+    private final LocalDate expertReportDate;
 
     @Builder
     public CCDExpertReportRow(String id, String expertName, LocalDate expertReportDate) {

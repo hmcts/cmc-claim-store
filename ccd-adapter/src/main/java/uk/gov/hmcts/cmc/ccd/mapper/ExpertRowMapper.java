@@ -27,10 +27,7 @@ public class ExpertRowMapper {
     public ExpertReportRow from(CCDCollectionElement<CCDExpertReportRow> collectionElement) {
         CCDExpertReportRow ccdExpertReportRow = collectionElement.getValue();
 
-        if (ccdExpertReportRow == null
-            || ccdExpertReportRow.getExpertName() == null
-            || ccdExpertReportRow.getExpertReportDate() == null
-        ) {
+        if (ccdExpertReportRow == null) {
             return null;
         }
 
