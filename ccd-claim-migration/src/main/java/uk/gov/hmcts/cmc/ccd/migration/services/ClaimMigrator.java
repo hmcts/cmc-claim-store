@@ -31,6 +31,7 @@ public class ClaimMigrator {
     private final DataFixHandler dataFixHandler;
     private final List<String> casesToMigrate;
     private final boolean fixDataIssues;
+    private final boolean dryRun;
 
     @Autowired
     public ClaimMigrator(
@@ -39,7 +40,8 @@ public class ClaimMigrator {
         MigrationHandler migrationHandler,
         DataFixHandler dataFixHandler,
         @Value("${migration.cases.references}") List<String> casesToMigrate,
-        @Value("${migration.fixDataIssues}") boolean fixDataIssues
+        @Value("${migration.fixDataIssues}") boolean fixDataIssues,
+        @Value("${migration.dryRun}") boolean dryRun
     ) {
         this.claimRepository = claimRepository;
         this.userService = userService;
@@ -47,23 +49,23 @@ public class ClaimMigrator {
         this.dataFixHandler = dataFixHandler;
         this.casesToMigrate = casesToMigrate;
         this.fixDataIssues = fixDataIssues;
+        this.dryRun = dryRun;
     }
 
     @LogExecutionTime
     public void migrate() {
         logger.info("===== MIGRATE CLAIMS TO CCD =====");
+        logger.info("DRY RUN Enabled: " + dryRun);
 
         User user = userService.authenticateSystemUpdateUser();
         List<Claim> claimsToMigrate = getClaimsToMigrate();
-
-        logger.info("User token: " + user.getAuthorisation());
 
         AtomicInteger migratedClaims = new AtomicInteger(0);
         AtomicInteger updatedClaims = new AtomicInteger(0);
         AtomicInteger failedOnCreateMigrations = new AtomicInteger(0);
         AtomicInteger failedOnUpdateMigrations = new AtomicInteger(0);
 
-        ForkJoinPool forkJoinPool = new ForkJoinPool(10);
+        ForkJoinPool forkJoinPool = new ForkJoinPool(2);
 
         try {
             forkJoinPool
@@ -123,6 +125,7 @@ public class ClaimMigrator {
                 );
             }
         });
+
     }
 
     private boolean isSettledOrJudgement(Claim claim) {

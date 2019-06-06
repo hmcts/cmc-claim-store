@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 public class CCDCase {
 
     private Long id;

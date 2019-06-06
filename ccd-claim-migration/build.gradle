@@ -22,6 +22,9 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.0.0'
   compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '10.2.3'
 
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.8'
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.6'
+
   compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
 }
 
