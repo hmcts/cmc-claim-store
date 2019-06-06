@@ -158,7 +158,8 @@ public class ClaimantResponseMapper {
         }
 
         if (ccdResponseRejection.getDirectionsQuestionnaire() != null) {
-            builder.directionsQuestionnaire(directionsQuestionnaireMapper.from(ccdResponseRejection.getDirectionsQuestionnaire()));
+            builder.directionsQuestionnaire(
+                directionsQuestionnaireMapper.from(ccdResponseRejection.getDirectionsQuestionnaire()));
         }
 
         claimBuilder.claimantResponse(builder.build())
