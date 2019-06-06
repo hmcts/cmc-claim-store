@@ -60,7 +60,6 @@ public class ClaimMigrator {
         User user = userService.authenticateSystemUpdateUser();
         List<Claim> claimsToMigrate = getClaimsToMigrate();
 
-
         AtomicInteger migratedClaims = new AtomicInteger(0);
         AtomicInteger updatedClaims = new AtomicInteger(0);
         AtomicInteger failedOnCreateMigrations = new AtomicInteger(0);

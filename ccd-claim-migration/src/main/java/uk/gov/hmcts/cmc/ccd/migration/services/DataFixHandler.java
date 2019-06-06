@@ -17,7 +17,6 @@ import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.mappers.JsonMapper;
 import uk.gov.hmcts.cmc.ccd.migration.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.time.LocalDate;
@@ -79,15 +78,14 @@ public class DataFixHandler {
 
             caseDetails
                 .ifPresent(details -> {
-                        CCDCase ccdCase = extractCase(details);
-                    if (isReponsedDeadlineWithinDownTime(ccdCase)&& !isResponded(ccdCase)) {
+                    CCDCase ccdCase = extractCase(details);
+                    if (isReponsedDeadlineWithinDownTime(ccdCase) && !isResponded(ccdCase)) {
                         Claim.ClaimBuilder claimBuilder = caseMapper.from(ccdCase).toBuilder();
                         claimBuilder.responseDeadline(LocalDate.of(2019, 06, 10));
                         CCDCase updatedCase = caseMapper.to(claimBuilder.build());
                         updateCase(user, updatedClaims, failedOnUpdateMigrations, updatedCase);
                     }
-
-//                    fixDataIssueWithPatch(user, details);
+                    // fixDataIssueWithPatch(user, details);
                 });
 
         } catch (Exception e) {
@@ -186,17 +184,17 @@ public class DataFixHandler {
         CCDCase.CCDCaseBuilder builder = ccdCase.toBuilder();
         interestDateMapper.to(claim.getClaimData().getInterest().getInterestDate(), builder);
 
-        CCDCase aCase = builder.build();
+        CCDCase updatedCase = builder.build();
 
         logger.info("updated case interest end date type from {} to {} for ref no {}",
             ccdCase.getInterestEndDateType(),
-            aCase.getInterestEndDateType(),
+            updatedCase.getInterestEndDateType(),
             claim.getReferenceNumber());
         logger.info("updated case interest date type from {} to {} for ref no {}",
             ccdCase.getInterestDateType(),
-            aCase.getInterestDateType(),
+            updatedCase.getInterestDateType(),
             claim.getReferenceNumber());
-        return aCase;
+        return updatedCase;
     }
 
     private void updateCase(
