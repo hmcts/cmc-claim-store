@@ -31,15 +31,12 @@ public class SearchCCDCaseService {
 
     private final CoreCaseDataApi coreCaseDataApi;
     private final AuthTokenGenerator authTokenGenerator;
-    private final MigrateCoreCaseDataService migrateCoreCaseDataService;
 
     @Autowired
     public SearchCCDCaseService(
-        MigrateCoreCaseDataService migrateCoreCaseDataService,
         CoreCaseDataApi coreCaseDataApi,
         AuthTokenGenerator authTokenGenerator
     ) {
-        this.migrateCoreCaseDataService = migrateCoreCaseDataService;
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;
     }
