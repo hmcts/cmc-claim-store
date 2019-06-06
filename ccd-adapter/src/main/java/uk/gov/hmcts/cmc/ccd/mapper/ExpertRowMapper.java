@@ -10,6 +10,10 @@ public class ExpertRowMapper {
 
     public CCDCollectionElement<CCDExpertReportRow> to(ExpertReportRow expertReportRow) {
 
+        if(expertReportRow == null) {
+            return null;
+        }
+
         CCDExpertReportRow.CCDExpertReportRowBuilder builder = CCDExpertReportRow.builder();
 
         return CCDCollectionElement.<CCDExpertReportRow>builder()
@@ -20,13 +24,21 @@ public class ExpertRowMapper {
             .build();
     }
 
-    public ExpertReportRow from(CCDCollectionElement<CCDExpertReportRow> ccdExpertReportRow) {
+    public ExpertReportRow from(CCDCollectionElement<CCDExpertReportRow> collectionElement) {
+        CCDExpertReportRow ccdExpertReportRow = collectionElement.getValue();
+
+        if (ccdExpertReportRow == null
+            || ccdExpertReportRow.getExpertName() == null
+            || ccdExpertReportRow.getExpertReportDate() == null
+        ) {
+            return null;
+        }
 
         return ExpertReportRow
             .builder()
             .id(ccdExpertReportRow.getId())
-            .expertName(ccdExpertReportRow.getValue().getExpertName())
-            .expertReportDate(ccdExpertReportRow.getValue().getExpertReportDate())
+            .expertName(ccdExpertReportRow.getExpertName())
+            .expertReportDate(ccdExpertReportRow.getExpertReportDate())
             .build();
     }
 }
