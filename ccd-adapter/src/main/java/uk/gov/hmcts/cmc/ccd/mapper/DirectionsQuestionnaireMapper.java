@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestion
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
+import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
 import java.util.stream.Collectors;
 
 @Component
@@ -33,8 +34,7 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
             .hearingLocation(directionsQuestionnaire.getHearingLocation())
             .hearingLocationSlug(directionsQuestionnaire.getHearingLocationSlug())
             .exceptionalCircumstancesReason(directionsQuestionnaire.getExceptionalCircumstancesReason())
-            .unavailableDates(directionsQuestionnaire.getUnavailableDates()
-                .stream()
+            .unavailableDates(asStream(directionsQuestionnaire.getUnavailableDates())
                 .map(unavailableDateMapper::to)
                 .collect(Collectors.toList()))
             .availableDate(directionsQuestionnaire.getAvailableDate())
@@ -44,8 +44,7 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
             .disabledAccess(CCDYesNoOption.valueOf(directionsQuestionnaire.getDisabledAccess().name()))
             .otherSupportRequired(directionsQuestionnaire.getOtherSupportRequired())
             .expertEvidenceToExamine(directionsQuestionnaire.getExpertEvidenceToExamine())
-            .expertReportsRows(directionsQuestionnaire.getExpertReportsRows()
-                .stream()
+            .expertReportsRows(asStream(directionsQuestionnaire.getExpertReportsRows())
                 .map(expertRowMapper::to)
                 .collect(Collectors.toList()))
             .reasonForExpertAdvice(directionsQuestionnaire.getReasonForExpertAdvice())
@@ -64,8 +63,7 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
             .hearingLocation(ccdDirectionsQuestionnaire.getHearingLocation())
             .hearingLocationSlug(ccdDirectionsQuestionnaire.getHearingLocationSlug())
             .exceptionalCircumstancesReason(ccdDirectionsQuestionnaire.getExceptionalCircumstancesReason())
-            .unavailableDates(ccdDirectionsQuestionnaire.getUnavailableDates()
-                .stream()
+            .unavailableDates(asStream(ccdDirectionsQuestionnaire.getUnavailableDates())
                 .map(unavailableDateMapper::from)
                 .collect(Collectors.toList()))
             .availableDate(ccdDirectionsQuestionnaire.getAvailableDate())
@@ -75,8 +73,7 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
             .disabledAccess(YesNoOption.valueOf(ccdDirectionsQuestionnaire.getDisabledAccess().name()))
             .otherSupportRequired(ccdDirectionsQuestionnaire.getOtherSupportRequired())
             .expertEvidenceToExamine(ccdDirectionsQuestionnaire.getExpertEvidenceToExamine())
-            .expertReportsRows(ccdDirectionsQuestionnaire.getExpertReportsRows()
-                .stream()
+            .expertReportsRows(asStream(ccdDirectionsQuestionnaire.getExpertReportsRows())
                 .map(expertRowMapper::from)
                 .collect(Collectors.toList()))
             .reasonForExpertAdvice(ccdDirectionsQuestionnaire.getReasonForExpertAdvice())
