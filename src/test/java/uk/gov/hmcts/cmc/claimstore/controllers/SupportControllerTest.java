@@ -341,7 +341,9 @@ public class SupportControllerTest {
 
     @Test
     public void shouldResetClaimSubmissionIndicators() {
-        Claim claim = SampleClaim.withNoResponse();
+        Claim claim = SampleClaim.builder()
+            .withDefendantId(null)
+            .build();
         when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
             .thenReturn(Optional.of(claim));
         ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators = ClaimSubmissionOperationIndicators
@@ -368,4 +370,17 @@ public class SupportControllerTest {
             "");
     }
 
+    @Test
+    public void shouldThrowConflictExceptionWhenResetClaimSubmissionIndicator() {
+        Claim claim = SampleClaim.getWithSettlement(SampleSettlement.validDefaults());
+        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
+            .thenReturn(Optional.of(claim));
+        exceptionRule.expect(ConflictException.class);
+        exceptionRule.expectMessage("Claim has already been linked to defendant "
+            + "- cannot reset claim submission operation indicators");
+        controller.updateClaimSubmissionIndicators(CLAIMREFERENCENUMBER,
+            ClaimSubmissionOperationIndicators
+                .builder().build(),
+            AUTHORISATION);
+    }
 }
