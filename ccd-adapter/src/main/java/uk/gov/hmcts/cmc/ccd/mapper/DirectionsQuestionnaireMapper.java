@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.stream.Collectors;
 
@@ -23,6 +22,10 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
 
     @Override
     public CCDDirectionsQuestionnaire to(DirectionsQuestionnaire directionsQuestionnaire) {
+        if (directionsQuestionnaire == null) {
+            return null;
+        }
+
         return CCDDirectionsQuestionnaire.builder()
             .selfWitness(CCDYesNoOption.valueOf(directionsQuestionnaire.isSelfWitness()))
             .howManyOtherWitness(directionsQuestionnaire.getHowManyOtherWitness())
@@ -50,6 +53,10 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
 
     @Override
     public DirectionsQuestionnaire from(CCDDirectionsQuestionnaire ccdDirectionsQuestionnaire) {
+        if (ccdDirectionsQuestionnaire == null) {
+            return null;
+        }
+
         return DirectionsQuestionnaire.builder()
             .selfWitness(ccdDirectionsQuestionnaire.getSelfWitness().toBoolean())
             .howManyOtherWitness(ccdDirectionsQuestionnaire.getHowManyOtherWitness())
