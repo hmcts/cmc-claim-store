@@ -27,6 +27,7 @@ import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -336,6 +337,35 @@ public class SupportControllerTest {
             .thenReturn(Optional.of(claim));
         controller.recoverClaimIssueOperations(CLAIMREFERENCENUMBER, AUTHORISATION);
         verify(postClaimOrchestrationHandler).representativeIssueHandler(any(RepresentedClaimCreatedEvent.class));
+    }
+
+    @Test
+    public void shouldResetClaimSubmissionIndicators() {
+        Claim claim = SampleClaim.withNoResponse();
+        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
+            .thenReturn(Optional.of(claim));
+        ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators = ClaimSubmissionOperationIndicators
+            .builder().build();
+        controller.updateClaimSubmissionIndicators(CLAIMREFERENCENUMBER,
+            claimSubmissionOperationIndicators,
+            AUTHORISATION);
+        verify(claimService).updateClaimSubmissionOperationIndicators(
+            eq(AUTHORISATION),
+            eq(claim),
+            eq(claimSubmissionOperationIndicators));
+    }
+
+    @Test
+    public void shouldThrowBadRequestExceptionWhenResetClaimSubmissionIndicator() {
+        Claim claim = SampleClaim.getDefault();
+        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
+            .thenReturn(Optional.of(claim));
+        exceptionRule.expect(BadRequestException.class);
+        exceptionRule.expectMessage("Authorisation is required");
+        controller.updateClaimSubmissionIndicators(CLAIMREFERENCENUMBER,
+            ClaimSubmissionOperationIndicators
+                .builder().build(),
+            "");
     }
 
 }

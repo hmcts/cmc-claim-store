@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -37,6 +38,7 @@ import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
@@ -161,6 +163,25 @@ public class SupportController {
         claimService.getClaimByReferenceAnonymous(referenceNumber)
             .ifPresent(updatedClaim -> updatedClaim.getClaimDocument(claimDocumentType)
                 .orElseThrow(() -> new NotFoundException("Unable to upload the document. Please try again later")));
+    }
+
+    @PostMapping("/claim/{referenceNumber}/claimSubmissionOperationIndicators")
+    @ApiOperation("update the claim submission operation Indicators")
+    public void updateClaimSubmissionIndicators(
+        @PathVariable("referenceNumber") String referenceNumber,
+        @RequestBody ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators,
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
+            .orElseThrow(() -> new NotFoundException(String.format(CLAIM_DOES_NOT_EXIST, referenceNumber)));
+        if (StringUtils.isBlank(authorisation)) {
+            throw new BadRequestException(AUTHORISATION_IS_REQUIRED);
+        }
+        if (claim.getDefendantId() != null) {
+            throw new ConflictException("Claim has already been linked to defendant "
+               +  "- cannot reset claim submission operation indicators");
+        }
+        claimService.updateClaimSubmissionOperationIndicators(authorisation, claim, claimSubmissionOperationIndicators);
     }
 
     @PutMapping("/claims/{referenceNumber}/recover-operations")

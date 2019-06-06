@@ -44,15 +44,14 @@ public class SearchCCDCaseService {
         this.authTokenGenerator = authTokenGenerator;
     }
 
-//    @Retryable(include = {SocketTimeoutException.class, FeignException.class, IOException.class},
-//        maxAttempts = 5,
-//        backoff = @Backoff(delay = 400, maxDelay = 800)
-//    )
-//    @LogExecutionTime
-//    public Optional<CaseDetails> getCcdCaseByReferenceNumber(User user, String referenceNumber) {
-//        return search(user, ImmutableMap.of("case.previousServiceCaseReference", referenceNumber));
-//    }
-
+    //    @Retryable(include = {SocketTimeoutException.class, FeignException.class, IOException.class},
+    //        maxAttempts = 5,
+    //        backoff = @Backoff(delay = 400, maxDelay = 800)
+    //    )
+    //    @LogExecutionTime
+    //    public Optional<CaseDetails> getCcdCaseByReferenceNumber(User user, String referenceNumber) {
+    //        return search(user, ImmutableMap.of("case.previousServiceCaseReference", referenceNumber));
+    //    }
 
     @Retryable(include = {SocketTimeoutException.class, FeignException.class, IOException.class},
         maxAttempts = 5,
