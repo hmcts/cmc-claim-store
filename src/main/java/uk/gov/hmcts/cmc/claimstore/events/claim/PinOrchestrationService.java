@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.events.claim;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
@@ -11,6 +12,9 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationSe
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
+
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled", havingValue = "true")
@@ -46,8 +50,12 @@ public class PinOrchestrationService {
             ClaimSubmissionOperationIndicators.builder();
 
         try {
-            bulkPrintService.print(updatedClaim, documents.getDefendantPinLetterDoc(),
-                documents.getSealedClaimDoc());
+            bulkPrintService.print(
+                updatedClaim,
+                ImmutableMap.of(
+                    DEFENDANT_PIN_LETTER, documents.getDefendantPinLetterDoc(),
+                    SEALED_CLAIM, documents.getSealedClaimDoc())
+            );
             updatedOperationIndicator.bulkPrint(YesNoOption.YES);
 
             claimIssuedStaffNotificationService.notifyStaffOfClaimIssue(

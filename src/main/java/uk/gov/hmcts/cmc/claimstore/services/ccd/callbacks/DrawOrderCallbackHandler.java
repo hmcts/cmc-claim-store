@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
@@ -12,11 +13,13 @@ import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.Clock;
@@ -31,6 +34,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.ORDER_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DRAW_ORDER;
 
 @Service
+@ConditionalOnProperty(prefix = "document_management", name = "url")
 public class DrawOrderCallbackHandler extends CallbackHandler {
     private static final String CASE_DOCUMENTS = "caseDocuments";
 
@@ -38,18 +42,20 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
     private final JsonMapper jsonMapper;
     private final OrderDrawnNotificationService orderDrawnNotificationService;
     private final CaseDetailsConverter caseDetailsConverter;
+    private final LegalOrderService legalOrderService;
 
     @Autowired
     public DrawOrderCallbackHandler(
         Clock clock,
         JsonMapper jsonMapper,
         OrderDrawnNotificationService orderDrawnNotificationService,
-        CaseDetailsConverter caseDetailsConverter
-    ) {
+        CaseDetailsConverter caseDetailsConverter,
+        LegalOrderService legalOrderService) {
         this.clock = clock;
         this.jsonMapper = jsonMapper;
         this.orderDrawnNotificationService = orderDrawnNotificationService;
         this.caseDetailsConverter = caseDetailsConverter;
+        this.legalOrderService = legalOrderService;
     }
 
     @Override
@@ -60,19 +66,41 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
         );
     }
 
-    private CallbackResponse notifyParties(CallbackParams callbackParams) {
-        CallbackRequest callbackRequest = callbackParams.getRequest();
-        Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
+    private CallbackResponse notifyPartiesAndPrintOrder(CallbackParams callbackParams) {
+        CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
+        notifyParties(caseDetails);
+        String authorisation = callbackParams.getParams()
+            .get(CallbackParams.Params.BEARER_TOKEN).toString();
+        return printOrder(authorisation, caseDetails);
+    }
+
+    private void notifyParties(CaseDetails caseDetails) {
+        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
         orderDrawnNotificationService.notifyClaimant(claim);
         orderDrawnNotificationService.notifyDefendant(claim);
-        return SubmittedCallbackResponse
-            .builder()
-            .build();
     }
 
     @Override
     public List<CaseEvent> handledEvents() {
         return Collections.singletonList(DRAW_ORDER);
+    }
+
+    private CallbackResponse printOrder(String authorisation, CaseDetails caseDetails) {
+        CCDCase ccdCase = jsonMapper.fromMap(
+            caseDetails.getData(), CCDCase.class);
+        CCDDocument draftOrderDoc = ccdCase.getOrderGenerationData().getDraftOrderDoc();
+        SubmittedCallbackResponse.SubmittedCallbackResponseBuilder builder =
+            SubmittedCallbackResponse.builder();
+        try {
+            legalOrderService.print(
+                authorisation,
+                caseDetails,
+                draftOrderDoc);
+        } catch (Exception e) {
+            builder.confirmationHeader("Bulk Print Failed");
+            builder.confirmationBody("The Bulk print operation has failed. Please notify the support users");
+        }
+        return builder.build();
     }
 
     private CallbackResponse copyDraftToCaseDocument(CallbackParams callbackParams) {
@@ -98,6 +126,7 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
                 .map(ArrayList::new)
                 .orElse(new ArrayList<>());
         currentCaseDocuments.add(claimDocument);
+
         return AboutToStartOrSubmitCallbackResponse
             .builder()
             .data(ImmutableMap.of(

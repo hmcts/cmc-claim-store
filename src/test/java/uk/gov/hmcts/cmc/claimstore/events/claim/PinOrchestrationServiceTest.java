@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.events.claim;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -24,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
@@ -104,7 +107,12 @@ public class PinOrchestrationServiceTest {
         pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
 
         //then
-        verify(bulkPrintService).print(eq(CLAIM), eq(defendantPinLetterDocument), eq(sealedClaimLetterDocument));
+        verify(bulkPrintService).print(
+            eq(CLAIM),
+            eq(ImmutableMap.of(
+                DEFENDANT_PIN_LETTER, defendantPinLetterDocument,
+                ClaimDocumentType.SEALED_CLAIM, sealedClaimLetterDocument
+            )));
 
         verify(claimIssuedStaffNotificationService)
             .notifyStaffOfClaimIssue(eq(CLAIM), eq(ImmutableList.of(sealedClaim, defendantPinLetter)));
@@ -134,7 +142,8 @@ public class PinOrchestrationServiceTest {
         given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION)))
             .willReturn(generatedDocuments);
 
-        doThrow(new RuntimeException("bulk print failed")).when(bulkPrintService).print(any(), any(), any());
+        doThrow(new RuntimeException("bulk print failed")).when(bulkPrintService).print(
+            any(), anyMap());
 
         //when
         try {

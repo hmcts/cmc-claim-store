@@ -1,11 +1,13 @@
 package uk.gov.hmcts.cmc.claimstore.documents;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
@@ -37,6 +39,11 @@ public class BulkPrintHandlerTest {
         bulkPrintHandler.print(printEvent);
 
         //verify
-        verify(bulkPrintService).print(claim, defendantLetterDocument, sealedClaimDocument);
+        verify(bulkPrintService).print(
+            claim,
+            ImmutableMap.of(
+                ClaimDocumentType.DEFENDANT_PIN_LETTER, defendantLetterDocument,
+                ClaimDocumentType.SEALED_CLAIM, sealedClaimDocument
+            ));
     }
 }

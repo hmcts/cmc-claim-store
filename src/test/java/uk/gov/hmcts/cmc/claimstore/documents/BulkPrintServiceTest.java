@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.documents;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,6 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.services.staff.BulkPrintStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.sendletter.api.Document;
@@ -77,7 +79,11 @@ public class BulkPrintServiceTest {
         );
 
         //when
-        bulkPrintService.print(CLAIM, defendantLetterDocument, sealedClaimDocument);
+        bulkPrintService.print(CLAIM,
+            ImmutableMap.of(
+                ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT, defendantLetterDocument,
+                ClaimDocumentType.SEALED_CLAIM, sealedClaimDocument
+            ));
         //then
         List<Document> documents = Arrays.asList(defendantLetterDocument, sealedClaimDocument);
 
@@ -102,7 +108,12 @@ public class BulkPrintServiceTest {
         );
 
         try {
-            bulkPrintService.print(CLAIM, defendantLetterDocument, sealedClaimDocument);
+            bulkPrintService.print(
+                CLAIM,
+                ImmutableMap.of(
+                    ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT, defendantLetterDocument,
+                    ClaimDocumentType.SEALED_CLAIM, sealedClaimDocument
+                ));
         } finally {
             //then
             verify(sendLetterApi).sendLetter(eq(AUTH_VALUE), eq(letter));
@@ -125,7 +136,13 @@ public class BulkPrintServiceTest {
 
         try {
             bulkPrintService
-                .notifyStaffForBulkPrintFailure(exception, CLAIM, defendantLetterDocument, sealedClaimDocument);
+                .notifyStaffForBulkPrintFailure(
+                    exception,
+                    CLAIM,
+                    ImmutableMap.of(
+                        ClaimDocumentType.DEFENDANT_PIN_LETTER, defendantLetterDocument,
+                        ClaimDocumentType.SEALED_CLAIM, sealedClaimDocument
+                    ));
         } finally {
             //then
             verify(bulkPrintStaffNotificationService).notifyFailedBulkPrint(
