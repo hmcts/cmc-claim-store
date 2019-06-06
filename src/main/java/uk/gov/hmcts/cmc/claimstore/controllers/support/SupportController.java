@@ -177,10 +177,6 @@ public class SupportController {
         if (StringUtils.isBlank(authorisation)) {
             throw new BadRequestException(AUTHORISATION_IS_REQUIRED);
         }
-        if (claim.getDefendantId() != null) {
-            throw new ConflictException("Claim has already been linked to defendant "
-               +  "- cannot reset claim submission operation indicators");
-        }
         claimService.updateClaimSubmissionOperationIndicators(authorisation, claim, claimSubmissionOperationIndicators);
     }
 
