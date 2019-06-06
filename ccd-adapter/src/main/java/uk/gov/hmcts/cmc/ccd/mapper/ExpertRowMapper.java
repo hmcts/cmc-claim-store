@@ -10,7 +10,7 @@ public class ExpertRowMapper {
 
     public CCDCollectionElement<CCDExpertReportRow> to(ExpertReportRow expertReportRow) {
 
-        if(expertReportRow == null) {
+        if (expertReportRow == null) {
             return null;
         }
 
