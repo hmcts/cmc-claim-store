@@ -16,9 +16,9 @@ public class DirectionsQuestionnaireAssert
 
         isNotNull();
 
-        if (!Objects.equals(actual.isSelfWitness(), ccdDirectionsQuestionnaire.getSelfWitness().toBoolean())) {
+        if (!Objects.equals(actual.getSelfWitness().name(), ccdDirectionsQuestionnaire.getSelfWitness().name())) {
             failWithMessage("Expected self witness to be <%s> but was <%s>",
-                ccdDirectionsQuestionnaire.getSelfWitness(), actual.isSelfWitness());
+                ccdDirectionsQuestionnaire.getSelfWitness(), actual.getSelfWitness());
         }
 
         if (!Objects.equals(actual.getHowManyOtherWitness(), ccdDirectionsQuestionnaire.getHowManyOtherWitness())) {
@@ -59,14 +59,14 @@ public class DirectionsQuestionnaireAssert
                 ccdDirectionsQuestionnaire.getSignLanguageInterpreted(), actual.getSignLanguageInterpreted());
         }
 
-        if (!Objects.equals(actual.isHearingLoop(), ccdDirectionsQuestionnaire.getHearingLoop().toBoolean())) {
+        if (!Objects.equals(actual.getHearingLoop().name(), ccdDirectionsQuestionnaire.getHearingLoop().name())) {
             failWithMessage("Expected hearing loop to be <%s> but was <%s>",
-                ccdDirectionsQuestionnaire.getHearingLoop(), actual.isHearingLoop());
+                ccdDirectionsQuestionnaire.getHearingLoop(), actual.getHearingLoop());
         }
 
-        if (!Objects.equals(actual.isDisabledAccess(), ccdDirectionsQuestionnaire.getDisabledAccess().toBoolean())) {
+        if (!Objects.equals(actual.getDisabledAccess().name(), ccdDirectionsQuestionnaire.getDisabledAccess().name())) {
             failWithMessage("Expected disabled access to be <%s> but was <%s>",
-                ccdDirectionsQuestionnaire.getDisabledAccess(), actual.isDisabledAccess());
+                ccdDirectionsQuestionnaire.getDisabledAccess(), actual.getDisabledAccess());
         }
 
         if (!Objects.equals(actual.getOtherSupportRequired(), ccdDirectionsQuestionnaire.getOtherSupportRequired())) {

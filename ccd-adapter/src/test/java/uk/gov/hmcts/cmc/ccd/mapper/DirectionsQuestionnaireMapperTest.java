@@ -43,8 +43,6 @@ public class DirectionsQuestionnaireMapperTest {
         DirectionsQuestionnaire directionsQuestionnaire = mapper.from(ccdDirectionsQuestionnaire);
 
         //then
-        System.out.println("directionsQuestionnaire--->" + directionsQuestionnaire);
-        System.out.println("ccdDirectionsQuestionnaire--->" + ccdDirectionsQuestionnaire);
         assertThat(directionsQuestionnaire).isEqualTo(ccdDirectionsQuestionnaire);
     }
 }

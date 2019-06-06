@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.stream.Collectors;
 
@@ -27,7 +28,7 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
         }
 
         return CCDDirectionsQuestionnaire.builder()
-            .selfWitness(CCDYesNoOption.valueOf(directionsQuestionnaire.isSelfWitness()))
+            .selfWitness(CCDYesNoOption.valueOf(directionsQuestionnaire.getSelfWitness().name()))
             .howManyOtherWitness(directionsQuestionnaire.getHowManyOtherWitness())
             .hearingLocation(directionsQuestionnaire.getHearingLocation())
             .hearingLocationSlug(directionsQuestionnaire.getHearingLocationSlug())
@@ -39,8 +40,8 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
             .availableDate(directionsQuestionnaire.getAvailableDate())
             .languageInterpreted(directionsQuestionnaire.getLanguageInterpreted())
             .signLanguageInterpreted(directionsQuestionnaire.getSignLanguageInterpreted())
-            .hearingLoop(CCDYesNoOption.valueOf(directionsQuestionnaire.isHearingLoop()))
-            .disabledAccess(CCDYesNoOption.valueOf(directionsQuestionnaire.isDisabledAccess()))
+            .hearingLoop(CCDYesNoOption.valueOf(directionsQuestionnaire.getHearingLoop().name()))
+            .disabledAccess(CCDYesNoOption.valueOf(directionsQuestionnaire.getDisabledAccess().name()))
             .otherSupportRequired(directionsQuestionnaire.getOtherSupportRequired())
             .expertEvidenceToExamine(directionsQuestionnaire.getExpertEvidenceToExamine())
             .expertReportsRows(directionsQuestionnaire.getExpertReportsRows()
@@ -58,7 +59,7 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
         }
 
         return DirectionsQuestionnaire.builder()
-            .selfWitness(ccdDirectionsQuestionnaire.getSelfWitness().toBoolean())
+            .selfWitness(YesNoOption.valueOf(ccdDirectionsQuestionnaire.getSelfWitness().name()))
             .howManyOtherWitness(ccdDirectionsQuestionnaire.getHowManyOtherWitness())
             .hearingLocation(ccdDirectionsQuestionnaire.getHearingLocation())
             .hearingLocationSlug(ccdDirectionsQuestionnaire.getHearingLocationSlug())
@@ -70,8 +71,8 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
             .availableDate(ccdDirectionsQuestionnaire.getAvailableDate())
             .languageInterpreted(ccdDirectionsQuestionnaire.getLanguageInterpreted())
             .signLanguageInterpreted(ccdDirectionsQuestionnaire.getSignLanguageInterpreted())
-            .hearingLoop(ccdDirectionsQuestionnaire.getHearingLoop().toBoolean())
-            .disabledAccess(ccdDirectionsQuestionnaire.getDisabledAccess().toBoolean())
+            .hearingLoop(YesNoOption.valueOf(ccdDirectionsQuestionnaire.getHearingLoop().name()))
+            .disabledAccess(YesNoOption.valueOf(ccdDirectionsQuestionnaire.getDisabledAccess().name()))
             .otherSupportRequired(ccdDirectionsQuestionnaire.getOtherSupportRequired())
             .expertEvidenceToExamine(ccdDirectionsQuestionnaire.getExpertEvidenceToExamine())
             .expertReportsRows(ccdDirectionsQuestionnaire.getExpertReportsRows()
