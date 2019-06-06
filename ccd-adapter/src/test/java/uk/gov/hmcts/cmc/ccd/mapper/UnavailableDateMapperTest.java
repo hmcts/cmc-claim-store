@@ -28,7 +28,7 @@ public class UnavailableDateMapperTest {
         //given
         UnavailableDate unavailableDate = UnavailableDate
             .builder()
-            .unavailableDate(LocalDate.of(2040,1,1))
+            .unavailableDate(LocalDate.of(2040, 1, 1))
             .build();
 
         //when
@@ -43,7 +43,7 @@ public class UnavailableDateMapperTest {
         //given
         CCDUnavailableDate ccdUnavailableDate = CCDUnavailableDate
             .builder()
-            .unavailableDate(LocalDate.of(2041,1,1))
+            .unavailableDate(LocalDate.of(2041, 1, 1))
             .build();
 
         //when

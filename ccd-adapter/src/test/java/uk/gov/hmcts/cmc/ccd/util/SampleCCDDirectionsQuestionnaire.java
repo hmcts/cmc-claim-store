@@ -14,7 +14,9 @@ import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 
 public class SampleCCDDirectionsQuestionnaire {
 
-    public static SampleCCDDirectionsQuestionnaire builder() { return new SampleCCDDirectionsQuestionnaire(); }
+    public static SampleCCDDirectionsQuestionnaire builder() {
+        return new SampleCCDDirectionsQuestionnaire();
+    }
 
     public CCDDirectionsQuestionnaire build() {
 
@@ -22,7 +24,7 @@ public class SampleCCDDirectionsQuestionnaire {
             CCDCollectionElement.<CCDUnavailableDate>builder()
                 .value(CCDUnavailableDate
                     .builder()
-                    .unavailableDate(LocalDate.of(2050,1,1))
+                    .unavailableDate(LocalDate.of(2050, 1, 1))
                     .build())
                 .build()
         );
@@ -32,7 +34,7 @@ public class SampleCCDDirectionsQuestionnaire {
                 .value(CCDExpertReportRow
                     .builder()
                     .expertName("expert1")
-                    .expertReportDate(LocalDate.of(2040,1,1))
+                    .expertReportDate(LocalDate.of(2040, 1, 1))
                     .build())
                 .build()
         );
@@ -44,7 +46,7 @@ public class SampleCCDDirectionsQuestionnaire {
                     .hearingLocationSlug("London-Court")
                     .exceptionalCircumstancesReason("disabled")
                     .unavailableDates(unavailableDates)
-                    .availableDate(LocalDate.of(2050,1,2))
+                    .availableDate(LocalDate.of(2050, 1, 2))
                     .languageInterpreted("some language")
                     .signLanguageInterpreted("some sign language")
                     .hearingLoop(NO)

@@ -29,7 +29,7 @@ public class ExpertRowMapperTest {
         ExpertReportRow expertReportRow = ExpertReportRow
             .builder()
             .expertName("expert1")
-            .expertReportDate(LocalDate.of(2050,1,1))
+            .expertReportDate(LocalDate.of(2050, 1, 1))
             .build();
 
         //when
@@ -45,7 +45,7 @@ public class ExpertRowMapperTest {
         CCDExpertReportRow ccdExpertReportRow = CCDExpertReportRow
             .builder()
             .expertName("expert1")
-            .expertReportDate(LocalDate.of(2050,1,1))
+            .expertReportDate(LocalDate.of(2050, 1, 1))
             .build();
 
         //when
