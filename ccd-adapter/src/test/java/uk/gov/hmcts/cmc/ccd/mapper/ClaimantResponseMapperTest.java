@@ -110,7 +110,7 @@ public class ClaimantResponseMapperTest {
     }
 
     @Test
-    public void shouldMapClaimantRejectionDQtoCCDDQ() {
+    public void shouldMapClaimantRejectionDQtoCCDDirectionsQuestionnaire() {
         ClaimantResponse response = SampleClaimantResponse.ClaimantResponseRejection.builder()
             .buildRejectionWithDirectionsQuestionnaire();
         Claim claim = Claim.builder().claimantResponse(response)

@@ -6,7 +6,8 @@ import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestion
 
 import java.util.Objects;
 
-public class DirectionsQuestionnaireAssert extends AbstractAssert<DirectionsQuestionnaireAssert, DirectionsQuestionnaire> {
+public class DirectionsQuestionnaireAssert
+    extends AbstractAssert<DirectionsQuestionnaireAssert, DirectionsQuestionnaire> {
     public DirectionsQuestionnaireAssert(DirectionsQuestionnaire actual) {
         super(actual, DirectionsQuestionnaireAssert.class);
     }
@@ -14,7 +15,6 @@ public class DirectionsQuestionnaireAssert extends AbstractAssert<DirectionsQues
     public DirectionsQuestionnaireAssert isEqualTo(CCDDirectionsQuestionnaire ccdDirectionsQuestionnaire) {
 
         isNotNull();
-
 
         if (!Objects.equals(actual.isSelfWitness(), ccdDirectionsQuestionnaire.getSelfWitness().toBoolean())) {
             failWithMessage("Expected self witness to be <%s> but was <%s>",
@@ -36,9 +36,11 @@ public class DirectionsQuestionnaireAssert extends AbstractAssert<DirectionsQues
                 ccdDirectionsQuestionnaire.getHearingLocationSlug(), actual.getHearingLocationSlug());
         }
 
-        if (!Objects.equals(actual.getExceptionalCircumstancesReason(), ccdDirectionsQuestionnaire.getExceptionalCircumstancesReason())) {
+        if (!Objects.equals(actual.getExceptionalCircumstancesReason(),
+            ccdDirectionsQuestionnaire.getExceptionalCircumstancesReason())) {
             failWithMessage("Expected exceptional circumstances reason to be <%s> but was <%s>",
-                ccdDirectionsQuestionnaire.getExceptionalCircumstancesReason(), actual.getExceptionalCircumstancesReason());
+                ccdDirectionsQuestionnaire.getExceptionalCircumstancesReason(),
+                actual.getExceptionalCircumstancesReason());
         }
 
         if (!Objects.equals(actual.getAvailableDate(), ccdDirectionsQuestionnaire.getAvailableDate())) {
@@ -51,7 +53,8 @@ public class DirectionsQuestionnaireAssert extends AbstractAssert<DirectionsQues
                 ccdDirectionsQuestionnaire.getLanguageInterpreted(), actual.getLanguageInterpreted());
         }
 
-        if (!Objects.equals(actual.getSignLanguageInterpreted(), ccdDirectionsQuestionnaire.getSignLanguageInterpreted())) {
+        if (!Objects.equals(actual.getSignLanguageInterpreted(),
+            ccdDirectionsQuestionnaire.getSignLanguageInterpreted())) {
             failWithMessage("Expected sign language interpreted to be <%s> but was <%s>",
                 ccdDirectionsQuestionnaire.getSignLanguageInterpreted(), actual.getSignLanguageInterpreted());
         }
@@ -71,7 +74,8 @@ public class DirectionsQuestionnaireAssert extends AbstractAssert<DirectionsQues
                 ccdDirectionsQuestionnaire.getOtherSupportRequired(), actual.getOtherSupportRequired());
         }
 
-        if (!Objects.equals(actual.getExpertEvidenceToExamine(), ccdDirectionsQuestionnaire.getExpertEvidenceToExamine())) {
+        if (!Objects.equals(actual.getExpertEvidenceToExamine(),
+            ccdDirectionsQuestionnaire.getExpertEvidenceToExamine())) {
             failWithMessage("Expected expert evidence to examine to be <%s> but was <%s>",
                 ccdDirectionsQuestionnaire.getExpertEvidenceToExamine(), actual.getExpertEvidenceToExamine());
         }
