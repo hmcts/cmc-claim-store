@@ -61,6 +61,7 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
             .selfWitness(ccdDirectionsQuestionnaire.getSelfWitness().toBoolean())
             .howManyOtherWitness(ccdDirectionsQuestionnaire.getHowManyOtherWitness())
             .hearingLocation(ccdDirectionsQuestionnaire.getHearingLocation())
+            .hearingLocationSlug(ccdDirectionsQuestionnaire.getHearingLocationSlug())
             .exceptionalCircumstancesReason(ccdDirectionsQuestionnaire.getExceptionalCircumstancesReason())
             .unavailableDates(ccdDirectionsQuestionnaire.getUnavailableDates()
                 .stream()
