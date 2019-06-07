@@ -193,11 +193,11 @@ public class DataFixService {
         }
     }
 
-    private CaseEventDetails getEventDetailsOf(int indexOfEvents, List<CaseEventDetails> events) {
+    private CaseEventDetails getEventDetailsOf(int positionFromLast, List<CaseEventDetails> events) {
         return events.stream()
             .sorted(Comparator.comparing(CaseEventDetails::getCreatedDate))
             .collect(Collectors.toList())
-            .get(events.size() - indexOfEvents);
+            .get(events.size() - positionFromLast);
     }
 
     private void updateCase(
