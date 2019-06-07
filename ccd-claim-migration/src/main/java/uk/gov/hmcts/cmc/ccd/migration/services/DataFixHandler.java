@@ -103,7 +103,7 @@ public class DataFixHandler {
     ) {
         List<CaseEventDetails> events
             = searchCCDEventsService.getCcdCaseEventsForCase(user, Long.toString(details.getId()));
-//        printEvents(details, events);
+        //  printEvents(details, events);
         CaseEventDetails lastEventDetails = findLastButOneEventDetails(events);
         CCDCase ccdCase = mapToCCDCase(lastEventDetails.getData(), Long.toString(details.getId()));
 

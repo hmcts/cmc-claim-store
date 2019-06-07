@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.InterestDateMapper;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.SearchCCDCaseService;
@@ -139,12 +138,20 @@ public class DataFixService {
         updateCase(user, updatedClaims, failedOnUpdateMigrations, caseAfterPaidInFullDatePatch);
     }
 
-    private CCDCase updatePaidInFullDate(CCDCase caseAfterResponseDeadlinePatch, List<CaseEventDetails> events) {
+    private CCDCase updatePaidInFullDate(CCDCase ccdCase, List<CaseEventDetails> events) {
         CaseEventDetails lastEventDetails = getEventDetailsOf(1, events);
 
-        if(lastEventDetails.getEventName().equals(CaseEvent.SETTLED_PRE_JUDGMENT))
+        if (lastEventDetails.getEventName().equals("Settled")) {
+            CCDCase eventCase = mapToCCDCase(lastEventDetails.getData(), Long.toString(ccdCase.getId()));
+            Claim.ClaimBuilder claimBuilder = caseMapper.from(ccdCase).toBuilder();
+            LocalDate moneyReceivedOn = caseMapper.from(eventCase).getMoneyReceivedOn().orElse(null);
+            claimBuilder.moneyReceivedOn(moneyReceivedOn);
 
-        return lastEventDetails;
+            logger.info("Paid in Full Date added as {}", moneyReceivedOn);
+            return caseMapper.to(claimBuilder.build());
+        } else {
+            return ccdCase;
+        }
     }
 
     private CCDCase patchResponseDeadline(CCDCase ccdCase) {
