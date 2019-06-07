@@ -115,9 +115,8 @@ public class ClaimMigrator {
         notMigratedClaims.parallelStream().forEach(claim -> {
             if (fixDataIssues) {
                 dataFixService.fixClaimFromSecondLastEvent(
-                    migratedClaims,
-                    failedOnUpdateMigrations,
                     updatedClaims,
+                    failedOnUpdateMigrations,
                     claim,
                     user
                 );

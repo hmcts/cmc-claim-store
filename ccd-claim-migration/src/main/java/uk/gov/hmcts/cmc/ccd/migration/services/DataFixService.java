@@ -128,7 +128,7 @@ public class DataFixService {
         CCDCase caseAfterResponseDeadlinePatch = patchResponseDeadline(caseAfterInterestDatePatch);
 
         logger.info("Response dead line after Patch {} from {}",
-            caseAfterInterestDatePatch.getRespondents().get(0).getValue().getResponseDeadline(),
+            caseAfterResponseDeadlinePatch.getRespondents().get(0).getValue().getResponseDeadline(),
             ccdCase.getRespondents().get(0).getValue().getResponseDeadline()
         );
 
