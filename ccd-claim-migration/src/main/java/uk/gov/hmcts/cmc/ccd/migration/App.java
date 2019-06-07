@@ -9,7 +9,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.retry.annotation.EnableRetry;
 import uk.gov.hmcts.cmc.ccd.migration.services.ClaimDataPatcher;
-import uk.gov.hmcts.cmc.ccd.migration.services.ClaimMigrator;
 
 /**
  * Application to patchClaims claims from claim-store database to CCD datastore.
@@ -34,9 +33,6 @@ public class App implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(App.class);
 
     @Autowired
-    private ClaimMigrator claimMigrator;
-
-    @Autowired
     private ClaimDataPatcher claimDataPatcher;
 
     public static void main(String[] args) {
@@ -46,9 +42,6 @@ public class App implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-//        logger.info("Migration is starting");
-//        claimMigrator.migrate();
-
         logger.info("Claims patching is starting");
         claimDataPatcher.patchClaims();
     }
