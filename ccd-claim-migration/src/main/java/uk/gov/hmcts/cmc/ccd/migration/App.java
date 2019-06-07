@@ -22,6 +22,7 @@ import uk.gov.hmcts.cmc.ccd.migration.services.ClaimMigrator;
 @EnableFeignClients(basePackages =
     {
         "uk.gov.hmcts.cmc.ccd.migration.idam.api",
+        "uk.gov.hmcts.cmc.ccd.migration.client",
         "uk.gov.hmcts.reform.authorisation",
         "uk.gov.hmcts.reform.ccd.client"
     }

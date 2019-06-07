@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.ccd.migration.ccd.services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
@@ -19,7 +18,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 
 @Service
-@ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class UpdateCCDCaseService {
     public static final String JURISDICTION_ID = "CMC";
     public static final String CASE_TYPE_ID = "MoneyClaimCase";
@@ -41,7 +39,7 @@ public class UpdateCCDCaseService {
         this.authTokenGenerator = authTokenGenerator;
     }
 
-    @Retryable(value = {OverwriteCaseException.class}, maxAttempts = 5, backoff = @Backoff(delay = 400, maxDelay = 800))
+    @Retryable(value = {OverwriteCaseException.class}, maxAttempts = 1, backoff = @Backoff(delay = 400, maxDelay = 800))
     @LogExecutionTime
     public CaseDetails updateCase(User user, Long caseId, Claim claim, CaseEvent event) {
 

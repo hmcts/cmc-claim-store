@@ -23,7 +23,6 @@ import uk.gov.hmcts.cmc.claimstore.rules.ClaimDeadlineService;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.rules.PaidInFullRule;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
@@ -100,15 +99,11 @@ public class ClaimServiceTest {
     @Mock
     private DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
     @Mock
-    private LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator;
-    @Mock
     private EventProducer eventProducer;
     @Mock
     private CCDEventProducer ccdEventProducer;
     @Mock
     private AppInsights appInsights;
-    @Mock
-    private CaseDetailsConverter ccdCaseDataToClaim;
 
     @Before
     public void setup() {
@@ -120,12 +115,10 @@ public class ClaimServiceTest {
             userService,
             issueDateCalculator,
             responseDeadlineCalculator,
-            legalOrderGenerationDeadlinesCalculator,
             directionsQuestionnaireDeadlineCalculator,
             new MoreTimeRequestRule(new ClaimDeadlineService()),
             eventProducer,
             appInsights,
-            ccdCaseDataToClaim,
             new PaidInFullRule(),
             ccdEventProducer,
             new ClaimAuthorisationRule(userService),
@@ -224,12 +217,10 @@ public class ClaimServiceTest {
             userService,
             issueDateCalculator,
             responseDeadlineCalculator,
-            legalOrderGenerationDeadlinesCalculator,
             directionsQuestionnaireDeadlineCalculator,
             new MoreTimeRequestRule(new ClaimDeadlineService()),
             eventProducer,
             appInsights,
-            ccdCaseDataToClaim,
             new PaidInFullRule(),
             ccdEventProducer,
             new ClaimAuthorisationRule(userService),
