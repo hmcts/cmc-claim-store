@@ -2,14 +2,12 @@ package uk.gov.hmcts.cmc.ccd.migration.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.InterestDateMapper;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.SearchCCDCaseService;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.SearchCCDEventsService;
-import uk.gov.hmcts.cmc.ccd.migration.ccd.services.UpdateCCDCaseService;
 import uk.gov.hmcts.cmc.ccd.migration.client.CaseEventDetails;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.mappers.JsonMapper;
@@ -24,36 +22,33 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUPPORT_UPDATE;
 import static uk.gov.hmcts.cmc.ccd.migration.util.CCDCaseUtil.isResponded;
 import static uk.gov.hmcts.cmc.ccd.migration.util.CCDCaseUtil.isResponseDeadlineWithinDownTime;
 
 @Service
 public class DataFixService {
+
     private static final Logger logger = LoggerFactory.getLogger(DataFixService.class);
 
     private final SearchCCDCaseService searchCCDCaseService;
-    private final UpdateCCDCaseService updateCCDCaseService;
     private final SearchCCDEventsService searchCCDEventsService;
-    private final boolean dryRun;
+    private final SupportUpdateService supportUpdateService;
     private final CaseMapper caseMapper;
     private final JsonMapper jsonMapper;
     private final InterestDateMapper interestDateMapper;
 
     public DataFixService(
         SearchCCDCaseService searchCCDCaseService,
-        UpdateCCDCaseService updateCCDCaseService,
         SearchCCDEventsService searchCCDEventsService,
-        @Value("${migration.dryRun:true}") boolean dryRun,
+        SupportUpdateService supportUpdateService,
         CaseMapper caseMapper,
         JsonMapper jsonMapper,
         InterestDateMapper interestDateMapper
 
     ) {
         this.searchCCDCaseService = searchCCDCaseService;
-        this.updateCCDCaseService = updateCCDCaseService;
         this.searchCCDEventsService = searchCCDEventsService;
-        this.dryRun = dryRun;
+        this.supportUpdateService = supportUpdateService;
         this.caseMapper = caseMapper;
         this.jsonMapper = jsonMapper;
         this.interestDateMapper = interestDateMapper;
@@ -164,7 +159,7 @@ public class DataFixService {
 
         CCDCase caseAfterPaidInFullDatePatch = updatePaidInFullDate(caseAfterResponseDeadlinePatch, events);
 
-        updateCase(user, updatedClaims, failedOnUpdate, caseAfterPaidInFullDatePatch);
+        supportUpdateService.updateCase(user, updatedClaims, failedOnUpdate, caseAfterPaidInFullDatePatch);
     }
 
     private CCDCase updatePaidInFullDate(CCDCase ccdCase, List<CaseEventDetails> events) {
@@ -198,39 +193,6 @@ public class DataFixService {
             .sorted(Comparator.comparing(CaseEventDetails::getCreatedDate))
             .collect(Collectors.toList())
             .get(events.size() - positionFromLast);
-    }
-
-    private void updateCase(
-        User user,
-        AtomicInteger updatedClaims,
-        AtomicInteger failedOnUpdates,
-        CCDCase ccdCase
-    ) {
-        String caseReference = ccdCase.getPreviousServiceCaseReference();
-        try {
-            logger.info("start updating case for: {} for event: {} counter: {}",
-                caseReference,
-                SUPPORT_UPDATE,
-                updatedClaims.toString());
-            if (!dryRun) {
-                updateCCDCaseService.updateCase(
-                    user,
-                    ccdCase.getId(),
-                    caseMapper.from(ccdCase),
-                    SUPPORT_UPDATE
-                );
-            }
-            updatedClaims.incrementAndGet();
-
-        } catch (Exception exception) {
-            logger.info("Claim update for events failed for Claim reference {} due to {}",
-                caseReference,
-                exception.getMessage(),
-                exception
-            );
-            failedOnUpdates.incrementAndGet();
-        }
-
     }
 
     private CCDCase mapToCCDCase(Map<String, Object> caseData, String caseId) {
