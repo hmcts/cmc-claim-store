@@ -42,7 +42,6 @@ public class SearchCCDEventsService {
         maxAttempts = 5,
         backoff = @Backoff(delay = 400, maxDelay = 800)
     )
-    @LogExecutionTime
     public List<CaseEventDetails> getCcdCaseEventsForCase(User user, String caseId) {
         return this.caseEventsApi.findEventDetailsForCase(
             user.getAuthorisation(),

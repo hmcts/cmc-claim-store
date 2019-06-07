@@ -15,7 +15,6 @@ import uk.gov.hmcts.cmc.ccd.migration.ccd.services.UpdateCCDCaseService;
 import uk.gov.hmcts.cmc.ccd.migration.client.CaseEventDetails;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.mappers.JsonMapper;
-import uk.gov.hmcts.cmc.ccd.migration.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
@@ -61,7 +60,6 @@ public class DataFixHandler {
         this.interestDateMapper = interestDateMapper;
     }
 
-    @LogExecutionTime
     public void fixClaim(
         AtomicInteger migratedClaims,
         AtomicInteger failedOnUpdateMigrations,
@@ -78,17 +76,14 @@ public class DataFixHandler {
 
             caseDetails
                 .ifPresent(details -> {
-                    CCDCase ccdCase = extractCase(details);
-                    if (!claim.getClaimData().isClaimantRepresented()
-                        && isReponsedDeadlineWithinDownTime(ccdCase)
-                        && !isResponded(ccdCase)
-                    ) {
-                        Claim.ClaimBuilder claimBuilder = caseMapper.from(ccdCase).toBuilder();
-                        claimBuilder.responseDeadline(LocalDate.of(2019, 06, 10));
-                        CCDCase updatedCase = caseMapper.to(claimBuilder.build());
-                        updateCase(user, updatedClaims, failedOnUpdateMigrations, updatedCase);
-                    }
+                    logger.info("Last modified date of claim "
+                        + claim.getReferenceNumber()
+                        + " "
+                        + details.getLastModified());
+                    CCDCase ccdCase = mapToCCDCase(details.getData(), Long.toString(details.getId()));
+                    // fixResponseDeadline(failedOnUpdateMigrations, updatedClaims, claim, user, ccdCase);
                     // fixDataIssueWithPatch(user, details);
+                    fixDataFromLastButOneEvent(user, details, failedOnUpdateMigrations, updatedClaims);
                 });
 
         } catch (Exception e) {
@@ -97,6 +92,52 @@ public class DataFixHandler {
                 migratedClaims.get(),
                 e.getMessage()
             );
+        }
+    }
+
+    private void fixDataFromLastButOneEvent(
+        User user,
+        CaseDetails details,
+        AtomicInteger failedOnUpdateMigrations,
+        AtomicInteger updatedClaims
+    ) {
+        List<CaseEventDetails> events
+            = searchCCDEventsService.getCcdCaseEventsForCase(user, Long.toString(details.getId()));
+        events.forEach(event -> {
+            Claim claim = caseMapper.from(mapToCCDCase(event.getData(), Long.toString(details.getId())));
+            logger.info(claim.getReferenceNumber()
+                + " "
+                + event.getEventName()
+                + " "
+                + event.getCreatedDate()
+                + " "
+                + claim.getResponseDeadline()
+            );
+        });
+//        CaseEventDetails lastEventDetails = findLastButOneEventDetails(events);
+//        CCDCase ccdCase = extractCaseFromEvent(lastEventDetails, Long.toString(details.getId()));
+//        updateCase(user, updatedClaims, failedOnUpdateMigrations, ccdCase);
+    }
+
+    private CaseEventDetails findLastButOneEventDetails(List<CaseEventDetails> events) {
+        return events.get(events.size() - 2);
+    }
+
+    private void fixResponseDeadline(
+        AtomicInteger failedOnUpdateMigrations,
+        AtomicInteger updatedClaims,
+        Claim claim,
+        User user,
+        CCDCase ccdCase
+    ) {
+        if (!claim.getClaimData().isClaimantRepresented()
+            && isReponsedDeadlineWithinDownTime(ccdCase)
+            && !isResponded(ccdCase)
+        ) {
+            Claim.ClaimBuilder claimBuilder = caseMapper.from(ccdCase).toBuilder();
+            claimBuilder.responseDeadline(LocalDate.of(2019, 06, 10));
+            CCDCase updatedCase = caseMapper.to(claimBuilder.build());
+            updateCase(user, updatedClaims, failedOnUpdateMigrations, updatedCase);
         }
     }
 
@@ -112,7 +153,7 @@ public class DataFixHandler {
             = searchCCDEventsService.getCcdCaseEventsForCase(user, Long.toString(details.getId()));
 
         CaseEventDetails lastEventDetails = findLastEventDetails(events);
-        CCDCase ccdCase = extractCaseFromEvent(lastEventDetails, Long.toString(details.getId()));
+        CCDCase ccdCase = mapToCCDCase(lastEventDetails.getData(), Long.toString(details.getId()));
         boolean hasProgressed = listEventsCreatedBetweenMigrationAndDataPatch(events).size() > 1;
         if (lastEventDetails.getCreatedDate().isBefore(details.getLastModified())) {
             logMessageForCsv("A", hasProgressed, ccdCase, details, lastEventDetails);
@@ -160,7 +201,7 @@ public class DataFixHandler {
             .collect(Collectors.toList());
     }
 
-    private Optional<CaseEventDetails> findLastSuccesdfullEventDetails(List<CaseEventDetails> events) {
+    private Optional<CaseEventDetails> findLastSuccessfullEventDetails(List<CaseEventDetails> events) {
         List<CaseEventDetails> sortedEvents = events.stream()
             .sorted(Comparator.comparing(CaseEventDetails::getCreatedDate))
             .collect(Collectors.toList());
@@ -233,14 +274,7 @@ public class DataFixHandler {
 
     }
 
-    private CCDCase extractCase(CaseDetails caseDetails) {
-        Map<String, Object> caseData = caseDetails.getData();
-        caseData.put("id", caseDetails.getId());
-        return jsonMapper.fromMap(caseData, CCDCase.class);
-    }
-
-    private CCDCase extractCaseFromEvent(CaseEventDetails caseDetails, String caseId) {
-        Map<String, Object> caseData = caseDetails.getData();
+    private CCDCase mapToCCDCase(Map<String, Object> caseData, String caseId) {
         caseData.put("id", caseId);
         return jsonMapper.fromMap(caseData, CCDCase.class);
     }
