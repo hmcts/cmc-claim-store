@@ -359,9 +359,6 @@ public class SupportControllerTest {
 
     @Test
     public void shouldThrowBadRequestExceptionWhenResetClaimSubmissionIndicator() {
-        Claim claim = SampleClaim.getDefault();
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
-            .thenReturn(Optional.of(claim));
         exceptionRule.expect(BadRequestException.class);
         exceptionRule.expectMessage("Authorisation is required");
         controller.updateClaimSubmissionIndicators(CLAIMREFERENCENUMBER,
