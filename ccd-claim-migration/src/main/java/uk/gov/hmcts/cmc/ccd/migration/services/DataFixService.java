@@ -44,7 +44,7 @@ public class DataFixService {
         SearchCCDCaseService searchCCDCaseService,
         UpdateCCDCaseService updateCCDCaseService,
         SearchCCDEventsService searchCCDEventsService,
-        @Value("${migration.dryRun}") boolean dryRun,
+        @Value("${migration.dryRun:true}") boolean dryRun,
         CaseMapper caseMapper,
         JsonMapper jsonMapper,
         InterestDateMapper interestDateMapper
