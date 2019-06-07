@@ -172,11 +172,11 @@ public class SupportController {
         @RequestBody ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators,
         @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
-            .orElseThrow(() -> new NotFoundException(String.format(CLAIM_DOES_NOT_EXIST, referenceNumber)));
         if (StringUtils.isBlank(authorisation)) {
             throw new BadRequestException(AUTHORISATION_IS_REQUIRED);
         }
+        Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
+            .orElseThrow(() -> new NotFoundException(String.format(CLAIM_DOES_NOT_EXIST, referenceNumber)));
         if (claim.getDefendantId() != null) {
             throw new ConflictException("Claim has already been linked to defendant "
                +  "- cannot reset claim submission operation indicators");
