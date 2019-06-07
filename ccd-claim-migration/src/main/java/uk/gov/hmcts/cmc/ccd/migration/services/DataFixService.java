@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.InterestDateMapper;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.SearchCCDCaseService;
@@ -26,6 +25,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SUPPORT_UPDATE;
+import static uk.gov.hmcts.cmc.ccd.migration.util.CCDCaseUtil.isResponded;
+import static uk.gov.hmcts.cmc.ccd.migration.util.CCDCaseUtil.isResponseDeadlineWithinDownTime;
 
 @Service
 public class DataFixService {
@@ -58,6 +59,35 @@ public class DataFixService {
         this.interestDateMapper = interestDateMapper;
     }
 
+    public void fixClaimFromThirdLastEvent(
+        AtomicInteger updatedClaims,
+        AtomicInteger failedOnUpdate,
+        Claim claim,
+        User user
+    ) {
+        try {
+
+            logger.info("Fix case for: {}", claim.getReferenceNumber());
+
+            Optional<CaseDetails> caseDetails
+                = searchCCDCaseService.getCcdCaseByExternalId(user, claim.getExternalId());
+
+            caseDetails.ifPresent(details ->
+                fixDataFromThirdLastEvent(user, details, updatedClaims, failedOnUpdate, claim));
+
+        } catch (Exception e) {
+            logger.info("Data Fix failed for claim for reference {} for the migrated count {} due to {}",
+                claim.getReferenceNumber(),
+                updatedClaims.get(),
+                e.getMessage()
+            );
+        }
+    }
+
+    private void fixDataFromThirdLastEvent(User user, CaseDetails details, AtomicInteger updatedClaims, AtomicInteger failedOnUpdate, Claim claim) {
+        // TODO:
+    }
+
     public void fixClaimFromSecondLastEvent(
         AtomicInteger updatedClaims,
         AtomicInteger failedOnUpdate,
@@ -66,7 +96,7 @@ public class DataFixService {
     ) {
         try {
 
-            logger.info("fix case for: {}", claim.getReferenceNumber());
+            logger.info("Fix case for: {}", claim.getReferenceNumber());
 
             Optional<CaseDetails> caseDetails
                 = searchCCDCaseService.getCcdCaseByExternalId(user, claim.getExternalId());
@@ -105,7 +135,7 @@ public class DataFixService {
             secondLastEventDetails.getCreatedDate()
         );
 
-        logger.info("Interest start date Reason after Patch {} from {}",
+        logger.info("Interest start date reason after Patch {} from {}",
             caseAfterInterestDatePatch.getInterestStartDateReason(),
             ccdCase.getInterestStartDateReason()
         );
@@ -140,7 +170,7 @@ public class DataFixService {
     private CCDCase updatePaidInFullDate(CCDCase ccdCase, List<CaseEventDetails> events) {
         CaseEventDetails lastEventDetails = getEventDetailsOf(1, events);
 
-        if (lastEventDetails.getEventName().equals("Settled")) {
+        if (lastEventDetails.getEventName().equals("Settled")) { // Settled is display name returned by CCD API
             CCDCase eventCase = mapToCCDCase(lastEventDetails.getData(), Long.toString(ccdCase.getId()));
             Claim.ClaimBuilder claimBuilder = caseMapper.from(ccdCase).toBuilder();
             LocalDate moneyReceivedOn = caseMapper.from(eventCase).getMoneyReceivedOn().orElse(null);
@@ -154,7 +184,7 @@ public class DataFixService {
     }
 
     private CCDCase patchResponseDeadline(CCDCase ccdCase) {
-        if (isReponseDeadlineWithinDownTime(ccdCase) && !isResponded(ccdCase)) {
+        if (isResponseDeadlineWithinDownTime(ccdCase) && !isResponded(ccdCase)) {
             Claim.ClaimBuilder claimBuilder = caseMapper.from(ccdCase).toBuilder();
             claimBuilder.responseDeadline(LocalDate.of(2019, 06, 10));
             return caseMapper.to(claimBuilder.build());
@@ -168,13 +198,6 @@ public class DataFixService {
             .sorted(Comparator.comparing(CaseEventDetails::getCreatedDate))
             .collect(Collectors.toList())
             .get(events.size() - indexOfEvents);
-    }
-
-    private boolean isResponded(CCDCase ccdCase) {
-        return ccdCase.getRespondents()
-            .stream()
-            .map(CCDCollectionElement::getValue)
-            .anyMatch(defendant -> defendant.getResponseSubmittedOn() != null);
     }
 
     private void updateCase(
@@ -213,17 +236,6 @@ public class DataFixService {
     private CCDCase mapToCCDCase(Map<String, Object> caseData, String caseId) {
         caseData.put("id", caseId);
         return jsonMapper.fromMap(caseData, CCDCase.class);
-    }
-
-    private boolean isReponseDeadlineWithinDownTime(CCDCase ccdCase) {
-        return ccdCase.getRespondents()
-            .stream()
-            .map(CCDCollectionElement::getValue)
-            .filter(respondent -> respondent.getResponseDeadline().isBefore(LocalDate.of(2019, 06, 05)))
-            .filter(respondent -> respondent.getResponseDeadline().isAfter(LocalDate.of(2019, 05, 29)))
-            .findAny()
-            .isPresent();
-
     }
 }
 
