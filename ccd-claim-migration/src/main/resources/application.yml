@@ -31,7 +31,7 @@ oauth2:
 
 migration:
   cases:
-    references: 000MC665,000MC672,000MC666,000MC673
+    references: 000MC673
     flag: true
     lots:
       size: 0

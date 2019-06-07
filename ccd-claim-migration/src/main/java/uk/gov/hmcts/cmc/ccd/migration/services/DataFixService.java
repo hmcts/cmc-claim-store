@@ -137,9 +137,20 @@ public class DataFixService {
         updateCase(user, updatedClaims, failedOnUpdate, caseAfterPaidInFullDatePatch);
     }
 
-    private CCDCase updatePaidInFullDate(CCDCase caseAfterResponseDeadlinePatch, List<CaseEventDetails> events) {
-        return null; // replace with code
+    private CCDCase updatePaidInFullDate(CCDCase ccdCase, List<CaseEventDetails> events) {
+        CaseEventDetails lastEventDetails = getEventDetailsOf(1, events);
 
+        if (lastEventDetails.getEventName().equals("Settled")) {
+            CCDCase eventCase = mapToCCDCase(lastEventDetails.getData(), Long.toString(ccdCase.getId()));
+            Claim.ClaimBuilder claimBuilder = caseMapper.from(ccdCase).toBuilder();
+            LocalDate moneyReceivedOn = caseMapper.from(eventCase).getMoneyReceivedOn().orElse(null);
+            claimBuilder.moneyReceivedOn(moneyReceivedOn);
+
+            logger.info("Paid in Full Date added as {}", moneyReceivedOn);
+            return caseMapper.to(claimBuilder.build());
+        } else {
+            return ccdCase;
+        }
     }
 
     private CCDCase patchResponseDeadline(CCDCase ccdCase) {
@@ -169,7 +180,7 @@ public class DataFixService {
     private void updateCase(
         User user,
         AtomicInteger updatedClaims,
-        AtomicInteger failedMigrations,
+        AtomicInteger failedOnUpdates,
         CCDCase ccdCase
     ) {
         String caseReference = ccdCase.getPreviousServiceCaseReference();
@@ -194,7 +205,7 @@ public class DataFixService {
                 exception.getMessage(),
                 exception
             );
-            failedMigrations.incrementAndGet();
+            failedOnUpdates.incrementAndGet();
         }
 
     }

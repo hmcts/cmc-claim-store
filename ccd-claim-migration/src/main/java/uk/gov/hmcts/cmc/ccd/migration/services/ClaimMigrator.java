@@ -59,7 +59,7 @@ public class ClaimMigrator {
     public void migrate() {
         logger.info("===== MIGRATE CLAIMS TO CCD =====");
         logger.info("DRY RUN Enabled: " + dryRun);
-        
+
         User user = userService.authenticateSystemUpdateUser();
         List<Claim> claimsToMigrate = getClaimsToMigrate();
 
