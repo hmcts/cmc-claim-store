@@ -72,7 +72,7 @@ public class PaidInFullTest extends BaseTest {
     }
 
     @Test
-    public void shouldNoAllowSubmitPaidInFullIfAlreadyDone() {
+    public void tshouldNoAllowSubmitPaidInFullIfAlreadyDone() {
         String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
             claimant.getAuthorisation(),
