@@ -8,10 +8,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.retry.annotation.EnableRetry;
+import uk.gov.hmcts.cmc.ccd.migration.services.ClaimDataPatcher;
 import uk.gov.hmcts.cmc.ccd.migration.services.ClaimMigrator;
 
 /**
- * Application to migrate claims from claim-store database to CCD datastore.
+ * Application to patchClaims claims from claim-store database to CCD datastore.
  */
 @SpringBootApplication(scanBasePackages = {
     "uk.gov.hmcts.reform.authorisation",
@@ -35,6 +36,9 @@ public class App implements CommandLineRunner {
     @Autowired
     private ClaimMigrator claimMigrator;
 
+    @Autowired
+    private ClaimDataPatcher claimDataPatcher;
+
     public static void main(String[] args) {
         logger.info("Application started");
         SpringApplication.run(App.class, args);
@@ -42,7 +46,10 @@ public class App implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        logger.info("Migration is starting");
-        claimMigrator.migrate();
+//        logger.info("Migration is starting");
+//        claimMigrator.migrate();
+
+        logger.info("Claims patching is starting");
+        claimDataPatcher.patchClaims();
     }
 }

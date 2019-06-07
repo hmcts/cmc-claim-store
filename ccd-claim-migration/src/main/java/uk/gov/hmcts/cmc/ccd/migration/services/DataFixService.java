@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.InterestDateMapper;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.SearchCCDCaseService;
@@ -60,9 +59,8 @@ public class DataFixService {
     }
 
     public void fixClaimFromSecondLastEvent(
-        AtomicInteger migratedClaims,
-        AtomicInteger failedOnUpdateMigrations,
         AtomicInteger updatedClaims,
+        AtomicInteger failedOnUpdate,
         Claim claim,
         User user
     ) {
@@ -74,12 +72,12 @@ public class DataFixService {
                 = searchCCDCaseService.getCcdCaseByExternalId(user, claim.getExternalId());
 
             caseDetails.ifPresent(details ->
-                fixDataFromSecondLastEvent(user, details, failedOnUpdateMigrations, updatedClaims, claim));
+                fixDataFromSecondLastEvent(user, details, updatedClaims, failedOnUpdate, claim));
 
         } catch (Exception e) {
             logger.info("Data Fix failed for claim for reference {} for the migrated count {} due to {}",
                 claim.getReferenceNumber(),
-                migratedClaims.get(),
+                updatedClaims.get(),
                 e.getMessage()
             );
         }
@@ -88,8 +86,8 @@ public class DataFixService {
     private void fixDataFromSecondLastEvent(
         User user,
         CaseDetails details,
-        AtomicInteger failedOnUpdateMigrations,
         AtomicInteger updatedClaims,
+        AtomicInteger failedOnUpdate,
         Claim claim
     ) {
         List<CaseEventDetails> events
@@ -136,15 +134,12 @@ public class DataFixService {
 
         CCDCase caseAfterPaidInFullDatePatch = updatePaidInFullDate(caseAfterResponseDeadlinePatch, events);
 
-        updateCase(user, updatedClaims, failedOnUpdateMigrations, caseAfterPaidInFullDatePatch);
+        updateCase(user, updatedClaims, failedOnUpdate, caseAfterPaidInFullDatePatch);
     }
 
     private CCDCase updatePaidInFullDate(CCDCase caseAfterResponseDeadlinePatch, List<CaseEventDetails> events) {
-        CaseEventDetails lastEventDetails = getEventDetailsOf(1, events);
+        return null; // replace with code
 
-        if(lastEventDetails.getEventName().equals(CaseEvent.SETTLED_PRE_JUDGMENT))
-
-        return lastEventDetails;
     }
 
     private CCDCase patchResponseDeadline(CCDCase ccdCase) {
