@@ -29,6 +29,7 @@ public class ClaimMigrator {
     private final UserService userService;
     private final MigrationHandler migrationHandler;
     private final DataFixHandler dataFixHandler;
+    private final DataFixService dataFixService;
     private final List<String> casesToMigrate;
     private final boolean fixDataIssues;
     private final boolean dryRun;
@@ -39,6 +40,7 @@ public class ClaimMigrator {
         UserService userService,
         MigrationHandler migrationHandler,
         DataFixHandler dataFixHandler,
+        DataFixService dataFixService,
         @Value("${migration.cases.references}") List<String> casesToMigrate,
         @Value("${migration.fixDataIssues}") boolean fixDataIssues,
         @Value("${migration.dryRun}") boolean dryRun
@@ -47,6 +49,7 @@ public class ClaimMigrator {
         this.userService = userService;
         this.migrationHandler = migrationHandler;
         this.dataFixHandler = dataFixHandler;
+        this.dataFixService = dataFixService;
         this.casesToMigrate = casesToMigrate;
         this.fixDataIssues = fixDataIssues;
         this.dryRun = dryRun;
@@ -56,7 +59,7 @@ public class ClaimMigrator {
     public void migrate() {
         logger.info("===== MIGRATE CLAIMS TO CCD =====");
         logger.info("DRY RUN Enabled: " + dryRun);
-
+        
         User user = userService.authenticateSystemUpdateUser();
         List<Claim> claimsToMigrate = getClaimsToMigrate();
 
@@ -111,9 +114,14 @@ public class ClaimMigrator {
     ) {
         notMigratedClaims.parallelStream().forEach(claim -> {
             if (fixDataIssues) {
-                if (isSettledOrJudgement(claim)) {
-                    dataFixHandler.fixClaim(migratedClaims, failedOnUpdateMigrations, updatedClaims, claim, user);
-                }
+                dataFixService.fixClaimFromSecondLastEvent(
+                    migratedClaims,
+                    failedOnUpdateMigrations,
+                    updatedClaims,
+                    claim,
+                    user
+                );
+
             } else {
                 migrationHandler.migrateClaim(
                     migratedClaims,

@@ -103,6 +103,14 @@ public class DataFixHandler {
     ) {
         List<CaseEventDetails> events
             = searchCCDEventsService.getCcdCaseEventsForCase(user, Long.toString(details.getId()));
+//        printEvents(details, events);
+        CaseEventDetails lastEventDetails = findLastButOneEventDetails(events);
+        CCDCase ccdCase = mapToCCDCase(lastEventDetails.getData(), Long.toString(details.getId()));
+
+        updateCase(user, updatedClaims, failedOnUpdateMigrations, ccdCase);
+    }
+
+    private void printEvents(CaseDetails details, List<CaseEventDetails> events) {
         events.forEach(event -> {
             Claim claim = caseMapper.from(mapToCCDCase(event.getData(), Long.toString(details.getId())));
             logger.info(claim.getReferenceNumber()
@@ -114,9 +122,6 @@ public class DataFixHandler {
                 + claim.getResponseDeadline()
             );
         });
-//        CaseEventDetails lastEventDetails = findLastButOneEventDetails(events);
-//        CCDCase ccdCase = extractCaseFromEvent(lastEventDetails, Long.toString(details.getId()));
-//        updateCase(user, updatedClaims, failedOnUpdateMigrations, ccdCase);
     }
 
     private CaseEventDetails findLastButOneEventDetails(List<CaseEventDetails> events) {
