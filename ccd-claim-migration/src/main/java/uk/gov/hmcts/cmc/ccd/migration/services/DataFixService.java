@@ -79,8 +79,61 @@ public class DataFixService {
         }
     }
 
-    private void fixDataFromThirdLastEvent(User user, CaseDetails details, AtomicInteger updatedClaims, AtomicInteger failedOnUpdate, Claim claim) {
-        // TODO:
+    private void fixDataFromThirdLastEvent(
+        User user,
+        CaseDetails details,
+        AtomicInteger updatedClaims,
+        AtomicInteger failedOnUpdate,
+        Claim claim
+    ) {
+
+        List<CaseEventDetails> events
+            = searchCCDEventsService.getCcdCaseEventsForCase(user, Long.toString(details.getId()));
+
+        CaseEventDetails thirdLastEventDetails = getEventDetailsOf(3, events);
+        CCDCase ccdCase = mapToCCDCase(thirdLastEventDetails.getData(), Long.toString(details.getId()));
+
+        CCDCase.CCDCaseBuilder builder = ccdCase.toBuilder();
+        interestDateMapper.to(claim.getClaimData().getInterest().getInterestDate(), builder);
+        CCDCase caseAfterInterestDatePatch = builder.build();
+
+        logger.info("Updating from event {} created at {}",
+            thirdLastEventDetails.getEventName(),
+            thirdLastEventDetails.getCreatedDate()
+        );
+
+        logInterestDate(ccdCase, caseAfterInterestDatePatch);
+
+        CCDCase caseAfterResponseDeadlinePatch = patchResponseDeadline(caseAfterInterestDatePatch);
+
+        logger.info("Response dead line after Patch {} from {}",
+            caseAfterResponseDeadlinePatch.getRespondents().get(0).getValue().getResponseDeadline(),
+            ccdCase.getRespondents().get(0).getValue().getResponseDeadline()
+        );
+
+        supportUpdateService.updateCase(user, updatedClaims, failedOnUpdate, caseAfterResponseDeadlinePatch);
+    }
+
+    private void logInterestDate(CCDCase ccdCase, CCDCase caseAfterInterestDatePatch) {
+        logger.info("Interest start date reason after Patch {} from {}",
+            caseAfterInterestDatePatch.getInterestStartDateReason(),
+            ccdCase.getInterestStartDateReason()
+        );
+
+        logger.info("Interest start date after Patch {} from {}",
+            caseAfterInterestDatePatch.getInterestClaimStartDate(),
+            ccdCase.getInterestClaimStartDate()
+        );
+
+        logger.info("Interest end date type after Patch {} from {}",
+            caseAfterInterestDatePatch.getInterestEndDateType(),
+            ccdCase.getInterestEndDateType()
+        );
+
+        logger.info("Interest date type after Patch {} from {}",
+            caseAfterInterestDatePatch.getInterestDateType(),
+            ccdCase.getInterestDateType()
+        );
     }
 
     public void fixClaimFromSecondLastEvent(
@@ -130,25 +183,7 @@ public class DataFixService {
             secondLastEventDetails.getCreatedDate()
         );
 
-        logger.info("Interest start date reason after Patch {} from {}",
-            caseAfterInterestDatePatch.getInterestStartDateReason(),
-            ccdCase.getInterestStartDateReason()
-        );
-
-        logger.info("Interest start date after Patch {} from {}",
-            caseAfterInterestDatePatch.getInterestClaimStartDate(),
-            ccdCase.getInterestClaimStartDate()
-        );
-
-        logger.info("Interest end date type after Patch {} from {}",
-            caseAfterInterestDatePatch.getInterestEndDateType(),
-            ccdCase.getInterestEndDateType()
-        );
-
-        logger.info("Interest date type after Patch {} from {}",
-            caseAfterInterestDatePatch.getInterestDateType(),
-            ccdCase.getInterestDateType()
-        );
+        logInterestDate(ccdCase, caseAfterInterestDatePatch);
 
         CCDCase caseAfterResponseDeadlinePatch = patchResponseDeadline(caseAfterInterestDatePatch);
 
