@@ -41,6 +41,7 @@ public class OrderDrawnNotificationService {
                     CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber(),
                     DEFENDANT_NAME, claim.getClaimData().getDefendant().getName(),
                     FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
+
                 notificationService.sendMail(
                     defendantEmail,
                     notificationsProperties.getTemplates().getEmail().getDefendantLegalOrderDrawn(),
@@ -59,6 +60,7 @@ public class OrderDrawnNotificationService {
             CLAIMANT_NAME, claim.getClaimData().getClaimant().getName(),
             FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl()
         );
+        
         notificationService.sendMail(
             claim.getSubmitterEmail(),
             notificationsProperties.getTemplates().getEmail().getClaimantLegalOrderDrawn(),
