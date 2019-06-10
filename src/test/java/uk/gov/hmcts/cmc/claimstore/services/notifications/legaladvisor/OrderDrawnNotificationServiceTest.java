@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OrderDrawnNotificationServiceTest extends BaseNotificationServiceTest {
-    private final String reference = "to-%s-legal-order-drawn-%s";
+    private final String reference = "to-%s-legal-order-drawn-notification-%s";
 
     @Mock
     protected NotificationService notificationService;

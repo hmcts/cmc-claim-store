@@ -206,12 +206,16 @@ public class NotificationReferenceBuilder {
             // do not instantiate
         }
 
-        public static String referenceForClaimant(String claimReferenceNumber) {
-            return reference("to-%s-legal-order-drawn-%s", CLAIMANT, claimReferenceNumber);
+        private static String referenceForClaim(String claimReferenceNumber, String party) {
+            return reference("to-%s-legal-order-drawn-notification-%s", party, claimReferenceNumber);
         }
 
         public static String referenceForDefendant(String claimReferenceNumber) {
-            return reference("to-%s-legal-order-drawn-%s", DEFENDANT, claimReferenceNumber);
+            return referenceForClaim(claimReferenceNumber, DEFENDANT);
+        }
+
+        public static String referenceForClaimant(String claimReferenceNumber) {
+            return referenceForClaim(claimReferenceNumber, CLAIMANT);
         }
     }
 }

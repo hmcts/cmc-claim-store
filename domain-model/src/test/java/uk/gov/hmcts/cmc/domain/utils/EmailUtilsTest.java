@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.domain.utils;
 
-
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -13,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class EmailUtilsTest {
 
-    private final static String DEFENDANT_EMAIL = "ineed@coffee.test";
+    private static final String DEFENDANT_EMAIL = "ineed@coffee.test";
 
     @Test
     public void shouldGetTheDefendantEmailIfPopulated() {
