@@ -177,10 +177,6 @@ public class SupportController {
         }
         Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
             .orElseThrow(() -> new NotFoundException(String.format(CLAIM_DOES_NOT_EXIST, referenceNumber)));
-        if (claim.getDefendantId() != null) {
-            throw new ConflictException("Claim has already been linked to defendant "
-               +  "- cannot reset claim submission operation indicators");
-        }
         claimService.updateClaimSubmissionOperationIndicators(authorisation, claim, claimSubmissionOperationIndicators);
     }
 
