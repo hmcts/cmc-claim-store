@@ -18,7 +18,6 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -64,11 +63,8 @@ public class DataFixService {
 
             logger.info("Fix case for: {}", claim.getReferenceNumber());
 
-            Optional<CaseDetails> caseDetails
-                = searchCCDCaseService.getCcdCaseByExternalId(user, claim.getExternalId());
-
-            caseDetails.ifPresent(details ->
-                fixDataFromThirdLastEvent(user, details, updatedClaims, failedOnUpdate, claim));
+            searchCCDCaseService.getCcdCaseByExternalId(user, claim.getExternalId())
+                .ifPresent(details -> fixDataFromThirdLastEvent(user, details, updatedClaims, failedOnUpdate, claim));
 
         } catch (Exception e) {
             logger.info("Data Fix failed for claim for reference {} for the migrated count {} due to {}",
@@ -140,11 +136,8 @@ public class DataFixService {
 
             logger.info("Fix case for: {}", claim.getReferenceNumber());
 
-            Optional<CaseDetails> caseDetails
-                = searchCCDCaseService.getCcdCaseByExternalId(user, claim.getExternalId());
-
-            caseDetails.ifPresent(details ->
-                fixDataFromSecondLastEvent(user, details, updatedClaims, failedOnUpdate, claim));
+            searchCCDCaseService.getCcdCaseByExternalId(user, claim.getExternalId())
+                .ifPresent(details -> fixDataFromSecondLastEvent(user, details, updatedClaims, failedOnUpdate, claim));
 
         } catch (Exception e) {
             logger.info("Data Fix failed for claim for reference {} for the migrated count {} due to {}",
