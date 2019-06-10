@@ -79,10 +79,6 @@ public class ClaimDataPatcher {
         logger.info("Failed on update ccd calls: " + failedOnUpdate.toString());
     }
 
-    private List<Claim> getClaimsToMigrate() {
-        return claimRepository.getClaims(casesToMigrate);
-    }
-
     private void patchClaims(
         User user,
         List<Claim> notMigratedClaims,
@@ -100,5 +96,9 @@ public class ClaimDataPatcher {
             }
         });
 
+    }
+
+    private List<Claim> getClaimsToMigrate() {
+        return claimRepository.getClaims(casesToMigrate);
     }
 }

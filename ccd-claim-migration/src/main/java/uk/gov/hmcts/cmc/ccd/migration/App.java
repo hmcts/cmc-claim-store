@@ -46,8 +46,8 @@ public class App implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-//        logger.info("Migration is starting");
-//        claimMigrator.migrate();
+        // logger.info("Migration is starting");
+        // claimMigrator.migrate();
 
         logger.info("Claims patching is starting");
         claimDataPatcher.patchClaims();
