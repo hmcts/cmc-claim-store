@@ -12,6 +12,8 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
+
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled", havingValue = "true")
 public class PinOrchestrationService {
@@ -43,7 +45,10 @@ public class PinOrchestrationService {
         Claim updatedClaim = documents.getClaim();
 
         ClaimSubmissionOperationIndicators.ClaimSubmissionOperationIndicatorsBuilder updatedOperationIndicator =
-            claim.getClaimSubmissionOperationIndicators().toBuilder();
+            claim.getClaimSubmissionOperationIndicators().toBuilder()
+            .bulkPrint(NO)
+            .staffNotification(NO)
+            .defendantNotification(NO);
 
         try {
             bulkPrintService.print(updatedClaim, documents.getDefendantPinLetterDoc(),
