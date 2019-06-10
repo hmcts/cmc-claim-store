@@ -87,7 +87,7 @@ public class ClaimDataPatcher {
     ) {
         notMigratedClaims.parallelStream().forEach(claim -> {
             if (fixDataIssues) {
-                dataFixService.fixClaimFromSecondLastEvent(
+                dataFixService.fixClaimFromThirdLastEvent(
                     updatedClaims,
                     failedOnUpdate,
                     claim,
