@@ -40,7 +40,7 @@ public class DirectionsQuestionnaire {
 
     private final String otherSupportRequired;
 
-    private final List<ExpertReportRow> expertReportsRows;
+    private final List<ExpertReport> expertReportsRows;
 
     private final String expertEvidenceToExamine;
 
