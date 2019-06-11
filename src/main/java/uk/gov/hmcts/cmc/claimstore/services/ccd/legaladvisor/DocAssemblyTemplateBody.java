@@ -64,9 +64,9 @@ public class DocAssemblyTemplateBody implements FormPayload {
 
     private CCDDirectionPartyType eyewitnessUploadForParty;
 
-    private String preferredCourtName;
+    private String hearingCourtName;
 
-    private String preferredCourtAddress;
+    private String hearingCourtAddress;
 
     private CCDHearingDurationType estimatedHearingDuration;
 
