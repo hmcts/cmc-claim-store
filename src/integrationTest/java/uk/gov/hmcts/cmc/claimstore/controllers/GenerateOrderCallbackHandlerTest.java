@@ -131,13 +131,13 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
             .data(caseDetailsTemp.getData())
             .build();
         Map<String, Object> data = new HashMap<>(caseDetailsTemp.getData());
-        data.put("hearingIsRequired", "Yes");
+        data.put("hearingRequired", "Yes");
         data.put("docUploadDeadline", "2019-06-03");
         data.put("docUploadForParty", "BOTH");
         data.put("eyewitnessUploadDeadline", "2019-06-03");
         data.put("eyewitnessUploadForParty", "CLAIMANT");
         data.put("directionList", ImmutableList.of("EYEWITNESS", "DOCUMENTS"));
-        data.put("otherDirectionList", ImmutableList.of(
+        data.put("otherDirexctions", ImmutableList.of(
             ImmutableMap.of(
                 "id", "",
                 "value", ImmutableMap.of(
