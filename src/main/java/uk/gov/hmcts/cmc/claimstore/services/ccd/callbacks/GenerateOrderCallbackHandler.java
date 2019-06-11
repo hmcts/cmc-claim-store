@@ -2,16 +2,20 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDResponseSubjectType;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -26,6 +30,7 @@ import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 import uk.gov.hmcts.reform.docassembly.domain.OutputType;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -63,7 +68,7 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
     @Override
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
-            CallbackType.ABOUT_TO_START, params -> this.prepopulateOrder(),
+            CallbackType.ABOUT_TO_START, this::prepopulateOrder,
             CallbackType.MID, this::generateOrder
         );
     }
@@ -73,19 +78,24 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
         return ImmutableList.of(CaseEvent.GENERATE_ORDER, CaseEvent.ACTION_REVIEW_COMMENTS);
     }
 
-    private CallbackResponse prepopulateOrder() {
+    private CallbackResponse prepopulateOrder(CallbackParams callbackParams) {
         logger.info("Generate order callback: prepopulating order fields");
+        CallbackRequest callbackRequest = callbackParams.getRequest();
+        CCDCase ccdCase = jsonMapper.fromMap(
+            callbackRequest.getCaseDetails().getData(), CCDCase.class);
         LocalDate deadline = legalOrderGenerationDeadlinesCalculator.calculateOrderGenerationDeadlines();
+        Map<String, Object> data = new HashMap<>();
+        data.put("directionList", ImmutableList.of(
+            CCDOrderDirectionType.DOCUMENTS.name(),
+            CCDOrderDirectionType.EYEWITNESS.name()
+        ));
+        data.put("docUploadDeadline", deadline);
+        data.put("eyewitnessUploadDeadline", deadline);
+        data.put("preferredCourt", ccdCase.getPreferredCourt());
+        addCourtData(ccdCase, data);
         return AboutToStartOrSubmitCallbackResponse
             .builder()
-            .data(ImmutableMap.of(
-                "directionList", ImmutableList.of(
-                    CCDOrderDirectionType.DOCUMENTS.name(),
-                    CCDOrderDirectionType.EYEWITNESS.name()
-                ),
-                "docUploadDeadline", deadline,
-                "eyewitnessUploadDeadline", deadline
-            ))
+            .data(data)
             .build();
     }
 
@@ -127,5 +137,27 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
                     .build()
             ))
             .build();
+    }
+
+    private void addCourtData(CCDCase ccdCase, Map<String, Object> data) {
+        String newRequestedCourt = null;
+        String preferredCourtObjectingParty = null;
+        String preferredCourtObjectingReason = null;
+        CCDApplicant applicant = ccdCase.getApplicants().get(0).getValue();
+        CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
+
+        if (StringUtils.isNotBlank(applicant.getPreferredCourtReason())) {
+            newRequestedCourt = applicant.getPreferredCourtName();
+            preferredCourtObjectingParty = CCDResponseSubjectType.RES_CLAIMANT.getValue();
+            preferredCourtObjectingReason = applicant.getPreferredCourtReason();
+        } else if (StringUtils.isNotBlank(respondent.getPreferredCourtReason())) {
+            newRequestedCourt = respondent.getPreferredCourtName();
+            preferredCourtObjectingParty = CCDResponseSubjectType.RES_DEFENDANT.getValue();
+            preferredCourtObjectingReason = respondent.getPreferredCourtReason();
+        }
+
+        data.put("newRequestedCourt", newRequestedCourt);
+        data.put("preferredCourtObjectingParty", preferredCourtObjectingParty);
+        data.put("preferredCourtObjectingReason", preferredCourtObjectingReason);
     }
 }
