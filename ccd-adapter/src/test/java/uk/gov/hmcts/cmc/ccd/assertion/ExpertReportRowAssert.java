@@ -2,13 +2,13 @@ package uk.gov.hmcts.cmc.ccd.assertion;
 
 import org.assertj.core.api.AbstractAssert;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDExpertReportRow;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReportRow;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
 
 import java.util.Objects;
 
-public class ExpertReportRowAssert extends AbstractAssert<ExpertReportRowAssert, ExpertReportRow> {
+public class ExpertReportRowAssert extends AbstractAssert<ExpertReportRowAssert, ExpertReport> {
 
-    public ExpertReportRowAssert(ExpertReportRow actual) {
+    public ExpertReportRowAssert(ExpertReport actual) {
         super(actual, ExpertReportRowAssert.class);
     }
 

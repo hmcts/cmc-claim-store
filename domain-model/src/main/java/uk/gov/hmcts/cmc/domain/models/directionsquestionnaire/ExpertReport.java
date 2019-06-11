@@ -12,12 +12,12 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @EqualsAndHashCode(callSuper = true)
 @Getter
-public class ExpertReportRow extends CollectionId {
+public class ExpertReport extends CollectionId {
     private String expertName;
     private LocalDate expertReportDate;
 
     @Builder
-    public ExpertReportRow(String id, String expertName, LocalDate expertReportDate) {
+    public ExpertReport(String id, String expertName, LocalDate expertReportDate) {
         super(id);
         this.expertName = expertName;
         this.expertReportDate = expertReportDate;

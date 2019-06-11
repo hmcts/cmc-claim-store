@@ -3,12 +3,12 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDExpertReportRow;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReportRow;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
 
 @Component
 public class ExpertRowMapper {
 
-    public CCDCollectionElement<CCDExpertReportRow> to(ExpertReportRow expertReportRow) {
+    public CCDCollectionElement<CCDExpertReportRow> to(ExpertReport expertReportRow) {
 
         if (expertReportRow == null) {
             return null;
@@ -24,14 +24,14 @@ public class ExpertRowMapper {
             .build();
     }
 
-    public ExpertReportRow from(CCDCollectionElement<CCDExpertReportRow> collectionElement) {
+    public ExpertReport from(CCDCollectionElement<CCDExpertReportRow> collectionElement) {
         CCDExpertReportRow ccdExpertReportRow = collectionElement.getValue();
 
         if (ccdExpertReportRow == null) {
             return null;
         }
 
-        return ExpertReportRow
+        return ExpertReport
             .builder()
             .id(ccdExpertReportRow.getId())
             .expertName(ccdExpertReportRow.getExpertName())

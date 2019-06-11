@@ -9,7 +9,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDExpertReportRow;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReportRow;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
 
 import java.time.LocalDate;
 
@@ -26,7 +26,7 @@ public class ExpertRowMapperTest {
     @Test
     public void shouldMapExpertRowMapperToCCD() {
         //given
-        ExpertReportRow expertReportRow = ExpertReportRow
+        ExpertReport expertReportRow = ExpertReport
             .builder()
             .expertName("expert1")
             .expertReportDate(LocalDate.of(2050, 1, 1))
@@ -49,7 +49,7 @@ public class ExpertRowMapperTest {
             .build();
 
         //when
-        ExpertReportRow expertReportRow = mapper.from(CCDCollectionElement.<CCDExpertReportRow>builder()
+        ExpertReport expertReportRow = mapper.from(CCDCollectionElement.<CCDExpertReportRow>builder()
             .value(ccdExpertReportRow).build());
 
         //then
