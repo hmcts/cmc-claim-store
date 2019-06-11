@@ -15,19 +15,22 @@ public class HearingLocation {
 
     @NotNull
     private final String courtName;
+    private final String hearingLocationSlug;
     private final Address courtAddress;
     @NotNull
-    private final CourtLocation locationOption;
+    private final CourtLocationType locationOption;
     private final String exceptionalCircumstancesReason;
 
     @Builder
     public HearingLocation(
         String courtName,
+        String hearingLocationSlug,
         Address courtAddress,
-        CourtLocation locationOption,
+        CourtLocationType locationOption,
         String exceptionalCircumstancesReason
     ) {
         this.courtName = courtName;
+        this.hearingLocationSlug = hearingLocationSlug;
         this.courtAddress = courtAddress;
         this.locationOption = locationOption;
         this.exceptionalCircumstancesReason = exceptionalCircumstancesReason;

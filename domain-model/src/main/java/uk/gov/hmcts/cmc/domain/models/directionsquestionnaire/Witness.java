@@ -12,21 +12,21 @@ import java.util.Optional;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @EqualsAndHashCode
-public class Evidence {
+public class Witness {
 
     @NotNull
-    private final YesNoOption selfEvidence;
+    private final YesNoOption selfWitness;
     @Min(1)
-    private final Integer noOfOtherPeopleEvidence;
+    private final Integer noOfOtherWitness;
 
     @Builder
-    public Evidence(YesNoOption selfEvidence, Integer noOfOtherPeopleEvidence) {
-        this.selfEvidence = selfEvidence;
-        this.noOfOtherPeopleEvidence = noOfOtherPeopleEvidence;
+    public Witness(YesNoOption selfWitness, Integer noOfOtherWitness) {
+        this.selfWitness = selfWitness;
+        this.noOfOtherWitness = noOfOtherWitness;
     }
 
-    public Optional<Integer> getNoOfOtherPeopleEvidence() {
-        return Optional.ofNullable(noOfOtherPeopleEvidence);
+    public Optional<Integer> getNoOfOtherWitness() {
+        return Optional.ofNullable(noOfOtherWitness);
     }
 
     @Override

@@ -36,7 +36,7 @@ public class SampleDirectionsQuestionnaire {
             .hearingLoop(YesNoOption.NO)
             .disabledAccess(YesNoOption.YES)
             .otherSupportRequired("maybe")
-            .expertReportsRows(expertReportRowsData)
+            .expertReports(expertReportRowsData)
             .expertEvidenceToExamine("nothing")
             .reasonForExpertAdvice("for specified reason")
             .build();
