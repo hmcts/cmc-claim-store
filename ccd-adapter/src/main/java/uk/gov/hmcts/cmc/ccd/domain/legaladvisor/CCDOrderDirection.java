@@ -21,6 +21,9 @@ public class CCDOrderDirection {
 
     private CCDOrderDirectionType extraOrderDirection;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @JsonSerialize(using = LocalDateSerializer.class)
+
     private String directionComment;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
