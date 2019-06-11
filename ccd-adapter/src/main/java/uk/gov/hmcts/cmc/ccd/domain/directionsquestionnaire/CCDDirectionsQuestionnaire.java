@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire;
 
 import lombok.Builder;
 import lombok.Value;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 
@@ -17,6 +18,8 @@ public class CCDDirectionsQuestionnaire {
     private final int howManyOtherWitness;
 
     private final String hearingLocation;
+
+    private final CCDAddress hearingCourtAddress;
 
     private final String hearingLocationSlug;
 

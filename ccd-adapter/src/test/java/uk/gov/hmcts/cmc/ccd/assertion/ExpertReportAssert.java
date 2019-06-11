@@ -6,13 +6,13 @@ import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
 
 import java.util.Objects;
 
-public class ExpertReportRowAssert extends AbstractAssert<ExpertReportRowAssert, ExpertReport> {
+public class ExpertReportAssert extends AbstractAssert<ExpertReportAssert, ExpertReport> {
 
-    public ExpertReportRowAssert(ExpertReport actual) {
-        super(actual, ExpertReportRowAssert.class);
+    public ExpertReportAssert(ExpertReport actual) {
+        super(actual, ExpertReportAssert.class);
     }
 
-    public ExpertReportRowAssert isEqualTo(CCDExpertReportRow ccdExpertReportRow) {
+    public ExpertReportAssert isEqualTo(CCDExpertReportRow ccdExpertReportRow) {
         isNotNull();
 
         if (!Objects.equals(actual.getExpertName(), ccdExpertReportRow.getExpertName())) {

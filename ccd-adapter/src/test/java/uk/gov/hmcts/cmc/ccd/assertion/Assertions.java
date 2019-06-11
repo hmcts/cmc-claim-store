@@ -94,8 +94,8 @@ public class Assertions {
         return new EvidenceRowAssert(evidenceRow);
     }
 
-    public static ExpertReportRowAssert assertThat(ExpertReport expertReportRow) {
-        return new ExpertReportRowAssert(expertReportRow);
+    public static ExpertReportAssert assertThat(ExpertReport expertReportRow) {
+        return new ExpertReportAssert(expertReportRow);
     }
 
     public static DirectionsQuestionnaireAssert assertThat(DirectionsQuestionnaire directionsQuestionnaire) {
