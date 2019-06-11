@@ -10,8 +10,8 @@ import java.time.LocalDate;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-@EqualsAndHashCode(callSuper = true)
 @Getter
+@EqualsAndHashCode(callSuper = true)
 public class UnavailableDate extends CollectionId {
     private LocalDate unavailableDate;
 
