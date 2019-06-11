@@ -20,7 +20,7 @@ public class DirectionsQuestionnaire {
     @NotNull
     private final HearingLocation hearingLocation;
     private final Witness witness;
-    @Size
+    @Size(min = 1)
     private final List<ExpertReport> expertReports;
     private final List<UnavailableDate> unavailableDates;
     private final ExpertRequest expertRequest;
@@ -41,7 +41,6 @@ public class DirectionsQuestionnaire {
         this.unavailableDates = unavailableDates;
         this.expertRequest = expertRequest;
     }
-
 
     @Override
     public String toString() {
