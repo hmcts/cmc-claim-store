@@ -18,22 +18,28 @@ import java.util.List;
 @JsonTypeName(value = "OtherDirection")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CCDOrderDirection {
+
     private CCDOrderDirectionType extraOrderDirection;
+
     private String directionComment;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate sendBy;
-    private CCDDirectionPartyType forParty;
-    private List<CCDCollectionElement<String>> extraDocUploadList;
-    private List<CCDCollectionElement<String>> expertReport;
 
-    @JsonProperty("expertReport")
-    void setExpertReport(List<CCDCollectionElement<String>> expertReport) {
-        setExpertReport(expertReport);
+    private CCDDirectionPartyType forParty;
+
+    private List<CCDCollectionElement<String>> extraDocUploadList;
+
+    private List<CCDCollectionElement<String>> expertReports;
+
+    @JsonProperty("expertReports")
+    void setExpertReports(List<CCDCollectionElement<String>> expertReports) {
+        setExpertReports(expertReports);
     }
 
     @JsonProperty("expertReportPermissionStatementList")
-    List<CCDCollectionElement<String>> getExpertReport() {
-        return expertReport;
+    List<CCDCollectionElement<String>> getExpertReports() {
+        return expertReports;
     }
 }

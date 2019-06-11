@@ -67,8 +67,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPaymentF
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebtType.ELECTRICITY;
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDResidenceType.JOINT_OWN_HOME;
 import static uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceType.EXPERT_WITNESS;
-import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOTH;
-import static uk.gov.hmcts.cmc.ccd.util.SampleCCDClaimSubmissionOperationIndicators.getDefaultCCDClaimSubmissionOperationIndicators;
+import static uk.gov.hmcts.cmc.ccd.util.SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicators;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
 
@@ -112,7 +111,7 @@ public class SampleData {
         .paymentId("PaymentId")
         .paymentAmount("400000")
         .paymentReference("RC-1524-6488-1670-7520")
-        .claimSubmissionOperationIndicators(getDefaultCCDClaimSubmissionOperationIndicators.get())
+        .claimSubmissionOperationIndicators(defaultCCDClaimSubmissionOperationIndicators)
         .timeline(singletonList(CCDCollectionElement.<CCDTimelineEvent>builder()
             .value(CCDTimelineEvent.builder().date("some Date").description("description of event").build())
             .build()))
@@ -486,7 +485,7 @@ public class SampleData {
             .preferredCourt("London Court")
             .applicants(applicants)
             .respondents(respondents)
-            .claimSubmissionOperationIndicators(getDefaultCCDClaimSubmissionOperationIndicators.get())
+            .claimSubmissionOperationIndicators(defaultCCDClaimSubmissionOperationIndicators)
             .build();
     }
 
@@ -512,17 +511,16 @@ public class SampleData {
                     CCDOrderDirection.builder()
                         .extraOrderDirection(CCDOrderDirectionType.OTHER)
                         .directionComment("a direction")
-                        .forParty(BOTH)
+                        .forParty(CCDDirectionPartyType.BOTH)
                         .sendBy(LocalDate.parse("2020-10-11"))
                         .build()
                 ).build(),
                 CCDCollectionElement.<CCDOrderDirection>builder().value(
                     CCDOrderDirection.builder()
                         .sendBy(LocalDate.parse("2020-10-11"))
-                        .extraOrderDirection
-                            (CCDOrderDirectionType.EXPERT_REPORT_PERMISSION)
+                        .extraOrderDirection(CCDOrderDirectionType.EXPERT_REPORT_PERMISSION)
                         .forParty(CCDDirectionPartyType.BOTH)
-                        .expertReport(
+                        .expertReports(
                             ImmutableList.of(
                                 CCDCollectionElement.<String>builder()
                                     .value("first")
@@ -641,7 +639,7 @@ public class SampleData {
     }
 
     public static CCDCase getCCDCitizenCaseWithOperationIndicators(
-        Supplier<CCDClaimSubmissionOperationIndicators> claimIndicatorSupplier) {
+        CCDClaimSubmissionOperationIndicators claimIndicatorSupplier) {
         List<CCDCollectionElement<CCDApplicant>> applicants
             = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
         List<CCDCollectionElement<CCDRespondent>> respondents
@@ -651,7 +649,7 @@ public class SampleData {
             .amountBreakDown(getAmountBreakDown())
             .applicants(applicants)
             .respondents(respondents)
-            .claimSubmissionOperationIndicators(claimIndicatorSupplier.get())
+            .claimSubmissionOperationIndicators(claimIndicatorSupplier)
             .build();
     }
 }

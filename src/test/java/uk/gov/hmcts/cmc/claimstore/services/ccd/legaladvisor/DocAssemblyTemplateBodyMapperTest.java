@@ -99,10 +99,9 @@ public class DocAssemblyTemplateBodyMapperTest  {
                     .build(),
                 CCDOrderDirection.builder()
                     .sendBy(LocalDate.parse("2020-10-11"))
-                    .extraOrderDirection
-                        (CCDOrderDirectionType.EXPERT_REPORT_PERMISSION)
+                    .extraOrderDirection(CCDOrderDirectionType.EXPERT_REPORT_PERMISSION)
                     .forParty(CCDDirectionPartyType.BOTH)
-                    .expertReport(
+                    .expertReports(
                         ImmutableList.of(
                             CCDCollectionElement.<String>builder()
                                 .value("first")
@@ -179,7 +178,7 @@ public class DocAssemblyTemplateBodyMapperTest  {
                     .sendBy(LocalDate.parse("2020-10-11"))
                     .extraOrderDirection(CCDOrderDirectionType.EXPERT_REPORT_PERMISSION)
                     .forParty(CCDDirectionPartyType.BOTH)
-                    .expertReport(
+                    .expertReports(
                         ImmutableList.of(
                             CCDCollectionElement.<String>builder()
                                 .value("first")
