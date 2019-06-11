@@ -1,50 +1,44 @@
 package uk.gov.hmcts.cmc.domain.models.directionsquestionnaire;
 
 import lombok.Builder;
-import lombok.Value;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import uk.gov.hmcts.cmc.domain.constraints.FutureDate;
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
-import java.time.LocalDate;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
-@Builder
-@Value
+@EqualsAndHashCode
 public class DirectionsQuestionnaire {
 
-    private final YesNoOption selfWitness;
+    private final RequireSupport requireSupport;
 
-    private final int howManyOtherWitness;
-
-    private final String hearingLocation;
-
-    private final String hearingLocationSlug;
-
-    private final String exceptionalCircumstancesReason;
-
+    @NotNull
+    private final HearingLocation hearingLocation;
+    private final Witness witness;
+    @Size
+    private final List<ExpertReport> expertReports;
     private final List<UnavailableDate> unavailableDates;
+    private final ExpertRequest expertRequest;
 
-    @FutureDate
-    private final LocalDate availableDate;
-
-    private final String languageInterpreted;
-
-    private final String signLanguageInterpreted;
-
-    private final YesNoOption hearingLoop;
-
-    private final YesNoOption disabledAccess;
-
-    private final String otherSupportRequired;
-
-    private final List<ExpertReport> expertReportsRows;
-
-    private final String expertEvidenceToExamine;
-
-    private final String reasonForExpertAdvice;
+    @Builder
+    public DirectionsQuestionnaire(
+        RequireSupport requireSupport,
+        HearingLocation hearingLocation,
+        Witness witness,
+        List<ExpertReport> expertReports,
+        List<UnavailableDate> unavailableDates,
+        ExpertRequest expertRequest
+    ) {
+        this.requireSupport = requireSupport;
+        this.hearingLocation = hearingLocation;
+        this.witness = witness;
+        this.expertReports = expertReports;
+        this.unavailableDates = unavailableDates;
+        this.expertRequest = expertRequest;
+    }
 
     @Override
     public String toString() {
