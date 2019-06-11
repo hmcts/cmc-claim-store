@@ -7,7 +7,6 @@ import lombok.Value;
 
 @Value
 @Builder
-@JsonTypeName(value = "student")
 public class CCDAddress {
 
     @JsonProperty("AddressLine1")

@@ -137,7 +137,7 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
         data.put("eyewitnessUploadDeadline", "2019-06-03");
         data.put("eyewitnessUploadForParty", "CLAIMANT");
         data.put("directionList", ImmutableList.of("EYEWITNESS", "DOCUMENTS"));
-        data.put("otherDirexctions", ImmutableList.of(
+        data.put("otherDirections", ImmutableList.of(
             ImmutableMap.of(
                 "id", "",
                 "value", ImmutableMap.of(
@@ -148,7 +148,7 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
                 "id", "",
                 "value", ImmutableMap.of(
                     "extraOrderDirection", "OTHER",
-                    "otherDirection", "second",
+                    "directionComment", "second",
                     "sendBy", "2019-06-04",
                     "forParty", "BOTH"))));
         data.put("preferredCourt", "Preferred court");

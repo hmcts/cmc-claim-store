@@ -67,7 +67,6 @@ import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPaymentF
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebtType.ELECTRICITY;
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDResidenceType.JOINT_OWN_HOME;
 import static uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceType.EXPERT_WITNESS;
-import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOTH;
 import static uk.gov.hmcts.cmc.ccd.util.SampleCCDClaimSubmissionOperationIndicators.getDefaultCCDClaimSubmissionOperationIndicators;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
@@ -506,15 +505,14 @@ public class SampleData {
                     CCDOrderDirection.builder()
                         .extraOrderDirection(CCDOrderDirectionType.OTHER)
                         .directionComment("a direction")
-                        .forParty(BOTH)
+                        .forParty(CCDDirectionPartyType.BOTH)
                         .sendBy(LocalDate.parse("2020-10-11"))
                         .build()
                 ).build(),
                 CCDCollectionElement.<CCDOrderDirection>builder().value(
                     CCDOrderDirection.builder()
                         .sendBy(LocalDate.parse("2020-10-11"))
-                        .extraOrderDirection
-                            (CCDOrderDirectionType.EXPERT_REPORT_PERMISSION)
+                        .extraOrderDirection(CCDOrderDirectionType.EXPERT_REPORT_PERMISSION)
                         .forParty(CCDDirectionPartyType.BOTH)
                         .expertReport(
                             ImmutableList.of(
