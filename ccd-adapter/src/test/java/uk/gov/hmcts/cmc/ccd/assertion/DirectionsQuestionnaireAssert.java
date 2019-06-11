@@ -52,15 +52,29 @@ public class DirectionsQuestionnaireAssert
             }
 
             if (!Objects.equals(hearingLocation.getHearingLocationSlug(), ccdDirectionsQuestionnaire.getHearingLocationSlug())) {
-                failWithMessage("Expected DirectionsQuestionnaire.courtName to be <%s> but was <%s>",
+                failWithMessage("Expected DirectionsQuestionnaire.hearingLocationSlug to be <%s> but was <%s>",
                     ccdDirectionsQuestionnaire.getHearingLocationSlug(), hearingLocation.getHearingLocationSlug());
             }
 
-            if (!Objects.equals(hearingLocation.getExceptionalCircumstancesReason(), ccdDirectionsQuestionnaire.getExceptionalCircumstancesReason())) {
-                failWithMessage("Expected DirectionsQuestionnaire.courtName to be <%s> but was <%s>",
+            if (!Objects.equals(hearingLocation.getExceptionalCircumstancesReason().orElse(null), ccdDirectionsQuestionnaire.getExceptionalCircumstancesReason())) {
+                failWithMessage("Expected DirectionsQuestionnaire.exceptionalCircumstances to be <%s> but was <%s>",
                     ccdDirectionsQuestionnaire.getExceptionalCircumstancesReason(), hearingLocation.getExceptionalCircumstancesReason());
             }
 
+            assertThat(hearingLocation.getCourtAddress().orElse(null)).isEqualTo(ccdDirectionsQuestionnaire.getHearingCourtAddress());
+
+        });
+
+        actual.getWitness().ifPresent( witness -> {
+            if (!Objects.equals(witness.getSelfWitness(), ccdDirectionsQuestionnaire.getSelfWitness())) {
+                failWithMessage("Expected DirectionsQuestionnaire.courtName to be <%s> but was <%s>",
+                    ccdDirectionsQuestionnaire.getLanguageInterpreted(), hearingLocation.getCourtName());
+            }
+
+            if (!Objects.equals(witness.getNoOfOtherWitness(), ccdDirectionsQuestionnaire.getOtherSupportRequired())) {
+                failWithMessage("Expected DirectionsQuestionnaire.courtName to be <%s> but was <%s>",
+                    ccdDirectionsQuestionnaire.getLanguageInterpreted(), hearingLocation.getCourtName());
+            }
         });
 
         return this;
