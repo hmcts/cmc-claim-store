@@ -501,16 +501,43 @@ public class SampleData {
         return CCDOrderGenerationData.builder()
             .directionList(ImmutableList.of(
                 CCDOrderDirectionType.DOCUMENTS, CCDOrderDirectionType.EYEWITNESS))
-            .otherDirectionList(ImmutableList.of(
+            .otherDirections(ImmutableList.of(
                 CCDCollectionElement.<CCDOrderDirection>builder().value(
                     CCDOrderDirection.builder()
                         .extraOrderDirection(CCDOrderDirectionType.OTHER)
-                        .otherDirection("a direction")
+                        .directionComment("a direction")
                         .forParty(BOTH)
                         .sendBy(LocalDate.parse("2020-10-11"))
+                        .build()
+                ).build(),
+                CCDCollectionElement.<CCDOrderDirection>builder().value(
+                    CCDOrderDirection.builder()
+                        .sendBy(LocalDate.parse("2020-10-11"))
+                        .extraOrderDirection
+                            (CCDOrderDirectionType.EXPERT_REPORT_PERMISSION)
+                        .forParty(CCDDirectionPartyType.BOTH)
+                        .expertReport(
+                            ImmutableList.of(
+                                CCDCollectionElement.<String>builder()
+                                    .value("first")
+                                    .build(),
+                                CCDCollectionElement.<String>builder()
+                                    .value("second")
+                                    .build(),
+                                CCDCollectionElement.<String>builder()
+                                    .value("third")
+                                    .build()))
+                        .extraDocUploadList(
+                            ImmutableList.of(
+                                CCDCollectionElement.<String>builder()
+                                    .value("first document")
+                                    .build(),
+                                CCDCollectionElement.<String>builder()
+                                    .value("second document")
+                                    .build()))
                         .build())
                     .build()))
-            .hearingIsRequired(YES)
+            .hearingRequired(YES)
             .docUploadDeadline(LocalDate.parse("2020-10-11"))
             .eyewitnessUploadDeadline(LocalDate.parse("2020-10-11"))
             .hearingCourt(CCDHearingCourtType.DEFENDANT_COURT)
@@ -608,7 +635,7 @@ public class SampleData {
     }
 
     public static CCDCase getCCDCitizenCaseWithOperationIndicators(
-                 Supplier<CCDClaimSubmissionOperationIndicators> claimIndicatorSupplier) {
+        Supplier<CCDClaimSubmissionOperationIndicators> claimIndicatorSupplier) {
         List<CCDCollectionElement<CCDApplicant>> applicants
             = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
         List<CCDCollectionElement<CCDRespondent>> respondents
