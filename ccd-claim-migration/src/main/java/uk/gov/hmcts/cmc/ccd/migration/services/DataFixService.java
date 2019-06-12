@@ -37,6 +37,7 @@ public class DataFixService {
     private final JsonMapper jsonMapper;
     private final InterestDateMapper interestDateMapper;
     private final InterestMapper interestMapper;
+    private final DataPrintService dataPrintService;
 
     public DataFixService(
         SearchCCDCaseService searchCCDCaseService,
@@ -45,7 +46,8 @@ public class DataFixService {
         CaseMapper caseMapper,
         JsonMapper jsonMapper,
         InterestDateMapper interestDateMapper,
-        InterestMapper interestMapper
+        InterestMapper interestMapper,
+        DataPrintService dataPrintService
 
     ) {
         this.searchCCDCaseService = searchCCDCaseService;
@@ -56,6 +58,7 @@ public class DataFixService {
         this.interestDateMapper = interestDateMapper;
 
         this.interestMapper = interestMapper;
+        this.dataPrintService = dataPrintService;
     }
 
     public void fixClaimWithMissingInterest(
@@ -67,6 +70,8 @@ public class DataFixService {
         try {
 
             logger.info("Fix case for: {}", claim.getReferenceNumber());
+
+            dataPrintService.printCaseDetails(claim.getReferenceNumber(), user);
 
             searchCCDCaseService.getCcdCaseByExternalId(user, claim.getExternalId())
                 .ifPresent(details -> fixData(user, details, updatedClaims, failedOnUpdate, claim));

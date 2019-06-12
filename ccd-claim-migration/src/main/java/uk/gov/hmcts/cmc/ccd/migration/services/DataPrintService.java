@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
-import uk.gov.hmcts.cmc.ccd.mapper.InterestDateMapper;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.SearchCCDCaseService;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.SearchCCDEventsService;
 import uk.gov.hmcts.cmc.ccd.migration.client.CaseEventDetails;
@@ -27,28 +26,22 @@ public class DataPrintService {
 
     private final SearchCCDCaseService searchCCDCaseService;
     private final SearchCCDEventsService searchCCDEventsService;
-    private final SupportUpdateService supportUpdateService;
     private final CaseMapper caseMapper;
     private final JsonMapper jsonMapper;
-    private final InterestDateMapper interestDateMapper;
     private final ClaimRepository claimRepository;
 
     public DataPrintService(
         SearchCCDCaseService searchCCDCaseService,
         SearchCCDEventsService searchCCDEventsService,
-        SupportUpdateService supportUpdateService,
         CaseMapper caseMapper,
         JsonMapper jsonMapper,
-        InterestDateMapper interestDateMapper,
         ClaimRepository claimRepository
 
     ) {
         this.searchCCDCaseService = searchCCDCaseService;
         this.searchCCDEventsService = searchCCDEventsService;
-        this.supportUpdateService = supportUpdateService;
         this.caseMapper = caseMapper;
         this.jsonMapper = jsonMapper;
-        this.interestDateMapper = interestDateMapper;
         this.claimRepository = claimRepository;
     }
 
