@@ -54,7 +54,6 @@ public class SearchCCDCaseService {
         maxAttempts = 5,
         backoff = @Backoff(delay = 400, maxDelay = 800)
     )
-    @LogExecutionTime
     public Optional<CaseDetails> getCcdCaseByExternalId(User user, String externalId) {
         return search(user, ImmutableMap.of("case.externalId", externalId));
     }
