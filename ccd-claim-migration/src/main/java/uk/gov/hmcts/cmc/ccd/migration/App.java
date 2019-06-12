@@ -8,7 +8,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.retry.annotation.EnableRetry;
-import uk.gov.hmcts.cmc.ccd.migration.services.ClaimDataPatcher;
+import uk.gov.hmcts.cmc.ccd.migration.services.DataPrinter;
 
 /**
  * Application to patchClaims claims from claim-store database to CCD datastore.
@@ -18,7 +18,8 @@ import uk.gov.hmcts.cmc.ccd.migration.services.ClaimDataPatcher;
     "uk.gov.hmcts.cmc.ccd.migration",
     "uk.gov.hmcts.cmc.ccd.mapper"
 })
-@SuppressWarnings({"HideUtilityClassConstructor", "squid:S1118"}) // Spring needs a constructor, its not a utility class
+@SuppressWarnings( {"HideUtilityClassConstructor", "squid:S1118"})
+// Spring needs a constructor, its not a utility class
 @EnableFeignClients(basePackages =
     {
         "uk.gov.hmcts.cmc.ccd.migration.idam.api",
@@ -33,7 +34,7 @@ public class App implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(App.class);
 
     @Autowired
-    private ClaimDataPatcher claimDataPatcher;
+    private DataPrinter dataPrinter;
 
     public static void main(String[] args) {
         logger.info("Application started");
@@ -43,6 +44,6 @@ public class App implements CommandLineRunner {
     @Override
     public void run(String... args) {
         logger.info("Claims patching is starting");
-        claimDataPatcher.patchClaims();
+        dataPrinter.printClaimDetails();
     }
 }
