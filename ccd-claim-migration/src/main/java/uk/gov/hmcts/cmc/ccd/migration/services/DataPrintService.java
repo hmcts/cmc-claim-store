@@ -79,18 +79,20 @@ public class DataPrintService {
 
     private void printEvents(CaseDetails details, User user) {
         CCDCase ccdCase = mapToCCDCase(details.getData(), Long.toString(details.getId()));
-        logger.info("ccdCase.getInterestStartDateReason " + ccdCase.getInterestStartDateReason());
-        logger.info(ccdCase.getInterestReason());
-        logger.info(ccdCase.getInterestSpecificDailyAmount());
-        logger.info(ccdCase.getInterestBreakDownAmount());
-        logger.info(ccdCase.getInterestBreakDownExplanation());
+        logger.info("ccdCase.getInterestReason " + ccdCase.getInterestReason());
+        logger.info("ccdCase.getInterestSpecificDailyAmount " + ccdCase.getInterestSpecificDailyAmount());
+        logger.info("ccdCase.getInterestBreakDownAmount " + ccdCase.getInterestBreakDownAmount());
+        logger.info("ccdCase.getInterestBreakDownExplanation " + ccdCase.getInterestBreakDownExplanation());
+        logger.info(ccdCase.getInterestType() != null ? ccdCase.getInterestType().getValue() : "no interest type");
         ccdCase.getAmountBreakDown().stream()
             .map(CCDCollectionElement::getValue)
             .forEach(ccdAmountRow -> logger.info(ccdAmountRow.getAmount() + " " + ccdAmountRow.getReason()));
 
-        logger.info(ccdCase.getInterestType() != null ? ccdCase.getInterestType().getValue() : "no interest date type");
-        logger.info(ccdCase.getInterestRate() != null ? ccdCase.getInterestRate().toString() : "no interest Rate");
-        logger.info(ccdCase.getInterestDateType() != null ? ccdCase.getInterestDateType().getValue() : "no interest date type");
+        logger.info("ccdCase.getInterestClaimStartDate " + ccdCase.getInterestClaimStartDate() != null ? ccdCase.getInterestClaimStartDate().toString() : "no claim start date");
+        logger.info("ccdCase.getInterestRate " + ccdCase.getInterestRate() != null ? ccdCase.getInterestRate().toString() : "no interest Rate");
+        logger.info("ccdCase.getInterestDateType " + ccdCase.getInterestDateType() != null ? ccdCase.getInterestDateType().getValue() : "no interest date type");
+        logger.info("ccdCase.getInterestDateType " + ccdCase.getInterestEndDateType() != null ? ccdCase.getInterestEndDateType().getValue() : "no interest end date type");
+        logger.info("ccdCase.getInterestStartDateReason " + ccdCase.getInterestStartDateReason());
 
         List<CaseEventDetails> events
             = searchCCDEventsService.getCcdCaseEventsForCase(user, Long.toString(details.getId()));
