@@ -83,15 +83,22 @@ public class DataPrintService {
         logger.info("ccdCase.getInterestSpecificDailyAmount " + ccdCase.getInterestSpecificDailyAmount());
         logger.info("ccdCase.getInterestBreakDownAmount " + ccdCase.getInterestBreakDownAmount());
         logger.info("ccdCase.getInterestBreakDownExplanation " + ccdCase.getInterestBreakDownExplanation());
-        logger.info(ccdCase.getInterestType() != null ? ccdCase.getInterestType().getValue() : "no interest type");
+        if (ccdCase.getInterestType() != null) {
+            logger.info("ccdCase.getInterestType " + ccdCase.getInterestType().getValue());
+        }
         ccdCase.getAmountBreakDown().stream()
             .map(CCDCollectionElement::getValue)
             .forEach(ccdAmountRow -> logger.info(ccdAmountRow.getAmount() + " " + ccdAmountRow.getReason()));
 
-        logger.info("ccdCase.getInterestClaimStartDate " + ccdCase.getInterestClaimStartDate() != null ? ccdCase.getInterestClaimStartDate().toString() : "no claim start date");
-        logger.info("ccdCase.getInterestRate " + ccdCase.getInterestRate() != null ? ccdCase.getInterestRate().toString() : "no interest Rate");
-        logger.info("ccdCase.getInterestDateType " + ccdCase.getInterestDateType() != null ? ccdCase.getInterestDateType().getValue() : "no interest date type");
-        logger.info("ccdCase.getInterestDateType " + ccdCase.getInterestEndDateType() != null ? ccdCase.getInterestEndDateType().getValue() : "no interest end date type");
+        logger.info("ccdCase.getInterestClaimStartDate " + ccdCase.getInterestClaimStartDate());
+        logger.info("ccdCase.getInterestRate " + ccdCase.getInterestRate());
+
+        if (ccdCase.getInterestDateType() != null) {
+            logger.info("ccdCase.getInterestDateType " + ccdCase.getInterestDateType().getValue());
+        }
+        if (ccdCase.getInterestEndDateType() != null) {
+            logger.info("ccdCase.getInterestEndDateType " + ccdCase.getInterestEndDateType().getValue());
+        }
         logger.info("ccdCase.getInterestStartDateReason " + ccdCase.getInterestStartDateReason());
 
         List<CaseEventDetails> events
