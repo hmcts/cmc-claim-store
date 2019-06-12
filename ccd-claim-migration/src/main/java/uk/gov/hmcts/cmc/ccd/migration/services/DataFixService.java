@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.InterestDateMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.InterestMapper;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.SearchCCDCaseService;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.SearchCCDEventsService;
 import uk.gov.hmcts.cmc.ccd.migration.client.CaseEventDetails;
@@ -35,6 +36,7 @@ public class DataFixService {
     private final CaseMapper caseMapper;
     private final JsonMapper jsonMapper;
     private final InterestDateMapper interestDateMapper;
+    private final InterestMapper interestMapper;
 
     public DataFixService(
         SearchCCDCaseService searchCCDCaseService,
@@ -42,7 +44,8 @@ public class DataFixService {
         SupportUpdateService supportUpdateService,
         CaseMapper caseMapper,
         JsonMapper jsonMapper,
-        InterestDateMapper interestDateMapper
+        InterestDateMapper interestDateMapper,
+        InterestMapper interestMapper
 
     ) {
         this.searchCCDCaseService = searchCCDCaseService;
@@ -51,6 +54,30 @@ public class DataFixService {
         this.caseMapper = caseMapper;
         this.jsonMapper = jsonMapper;
         this.interestDateMapper = interestDateMapper;
+
+        this.interestMapper = interestMapper;
+    }
+
+    public void fixClaimWithMissingInterest(
+        AtomicInteger updatedClaims,
+        AtomicInteger failedOnUpdate,
+        Claim claim,
+        User user
+    ) {
+        try {
+
+            logger.info("Fix case for: {}", claim.getReferenceNumber());
+
+            searchCCDCaseService.getCcdCaseByExternalId(user, claim.getExternalId())
+                .ifPresent(details -> fixDataFromLastEvent(user, details, updatedClaims, failedOnUpdate, claim));
+
+        } catch (Exception e) {
+            logger.info("Data Fix failed for claim for reference {} for the migrated count {} due to {}",
+                claim.getReferenceNumber(),
+                updatedClaims.get(),
+                e.getMessage()
+            );
+        }
     }
 
     public void fixClaimFromThirdLastEvent(
@@ -75,6 +102,24 @@ public class DataFixService {
         }
     }
 
+    private void fixDataFromLastEvent(
+        User user,
+        CaseDetails details,
+        AtomicInteger updatedClaims,
+        AtomicInteger failedOnUpdate,
+        Claim claim
+    ) {
+        List<CaseEventDetails> events
+            = searchCCDEventsService.getCcdCaseEventsForCase(user, Long.toString(details.getId()));
+
+        CaseEventDetails eventDetails = getEventDetailsOf(1, events);
+        CCDCase ccdCase = mapToCCDCase(eventDetails.getData(), Long.toString(details.getId()));
+
+        CCDCase caseAfterInterestPatch = addInterestPatch(claim, eventDetails, ccdCase);
+
+        supportUpdateService.updateCase(user, updatedClaims, failedOnUpdate, caseAfterInterestPatch);
+    }
+
     private void fixDataFromThirdLastEvent(
         User user,
         CaseDetails details,
@@ -92,6 +137,53 @@ public class DataFixService {
         CCDCase caseAfterResponseDeadlinePatch = addResponseDeadlinePatch(ccdCase, caseAfterInterestDatePatch);
 
         supportUpdateService.updateCase(user, updatedClaims, failedOnUpdate, caseAfterResponseDeadlinePatch);
+    }
+
+    private CCDCase addInterestPatch(Claim claim, CaseEventDetails eventDetails, CCDCase ccdCase) {
+        CCDCase.CCDCaseBuilder builder = ccdCase.toBuilder();
+        interestMapper.to(claim.getClaimData().getInterest(), builder);
+        CCDCase caseAfterInterestPatch = builder.build();
+
+        logger.info("Updating from event {} created at {}",
+            eventDetails.getEventName(),
+            eventDetails.getCreatedDate()
+        );
+
+        logger.info("Interest type after Patch {} from {}",
+            caseAfterInterestPatch.getInterestType(),
+            ccdCase.getInterestType()
+        );
+
+        logger.info("Interest breakdown after Patch {} from {}",
+            caseAfterInterestPatch.getInterestBreakDownAmount(),
+            ccdCase.getInterestBreakDownAmount()
+        );
+
+        logger.info("Interest breakdown explanation after Patch {} from {}",
+            caseAfterInterestPatch.getInterestBreakDownExplanation(),
+            ccdCase.getInterestBreakDownExplanation()
+        );
+
+        logger.info("Interest start date reason after Patch {} from {}",
+            caseAfterInterestPatch.getInterestStartDateReason(),
+            ccdCase.getInterestStartDateReason()
+        );
+
+        logger.info("Interest start date after Patch {} from {}",
+            caseAfterInterestPatch.getInterestClaimStartDate(),
+            ccdCase.getInterestClaimStartDate()
+        );
+
+        logger.info("Interest end date type after Patch {} from {}",
+            caseAfterInterestPatch.getInterestEndDateType(),
+            ccdCase.getInterestEndDateType()
+        );
+
+        logger.info("Interest date type after Patch {} from {}",
+            caseAfterInterestPatch.getInterestDateType(),
+            ccdCase.getInterestDateType()
+        );
+        return caseAfterInterestPatch;
     }
 
     private CCDCase addInterestDatePatch(Claim claim, CaseEventDetails eventDetails, CCDCase ccdCase) {

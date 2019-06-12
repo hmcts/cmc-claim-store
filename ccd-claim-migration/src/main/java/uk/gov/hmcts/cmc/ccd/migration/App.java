@@ -8,7 +8,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.retry.annotation.EnableRetry;
-import uk.gov.hmcts.cmc.ccd.migration.services.DataPrinter;
+import uk.gov.hmcts.cmc.ccd.migration.services.ClaimDataPatcher;
 
 /**
  * Application to patchClaims claims from claim-store database to CCD datastore.
@@ -34,7 +34,7 @@ public class App implements CommandLineRunner {
     private static final Logger logger = LoggerFactory.getLogger(App.class);
 
     @Autowired
-    private DataPrinter dataPrinter;
+    private ClaimDataPatcher claimDataPatcher;
 
     public static void main(String[] args) {
         logger.info("Application started");
@@ -44,6 +44,6 @@ public class App implements CommandLineRunner {
     @Override
     public void run(String... args) {
         logger.info("Claims patching is starting");
-        dataPrinter.printClaimDetails();
+        claimDataPatcher.patchClaims();
     }
 }
