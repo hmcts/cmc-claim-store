@@ -18,7 +18,9 @@ import uk.gov.hmcts.cmc.ccd.migration.services.ClaimDataPatcher;
     "uk.gov.hmcts.cmc.ccd.migration",
     "uk.gov.hmcts.cmc.ccd.mapper"
 })
-@SuppressWarnings( {"HideUtilityClassConstructor", "squid:S1118"})
+@SuppressWarnings(
+    {"HideUtilityClassConstructor", "squid:S1118"}
+)
 // Spring needs a constructor, its not a utility class
 @EnableFeignClients(basePackages =
     {

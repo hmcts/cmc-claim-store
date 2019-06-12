@@ -7,9 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.idam.services.UserService;
-import uk.gov.hmcts.cmc.ccd.migration.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.ccd.migration.stereotypes.LogExecutionTime;
-import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
