@@ -6,40 +6,31 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Builder
 @Value
 public class CCDDirectionsQuestionnaire {
 
-    private final String hearingLocation;
+    private String languageInterpreted;
+    private String signLanguageInterpreted;
+    private CCDYesNoOption hearingLoop;
+    private CCDYesNoOption disabledAccess;
+    private String otherSupportRequired;
 
-    private final CCDYesNoOption selfWitness;
+    private String hearingLocation;
+    private String hearingLocationSlug;
+    private CCDCourtLocationOption hearingLocationOption;
+    private CCDAddress hearingCourtAddress;
+    private String exceptionalCircumstancesReason;
 
-    private final int howManyOtherWitness;
-    private final CCDAddress hearingCourtAddress;
+    private CCDYesNoOption selfWitness;
+    private int howManyOtherWitness;
 
-    private final String hearingLocationSlug;
+    private List<CCDCollectionElement<CCDExpertReport>> expertReports;
 
-    private final String exceptionalCircumstancesReason;
+    private List<CCDCollectionElement<CCDUnavailableDate>> unavailableDates;
 
-    private final List<CCDCollectionElement<CCDUnavailableDate>> unavailableDates;
-
-    private final String languageInterpreted;
-
-    private final String signLanguageInterpreted;
-
-    private final CCDYesNoOption hearingLoop;
-
-    private final CCDYesNoOption disabledAccess;
-
-    private final String otherSupportRequired;
-
-    private final List<CCDCollectionElement<CCDExpertReportRow>> expertReportsRows;
-
-    private final String expertEvidenceToExamine;
-
-    private final String reasonForExpertAdvice;
-
+    private String expertEvidenceToExamine;
+    private String reasonForExpertAdvice;
 }

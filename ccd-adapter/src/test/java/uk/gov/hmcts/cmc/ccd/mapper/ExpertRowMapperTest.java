@@ -8,7 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDExpertReportRow;
+import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDExpertReport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
 
 import java.time.LocalDate;
@@ -33,7 +33,7 @@ public class ExpertRowMapperTest {
             .build();
 
         //when
-        CCDCollectionElement<CCDExpertReportRow> ccdExpertReportRow = mapper.to(expertReportRow);
+        CCDCollectionElement<CCDExpertReport> ccdExpertReportRow = mapper.to(expertReportRow);
 
         //then
         assertThat(expertReportRow).isEqualTo(ccdExpertReportRow.getValue());
@@ -42,14 +42,14 @@ public class ExpertRowMapperTest {
     @Test
     public void shouldMapExpertRowMapperFromCCD() {
         //given
-        CCDExpertReportRow ccdExpertReportRow = CCDExpertReportRow
+        CCDExpertReport ccdExpertReportRow = CCDExpertReport
             .builder()
             .expertName("expert1")
             .expertReportDate(LocalDate.of(2050, 1, 1))
             .build();
 
         //when
-        ExpertReport expertReportRow = mapper.from(CCDCollectionElement.<CCDExpertReportRow>builder()
+        ExpertReport expertReportRow = mapper.from(CCDCollectionElement.<CCDExpertReport>builder()
             .value(ccdExpertReportRow).build());
 
         //then

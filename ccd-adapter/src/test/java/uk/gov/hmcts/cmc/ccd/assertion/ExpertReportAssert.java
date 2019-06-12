@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.assertion;
 
 import org.assertj.core.api.AbstractAssert;
-import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDExpertReportRow;
+import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDExpertReport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
 
 import java.util.Objects;
@@ -12,7 +12,7 @@ public class ExpertReportAssert extends AbstractAssert<ExpertReportAssert, Exper
         super(actual, ExpertReportAssert.class);
     }
 
-    public ExpertReportAssert isEqualTo(CCDExpertReportRow ccdExpertReportRow) {
+    public ExpertReportAssert isEqualTo(CCDExpertReport ccdExpertReportRow) {
         isNotNull();
 
         if (!Objects.equals(actual.getExpertName(), ccdExpertReportRow.getExpertName())) {

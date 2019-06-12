@@ -3,12 +3,13 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
+import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDCourtLocationOption;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
-import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
-
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
@@ -16,11 +17,17 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
 
     private final ExpertRowMapper expertRowMapper;
     private final UnavailableDateMapper unavailableDateMapper;
+    private final AddressMapper addressMapper;
 
     @Autowired
-    public DirectionsQuestionnaireMapper(ExpertRowMapper expertRowMapper, UnavailableDateMapper unavailableDateMapper) {
+    public DirectionsQuestionnaireMapper(
+        ExpertRowMapper expertRowMapper,
+        UnavailableDateMapper unavailableDateMapper,
+        AddressMapper addressMapper
+    ) {
         this.expertRowMapper = expertRowMapper;
         this.unavailableDateMapper = unavailableDateMapper;
+        this.addressMapper = addressMapper;
     }
 
     @Override
@@ -29,27 +36,62 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
             return null;
         }
 
-        return CCDDirectionsQuestionnaire.builder()
-            .selfWitness(mapToCCDYesNo(directionsQuestionnaire.getSelfWitness()))
-            .howManyOtherWitness(directionsQuestionnaire.getHowManyOtherWitness())
-            .hearingLocation(directionsQuestionnaire.getHearingLocation())
-            .hearingLocationSlug(directionsQuestionnaire.getHearingLocationSlug())
-            .exceptionalCircumstancesReason(directionsQuestionnaire.getExceptionalCircumstancesReason())
-            .unavailableDates(asStream(directionsQuestionnaire.getUnavailableDates())
-                .map(unavailableDateMapper::to)
-                .collect(Collectors.toList()))
-            .availableDate(directionsQuestionnaire.getAvailableDate())
-            .languageInterpreted(directionsQuestionnaire.getLanguageInterpreted())
-            .signLanguageInterpreted(directionsQuestionnaire.getSignLanguageInterpreted())
-            .hearingLoop(mapToCCDYesNo(directionsQuestionnaire.getHearingLoop()))
-            .disabledAccess(mapToCCDYesNo(directionsQuestionnaire.getDisabledAccess()))
-            .otherSupportRequired(directionsQuestionnaire.getOtherSupportRequired())
-            .expertEvidenceToExamine(directionsQuestionnaire.getExpertEvidenceToExamine())
-            .expertReportsRows(asStream(directionsQuestionnaire.getExpertReports())
-                .map(expertRowMapper::to)
-                .collect(Collectors.toList()))
-            .reasonForExpertAdvice(directionsQuestionnaire.getReasonForExpertAdvice())
-            .build();
+        final CCDDirectionsQuestionnaire.CCDDirectionsQuestionnaireBuilder builder = CCDDirectionsQuestionnaire.builder();
+        directionsQuestionnaire.getRequireSupport().ifPresent(requireSupport -> {
+            requireSupport.getLanguageInterpreter().ifPresent(builder::languageInterpreted);
+            requireSupport.getSignLanguageInterpreter().ifPresent(builder::signLanguageInterpreted);
+            requireSupport.getOtherSupport().ifPresent(builder::otherSupportRequired);
+
+            requireSupport.getHearingLoop()
+                .map(YesNoOption::name)
+                .map(CCDYesNoOption::valueOf)
+                .ifPresent(builder::hearingLoop);
+
+            requireSupport.getDisabledAccess()
+                .map(YesNoOption::name)
+                .map(CCDYesNoOption::valueOf)
+                .ifPresent(builder::disabledAccess);
+        });
+
+        toHearingLocation(directionsQuestionnaire.getHearingLocation(), builder);
+
+        directionsQuestionnaire.getWitness().ifPresent(witness -> {
+            builder.selfWitness(CCDYesNoOption.valueOf(witness.getSelfWitness().name()));
+            witness.getNoOfOtherWitness().ifPresent(builder::howManyOtherWitness);
+        });
+
+        directionsQuestionnaire.getExpertRequest().ifPresent(expertRequest -> {
+            builder.expertEvidenceToExamine(expertRequest.getExpertEvidenceToExamine());
+            builder.reasonForExpertAdvice(expertRequest.getReasonForExpertAdvice());
+        });
+
+        builder.expertReports(directionsQuestionnaire.getExpertReports()
+            .stream()
+            .map(expertRowMapper::to)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList())
+        );
+
+        builder.unavailableDates(directionsQuestionnaire.getUnavailableDates()
+            .stream()
+            .map(unavailableDateMapper::to)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList())
+        );
+
+        return builder.build();
+    }
+
+    private void toHearingLocation(
+        HearingLocation hearingLocation,
+        CCDDirectionsQuestionnaire.CCDDirectionsQuestionnaireBuilder builder
+    ) {
+        builder.hearingLocation(hearingLocation.getCourtName());
+        builder.hearingLocationSlug(hearingLocation.getHearingLocationSlug());
+        hearingLocation.getCourtAddress()
+            .ifPresent(address -> builder.hearingCourtAddress(addressMapper.to(address)));
+        builder.hearingLocationOption(CCDCourtLocationOption.valueOf(hearingLocation.getLocationOption().name()));
+        hearingLocation.getExceptionalCircumstancesReason().ifPresent(builder::exceptionalCircumstancesReason);
     }
 
     @Override
@@ -59,34 +101,8 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
         }
 
         return DirectionsQuestionnaire.builder()
-            .selfWitness(mapFromCCDYesNo(ccdDirectionsQuestionnaire.getSelfWitness()))
-            .howManyOtherWitness(ccdDirectionsQuestionnaire.getHowManyOtherWitness())
-            .hearingLocation(ccdDirectionsQuestionnaire.getHearingLocation())
-            .hearingLocationSlug(ccdDirectionsQuestionnaire.getHearingLocationSlug())
-            .exceptionalCircumstancesReason(ccdDirectionsQuestionnaire.getExceptionalCircumstancesReason())
-            .unavailableDates(asStream(ccdDirectionsQuestionnaire.getUnavailableDates())
-                .map(unavailableDateMapper::from)
-                .collect(Collectors.toList()))
-            .availableDate(ccdDirectionsQuestionnaire.getAvailableDate())
-            .languageInterpreted(ccdDirectionsQuestionnaire.getLanguageInterpreted())
-            .signLanguageInterpreted(ccdDirectionsQuestionnaire.getSignLanguageInterpreted())
-            .hearingLoop(mapFromCCDYesNo(ccdDirectionsQuestionnaire.getHearingLoop()))
-            .disabledAccess(mapFromCCDYesNo(ccdDirectionsQuestionnaire.getDisabledAccess()))
-            .otherSupportRequired(ccdDirectionsQuestionnaire.getOtherSupportRequired())
-            .expertEvidenceToExamine(ccdDirectionsQuestionnaire.getExpertEvidenceToExamine())
-            .expertReports(asStream(ccdDirectionsQuestionnaire.getExpertReportsRows())
-                .map(expertRowMapper::from)
-                .collect(Collectors.toList()))
-            .reasonForExpertAdvice(ccdDirectionsQuestionnaire.getReasonForExpertAdvice())
             .build();
     }
 
-    private CCDYesNoOption mapToCCDYesNo(YesNoOption option) {
-        return option == null ? null : CCDYesNoOption.valueOf(option.name());
-    }
-
-    private YesNoOption mapFromCCDYesNo(CCDYesNoOption option) {
-        return option == null ? null : YesNoOption.valueOf(option.name());
-    }
 
 }

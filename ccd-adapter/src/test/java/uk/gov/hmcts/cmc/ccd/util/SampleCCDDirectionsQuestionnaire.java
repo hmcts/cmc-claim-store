@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.ccd.util;
 
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
-import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDExpertReportRow;
+import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDExpertReport;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDUnavailableDate;
 
 import java.time.LocalDate;
@@ -29,9 +29,9 @@ public class SampleCCDDirectionsQuestionnaire {
                 .build()
         );
 
-        List<CCDCollectionElement<CCDExpertReportRow>> expertReportRow = asList(
-            CCDCollectionElement.<CCDExpertReportRow>builder()
-                .value(CCDExpertReportRow
+        List<CCDCollectionElement<CCDExpertReport>> expertReportRow = asList(
+            CCDCollectionElement.<CCDExpertReport>builder()
+                .value(CCDExpertReport
                     .builder()
                     .expertName("expert1")
                     .expertReportDate(LocalDate.of(2040, 1, 1))
