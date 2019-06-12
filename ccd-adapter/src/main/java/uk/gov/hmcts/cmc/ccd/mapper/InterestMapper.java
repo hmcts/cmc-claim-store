@@ -6,6 +6,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 
+import java.util.Optional;
+
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Component
@@ -37,8 +39,10 @@ public class InterestMapper implements BuilderMapper<CCDCase, Interest, CCDCase.
         interestBreakdownMapper.to(interest.getInterestBreakdown(), builder);
         interestDateMapper.to(interest.getInterestDate(), builder);
 
+        Optional.ofNullable(interest.getType())
+            .ifPresent(type -> builder.interestType(CCDInterestType.valueOf(type.name())));
+
         builder
-            .interestType(CCDInterestType.valueOf(interest.getType().name()))
             .interestRate(interest.getRate())
             .interestReason(interest.getReason());
     }
@@ -52,12 +56,15 @@ public class InterestMapper implements BuilderMapper<CCDCase, Interest, CCDCase.
             && ccdCase.getInterestBreakDownAmount() == null
             && isBlank(ccdCase.getInterestBreakDownExplanation())
             && ccdCase.getInterestDateType() == null
+            && ccdCase.getInterestEndDateType() == null
+            && ccdCase.getInterestClaimStartDate() == null
+            && isBlank(ccdCase.getInterestStartDateReason())
         ) {
             return null;
         }
 
         return new Interest(
-            Interest.InterestType.valueOf(ccdCase.getInterestType().name()),
+            ccdCase.getInterestType() != null ? Interest.InterestType.valueOf(ccdCase.getInterestType().name()) : null,
             interestBreakdownMapper.from(ccdCase),
             ccdCase.getInterestRate(),
             ccdCase.getInterestReason(),
