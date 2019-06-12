@@ -6,36 +6,36 @@ import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDExpertReport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
 
 @Component
-public class ExpertRowMapper {
+public class ExpertRowMapper implements Mapper<CCDCollectionElement<CCDExpertReport>, ExpertReport> {
 
-    public CCDCollectionElement<CCDExpertReport> to(ExpertReport expertReportRow) {
-
-        if (expertReportRow == null) {
+    @Override
+    public CCDCollectionElement<CCDExpertReport> to(ExpertReport expertReport) {
+        if (expertReport == null) {
             return null;
         }
 
-        CCDExpertReport.CCDExpertReportBuilder builder = CCDExpertReport.builder();
-
         return CCDCollectionElement.<CCDExpertReport>builder()
-            .value(builder.expertName(expertReportRow.getExpertName())
-                    .expertReportDate(expertReportRow.getExpertReportDate())
-                    .build())
-            .id(expertReportRow.getId())
+            .value(CCDExpertReport.builder()
+                .expertName(expertReport.getExpertName())
+                .expertReportDate(expertReport.getExpertReportDate())
+                .build())
+            .id(expertReport.getId())
             .build();
     }
 
+    @Override
     public ExpertReport from(CCDCollectionElement<CCDExpertReport> collectionElement) {
-        CCDExpertReport ccdExpertReportRow = collectionElement.getValue();
+        CCDExpertReport expertReport = collectionElement.getValue();
 
-        if (ccdExpertReportRow == null) {
+        if (expertReport == null) {
             return null;
         }
 
         return ExpertReport
             .builder()
-            .id(ccdExpertReportRow.getId())
-            .expertName(ccdExpertReportRow.getExpertName())
-            .expertReportDate(ccdExpertReportRow.getExpertReportDate())
+            .id(collectionElement.getId())
+            .expertName(expertReport.getExpertName())
+            .expertReportDate(expertReport.getExpertReportDate())
             .build();
     }
 }

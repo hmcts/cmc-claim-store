@@ -2,30 +2,29 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDUnavailableDate;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.UnavailableDate;
 
+import java.time.LocalDate;
+
 @Component
-public class UnavailableDateMapper {
+public class UnavailableDateMapper implements Mapper<CCDCollectionElement<LocalDate>, UnavailableDate> {
 
-    public CCDCollectionElement<CCDUnavailableDate> to(UnavailableDate unavailableDate) {
+    @Override
+    public CCDCollectionElement<LocalDate> to(UnavailableDate unavailableDate) {
 
-        CCDUnavailableDate.CCDUnavailableDateBuilder builder = CCDUnavailableDate.builder();
-
-        return CCDCollectionElement.<CCDUnavailableDate>builder()
-            .value(
-                builder.unavailableDate(unavailableDate.getUnavailableDate())
-                .build())
+        return CCDCollectionElement.<LocalDate>builder()
+            .value(unavailableDate.getUnavailableDate())
             .id(unavailableDate.getId())
             .build();
     }
 
-    public UnavailableDate from(CCDCollectionElement<CCDUnavailableDate> ccdUnavailableDate) {
+    @Override
+    public UnavailableDate from(CCDCollectionElement<LocalDate> ccdUnavailableDate) {
 
         return UnavailableDate
             .builder()
             .id(ccdUnavailableDate.getId())
-            .unavailableDate(ccdUnavailableDate.getValue().getUnavailableDate())
+            .unavailableDate(ccdUnavailableDate.getValue())
             .build();
     }
 }

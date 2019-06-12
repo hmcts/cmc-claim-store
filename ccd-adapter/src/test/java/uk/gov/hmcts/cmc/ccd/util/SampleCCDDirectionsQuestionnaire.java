@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.ccd.util;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDExpertReport;
-import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDUnavailableDate;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,14 +19,14 @@ public class SampleCCDDirectionsQuestionnaire {
 
     public CCDDirectionsQuestionnaire build() {
 
-        List<CCDCollectionElement<CCDUnavailableDate>> unavailableDates = asList(
-            CCDCollectionElement.<CCDUnavailableDate>builder()
-                .value(CCDUnavailableDate
-                    .builder()
-                    .unavailableDate(LocalDate.of(2050, 1, 1))
-                    .build())
-                .build()
-        );
+//        List<CCDCollectionElement<CCDUnavailableDate>> unavailableDates = asList(
+//            CCDCollectionElement.<CCDUnavailableDate>builder()
+//                .value(CCDUnavailableDate
+//                    .builder()
+//                    .unavailableDate(LocalDate.of(2050, 1, 1))
+//                    .build())
+//                .build()
+//        );
 
         List<CCDCollectionElement<CCDExpertReport>> expertReportRow = asList(
             CCDCollectionElement.<CCDExpertReport>builder()
@@ -40,21 +39,20 @@ public class SampleCCDDirectionsQuestionnaire {
         );
 
         return CCDDirectionsQuestionnaire.builder()
-                    .selfWitness(YES)
-                    .howManyOtherWitness(1)
-                    .hearingLocation("London")
-                    .hearingLocationSlug("London-Court")
-                    .exceptionalCircumstancesReason("disabled")
-                    .unavailableDates(unavailableDates)
-                    .availableDate(LocalDate.of(2050, 1, 2))
-                    .languageInterpreted("some language")
-                    .signLanguageInterpreted("some sign language")
-                    .hearingLoop(NO)
-                    .disabledAccess(YES)
-                    .otherSupportRequired("maybe")
-                    .expertReportsRows(expertReportRow)
-                    .expertEvidenceToExamine("nothing")
-                    .reasonForExpertAdvice("for specified reason")
-                    .build();
+            .selfWitness(YES)
+            .howManyOtherWitness(1)
+            .hearingLocation("London")
+            .hearingLocationSlug("London-Court")
+            .exceptionalCircumstancesReason("disabled")
+            .unavailableDates(null)
+            .languageInterpreted("some language")
+            .signLanguageInterpreted("some sign language")
+            .hearingLoop(NO)
+            .disabledAccess(YES)
+            .otherSupportRequired("maybe")
+            .expertReports(expertReportRow)
+            .expertEvidenceToExamine("nothing")
+            .reasonForExpertAdvice("for specified reason")
+            .build();
     }
 }

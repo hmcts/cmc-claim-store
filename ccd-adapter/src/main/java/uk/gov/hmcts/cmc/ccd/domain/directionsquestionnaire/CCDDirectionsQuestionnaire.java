@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Builder
@@ -29,7 +30,7 @@ public class CCDDirectionsQuestionnaire {
 
     private List<CCDCollectionElement<CCDExpertReport>> expertReports;
 
-    private List<CCDCollectionElement<CCDUnavailableDate>> unavailableDates;
+    private List<CCDCollectionElement<LocalDate>> unavailableDates;
 
     private String expertEvidenceToExamine;
     private String reasonForExpertAdvice;
