@@ -215,7 +215,7 @@ public class ClaimService {
             .responseDeadline(responseDeadline)
             .externalId(externalId)
             .submitterEmail(submitterEmail)
-            .createdAt(nowInUTC())
+            .createdAt(nowInLocalZone())
             .letterHolderId(letterHolderId.orElse(null))
             .features(features)
             .claimSubmissionOperationIndicators(getDefaultClaimSubmissionOperationIndicators.get())
