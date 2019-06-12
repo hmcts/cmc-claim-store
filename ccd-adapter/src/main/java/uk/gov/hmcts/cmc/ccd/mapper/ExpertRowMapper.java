@@ -2,21 +2,21 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDExpertReportRow;
+import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDExpertReport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
 
 @Component
 public class ExpertRowMapper {
 
-    public CCDCollectionElement<CCDExpertReportRow> to(ExpertReport expertReportRow) {
+    public CCDCollectionElement<CCDExpertReport> to(ExpertReport expertReportRow) {
 
         if (expertReportRow == null) {
             return null;
         }
 
-        CCDExpertReportRow.CCDExpertReportRowBuilder builder = CCDExpertReportRow.builder();
+        CCDExpertReport.CCDExpertReportBuilder builder = CCDExpertReport.builder();
 
-        return CCDCollectionElement.<CCDExpertReportRow>builder()
+        return CCDCollectionElement.<CCDExpertReport>builder()
             .value(builder.expertName(expertReportRow.getExpertName())
                     .expertReportDate(expertReportRow.getExpertReportDate())
                     .build())
@@ -24,8 +24,8 @@ public class ExpertRowMapper {
             .build();
     }
 
-    public ExpertReport from(CCDCollectionElement<CCDExpertReportRow> collectionElement) {
-        CCDExpertReportRow ccdExpertReportRow = collectionElement.getValue();
+    public ExpertReport from(CCDCollectionElement<CCDExpertReport> collectionElement) {
+        CCDExpertReport ccdExpertReportRow = collectionElement.getValue();
 
         if (ccdExpertReportRow == null) {
             return null;

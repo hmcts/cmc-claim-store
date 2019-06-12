@@ -10,6 +10,7 @@ import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Getter
@@ -51,16 +52,16 @@ public class DirectionsQuestionnaire {
         return Optional.ofNullable(witness);
     }
 
-    public Optional<List<UnavailableDate>> getUnavailableDates() {
-        return Optional.ofNullable(unavailableDates);
+    public List<UnavailableDate> getUnavailableDates() {
+        return unavailableDates == null ? emptyList() : unavailableDates;
     }
 
     public Optional<ExpertRequest> getExpertRequest() {
         return Optional.ofNullable(expertRequest);
     }
 
-    public Optional<List<ExpertReport>> getExpertReports() {
-        return Optional.ofNullable(expertReports);
+    public List<ExpertReport> getExpertReports() {
+        return expertReports == null ? emptyList() : expertReports;
     }
 
     @Override
