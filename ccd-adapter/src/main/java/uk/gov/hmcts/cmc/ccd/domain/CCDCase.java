@@ -1,9 +1,11 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -11,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 public class CCDCase {
 
     private Long id;
@@ -63,4 +65,7 @@ public class CCDCase {
     private String caseName;
     private CCDClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
     private String state;
+
+    @JsonUnwrapped
+    private CCDOrderGenerationData orderGenerationData;
 }
