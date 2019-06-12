@@ -7,14 +7,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDUnavailableDate;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.UnavailableDate;
 
 import java.time.LocalDate;
-
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -32,25 +27,12 @@ public class UnavailableDateMapperTest {
             .build();
 
         //when
-        CCDCollectionElement<CCDUnavailableDate> ccdUnavailableDate = mapper.to(unavailableDate);
 
-        //then
-        assertThat(unavailableDate.getUnavailableDate(), is(ccdUnavailableDate.getValue().getUnavailableDate()));
     }
 
     @Test
     public void shouldMapUnavailableDateMapperFromCCD() {
         //given
-        CCDUnavailableDate ccdUnavailableDate = CCDUnavailableDate
-            .builder()
-            .unavailableDate(LocalDate.of(2041, 1, 1))
-            .build();
 
-        //when
-        UnavailableDate unavailableDate = mapper.from(CCDCollectionElement.<CCDUnavailableDate>builder()
-            .value(ccdUnavailableDate).build());
-
-        //then
-        assertThat(ccdUnavailableDate.getUnavailableDate(), is(unavailableDate.getUnavailableDate()));
     }
 }
