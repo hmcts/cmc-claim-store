@@ -83,9 +83,8 @@ public class DataPrintService {
         logger.info("ccdCase.getInterestSpecificDailyAmount " + ccdCase.getInterestSpecificDailyAmount());
         logger.info("ccdCase.getInterestBreakDownAmount " + ccdCase.getInterestBreakDownAmount());
         logger.info("ccdCase.getInterestBreakDownExplanation " + ccdCase.getInterestBreakDownExplanation());
-        if (ccdCase.getInterestType() != null) {
-            logger.info("ccdCase.getInterestType " + ccdCase.getInterestType().getValue());
-        }
+        logger.info("ccdCase.getInterestType " + ccdCase.getInterestType());
+
         ccdCase.getAmountBreakDown().stream()
             .map(CCDCollectionElement::getValue)
             .forEach(ccdAmountRow -> logger.info(ccdAmountRow.getAmount() + " " + ccdAmountRow.getReason()));
@@ -93,12 +92,10 @@ public class DataPrintService {
         logger.info("ccdCase.getInterestClaimStartDate " + ccdCase.getInterestClaimStartDate());
         logger.info("ccdCase.getInterestRate " + ccdCase.getInterestRate());
 
-        if (ccdCase.getInterestDateType() != null) {
-            logger.info("ccdCase.getInterestDateType " + ccdCase.getInterestDateType().getValue());
-        }
-        if (ccdCase.getInterestEndDateType() != null) {
-            logger.info("ccdCase.getInterestEndDateType " + ccdCase.getInterestEndDateType().getValue());
-        }
+        logger.info("ccdCase.getInterestDateType " + ccdCase.getInterestDateType());
+
+        logger.info("ccdCase.getInterestEndDateType " + ccdCase.getInterestEndDateType());
+
         logger.info("ccdCase.getInterestStartDateReason " + ccdCase.getInterestStartDateReason());
 
         List<CaseEventDetails> events
