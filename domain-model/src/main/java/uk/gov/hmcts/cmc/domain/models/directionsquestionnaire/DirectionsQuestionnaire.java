@@ -43,24 +43,15 @@ public class DirectionsQuestionnaire {
         this.expertRequest = expertRequest;
     }
 
-    @Override
-    public String toString() {
-        return ReflectionToStringBuilder.toString(this, ourStyle());
-    }
-
     public Optional<RequireSupport> getRequireSupport() {
         return Optional.ofNullable(requireSupport);
-    }
-
-    public Optional<HearingLocation> getHearingLocation() {
-        return Optional.ofNullable(hearingLocation);
     }
 
     public Optional<Witness> getWitness() {
         return Optional.ofNullable(witness);
     }
 
-    public Optional<UnavailableDate> getUnavailableDates() {
+    public Optional<List<UnavailableDate>> getUnavailableDates() {
         return Optional.ofNullable(unavailableDates);
     }
 
@@ -68,7 +59,13 @@ public class DirectionsQuestionnaire {
         return Optional.ofNullable(expertRequest);
     }
 
-    public List<ExpertReport> getExpertReports() {
-        return expertReports;
+    public Optional<List<ExpertReport>> getExpertReports() {
+        return Optional.ofNullable(expertReports);
     }
+
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ourStyle());
+    }
+
 }

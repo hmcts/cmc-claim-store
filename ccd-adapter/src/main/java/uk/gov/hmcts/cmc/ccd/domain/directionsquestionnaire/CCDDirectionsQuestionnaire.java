@@ -13,12 +13,11 @@ import java.util.List;
 @Value
 public class CCDDirectionsQuestionnaire {
 
+    private final String hearingLocation;
+
     private final CCDYesNoOption selfWitness;
 
     private final int howManyOtherWitness;
-
-    private final String hearingLocation;
-
     private final CCDAddress hearingCourtAddress;
 
     private final String hearingLocationSlug;
@@ -26,8 +25,6 @@ public class CCDDirectionsQuestionnaire {
     private final String exceptionalCircumstancesReason;
 
     private final List<CCDCollectionElement<CCDUnavailableDate>> unavailableDates;
-
-    private final LocalDate availableDate;
 
     private final String languageInterpreted;
 

@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.domain.models.directionsquestionnaire;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.Optional;
 
@@ -11,19 +12,19 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @EqualsAndHashCode
 public class RequireSupport {
 
-    private final SupportType languageInterpreter;
-    private final SupportType signLanguageInterpreter;
-    private final SupportType hearingLoop;
-    private final SupportType disabledAccess;
-    private final SupportType otherSupport;
+    private final String languageInterpreter;
+    private final String signLanguageInterpreter;
+    private final YesNoOption hearingLoop;
+    private final YesNoOption disabledAccess;
+    private final String otherSupport;
 
     @Builder
     public RequireSupport(
-        SupportType languageInterpreter,
-        SupportType signLanguageInterpreter,
-        SupportType hearingLoop,
-        SupportType disabledAccess,
-        SupportType otherSupport
+        String languageInterpreter,
+        String signLanguageInterpreter,
+        YesNoOption hearingLoop,
+        YesNoOption disabledAccess,
+        String otherSupport
     ) {
         this.languageInterpreter = languageInterpreter;
         this.signLanguageInterpreter = signLanguageInterpreter;
@@ -32,23 +33,23 @@ public class RequireSupport {
         this.otherSupport = otherSupport;
     }
 
-    public Optional<SupportType> getLanguageInterpreter() {
+    public Optional<String> getLanguageInterpreter() {
         return Optional.ofNullable(languageInterpreter);
     }
 
-    public Optional<SupportType> getSignLanguageInterpreter() {
+    public Optional<String> getSignLanguageInterpreter() {
         return Optional.ofNullable(signLanguageInterpreter);
     }
 
-    public Optional<SupportType> getHearingLoop() {
+    public Optional<YesNoOption> getHearingLoop() {
         return Optional.ofNullable(hearingLoop);
     }
 
-    public Optional<SupportType> getDisabledAccess() {
+    public Optional<YesNoOption> getDisabledAccess() {
         return Optional.ofNullable(disabledAccess);
     }
 
-    public Optional<SupportType> getOtherSupport() {
+    public Optional<String> getOtherSupport() {
         return Optional.ofNullable(otherSupport);
     }
 
