@@ -69,7 +69,7 @@ public class DataFixService {
             logger.info("Fix case for: {}", claim.getReferenceNumber());
 
             searchCCDCaseService.getCcdCaseByExternalId(user, claim.getExternalId())
-                .ifPresent(details -> fixDataFromLastEvent(user, details, updatedClaims, failedOnUpdate, claim));
+                .ifPresent(details -> fixData(user, details, updatedClaims, failedOnUpdate, claim));
 
         } catch (Exception e) {
             logger.info("Data Fix failed for claim for reference {} for the migrated count {} due to {}",
@@ -102,21 +102,15 @@ public class DataFixService {
         }
     }
 
-    private void fixDataFromLastEvent(
+    private void fixData(
         User user,
         CaseDetails details,
         AtomicInteger updatedClaims,
         AtomicInteger failedOnUpdate,
         Claim claim
     ) {
-        List<CaseEventDetails> events
-            = searchCCDEventsService.getCcdCaseEventsForCase(user, Long.toString(details.getId()));
-
-        CaseEventDetails eventDetails = getEventDetailsOf(1, events);
-        CCDCase ccdCase = mapToCCDCase(eventDetails.getData(), Long.toString(details.getId()));
-
-        CCDCase caseAfterInterestPatch = addInterestPatch(claim, eventDetails, ccdCase);
-
+        CCDCase ccdCase = mapToCCDCase(details.getData(), Long.toString(details.getId()));
+        CCDCase caseAfterInterestPatch = addInterestPatch(claim, ccdCase);
         supportUpdateService.updateCase(user, updatedClaims, failedOnUpdate, caseAfterInterestPatch);
     }
 
@@ -139,15 +133,10 @@ public class DataFixService {
         supportUpdateService.updateCase(user, updatedClaims, failedOnUpdate, caseAfterResponseDeadlinePatch);
     }
 
-    private CCDCase addInterestPatch(Claim claim, CaseEventDetails eventDetails, CCDCase ccdCase) {
+    private CCDCase addInterestPatch(Claim claim, CCDCase ccdCase) {
         CCDCase.CCDCaseBuilder builder = ccdCase.toBuilder();
         interestMapper.to(claim.getClaimData().getInterest(), builder);
         CCDCase caseAfterInterestPatch = builder.build();
-
-        logger.info("Updating from event {} created at {}",
-            eventDetails.getEventName(),
-            eventDetails.getCreatedDate()
-        );
 
         logger.info("Interest type after Patch {} from {}",
             caseAfterInterestPatch.getInterestType(),
