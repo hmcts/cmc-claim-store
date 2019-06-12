@@ -31,7 +31,7 @@ oauth2:
 
 migration:
   cases:
-    references: 066MC082
+    references: # Comma separated list of case reference numbers
     flag: true
     lots:
       size: 0

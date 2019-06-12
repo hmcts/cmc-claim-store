@@ -1,9 +1,11 @@
 package uk.gov.hmcts.cmc.ccd.migration.services;
 
+import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.InterestDateMapper;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.SearchCCDCaseService;
@@ -11,6 +13,7 @@ import uk.gov.hmcts.cmc.ccd.migration.ccd.services.SearchCCDEventsService;
 import uk.gov.hmcts.cmc.ccd.migration.client.CaseEventDetails;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.mappers.JsonMapper;
+import uk.gov.hmcts.cmc.ccd.migration.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
@@ -28,6 +31,7 @@ public class DataPrintService {
     private final CaseMapper caseMapper;
     private final JsonMapper jsonMapper;
     private final InterestDateMapper interestDateMapper;
+    private final ClaimRepository claimRepository;
 
     public DataPrintService(
         SearchCCDCaseService searchCCDCaseService,
@@ -35,7 +39,8 @@ public class DataPrintService {
         SupportUpdateService supportUpdateService,
         CaseMapper caseMapper,
         JsonMapper jsonMapper,
-        InterestDateMapper interestDateMapper
+        InterestDateMapper interestDateMapper,
+        ClaimRepository claimRepository
 
     ) {
         this.searchCCDCaseService = searchCCDCaseService;
@@ -44,6 +49,7 @@ public class DataPrintService {
         this.caseMapper = caseMapper;
         this.jsonMapper = jsonMapper;
         this.interestDateMapper = interestDateMapper;
+        this.claimRepository = claimRepository;
     }
 
     public void printCaseDetails(
@@ -52,6 +58,13 @@ public class DataPrintService {
     ) {
         try {
             logger.info("Search case for: {}", reference);
+
+            List<Claim> claims = claimRepository.getClaims(ImmutableList.of(reference));
+
+            claims.forEach(claim -> {
+                logger.info(claim.getClaimData().getInterest().toString());
+                logger.info(claim.getClaimData().getAmount().toString());
+            });
 
             searchCCDCaseService.getCcdCaseByReferenceNumber(user, reference)
                 .ifPresent(details -> printEvents(details, user));
@@ -65,6 +78,20 @@ public class DataPrintService {
     }
 
     private void printEvents(CaseDetails details, User user) {
+        CCDCase ccdCase = mapToCCDCase(details.getData(), Long.toString(details.getId()));
+        logger.info("ccdCase.getInterestStartDateReason " + ccdCase.getInterestStartDateReason());
+        logger.info(ccdCase.getInterestReason());
+        logger.info(ccdCase.getInterestSpecificDailyAmount());
+        logger.info(ccdCase.getInterestBreakDownAmount());
+        logger.info(ccdCase.getInterestBreakDownExplanation());
+        ccdCase.getAmountBreakDown().stream()
+            .map(CCDCollectionElement::getValue)
+            .forEach(ccdAmountRow -> logger.info(ccdAmountRow.getAmount() + " " + ccdAmountRow.getReason()));
+
+        logger.info(ccdCase.getInterestType() != null ? ccdCase.getInterestType().getValue() : "no interest date type");
+        logger.info(ccdCase.getInterestRate() != null ? ccdCase.getInterestRate().toString() : "no interest Rate");
+        logger.info(ccdCase.getInterestDateType() != null ? ccdCase.getInterestDateType().getValue() : "no interest date type");
+
         List<CaseEventDetails> events
             = searchCCDEventsService.getCcdCaseEventsForCase(user, Long.toString(details.getId()));
 
