@@ -90,12 +90,12 @@ public class FullDefenceResponse extends Response {
         return Optional.ofNullable(evidence);
     }
 
+    public Optional<DirectionsQuestionnaire> getDirectionsQuestionnaire() {
+        return Optional.ofNullable(directionsQuestionnaire);
+    }
+
     @Override
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ourStyle());
-    }
-
-    public Optional<DirectionsQuestionnaire> getDirectionsQuestionnaire() {
-        return Optional.ofNullable(directionsQuestionnaire);
     }
 }
