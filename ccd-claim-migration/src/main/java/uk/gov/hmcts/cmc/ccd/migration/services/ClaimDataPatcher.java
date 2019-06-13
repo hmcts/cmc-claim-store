@@ -10,11 +10,15 @@ import uk.gov.hmcts.cmc.ccd.migration.idam.services.UserService;
 import uk.gov.hmcts.cmc.ccd.migration.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.ccd.migration.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.Interest;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static uk.gov.hmcts.cmc.domain.models.InterestDate.InterestEndDateType.SETTLED_OR_JUDGMENT;
+import static uk.gov.hmcts.cmc.domain.models.InterestDate.InterestEndDateType.SUBMISSION;
 
 @Service
 public class ClaimDataPatcher {
@@ -86,7 +90,7 @@ public class ClaimDataPatcher {
         AtomicInteger failedOnUpdate
     ) {
         notMigratedClaims.parallelStream().forEach(claim -> {
-            if (fixDataIssues) {
+            if (fixDataIssues && isSubmission(claim)) {
                 dataFixService.fixClaimWithMissingInterest(
                     updatedClaims,
                     failedOnUpdate,
@@ -96,6 +100,14 @@ public class ClaimDataPatcher {
             }
         });
 
+    }
+
+    private boolean isSubmission(Claim claim) {
+        Interest interest = claim.getClaimData().getInterest();
+        return interest != null
+            && interest.getInterestDate() != null
+            && interest.getInterestDate().getEndDateType() != null
+            && interest.getInterestDate().getEndDateType() == SUBMISSION;
     }
 
     private List<Claim> getClaimsToMigrate() {
