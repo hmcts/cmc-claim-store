@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.processors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.json.JSONException;
+import org.junit.Assert;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
@@ -179,7 +180,7 @@ public class JsonMapperTest {
 
         //then
         Response expected = SampleResponse.validDefaults();
-        assertThat(output).isEqualTo(expected);
+        Assert.assertEquals(output, expected);
     }
 
     @Test
@@ -232,8 +233,6 @@ public class JsonMapperTest {
                 CCDOrderGenerationData
                     .builder()
                     .build())
-            //.responseDeadline(date.plusDays(14))
-            //.moreTimeRequested(CCDYesNoOption.NO)
             .build();
 
         assertThat(ccdCase).isEqualTo(expected);

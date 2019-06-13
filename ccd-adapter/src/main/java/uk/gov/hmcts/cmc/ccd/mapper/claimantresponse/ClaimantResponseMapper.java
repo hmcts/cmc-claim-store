@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseAcceptation;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
+import uk.gov.hmcts.cmc.ccd.mapper.DirectionsQuestionnaireMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.MoneyMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.PaymentIntentionMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.TelephoneMapper;
@@ -29,18 +30,21 @@ public class ClaimantResponseMapper {
     private final CourtDeterminationMapper courtDeterminationMapper;
     private final TelephoneMapper telephoneMapper;
     private final MoneyMapper moneyMapper;
+    private final DirectionsQuestionnaireMapper directionsQuestionnaireMapper;
 
     @Autowired
     public ClaimantResponseMapper(
         PaymentIntentionMapper paymentIntentionMapper,
         CourtDeterminationMapper courtDeterminationMapper,
         TelephoneMapper telephoneMapper,
-        MoneyMapper moneyMapper
+        MoneyMapper moneyMapper,
+        DirectionsQuestionnaireMapper directionsQuestionnaireMapper
     ) {
         this.paymentIntentionMapper = paymentIntentionMapper;
         this.courtDeterminationMapper = courtDeterminationMapper;
         this.telephoneMapper = telephoneMapper;
         this.moneyMapper = moneyMapper;
+        this.directionsQuestionnaireMapper = directionsQuestionnaireMapper;
     }
 
     public CCDClaimantResponse to(Claim claim) {
@@ -83,6 +87,9 @@ public class ClaimantResponseMapper {
             .map(YesNoOption::name)
             .map(CCDYesNoOption::valueOf)
             .ifPresent(rejection::settleForAmount);
+        responseRejection.getDirectionsQuestionnaire()
+            .map(directionsQuestionnaireMapper::to)
+            .ifPresent(rejection::directionsQuestionnaire);
         claim.getClaimantRespondedAt().ifPresent(rejection::submittedOn);
         return rejection.build();
     }
@@ -148,6 +155,11 @@ public class ClaimantResponseMapper {
 
         if (ccdResponseRejection.getSettleForAmount() != null) {
             builder.settleForAmount(YesNoOption.valueOf(ccdResponseRejection.getSettleForAmount().name()));
+        }
+
+        if (ccdResponseRejection.getDirectionsQuestionnaire() != null) {
+            builder.directionsQuestionnaire(
+                directionsQuestionnaireMapper.from(ccdResponseRejection.getDirectionsQuestionnaire()));
         }
 
         claimBuilder.claimantResponse(builder.build())

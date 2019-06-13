@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.models.claimantresponse;
 
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleDirectionsQuestionnaire;
 
 import java.util.Set;
 
@@ -68,5 +69,16 @@ public class ResponseRejectionTest {
         Set<String> response = validate(claimantResponse);
 
         assertThat(response).hasSize(1);
+    }
+
+    @Test
+    public void shouldBeValidDirectionsQuestionnaireIsValid() {
+        ClaimantResponse claimantResponse = ResponseRejection.builder()
+            .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder().build())
+            .build();
+
+        Set<String> response = validate(claimantResponse);
+
+        assertThat(response).hasSize(0);
     }
 }
