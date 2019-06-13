@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.idam.services.UserService;
 import uk.gov.hmcts.cmc.ccd.migration.repositories.ClaimRepository;
@@ -17,7 +18,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static uk.gov.hmcts.cmc.domain.models.InterestDate.InterestEndDateType.SETTLED_OR_JUDGMENT;
 import static uk.gov.hmcts.cmc.domain.models.InterestDate.InterestEndDateType.SUBMISSION;
 
 @Service
@@ -111,6 +111,10 @@ public class ClaimDataPatcher {
     }
 
     private List<Claim> getClaimsToMigrate() {
-        return claimRepository.getClaims(casesToMigrate);
+        if (CollectionUtils.isEmpty(casesToMigrate)) {
+            return claimRepository.getAllNotMigratedClaims();
+        } else {
+            return claimRepository.getClaims(casesToMigrate);
+        }
     }
 }
