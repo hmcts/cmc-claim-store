@@ -209,6 +209,7 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
 
     private HearingLocation extractHearingLocation(CCDDirectionsQuestionnaire ccdDirectionsQuestionnaire) {
         HearingLocation.HearingLocationBuilder hearingLocation = HearingLocation.builder();
+
         hearingLocation.courtName(ccdDirectionsQuestionnaire.getHearingLocation());
         hearingLocation.courtAddress(addressMapper.from(ccdDirectionsQuestionnaire.getHearingCourtAddress()));
         hearingLocation.hearingLocationSlug(ccdDirectionsQuestionnaire.getHearingLocationSlug());

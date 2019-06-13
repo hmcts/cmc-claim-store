@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.util;
 
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDCourtLocationOption;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDExpertReport;
 
@@ -19,14 +20,11 @@ public class SampleCCDDirectionsQuestionnaire {
 
     public CCDDirectionsQuestionnaire build() {
 
-//        List<CCDCollectionElement<CCDUnavailableDate>> unavailableDates = asList(
-//            CCDCollectionElement.<CCDUnavailableDate>builder()
-//                .value(CCDUnavailableDate
-//                    .builder()
-//                    .unavailableDate(LocalDate.of(2050, 1, 1))
-//                    .build())
-//                .build()
-//        );
+        List<CCDCollectionElement<LocalDate>> unavailableDates = asList(
+            CCDCollectionElement.<LocalDate>builder()
+                .value(LocalDate.of(2050, 1, 1))
+            .build()
+        );
 
         List<CCDCollectionElement<CCDExpertReport>> expertReportRow = asList(
             CCDCollectionElement.<CCDExpertReport>builder()
@@ -43,8 +41,9 @@ public class SampleCCDDirectionsQuestionnaire {
             .howManyOtherWitness(1)
             .hearingLocation("London")
             .hearingLocationSlug("London-Court")
+            .hearingLocationOption(CCDCourtLocationOption.ALTERNATE_COURT)
             .exceptionalCircumstancesReason("disabled")
-            .unavailableDates(null)
+            .unavailableDates(unavailableDates)
             .languageInterpreted("some language")
             .signLanguageInterpreted("some sign language")
             .hearingLoop(NO)

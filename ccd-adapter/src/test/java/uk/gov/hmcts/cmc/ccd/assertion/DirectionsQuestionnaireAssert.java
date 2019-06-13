@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
+
 public class DirectionsQuestionnaireAssert
     extends AbstractAssert<DirectionsQuestionnaireAssert, DirectionsQuestionnaire> {
     public DirectionsQuestionnaireAssert(DirectionsQuestionnaire actual) {
@@ -33,15 +34,20 @@ public class DirectionsQuestionnaireAssert
 
     private Consumer<Witness> isEqualToWitness(CCDDirectionsQuestionnaire ccdDirectionsQuestionnaire) {
         return witness -> {
-            if (!Objects.equals(witness.getSelfWitness(), ccdDirectionsQuestionnaire.getSelfWitness())) {
+            if (!Objects.equals(witness.getSelfWitness().name(), ccdDirectionsQuestionnaire.getSelfWitness().name())) {
                 failWithMessage("Expected DirectionsQuestionnaire.selfWitness to be <%s> but was <%s>",
                     ccdDirectionsQuestionnaire.getSelfWitness(), witness.getSelfWitness());
             }
 
-            if (!Objects.equals(witness.getNoOfOtherWitness(), ccdDirectionsQuestionnaire.getHowManyOtherWitness())) {
-                failWithMessage("Expected DirectionsQuestionnaire.noOfOtherWitness to be <%s> but was <%s>",
-                    ccdDirectionsQuestionnaire.getHowManyOtherWitness(), witness.getNoOfOtherWitness());
-            }
+
+            witness.getNoOfOtherWitness().ifPresent( noOfOtherWitness -> {
+                    if (!Objects.equals(noOfOtherWitness, ccdDirectionsQuestionnaire.getHowManyOtherWitness())) {
+                        failWithMessage(
+                            "Expected DirectionsQuestionnaire.noOfOtherWitness to be <%s> but was <%s>",
+                            ccdDirectionsQuestionnaire.getHowManyOtherWitness(), witness.getNoOfOtherWitness());
+                    }
+                }
+            );
         };
     }
 
@@ -71,6 +77,15 @@ public class DirectionsQuestionnaireAssert
             );
         }
 
+        if (!Objects.equals(hearingLocation.getLocationOption().name(),
+            ccdDirectionsQuestionnaire.getHearingLocationOption().name())
+        ) {
+            failWithMessage(
+                "Expected DirectionsQuestionnaire.hearingLocationOption to be <%s> but was <%s>",
+                ccdDirectionsQuestionnaire.getHearingLocationOption().name(),
+                hearingLocation.getLocationOption().name());
+        }
+
         hearingLocation.getCourtAddress()
             .ifPresent(address -> assertThat(address).isEqualTo(ccdDirectionsQuestionnaire.getHearingCourtAddress()));
     }
@@ -78,7 +93,7 @@ public class DirectionsQuestionnaireAssert
     private Consumer<RequireSupport> isEqualToRequireSupport(CCDDirectionsQuestionnaire ccdDirectionsQuestionnaire) {
         return requireSupport -> {
             if (!Objects.equals(
-                requireSupport.getLanguageInterpreter(),
+                requireSupport.getLanguageInterpreter().orElse(null),
                 ccdDirectionsQuestionnaire.getLanguageInterpreted()
             )) {
                 failWithMessage(
@@ -88,7 +103,7 @@ public class DirectionsQuestionnaireAssert
             }
 
             if (!Objects.equals(
-                requireSupport.getSignLanguageInterpreter(),
+                requireSupport.getSignLanguageInterpreter().orElse(null),
                 ccdDirectionsQuestionnaire.getSignLanguageInterpreted()
             )) {
                 failWithMessage(
@@ -97,18 +112,23 @@ public class DirectionsQuestionnaireAssert
                 );
             }
 
-            if (!Objects.equals(requireSupport.getHearingLoop(), ccdDirectionsQuestionnaire.getHearingLoop())) {
-                failWithMessage("Expected DirectionsQuestionnaire.hearingLoop to be <%s> but was <%s>",
-                    ccdDirectionsQuestionnaire.getHearingLoop(), requireSupport.getHearingLoop());
-            }
+            requireSupport.getHearingLoop().ifPresent( hearingLoop -> {
+                if (!Objects.equals(hearingLoop.name(), ccdDirectionsQuestionnaire.getHearingLoop().name())) {
+                    failWithMessage("Expected DirectionsQuestionnaire.hearingLoop to be <%s> but was <%s>",
+                        ccdDirectionsQuestionnaire.getHearingLoop(), hearingLoop);
+                }
+            });
 
-            if (!Objects.equals(requireSupport.getDisabledAccess(), ccdDirectionsQuestionnaire.getDisabledAccess())) {
-                failWithMessage("Expected DirectionsQuestionnaire.disabledAccess to be <%s> but was <%s>",
-                    ccdDirectionsQuestionnaire.getDisabledAccess(), requireSupport.getDisabledAccess());
-            }
+            requireSupport.getDisabledAccess().ifPresent( disabledAccess -> {
+                if (!Objects.equals(disabledAccess.name(), ccdDirectionsQuestionnaire.getDisabledAccess().name())) {
+                    failWithMessage(
+                        "Expected DirectionsQuestionnaire.disabledAccess to be <%s> but was <%s>",
+                        ccdDirectionsQuestionnaire.getDisabledAccess(), disabledAccess);
+                }
+            });
 
             if (!Objects.equals(
-                requireSupport.getOtherSupport(),
+                requireSupport.getOtherSupport().orElse(null),
                 ccdDirectionsQuestionnaire.getOtherSupportRequired()
             )) {
                 failWithMessage("Expected DirectionsQuestionnaire.otherSupport to be <%s> but was <%s>",
