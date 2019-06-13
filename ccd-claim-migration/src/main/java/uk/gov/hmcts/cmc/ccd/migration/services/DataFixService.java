@@ -114,6 +114,7 @@ public class DataFixService {
         AtomicInteger failedOnUpdate,
         Claim claim
     ) {
+        logger.info("deadline for case reference {} is {}", claim.getReferenceNumber(), claim.getResponseDeadline());
         CCDCase ccdCase = mapToCCDCase(details.getData(), Long.toString(details.getId()));
         CCDCase caseAfterInterestPatch = addInterestPatch(claim, ccdCase);
         supportUpdateService.updateCase(user, updatedClaims, failedOnUpdate, caseAfterInterestPatch);
