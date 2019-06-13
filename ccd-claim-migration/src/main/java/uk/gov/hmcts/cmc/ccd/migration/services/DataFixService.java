@@ -71,7 +71,7 @@ public class DataFixService {
 
             logger.info("Fix case for: {}", claim.getReferenceNumber());
 
-            dataPrintService.printCaseDetails(claim.getReferenceNumber(), user);
+//            dataPrintService.printCaseDetails(claim.getReferenceNumber(), user);
 
             searchCCDCaseService.getCcdCaseByExternalId(user, claim.getExternalId())
                 .ifPresent(details -> fixData(user, details, updatedClaims, failedOnUpdate, claim));
