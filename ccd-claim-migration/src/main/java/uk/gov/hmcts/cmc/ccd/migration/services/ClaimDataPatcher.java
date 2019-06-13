@@ -106,6 +106,7 @@ public class ClaimDataPatcher {
         Interest interest = claim.getClaimData().getInterest();
         return interest != null
             && interest.getInterestDate() != null
+            && interest.getInterestDate().getType() == null
             && interest.getInterestDate().getEndDateType() != null
             && interest.getInterestDate().getEndDateType() == SUBMISSION;
     }
