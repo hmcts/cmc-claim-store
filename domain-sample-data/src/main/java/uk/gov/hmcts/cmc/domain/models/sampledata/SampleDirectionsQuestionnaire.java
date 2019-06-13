@@ -1,14 +1,20 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.CourtLocationType;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertRequest;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.RequireSupport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.UnavailableDate;
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.Witness;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
 public class SampleDirectionsQuestionnaire {
 
@@ -24,21 +30,32 @@ public class SampleDirectionsQuestionnaire {
             new ExpertReport("1", "expert1", LocalDate.of(2040, 1, 1)));
 
         return DirectionsQuestionnaire.builder()
-            .selfWitness(YesNoOption.YES)
-            .howManyOtherWitness(1)
-            .hearingLocation("London")
-            .hearingLocationSlug("London-Court")
-            .exceptionalCircumstancesReason("disabled")
+            .requireSupport(RequireSupport.builder()
+                .languageInterpreter("English")
+                .signLanguageInterpreter("Need Sign Language")
+                .disabledAccess(YES)
+                .hearingLoop(NO)
+                .build()
+            )
+            .hearingLocation(HearingLocation.builder()
+                .courtName("A Court")
+                .hearingLocationSlug("a-court")
+                .courtAddress(SampleAddress.builder().build())
+                .locationOption(CourtLocationType.ALTERNATE_COURT)
+                .build()
+            )
+            .expertRequest(ExpertRequest.builder()
+                .reasonForExpertAdvice("A valid reason")
+                .expertEvidenceToExamine("Evidence to examine")
+                .build()
+            )
+            .witness(Witness.builder()
+                .selfWitness(YES)
+                .noOfOtherWitness(1)
+                .build()
+            )
             .unavailableDates(unavailableDates)
-            .availableDate(LocalDate.of(2050, 1, 2))
-            .languageInterpreted("some language")
-            .signLanguageInterpreted("some sign language")
-            .hearingLoop(YesNoOption.NO)
-            .disabledAccess(YesNoOption.YES)
-            .otherSupportRequired("maybe")
             .expertReports(expertReportRowsData)
-            .expertEvidenceToExamine("nothing")
-            .reasonForExpertAdvice("for specified reason")
             .build();
     }
 }

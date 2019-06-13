@@ -26,7 +26,7 @@ public class CCDDirectionsQuestionnaire {
     private String exceptionalCircumstancesReason;
 
     private CCDYesNoOption selfWitness;
-    private int howManyOtherWitness;
+    private Integer howManyOtherWitness;
 
     private List<CCDCollectionElement<CCDExpertReport>> expertReports;
 
