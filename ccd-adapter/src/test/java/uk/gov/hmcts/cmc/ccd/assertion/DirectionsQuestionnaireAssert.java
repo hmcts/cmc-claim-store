@@ -15,6 +15,7 @@ import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 public class DirectionsQuestionnaireAssert
     extends AbstractAssert<DirectionsQuestionnaireAssert, DirectionsQuestionnaire> {
+    
     public DirectionsQuestionnaireAssert(DirectionsQuestionnaire actual) {
         super(actual, DirectionsQuestionnaireAssert.class);
     }
@@ -39,8 +40,7 @@ public class DirectionsQuestionnaireAssert
                     ccdDirectionsQuestionnaire.getSelfWitness(), witness.getSelfWitness());
             }
 
-
-            witness.getNoOfOtherWitness().ifPresent( noOfOtherWitness -> {
+            witness.getNoOfOtherWitness().ifPresent(noOfOtherWitness -> {
                     if (!Objects.equals(noOfOtherWitness, ccdDirectionsQuestionnaire.getHowManyOtherWitness())) {
                         failWithMessage(
                             "Expected DirectionsQuestionnaire.noOfOtherWitness to be <%s> but was <%s>",
@@ -112,14 +112,14 @@ public class DirectionsQuestionnaireAssert
                 );
             }
 
-            requireSupport.getHearingLoop().ifPresent( hearingLoop -> {
+            requireSupport.getHearingLoop().ifPresent(hearingLoop -> {
                 if (!Objects.equals(hearingLoop.name(), ccdDirectionsQuestionnaire.getHearingLoop().name())) {
                     failWithMessage("Expected DirectionsQuestionnaire.hearingLoop to be <%s> but was <%s>",
                         ccdDirectionsQuestionnaire.getHearingLoop(), hearingLoop);
                 }
             });
 
-            requireSupport.getDisabledAccess().ifPresent( disabledAccess -> {
+            requireSupport.getDisabledAccess().ifPresent(disabledAccess -> {
                 if (!Objects.equals(disabledAccess.name(), ccdDirectionsQuestionnaire.getDisabledAccess().name())) {
                     failWithMessage(
                         "Expected DirectionsQuestionnaire.disabledAccess to be <%s> but was <%s>",
