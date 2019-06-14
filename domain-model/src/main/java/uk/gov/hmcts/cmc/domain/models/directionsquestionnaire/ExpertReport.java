@@ -6,6 +6,7 @@ import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.CollectionId;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
@@ -13,8 +14,10 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @Getter
 @EqualsAndHashCode(callSuper = true)
 public class ExpertReport extends CollectionId {
-    private String expertName;
-    private LocalDate expertReportDate;
+    @NotNull
+    private final String expertName;
+    @NotNull
+    private final LocalDate expertReportDate;
 
     @Builder
     public ExpertReport(String id, String expertName, LocalDate expertReportDate) {
