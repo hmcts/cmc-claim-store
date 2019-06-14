@@ -5,10 +5,10 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Optional;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
