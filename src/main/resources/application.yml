@@ -137,6 +137,8 @@ notifications:
       defendantSignedSettlementAgreementToClaimant: "59f982a7-264e-4ce1-93bf-25a9fb354dc9"
       defendantAdmissionResponseToClaimant: "fce1eaa7-baa9-4b82-b1bb-119f9a2ffae3"
       claimantRejectedPartAdmitOrStatesPaidEmailToDefendant: "e6966b30-8c2f-4107-b3fa-1ae00594a672"
+      claimantLegalOrderDrawn: "4fbb9120-65ae-417e-97c4-158189be910a"
+      defendantLegalOrderDrawn: "4bc101c9-1cbd-45f6-849f-b8bafc2ca535"
 
 staff-notifications:
   sender:
