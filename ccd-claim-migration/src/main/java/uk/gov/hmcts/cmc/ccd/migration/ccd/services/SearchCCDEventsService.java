@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.migration.client.CaseEventDetails;
 import uk.gov.hmcts.cmc.ccd.migration.client.CaseEventsApi;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
-import uk.gov.hmcts.cmc.ccd.migration.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 
 import java.io.IOException;
@@ -42,7 +41,6 @@ public class SearchCCDEventsService {
         maxAttempts = 5,
         backoff = @Backoff(delay = 400, maxDelay = 800)
     )
-    @LogExecutionTime
     public List<CaseEventDetails> getCcdCaseEventsForCase(User user, String caseId) {
         return this.caseEventsApi.findEventDetailsForCase(
             user.getAuthorisation(),

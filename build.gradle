@@ -3,9 +3,9 @@ import java.util.stream.Collectors
 plugins {
   id 'checkstyle'
   id 'io.spring.dependency-management' version '1.0.7.RELEASE'
-  id 'org.springframework.boot' version '2.1.4.RELEASE'
+  id 'org.springframework.boot' version '2.1.5.RELEASE'
   id 'org.owasp.dependencycheck' version '4.0.2'
-  id 'org.sonarqube' version '2.7'
+  id 'org.sonarqube' version '2.7.1'
   id 'com.github.ben-manes.versions' version '0.21.0'
   id 'jacoco'
   id 'net.ltgt.apt' version '0.21'
@@ -24,7 +24,7 @@ dependencyUpdates.resolutionStrategy = {
   }
 }
 
-def springBootVersion = '2.1.4.RELEASE'
+def springBootVersion = '2.1.5.RELEASE'
 def springCloudVersion = 'Greenwich.SR1'
 
 allprojects {
@@ -85,7 +85,7 @@ allprojects {
     }
     dependencies {
       // CVE-2019-0232 - command line injections on windows - fixed on spring boot master but not released
-      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.20') {
+      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.21') {
         entry 'tomcat-embed-core'
         entry 'tomcat-embed-el'
         entry 'tomcat-embed-websocket'
