@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.ccd.assertion;
 import org.assertj.core.api.AbstractAssert;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertRequest;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.RequireSupport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.Witness;
@@ -14,7 +15,7 @@ import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 public class DirectionsQuestionnaireAssert
     extends AbstractAssert<DirectionsQuestionnaireAssert, DirectionsQuestionnaire> {
-    
+
     public DirectionsQuestionnaireAssert(DirectionsQuestionnaire actual) {
         super(actual, DirectionsQuestionnaireAssert.class);
     }
@@ -28,6 +29,8 @@ public class DirectionsQuestionnaireAssert
         actual.getRequireSupport().ifPresent(isEqualToRequireSupport(ccdDirectionsQuestionnaire));
 
         actual.getWitness().ifPresent(isEqualToWitness(ccdDirectionsQuestionnaire));
+
+        actual.getRequireSupport().ifPresent(isEqualToRequireSupport(ccdDirectionsQuestionnaire));
 
         return this;
     }
@@ -47,6 +50,25 @@ public class DirectionsQuestionnaireAssert
                     }
                 }
             );
+        };
+    }
+
+    private Consumer<ExpertRequest> isEqualToExpertRequest(CCDDirectionsQuestionnaire ccdDirectionsQuestionnaire) {
+        return expertRequest -> {
+            if (!Objects.equals(expertRequest.getExpertEvidenceToExamine(),
+                ccdDirectionsQuestionnaire.getExpertEvidenceToExamine())) {
+                failWithMessage("Expected DirectionsQuestionnaire.expertRequest to be <%s> but was <%s>",
+                    ccdDirectionsQuestionnaire.getExpertEvidenceToExamine(),
+                    expertRequest.getExpertEvidenceToExamine());
+            }
+
+            if (!Objects.equals(expertRequest.getReasonForExpertAdvice(),
+                ccdDirectionsQuestionnaire.getReasonForExpertAdvice())) {
+                failWithMessage(
+                    "Expected DirectionsQuestionnaire.reasonForExpertAdvice to be <%s> but was <%s>",
+                    ccdDirectionsQuestionnaire.getReasonForExpertAdvice(),
+                    expertRequest.getReasonForExpertAdvice());
+            }
         };
     }
 
