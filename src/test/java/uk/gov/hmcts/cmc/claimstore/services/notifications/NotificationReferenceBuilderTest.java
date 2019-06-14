@@ -79,4 +79,18 @@ public class NotificationReferenceBuilderTest {
             NotificationReferenceBuilder.ClaimantResponseSubmitted.referenceForClaimant("abc")
         ).isEqualTo("to-claimant-claimant’s-response-submitted-notification-abc");
     }
+
+    @Test
+    public void shouldGenerateValidReferenceForDefendantLegalOrderDrawnNotification() {
+        assertThat(
+            NotificationReferenceBuilder.LegalOrderDrawn.referenceForDefendant("abc")
+        ).isEqualTo("to-defendant-legal-order-drawn-notification-abc");
+    }
+
+    @Test
+    public void shouldGenerateValidReferenceForClaimantLegalOrderDrawnNotification() {
+        assertThat(
+            NotificationReferenceBuilder.LegalOrderDrawn.referenceForClaimant("abc")
+        ).isEqualTo("to-claimant-legal-order-drawn-notification-abc");
+    }
 }
