@@ -12,7 +12,6 @@ import java.util.function.Consumer;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
-
 public class DirectionsQuestionnaireAssert
     extends AbstractAssert<DirectionsQuestionnaireAssert, DirectionsQuestionnaire> {
     
