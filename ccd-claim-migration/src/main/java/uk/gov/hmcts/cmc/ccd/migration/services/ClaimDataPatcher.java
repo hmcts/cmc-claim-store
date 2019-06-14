@@ -90,7 +90,7 @@ public class ClaimDataPatcher {
         AtomicInteger failedOnUpdate
     ) {
         notMigratedClaims.parallelStream().forEach(claim -> {
-            if (fixDataIssues && isSubmission(claim)) {
+            if (fixDataIssues) {
                 dataFixService.fixClaimWithMissingInterest(
                     updatedClaims,
                     failedOnUpdate,

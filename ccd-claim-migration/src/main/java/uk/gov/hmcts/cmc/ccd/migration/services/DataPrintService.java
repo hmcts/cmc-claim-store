@@ -1,23 +1,23 @@
 package uk.gov.hmcts.cmc.ccd.migration.services;
 
-import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.InterestMapper;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.SearchCCDCaseService;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.SearchCCDEventsService;
 import uk.gov.hmcts.cmc.ccd.migration.client.CaseEventDetails;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.mappers.JsonMapper;
-import uk.gov.hmcts.cmc.ccd.migration.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class DataPrintService {
@@ -28,81 +28,88 @@ public class DataPrintService {
     private final SearchCCDEventsService searchCCDEventsService;
     private final CaseMapper caseMapper;
     private final JsonMapper jsonMapper;
-    private final ClaimRepository claimRepository;
+    private final InterestMapper interestMapper;
 
     public DataPrintService(
         SearchCCDCaseService searchCCDCaseService,
         SearchCCDEventsService searchCCDEventsService,
         CaseMapper caseMapper,
         JsonMapper jsonMapper,
-        ClaimRepository claimRepository
-
+        InterestMapper interestMapper
     ) {
         this.searchCCDCaseService = searchCCDCaseService;
         this.searchCCDEventsService = searchCCDEventsService;
         this.caseMapper = caseMapper;
         this.jsonMapper = jsonMapper;
-        this.claimRepository = claimRepository;
+        this.interestMapper = interestMapper;
     }
 
     public void printCaseDetails(
-        String reference,
-        User user
+        Claim claim,
+        User user,
+        AtomicInteger updatedClaims
     ) {
+        String referenceNumber = claim.getReferenceNumber();
         try {
-            logger.info("Search case for: {}", reference);
-
-            List<Claim> claims = claimRepository.getClaims(ImmutableList.of(reference));
-
-            claims.forEach(claim -> {
-                logger.info(claim.getClaimData().getInterest().toString());
-                logger.info(claim.getClaimData().getAmount().toString());
-            });
-
-            searchCCDCaseService.getCcdCaseByReferenceNumber(user, reference)
-                .ifPresent(details -> printEvents(details, user));
-
+            searchCCDCaseService.getCcdCaseByReferenceNumber(user, referenceNumber)
+                .ifPresent(details -> printEvents(details, user, claim, updatedClaims));
         } catch (Exception e) {
             logger.info("Data search failed for claim for reference {} due to {}",
-                reference,
+                referenceNumber,
                 e.getMessage()
             );
         }
     }
 
-    private void printEvents(CaseDetails details, User user) {
+    private void printEvents(CaseDetails details, User user, Claim claim, AtomicInteger updatedClaims) {
         CCDCase ccdCase = mapToCCDCase(details.getData(), Long.toString(details.getId()));
-        logger.info("ccdCase.getInterestReason " + ccdCase.getInterestReason());
-        logger.info("ccdCase.getInterestSpecificDailyAmount " + ccdCase.getInterestSpecificDailyAmount());
-        logger.info("ccdCase.getInterestBreakDownAmount " + ccdCase.getInterestBreakDownAmount());
-        logger.info("ccdCase.getInterestBreakDownExplanation " + ccdCase.getInterestBreakDownExplanation());
-        logger.info("ccdCase.getInterestType " + ccdCase.getInterestType());
+        if (ccdCase.getInterestDateType() == null
+            && ccdCase.getInterestEndDateType() == null
+            && ccdCase.getInterestClaimStartDate() == null
+            && StringUtils.isBlank(ccdCase.getInterestStartDateReason())
+        ) {
+            updatedClaims.incrementAndGet();
+            logger.info("interest before and after of {} are equal {}",
+                claim.getReferenceNumber(),
+                interestMapper.from(ccdCase).equals(claim.getClaimData().getInterest()));
+        } else {
+            return;
+        }
 
-        ccdCase.getAmountBreakDown().stream()
-            .map(CCDCollectionElement::getValue)
-            .forEach(ccdAmountRow -> logger.info(ccdAmountRow.getAmount() + " " + ccdAmountRow.getReason()));
-
-        logger.info("ccdCase.getInterestClaimStartDate " + ccdCase.getInterestClaimStartDate());
-        logger.info("ccdCase.getInterestRate " + ccdCase.getInterestRate());
-
-        logger.info("ccdCase.getInterestDateType " + ccdCase.getInterestDateType());
-
-        logger.info("ccdCase.getInterestEndDateType " + ccdCase.getInterestEndDateType());
-
-        logger.info("ccdCase.getInterestStartDateReason " + ccdCase.getInterestStartDateReason());
+        logger.info(claim.getReferenceNumber()
+            + ","
+            + claim.getClaimData().getInterest()
+            + ","
+            + ccdCase.getInterestReason()
+            + ","
+            + ccdCase.getInterestType()
+            + ","
+            + ccdCase.getInterestBreakDownAmount()
+            + ","
+            + ccdCase.getInterestBreakDownExplanation()
+            + ","
+            + ccdCase.getInterestSpecificDailyAmount()
+            + ","
+            + ccdCase.getInterestClaimStartDate()
+            + ","
+            + ccdCase.getInterestDateType()
+            + ","
+            + ccdCase.getInterestEndDateType()
+            + ","
+            + ccdCase.getInterestStartDateReason());
 
         List<CaseEventDetails> events
             = searchCCDEventsService.getCcdCaseEventsForCase(user, Long.toString(details.getId()));
 
         events.forEach(event -> {
-            Claim claim = caseMapper.from(mapToCCDCase(event.getData(), Long.toString(details.getId())));
-            logger.info(claim.getReferenceNumber()
+            Claim result = caseMapper.from(mapToCCDCase(event.getData(), Long.toString(details.getId())));
+            logger.info(result.getReferenceNumber()
                 + " "
                 + event.getEventName()
                 + " "
                 + event.getCreatedDate()
                 + " "
-                + claim.getResponseDeadline()
+                + result.getResponseDeadline()
             );
         });
     }

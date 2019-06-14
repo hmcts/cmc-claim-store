@@ -71,10 +71,10 @@ public class DataFixService {
 
             logger.info("Fix case for: {}", claim.getReferenceNumber());
 
-//            dataPrintService.printCaseDetails(claim.getReferenceNumber(), user);
+            dataPrintService.printCaseDetails(claim, user, updatedClaims);
 
-            searchCCDCaseService.getCcdCaseByExternalId(user, claim.getExternalId())
-                .ifPresent(details -> fixData(user, details, updatedClaims, failedOnUpdate, claim));
+//            searchCCDCaseService.getCcdCaseByExternalId(user, claim.getExternalId())
+//                .ifPresent(details -> fixData(user, details, updatedClaims, failedOnUpdate, claim));
 
         } catch (Exception e) {
             logger.info("Data Fix failed for claim for reference {} for the migrated count {} due to {}",

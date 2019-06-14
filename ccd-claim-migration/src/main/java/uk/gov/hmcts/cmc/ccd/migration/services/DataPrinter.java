@@ -56,7 +56,7 @@ public class DataPrinter {
         List<String> references
     ) {
         references.parallelStream().forEach(reference -> {
-            dataPrintService.printCaseDetails(reference, user);
+//            dataPrintService.printCaseDetails(reference, user);
         });
 
     }
