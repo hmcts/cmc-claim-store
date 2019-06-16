@@ -90,8 +90,8 @@ public final class SampleClaim {
     private ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
     private LocalDate claimantResponseDeadline;
     private ClaimState state = null;
-    private static Supplier<ClaimSubmissionOperationIndicators> getDefaultClaimSubmissionOperationIndicators =
-        () -> ClaimSubmissionOperationIndicators.builder().build();
+    private ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators =
+        ClaimSubmissionOperationIndicators.builder().build();
     private Long ccdCaseId = 1023467890123456L;
 
     private SampleClaim() {
@@ -109,6 +109,34 @@ public final class SampleClaim {
                 .builder()
                 .withDefenceType(DefenceType.DISPUTE)
                 .withMediation(YES)
+                .build()
+            )
+            .build();
+    }
+
+    public static Claim getWithClaimSubmissionOperationIndicators() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimantBuilder().withExternalId(RAND_UUID).build())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .ccjType(CountyCourtJudgmentType.ADMISSIONS)
+                    .paymentOption(IMMEDIATELY)
+                    .build()
+            ).withResponse(SampleResponse.FullDefence
+                .builder()
+                .withDefenceType(DefenceType.DISPUTE)
+                .withMediation(YES)
+                .build()
+            )
+            .withClaimSubmissionOperationIndicators(
+                ClaimSubmissionOperationIndicators.builder()
+                .bulkPrint(YES)
+                .claimantNotification(YES)
+                .claimIssueReceiptUpload(YES)
+                .defendantNotification(YES)
+                .rpa(YES)
+                .sealedClaimUpload(YES)
+                .staffNotification(YES)
                 .build()
             )
             .build();
@@ -458,7 +486,7 @@ public final class SampleClaim {
             claimDocumentCollection,
             claimantResponseDeadline,
             state,
-            getDefaultClaimSubmissionOperationIndicators.get(),
+            claimSubmissionOperationIndicators,
             ccdCaseId
         );
     }
@@ -662,5 +690,11 @@ public final class SampleClaim {
         this.features = features;
         return this;
     }
+
+    public SampleClaim withClaimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators) {
+        this.claimSubmissionOperationIndicators = claimSubmissionOperationIndicators;
+        return this;
+    }
+
 }
 

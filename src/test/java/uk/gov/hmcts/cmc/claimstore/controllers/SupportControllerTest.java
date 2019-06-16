@@ -340,28 +340,54 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldResetClaimSubmissionIndicators() {
-        Claim claim = SampleClaim.builder()
-            .withDefendantId(null)
-            .build();
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
-            .thenReturn(Optional.of(claim));
+    public void shouldPerformResetOperationForCitizenClaim() {
+        Claim claim = SampleClaim.getDefault();
         ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators = ClaimSubmissionOperationIndicators
             .builder().build();
-        controller.updateClaimSubmissionIndicators(CLAIMREFERENCENUMBER,
+        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
+            .thenReturn(Optional.of(claim));
+        when(claimService.updateClaimSubmissionOperationIndicators(
+            eq(AUTHORISATION),
+            eq(claim),
+            eq(claimSubmissionOperationIndicators)
+        )).thenReturn(claim);
+        controller.resetOperation(CLAIMREFERENCENUMBER,
             claimSubmissionOperationIndicators,
             AUTHORISATION);
         verify(claimService).updateClaimSubmissionOperationIndicators(
             eq(AUTHORISATION),
             eq(claim),
             eq(claimSubmissionOperationIndicators));
+        verify(postClaimOrchestrationHandler).citizenIssueHandler(any(CitizenClaimCreatedEvent.class));
+    }
+
+    @Test
+    public void shouldPerformResetOperationForRepresentedClaim() {
+        Claim claim = SampleClaim.getDefaultForLegal();
+        ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators = ClaimSubmissionOperationIndicators
+            .builder().build();
+        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
+            .thenReturn(Optional.of(claim));
+        when(claimService.updateClaimSubmissionOperationIndicators(
+            eq(AUTHORISATION),
+            eq(claim),
+            eq(claimSubmissionOperationIndicators)
+        )).thenReturn(claim);
+        controller.resetOperation(CLAIMREFERENCENUMBER,
+            claimSubmissionOperationIndicators,
+            AUTHORISATION);
+        verify(claimService).updateClaimSubmissionOperationIndicators(
+            eq(AUTHORISATION),
+            eq(claim),
+            eq(claimSubmissionOperationIndicators));
+        verify(postClaimOrchestrationHandler).representativeIssueHandler(any(RepresentedClaimCreatedEvent.class));
     }
 
     @Test
     public void shouldThrowBadRequestExceptionWhenResetClaimSubmissionIndicator() {
         exceptionRule.expect(BadRequestException.class);
         exceptionRule.expectMessage("Authorisation is required");
-        controller.updateClaimSubmissionIndicators(CLAIMREFERENCENUMBER,
+        controller.resetOperation(CLAIMREFERENCENUMBER,
             ClaimSubmissionOperationIndicators
                 .builder().build(),
             "");

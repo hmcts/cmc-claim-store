@@ -356,12 +356,12 @@ public class ClaimService {
         caseRepository.updateClaimState(authorisation, claim.getId(), state);
     }
 
-    public void updateClaimSubmissionOperationIndicators(
+    public Claim updateClaimSubmissionOperationIndicators(
         String authorisation,
         Claim claim,
         ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
     ) {
-        caseRepository.updateClaimSubmissionOperationStatus(
+        return caseRepository.updateClaimSubmissionOperationStatus(
             authorisation,
             claim.getId(),
             claimSubmissionOperationIndicators,

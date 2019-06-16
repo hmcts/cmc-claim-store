@@ -52,6 +52,8 @@ import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isReferredToJudge;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
 @RestController
 @RequestMapping("/support")
@@ -165,9 +167,9 @@ public class SupportController {
                 .orElseThrow(() -> new NotFoundException("Unable to upload the document. Please try again later")));
     }
 
-    @PostMapping("/claim/{referenceNumber}/claimSubmissionOperationIndicators")
-    @ApiOperation("update the claim submission operation Indicators")
-    public void updateClaimSubmissionIndicators(
+    @PostMapping("/claim/{referenceNumber}/reset-operation")
+    @ApiOperation("Redo any failed operation. Use the claim submission indicators to indicate the operation to redo.")
+    public void resetOperation(
         @PathVariable("referenceNumber") String referenceNumber,
         @RequestBody ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators,
         @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation
@@ -177,7 +179,61 @@ public class SupportController {
         }
         Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
             .orElseThrow(() -> new NotFoundException(String.format(CLAIM_DOES_NOT_EXIST, referenceNumber)));
-        claimService.updateClaimSubmissionOperationIndicators(authorisation, claim, claimSubmissionOperationIndicators);
+        validateClaimSubmissionOpsInd(claim.getClaimSubmissionOperationIndicators(),
+            claimSubmissionOperationIndicators);
+        claim = claimService.updateClaimSubmissionOperationIndicators(
+            authorisation,
+            claim,
+            claimSubmissionOperationIndicators
+        );
+        triggerAsyncOperation(authorisation, claim);
+    }
+
+    private void validateClaimSubmissionOpsInd(
+        ClaimSubmissionOperationIndicators existingClaimSubmissionOperationIndicators,
+        ClaimSubmissionOperationIndicators newClaimSubmissionOperationIndicators
+    ) {
+        List<String> invalidIndicators = new ArrayList<>();
+
+        if (existingClaimSubmissionOperationIndicators.getClaimIssueReceiptUpload().equals(NO) &&
+            newClaimSubmissionOperationIndicators.getClaimIssueReceiptUpload().equals(YES)) {
+            invalidIndicators.add("claimIssueReceiptUpload");
+        }
+
+        if (existingClaimSubmissionOperationIndicators.getSealedClaimUpload().equals(NO) &&
+            newClaimSubmissionOperationIndicators.getSealedClaimUpload().equals(YES)) {
+            invalidIndicators.add("sealedClaimUpload");
+        }
+
+        if (existingClaimSubmissionOperationIndicators.getBulkPrint().equals(NO) &&
+            newClaimSubmissionOperationIndicators.getBulkPrint().equals(YES)) {
+            invalidIndicators.add("bulkPrint");
+        }
+
+        if (existingClaimSubmissionOperationIndicators.getClaimantNotification().equals(NO) &&
+            newClaimSubmissionOperationIndicators.getClaimantNotification().equals(YES)) {
+            invalidIndicators.add("claimantNotification");
+        }
+
+        if (existingClaimSubmissionOperationIndicators.getDefendantNotification().equals(NO) &&
+            newClaimSubmissionOperationIndicators.getDefendantNotification().equals(YES)) {
+            invalidIndicators.add("defendantNotification");
+        }
+
+        if (existingClaimSubmissionOperationIndicators.getRpa().equals(NO) &&
+            newClaimSubmissionOperationIndicators.getRpa().equals(YES)) {
+            invalidIndicators.add("rpa");
+        }
+
+        if (existingClaimSubmissionOperationIndicators.getStaffNotification().equals(NO) &&
+            newClaimSubmissionOperationIndicators.getStaffNotification().equals(YES)) {
+            invalidIndicators.add("staffNotification");
+        }
+
+        if (invalidIndicators.size() > 0) {
+            throw new BadRequestException("Invalid input. The following indicator(s)" + invalidIndicators + " cannot be set to Yes");
+        }
+
     }
 
     @PutMapping("/claims/{referenceNumber}/recover-operations")
@@ -188,7 +244,10 @@ public class SupportController {
     ) {
         Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
             .orElseThrow(() -> new NotFoundException(String.format(CLAIM_DOES_NOT_EXIST, referenceNumber)));
+        triggerAsyncOperation(authorisation, claim);
+    }
 
+    private void triggerAsyncOperation(String authorisation, Claim claim) {
         if (claim.getClaimData().isClaimantRepresented()) {
             String submitterName = claim.getClaimData().getClaimant()
                 .getRepresentative().orElseThrow(IllegalArgumentException::new)
