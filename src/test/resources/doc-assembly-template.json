@@ -18,8 +18,8 @@
   "eyewitnessUploadDeadline":"11-10-2020",
   "docUploadForParty":"CLAIMANT",
   "eyewitnessUploadForParty":"DEFENDANT",
-  "preferredCourtName":"Some court",
-  "preferredCourtAddress":"this is an address EC2Y 3ND",
+  "hearingCourtName":"Defendant Court",
+  "hearingCourtAddress":"Defendant Court address\nSW1P4BB\nLondon",
   "estimatedHearingDuration":"FOUR_HOURS",
   "hearingStatement":"No idea",
   "otherDirectionList":[
