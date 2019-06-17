@@ -9,7 +9,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
@@ -31,7 +30,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -40,6 +38,7 @@ import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
@@ -128,7 +127,7 @@ public class SaveCountyCourtJudgementTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldUploadDocumentToDocumentManagementAfterSuccessfulSave() throws Exception {
+    public void shouldNotUploadDocumentToDocumentManagementAfterSuccessfulSave() throws Exception {
         final ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
 
         InMemoryMultipartFile ccj = new InMemoryMultipartFile(
@@ -139,14 +138,12 @@ public class SaveCountyCourtJudgementTest extends BaseIntegrationTest {
             PDF_BYTES
         );
         makeRequest(claim.getExternalId(), COUNTY_COURT_JUDGMENT).andExpect(status().isOk());
-        verify(documentUploadClient).upload(anyString(),
+        verify(documentUploadClient, never()).upload(anyString(),
             anyString(),
             anyString(),
             anyList(),
             any(Classification.class),
-            argument.capture());
-        List<MultipartFile> files = argument.getValue();
-        assertTrue(files.contains(ccj));
+            anyList());
     }
 
     @Test

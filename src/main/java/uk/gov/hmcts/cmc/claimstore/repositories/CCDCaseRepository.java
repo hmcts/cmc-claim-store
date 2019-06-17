@@ -19,7 +19,6 @@ import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
-import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.time.LocalDate;
@@ -165,11 +164,6 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public CaseReference savePrePaymentClaim(String externalId, String authorisation) {
-        return new CaseReference(externalId);
-    }
-
-    @Override
     public Claim saveClaim(User user, Claim claim) {
         return coreCaseDataService.createNewCase(user, claim);
     }
@@ -217,8 +211,11 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void updateClaimState(String authorisation, Long claimId, String state) {
-        //TODO to be implemented as part of another PR.
+    public void updateClaimState(String authorisation, Long claimId, ClaimState state) {
+        if (state == ClaimState.OPEN) {
+            coreCaseDataService.saveCaseEvent(authorisation, claimId, CaseEvent.ISSUE_CASE);
+        } else {
+            throw new UnsupportedOperationException("State transition not allowed for " + state.name());
+        }
     }
-
 }

@@ -35,6 +35,8 @@ migration:
     flag: true
     lots:
       size: 0
+  fixDataIssues: true
+  dryRun: true
   delay:
     between:
       cases:

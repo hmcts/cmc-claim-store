@@ -7,20 +7,24 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.domain.models.CaseMetadata;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 
 import java.util.Optional;
 
 @Service
 public class ClaimOperation {
 
-    @Retryable(value = RuntimeException.class, maxAttempts = 10, backoff = @Backoff(delay = 300, maxDelay = 3000))
+    @Retryable(value = RuntimeException.class, maxAttempts = 20, backoff = @Backoff(delay = 500))
     public Claim getClaimWithLetterHolder(String externalId, String userAuthentication) {
 
-        Claim claim = retrieveClaim(externalId, userAuthentication);
-        if (!Optional.ofNullable(claim.getLetterHolderId()).isPresent()) {
+        Optional<CaseMetadata> caseMetadata = Optional.of(retrieveCaseMetaData(externalId));
+        if (! caseMetadata.filter(c -> c.getState() == ClaimState.OPEN).isPresent()) {
             throw new RuntimeException("pin process not complete");
         }
+
+        Claim claim = retrieveClaim(externalId, userAuthentication);
         return claim;
     }
 
@@ -41,5 +45,17 @@ public class ClaimOperation {
             .extract()
             .body()
             .as(Claim.class);
+    }
+
+    public CaseMetadata retrieveCaseMetaData(String externalId) {
+        return RestAssured
+            .given()
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .when()
+            .get(String.format("claims/%s/metadata", externalId))
+            .then()
+            .extract()
+            .body()
+            .as(CaseMetadata.class);
     }
 }

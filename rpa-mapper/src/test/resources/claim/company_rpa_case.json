@@ -2,7 +2,7 @@
   "caseNumber": "000CM001",
   "issueDate": "26-Apr-2018",
   "courtFee": 40.00,
-  "amountWithInterest": 40.89,
+  "amountWithInterest": 41.90,
   "submitterEmail": "claimant@mail.com",
   "claimants": [
     {
@@ -31,7 +31,7 @@
   "defendants": [
     {
       "type": "Company",
-      "name": "John Smith",
+      "name": "Dr. John Smith",
       "businessName": null,
       "contactPerson": "Arnold Schwarzenegger",
       "address": {

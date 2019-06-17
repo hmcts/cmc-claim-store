@@ -5,7 +5,6 @@ import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
@@ -23,7 +22,6 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
-@ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class SearchCCDCaseService {
 
     public static final String JURISDICTION_ID = "CMC";
@@ -33,15 +31,12 @@ public class SearchCCDCaseService {
 
     private final CoreCaseDataApi coreCaseDataApi;
     private final AuthTokenGenerator authTokenGenerator;
-    private final MigrateCoreCaseDataService migrateCoreCaseDataService;
 
     @Autowired
     public SearchCCDCaseService(
-        MigrateCoreCaseDataService migrateCoreCaseDataService,
         CoreCaseDataApi coreCaseDataApi,
         AuthTokenGenerator authTokenGenerator
     ) {
-        this.migrateCoreCaseDataService = migrateCoreCaseDataService;
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;
     }
@@ -51,15 +46,23 @@ public class SearchCCDCaseService {
         backoff = @Backoff(delay = 400, maxDelay = 800)
     )
     @LogExecutionTime
-    public Optional<CaseDetails> getCcdIdByReferenceNumber(User user, String referenceNumber) {
+    public Optional<CaseDetails> getCcdCaseByReferenceNumber(User user, String referenceNumber) {
         return search(user, ImmutableMap.of("case.previousServiceCaseReference", referenceNumber));
     }
 
+    @Retryable(include = {SocketTimeoutException.class, FeignException.class, IOException.class},
+        maxAttempts = 5,
+        backoff = @Backoff(delay = 400, maxDelay = 800)
+    )
+    public Optional<CaseDetails> getCcdCaseByExternalId(User user, String externalId) {
+        return search(user, ImmutableMap.of("case.externalId", externalId));
+    }
+
     @Recover
-    public Optional<CaseDetails> recoverSearchFailure(RuntimeException exception, User user, String referenceNumber) {
+    public Optional<CaseDetails> recoverSearchFailure(RuntimeException exception, User user, String externalId) {
         String errorMessage = String.format(
             "Failure: failed search by reference number ( %s for user %s ) due to %s",
-            referenceNumber, user.getUserDetails().getId(), exception.getMessage()
+            externalId, user.getUserDetails().getId(), exception.getMessage()
         );
 
         logger.info(errorMessage, exception);

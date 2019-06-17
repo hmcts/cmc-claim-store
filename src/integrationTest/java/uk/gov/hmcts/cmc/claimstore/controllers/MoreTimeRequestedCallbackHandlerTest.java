@@ -11,7 +11,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
-import uk.gov.hmcts.cmc.claimstore.services.CallbackService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.MoreTimeRequestedNotificationService;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
@@ -33,18 +33,19 @@ import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @TestPropertySource(
     properties = {
-        "core_case_data.api.url=http://core-case-data-api"
+        "core_case_data.api.url=http://core-case-data-api",
+        "doc_assembly.url=false"
     }
 )
 @Ignore
-public class MoreTimeRequestedCallbackTest extends MockSpringTest {
+public class MoreTimeRequestedCallbackHandlerTest extends MockSpringTest {
 
     @SpyBean
     private MoreTimeRequestedNotificationService notificationService;
 
     @Test
     public void shouldReturnWithNoValidationErrorsOnAboutToStartIfAvailable() throws Exception {
-        MvcResult mvcResult = makeRequest(CallbackService.ABOUT_TO_START_CALLBACK, LocalDate.now().plusDays(3), false)
+        MvcResult mvcResult = makeRequest(CallbackType.ABOUT_TO_START.getValue(), LocalDate.now().plusDays(3), false)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -58,7 +59,7 @@ public class MoreTimeRequestedCallbackTest extends MockSpringTest {
 
     @Test
     public void shouldReturnWithValidationErrorsOnAboutToStartIfAlreadyRequested() throws Exception {
-        MvcResult mvcResult = makeRequest(CallbackService.ABOUT_TO_START_CALLBACK, LocalDate.now().plusDays(3), true)
+        MvcResult mvcResult = makeRequest(CallbackType.ABOUT_TO_START.getValue(), LocalDate.now().plusDays(3), true)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -74,7 +75,7 @@ public class MoreTimeRequestedCallbackTest extends MockSpringTest {
     @Test
     public void shouldReturnWithValidationErrorsOnAboutToStartIfAlreadyResponded() throws Exception {
         MvcResult mvcResult = makeRequest(
-            CallbackService.ABOUT_TO_START_CALLBACK,
+            CallbackType.ABOUT_TO_START.getValue(),
             LocalDate.now().plusDays(3),
             false,
             true
@@ -93,7 +94,7 @@ public class MoreTimeRequestedCallbackTest extends MockSpringTest {
 
     @Test
     public void shouldReturnWithValidationErrorsOnAboutToStartIfPastResponseDeadline() throws Exception {
-        MvcResult mvcResult = makeRequest(CallbackService.ABOUT_TO_START_CALLBACK, LocalDate.now().minusDays(1), false)
+        MvcResult mvcResult = makeRequest(CallbackType.ABOUT_TO_START.getValue(), LocalDate.now().minusDays(1), false)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -109,7 +110,7 @@ public class MoreTimeRequestedCallbackTest extends MockSpringTest {
     @Test
     public void shouldModifyResponseDeadlineOnAboutToSubmit() throws Exception {
         LocalDate responseDeadline = LocalDate.now().plusDays(14);
-        MvcResult mvcResult = makeRequest(CallbackService.ABOUT_TO_SUBMIT_CALLBACK, responseDeadline, false)
+        MvcResult mvcResult = makeRequest(CallbackType.ABOUT_TO_SUBMIT.getValue(), responseDeadline, false)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -128,7 +129,7 @@ public class MoreTimeRequestedCallbackTest extends MockSpringTest {
     @Test
     public void shouldSendNotificationOnSubmitted() throws Exception {
         LocalDate responseDeadline = LocalDate.now().plusDays(3);
-        MvcResult mvcResult = makeRequest(CallbackService.SUBMITTED_CALLBACK, responseDeadline, false)
+        MvcResult mvcResult = makeRequest(CallbackType.SUBMITTED.getValue(), responseDeadline, false)
             .andExpect(status().isOk())
             .andReturn();
 

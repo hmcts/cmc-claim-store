@@ -56,11 +56,6 @@ public class AlwaysGenerateDocumentsService implements DocumentsService {
     }
 
     @Override
-    public byte[] generateCountyCourtJudgement(String externalId, String authorisation) {
-        return countyCourtJudgmentPdfService.createPdf(getClaimByExternalId(externalId, authorisation));
-    }
-
-    @Override
     public byte[] generateSettlementAgreement(String externalId, String authorisation) {
         return settlementAgreementCopyService.createPdf(getClaimByExternalId(externalId, authorisation));
     }

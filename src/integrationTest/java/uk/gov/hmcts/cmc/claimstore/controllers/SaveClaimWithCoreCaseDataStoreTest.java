@@ -14,7 +14,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_NEW_CASE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ISSUE_CASE;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreStartResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitRepresentativeResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponse;
@@ -39,7 +40,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(CREATE_NEW_CASE.getValue())
+            eq(CREATE_CASE.getValue())
             )
         ).willReturn(successfulCoreCaseDataStoreStartResponse());
 
@@ -49,6 +50,29 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
+            eq(IGNORE_WARNING),
+            any()
+            )
+        ).willReturn(successfulCoreCaseDataStoreSubmitRepresentativeResponse());
+
+        given(coreCaseDataApi.startEventForCaseWorker(
+            eq(SOLICITOR_AUTHORISATION_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(USER_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            any(),
+            eq(ISSUE_CASE.getValue())
+            )
+        ).willReturn(successfulCoreCaseDataStoreStartResponse());
+
+        given(coreCaseDataApi.submitEventForCaseWorker(
+            eq(SOLICITOR_AUTHORISATION_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(USER_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            any(),
             eq(IGNORE_WARNING),
             any()
             )
@@ -67,7 +91,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
                 eq(USER_ID),
                 eq(JURISDICTION_ID),
                 eq(CASE_TYPE_ID),
-                eq(CREATE_NEW_CASE.getValue())
+                eq(CREATE_CASE.getValue())
             );
 
         verify(coreCaseDataApi)
@@ -92,7 +116,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(CREATE_NEW_CASE.getValue())
+            eq(CREATE_CASE.getValue())
             )
         ).willReturn(successfulCoreCaseDataStoreStartResponse());
 
@@ -107,6 +131,29 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             )
         ).willReturn(successfulCoreCaseDataStoreSubmitResponse());
 
+        given(coreCaseDataApi.startEventForCitizen(
+            eq(AUTHORISATION_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(USER_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            any(),
+            eq(ISSUE_CASE.getValue())
+            )
+        ).willReturn(successfulCoreCaseDataStoreStartResponse());
+
+        given(coreCaseDataApi.submitEventForCitizen(
+            eq(AUTHORISATION_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(USER_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            any(),
+            eq(IGNORE_WARNING),
+            any()
+            )
+        ).willReturn(successfulCoreCaseDataStoreSubmitRepresentativeResponse());
+
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
 
         makeIssueClaimRequest(claimData, AUTHORISATION_TOKEN)
@@ -120,7 +167,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
                 eq(USER_ID),
                 eq(JURISDICTION_ID),
                 eq(CASE_TYPE_ID),
-                eq(CREATE_NEW_CASE.getValue())
+                eq(CREATE_CASE.getValue())
             );
 
         verify(coreCaseDataApi)
@@ -145,7 +192,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(CREATE_NEW_CASE.getValue())
+            eq(CREATE_CASE.getValue())
             )
         ).willThrow(FeignException.class);
 
@@ -156,7 +203,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             .andReturn();
 
         assertThat(result.getResolvedException().getMessage())
-            .isEqualTo("Failed storing claim in CCD store for case id 000LR001 on event CREATE_NEW_CASE");
+            .isEqualTo("Failed storing claim in CCD store for case id 000LR001 on event CREATE_CASE");
     }
 
     @Test
@@ -169,7 +216,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(CREATE_NEW_CASE.getValue())
+            eq(CREATE_CASE.getValue())
             )
         ).willReturn(successfulCoreCaseDataStoreStartResponse());
 
@@ -191,6 +238,6 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             .andReturn();
 
         assertThat(result.getResolvedException().getMessage())
-            .isEqualTo("Failed storing claim in CCD store for case id 000LR001 on event CREATE_NEW_CASE");
+            .isEqualTo("Failed storing claim in CCD store for case id 000LR001 on event CREATE_CASE");
     }
 }

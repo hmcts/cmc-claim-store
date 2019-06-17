@@ -17,39 +17,20 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
-import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CLAIM_ISSUE_RECEIPT_UPLOAD;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SEALED_CLAIM_UPLOAD;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 
 @Async("threadPoolTaskExecutor")
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled", havingValue = "true")
 public class PostClaimOrchestrationHandler {
     private static final Logger logger = LoggerFactory.getLogger(PostClaimOrchestrationHandler.class);
+
     private final DocumentOrchestrationService documentOrchestrationService;
     private final ClaimService claimService;
-
-    private final Predicate<ClaimSubmissionOperationIndicators> isPinOperationSuccess = indicators ->
-        Stream.of(indicators.getBulkPrint(), indicators.getStaffNotification(),
-            indicators.getDefendantNotification())
-            .anyMatch(ind -> ind.equals(YesNoOption.NO));
-    private final Predicate<ClaimSubmissionOperationIndicators> isUploadSealedClaimSuccess = indicators ->
-        indicators.getSealedClaimUpload().equals(YesNoOption.NO);
-    private final Predicate<ClaimSubmissionOperationIndicators> isUploadClaimReceiptSuccess = indicators ->
-        indicators.getClaimIssueReceiptUpload().equals(YesNoOption.NO);
-    private final Predicate<ClaimSubmissionOperationIndicators> isRpaOperationSuccess = indicators ->
-        indicators.getRpa().equals(YesNoOption.NO);
-    private final Predicate<ClaimSubmissionOperationIndicators> isNotifyStaffSuccess = indicators ->
-        indicators.getStaffNotification().equals(YesNoOption.NO);
-    private final Predicate<ClaimSubmissionOperationIndicators> isNotifyCitizenSuccess = indicators ->
-        indicators.getClaimantNotification().equals(YesNoOption.NO);
 
     private final PDFBasedOperation<Claim, String, PDF, Claim> uploadSealedClaimOperation;
     private final PDFBasedOperation<Claim, String, PDF, Claim> uploadClaimIssueReceiptOperation;
@@ -74,39 +55,37 @@ public class PostClaimOrchestrationHandler {
         this.claimService = claimService;
 
         generatePinOperation = (claim, event) ->
-            isPinOperationSuccess.test(claim.getClaimSubmissionOperationIndicators())
-                ? pinOrchestrationService.process(claim, event.getAuthorisation(), event.getAuthorisation())
-                : claim;
+            claim.getClaimSubmissionOperationIndicators().isPinOperationSuccess()
+                ? claim
+                : pinOrchestrationService.process(claim, event.getAuthorisation(), event.getAuthorisation());
 
         uploadSealedClaimOperation = (claim, authorisation, sealedClaim) ->
-            isUploadSealedClaimSuccess.test(claim.getClaimSubmissionOperationIndicators())
-                ? uploadOperationService
-                .uploadDocument(claim, authorisation, sealedClaim, SEALED_CLAIM_UPLOAD)
+            claim.getClaimSubmissionOperationIndicators().getSealedClaimUpload() == NO
+                ? uploadOperationService.uploadDocument(claim, authorisation, sealedClaim)
                 : claim;
 
         uploadClaimIssueReceiptOperation = (claim, authorisation, claimIssueReceipt) ->
-            isUploadClaimReceiptSuccess.test(claim.getClaimSubmissionOperationIndicators())
-                ? uploadOperationService
-                .uploadDocument(claim, authorisation, claimIssueReceipt, CLAIM_ISSUE_RECEIPT_UPLOAD)
+            claim.getClaimSubmissionOperationIndicators().getClaimIssueReceiptUpload() == NO
+                ? uploadOperationService.uploadDocument(claim, authorisation, claimIssueReceipt)
                 : claim;
 
         rpaOperation = (claim, authorisation, sealedClaim) ->
-            isRpaOperationSuccess.test(claim.getClaimSubmissionOperationIndicators())
+            claim.getClaimSubmissionOperationIndicators().getRpa() == NO
                 ? rpaOperationService.notify(claim, authorisation, sealedClaim)
                 : claim;
 
         notifyStaffOperation = (claim, authorisation, sealedClaim) ->
-            isNotifyStaffSuccess.test(claim.getClaimSubmissionOperationIndicators())
+            claim.getClaimSubmissionOperationIndicators().getStaffNotification() == NO
                 ? notifyStaffOperationService.notify(claim, authorisation, sealedClaim)
                 : claim;
 
         notifyClaimantOperation = (claim, event) ->
-            isNotifyCitizenSuccess.test(claim.getClaimSubmissionOperationIndicators())
+            claim.getClaimSubmissionOperationIndicators().getClaimantNotification() == NO
                 ? claimantOperationService.notifyCitizen(claim, event.getSubmitterName(), event.getAuthorisation())
                 : claim;
 
         notifyRepresentativeOperation = (claim, event) ->
-            isNotifyCitizenSuccess.test(claim.getClaimSubmissionOperationIndicators())
+            claim.getClaimSubmissionOperationIndicators().getClaimantNotification() == NO
                 ? claimantOperationService.confirmRepresentative(
                 claim,
                 event.getSubmitterName(),
@@ -138,7 +117,7 @@ public class PostClaimOrchestrationHandler {
             claimService.updateClaimState(authorisation, updatedClaim.get(), ClaimState.OPEN);
 
         } catch (Exception e) {
-            logger.error("failed operation processing for event ()", event, e);
+            logger.error("Failed operation processing for event ()", event, e);
         }
     }
 
@@ -165,7 +144,7 @@ public class PostClaimOrchestrationHandler {
             claimService.updateClaimState(authorisation, updatedClaim.get(), ClaimState.OPEN);
 
         } catch (Exception e) {
-            logger.error("failed operation processing for event ()", event, e);
+            logger.error("Failed operation processing for event ()", event, e);
         }
     }
 }

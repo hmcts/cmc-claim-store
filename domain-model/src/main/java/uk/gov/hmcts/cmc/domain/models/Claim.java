@@ -66,6 +66,7 @@ public class Claim {
     private final LocalDate claimantResponseDeadline;
     private final ClaimState state;
     private final ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
+    private final Long ccdCaseId;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -100,7 +101,8 @@ public class Claim {
         ClaimDocumentCollection claimDocumentCollection,
         LocalDate claimantResponseDeadline,
         ClaimState state,
-        ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
+        ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators,
+        Long ccdCaseId
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -132,6 +134,7 @@ public class Claim {
         this.claimDocumentCollection = claimDocumentCollection;
         this.claimantResponseDeadline = claimantResponseDeadline;
         this.state = state;
+        this.ccdCaseId = ccdCaseId;
         this.claimSubmissionOperationIndicators = claimSubmissionOperationIndicators;
     }
 

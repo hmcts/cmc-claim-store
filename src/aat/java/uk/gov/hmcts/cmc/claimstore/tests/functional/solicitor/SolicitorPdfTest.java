@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.solicitor;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.tests.functional.BasePdfTest;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
@@ -23,6 +24,7 @@ public class SolicitorPdfTest extends BasePdfTest {
     }
 
     @Test
+    @Ignore
     public void shouldBeAbleToFindTestClaimDataInSolicitorSealedClaimPdf() throws IOException {
         shouldBeAbleToFindTestClaimDataInPdf("legalSealedClaim", createCase());
     }
@@ -50,7 +52,6 @@ public class SolicitorPdfTest extends BasePdfTest {
     @Override
     protected Claim createCase() {
         ClaimData claimData = getSampleClaimDataBuilder().get().build();
-        commonOperations.submitPrePaymentClaim(claimData.getExternalId().toString(), user.getAuthorisation());
         return commonOperations.saveClaim(claimData, user.getAuthorisation(), user.getUserDetails().getId())
             .then().extract().body().as(Claim.class);
     }

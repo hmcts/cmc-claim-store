@@ -40,14 +40,6 @@ public abstract class BasePdfTest extends BaseTest {
             .asInputStream();
     }
 
-    protected InputStream retrieveCCJPdf(String externalId) {
-        return RestAssured
-            .given()
-            .header(HttpHeaders.AUTHORIZATION, user.getAuthorisation())
-            .get("/documents/ccj/" + externalId)
-            .asInputStream();
-    }
-
     protected static String textContentOf(InputStream inputStream) throws IOException {
         PDDocument document = PDDocument.load(inputStream);
         try {
