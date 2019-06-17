@@ -30,7 +30,7 @@ public class DirectionsQuestionnaireAssert
 
         actual.getWitness().ifPresent(isEqualToWitness(ccdDirectionsQuestionnaire));
 
-        actual.getRequireSupport().ifPresent(isEqualToRequireSupport(ccdDirectionsQuestionnaire));
+        actual.getExpertRequest().ifPresent(isEqualToExpertRequest(ccdDirectionsQuestionnaire));
 
         return this;
     }
