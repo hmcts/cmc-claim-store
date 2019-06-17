@@ -111,4 +111,10 @@ public class EmailTemplates {
 
     @NotEmpty
     private String claimantRejectedPartAdmitOrStatesPaidEmailToDefendant;
+
+    @NotEmpty
+    private String claimantLegalOrderDrawn;
+
+    @NotEmpty
+    private String defendantLegalOrderDrawn;
 }
