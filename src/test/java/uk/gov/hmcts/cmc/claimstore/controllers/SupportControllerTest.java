@@ -53,6 +53,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEI
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SupportControllerTest {
@@ -341,7 +342,7 @@ public class SupportControllerTest {
 
     @Test
     public void shouldPerformResetOperationForCitizenClaim() {
-        Claim claim = SampleClaim.getDefault();
+        Claim claim = SampleClaim.getWithClaimSubmissionOperationIndicators();
         ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators = ClaimSubmissionOperationIndicators
             .builder().build();
         when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
@@ -359,6 +360,30 @@ public class SupportControllerTest {
             eq(claim),
             eq(claimSubmissionOperationIndicators));
         verify(postClaimOrchestrationHandler).citizenIssueHandler(any(CitizenClaimCreatedEvent.class));
+    }
+
+    @Test
+    public void shouldThrowExceptionForResetOperationForCitizenClaim() {
+        Claim claim = SampleClaim.getDefault();
+        final ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators = ClaimSubmissionOperationIndicators
+            .builder()
+            .claimIssueReceiptUpload(YES)
+            .sealedClaimUpload(YES)
+            .bulkPrint(YES)
+            .claimantNotification(YES)
+            .rpa(YES)
+            .defendantNotification(YES)
+            .staffNotification(YES)
+            .build();
+        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
+            .thenReturn(Optional.of(claim));
+        exceptionRule.expect(BadRequestException.class);
+        exceptionRule.expectMessage("Invalid input. The following indicator(s)[claimIssueReceiptUpload, "
+            + "sealedClaimUpload, bulkPrint, claimantNotification, defendantNotification, rpa, staffNotification] "
+            + "cannot be set to Yes");
+        controller.resetOperation(CLAIMREFERENCENUMBER,
+            claimSubmissionOperationIndicators,
+            AUTHORISATION);
     }
 
     @Test

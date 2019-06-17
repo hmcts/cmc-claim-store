@@ -13,10 +13,10 @@ import uk.gov.hmcts.cmc.claimstore.events.operations.NotifyStaffOperationService
 import uk.gov.hmcts.cmc.claimstore.events.operations.RpaOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.UploadOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimCreatedEvent;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimState;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -114,8 +114,11 @@ public class PostClaimOrchestrationHandler {
                     .andThen(c -> notifyClaimantOperation.perform(c, event))
                     .apply(claim);
 
-            claimService.updateClaimState(authorisation, updatedClaim.get(), ClaimState.OPEN);
-
+            claimService.updateClaimState(
+                authorisation,
+                updatedClaim.get(),
+                claim.getState().orElseThrow(() -> new ConflictException("Claim should have a state"))
+            );
         } catch (Exception e) {
             logger.error("Failed operation processing for event ()", event, e);
         }
@@ -141,7 +144,11 @@ public class PostClaimOrchestrationHandler {
                     .andThen(c -> notifyRepresentativeOperation.perform(c, event))
                     .apply(claim);
 
-            claimService.updateClaimState(authorisation, updatedClaim.get(), ClaimState.OPEN);
+            claimService.updateClaimState(
+                authorisation,
+                updatedClaim.get(),
+                claim.getState().orElseThrow(() -> new ConflictException("Claim should have a state"))
+            );
 
         } catch (Exception e) {
             logger.error("Failed operation processing for event ()", event, e);

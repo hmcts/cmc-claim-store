@@ -27,7 +27,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Supplier;
 
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
@@ -130,14 +129,14 @@ public final class SampleClaim {
             )
             .withClaimSubmissionOperationIndicators(
                 ClaimSubmissionOperationIndicators.builder()
-                .bulkPrint(YES)
-                .claimantNotification(YES)
-                .claimIssueReceiptUpload(YES)
-                .defendantNotification(YES)
-                .rpa(YES)
-                .sealedClaimUpload(YES)
-                .staffNotification(YES)
-                .build()
+                    .bulkPrint(YES)
+                    .claimantNotification(YES)
+                    .claimIssueReceiptUpload(YES)
+                    .defendantNotification(YES)
+                    .rpa(YES)
+                    .sealedClaimUpload(YES)
+                    .staffNotification(YES)
+                    .build()
             )
             .build();
     }
@@ -691,7 +690,9 @@ public final class SampleClaim {
         return this;
     }
 
-    public SampleClaim withClaimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators) {
+    public SampleClaim withClaimSubmissionOperationIndicators(
+        ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
+    ) {
         this.claimSubmissionOperationIndicators = claimSubmissionOperationIndicators;
         return this;
     }

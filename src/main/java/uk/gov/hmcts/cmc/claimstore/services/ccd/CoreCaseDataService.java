@@ -738,6 +738,7 @@ public class CoreCaseDataService {
     private CCDCase extractCase(CaseDetails caseDetails) {
         Map<String, Object> caseData = caseDetails.getData();
         caseData.put("id", caseDetails.getId());
+        caseData.put("state", caseDetails.getState());
         return jsonMapper.fromMap(caseData, CCDCase.class);
     }
 
@@ -791,7 +792,7 @@ public class CoreCaseDataService {
             );
 
             CCDCase ccdCase = extractCase(startEventResponse.getCaseDetails());
-
+            ccdCase.setState(null);
             CaseDataContent caseDataContent = caseDataContent(startEventResponse, ccdCase);
 
             submitUpdate(authorisation,

@@ -195,43 +195,44 @@ public class SupportController {
     ) {
         List<String> invalidIndicators = new ArrayList<>();
 
-        if (existingClaimSubmissionOperationIndicators.getClaimIssueReceiptUpload().equals(NO) &&
-            newClaimSubmissionOperationIndicators.getClaimIssueReceiptUpload().equals(YES)) {
+        if (existingClaimSubmissionOperationIndicators.getClaimIssueReceiptUpload().equals(NO)
+            && newClaimSubmissionOperationIndicators.getClaimIssueReceiptUpload().equals(YES)) {
             invalidIndicators.add("claimIssueReceiptUpload");
         }
 
-        if (existingClaimSubmissionOperationIndicators.getSealedClaimUpload().equals(NO) &&
-            newClaimSubmissionOperationIndicators.getSealedClaimUpload().equals(YES)) {
+        if (existingClaimSubmissionOperationIndicators.getSealedClaimUpload().equals(NO)
+            && newClaimSubmissionOperationIndicators.getSealedClaimUpload().equals(YES)) {
             invalidIndicators.add("sealedClaimUpload");
         }
 
-        if (existingClaimSubmissionOperationIndicators.getBulkPrint().equals(NO) &&
-            newClaimSubmissionOperationIndicators.getBulkPrint().equals(YES)) {
+        if (existingClaimSubmissionOperationIndicators.getBulkPrint().equals(NO)
+            && newClaimSubmissionOperationIndicators.getBulkPrint().equals(YES)) {
             invalidIndicators.add("bulkPrint");
         }
 
-        if (existingClaimSubmissionOperationIndicators.getClaimantNotification().equals(NO) &&
-            newClaimSubmissionOperationIndicators.getClaimantNotification().equals(YES)) {
+        if (existingClaimSubmissionOperationIndicators.getClaimantNotification().equals(NO)
+            && newClaimSubmissionOperationIndicators.getClaimantNotification().equals(YES)) {
             invalidIndicators.add("claimantNotification");
         }
 
-        if (existingClaimSubmissionOperationIndicators.getDefendantNotification().equals(NO) &&
-            newClaimSubmissionOperationIndicators.getDefendantNotification().equals(YES)) {
+        if (existingClaimSubmissionOperationIndicators.getDefendantNotification().equals(NO)
+            && newClaimSubmissionOperationIndicators.getDefendantNotification().equals(YES)) {
             invalidIndicators.add("defendantNotification");
         }
 
-        if (existingClaimSubmissionOperationIndicators.getRpa().equals(NO) &&
-            newClaimSubmissionOperationIndicators.getRpa().equals(YES)) {
+        if (existingClaimSubmissionOperationIndicators.getRpa().equals(NO)
+            && newClaimSubmissionOperationIndicators.getRpa().equals(YES)) {
             invalidIndicators.add("rpa");
         }
 
-        if (existingClaimSubmissionOperationIndicators.getStaffNotification().equals(NO) &&
-            newClaimSubmissionOperationIndicators.getStaffNotification().equals(YES)) {
+        if (existingClaimSubmissionOperationIndicators.getStaffNotification().equals(NO)
+            && newClaimSubmissionOperationIndicators.getStaffNotification().equals(YES)) {
             invalidIndicators.add("staffNotification");
         }
 
         if (invalidIndicators.size() > 0) {
-            throw new BadRequestException("Invalid input. The following indicator(s)" + invalidIndicators + " cannot be set to Yes");
+            throw new BadRequestException("Invalid input. The following indicator(s)"
+                + invalidIndicators + " cannot be set to Yes");
         }
 
     }

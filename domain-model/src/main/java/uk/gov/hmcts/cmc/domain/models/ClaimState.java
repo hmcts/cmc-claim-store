@@ -15,4 +15,13 @@ public enum ClaimState {
     public String getValue() {
         return state;
     }
+
+    public static ClaimState fromValue(String state) {
+        for (ClaimState claimState : ClaimState.values()) {
+            if (claimState.getValue().equalsIgnoreCase(state)) {
+                return claimState;
+            }
+        }
+        throw new IllegalArgumentException(state + " is not a valid state.");
+    }
 }
