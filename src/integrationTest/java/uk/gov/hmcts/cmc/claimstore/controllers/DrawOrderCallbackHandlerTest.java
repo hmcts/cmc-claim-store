@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
@@ -10,6 +11,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -20,6 +23,8 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponse;
@@ -34,6 +39,9 @@ public class DrawOrderCallbackHandlerTest extends MockSpringTest {
 
     private static final String AUTHORISATION_TOKEN = "Bearer let me in";
     private static final String DOCUMENT_URL = "http://bla.test";
+
+    @MockBean
+    private OrderDrawnNotificationService orderDrawnNotificationService;
 
     @Test
     public void shouldAddDraftDocumentToEmptyCaseDocumentsOnEventStart() throws Exception {
@@ -57,7 +65,19 @@ public class DrawOrderCallbackHandlerTest extends MockSpringTest {
                 entry("documentType", "ORDER_DIRECTIONS")
             );
     }
-    
+
+    @Test
+    public void shouldNotifyPartiesOnEventSubmitted() throws Exception {
+        makeRequest(CallbackType.SUBMITTED.getValue())
+            .andExpect(status().isOk())
+            .andReturn();
+
+        verify(orderDrawnNotificationService)
+            .notifyClaimant(any(Claim.class));
+        verify(orderDrawnNotificationService)
+            .notifyDefendant(any(Claim.class));
+    }
+
     private ResultActions makeRequest(String callbackType) throws Exception {
         CaseDetails caseDetailsTemp =  successfulCoreCaseDataStoreSubmitResponse();
         Map<String, Object> data = new HashMap<>(caseDetailsTemp.getData());
