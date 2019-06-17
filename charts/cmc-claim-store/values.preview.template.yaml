@@ -24,7 +24,7 @@ postgresql:
   postgresqlUsername: hmcts
   postgresqlPassword: hmcts
   postgresqlDatabase: user-profile
-  nameOverride: ccd-postgres  # because ccd wont work without this specific name
+  nameOverride: postgres
   persistence:
     enabled: false
 
@@ -41,10 +41,10 @@ java:
     DOC_ASSEMBLY_URL: false
     FRONTEND_BASE_URL: https://www-${SERVICE_FQDN}
     RESPOND_TO_CLAIM_URL: https://www-${SERVICE_FQDN}/first-contact/start
-    CLAIM_STORE_DB_HOST: ${SERVICE_NAME}-ccd-postgres
+    CLAIM_STORE_DB_HOST: ${SERVICE_NAME}-postgres
     CLAIM_STORE_DB_USERNAME: claimstore
     CLAIM_STORE_DB_PASSWORD: claimstore
-    CMC_DB_HOST: ${SERVICE_NAME}-ccd-postgres
+    CMC_DB_HOST: ${SERVICE_NAME}-postgres
     CMC_DB_USERNAME: cmc
     CMC_DB_PASSWORD: cmc
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
@@ -80,7 +80,7 @@ cmc-citizen-frontend:
     java:
       releaseNameOverride: ${SERVICE_NAME}-ftr-tgl-api
       environment:
-        FEATURES_DB_HOST: ${SERVICE_NAME}-ccd-postgres
+        FEATURES_DB_HOST: ${SERVICE_NAME}-postgres
         FEATURES_DB_NAME: features
         FEATURES_DB_USER_NAME: features
         FEATURES_DB_PASSWORD: features
@@ -130,7 +130,7 @@ ccd:
         - CMC
       users:
         - civilmoneyclaims+ccd@gmail.com|CMC|MoneyClaimCase|open
-      userProfileDatabaseHost: ${SERVICE_NAME}-ccd-postgres
+      userProfileDatabaseHost: ${SERVICE_NAME}-postgres
       userProfileDatabasePort: 5432
       userProfileDatabaseUser: hmcts
       userProfileDatabasePassword: hmcts
