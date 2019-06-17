@@ -86,7 +86,7 @@ cmc-citizen-frontend:
         image:
           tag: '11.3.0'
     importer:
-      apiUrl: http://${SERVICE_NAME}-java/api/ff4j/store/features/
+      apiUrl: http://${SERVICE_NAME}-ftr-tgl-api/api/ff4j/store/features/
       kvSecretRef: kvcreds
       cron:
         enabled: false
