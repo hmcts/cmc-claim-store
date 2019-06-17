@@ -13,12 +13,9 @@ postgresql:
       cpu: 25m
   initdbScripts:
     init.sql: |-
-      CREATE USER claimstore WITH PASSWORD 'claimstore';
-      CREATE DATABASE claimstore WITH OWNER = claimstore ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-      CREATE USER cmc WITH PASSWORD 'cmc';
-      CREATE DATABASE cmc WITH OWNER = cmc ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-      CREATE USER features WITH PASSWORD 'features';
-      CREATE DATABASE features WITH OWNER = features ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+      CREATE DATABASE claimstore WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+      CREATE DATABASE cmc WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+      CREATE DATABASE features WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
   postgresqlUsername: hmcts
@@ -42,8 +39,8 @@ java:
     FRONTEND_BASE_URL: https://www-${SERVICE_FQDN}
     RESPOND_TO_CLAIM_URL: https://www-${SERVICE_FQDN}/first-contact/start
     CLAIM_STORE_DB_HOST: ${SERVICE_NAME}-postgres
-    CLAIM_STORE_DB_USERNAME: claimstore
-    CLAIM_STORE_DB_PASSWORD: claimstore
+    CLAIM_STORE_DB_USERNAME: hmcts
+    CLAIM_STORE_DB_PASSWORD: hmcts
     CMC_DB_HOST: ${SERVICE_NAME}-postgres
     CMC_DB_USERNAME: cmc
     CMC_DB_PASSWORD: cmc
@@ -82,8 +79,8 @@ cmc-citizen-frontend:
       environment:
         FEATURES_DB_HOST: ${SERVICE_NAME}-postgres
         FEATURES_DB_NAME: features
-        FEATURES_DB_USER_NAME: features
-        FEATURES_DB_PASSWORD: features
+        FEATURES_DB_USER_NAME: hmcts
+        FEATURES_DB_PASSWORD: hmcts
       postgresql:
         image:
           tag: '11.3.0'
