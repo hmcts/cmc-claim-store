@@ -5,41 +5,33 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.idam.services.UserService;
 import uk.gov.hmcts.cmc.ccd.migration.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.ccd.migration.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.Interest;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static uk.gov.hmcts.cmc.domain.models.InterestDate.InterestEndDateType.SETTLED_OR_JUDGMENT;
-
 @Service
-public class ClaimMigrator {
+public class ClaimDataPatcher {
 
-    private static final Logger logger = LoggerFactory.getLogger(ClaimMigrator.class);
+    private static final Logger logger = LoggerFactory.getLogger(ClaimDataPatcher.class);
 
     private final ClaimRepository claimRepository;
     private final UserService userService;
-    private final MigrationHandler migrationHandler;
-    private final DataFixHandler dataFixHandler;
     private final DataFixService dataFixService;
     private final List<String> casesToMigrate;
     private final boolean fixDataIssues;
     private final boolean dryRun;
 
     @Autowired
-    public ClaimMigrator(
+    public ClaimDataPatcher(
         ClaimRepository claimRepository,
         UserService userService,
-        MigrationHandler migrationHandler,
-        DataFixHandler dataFixHandler,
         DataFixService dataFixService,
         @Value("${migration.cases.references}") List<String> casesToMigrate,
         @Value("${migration.fixDataIssues}") boolean fixDataIssues,
@@ -47,8 +39,6 @@ public class ClaimMigrator {
     ) {
         this.claimRepository = claimRepository;
         this.userService = userService;
-        this.migrationHandler = migrationHandler;
-        this.dataFixHandler = dataFixHandler;
         this.dataFixService = dataFixService;
         this.casesToMigrate = casesToMigrate;
         this.fixDataIssues = fixDataIssues;
@@ -56,29 +46,25 @@ public class ClaimMigrator {
     }
 
     @LogExecutionTime
-    public void migrate() {
-        logger.info("===== MIGRATE CLAIMS TO CCD =====");
+    public void patchClaims() {
+        logger.info("===== PATCH DATA IN CCD =====");
         logger.info("DRY RUN Enabled: " + dryRun);
 
         User user = userService.authenticateSystemUpdateUser();
         List<Claim> claimsToMigrate = getClaimsToMigrate();
 
-        AtomicInteger migratedClaims = new AtomicInteger(0);
         AtomicInteger updatedClaims = new AtomicInteger(0);
-        AtomicInteger failedOnCreateMigrations = new AtomicInteger(0);
-        AtomicInteger failedOnUpdateMigrations = new AtomicInteger(0);
+        AtomicInteger failedOnUpdate = new AtomicInteger(0);
 
         ForkJoinPool forkJoinPool = new ForkJoinPool(1);
 
         try {
             forkJoinPool
-                .submit(() -> migrateClaims(
+                .submit(() -> patchClaims(
                     user,
                     claimsToMigrate,
-                    migratedClaims,
                     updatedClaims,
-                    failedOnCreateMigrations,
-                    failedOnUpdateMigrations
+                    failedOnUpdate
                     )
                 )
                 .get();
@@ -88,45 +74,22 @@ public class ClaimMigrator {
             forkJoinPool.shutdown();
         }
 
-        logger.info("Total Claims in database: " + claimsToMigrate.size());
-        logger.info("Successful creates: " + migratedClaims.toString());
+        logger.info("Total Claims fetched: " + claimsToMigrate.size());
         logger.info("Successful updates: " + updatedClaims.toString());
-        logger.info("Total ccd calls: " + (updatedClaims.intValue() + migratedClaims.intValue()));
-        logger.info("Failed on update ccd calls: " + failedOnUpdateMigrations.toString());
-        logger.info("Failed on create ccd calls: " + failedOnCreateMigrations.toString());
+        logger.info("Failed on update ccd calls: " + failedOnUpdate.toString());
     }
 
-    private List<Claim> getClaimsToMigrate() {
-        if (CollectionUtils.isEmpty(casesToMigrate)) {
-            return claimRepository.getAllNotMigratedClaims();
-        } else {
-            return claimRepository.getClaims(casesToMigrate);
-        }
-    }
-
-    private void migrateClaims(
+    private void patchClaims(
         User user,
         List<Claim> notMigratedClaims,
-        AtomicInteger migratedClaims,
         AtomicInteger updatedClaims,
-        AtomicInteger failedOnCreateMigrations,
-        AtomicInteger failedOnUpdateMigrations
+        AtomicInteger failedOnUpdate
     ) {
         notMigratedClaims.parallelStream().forEach(claim -> {
             if (fixDataIssues) {
-                dataFixService.fixClaimFromSecondLastEvent(
+                dataFixService.fixClaimWithMissingInterest(
                     updatedClaims,
-                    failedOnUpdateMigrations,
-                    claim,
-                    user
-                );
-
-            } else {
-                migrationHandler.migrateClaim(
-                    migratedClaims,
-                    failedOnCreateMigrations,
-                    failedOnUpdateMigrations,
-                    updatedClaims,
+                    failedOnUpdate,
                     claim,
                     user
                 );
@@ -135,11 +98,7 @@ public class ClaimMigrator {
 
     }
 
-    private boolean isSettledOrJudgement(Claim claim) {
-        Interest interest = claim.getClaimData().getInterest();
-        return interest != null
-            && interest.getInterestDate() != null
-            && interest.getInterestDate().getEndDateType() != null
-            && interest.getInterestDate().getEndDateType() == SETTLED_OR_JUDGMENT;
+    private List<Claim> getClaimsToMigrate() {
+        return claimRepository.getClaims(casesToMigrate);
     }
 }
