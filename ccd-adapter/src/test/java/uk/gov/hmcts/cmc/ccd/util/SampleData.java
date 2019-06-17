@@ -246,6 +246,11 @@ public class SampleData {
                     .dateOfBirth(LocalDate.of(1950, 01, 01))
                     .correspondenceAddress(ccdAddress)
                     .build())
+            .partyDetail(
+                CCDParty.builder()
+                    .emailAddress("defendant@email.test")
+                    .build()
+            )
             .claimantProvidedPartyName("Individual")
             .claimantProvidedRepresentativeOrganisationAddress(ccdAddress)
             .claimantProvidedRepresentativeOrganisationName("My Org")
@@ -319,6 +324,7 @@ public class SampleData {
             .partyDetail(CCDParty.builder()
                 .type(INDIVIDUAL)
                 .primaryAddress(ccdAddress)
+                .emailAddress("claimant@email.test")
                 .telephoneNumber(CCDTelephone.builder().telephoneNumber("07987654321").build())
                 .dateOfBirth(LocalDate.of(1950, 01, 01))
                 .correspondenceAddress(ccdAddress)
@@ -329,6 +335,59 @@ public class SampleData {
             .representativeOrganisationPhone("07987654321")
             .representativeOrganisationEmail("my@email.com")
             .representativeOrganisationDxAddress("dx123")
+            .build();
+    }
+
+    public static CCDApplicant getIndividualApplicantWithDQ() {
+        CCDAddress ccdAddress = getCCDAddress();
+        return CCDApplicant.builder()
+            .partyDetail(CCDParty.builder()
+                .type(INDIVIDUAL)
+                .primaryAddress(ccdAddress)
+                .telephoneNumber(CCDTelephone.builder().telephoneNumber("07987654321").build())
+                .dateOfBirth(LocalDate.of(1950, 01, 01))
+                .correspondenceAddress(ccdAddress)
+                .build())
+            .partyName("Individual")
+            .representativeOrganisationAddress(ccdAddress)
+            .representativeOrganisationName("My Org")
+            .representativeOrganisationPhone("07987654321")
+            .representativeOrganisationEmail("my@email.com")
+            .representativeOrganisationDxAddress("dx123")
+            .preferredCourtName("Claimant Court")
+            .preferredCourtAddress(CCDAddress.builder()
+                .addressLine1("Claimant Court address")
+                .postCode("SW1P4BB")
+                .postTown("London")
+                .build())
+            .preferredCourtReason("As a claimant I like this court more")
+            .build();
+    }
+
+    public static CCDRespondent getIndividualRespondentWithDQ() {
+        CCDAddress ccdAddress = getCCDAddress();
+        return CCDRespondent.builder()
+            .partyName("Mary Richards")
+            .claimantProvidedDetail(
+                CCDParty.builder()
+                    .type(INDIVIDUAL)
+                    .primaryAddress(ccdAddress)
+                    .dateOfBirth(LocalDate.of(1950, 01, 01))
+                    .correspondenceAddress(ccdAddress)
+                    .build())
+            .claimantProvidedPartyName("Individual")
+            .claimantProvidedRepresentativeOrganisationAddress(ccdAddress)
+            .claimantProvidedRepresentativeOrganisationName("My Org")
+            .claimantProvidedRepresentativeOrganisationPhone("07987654321")
+            .claimantProvidedRepresentativeOrganisationPhone("my@email.com")
+            .claimantProvidedRepresentativeOrganisationDxAddress("dx123")
+            .preferredCourtName("Defendant Court")
+            .preferredCourtAddress(CCDAddress.builder()
+                .addressLine1("Defendant Court address")
+                .postCode("SW1P4BB")
+                .postTown("London")
+                .build())
+            .preferredCourtReason("As a defendant I like this court more")
             .build();
     }
 
