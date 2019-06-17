@@ -3,9 +3,9 @@ import java.util.stream.Collectors
 plugins {
   id 'checkstyle'
   id 'io.spring.dependency-management' version '1.0.7.RELEASE'
-  id 'org.springframework.boot' version '2.1.4.RELEASE'
+  id 'org.springframework.boot' version '2.1.5.RELEASE'
   id 'org.owasp.dependencycheck' version '4.0.2'
-  id 'org.sonarqube' version '2.7'
+  id 'org.sonarqube' version '2.7.1'
   id 'com.github.ben-manes.versions' version '0.21.0'
   id 'jacoco'
   id 'net.ltgt.apt' version '0.21'
@@ -24,7 +24,7 @@ dependencyUpdates.resolutionStrategy = {
   }
 }
 
-def springBootVersion = '2.1.4.RELEASE'
+def springBootVersion = '2.1.5.RELEASE'
 def springCloudVersion = 'Greenwich.SR1'
 
 allprojects {
@@ -85,7 +85,7 @@ allprojects {
     }
     dependencies {
       // CVE-2019-0232 - command line injections on windows - fixed on spring boot master but not released
-      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.20') {
+      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.21') {
         entry 'tomcat-embed-core'
         entry 'tomcat-embed-el'
         entry 'tomcat-embed-websocket'
@@ -175,7 +175,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'pdf-service-client', version: '7.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.6.2'
   compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '5.0.0'
-  compile group: 'uk.gov.hmcts.reform', name: 'doc-assembly-client', version: '1.0.3'
+  compile group: 'uk.gov.hmcts.reform', name: 'doc-assembly-client', version: '1.0.4'
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.2.0'
   compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.4'
@@ -203,7 +203,7 @@ dependencies {
   
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.12.2'
   testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.11.2'
-  testCompile group: 'org.mockito', name: 'mockito-core', version: '2.27.0'
+  testCompile group: 'org.mockito', name: 'mockito-core', version: '2.28.2'
   
   testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
   testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.4.0'
@@ -264,9 +264,9 @@ task migrateClaims() {
 task functional(type: Test) {
   group = 'Delivery pipeline'
   description = 'Executes functional tests against an AAT Claim Store instance'
-//  setTestClassesDirs(sourceSets.aat.output.classesDirs)
-//  setClasspath(sourceSets.aat.runtimeClasspath)
-//  include "uk/gov/hmcts/cmc/claimstore/tests/functional/**"
+  setTestClassesDirs(sourceSets.aat.output.classesDirs)
+  setClasspath(sourceSets.aat.runtimeClasspath)
+  include "uk/gov/hmcts/cmc/claimstore/tests/functional/**"
 
   environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }

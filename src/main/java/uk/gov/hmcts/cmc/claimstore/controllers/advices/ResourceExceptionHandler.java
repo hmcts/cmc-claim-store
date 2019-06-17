@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantLinkException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
@@ -113,6 +114,7 @@ public class ResourceExceptionHandler {
     }
 
     @ExceptionHandler(value = {
+        CallbackException.class,
         HttpMediaTypeNotSupportedException.class,
         ServletRequestBindingException.class})
     public ResponseEntity<Object> badRequest(Exception exception) {
