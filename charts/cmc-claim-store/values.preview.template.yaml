@@ -75,7 +75,6 @@ cmc-citizen-frontend:
       FEES_URL: http://fees-register-api-aat.service.core-compute-aat.internal
       DRAFT_STORE_URL: http://draft-store-service-aat.service.core-compute-aat.internal
   rpe-feature-toggle-api:
-    releaseNameOverride: ${SERVICE_NAME}-ftr-tgl-api
     java:
       releaseNameOverride: ${SERVICE_NAME}-ftr-tgl-api
       environment:
@@ -83,6 +82,8 @@ cmc-citizen-frontend:
         FEATURES_DB_NAME: features
         FEATURES_DB_USER_NAME: features
         FEATURES_DB_PASSWORD: features
+    importer:
+      apiUrl: http://${SERVICE_NAME}-java/api/ff4j/store/features/
   idam-pr:
     service:
       name: Money Claims - Citizen
@@ -135,6 +136,9 @@ ccd:
     definition:
       enabled: true
       image: hmcts.azurecr.io/hmcts/cmc-ccd-definition-importer:1.2.6
+      kvSecretRef: kvcreds
+      gitSecretRef: kvcreds
+      redirectUri: https://case-management-web-${SERVICE_FQDN}/oauth2redirect
       definitionFilename: cmc-ccd.xlsx
       userRoles:
         - citizen
