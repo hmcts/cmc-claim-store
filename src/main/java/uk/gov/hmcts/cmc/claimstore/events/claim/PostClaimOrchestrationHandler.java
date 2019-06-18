@@ -13,14 +13,13 @@ import uk.gov.hmcts.cmc.claimstore.events.operations.NotifyStaffOperationService
 import uk.gov.hmcts.cmc.claimstore.events.operations.RpaOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.operations.UploadOperationService;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimCreatedEvent;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.function.Function;
-import java.util.function.Supplier;
 
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 
 @Async("threadPoolTaskExecutor")
@@ -106,7 +105,7 @@ public class PostClaimOrchestrationHandler {
             PDF sealedClaimPdf = documentOrchestrationService.getSealedClaimPdf(claim);
             PDF claimIssueReceiptPdf = documentOrchestrationService.getClaimIssueReceiptPdf(claim);
 
-            Supplier<Claim> updatedClaim = () ->
+            Claim updatedClaim =
                 doPinOperation
                     .andThen(c -> uploadSealedClaimOperation.perform(c, authorisation, sealedClaimPdf))
                     .andThen(c -> uploadClaimIssueReceiptOperation.perform(c, authorisation, claimIssueReceiptPdf))
@@ -114,11 +113,14 @@ public class PostClaimOrchestrationHandler {
                     .andThen(c -> notifyClaimantOperation.perform(c, event))
                     .apply(claim);
 
-            claimService.updateClaimState(
-                authorisation,
-                updatedClaim.get(),
-                claim.getState().orElseThrow(() -> new ConflictException("Claim should have a state"))
-            );
+            updatedClaim.getState()
+                .filter(state -> state == CREATE)
+                .ifPresent(state -> {
+                    claimService.updateClaimState(
+                        authorisation,
+                        updatedClaim,
+                        state);
+                });
         } catch (Exception e) {
             logger.error("Failed operation processing for event ()", event, e);
         }
@@ -137,18 +139,20 @@ public class PostClaimOrchestrationHandler {
             Function<Claim, Claim> doUploadSealedClaim =
                 c -> uploadSealedClaimOperation.perform(c, authorisation, sealedClaim);
 
-            Supplier<Claim> updatedClaim = () ->
-                doUploadSealedClaim
-                    .andThen(c -> rpaOperation.perform(c, authorisation, sealedClaim))
-                    .andThen(c -> notifyStaffOperation.perform(c, authorisation, sealedClaim))
-                    .andThen(c -> notifyRepresentativeOperation.perform(c, event))
-                    .apply(claim);
+            Claim updatedClaim = doUploadSealedClaim
+                .andThen(c -> rpaOperation.perform(c, authorisation, sealedClaim))
+                .andThen(c -> notifyStaffOperation.perform(c, authorisation, sealedClaim))
+                .andThen(c -> notifyRepresentativeOperation.perform(c, event))
+                .apply(claim);
 
-            claimService.updateClaimState(
-                authorisation,
-                updatedClaim.get(),
-                claim.getState().orElseThrow(() -> new ConflictException("Claim should have a state"))
-            );
+            updatedClaim.getState()
+                .filter(state -> state == CREATE)
+                .ifPresent(state -> {
+                    claimService.updateClaimState(
+                        authorisation,
+                        updatedClaim,
+                        state);
+                });
 
         } catch (Exception e) {
             logger.error("Failed operation processing for event ()", event, e);

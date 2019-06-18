@@ -113,6 +113,7 @@ public class SampleData {
         .paymentAmount("400000")
         .paymentReference("RC-1524-6488-1670-7520")
         .claimSubmissionOperationIndicators(getDefaultCCDClaimSubmissionOperationIndicators.get())
+        .state("create")
         .timeline(singletonList(CCDCollectionElement.<CCDTimelineEvent>builder()
             .value(CCDTimelineEvent.builder().date("some Date").description("description of event").build())
             .build()))
@@ -428,6 +429,7 @@ public class SampleData {
             .applicants(applicants)
             .respondents(respondents)
             .claimSubmissionOperationIndicators(getDefaultCCDClaimSubmissionOperationIndicators.get())
+            .state("open")
             .build();
     }
 
