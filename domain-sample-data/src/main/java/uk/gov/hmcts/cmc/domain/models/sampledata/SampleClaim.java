@@ -109,7 +109,7 @@ public final class SampleClaim {
                 .withDefenceType(DefenceType.DISPUTE)
                 .withMediation(YES)
                 .build()
-            )
+            ).withState(ClaimState.OPEN)
             .build();
     }
 
