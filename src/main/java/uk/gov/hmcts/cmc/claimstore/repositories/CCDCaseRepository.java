@@ -1,32 +1,32 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.claimstore.idam.models.User;
-import uk.gov.hmcts.cmc.claimstore.services.UserService;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
-import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
-import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
-import uk.gov.hmcts.cmc.domain.models.ClaimState;
-import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
-import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.models.PaidInFull;
-import uk.gov.hmcts.cmc.domain.models.ReDetermination;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
-import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
-import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
-import uk.gov.hmcts.cmc.domain.models.response.Response;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+    import org.springframework.stereotype.Service;
+    import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+    import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+    import uk.gov.hmcts.cmc.claimstore.services.UserService;
+    import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
+    import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
+    import uk.gov.hmcts.cmc.domain.models.Claim;
+    import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+    import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
+    import uk.gov.hmcts.cmc.domain.models.ClaimState;
+    import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
+    import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+    import uk.gov.hmcts.cmc.domain.models.PaidInFull;
+    import uk.gov.hmcts.cmc.domain.models.ReDetermination;
+    import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+    import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
+    import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+    import uk.gov.hmcts.cmc.domain.models.response.Response;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
+    import java.time.LocalDate;
+    import java.util.List;
+    import java.util.Optional;
 
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_DEFENDANT;
-import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
+    import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_DEFENDANT;
+    import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service("caseRepository")
 @ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled", havingValue = "true")
@@ -211,7 +211,7 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void updateClaimState(String authorisation, Long claimId, ClaimState state) {
+    public void updateClaimStateToOpen(String authorisation, Long claimId, ClaimState state) {
         if (state == ClaimState.CREATE) {
             coreCaseDataService.saveCaseEvent(authorisation, claimId, CaseEvent.ISSUE_CASE);
         } else {

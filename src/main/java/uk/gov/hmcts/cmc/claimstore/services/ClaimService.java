@@ -239,7 +239,7 @@ public class ClaimService {
                 user.getUserDetails().getFullName(),
                 authorisation
             );
-            caseRepository.updateClaimState(user.getAuthorisation(), savedClaim.getId(), OPEN);
+            caseRepository.updateClaimStateToOpen(user.getAuthorisation(), savedClaim.getId(), OPEN);
         }
         trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
 
@@ -353,7 +353,7 @@ public class ClaimService {
     }
 
     public void updateClaimState(String authorisation, Claim claim, ClaimState state) {
-        caseRepository.updateClaimState(authorisation, claim.getId(), state);
+        caseRepository.updateClaimStateToOpen(authorisation, claim.getId(), state);
     }
 
     public Claim updateClaimSubmissionOperationIndicators(

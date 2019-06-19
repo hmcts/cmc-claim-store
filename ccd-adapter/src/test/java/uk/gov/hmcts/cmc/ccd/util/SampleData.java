@@ -38,6 +38,7 @@ import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
@@ -69,6 +70,8 @@ import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDResidenc
 import static uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceType.EXPERT_WITNESS;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOTH;
 import static uk.gov.hmcts.cmc.ccd.util.SampleCCDClaimSubmissionOperationIndicators.getDefaultCCDClaimSubmissionOperationIndicators;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
 
@@ -113,7 +116,7 @@ public class SampleData {
         .paymentAmount("400000")
         .paymentReference("RC-1524-6488-1670-7520")
         .claimSubmissionOperationIndicators(getDefaultCCDClaimSubmissionOperationIndicators.get())
-        .state("create")
+        .state(CREATE.getValue())
         .timeline(singletonList(CCDCollectionElement.<CCDTimelineEvent>builder()
             .value(CCDTimelineEvent.builder().date("some Date").description("description of event").build())
             .build()))
@@ -488,7 +491,7 @@ public class SampleData {
             .applicants(applicants)
             .respondents(respondents)
             .claimSubmissionOperationIndicators(getDefaultCCDClaimSubmissionOperationIndicators.get())
-            .state("open")
+            .state(OPEN.getValue())
             .build();
     }
 
