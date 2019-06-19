@@ -6,23 +6,22 @@ tags:
   postgresql-pod: false  # stop any subcharts starting their own postgres instance
 
 postgresql:
+  image:
+    tag: '11.3.0'
   resources:
     requests:
       cpu: 25m
   initdbScripts:
     init.sql: |-
-      CREATE USER claimstore WITH PASSWORD 'claimstore';
-      CREATE DATABASE claimstore WITH OWNER = claimstore ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-      CREATE USER cmc WITH PASSWORD 'cmc';
-      CREATE DATABASE cmc WITH OWNER = cmc ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-      CREATE USER features WITH PASSWORD 'features';
-      CREATE DATABASE features WITH OWNER = features ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+      CREATE DATABASE claimstore WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+      CREATE DATABASE cmc WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+      CREATE DATABASE features WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
   postgresqlUsername: hmcts
   postgresqlPassword: hmcts
   postgresqlDatabase: user-profile
-  nameOverride: ccd-postgres  # because ccd wont work without this specific name
+  nameOverride: postgres
   persistence:
     enabled: false
 
@@ -39,12 +38,12 @@ java:
     DOC_ASSEMBLY_URL: false
     FRONTEND_BASE_URL: https://www-${SERVICE_FQDN}
     RESPOND_TO_CLAIM_URL: https://www-${SERVICE_FQDN}/first-contact/start
-    CLAIM_STORE_DB_HOST: ${SERVICE_NAME}-ccd-postgres
-    CLAIM_STORE_DB_USERNAME: claimstore
-    CLAIM_STORE_DB_PASSWORD: claimstore
-    CMC_DB_HOST: ${SERVICE_NAME}-ccd-postgres
-    CMC_DB_USERNAME: cmc
-    CMC_DB_PASSWORD: cmc
+    CLAIM_STORE_DB_HOST: ${SERVICE_NAME}-postgres
+    CLAIM_STORE_DB_USERNAME: hmcts
+    CLAIM_STORE_DB_PASSWORD: hmcts
+    CMC_DB_HOST: ${SERVICE_NAME}-postgres
+    CMC_DB_USERNAME: hmcts
+    CMC_DB_PASSWORD: hmcts
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
     FEATURE_TOGGLES_CCD_ENABLED: true
     FEATURE_TOGGLES_CCD_ASYNC_ENABLED: false
@@ -78,10 +77,10 @@ cmc-citizen-frontend:
     java:
       releaseNameOverride: ${SERVICE_NAME}-ftr-tgl-api
       environment:
-        FEATURES_DB_HOST: ${SERVICE_NAME}-ccd-postgres
+        FEATURES_DB_HOST: ${SERVICE_NAME}-postgres
         FEATURES_DB_NAME: features
-        FEATURES_DB_USER_NAME: features
-        FEATURES_DB_PASSWORD: features
+        FEATURES_DB_USER_NAME: hmcts
+        FEATURES_DB_PASSWORD: hmcts
       postgresql:
         image:
           tag: '11.3.0'
@@ -106,6 +105,8 @@ ccd:
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP}
+  postgresql:
+    nameOverride: postgres
   idam-pr:
     releaseNameOverride: ${SERVICE_NAME}-ccd-idam-pr
     redirect_uris:
@@ -115,7 +116,8 @@ ccd:
         - https://admin-web-${SERVICE_FQDN}/oauth2redirect
   apiGateway:
     s2sKey: ${API_GATEWAY_S2S_KEY}
-    idamClientSecret: ${API_GATEWAY_IDAM_SECRET}
+    idamClientSecret:
+      value: ${API_GATEWAY_IDAM_SECRET}
   userProfileApi:
     authorisedServices: ccd_admin,ccd_data,ccd_definition,cmc_claim_store
   dataStoreApi:
@@ -131,7 +133,8 @@ ccd:
   adminWeb:
     enabled: true
     s2sKey: ${ADMIN_S2S_KEY}
-    idamClientSecret: ${ADMIN_WEB_IDAM_SECRET}
+    idamClientSecret:
+      value: ${ADMIN_WEB_IDAM_SECRET}
     environment:
       NODE_TLS_REJECT_UNAUTHORIZED: 0
   importer:
@@ -141,7 +144,7 @@ ccd:
         - CMC
       users:
         - civilmoneyclaims+ccd@gmail.com|CMC|MoneyClaimCase|open
-      userProfileDatabaseHost: ${SERVICE_NAME}-ccd-postgres
+      userProfileDatabaseHost: ${SERVICE_NAME}-postgres
       userProfileDatabasePort: 5432
       userProfileDatabaseUser: hmcts
       userProfileDatabasePassword: hmcts
@@ -149,6 +152,9 @@ ccd:
     definition:
       enabled: true
       image: hmcts.azurecr.io/hmcts/cmc-ccd-definition-importer:1.2.6.AKS
+      kvSecretRef: kvcreds
+      gitSecretRef: kvcreds
+      redirectUri: https://case-management-web-${SERVICE_FQDN}/oauth2redirect
       definitionFilename: cmc-ccd.xlsx
       userRoles:
         - citizen
