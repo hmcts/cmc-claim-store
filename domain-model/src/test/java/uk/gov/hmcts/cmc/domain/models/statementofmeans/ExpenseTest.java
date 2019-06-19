@@ -152,13 +152,13 @@ public class ExpenseTest {
         Expense expense = Expense.builder()
                 .type(MORTGAGE)
                 .frequency(MONTH)
-                .amount(BigDecimal.valueOf(0))
+                .amount(BigDecimal.valueOf(-1))
                 .build();
         //when
         Set<String> errors = validate(expense);
         //then
         assertThat(errors)
                 .hasSize(1)
-                .contains("amount : must be greater than or equal to 0.01");
+                .contains("amount : must be greater than or equal to 0.00");
     }
 }
