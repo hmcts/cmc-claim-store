@@ -792,7 +792,6 @@ public class CoreCaseDataService {
             );
 
             CCDCase ccdCase = extractCase(startEventResponse.getCaseDetails());
-            ccdCase.setState(null);
             CaseDataContent caseDataContent = caseDataContent(startEventResponse, ccdCase);
 
             submitUpdate(authorisation,
