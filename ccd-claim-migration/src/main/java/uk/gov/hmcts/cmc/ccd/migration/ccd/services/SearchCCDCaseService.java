@@ -65,6 +65,8 @@ public class SearchCCDCaseService {
     public Optional<CCDCase> getCcdCaseByReferenceNumberWithoutFilterParam(User user, String referenceNumber) {
         List<CaseDetails> searchResults = search(user, ImmutableMap.of());
 
+        logger.info("number of case details found for {} is {}", referenceNumber, searchResults.size());
+
         List<CCDCase> result = searchResults.stream()
             .map(this::extractCase)
             .filter(ccdCase -> ccdCase.getPreviousServiceCaseReference().equals(referenceNumber))
