@@ -75,8 +75,8 @@ public class ClaimDocumentMapperTest {
         assertEquals(URI.create(ccdClaimDocument.getDocumentLink().getDocumentUrl()),
             claimDocument.getDocumentManagementUrl());
 
-        assertEquals(URI.create(ccdClaimDocument.getDocumentLink().getDocumentUrl()),
-            claimDocument.getDocumentManagementUrl());
+        assertEquals(URI.create(ccdClaimDocument.getDocumentLink().getDocumentBinaryUrl()),
+            claimDocument.getDocumentManagementBinaryUrl());
 
         assertEquals(ccdClaimDocument.getDocumentName(), claimDocument.getDocumentName());
         assertEquals(ClaimDocumentType.CLAIM_ISSUE_RECEIPT, claimDocument.getDocumentType());
