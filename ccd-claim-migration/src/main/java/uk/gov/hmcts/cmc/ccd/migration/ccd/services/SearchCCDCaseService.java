@@ -67,10 +67,14 @@ public class SearchCCDCaseService {
     )
     @LogExecutionTime
     public Optional<CCDCase> getCcdCaseByReferenceNumberWithoutFilterParam(User user, String referenceNumber) {
-        ImmutableMap<String, String> searchString = ImmutableMap.of( "sortDirection", "desc");
+        ImmutableMap<String, String> searchString = ImmutableMap.of("sortDirection", "desc");
         List<CaseDetails> searchResults = search(user, searchString);
 
         logger.info("number of case details found for {} is {}", referenceNumber, searchResults.size());
+
+        searchResults.stream()
+            .map(this::extractCase)
+            .forEach(ccdCase -> logger.info("case number is {}", ccdCase.getPreviousServiceCaseReference()));
 
         List<CCDCase> result = searchResults.stream()
             .map(this::extractCase)
