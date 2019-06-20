@@ -9,7 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
-import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
+import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse.AboutToStartOrSubmitCallbackResponseBuilder;
@@ -33,7 +33,7 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
     private final AppInsights appInsights;
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
     private final MoreTimeRequestRule moreTimeRequestRule;
-    private final CCDCaseDataToClaim ccdCaseDataToClaim;
+    private final CaseDetailsConverter caseDetailsConverter;
 
     @Autowired
     public MoreTimeRequestedCallbackHandler(
@@ -41,12 +41,12 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
         AppInsights appInsights,
         ResponseDeadlineCalculator responseDeadlineCalculator,
         MoreTimeRequestRule moreTimeRequestRule,
-        CCDCaseDataToClaim ccdCaseDataToClaim) {
+        CaseDetailsConverter caseDetailsConverter) {
         this.eventProducer = eventProducer;
         this.appInsights = appInsights;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
         this.moreTimeRequestRule = moreTimeRequestRule;
-        this.ccdCaseDataToClaim = ccdCaseDataToClaim;
+        this.caseDetailsConverter = caseDetailsConverter;
     }
 
     @Override
@@ -114,8 +114,6 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
     }
 
     private Claim convertCallbackToClaim(CallbackRequest callbackRequest) {
-        return ccdCaseDataToClaim.to(
-            callbackRequest.getCaseDetails()
-        );
+        return caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
     }
 }

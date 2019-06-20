@@ -12,9 +12,13 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
+import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -28,19 +32,38 @@ import java.util.Optional;
 public class DrawOrderCallbackHandler extends CallbackHandler {
     private final Clock clock;
     private final JsonMapper jsonMapper;
+    private final OrderDrawnNotificationService orderDrawnNotificationService;
+    private final CaseDetailsConverter caseDetailsConverter;
 
     @Autowired
     public DrawOrderCallbackHandler(
-        Clock clock, JsonMapper jsonMapper) {
+        Clock clock,
+        JsonMapper jsonMapper,
+        OrderDrawnNotificationService orderDrawnNotificationService,
+        CaseDetailsConverter caseDetailsConverter
+    ) {
         this.clock = clock;
         this.jsonMapper = jsonMapper;
+        this.orderDrawnNotificationService = orderDrawnNotificationService;
+        this.caseDetailsConverter = caseDetailsConverter;
     }
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
-            CallbackType.ABOUT_TO_START, this::copyDraftToCaseDocument
+            CallbackType.ABOUT_TO_START, this::copyDraftToCaseDocument,
+            CallbackType.SUBMITTED, this::notifyParties
         );
+    }
+
+    private CallbackResponse notifyParties(CallbackParams callbackParams) {
+        CallbackRequest callbackRequest = callbackParams.getRequest();
+        Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
+        orderDrawnNotificationService.notifyClaimant(claim);
+        orderDrawnNotificationService.notifyDefendant(claim);
+        return SubmittedCallbackResponse
+            .builder()
+            .build();
     }
 
     @Override
