@@ -67,7 +67,7 @@ public class SearchCCDCaseService {
     )
     @LogExecutionTime
     public Optional<CCDCase> getCcdCaseByReferenceNumberWithoutFilterParam(User user, String referenceNumber) {
-        ImmutableMap<String, String> searchString = ImmutableMap.of("page", "1", "sortDirection", "desc");
+        ImmutableMap<String, String> searchString = ImmutableMap.of( "sortDirection", "desc");
         List<CaseDetails> searchResults = search(user, searchString);
 
         logger.info("number of case details found for {} is {}", referenceNumber, searchResults.size());
