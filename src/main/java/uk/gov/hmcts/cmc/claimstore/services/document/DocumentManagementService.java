@@ -96,6 +96,7 @@ public class DocumentManagementService {
 
             return ClaimDocument.builder()
                 .documentManagementUrl(URI.create(document.links.self.href))
+                .documentManagementBinaryUrl(URI.create(document.links.binary.href))
                 .documentName(originalFileName)
                 .documentType(pdf.getClaimDocumentType())
                 .createdDatetime(LocalDateTimeFactory.nowInUTC())
