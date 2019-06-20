@@ -42,4 +42,8 @@ public class JsonMapper {
     public <T> T fromMap(Map<String, Object> input, Class<T> clazz) {
         return objectMapper.convertValue(input, clazz);
     }
+
+    public <T> T convertValue(Object value, Class<T> clazz) {
+        return objectMapper.convertValue(value, clazz);
+    }
 }

@@ -9,7 +9,9 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
+import uk.gov.hmcts.cmc.ccd.migration.mappers.JsonMapper;
 import uk.gov.hmcts.cmc.ccd.migration.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
@@ -20,6 +22,7 @@ import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class SearchCCDCaseService {
@@ -31,14 +34,17 @@ public class SearchCCDCaseService {
 
     private final CoreCaseDataApi coreCaseDataApi;
     private final AuthTokenGenerator authTokenGenerator;
+    private final JsonMapper jsonMapper;
 
     @Autowired
     public SearchCCDCaseService(
         CoreCaseDataApi coreCaseDataApi,
-        AuthTokenGenerator authTokenGenerator
+        AuthTokenGenerator authTokenGenerator,
+        JsonMapper jsonMapper
     ) {
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;
+        this.jsonMapper = jsonMapper;
     }
 
     @Retryable(include = {SocketTimeoutException.class, FeignException.class, IOException.class},
@@ -47,7 +53,24 @@ public class SearchCCDCaseService {
     )
     @LogExecutionTime
     public Optional<CaseDetails> getCcdCaseByReferenceNumber(User user, String referenceNumber) {
-        return search(user, ImmutableMap.of("case.previousServiceCaseReference", referenceNumber));
+        List<CaseDetails> result = search(user, ImmutableMap.of("case.previousServiceCaseReference", referenceNumber));
+        return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
+    }
+
+    @Retryable(include = {SocketTimeoutException.class, FeignException.class, IOException.class},
+        maxAttempts = 5,
+        backoff = @Backoff(delay = 400, maxDelay = 800)
+    )
+    @LogExecutionTime
+    public Optional<CCDCase> getCcdCaseByReferenceNumberWithoutFilterParam(User user, String referenceNumber) {
+        List<CaseDetails> searchResults = search(user, ImmutableMap.of());
+
+        List<CCDCase> result = searchResults.stream()
+            .map(this::extractCase)
+            .filter(ccdCase -> ccdCase.getPreviousServiceCaseReference().equals(referenceNumber))
+            .collect(Collectors.toList());
+
+        return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
     }
 
     @Retryable(include = {SocketTimeoutException.class, FeignException.class, IOException.class},
@@ -55,7 +78,8 @@ public class SearchCCDCaseService {
         backoff = @Backoff(delay = 400, maxDelay = 800)
     )
     public Optional<CaseDetails> getCcdCaseByExternalId(User user, String externalId) {
-        return search(user, ImmutableMap.of("case.externalId", externalId));
+        List<CaseDetails> result = search(user, ImmutableMap.of("case.externalId", externalId));
+        return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
     }
 
     @Recover
@@ -70,10 +94,9 @@ public class SearchCCDCaseService {
         return Optional.empty();
     }
 
-    private Optional<CaseDetails> search(User user, Map<String, String> searchString) {
+    private List<CaseDetails> search(User user, Map<String, String> searchString) {
 
-        List<CaseDetails> result;
-        result = this.coreCaseDataApi.searchForCaseworker(
+        return this.coreCaseDataApi.searchForCaseworker(
             user.getAuthorisation(),
             this.authTokenGenerator.generate(),
             user.getUserDetails().getId(),
@@ -81,7 +104,11 @@ public class SearchCCDCaseService {
             CASE_TYPE_ID,
             searchString
         );
+    }
 
-        return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
+    private CCDCase extractCase(CaseDetails caseDetails) {
+        Map<String, Object> caseData = caseDetails.getData();
+        caseData.put("id", caseDetails.getId());
+        return jsonMapper.fromMap(caseData, CCDCase.class);
     }
 }
