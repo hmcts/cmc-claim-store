@@ -53,7 +53,11 @@ public class SearchCCDCaseService {
     )
     @LogExecutionTime
     public Optional<CaseDetails> getCcdCaseByReferenceNumber(User user, String referenceNumber) {
-        List<CaseDetails> result = search(user, ImmutableMap.of("case.previousServiceCaseReference", referenceNumber));
+        ImmutableMap<String, String> searchString =
+            ImmutableMap.of("case.previousServiceCaseReference", referenceNumber,
+                "page", "1",
+                "sortDirection", "desc");
+        List<CaseDetails> result = search(user, searchString);
         return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
     }
 
@@ -63,7 +67,8 @@ public class SearchCCDCaseService {
     )
     @LogExecutionTime
     public Optional<CCDCase> getCcdCaseByReferenceNumberWithoutFilterParam(User user, String referenceNumber) {
-        List<CaseDetails> searchResults = search(user, ImmutableMap.of());
+        ImmutableMap<String, String> searchString = ImmutableMap.of("page", "1", "sortDirection", "desc");
+        List<CaseDetails> searchResults = search(user, searchString);
 
         logger.info("number of case details found for {} is {}", referenceNumber, searchResults.size());
 
