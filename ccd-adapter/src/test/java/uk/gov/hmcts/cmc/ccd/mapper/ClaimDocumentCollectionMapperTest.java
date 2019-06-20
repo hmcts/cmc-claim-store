@@ -20,16 +20,30 @@ public class ClaimDocumentCollectionMapperTest {
 
         CCDCase.CCDCaseBuilder builder = CCDCase.builder();
         ClaimDocumentCollection collection = new ClaimDocumentCollection();
-        collection.addClaimDocument(ClaimDocument.builder().documentManagementUrl(URI.create("someurl"))
-            .documentType(ClaimDocumentType.DEFENDANT_PIN_LETTER).build());
-        collection.addClaimDocument(ClaimDocument.builder().documentManagementUrl(URI.create("someurl"))
-            .documentType(ClaimDocumentType.CCJ_REQUEST).build());
-        collection.addClaimDocument(ClaimDocument.builder().documentManagementUrl(URI.create("someurl"))
-            .documentType(ClaimDocumentType.CLAIM_ISSUE_RECEIPT).build());
-        collection.addClaimDocument(ClaimDocument.builder().documentManagementUrl(URI.create("someurl"))
-            .documentType(ClaimDocumentType.SEALED_CLAIM).build());
-        collection.addClaimDocument(ClaimDocument.builder().documentManagementUrl(URI.create("someurl"))
-            .documentType(ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT).build());
+
+        collection.addClaimDocument(ClaimDocument.builder()
+            .documentManagementUrl(URI.create("someurl"))
+            .documentManagementBinaryUrl(URI.create("someBinaryUrl"))
+            .documentType(ClaimDocumentType.CCJ_REQUEST)
+            .build());
+
+        collection.addClaimDocument(ClaimDocument.builder()
+            .documentManagementUrl(URI.create("someurl"))
+            .documentManagementBinaryUrl(URI.create("someBinaryUrl"))
+            .documentType(ClaimDocumentType.CLAIM_ISSUE_RECEIPT)
+            .build());
+
+        collection.addClaimDocument(ClaimDocument.builder()
+            .documentManagementUrl(URI.create("someurl"))
+            .documentManagementBinaryUrl(URI.create("someBinaryUrl"))
+            .documentType(ClaimDocumentType.SEALED_CLAIM)
+            .build());
+
+        collection.addClaimDocument(ClaimDocument.builder()
+            .documentManagementUrl(URI.create("someurl"))
+            .documentManagementBinaryUrl(URI.create("someBinaryUrl"))
+            .documentType(ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT)
+            .build());
 
         ClaimDocumentCollectionMapper mapper = new ClaimDocumentCollectionMapper(new ClaimDocumentMapper());
         mapper.to(collection, builder);
