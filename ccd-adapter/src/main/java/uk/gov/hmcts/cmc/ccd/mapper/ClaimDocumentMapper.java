@@ -12,14 +12,15 @@ import java.net.URI;
 
 @Component
 public class ClaimDocumentMapper {
+    private static final String BINARY = "/binary";
 
     public CCDCollectionElement<CCDClaimDocument> to(ClaimDocument claimDocument) {
         CCDClaimDocument.CCDClaimDocumentBuilder builder = CCDClaimDocument.builder();
         final String documentUrl = claimDocument.getDocumentManagementUrl().toString();
-        final String documentBinaryUrl = claimDocument.getDocumentManagementBinaryUrl().toString();
-
         builder.documentName(claimDocument.getDocumentName())
-            .documentLink(new CCDDocument(documentUrl, documentBinaryUrl, claimDocument.getDocumentName()))
+            .documentLink(new CCDDocument(documentUrl,
+                documentUrl + BINARY,
+                claimDocument.getDocumentName()))
             .documentType(CCDClaimDocumentType.valueOf(claimDocument.getDocumentType().name()))
             .authoredDatetime(claimDocument.getAuthoredDatetime())
             .createdDatetime(claimDocument.getCreatedDatetime())
@@ -45,7 +46,6 @@ public class ClaimDocumentMapper {
             .id(collectionElement.getId())
             .documentName(ccdClaimDocument.getDocumentName())
             .documentManagementUrl(URI.create(ccdClaimDocument.getDocumentLink().getDocumentUrl()))
-            .documentManagementBinaryUrl(URI.create(ccdClaimDocument.getDocumentLink().getDocumentBinaryUrl()))
             .documentType(ClaimDocumentType.valueOf(ccdClaimDocument.getDocumentType().name()))
             .authoredDatetime(ccdClaimDocument.getAuthoredDatetime())
             .createdDatetime(ccdClaimDocument.getCreatedDatetime())
