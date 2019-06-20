@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 @Getter
 public class ClaimDocument extends CollectionId {
     private final URI documentManagementUrl;
-    private final URI documentManagementBinaryUrl;
     private final String documentName;
     private final ClaimDocumentType documentType;
     private final LocalDateTime authoredDatetime;
@@ -21,7 +20,6 @@ public class ClaimDocument extends CollectionId {
     public ClaimDocument(
         String id,
         URI documentManagementUrl,
-        URI documentManagementBinaryUrl,
         String documentName,
         ClaimDocumentType documentType,
         LocalDateTime authoredDatetime,
@@ -31,7 +29,6 @@ public class ClaimDocument extends CollectionId {
     ) {
         super(id);
         this.documentManagementUrl = documentManagementUrl;
-        this.documentManagementBinaryUrl = documentManagementBinaryUrl;
         this.documentName = documentName;
         this.documentType = documentType;
         this.authoredDatetime = authoredDatetime;
