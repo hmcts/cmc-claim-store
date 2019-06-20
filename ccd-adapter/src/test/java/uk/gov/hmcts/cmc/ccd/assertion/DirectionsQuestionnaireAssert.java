@@ -30,7 +30,7 @@ public class DirectionsQuestionnaireAssert
 
         actual.getWitness().ifPresent(isEqualToWitness(ccdDirectionsQuestionnaire));
 
-        actual.getExpertRequest().ifPresent(isEqualToExpertRequest(ccdDirectionsQuestionnaire));
+        actual.getRequireSupport().ifPresent(isEqualToRequireSupport(ccdDirectionsQuestionnaire));
 
         return this;
     }
@@ -43,10 +43,10 @@ public class DirectionsQuestionnaireAssert
             }
 
             witness.getNoOfOtherWitness().ifPresent(noOfOtherWitness -> {
-                    if (!Objects.equals(noOfOtherWitness, ccdDirectionsQuestionnaire.getHowManyOtherWitness())) {
+                    if (!Objects.equals(noOfOtherWitness, ccdDirectionsQuestionnaire.getNumberOfOtherWitnesses())) {
                         failWithMessage(
                             "Expected DirectionsQuestionnaire.noOfOtherWitness to be <%s> but was <%s>",
-                            ccdDirectionsQuestionnaire.getHowManyOtherWitness(), witness.getNoOfOtherWitness());
+                            ccdDirectionsQuestionnaire.getNumberOfOtherWitnesses(), witness.getNoOfOtherWitness());
                     }
                 }
             );

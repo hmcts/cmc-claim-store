@@ -38,7 +38,7 @@ public class SampleCCDDirectionsQuestionnaire {
 
         return CCDDirectionsQuestionnaire.builder()
             .selfWitness(YES)
-            .howManyOtherWitness(1)
+            .numberOfOtherWitnesses(1)
             .hearingLocation("London")
             .hearingLocationSlug("London-Court")
             .hearingLocationOption(CCDCourtLocationOption.ALTERNATE_COURT)

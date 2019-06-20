@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.assertion.defendant;
 
 import org.assertj.core.api.AbstractAssert;
-import uk.gov.hmcts.cmc.ccd.assertion.Assertions;
+import uk.gov.hmcts.cmc.ccd.assertion.DirectionsQuestionnaireAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.EvidenceRowAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.TimelineEventAssert;
 import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.StatementOfMeansAssert;
@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
@@ -55,6 +56,10 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
 
     private static StatementOfMeansAssert assertThat(StatementOfMeans statementOfMeans) {
         return new StatementOfMeansAssert(statementOfMeans);
+    }
+
+    private static DirectionsQuestionnaireAssert assertThat(DirectionsQuestionnaire directionsQuestionnaire) {
+        return new DirectionsQuestionnaireAssert(directionsQuestionnaire);
     }
 
     public ResponseAssert isEqualTo(CCDRespondent ccdRespondent) {
@@ -109,7 +114,9 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
         partAdmissionResponse.getStatementOfMeans()
             .ifPresent(statementOfMeans -> assertThat(statementOfMeans).isEqualTo(ccdRespondent.getStatementOfMeans()));
 
-        partAdmissionResponse.getDirectionsQuestionnaire().ifPresent(Assertions::assertThat);
+        partAdmissionResponse.getDirectionsQuestionnaire()
+            .ifPresent(directionsQuestionnaire -> assertThat(directionsQuestionnaire)
+                .isEqualTo(ccdRespondent.getDirectionsQuestionnaire()));
 
     }
 
@@ -147,7 +154,9 @@ public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
 
         fullDefenceResponse.getEvidence().ifPresent(assertDefendantEvidenceConsumer(respondent));
 
-        fullDefenceResponse.getDirectionsQuestionnaire().ifPresent(Assertions::assertThat);
+        fullDefenceResponse.getDirectionsQuestionnaire()
+            .ifPresent(directionsQuestionnaire ->
+                assertThat(directionsQuestionnaire).isEqualTo(respondent.getDirectionsQuestionnaire()));
     }
 
     private Consumer<DefendantEvidence> assertDefendantEvidenceConsumer(CCDRespondent ccdRespondent) {
