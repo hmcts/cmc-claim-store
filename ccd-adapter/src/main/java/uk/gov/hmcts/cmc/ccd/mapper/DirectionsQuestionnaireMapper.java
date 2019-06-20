@@ -109,7 +109,7 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
     private Consumer<Witness> toWitness(CCDDirectionsQuestionnaire.CCDDirectionsQuestionnaireBuilder builder) {
         return witness -> {
             builder.selfWitness(yesNoMapper.to(witness.getSelfWitness()));
-            witness.getNoOfOtherWitness().ifPresent(builder::howManyOtherWitness);
+            witness.getNoOfOtherWitness().ifPresent(builder::numberOfOtherWitnesses);
         };
     }
 
@@ -197,13 +197,13 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
     private Witness extractWitness(CCDDirectionsQuestionnaire ccdDirectionsQuestionnaire) {
         CCDYesNoOption selfWitness = ccdDirectionsQuestionnaire.getSelfWitness();
         if (isNull(selfWitness)
-            && isNull(ccdDirectionsQuestionnaire.getHowManyOtherWitness())) {
+            && isNull(ccdDirectionsQuestionnaire.getNumberOfOtherWitnesses())) {
             return null;
         }
 
         return Witness.builder()
             .selfWitness(yesNoMapper.from(selfWitness))
-            .noOfOtherWitness(ccdDirectionsQuestionnaire.getHowManyOtherWitness())
+            .noOfOtherWitness(ccdDirectionsQuestionnaire.getNumberOfOtherWitnesses())
             .build();
     }
 

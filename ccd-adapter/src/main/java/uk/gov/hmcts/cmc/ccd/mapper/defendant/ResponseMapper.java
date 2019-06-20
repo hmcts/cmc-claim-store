@@ -146,17 +146,18 @@ public class ResponseMapper {
         builder.responseDefence(response.getDefence());
         response.getEvidence().ifPresent(mapDefendantEvidence(builder));
         response.getTimeline().ifPresent(mapDefendantTimeline(builder));
-        response.getPaymentIntention().ifPresent(
-            paymentIntention -> builder.defendantPaymentIntention(paymentIntentionMapper.to(paymentIntention))
-        );
 
-        response.getStatementOfMeans().ifPresent(
-            statementOfMeans -> builder.statementOfMeans(statementOfMeansMapper.to(statementOfMeans))
-        );
+        response.getPaymentIntention()
+            .map(paymentIntentionMapper::to)
+            .ifPresent(builder::defendantPaymentIntention);
 
-        response.getDirectionsQuestionnaire().ifPresent(
-            dq -> builder.directionsQuestionnaire(directionsQuestionnaireMapper.to(dq))
-        );
+        response.getStatementOfMeans()
+            .map(statementOfMeansMapper::to)
+            .ifPresent(builder::statementOfMeans);
+
+        response.getDirectionsQuestionnaire()
+            .map(directionsQuestionnaireMapper:: to)
+            .ifPresent(builder::directionsQuestionnaire);
     }
 
     private void toFullAdmissionResponse(CCDRespondent.CCDRespondentBuilder builder, FullAdmissionResponse response) {
