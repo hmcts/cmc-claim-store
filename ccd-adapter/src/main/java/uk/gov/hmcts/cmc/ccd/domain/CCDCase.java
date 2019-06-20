@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Builder;
 import lombok.Data;
@@ -64,6 +65,7 @@ public class CCDCase {
     private List<CCDCollectionElement<CCDClaimDocument>> caseDocuments;
     private String caseName;
     private CCDClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
+    @JsonIgnore
     private String state;
 
     @JsonUnwrapped
