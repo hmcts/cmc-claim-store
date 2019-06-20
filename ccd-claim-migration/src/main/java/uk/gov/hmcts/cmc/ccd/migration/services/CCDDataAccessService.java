@@ -36,7 +36,7 @@ public class CCDDataAccessService {
         casesToSearch.forEach(caseId -> {
             Optional<CaseDetails> caseDetails = searchCCDCaseService.getCcdCaseByReferenceNumber(user, caseId);
             if (caseDetails.isPresent()) {
-                logger.info("case details returned with query Param for {}, has id ", caseId,
+                logger.info("case details returned with query Param for {}, has id {}", caseId,
                     caseDetails.get().getId());
             } else {
                 logger.info("No case details returned with query Param for {} ", caseId);
@@ -47,7 +47,7 @@ public class CCDDataAccessService {
 
             if (caseDetailsWithoutQueryParam.isPresent()) {
 
-                logger.info("case details returned without query Param for {}, has id ",
+                logger.info("case details returned without query Param for {}, has id {}",
                     caseId,
                     caseDetailsWithoutQueryParam.get().getId());
             } else {
