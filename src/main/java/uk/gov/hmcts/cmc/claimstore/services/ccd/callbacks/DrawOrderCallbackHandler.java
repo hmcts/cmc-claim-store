@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.ORDER_DIRECTIONS;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DRAW_ORDER;
 
 @Service
 @ConditionalOnProperty(prefix = "document_management", name = "url")
@@ -59,10 +58,15 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
     }
 
     @Override
+    public List<CaseEvent> handledEvents() {
+        return Collections.singletonList(CaseEvent.DRAW_ORDER);
+    }
+
+    @Override
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
             CallbackType.ABOUT_TO_SUBMIT, this::copyDraftToCaseDocument,
-            CallbackType.SUBMITTED, this::notifyParties
+            CallbackType.SUBMITTED, this::notifyPartiesAndPrintOrder
         );
     }
 
@@ -80,27 +84,17 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
         orderDrawnNotificationService.notifyDefendant(claim);
     }
 
-    @Override
-    public List<CaseEvent> handledEvents() {
-        return Collections.singletonList(DRAW_ORDER);
-    }
-
     private CallbackResponse printOrder(String authorisation, CaseDetails caseDetails) {
         CCDCase ccdCase = jsonMapper.fromMap(
             caseDetails.getData(), CCDCase.class);
         CCDDocument draftOrderDoc = ccdCase.getOrderGenerationData().getDraftOrderDoc();
-        SubmittedCallbackResponse.SubmittedCallbackResponseBuilder builder =
-            SubmittedCallbackResponse.builder();
-        try {
-            legalOrderService.print(
-                authorisation,
-                caseDetails,
-                draftOrderDoc);
-        } catch (Exception e) {
-            builder.confirmationHeader("Bulk Print Failed");
-            builder.confirmationBody("The Bulk print operation has failed. Please notify the support users");
-        }
-        return builder.build();
+        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
+        legalOrderService.print(
+            authorisation,
+            claim,
+            draftOrderDoc);
+        return SubmittedCallbackResponse.builder()
+            .build();
     }
 
     private CallbackResponse copyDraftToCaseDocument(CallbackParams callbackParams) {

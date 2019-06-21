@@ -35,7 +35,6 @@ import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -110,34 +109,11 @@ public class DrawOrderCallbackHandlerTest extends MockSpringTest {
             .notifyDefendant(any(Claim.class));
         verify(legalOrderService).print(
             eq(AUTHORISATION_TOKEN),
-            any(CaseDetails.class),
+            any(Claim.class),
             any(CCDDocument.class)
         );
         assertThat(response.getConfirmationHeader()).isNull();
         assertThat(response.getConfirmationBody()).isNull();
-    }
-
-    @Test
-    public void shouldReturnWarningIfBulkPrintFailsOnSubmittedEvent() throws Exception {
-        willThrow(new Exception())
-            .willDoNothing()
-            .given(legalOrderService)
-            .print(
-                eq(AUTHORISATION_TOKEN),
-                any(CaseDetails.class),
-                any(CCDDocument.class));
-
-        MvcResult mvcResult = makeRequest(CallbackType.SUBMITTED.getValue())
-            .andExpect(status().isOk())
-            .andReturn();
-        SubmittedCallbackResponse response = deserializeObjectFrom(
-            mvcResult,
-            SubmittedCallbackResponse.class
-        );
-        assertThat(response.getConfirmationHeader())
-            .isEqualTo("Bulk Print Failed");
-        assertThat(response.getConfirmationBody())
-            .isEqualTo("The Bulk print operation has failed. Please notify the support users");
     }
 
     private ResultActions makeRequest(String callbackType) throws Exception {

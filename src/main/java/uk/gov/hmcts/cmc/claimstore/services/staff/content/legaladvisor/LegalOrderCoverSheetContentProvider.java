@@ -50,7 +50,6 @@ public class LegalOrderCoverSheetContentProvider {
         content.put(CLAIM_REFERENCE_NUMBER, claimReferenceNumber);
         content.put(PARTY_ADDRESS, partyAddress);
         content.put(HMCTS_EMAIL, staffEmailProperties.getRecipient());
-
         return content;
     }
 }

@@ -1,87 +1,80 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor;
 
-import com.google.common.collect.ImmutableMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
-import uk.gov.hmcts.cmc.claimstore.documents.PrintService;
+import uk.gov.hmcts.cmc.claimstore.events.legaladvisor.DirectionsOrderReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
-import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Base64;
 import java.util.Collections;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.COVER_SHEET;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_DIRECTIONS;
 
 @Service
 @ConditionalOnProperty(prefix = "document_management", name = "url")
 public class LegalOrderService {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final DocumentTemplates documentTemplates;
     private final LegalOrderCoverSheetContentProvider legalOrderCoverSheetContentProvider;
-    private final PrintService legalOrderBulkPrintService;
+    private final ApplicationEventPublisher publisher;
     private final DocumentManagementService documentManagementService;
-    private final CaseDetailsConverter caseDetailsConverter;
 
     @Autowired
     public LegalOrderService(
         DocumentTemplates documentTemplates,
-        PrintService legalOrderBulkPrintService,
         LegalOrderCoverSheetContentProvider legalOrderCoverSheetContentProvider,
         DocumentManagementService documentManagementService,
-        CaseDetailsConverter caseDetailsConverter) {
+        ApplicationEventPublisher publisher) {
         this.documentTemplates = documentTemplates;
-        this.legalOrderBulkPrintService = legalOrderBulkPrintService;
+        this.publisher = publisher;
         this.legalOrderCoverSheetContentProvider = legalOrderCoverSheetContentProvider;
         this.documentManagementService = documentManagementService;
-        this.caseDetailsConverter = caseDetailsConverter;
     }
 
-    public void print(String authorisation, CaseDetails caseDetails, CCDDocument ccdLegalOrder) throws Exception {
-        requireNonNull(caseDetails);
-        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
-        Document legalOrder = downloadLegalOrder(authorisation, ccdLegalOrder);
+    public void print(String authorisation, Claim claim, CCDDocument ccdLegalOrder) {
+        requireNonNull(claim);
+        try {
+            Document legalOrder = downloadLegalOrder(authorisation, ccdLegalOrder);
+            Document coverSheetForClaimant = new Document(
+                new String(documentTemplates.getLegalOrderCoverSheet()),
+                legalOrderCoverSheetContentProvider.createContentForClaimant(claim));
 
-        Document coverSheetForClaimant = new Document(
-            new String(documentTemplates.getLegalOrderCoverSheet()),
-            legalOrderCoverSheetContentProvider.createContentForClaimant(claim));
+            publisher.publishEvent(new DirectionsOrderReadyToPrintEvent(
+                claim,
+                coverSheetForClaimant,
+                legalOrder
+            ));
 
-        legalOrderBulkPrintService.print(
-            claim,
-            ImmutableMap.of(
-                COVER_SHEET, coverSheetForClaimant,
-                ORDER_DIRECTIONS, legalOrder
-            )
-        );
+            Document coverSheetForDefendant = new Document(
+                new String(documentTemplates.getLegalOrderCoverSheet()),
+                legalOrderCoverSheetContentProvider.createContentForDefendant(claim));
 
-        Document coverSheetForDefendant = new Document(
-            new String(documentTemplates.getLegalOrderCoverSheet()),
-            legalOrderCoverSheetContentProvider.createContentForDefendant(claim));
-
-        legalOrderBulkPrintService.print(
-            claim,
-            ImmutableMap.of(
-                COVER_SHEET, coverSheetForDefendant,
-                ORDER_DIRECTIONS, legalOrder
-            )
-        );
+            publisher.publishEvent(new DirectionsOrderReadyToPrintEvent(
+                claim,
+                coverSheetForDefendant,
+                legalOrder
+            ));
+        } catch (URISyntaxException e) {
+            logger.warn("Problem download legal advisor document from doc store, won't print");
+        }
     }
 
     private Document downloadLegalOrder(String authorisation, CCDDocument ccdLegalOrder) throws URISyntaxException {
-        return new Document(
-            new String(documentManagementService.downloadDocument(
-                authorisation,
-                new URI(ccdLegalOrder.getDocumentUrl()),
-                ccdLegalOrder.getDocumentFileName())),
-            Collections.emptyMap()
-        );
+        return new Document(Base64.getEncoder().encodeToString(documentManagementService.downloadDocument(
+            authorisation,
+            new URI(ccdLegalOrder.getDocumentUrl()),
+            ccdLegalOrder.getDocumentFileName())),
+            Collections.emptyMap());
     }
 }

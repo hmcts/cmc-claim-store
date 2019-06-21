@@ -1,11 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.documents;
 
+import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.Printable;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
-import uk.gov.hmcts.reform.sendletter.api.Document;
 
-import java.util.Map;
+import java.util.List;
 
 public interface PrintService {
-    void print(Claim claim, Map<ClaimDocumentType, Document> documents);
+    void print(Claim claim, List<Printable> documents);
 }

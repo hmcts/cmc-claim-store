@@ -1,15 +1,16 @@
 package uk.gov.hmcts.cmc.claimstore.documents;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
 import uk.gov.hmcts.cmc.claimstore.services.staff.BulkPrintStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.sendletter.api.Document;
@@ -74,15 +75,14 @@ public class BulkPrintServiceTest {
             sendLetterApi,
             authTokenGenerator,
             bulkPrintStaffNotificationService,
-            appInsights,
-            false
+            appInsights
         );
 
         //when
         bulkPrintService.print(CLAIM,
-            ImmutableMap.of(
-                ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT, defendantLetterDocument,
-                ClaimDocumentType.SEALED_CLAIM, sealedClaimDocument
+            ImmutableList.of(
+                new PrintableTemplate(defendantLetterDocument, "filename"),
+                new PrintableTemplate(sealedClaimDocument, "filename")
             ));
         //then
         List<Document> documents = Arrays.asList(defendantLetterDocument, sealedClaimDocument);
@@ -103,16 +103,14 @@ public class BulkPrintServiceTest {
             sendLetterApi,
             authTokenGenerator,
             bulkPrintStaffNotificationService,
-            appInsights,
-            false
+            appInsights
         );
-
         try {
             bulkPrintService.print(
                 CLAIM,
-                ImmutableMap.of(
-                    ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT, defendantLetterDocument,
-                    ClaimDocumentType.SEALED_CLAIM, sealedClaimDocument
+                ImmutableList.of(
+                    new PrintableTemplate(defendantLetterDocument, "filename"),
+                    new PrintableTemplate(sealedClaimDocument, "filename")
                 ));
         } finally {
             //then
@@ -130,24 +128,26 @@ public class BulkPrintServiceTest {
             sendLetterApi,
             authTokenGenerator,
             bulkPrintStaffNotificationService,
-            appInsights,
-            true
+            appInsights
         );
-
+        ReflectionTestUtils.setField(bulkPrintService,
+            "feature_toggles.async_event_operations_enabled",
+            true);
         try {
             bulkPrintService
                 .notifyStaffForBulkPrintFailure(
                     exception,
                     CLAIM,
-                    ImmutableMap.of(
-                        ClaimDocumentType.DEFENDANT_PIN_LETTER, defendantLetterDocument,
-                        ClaimDocumentType.SEALED_CLAIM, sealedClaimDocument
+                    ImmutableList.of(
+                        new PrintableTemplate(defendantLetterDocument, "filename"),
+                        new PrintableTemplate(sealedClaimDocument, "filename")
                     ));
         } finally {
             //then
             verify(bulkPrintStaffNotificationService).notifyFailedBulkPrint(
-                eq(defendantLetterDocument),
-                eq(sealedClaimDocument),
+                eq(ImmutableList.of(
+                    new PrintableTemplate(defendantLetterDocument, "filename"),
+                    new PrintableTemplate(sealedClaimDocument, "filename"))),
                 eq(CLAIM)
             );
 

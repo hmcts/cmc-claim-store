@@ -1,18 +1,19 @@
 package uk.gov.hmcts.cmc.claimstore.documents;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintablePdf;
+import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
+import uk.gov.hmcts.cmc.claimstore.events.legaladvisor.DirectionsOrderReadyToPrintEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import static org.mockito.Mockito.verify;
 
@@ -23,14 +24,12 @@ public class BulkPrintHandlerTest {
     private BulkPrintService bulkPrintService;
 
     @Test
-    public void notifyStaff() {
+    public void notifyStaffForDefendantLetters() {
         //given
         BulkPrintHandler bulkPrintHandler = new BulkPrintHandler(bulkPrintService);
         Claim claim = SampleClaim.getDefault();
-        Map<String, Object> pinContents = new HashMap<>();
-        Document defendantLetterDocument = new Document("pinTemplate", pinContents);
-        Map<String, Object> claimContents = new HashMap<>();
-        Document sealedClaimDocument = new Document("sealedClaimTemplate", claimContents);
+        Document defendantLetterDocument = new Document("pinTemplate", new HashMap<>());
+        Document sealedClaimDocument = new Document("sealedClaimTemplate", new HashMap<>());
 
         DocumentReadyToPrintEvent printEvent
             = new DocumentReadyToPrintEvent(claim, defendantLetterDocument, sealedClaimDocument);
@@ -41,9 +40,40 @@ public class BulkPrintHandlerTest {
         //verify
         verify(bulkPrintService).print(
             claim,
-            ImmutableMap.of(
-                ClaimDocumentType.DEFENDANT_PIN_LETTER, defendantLetterDocument,
-                ClaimDocumentType.SEALED_CLAIM, sealedClaimDocument
+            ImmutableList.of(
+                new PrintableTemplate(
+                    defendantLetterDocument,
+                    claim.getReferenceNumber() + "-defendant-pin-letter"),
+                new PrintableTemplate(
+                    sealedClaimDocument,
+                    claim.getReferenceNumber() + "-claim-form")
+            ));
+    }
+
+    @Test
+    public void notifyStaffForLegalAdvisor() {
+        //given
+        BulkPrintHandler bulkPrintHandler = new BulkPrintHandler(bulkPrintService);
+        Claim claim = SampleClaim.getDefault();
+        Document coverSheet = new Document("coverSheet", new HashMap<>());
+        Document legalOrder = new Document("legalOrder", new HashMap<>());
+
+        DirectionsOrderReadyToPrintEvent printEvent
+            = new DirectionsOrderReadyToPrintEvent(claim, coverSheet, legalOrder);
+
+        //when
+        bulkPrintHandler.print(printEvent);
+
+        //verify
+        verify(bulkPrintService).print(
+            claim,
+            ImmutableList.of(
+                new PrintablePdf(
+                    legalOrder,
+                    claim.getReferenceNumber() + "-directions-order"),
+                new PrintableTemplate(
+                    coverSheet,
+                    claim.getReferenceNumber() + "-directions-order-cover-sheet")
             ));
     }
 }

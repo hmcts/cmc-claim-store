@@ -8,20 +8,20 @@ import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.Printable;
 import uk.gov.hmcts.cmc.claimstore.services.staff.BulkPrintStaffNotificationService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 import uk.gov.hmcts.reform.sendletter.api.Letter;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
@@ -42,23 +42,21 @@ public class BulkPrintService implements PrintService {
 
     private final SendLetterApi sendLetterApi;
     private final AuthTokenGenerator authTokenGenerator;
-    private final BulkPrintStaffNotificationService bulkPrintStaffNotificationService;
     private final AppInsights appInsights;
-    private final boolean asyncEventProcessingEnabled;
+    private final BulkPrintStaffNotificationService bulkPrintStaffNotificationService;
+    @Value("${feature_toggles.async_event_operations_enabled:false}")
+    private boolean asyncEventProcessingEnabled;
 
     @Autowired
     public BulkPrintService(
         SendLetterApi sendLetterApi,
         AuthTokenGenerator authTokenGenerator,
         BulkPrintStaffNotificationService bulkPrintStaffNotificationService,
-        AppInsights appInsights,
-        @Value("${feature_toggles.async_event_operations_enabled:false}") boolean asyncEventProcessingEnabled
-    ) {
+        AppInsights appInsights) {
         this.sendLetterApi = sendLetterApi;
         this.authTokenGenerator = authTokenGenerator;
-        this.bulkPrintStaffNotificationService = bulkPrintStaffNotificationService;
         this.appInsights = appInsights;
-        this.asyncEventProcessingEnabled = asyncEventProcessingEnabled;
+        this.bulkPrintStaffNotificationService = bulkPrintStaffNotificationService;
     }
 
     @LogExecutionTime
@@ -66,12 +64,13 @@ public class BulkPrintService implements PrintService {
         value = RuntimeException.class,
         backoff = @Backoff(delay = 200)
     )
-
     @Override
-    public void print(Claim claim, Map<ClaimDocumentType, Document> documents) {
+    public void print(Claim claim, List<Printable> documents) {
         requireNonNull(claim);
-        List<Document> docs = new ArrayList<>(documents.values());
-        docs.forEach(Objects::requireNonNull);
+        List<Document> docs = documents.stream()
+            .filter(Objects::nonNull)
+            .map(Printable::getDocument)
+            .collect(Collectors.toList());
 
         sendLetterApi.sendLetter(
             authTokenGenerator.generate(),
@@ -87,16 +86,12 @@ public class BulkPrintService implements PrintService {
     public void notifyStaffForBulkPrintFailure(
         RuntimeException exception,
         Claim claim,
-        Map<ClaimDocumentType, Document> documents
+        List<Printable> documents
     ) {
-        Document defendantLetterDocument = documents.get(ClaimDocumentType.DEFENDANT_PIN_LETTER);
-        Document sealedClaimDocument = documents.get(ClaimDocumentType.SEALED_CLAIM);
         bulkPrintStaffNotificationService.notifyFailedBulkPrint(
-            defendantLetterDocument,
-            sealedClaimDocument,
+            documents,
             claim
         );
-
         appInsights.trackEvent(BULK_PRINT_FAILED, REFERENCE_NUMBER, claim.getReferenceNumber());
         if (asyncEventProcessingEnabled) {
             throw exception;
