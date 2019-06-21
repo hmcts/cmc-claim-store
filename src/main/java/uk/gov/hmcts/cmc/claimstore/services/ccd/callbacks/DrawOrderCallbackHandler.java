@@ -51,7 +51,7 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
     @Override
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
-            CallbackType.ABOUT_TO_START, this::copyDraftToCaseDocument,
+            CallbackType.ABOUT_TO_SUBMIT, this::copyDraftToCaseDocument,
             CallbackType.SUBMITTED, this::notifyParties
         );
     }
