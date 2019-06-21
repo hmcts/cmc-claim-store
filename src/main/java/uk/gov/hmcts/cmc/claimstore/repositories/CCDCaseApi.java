@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
@@ -99,7 +100,7 @@ public class CCDCaseApi {
     public List<Claim> getByDefendantId(String id, String authorisation) {
         User user = userService.getUser(authorisation);
 
-        return asStream(getAllCasesBy(user, ImmutableMap.of()))
+        return asStream(getAllIssuedCasesBy(user, ImmutableMap.of()))
             .filter(claim -> id.equals(claim.getDefendantId()))
             .collect(Collectors.toList());
     }
@@ -112,7 +113,7 @@ public class CCDCaseApi {
     public List<Claim> getByDefendantEmail(String defendantEmail, String authorisation) {
         User user = userService.getUser(authorisation);
 
-        return asStream(getAllCasesBy(user, ImmutableMap.of()))
+        return asStream(getAllIssuedCasesBy(user, ImmutableMap.of()))
             .filter(claim -> defendantEmail.equals(claim.getDefendantEmail()))
             .collect(Collectors.toList());
     }
@@ -172,12 +173,18 @@ public class CCDCaseApi {
     }
 
     private List<Claim> getAllCasesBy(User user, ImmutableMap<String, String> searchString) {
-        List<CaseDetails> validCases = searchAll(user, searchString)
-            .stream()
-            .filter(caseDetails -> !isCreatedState(caseDetails))
-            .collect(Collectors.toList());
+        return extractClaims(searchAll(user, searchString));
+    }
 
-        return extractClaims(validCases);
+    private List<Claim> getAllIssuedCasesBy(User user, ImmutableMap<String, String> searchString) {
+        List<CaseDetails> issuedCases = asStream(searchAll(user, searchString))
+            .filter(isCaseIssued())
+            .collect(Collectors.toList());
+        return extractClaims(issuedCases);
+    }
+
+    private Predicate<CaseDetails> isCaseIssued() {
+        return caseDetails -> !CREATE.getValue().equals(caseDetails.getState());
     }
 
     private Optional<Claim> getCaseBy(String authorisation, Map<String, String> searchString) {
@@ -394,13 +401,8 @@ public class CCDCaseApi {
     }
 
     private List<Claim> extractClaims(List<CaseDetails> result) {
-        return result
-            .stream()
+        return asStream(result)
             .map(entry -> ccdCaseDataToClaim.extractClaim(entry))
             .collect(Collectors.toList());
-    }
-
-    private boolean isCreatedState(CaseDetails caseDetails) {
-        return CREATE.getValue().equals(caseDetails.getState());
     }
 }
