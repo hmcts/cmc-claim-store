@@ -87,13 +87,15 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
 
-        assertThat(responseData).hasSize(4);
+        assertThat(responseData).hasSize(6);
         assertThat(LocalDate.parse(responseData.get("docUploadDeadline").toString()))
             .isAfterOrEqualTo(LocalDate.now().plusDays(42));
         assertThat(LocalDate.parse(responseData.get("eyewitnessUploadDeadline").toString()))
             .isAfterOrEqualTo(LocalDate.now().plusDays(42));
         assertThat(responseData).flatExtracting("directionList")
             .containsExactlyInAnyOrder("DOCUMENTS", "EYEWITNESS");
+        assertThat(responseData.get("docUploadForParty")).isEqualTo("BOTH");
+        assertThat(responseData.get("eyewitnessUploadForParty")).isEqualTo("BOTH");
         assertThat(responseData.get("preferredCourt")).isEqualTo("Preferred court");
         assertThat(responseData.get("newRequestedCourt")).isNull();
         assertThat(responseData.get("preferredCourtObjectingParty")).isNull();

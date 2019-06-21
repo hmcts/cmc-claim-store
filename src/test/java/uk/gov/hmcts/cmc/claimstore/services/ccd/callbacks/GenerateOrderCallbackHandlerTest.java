@@ -110,7 +110,9 @@ public class GenerateOrderCallbackHandlerTest {
         assertThat(response.getData()).contains(
             entry("directionList", ImmutableList.of("DOCUMENTS", "EYEWITNESS")),
             entry("docUploadDeadline", DEADLINE),
+            entry("docUploadForParty", "BOTH"),
             entry("eyewitnessUploadDeadline", DEADLINE),
+            entry("eyewitnessUploadForParty", "BOTH"),
             entry("preferredCourt", ccdCase.getPreferredCourt()),
             entry("newRequestedCourt", null),
             entry("preferredCourtObjectingParty", null),
@@ -140,7 +142,9 @@ public class GenerateOrderCallbackHandlerTest {
         assertThat(response.getData()).contains(
             entry("directionList", ImmutableList.of("DOCUMENTS", "EYEWITNESS")),
             entry("docUploadDeadline", DEADLINE),
+            entry("docUploadForParty", "BOTH"),
             entry("eyewitnessUploadDeadline", DEADLINE),
+            entry("eyewitnessUploadForParty", "BOTH"),
             entry("preferredCourt", ccdCase.getPreferredCourt()),
             entry("newRequestedCourt", "Claimant Court"),
             entry("preferredCourtObjectingParty", "Res_CLAIMANT"),
@@ -170,7 +174,9 @@ public class GenerateOrderCallbackHandlerTest {
         assertThat(response.getData()).contains(
             entry("directionList", ImmutableList.of("DOCUMENTS", "EYEWITNESS")),
             entry("docUploadDeadline", DEADLINE),
+            entry("docUploadForParty", "BOTH"),
             entry("eyewitnessUploadDeadline", DEADLINE),
+            entry("eyewitnessUploadForParty", "BOTH"),
             entry("preferredCourt", ccdCase.getPreferredCourt()),
             entry("newRequestedCourt", "Defendant Court"),
             entry("preferredCourtObjectingParty", "Res_DEFENDANT"),

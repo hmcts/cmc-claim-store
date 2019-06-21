@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDResponseSubjectType;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
@@ -92,6 +93,8 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
         data.put("docUploadDeadline", deadline);
         data.put("eyewitnessUploadDeadline", deadline);
         data.put("preferredCourt", ccdCase.getPreferredCourt());
+        data.put("docUploadForParty", CCDDirectionPartyType.BOTH.name());
+        data.put("eyewitnessUploadForParty", CCDDirectionPartyType.BOTH.name());
         addCourtData(ccdCase, data);
         return AboutToStartOrSubmitCallbackResponse
             .builder()
