@@ -287,15 +287,19 @@ public class CCDCaseApi {
         }
 
         User letterHolder = userService.getUser(authorisation);
-        return Optional.of(readCase(letterHolder, letterHolderCases.get(0)));
+        CaseDetails caseDetails = readCase(letterHolder, letterHolderCases.get(0));
+        if (CREATE.getValue().equals(caseDetails.getState())) {
+            throw new DefendantLinkingException("Claim is not in open state, can not link defendant");
+        }
+        return Optional.of(ccdCaseDataToClaim.extractClaim(caseDetails));
     }
 
     private String extractLetterHolderId(String role) {
         return StringUtils.remove(role, "letter-");
     }
 
-    private Claim readCase(User user, String caseId) {
-        CaseDetails caseDetails = coreCaseDataApi.readForCitizen(
+    private CaseDetails readCase(User user, String caseId) {
+        return coreCaseDataApi.readForCitizen(
             user.getAuthorisation(),
             authTokenGenerator.generate(),
             user.getUserDetails().getId(),
@@ -303,7 +307,6 @@ public class CCDCaseApi {
             CASE_TYPE_ID,
             caseId
         );
-        return ccdCaseDataToClaim.extractClaim(caseDetails);
     }
 
     private List<CaseDetails> searchAll(User user, ClaimState state) {
