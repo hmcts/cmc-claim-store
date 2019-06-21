@@ -186,8 +186,7 @@ public class CCDCaseRepository implements CaseRepository {
 
     @Override
     public List<Claim> getMediationClaims(String authorisation, LocalDate mediationAgreementDate) {
-        // ROC-5619 To implement CCD logic
-        return null;
+        return ccdCaseApi.getMediationClaims(mediationAgreementDate, authorisation);
     }
 
     @Override
