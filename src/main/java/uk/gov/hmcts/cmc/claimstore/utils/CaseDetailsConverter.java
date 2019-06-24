@@ -11,30 +11,30 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class CCDCaseDataToClaim {
+public class CaseDetailsConverter {
 
     private final CaseMapper caseMapper;
     private final JsonMapper jsonMapper;
 
-    public CCDCaseDataToClaim(CaseMapper caseMapper, JsonMapper jsonMapper) {
+    public CaseDetailsConverter(CaseMapper caseMapper, JsonMapper jsonMapper) {
 
         this.caseMapper = caseMapper;
         this.jsonMapper = jsonMapper;
     }
 
-    public Claim to(CaseDetails caseDetails) {
-        return caseMapper.from(convertToCCDCase(caseDetails));
+    public Claim extractClaim(CaseDetails caseDetails) {
+        return caseMapper.from(extractCCDCase(caseDetails));
     }
 
-    public CCDCase convertToCCDCase(CaseDetails caseDetails) {
+    public CCDCase extractCCDCase(CaseDetails caseDetails) {
         Map<String, Object> tempData = new HashMap<>(caseDetails.getData());
         tempData.put("id", caseDetails.getId());
         tempData.put("state", caseDetails.getState());
 
-        return convertToCCDCase(tempData);
+        return extractCCDCase(tempData);
     }
 
-    private CCDCase convertToCCDCase(Map<String, Object> mapData) {
+    private CCDCase extractCCDCase(Map<String, Object> mapData) {
         return jsonMapper.fromMap(mapData, CCDCase.class);
     }
 }

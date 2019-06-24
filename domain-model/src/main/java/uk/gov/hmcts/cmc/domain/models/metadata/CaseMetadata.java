@@ -1,10 +1,14 @@
-package uk.gov.hmcts.cmc.domain.models;
+package uk.gov.hmcts.cmc.domain.models.metadata;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
+import uk.gov.hmcts.cmc.domain.models.Payment;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -20,17 +24,20 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 public class CaseMetadata {
     private final Long id;
     private final String submitterId;
+    private final String submitterPartyType;
     private final String defendantId;
+    private final String defendantPartyType;
     private final String externalId;
     private final String referenceNumber;
     private final LocalDateTime createdAt;
     private final LocalDate issuedOn;
     private final LocalDate responseDeadline;
-    private final LocalDateTime respondedAt;
-    private final boolean moreTimeRequested;
-    private final LocalDateTime countyCourtJudgmentRequestedAt;
-    private final LocalDateTime claimantRespondedAt;
-    private final LocalDateTime settlementReachedAt;
+    private final Boolean moreTimeRequested;
+    private final CountyCourtJudgmentMetadata countyCourtJudgment;
+    private final DefendantResponseMetadata defendantResponse;
+    private final ClaimantResponseMetadata claimantResponse;
+    private final SettlementMetadata settlement;
+    private final RedeterminationMetadata redetermination;
     private final URI sealedClaimDocument;
     private final String paymentReference;
     private final LocalDate moneyReceivedOn;
@@ -41,17 +48,20 @@ public class CaseMetadata {
         return new CaseMetadata(
             claim.getId(),
             claim.getSubmitterId(),
+            claim.getClaimData().getClaimant().getClass().getSimpleName(),
             claim.getDefendantId(),
+            claim.getClaimData().getDefendant().getClass().getSimpleName(),
             claim.getExternalId(),
             claim.getReferenceNumber(),
             claim.getCreatedAt(),
             claim.getIssuedOn(),
             claim.getResponseDeadline(),
-            claim.getRespondedAt(),
             claim.isMoreTimeRequested(),
-            claim.getCountyCourtJudgmentRequestedAt(),
-            claim.getClaimantRespondedAt().orElse(null),
-            claim.getSettlementReachedAt(),
+            CountyCourtJudgmentMetadata.fromClaim(claim),
+            DefendantResponseMetadata.fromClaim(claim),
+            ClaimantResponseMetadata.fromClaim(claim),
+            SettlementMetadata.fromClaim(claim),
+            RedeterminationMetadata.fromClaim(claim),
             claim.getClaimDocument(SEALED_CLAIM).orElse(null),
             Optional.ofNullable(claim.getClaimData().getPayment())
                 .map(Payment::getReference)
