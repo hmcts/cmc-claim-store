@@ -179,10 +179,9 @@ public class CCDCaseApi {
     }
 
     private List<Claim> getAllIssuedCasesBy(User user, ImmutableMap<String, String> searchString) {
-        List<CaseDetails> issuedCases = asStream(searchAll(user, searchString))
+        return extractClaims(asStream(searchAll(user, searchString))
             .filter(isCreatedState.negate())
-            .collect(Collectors.toList());
-        return extractClaims(issuedCases);
+            .collect(Collectors.toList()));
     }
 
     private Optional<Claim> getCaseBy(String authorisation, Map<String, String> searchString) {
@@ -286,8 +285,8 @@ public class CCDCaseApi {
 
         User letterHolder = userService.getUser(authorisation);
         CaseDetails caseDetails = readCase(letterHolder, letterHolderCases.get(0));
-        if (CREATE.getValue().equals(caseDetails.getState())) {
-            throw new DefendantLinkingException("Claim is not in open state, can not link defendant");
+        if (CREATE == ClaimState.valueOf(caseDetails.getState())) {
+            throw new DefendantLinkingException("Claim is not in issued yet, can not link defendant");
         }
         return Optional.of(ccdCaseDataToClaim.extractClaim(caseDetails));
     }
