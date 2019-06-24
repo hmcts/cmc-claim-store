@@ -56,6 +56,8 @@ public class CCDCaseApi {
     private static final int MINIMUM_SIZE_TO_CHECK_FOR_MORE_PAGES = 10;
     private static final int MAX_NUM_OF_PAGES_TO_CHECK = 10;
 
+    private Predicate<CaseDetails> isCreatedState = caseDetails -> CREATE.getValue().equals(caseDetails.getState());
+
     @SuppressWarnings("squid:S00107") // All parameters are required here
     public CCDCaseApi(
         CoreCaseDataApi coreCaseDataApi,
@@ -178,13 +180,9 @@ public class CCDCaseApi {
 
     private List<Claim> getAllIssuedCasesBy(User user, ImmutableMap<String, String> searchString) {
         List<CaseDetails> issuedCases = asStream(searchAll(user, searchString))
-            .filter(isCaseIssued())
+            .filter(isCreatedState.negate())
             .collect(Collectors.toList());
         return extractClaims(issuedCases);
-    }
-
-    private Predicate<CaseDetails> isCaseIssued() {
-        return caseDetails -> !CREATE.getValue().equals(caseDetails.getState());
     }
 
     private Optional<Claim> getCaseBy(String authorisation, Map<String, String> searchString) {
