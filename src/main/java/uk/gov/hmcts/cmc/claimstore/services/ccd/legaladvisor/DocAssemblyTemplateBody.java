@@ -59,7 +59,8 @@ public class DocAssemblyTemplateBody implements FormPayload {
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate eyewitnessUploadDeadline;
 
-    private boolean hearingRequired;
+    @JsonProperty("hearingRequired")
+    private boolean paperDetermination;
 
     private CCDDirectionPartyType docUploadForParty;
 

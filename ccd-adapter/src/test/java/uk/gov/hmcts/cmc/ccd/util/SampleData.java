@@ -541,7 +541,7 @@ public class SampleData {
                                     .build()))
                         .build())
                     .build()))
-            .hearingRequired(YES)
+            .paperDetermination(NO)
             .docUploadDeadline(LocalDate.parse("2020-10-11"))
             .eyewitnessUploadDeadline(LocalDate.parse("2020-10-11"))
             .hearingCourt(CCDHearingCourtType.DEFENDANT_COURT)

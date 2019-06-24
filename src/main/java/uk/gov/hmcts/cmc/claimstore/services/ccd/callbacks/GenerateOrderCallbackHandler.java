@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
@@ -95,6 +96,7 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
         data.put("preferredCourt", ccdCase.getPreferredCourt());
         data.put("docUploadForParty", CCDDirectionPartyType.BOTH.name());
         data.put("eyewitnessUploadForParty", CCDDirectionPartyType.BOTH.name());
+        data.put("paperDetermination", CCDYesNoOption.NO.name());
         addCourtData(ccdCase, data);
         return AboutToStartOrSubmitCallbackResponse
             .builder()
@@ -115,7 +117,7 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
 
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
             .templateId(templateId)
-            .outputType(OutputType.DOC)
+            .outputType(OutputType.PDF)
             .formPayload(docAssemblyTemplateBodyMapper.from(
                 ccdCase,
                 userService.getUserDetails(authorisation)))

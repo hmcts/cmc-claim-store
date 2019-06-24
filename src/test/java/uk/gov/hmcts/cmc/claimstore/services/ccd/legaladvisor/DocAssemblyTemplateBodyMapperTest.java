@@ -70,7 +70,7 @@ public class DocAssemblyTemplateBodyMapperTest  {
             .withSurname("McJudge")
             .build();
         docAssemblyTemplateBodyBuilder = DocAssemblyTemplateBody.builder()
-            .hearingRequired(true)
+            .paperDetermination(false)
             .hasFirstOrderDirections(true)
             .hasSecondOrderDirections(true)
             .docUploadDeadline(LocalDate.parse("2020-10-11"))
@@ -146,7 +146,7 @@ public class DocAssemblyTemplateBodyMapperTest  {
             userDetails);
 
         DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
-            .hearingRequired(true)
+            .paperDetermination(false)
             .hasFirstOrderDirections(true)
             .hasSecondOrderDirections(true)
             .docUploadDeadline(LocalDate.parse("2020-10-11"))

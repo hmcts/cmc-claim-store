@@ -36,7 +36,7 @@ public class CCDOrderGenerationData {
     @Builder.Default
     private List<CCDCollectionElement<String>> extraDocUploadList = Collections.emptyList();
 
-    private CCDYesNoOption hearingRequired;
+    private CCDYesNoOption paperDetermination;
 
     private String newRequestedCourt;
 

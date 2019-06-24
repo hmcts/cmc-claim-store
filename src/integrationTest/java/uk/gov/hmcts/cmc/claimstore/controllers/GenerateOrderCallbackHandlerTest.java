@@ -97,6 +97,7 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
         assertThat(responseData.get("docUploadForParty")).isEqualTo("BOTH");
         assertThat(responseData.get("eyewitnessUploadForParty")).isEqualTo("BOTH");
         assertThat(responseData.get("preferredCourt")).isEqualTo("Preferred court");
+        assertThat(responseData.get("hearingRequired")).isEqualTo("NO");
         assertThat(responseData.get("newRequestedCourt")).isNull();
         assertThat(responseData.get("preferredCourtObjectingParty")).isNull();
         assertThat(responseData.get("preferredCourtObjectingReason")).isNull();
@@ -133,7 +134,7 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
             .data(caseDetailsTemp.getData())
             .build();
         Map<String, Object> data = new HashMap<>(caseDetailsTemp.getData());
-        data.put("hearingRequired", "Yes");
+        data.put("paperDetermination", "No");
         data.put("docUploadDeadline", "2019-06-03");
         data.put("docUploadForParty", "BOTH");
         data.put("eyewitnessUploadDeadline", "2019-06-03");
