@@ -58,12 +58,14 @@ public class FixCCDDataForCaseProgression {
 
                 CCDCase ccdCase = caseDetailsConverter.extractCCDCase(c);
                 ccdCase.getRespondents().stream().map(CCDCollectionElement::getValue)
-                    .forEach(def -> logger.info("defendant before before {}", def.getClaimantProvidedDetail()));
+                    .forEach(def -> logger.info("defendant details before {}",
+                        def.getClaimantProvidedDetail().getEmailAddress()));
                 Claim claim = caseMapper.from(ccdCase);
                 CCDCase updatedCase = caseMapper.to(claim.toBuilder().defendantEmail(null).build());
 
                 updatedCase.getRespondents().stream().map(CCDCollectionElement::getValue)
-                    .forEach(def -> logger.info("defendant before before {}", def.getClaimantProvidedDetail()));
+                    .forEach(def -> logger.info("defendant details after {}",
+                        def.getClaimantProvidedDetail().getEmailAddress()));
                 supportUpdateService.updateCase(user, updatedClaims, failedOnUpdateMigrations, updatedCase);
 
             });
