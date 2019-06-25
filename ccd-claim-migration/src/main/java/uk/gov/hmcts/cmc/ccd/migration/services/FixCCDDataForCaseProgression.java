@@ -66,8 +66,10 @@ public class FixCCDDataForCaseProgression {
 
                 CCDCase ccdCase = caseDetailsConverter.extractCCDCase(c);
                 ccdCase.getRespondents().stream().map(CCDCollectionElement::getValue)
-                    .forEach(def -> logger.info("defendant details before {}",
-                        def.getClaimantProvidedDetail().getEmailAddress()));
+                    .forEach(def -> {
+                        logger.info("defendant details before {}", def.getClaimantProvidedDetail().getEmailAddress());
+                        logger.info("defendant type {}", def.getClaimantProvidedDetail().getType());
+                    });
 
                 Claim claim = caseMapper.from(ccdCase);
                 TheirDetails defendant = claim.getClaimData().getDefendant();
