@@ -9,7 +9,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.retry.annotation.EnableRetry;
 import uk.gov.hmcts.cmc.ccd.migration.services.CCDDataAccessService;
-import uk.gov.hmcts.cmc.ccd.migration.services.ClaimDataPatcher;
 
 /**
  * Application to patchClaims claims from claim-store database to CCD datastore.
