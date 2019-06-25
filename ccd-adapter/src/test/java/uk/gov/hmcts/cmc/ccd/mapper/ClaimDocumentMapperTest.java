@@ -40,6 +40,7 @@ public class ClaimDocumentMapperTest {
         claimDocument = ClaimDocument.builder()
             .documentName("foo")
             .documentManagementUrl(URI.create("www.google.com"))
+            .documentManagementBinaryUrl(URI.create("www.binary-url.com"))
             .documentType(ClaimDocumentType.CLAIM_ISSUE_RECEIPT)
             .authoredDatetime(now)
             .createdDatetime(yesterday)
@@ -55,7 +56,7 @@ public class ClaimDocumentMapperTest {
         assertEquals(claimDocument.getDocumentName(), ccdCollectionElement.getValue().getDocumentName());
         assertEquals(claimDocument.getDocumentManagementUrl(),
             URI.create(ccdCollectionElement.getValue().getDocumentLink().getDocumentUrl()));
-        assertEquals(claimDocument.getDocumentManagementUrl().toString() + "/binary",
+        assertEquals(claimDocument.getDocumentManagementBinaryUrl().toString(),
             ccdCollectionElement.getValue().getDocumentLink().getDocumentBinaryUrl());
         assertEquals(claimDocument.getDocumentName(),
             ccdCollectionElement.getValue().getDocumentLink().getDocumentFileName());
@@ -71,9 +72,13 @@ public class ClaimDocumentMapperTest {
         ClaimDocument claimDocument = claimDocumentMapper.from(ccdCollectionElement);
         CCDClaimDocument ccdClaimDocument = ccdCollectionElement.getValue();
 
-        assertEquals(ccdClaimDocument.getDocumentName(), claimDocument.getDocumentName());
         assertEquals(URI.create(ccdClaimDocument.getDocumentLink().getDocumentUrl()),
             claimDocument.getDocumentManagementUrl());
+
+        assertEquals(URI.create(ccdClaimDocument.getDocumentLink().getDocumentBinaryUrl()),
+            claimDocument.getDocumentManagementBinaryUrl());
+
+        assertEquals(ccdClaimDocument.getDocumentName(), claimDocument.getDocumentName());
         assertEquals(ClaimDocumentType.CLAIM_ISSUE_RECEIPT, claimDocument.getDocumentType());
         assertEquals(ccdClaimDocument.getAuthoredDatetime(), claimDocument.getAuthoredDatetime());
         assertEquals(ccdClaimDocument.getCreatedDatetime(), claimDocument.getCreatedDatetime());
