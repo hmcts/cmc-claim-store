@@ -13,7 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
-import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
+import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -44,7 +44,7 @@ public class MoreTimeRequestedCallbackHandlerTest {
     @Mock
     private MoreTimeRequestRule moreTimeRequestRule;
     @Mock
-    private CCDCaseDataToClaim ccdCaseDataToClaim;
+    private CaseDetailsConverter caseDetailsConverter;
 
     private Claim claim;
 
@@ -59,7 +59,7 @@ public class MoreTimeRequestedCallbackHandlerTest {
             appInsights,
             responseDeadlineCalculator,
             moreTimeRequestRule,
-            ccdCaseDataToClaim
+            caseDetailsConverter
         );
         claim = SampleClaim.getDefault();
         callbackRequest =
@@ -75,7 +75,7 @@ public class MoreTimeRequestedCallbackHandlerTest {
             .id(10L)
             .data(Collections.emptyMap())
             .build();
-        when(ccdCaseDataToClaim.to(caseDetails)).thenReturn(claim);
+        when(caseDetailsConverter.extractClaim(caseDetails)).thenReturn(claim);
 
     }
 
