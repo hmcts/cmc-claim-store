@@ -42,14 +42,17 @@ public class DirectionsQuestionnaireAssert
                     ccdDirectionsQuestionnaire.getSelfWitness(), witness.getSelfWitness());
             }
 
-            witness.getNoOfOtherWitness().ifPresent(noOfOtherWitness -> {
-                    if (!Objects.equals(noOfOtherWitness, ccdDirectionsQuestionnaire.getNumberOfOtherWitnesses())) {
-                        failWithMessage(
-                            "Expected DirectionsQuestionnaire.noOfOtherWitness to be <%s> but was <%s>",
-                            ccdDirectionsQuestionnaire.getNumberOfOtherWitnesses(), witness.getNoOfOtherWitness());
-                    }
-                }
-            );
+            witness.getNoOfOtherWitness()
+                .filter(
+                    noOfOtherWitness ->
+                        !Objects.equals(noOfOtherWitness, ccdDirectionsQuestionnaire.getNumberOfOtherWitnesses())
+                )
+                .ifPresent(noOfOtherWitness ->
+                    failWithMessage(
+                        "Expected DirectionsQuestionnaire.noOfOtherWitness to be <%s> but was <%s>",
+                        ccdDirectionsQuestionnaire.getNumberOfOtherWitnesses(), witness.getNoOfOtherWitness()
+                    )
+                );
         };
     }
 
