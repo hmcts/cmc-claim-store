@@ -156,7 +156,7 @@ public class ResponseMapper {
             .ifPresent(builder::statementOfMeans);
 
         response.getDirectionsQuestionnaire()
-            .map(directionsQuestionnaireMapper:: to)
+            .map(directionsQuestionnaireMapper::to)
             .ifPresent(builder::directionsQuestionnaire);
     }
 
@@ -180,7 +180,7 @@ public class ResponseMapper {
         fullDefenceResponse.getTimeline().ifPresent(mapDefendantTimeline(builder));
 
         fullDefenceResponse.getDirectionsQuestionnaire()
-            .map(directionsQuestionnaireMapper:: to)
+            .map(directionsQuestionnaireMapper::to)
             .ifPresent(builder::directionsQuestionnaire);
     }
 
