@@ -13,7 +13,7 @@ import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
-import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
+import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
@@ -33,18 +33,19 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
     private final Clock clock;
     private final JsonMapper jsonMapper;
     private final OrderDrawnNotificationService orderDrawnNotificationService;
-    private final CCDCaseDataToClaim ccdCaseDataToClaim;
+    private final CaseDetailsConverter caseDetailsConverter;
 
     @Autowired
     public DrawOrderCallbackHandler(
         Clock clock,
         JsonMapper jsonMapper,
         OrderDrawnNotificationService orderDrawnNotificationService,
-        CCDCaseDataToClaim ccdCaseDataToClaim) {
+        CaseDetailsConverter caseDetailsConverter
+    ) {
         this.clock = clock;
         this.jsonMapper = jsonMapper;
         this.orderDrawnNotificationService = orderDrawnNotificationService;
-        this.ccdCaseDataToClaim = ccdCaseDataToClaim;
+        this.caseDetailsConverter = caseDetailsConverter;
     }
 
     @Override
@@ -57,7 +58,7 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
 
     private CallbackResponse notifyParties(CallbackParams callbackParams) {
         CallbackRequest callbackRequest = callbackParams.getRequest();
-        Claim claim = ccdCaseDataToClaim.to(callbackRequest.getCaseDetails());
+        Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
         orderDrawnNotificationService.notifyClaimant(claim);
         orderDrawnNotificationService.notifyDefendant(claim);
         return SubmittedCallbackResponse
