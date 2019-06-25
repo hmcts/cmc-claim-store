@@ -16,12 +16,12 @@ public class ExpertReportAssert extends AbstractAssert<ExpertReportAssert, Exper
         isNotNull();
 
         if (!Objects.equals(actual.getExpertName(), ccdExpertReportRow.getExpertName())) {
-            failWithMessage("Expected Expert Report Row to be <%s> but was <%s>",
+            failWithMessage("Expected ExpertReport.expertName to be <%s> but was <%s>",
                 ccdExpertReportRow.getExpertName(), actual.getExpertName());
         }
 
         if (!Objects.equals(actual.getExpertReportDate(), ccdExpertReportRow.getExpertReportDate())) {
-            failWithMessage("Expected Expert Report Row to be <%s> but was <%s>",
+            failWithMessage("Expected ExpertReport.expertReportDate to be <%s> but was <%s>",
                 ccdExpertReportRow.getExpertReportDate(), actual.getExpertReportDate());
         }
 

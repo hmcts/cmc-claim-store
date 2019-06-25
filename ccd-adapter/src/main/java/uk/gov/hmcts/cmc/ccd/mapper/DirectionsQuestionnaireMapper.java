@@ -27,19 +27,19 @@ import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
 @Component
 public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuestionnaire, DirectionsQuestionnaire> {
 
-    private final ExpertRowMapper expertRowMapper;
+    private final ExpertReportMapper expertReportMapper;
     private final UnavailableDateMapper unavailableDateMapper;
     private final AddressMapper addressMapper;
     private final YesNoMapper yesNoMapper;
 
     @Autowired
     public DirectionsQuestionnaireMapper(
-        ExpertRowMapper expertRowMapper,
+        ExpertReportMapper expertReportMapper,
         UnavailableDateMapper unavailableDateMapper,
         AddressMapper addressMapper,
         YesNoMapper yesNoMapper
     ) {
-        this.expertRowMapper = expertRowMapper;
+        this.expertReportMapper = expertReportMapper;
         this.unavailableDateMapper = unavailableDateMapper;
         this.addressMapper = addressMapper;
         this.yesNoMapper = yesNoMapper;
@@ -62,7 +62,7 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
 
         builder.expertReports(directionsQuestionnaire.getExpertReports()
             .stream()
-            .map(expertRowMapper::to)
+            .map(expertReportMapper::to)
             .filter(Objects::nonNull)
             .collect(Collectors.toList())
         );
@@ -139,7 +139,7 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
         builder.requireSupport(extractRequireSupport(ccdDirectionsQuestionnaire));
 
         List<ExpertReport> expertReports = asStream(ccdDirectionsQuestionnaire.getExpertReports())
-            .map(expertRowMapper::from)
+            .map(expertReportMapper::from)
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
 

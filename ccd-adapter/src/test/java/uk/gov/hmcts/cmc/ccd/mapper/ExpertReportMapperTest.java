@@ -18,42 +18,42 @@ import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-public class ExpertRowMapperTest {
+public class ExpertReportMapperTest {
 
     @Autowired
-    private ExpertRowMapper mapper;
+    private ExpertReportMapper mapper;
 
     @Test
     public void shouldMapExpertRowMapperToCCD() {
         //given
-        ExpertReport expertReportRow = ExpertReport
+        ExpertReport expertReport = ExpertReport
             .builder()
             .expertName("expert1")
             .expertReportDate(LocalDate.of(2050, 1, 1))
             .build();
 
         //when
-        CCDCollectionElement<CCDExpertReport> ccdExpertReportRow = mapper.to(expertReportRow);
+        CCDCollectionElement<CCDExpertReport> ccdExpertReport = mapper.to(expertReport);
 
         //then
-        assertThat(expertReportRow).isEqualTo(ccdExpertReportRow.getValue());
+        assertThat(expertReport).isEqualTo(ccdExpertReport.getValue());
     }
 
     @Test
     public void shouldMapExpertRowMapperFromCCD() {
         //given
-        CCDExpertReport ccdExpertReportRow = CCDExpertReport
+        CCDExpertReport ccdExpertReport = CCDExpertReport
             .builder()
             .expertName("expert1")
             .expertReportDate(LocalDate.of(2050, 1, 1))
             .build();
 
         //when
-        ExpertReport expertReportRow = mapper.from(CCDCollectionElement.<CCDExpertReport>builder()
-            .value(ccdExpertReportRow).build());
+        ExpertReport expertReport = mapper.from(CCDCollectionElement.<CCDExpertReport>builder()
+            .value(ccdExpertReport).build());
 
         //then
-        assertThat(expertReportRow).isEqualTo(ccdExpertReportRow);
+        assertThat(expertReport).isEqualTo(ccdExpertReport);
     }
 
 }
