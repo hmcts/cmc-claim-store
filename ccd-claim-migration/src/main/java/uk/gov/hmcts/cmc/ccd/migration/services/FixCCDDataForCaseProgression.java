@@ -95,8 +95,6 @@ public class FixCCDDataForCaseProgression {
                             def.getClaimantProvidedDetail().getEmailAddress()));
                     supportUpdateService.updateCase(user, updatedClaims, failedOnUpdateMigrations, updatedCase);
                 }
-
-
             });
         });
         logger.info("Successful updates: " + updatedClaims.toString());
