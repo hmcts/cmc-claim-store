@@ -16,7 +16,7 @@ import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.idam.services.UserService;
 import uk.gov.hmcts.cmc.ccd.migration.util.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
+import uk.gov.hmcts.cmc.domain.models.otherparty.CompanyDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
@@ -74,19 +74,16 @@ public class FixCCDDataForCaseProgression {
                 Claim claim = caseMapper.from(ccdCase);
                 TheirDetails defendant = claim.getClaimData().getDefendant();
 
-                if (defendant instanceof IndividualDetails) {
-                    IndividualDetails individualDetails = (IndividualDetails) defendant;
-                    IndividualDetails updatedDetails = new IndividualDetails(
-                        individualDetails.getId(),
-                        individualDetails.getName(),
-                        individualDetails.getTitle().orElse(null),
-                        individualDetails.getFirstName(),
-                        individualDetails.getLastName(),
-                        individualDetails.getAddress(),
+                if (defendant instanceof CompanyDetails) {
+                    CompanyDetails companyDetails = (CompanyDetails) defendant;
+                    CompanyDetails updatedDetails = new CompanyDetails(
+                        companyDetails.getId(),
+                        companyDetails.getName(),
+                        companyDetails.getAddress(),
                         null,
-                        individualDetails.getRepresentative().orElse(null),
-                        individualDetails.getServiceAddress().orElse(null),
-                        individualDetails.getDateOfBirth().orElse(null)
+                        companyDetails.getRepresentative().orElse(null),
+                        companyDetails.getServiceAddress().orElse(null),
+                        companyDetails.getContactPerson().orElse(null)
                     );
 
                     CCDCollectionElement<CCDRespondent> respondent = defendantMapper.to(updatedDetails, claim);
