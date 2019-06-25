@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -121,7 +122,12 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
         builder.hearingLocationSlug(hearingLocation.getHearingLocationSlug());
         hearingLocation.getCourtAddress()
             .ifPresent(address -> builder.hearingCourtAddress(addressMapper.to(address)));
-        builder.hearingLocationOption(CCDCourtLocationOption.valueOf(hearingLocation.getLocationOption().name()));
+
+        Optional.ofNullable(hearingLocation.getLocationOption())
+            .map(CourtLocationType::name)
+            .map(CCDCourtLocationOption::valueOf)
+            .ifPresent(builder::hearingLocationOption);
+
         hearingLocation.getExceptionalCircumstancesReason().ifPresent(builder::exceptionalCircumstancesReason);
     }
 
@@ -215,8 +221,10 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
         hearingLocation.hearingLocationSlug(ccdDirectionsQuestionnaire.getHearingLocationSlug());
         hearingLocation.exceptionalCircumstancesReason(ccdDirectionsQuestionnaire.getExceptionalCircumstancesReason());
 
-        hearingLocation.locationOption(
-            CourtLocationType.valueOf(ccdDirectionsQuestionnaire.getHearingLocationOption().name()));
+        Optional.ofNullable(ccdDirectionsQuestionnaire.getHearingLocationOption())
+            .map(CCDCourtLocationOption::name)
+            .map(CourtLocationType::valueOf)
+            .ifPresent(hearingLocation::locationOption);
 
         return hearingLocation.build();
     }
