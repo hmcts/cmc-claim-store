@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.SearchCCDCaseService;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
@@ -56,8 +57,13 @@ public class FixCCDDataForCaseProgression {
             caseDetails.ifPresent(c -> {
 
                 CCDCase ccdCase = caseDetailsConverter.extractCCDCase(c);
+                ccdCase.getRespondents().stream().map(CCDCollectionElement::getValue)
+                    .forEach(def -> logger.info("defendant before before {}", def.getClaimantProvidedDetail()));
                 Claim claim = caseMapper.from(ccdCase);
                 CCDCase updatedCase = caseMapper.to(claim.toBuilder().defendantEmail(null).build());
+
+                updatedCase.getRespondents().stream().map(CCDCollectionElement::getValue)
+                    .forEach(def -> logger.info("defendant before before {}", def.getClaimantProvidedDetail()));
                 supportUpdateService.updateCase(user, updatedClaims, failedOnUpdateMigrations, updatedCase);
 
             });
