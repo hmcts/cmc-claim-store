@@ -178,8 +178,10 @@ public class ResponseMapper {
         fullDefenceResponse.getPaymentDeclaration().ifPresent(mapPaymentDeclaration(builder));
         fullDefenceResponse.getEvidence().ifPresent(mapDefendantEvidence(builder));
         fullDefenceResponse.getTimeline().ifPresent(mapDefendantTimeline(builder));
+
         fullDefenceResponse.getDirectionsQuestionnaire()
-            .ifPresent(dq -> builder.directionsQuestionnaire(directionsQuestionnaireMapper.to(dq)));
+            .map(directionsQuestionnaireMapper:: to)
+            .ifPresent(builder::directionsQuestionnaire);
     }
 
     private Consumer<DefendantTimeline> mapDefendantTimeline(CCDRespondent.CCDRespondentBuilder builder) {

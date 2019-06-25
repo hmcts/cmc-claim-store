@@ -6,7 +6,7 @@ import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDExpertReport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
 
 @Component
-public class ExpertRowMapper implements Mapper<CCDCollectionElement<CCDExpertReport>, ExpertReport> {
+public class ExpertReportMapper implements Mapper<CCDCollectionElement<CCDExpertReport>, ExpertReport> {
 
     @Override
     public CCDCollectionElement<CCDExpertReport> to(ExpertReport expertReport) {
