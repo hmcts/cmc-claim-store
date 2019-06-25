@@ -7,7 +7,6 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDCaseHandler;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDTestingSupportHandler;
-import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
@@ -18,7 +17,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CCDCreateCaseService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
-import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
+import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
@@ -51,15 +50,15 @@ public class CCDStoreConfiguration {
     public CoreCaseDataService coreCaseDataService(
         CaseMapper caseMapper,
         UserService userService,
-        JsonMapper jsonMapper,
         ReferenceNumberService referenceNumberService,
         CoreCaseDataApi coreCaseDataApi,
         AuthTokenGenerator authTokenGenerator,
         JobSchedulerService jobSchedulerService,
-        CCDCreateCaseService ccdCreateCaseService
+        CCDCreateCaseService ccdCreateCaseService,
+        CaseDetailsConverter caseDetailsConverter
     ) {
-        return new CoreCaseDataService(caseMapper, userService, jsonMapper, referenceNumberService, coreCaseDataApi,
-            authTokenGenerator, jobSchedulerService, ccdCreateCaseService);
+        return new CoreCaseDataService(caseMapper, userService, referenceNumberService, coreCaseDataApi,
+            authTokenGenerator, jobSchedulerService, ccdCreateCaseService, caseDetailsConverter);
     }
 
     @Bean
@@ -69,11 +68,11 @@ public class CCDStoreConfiguration {
         UserService userService,
         CaseAccessApi caseAccessApi,
         CoreCaseDataService coreCaseDataService,
-        CCDCaseDataToClaim ccdCaseDataToClaim,
+        CaseDetailsConverter caseDetailsConverter,
         JobSchedulerService jobSchedulerService
     ) {
         return new CCDCaseApi(coreCaseDataApi, authTokenGenerator, userService, caseAccessApi,
-            coreCaseDataService, ccdCaseDataToClaim, jobSchedulerService, true);
+            coreCaseDataService, caseDetailsConverter, jobSchedulerService, true);
     }
 
     @Bean

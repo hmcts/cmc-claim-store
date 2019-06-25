@@ -17,7 +17,7 @@ import uk.gov.hmcts.cmc.ccd.util.SampleData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
-import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
+import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -45,7 +45,7 @@ public class DrawOrderCallbackHandlerTest {
     @Mock
     private JsonMapper jsonMapper;
     @Mock
-    private CCDCaseDataToClaim ccdCaseDataToClaim;
+    private CaseDetailsConverter caseDetailsConverter;
     @Mock
     private Clock clock;
     @Mock
@@ -77,7 +77,7 @@ public class DrawOrderCallbackHandlerTest {
             clock,
             jsonMapper,
             orderDrawnNotificationService,
-            ccdCaseDataToClaim);
+            caseDetailsConverter);
         when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
         callbackRequest = CallbackRequest
@@ -144,7 +144,7 @@ public class DrawOrderCallbackHandlerTest {
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
             drawOrderCallbackHandler
                 .handle(callbackParams);
-        
+
         assertThat(response.getData()).contains(
             entry("caseDocuments", ImmutableList.of(existingDocument, CLAIM_DOCUMENT))
         );
@@ -172,7 +172,7 @@ public class DrawOrderCallbackHandlerTest {
             .request(callbackRequest)
             .build();
         Claim claim = SampleClaim.builder().build();
-        when(ccdCaseDataToClaim.to(any(CaseDetails.class))).thenReturn(claim);
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         drawOrderCallbackHandler
             .handle(callbackParams);
 
