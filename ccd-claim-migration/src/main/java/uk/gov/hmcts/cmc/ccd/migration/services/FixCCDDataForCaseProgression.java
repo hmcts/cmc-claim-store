@@ -10,12 +10,11 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.SearchCCDCaseService;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.idam.services.UserService;
-import uk.gov.hmcts.cmc.ccd.migration.mappers.JsonMapper;
+import uk.gov.hmcts.cmc.ccd.migration.util.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -24,10 +23,9 @@ public class FixCCDDataForCaseProgression {
     private static final Logger logger = LoggerFactory.getLogger(FixCCDDataForCaseProgression.class);
     private final SearchCCDCaseService searchCCDCaseService;
     private final SupportUpdateService supportUpdateService;
-    private final JsonMapper jsonMapper;
+    private final CaseDetailsConverter caseDetailsConverter;
     private final CaseMapper caseMapper;
     private final List<String> casesTofix;
-    private final boolean dryRun;
     private final UserService userService;
 
     @Autowired
@@ -35,21 +33,19 @@ public class FixCCDDataForCaseProgression {
         UserService userService,
         SearchCCDCaseService searchCCDCaseService,
         SupportUpdateService supportUpdateService,
-        JsonMapper jsonMapper,
+        CaseDetailsConverter caseDetailsConverter,
         CaseMapper caseMapper,
-        @Value("${migration.cases.references}") List<String> casesTofix,
-        @Value("${migration.dryRun}") boolean dryRun
+        @Value("${migration.cases.references}") List<String> casesTofix
     ) {
         this.userService = userService;
         this.searchCCDCaseService = searchCCDCaseService;
         this.supportUpdateService = supportUpdateService;
-        this.jsonMapper = jsonMapper;
+        this.caseDetailsConverter = caseDetailsConverter;
         this.caseMapper = caseMapper;
         this.casesTofix = casesTofix;
-        this.dryRun = dryRun;
     }
 
-    public void fixData() {
+    public void removeDefendantEmail() {
         User user = userService.authenticateSystemUpdateUser();
         AtomicInteger failedOnUpdateMigrations = new AtomicInteger(0);
         AtomicInteger updatedClaims = new AtomicInteger(0);
@@ -59,7 +55,7 @@ public class FixCCDDataForCaseProgression {
             Optional<CaseDetails> caseDetails = searchCCDCaseService.getCcdCaseByReferenceNumber(user, caseReference);
             caseDetails.ifPresent(c -> {
 
-                CCDCase ccdCase = mapToCCDCase(c.getData(), Long.toString(c.getId()));
+                CCDCase ccdCase = caseDetailsConverter.extractCCDCase(c);
                 Claim claim = caseMapper.from(ccdCase);
                 CCDCase updatedCase = caseMapper.to(claim.toBuilder().defendantEmail(null).build());
                 supportUpdateService.updateCase(user, updatedClaims, failedOnUpdateMigrations, updatedCase);
@@ -67,10 +63,5 @@ public class FixCCDDataForCaseProgression {
             });
         });
         logger.info("Successful updates: " + updatedClaims.toString());
-    }
-
-    private CCDCase mapToCCDCase(Map<String, Object> caseData, String caseId) {
-        caseData.put("id", caseId);
-        return jsonMapper.fromMap(caseData, CCDCase.class);
     }
 }

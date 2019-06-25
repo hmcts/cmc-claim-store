@@ -8,7 +8,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.retry.annotation.EnableRetry;
-import uk.gov.hmcts.cmc.ccd.migration.services.ClaimDataPatcher;
 import uk.gov.hmcts.cmc.ccd.migration.services.FixCCDDataForCaseProgression;
 
 /**
@@ -47,6 +46,6 @@ public class App implements CommandLineRunner {
     @Override
     public void run(String... args) {
         logger.info("Fix ccd data ");
-        fixCCDDataForCaseProgression.fixData();
+        fixCCDDataForCaseProgression.removeDefendantEmail();
     }
 }
