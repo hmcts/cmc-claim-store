@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.function.Function;
 
+import static java.util.function.Predicate.isEqual;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 
@@ -114,13 +115,13 @@ public class PostClaimOrchestrationHandler {
                     .apply(claim);
 
             updatedClaim.getState()
-                .filter(state -> state == CREATE)
-                .ifPresent(state -> {
+                .filter(isEqual(CREATE))
+                .ifPresent(state ->
                     claimService.updateClaimState(
                         authorisation,
                         updatedClaim,
-                        state);
-                });
+                        state)
+                );
         } catch (Exception e) {
             logger.error("Failed operation processing for event ()", event, e);
         }
@@ -146,14 +147,13 @@ public class PostClaimOrchestrationHandler {
                 .apply(claim);
 
             updatedClaim.getState()
-                .filter(state -> state == CREATE)
-                .ifPresent(state -> {
+                .filter(isEqual(CREATE))
+                .ifPresent(state ->
                     claimService.updateClaimState(
                         authorisation,
                         updatedClaim,
-                        state);
-                });
-
+                        state)
+                );
         } catch (Exception e) {
             logger.error("Failed operation processing for event ()", event, e);
         }
