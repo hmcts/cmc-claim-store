@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.migration.services;
 
+import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,12 +8,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.defendant.DefendantMapper;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.SearchCCDCaseService;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 import uk.gov.hmcts.cmc.ccd.migration.idam.services.UserService;
 import uk.gov.hmcts.cmc.ccd.migration.util.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
+import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.util.List;
@@ -26,6 +31,7 @@ public class FixCCDDataForCaseProgression {
     private final SupportUpdateService supportUpdateService;
     private final CaseDetailsConverter caseDetailsConverter;
     private final CaseMapper caseMapper;
+    private final DefendantMapper defendantMapper;
     private final List<String> casesTofix;
     private final UserService userService;
 
@@ -36,6 +42,7 @@ public class FixCCDDataForCaseProgression {
         SupportUpdateService supportUpdateService,
         CaseDetailsConverter caseDetailsConverter,
         CaseMapper caseMapper,
+        DefendantMapper defendantMapper,
         @Value("${migration.cases.references}") List<String> casesTofix
     ) {
         this.userService = userService;
@@ -43,6 +50,7 @@ public class FixCCDDataForCaseProgression {
         this.supportUpdateService = supportUpdateService;
         this.caseDetailsConverter = caseDetailsConverter;
         this.caseMapper = caseMapper;
+        this.defendantMapper = defendantMapper;
         this.casesTofix = casesTofix;
     }
 
@@ -60,13 +68,35 @@ public class FixCCDDataForCaseProgression {
                 ccdCase.getRespondents().stream().map(CCDCollectionElement::getValue)
                     .forEach(def -> logger.info("defendant details before {}",
                         def.getClaimantProvidedDetail().getEmailAddress()));
-                Claim claim = caseMapper.from(ccdCase);
-                CCDCase updatedCase = caseMapper.to(claim.toBuilder().defendantEmail(null).build());
 
-                updatedCase.getRespondents().stream().map(CCDCollectionElement::getValue)
-                    .forEach(def -> logger.info("defendant details after {}",
-                        def.getClaimantProvidedDetail().getEmailAddress()));
-                supportUpdateService.updateCase(user, updatedClaims, failedOnUpdateMigrations, updatedCase);
+                Claim claim = caseMapper.from(ccdCase);
+                TheirDetails defendant = claim.getClaimData().getDefendant();
+
+                if (defendant instanceof IndividualDetails) {
+                    IndividualDetails individualDetails = (IndividualDetails) defendant;
+                    IndividualDetails updatedDetails = new IndividualDetails(
+                        individualDetails.getId(),
+                        individualDetails.getName(),
+                        individualDetails.getTitle().orElse(null),
+                        individualDetails.getFirstName(),
+                        individualDetails.getLastName(),
+                        individualDetails.getAddress(),
+                        null,
+                        individualDetails.getRepresentative().orElse(null),
+                        individualDetails.getServiceAddress().orElse(null),
+                        individualDetails.getDateOfBirth().orElse(null)
+                    );
+
+                    CCDCollectionElement<CCDRespondent> respondent = defendantMapper.to(updatedDetails, claim);
+
+                    CCDCase updatedCase = ccdCase.toBuilder().respondents(ImmutableList.of(respondent)).build();
+
+                    updatedCase.getRespondents().stream().map(CCDCollectionElement::getValue)
+                        .forEach(def -> logger.info("defendant details after {}",
+                            def.getClaimantProvidedDetail().getEmailAddress()));
+                    supportUpdateService.updateCase(user, updatedClaims, failedOnUpdateMigrations, updatedCase);
+                }
+
 
             });
         });
