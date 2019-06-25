@@ -11,11 +11,11 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
+import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
@@ -38,7 +38,6 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
@@ -74,33 +73,33 @@ public class CoreCaseDataService {
 
     private final CaseMapper caseMapper;
     private final UserService userService;
-    private final JsonMapper jsonMapper;
     private final ReferenceNumberService referenceNumberService;
     private final CoreCaseDataApi coreCaseDataApi;
     private final AuthTokenGenerator authTokenGenerator;
     private final JobSchedulerService jobSchedulerService;
     private final CCDCreateCaseService ccdCreateCaseService;
+    private final CaseDetailsConverter caseDetailsConverter;
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     @Autowired
     public CoreCaseDataService(
         CaseMapper caseMapper,
         UserService userService,
-        JsonMapper jsonMapper,
         ReferenceNumberService referenceNumberService,
         CoreCaseDataApi coreCaseDataApi,
         AuthTokenGenerator authTokenGenerator,
         JobSchedulerService jobSchedulerService,
-        CCDCreateCaseService ccdCreateCaseService
+        CCDCreateCaseService ccdCreateCaseService,
+        CaseDetailsConverter caseDetailsConverter
     ) {
         this.caseMapper = caseMapper;
         this.userService = userService;
-        this.jsonMapper = jsonMapper;
         this.referenceNumberService = referenceNumberService;
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;
         this.jobSchedulerService = jobSchedulerService;
         this.ccdCreateCaseService = ccdCreateCaseService;
+        this.caseDetailsConverter = caseDetailsConverter;
     }
 
     @LogExecutionTime
@@ -146,7 +145,7 @@ public class CoreCaseDataService {
                 ccdCreateCaseService.grantAccessToCase(caseDetails.getId().toString(), claim.getLetterHolderId());
             }
 
-            return extractClaim(caseDetails);
+            return caseDetailsConverter.extractClaim(caseDetails);
 
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
@@ -192,7 +191,7 @@ public class CoreCaseDataService {
             );
 
             jobSchedulerService.rescheduleEmailNotificationsForDefendantResponse(claim, newResponseDeadline);
-            return extractClaim(caseDetails);
+            return caseDetailsConverter.extractClaim(caseDetails);
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(
@@ -298,7 +297,7 @@ public class CoreCaseDataService {
                 caseId,
                 userDetails.isSolicitor() || userDetails.isCaseworker()
             );
-            return extractClaim(caseDetails);
+            return caseDetailsConverter.extractClaim(caseDetails);
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(
@@ -409,7 +408,7 @@ public class CoreCaseDataService {
 
             CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);
 
-            return extractClaim(submitUpdate(authorisation,
+            return caseDetailsConverter.extractClaim(submitUpdate(authorisation,
                 eventRequestData,
                 caseDataContent,
                 caseId,
@@ -599,7 +598,7 @@ public class CoreCaseDataService {
     }
 
     private Claim toClaim(StartEventResponse startEventResponse) {
-        return caseMapper.from(extractCase(startEventResponse.getCaseDetails()));
+        return caseMapper.from(caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails()));
     }
 
     private CaseDataContent caseDataContent(StartEventResponse startEventResponse, Claim ccdClaim) {
@@ -731,16 +730,6 @@ public class CoreCaseDataService {
         }
     }
 
-    private Claim extractClaim(CaseDetails caseDetails) {
-        return caseMapper.from(extractCase(caseDetails));
-    }
-
-    private CCDCase extractCase(CaseDetails caseDetails) {
-        Map<String, Object> caseData = caseDetails.getData();
-        caseData.put("id", caseDetails.getId());
-        return jsonMapper.fromMap(caseData, CCDCase.class);
-    }
-
     public void saveDirectionsQuestionnaireDeadline(Long caseId, LocalDate dqDeadline, String authorisation) {
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
@@ -790,7 +779,7 @@ public class CoreCaseDataService {
                 userDetails.isSolicitor() || userDetails.isCaseworker()
             );
 
-            CCDCase ccdCase = extractCase(startEventResponse.getCaseDetails());
+            CCDCase ccdCase = caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails());
 
             CaseDataContent caseDataContent = caseDataContent(startEventResponse, ccdCase);
 
@@ -918,7 +907,7 @@ public class CoreCaseDataService {
                 userDetails.isSolicitor() || userDetails.isCaseworker()
             );
 
-            return extractClaim(caseDetails);
+            return caseDetailsConverter.extractClaim(caseDetails);
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(
@@ -944,7 +933,7 @@ public class CoreCaseDataService {
                 userDetails.isSolicitor() || userDetails.isCaseworker()
             );
 
-            CCDCase ccdCase = extractCase(startEventResponse.getCaseDetails());
+            CCDCase ccdCase = caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails());
             Claim claim = caseMapper.from(ccdCase);
 
             Claim updatedClaim = claim.toBuilder()
@@ -967,7 +956,7 @@ public class CoreCaseDataService {
                     ccdCreateCaseService.removeAccessToCase(caseId.toString(), previousLetterHolderId)
             );
 
-            return extractClaim(caseDetails);
+            return caseDetailsConverter.extractClaim(caseDetails);
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(
