@@ -70,8 +70,8 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
 
         builder.unavailableDates(directionsQuestionnaire.getUnavailableDates()
             .stream()
-            .map(unavailableDateMapper::to)
             .filter(Objects::nonNull)
+            .map(unavailableDateMapper::to)
             .collect(Collectors.toList())
         );
 

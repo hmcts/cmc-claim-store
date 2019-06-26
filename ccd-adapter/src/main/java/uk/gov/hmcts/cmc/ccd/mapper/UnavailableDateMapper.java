@@ -11,7 +11,9 @@ public class UnavailableDateMapper implements Mapper<CCDCollectionElement<LocalD
 
     @Override
     public CCDCollectionElement<LocalDate> to(UnavailableDate unavailableDate) {
-
+        if (unavailableDate == null) {
+            return null;
+        }
         return CCDCollectionElement.<LocalDate>builder()
             .value(unavailableDate.getUnavailableDate())
             .id(unavailableDate.getId())
@@ -20,7 +22,9 @@ public class UnavailableDateMapper implements Mapper<CCDCollectionElement<LocalD
 
     @Override
     public UnavailableDate from(CCDCollectionElement<LocalDate> ccdUnavailableDate) {
-
+        if (ccdUnavailableDate == null) {
+            return null;
+        }
         return UnavailableDate
             .builder()
             .id(ccdUnavailableDate.getId())
