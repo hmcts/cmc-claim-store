@@ -64,6 +64,15 @@ public class MediationCSVGenerator {
                 .getMediationPhoneNumber()
         );
 
+    private static final Map<Integer, Function<Claim, String>> CONTACT_EMAIL_EXTRACTORS =
+        ImmutableMap.of(
+            CLAIMANT_PARTY_TYPE,
+            claim -> claim.getSubmitterEmail(),
+
+            DEFENDANT_PARTY_TYPE,
+            claim -> claim.getDefendantEmail()
+        );
+
     private static final String NULL_STRING = "null";
 
     private final CaseRepository caseRepository;
@@ -125,7 +134,9 @@ public class MediationCSVGenerator {
             .caseNumber(claim.getReferenceNumber())
             .amount(String.valueOf(claim.getTotalAmountTillToday()
                 .orElseThrow(invalidMediationStateException("Unable to find total amount of claim"))))
-            .partyType(String.valueOf(partyType));
+            .partyType(String.valueOf(partyType))
+            .emailAddress(CONTACT_EMAIL_EXTRACTORS.get(partyType)
+                .apply(claim));
 
         CONTACT_PERSON_EXTRACTORS.get(partyType)
             .apply(claim)

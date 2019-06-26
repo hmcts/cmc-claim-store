@@ -20,6 +20,7 @@ public class MediationRow implements Iterable<String> {
     private String contactName;
     private String contactDetail;
     private String contactNumber;
+    private String emailAddress;
     private String checkList;
     private String partyStatus;
 
