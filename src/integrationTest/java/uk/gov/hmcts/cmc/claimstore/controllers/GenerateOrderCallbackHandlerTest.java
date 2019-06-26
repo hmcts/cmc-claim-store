@@ -101,6 +101,7 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
         assertThat(responseData.get("newRequestedCourt")).isNull();
         assertThat(responseData.get("preferredCourtObjectingParty")).isNull();
         assertThat(responseData.get("preferredCourtObjectingReason")).isNull();
+        assertThat(responseData.get("otherDirectionHeaders")).isNull();
     }
 
     @Test

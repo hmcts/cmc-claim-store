@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -97,6 +98,38 @@ public class GenerateOrderCallbackHandlerTest {
     @Test
     public void shouldPrepopulateFieldsOnAboutToStartEventIfNobodyObjectsCourt() {
         when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
+        ccdCase.setOrderGenerationData(SampleData.getCCDOrderGenerationData());
+
+        CallbackParams callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_START)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+        AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
+            generateOrderCallbackHandler
+                .handle(callbackParams);
+
+        assertThat(response.getData()).contains(
+            entry("directionList", ImmutableList.of("DOCUMENTS", "EYEWITNESS")),
+            entry("docUploadDeadline", DEADLINE),
+            entry("docUploadForParty", "BOTH"),
+            entry("eyewitnessUploadDeadline", DEADLINE),
+            entry("eyewitnessUploadForParty", "BOTH"),
+            entry("paperDetermination", "NO"),
+            entry("otherDirectionHeaders", "HEADER_UPLOAD"),
+            entry("preferredCourt", ccdCase.getPreferredCourt()),
+            entry("newRequestedCourt", null),
+            entry("preferredCourtObjectingParty", null),
+            entry("preferredCourtObjectingReason", null)
+        );
+    }
+
+    @Test
+    public void shouldPrepopulateFieldsOnAboutToStartEventIfOtherDirectionHeaderIsNull() {
+        when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
+        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData();
+        ccdOrderGenerationData.setOtherDirectionHeader(null);
+        ccdCase.setOrderGenerationData(ccdOrderGenerationData);
 
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_START)
@@ -118,7 +151,9 @@ public class GenerateOrderCallbackHandlerTest {
             entry("newRequestedCourt", null),
             entry("preferredCourtObjectingParty", null),
             entry("preferredCourtObjectingReason", null)
-        );
+        ).doesNotContain(
+            entry("otherDirectionHeaders", null)
+        );;
     }
 
     @Test
@@ -151,6 +186,8 @@ public class GenerateOrderCallbackHandlerTest {
             entry("newRequestedCourt", "Claimant Court"),
             entry("preferredCourtObjectingParty", "Res_CLAIMANT"),
             entry("preferredCourtObjectingReason", "As a claimant I like this court more")
+        ).doesNotContain(
+            entry("otherDirectionHeaders", "HEADER_UPLOAD")
         );
     }
 

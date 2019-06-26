@@ -70,11 +70,8 @@ import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.DOC
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EXPERT_REPORT_PERMISSION;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYEWITNESS;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.OTHER;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOtherDirectionHeaderType.UPLOAD;
 import static uk.gov.hmcts.cmc.ccd.util.SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicators;
-import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.DOCUMENTS;
-import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EXPERT_REPORT_PERMISSION;
-import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYEWITNESS;
-import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.OTHER;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
 
@@ -510,6 +507,7 @@ public class SampleData {
 
     public static CCDOrderGenerationData getCCDOrderGenerationData() {
         return CCDOrderGenerationData.builder()
+            .otherDirectionHeader(UPLOAD)
             .directionList(ImmutableList.of(
                 DOCUMENTS, EYEWITNESS))
             .otherDirections(ImmutableList.of(
@@ -517,6 +515,7 @@ public class SampleData {
                     CCDOrderDirection.builder()
                         .extraOrderDirection(OTHER)
                         .directionComment("a direction")
+                        .otherDirectionHeaders(UPLOAD)
                         .forParty(CCDDirectionPartyType.BOTH)
                         .sendBy(LocalDate.parse("2020-10-11"))
                         .build()

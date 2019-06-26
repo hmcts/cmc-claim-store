@@ -44,6 +44,7 @@
       "OtherDirection":{
         "extraOrderDirection":"OTHER",
         "directionComment":"a direction",
+        "otherDirectionHeaders": "HEADER_UPLOAD",
         "sendBy":"11-10-2020",
         "forParty":"BOTH"
       }
