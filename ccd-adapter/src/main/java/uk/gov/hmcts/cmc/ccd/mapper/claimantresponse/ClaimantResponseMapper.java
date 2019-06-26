@@ -157,10 +157,8 @@ public class ClaimantResponseMapper {
             builder.settleForAmount(YesNoOption.valueOf(ccdResponseRejection.getSettleForAmount().name()));
         }
 
-        if (ccdResponseRejection.getDirectionsQuestionnaire() != null) {
-            builder.directionsQuestionnaire(
-                directionsQuestionnaireMapper.from(ccdResponseRejection.getDirectionsQuestionnaire()));
-        }
+        builder.directionsQuestionnaire(
+            directionsQuestionnaireMapper.from(ccdResponseRejection.getDirectionsQuestionnaire()));
 
         claimBuilder.claimantResponse(builder.build())
             .claimantRespondedAt(ccdClaimantResponse.getSubmittedOn());
