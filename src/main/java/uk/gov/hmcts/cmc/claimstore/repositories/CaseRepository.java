@@ -84,7 +84,7 @@ public interface CaseRepository {
         ClaimSubmissionOperationIndicators indicators,
         CaseEvent caseEvent);
 
-    void updateClaimStateToOpen(String authorisation, Long claimId, ClaimState state);
+    void updateClaimStateToOpen(String authorisation, Long claimId, ClaimState currentState);
 
     Claim linkLetterHolder(Long claimId, String letterHolderId);
 }

@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models;
 
+import java.util.Arrays;
+
 public enum ClaimState {
     CREATE("create"),
     OPEN("open"),
@@ -17,11 +19,9 @@ public enum ClaimState {
     }
 
     public static ClaimState fromValue(String state) {
-        for (ClaimState claimState : ClaimState.values()) {
-            if (claimState.getValue().equalsIgnoreCase(state)) {
-                return claimState;
-            }
-        }
-        throw new IllegalArgumentException(state + " is not a valid state.");
+        return Arrays.stream(ClaimState.values())
+            .filter(claimState -> claimState.getValue().equalsIgnoreCase(state))
+            .findAny()
+            .orElseThrow(() -> new IllegalArgumentException(state + " is not a valid state."));
     }
 }

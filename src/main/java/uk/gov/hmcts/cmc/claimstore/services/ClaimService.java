@@ -45,7 +45,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMB
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED;
-import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
@@ -239,7 +239,7 @@ public class ClaimService {
                 user.getUserDetails().getFullName(),
                 authorisation
             );
-            caseRepository.updateClaimStateToOpen(user.getAuthorisation(), savedClaim.getId(), OPEN);
+            caseRepository.updateClaimStateToOpen(user.getAuthorisation(), savedClaim.getId(), CREATE);
         }
         trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
 
@@ -352,8 +352,8 @@ public class ClaimService {
         ccdEventProducer.createCCDReDetermination(claim, authorisation, redetermination);
     }
 
-    public void updateClaimState(String authorisation, Claim claim, ClaimState state) {
-        caseRepository.updateClaimStateToOpen(authorisation, claim.getId(), state);
+    public void updateClaimState(String authorisation, Claim claim, ClaimState currentState) {
+        caseRepository.updateClaimStateToOpen(authorisation, claim.getId(), currentState);
     }
 
     public Claim updateClaimSubmissionOperationIndicators(
