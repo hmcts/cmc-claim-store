@@ -47,7 +47,6 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISS
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
-import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Component
 public class ClaimService {
@@ -216,7 +215,7 @@ public class ClaimService {
             .responseDeadline(responseDeadline)
             .externalId(externalId)
             .submitterEmail(submitterEmail)
-            .createdAt(nowInUTC())
+            .createdAt(nowInLocalZone())
             .letterHolderId(letterHolderId.orElse(null))
             .features(features)
             .claimSubmissionOperationIndicators(getDefaultClaimSubmissionOperationIndicators.get())
