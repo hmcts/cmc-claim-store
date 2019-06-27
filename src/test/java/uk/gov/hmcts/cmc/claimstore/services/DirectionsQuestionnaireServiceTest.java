@@ -3,9 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
@@ -20,12 +18,9 @@ public class DirectionsQuestionnaireServiceTest {
 
     private DirectionsQuestionnaireService directionsQuestionnaireService;
 
-    @Mock
-    CaseRepository caseRepository;
-
     @Before
     public void setUp() {
-        directionsQuestionnaireService = new DirectionsQuestionnaireService(caseRepository);
+        directionsQuestionnaireService = new DirectionsQuestionnaireService();
     }
 
     @Test
