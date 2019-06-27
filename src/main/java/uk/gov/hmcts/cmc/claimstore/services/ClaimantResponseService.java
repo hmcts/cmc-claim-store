@@ -28,6 +28,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isReferredToJudge;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isSettlePreJudgment;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
 
 @Service
 public class ClaimantResponseService {
@@ -40,6 +41,7 @@ public class ClaimantResponseService {
     private final FormaliseResponseAcceptanceService formaliseResponseAcceptanceService;
     private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
     private final CCDEventProducer ccdEventProducer;
+    private final DirectionsQuestionnaireService directionsQuestionnaireService;
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     public ClaimantResponseService(
@@ -50,7 +52,8 @@ public class ClaimantResponseService {
         EventProducer eventProducer,
         FormaliseResponseAcceptanceService formaliseResponseAcceptanceService,
         DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator,
-        CCDEventProducer ccdEventProducer
+        CCDEventProducer ccdEventProducer,
+        DirectionsQuestionnaireService directionsQuestionnaireService
     ) {
         this.claimService = claimService;
         this.appInsights = appInsights;
@@ -60,6 +63,7 @@ public class ClaimantResponseService {
         this.formaliseResponseAcceptanceService = formaliseResponseAcceptanceService;
         this.directionsQuestionnaireDeadlineCalculator = directionsQuestionnaireDeadlineCalculator;
         this.ccdEventProducer = ccdEventProducer;
+        this.directionsQuestionnaireService = directionsQuestionnaireService;
     }
 
     @Transactional(transactionManager = "transactionManager")
@@ -87,6 +91,11 @@ public class ClaimantResponseService {
 
         if (isSettlePreJudgment(claimantResponse)) {
             caseRepository.saveCaseEvent(authorization, updatedClaim, SETTLED_PRE_JUDGMENT);
+        }
+
+        if (claimantResponse.getType() == REJECTION) {
+            directionsQuestionnaireService.prepareCaseEvent((ResponseRejection) claimantResponse)
+                .ifPresent(caseEvent -> caseRepository.saveCaseEvent(authorization, updatedClaim, caseEvent));
         }
 
         ccdEventProducer.createCCDClaimantResponseEvent(claim, claimantResponse, authorization);

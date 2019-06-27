@@ -3,10 +3,12 @@ package uk.gov.hmcts.cmc.claimstore.utils;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 
 import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
 public class ClaimantResponseHelper {
@@ -35,4 +37,13 @@ public class ClaimantResponseHelper {
         return false;
     }
 
+    public static boolean isOptedForMediation(ClaimantResponse claimantResponse) {
+        if (claimantResponse.getType() == REJECTION) {
+            ResponseRejection responseRejection = (ResponseRejection) claimantResponse;
+            return responseRejection.getFreeMediation()
+                .filter(Predicate.isEqual(YES))
+                .isPresent();
+        }
+        return false;
+    }
 }
