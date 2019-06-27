@@ -1,9 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 
@@ -16,13 +14,6 @@ import static uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt.
 
 @Service
 public class DirectionsQuestionnaireService {
-
-    private final CaseRepository caseRepository;
-
-    @Autowired
-    public DirectionsQuestionnaireService(CaseRepository caseRepository) {
-        this.caseRepository = caseRepository;
-    }
 
     public Optional<CaseEvent> prepareCaseEvent(ResponseRejection responseRejection) {
         DirectionsQuestionnaire directionsQuestionnaire = responseRejection.getDirectionsQuestionnaire()
