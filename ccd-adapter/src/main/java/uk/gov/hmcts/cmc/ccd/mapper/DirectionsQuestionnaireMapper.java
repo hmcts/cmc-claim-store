@@ -145,15 +145,15 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
         builder.requireSupport(extractRequireSupport(ccdDirectionsQuestionnaire));
 
         List<ExpertReport> expertReports = asStream(ccdDirectionsQuestionnaire.getExpertReports())
-            .map(expertReportMapper::from)
             .filter(Objects::nonNull)
+            .map(expertReportMapper::from)
             .collect(Collectors.toList());
 
         builder.expertReports(expertReports);
 
         List<UnavailableDate> unavailableDates = asStream(ccdDirectionsQuestionnaire.getUnavailableDates())
-            .map(unavailableDateMapper::from)
             .filter(Objects::nonNull)
+            .map(unavailableDateMapper::from)
             .collect(Collectors.toList());
 
         builder.unavailableDates(unavailableDates);
