@@ -285,7 +285,7 @@ public class CCDCaseApi {
 
         User letterHolder = userService.getUser(authorisation);
         CaseDetails caseDetails = readCase(letterHolder, letterHolderCases.get(0));
-        if (CREATE == ClaimState.valueOf(caseDetails.getState())) {
+        if (CREATE == ClaimState.fromValue(caseDetails.getState())) {
             throw new DefendantLinkingException("Claim is not in issued yet, can not link defendant");
         }
         return Optional.of(ccdCaseDataToClaim.extractClaim(caseDetails));
