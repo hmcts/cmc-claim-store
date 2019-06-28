@@ -4,11 +4,13 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
 import uk.gov.hmcts.cmc.domain.models.otherparty.CompanyDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
+import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -208,5 +210,132 @@ public class DirectionsQuestionnaireUtilsTest {
         CaseEvent caseEvent = DirectionsQuestionnaireUtils
             .prepareCaseEvent(responseRejection, claim).get();
         Assertions.assertThat(caseEvent).isEqualTo(REFERRED_TO_MEDIATION);
+    }
+
+    @Test(expected =  IllegalStateException.class)
+    public void shouldThrowIfDefendantIsBusinessAndClaimantResponseDoesNotExist() {
+        ResponseRejection responseRejection = ResponseRejection.builder()
+            .freeMediation(NO)
+            .directionsQuestionnaire(null)
+            .build();
+        Claim claim = SampleClaim.builder()
+            .withClaimantResponse(null)
+            .withClaimData(SampleClaimData
+                .builder()
+                .withDefendant(CompanyDetails.builder().build())
+                .build())
+            .build();
+
+        DirectionsQuestionnaireUtils
+            .prepareCaseEvent(responseRejection, claim);
+    }
+
+    @Test(expected =  IllegalStateException.class)
+    public void shouldThrowIfDefendantIsBusinessAndClaimantRejectionResponseHasNoDQObject() {
+        ResponseRejection responseRejection = ResponseRejection.builder()
+            .freeMediation(NO)
+            .directionsQuestionnaire(null)
+            .build();
+        Claim claim = SampleClaim.builder()
+            .withClaimantResponse(responseRejection)
+            .withClaimData(SampleClaimData
+                .builder()
+                .withDefendant(CompanyDetails.builder().build())
+                .build())
+            .build();
+
+        DirectionsQuestionnaireUtils
+            .prepareCaseEvent(responseRejection, claim);
+    }
+
+    @Test(expected =  IllegalStateException.class)
+    public void shouldThrowIfDefendantIsBusinessAndClaimantResponseIsNotRejection() {
+        ResponseRejection responseRejection = ResponseRejection.builder()
+            .freeMediation(NO)
+            .directionsQuestionnaire(null)
+            .build();
+        ResponseAcceptation responseAcceptation = ResponseAcceptation.builder()
+            .build();
+        Claim claim = SampleClaim.builder()
+            .withClaimantResponse(responseAcceptation)
+            .withClaimData(SampleClaimData
+                .builder()
+                .withDefendant(CompanyDetails.builder().build())
+                .build())
+            .build();
+
+        DirectionsQuestionnaireUtils
+            .prepareCaseEvent(responseRejection, claim);
+    }
+
+    @Test(expected =  IllegalStateException.class)
+    public void shouldThrowIfDefendantIsIndividualAndFullDefenceDefendantResponseHasNoDQObject() {
+        ResponseRejection responseRejection = ResponseRejection.builder()
+            .freeMediation(NO)
+            .build();
+
+        FullDefenceResponse defenceResponse = FullDefenceResponse.builder()
+            .freeMediation(NO)
+            .directionsQuestionnaire(null)
+            .build();
+
+        Claim claim = SampleClaim.builder()
+            .withClaimantResponse(responseRejection)
+            .withResponse(defenceResponse)
+            .withClaimData(SampleClaimData
+                .builder()
+                .withDefendant(IndividualDetails.builder().build())
+                .build())
+            .build();
+
+        DirectionsQuestionnaireUtils
+            .prepareCaseEvent(responseRejection, claim);
+    }
+
+    @Test(expected =  IllegalStateException.class)
+    public void shouldThrowIfDefendantIsIndividualAndPartAdmitDefendantResponseHasNoDQObject() {
+        ResponseRejection responseRejection = ResponseRejection.builder()
+            .freeMediation(NO)
+            .build();
+
+        PartAdmissionResponse defenceResponse = PartAdmissionResponse.builder()
+            .freeMediation(NO)
+            .directionsQuestionnaire(null)
+            .build();
+
+        Claim claim = SampleClaim.builder()
+            .withClaimantResponse(responseRejection)
+            .withResponse(defenceResponse)
+            .withClaimData(SampleClaimData
+                .builder()
+                .withDefendant(IndividualDetails.builder().build())
+                .build())
+            .build();
+
+        DirectionsQuestionnaireUtils
+            .prepareCaseEvent(responseRejection, claim);
+    }
+
+    @Test(expected =  IllegalStateException.class)
+    public void shouldThrowIfDefendantIsIndividualAndDefendantResponseIsFullAdmission() {
+        ResponseRejection responseRejection = ResponseRejection.builder()
+            .freeMediation(NO)
+            .build();
+
+        FullAdmissionResponse defenceResponse = FullAdmissionResponse.builder()
+            .freeMediation(NO)
+            .build();
+
+        Claim claim = SampleClaim.builder()
+            .withClaimantResponse(responseRejection)
+            .withResponse(defenceResponse)
+            .withClaimData(SampleClaimData
+                .builder()
+                .withDefendant(IndividualDetails.builder().build())
+                .build())
+            .build();
+
+        DirectionsQuestionnaireUtils
+            .prepareCaseEvent(responseRejection, claim);
     }
 }
