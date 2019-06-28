@@ -7,15 +7,18 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGN_FOR_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
+import static uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt.BIRMINGHAM;
+import static uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt.MANCHESTER;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
 public class DirectionsQuestionnaireServiceTest {
 
+    public static final String NON_PILOT_COURT_NAME = "Non pilot court name";
+    
     private DirectionsQuestionnaireService directionsQuestionnaireService;
 
     @Before
@@ -30,14 +33,15 @@ public class DirectionsQuestionnaireServiceTest {
             .directionsQuestionnaire(
                 DirectionsQuestionnaire.builder()
                     .hearingLocation(HearingLocation.builder()
-                        .courtName(PilotCourt.BIRMINGHAM.getName())
+                        .courtName(BIRMINGHAM.getName())
                         .build()
                     )
                     .build()
             )
             .build();
 
-        CaseEvent caseEvent = directionsQuestionnaireService.prepareCaseEvent(responseRejection).get();
+        CaseEvent caseEvent = directionsQuestionnaireService
+            .prepareCaseEvent(responseRejection, BIRMINGHAM.getName()).get();
         Assertions.assertThat(caseEvent).isEqualTo(ASSIGN_FOR_DIRECTIONS);
     }
 
@@ -48,14 +52,15 @@ public class DirectionsQuestionnaireServiceTest {
             .directionsQuestionnaire(
                 DirectionsQuestionnaire.builder()
                     .hearingLocation(HearingLocation.builder()
-                        .courtName(PilotCourt.MANCHESTER.getName())
+                        .courtName(MANCHESTER.getName())
                         .build()
                     )
                     .build()
             )
             .build();
 
-        CaseEvent caseEvent = directionsQuestionnaireService.prepareCaseEvent(responseRejection).get();
+        CaseEvent caseEvent = directionsQuestionnaireService
+            .prepareCaseEvent(responseRejection, MANCHESTER.getName()).get();
         Assertions.assertThat(caseEvent).isEqualTo(REFERRED_TO_MEDIATION);
     }
 
@@ -66,13 +71,14 @@ public class DirectionsQuestionnaireServiceTest {
             .directionsQuestionnaire(
                 DirectionsQuestionnaire.builder()
                     .hearingLocation(HearingLocation.builder()
-                        .courtName("Non pilot court name")
+                        .courtName(NON_PILOT_COURT_NAME)
                         .build()
                     )
                     .build()
             ).build();
 
-        CaseEvent caseEvent = directionsQuestionnaireService.prepareCaseEvent(responseRejection).get();
+        CaseEvent caseEvent = directionsQuestionnaireService
+            .prepareCaseEvent(responseRejection, NON_PILOT_COURT_NAME).get();
         Assertions.assertThat(caseEvent).isEqualTo(REFERRED_TO_MEDIATION);
     }
 
@@ -83,12 +89,13 @@ public class DirectionsQuestionnaireServiceTest {
             .directionsQuestionnaire(
                 DirectionsQuestionnaire.builder()
                     .hearingLocation(HearingLocation.builder()
-                        .courtName("Non pilot court name")
+                        .courtName(NON_PILOT_COURT_NAME)
                         .build()
                     )
                     .build()
             ).build();
 
-        Assertions.assertThat(directionsQuestionnaireService.prepareCaseEvent(responseRejection)).isEmpty();
+        Assertions.assertThat(directionsQuestionnaireService
+            .prepareCaseEvent(responseRejection, NON_PILOT_COURT_NAME)).isEmpty();
     }
 }
