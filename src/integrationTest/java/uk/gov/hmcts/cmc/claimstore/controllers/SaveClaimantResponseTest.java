@@ -18,8 +18,6 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -28,7 +26,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleDefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleDefendantTimeline;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.reform.document.domain.Classification;
@@ -57,8 +54,6 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMB
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NOTIFICATION_FAILURE;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.CLAIMANT_EMAIL;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementUploadResponse;
-import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
-import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse.ClaimantResponseAcceptation.builder;
 
 @TestPropertySource(
@@ -161,7 +156,7 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldSaveClaimantResponseRejectionWithFreeMediationAndNoPilotCourt() throws Exception {
+    public void shouldSaveClaimantResponseRejectionWithDirectionsQuestionnaire() throws Exception {
         ClaimantResponse response = SampleClaimantResponse
             .ClaimantResponseRejection.builder()
             .buildRejectionWithDirectionsQuestionnaire();
@@ -179,80 +174,6 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
         assertThat(claimantResponse.getDirectionsQuestionnaire()).isNotEmpty();
         verify(coreCaseDataService)
             .saveCaseEvent(AUTHORISATION_TOKEN, claimWithClaimantResponse.getId(), REFERRED_TO_MEDIATION);
-    }
-
-    @Test
-    public void shouldSaveClaimantResponseRejectionWithFreeMediationAndPilotCourt() throws Exception {
-        ClaimantResponse response = ResponseRejection.builder()
-            .freeMediation(YES)
-            .directionsQuestionnaire(DirectionsQuestionnaire.builder()
-                .hearingLocation(HearingLocation.builder()
-                    .courtName("Manchester").build())
-                .build())
-            .build();
-
-        makeRequest(claim.getExternalId(), SUBMITTER_ID, response)
-            .andExpect(status().isCreated());
-
-        Claim claimWithClaimantResponse = claimStore.getClaimByExternalId(claim.getExternalId());
-
-        assertThat(claimWithClaimantResponse.getClaimantRespondedAt().isPresent()).isTrue();
-
-        ResponseRejection claimantResponse = (ResponseRejection) claimWithClaimantResponse.getClaimantResponse()
-            .orElseThrow(AssertionError::new);
-
-        assertThat(claimantResponse.getDirectionsQuestionnaire()).isNotEmpty();
-        verify(coreCaseDataService)
-            .saveCaseEvent(AUTHORISATION_TOKEN, claimWithClaimantResponse.getId(), REFERRED_TO_MEDIATION);
-    }
-
-    @Test
-    public void shouldSaveClaimantResponseRejectionWithNoFreeMediationAndPilotCourt() throws Exception {
-        ClaimantResponse response = ResponseRejection.builder()
-            .freeMediation(NO)
-            .directionsQuestionnaire(DirectionsQuestionnaire.builder()
-                .hearingLocation(HearingLocation.builder()
-                    .courtName("Manchester").build())
-                .build())
-            .build();
-
-        makeRequest(claim.getExternalId(), SUBMITTER_ID, response)
-            .andExpect(status().isCreated());
-
-        Claim claimWithClaimantResponse = claimStore.getClaimByExternalId(claim.getExternalId());
-
-        assertThat(claimWithClaimantResponse.getClaimantRespondedAt().isPresent()).isTrue();
-
-        ResponseRejection claimantResponse = (ResponseRejection) claimWithClaimantResponse.getClaimantResponse()
-            .orElseThrow(AssertionError::new);
-
-        assertThat(claimantResponse.getDirectionsQuestionnaire()).isNotEmpty();
-        verify(coreCaseDataService)
-            .saveCaseEvent(AUTHORISATION_TOKEN, claimWithClaimantResponse.getId(), ASSIGNING_FOR_DIRECTIONS);
-    }
-
-    @Test
-    public void shouldSaveClaimantResponseRejectionWithNoFreeMediationAndNoPilotCourt() throws Exception {
-        ClaimantResponse response = ResponseRejection.builder()
-            .freeMediation(NO)
-            .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder().build())
-            .build();
-
-        makeRequest(claim.getExternalId(), SUBMITTER_ID, response)
-            .andExpect(status().isCreated());
-
-        Claim claimWithClaimantResponse = claimStore.getClaimByExternalId(claim.getExternalId());
-
-        assertThat(claimWithClaimantResponse.getClaimantRespondedAt().isPresent()).isTrue();
-
-        ResponseRejection claimantResponse = (ResponseRejection) claimWithClaimantResponse.getClaimantResponse()
-            .orElseThrow(AssertionError::new);
-
-        assertThat(claimantResponse.getDirectionsQuestionnaire()).isNotEmpty();
-        verify(coreCaseDataService, never())
-            .saveCaseEvent(AUTHORISATION_TOKEN, claimWithClaimantResponse.getId(), REFERRED_TO_MEDIATION);
-        verify(coreCaseDataService, never())
-            .saveCaseEvent(AUTHORISATION_TOKEN, claimWithClaimantResponse.getId(), ASSIGNING_FOR_DIRECTIONS);
     }
 
     @Test
