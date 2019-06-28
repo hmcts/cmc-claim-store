@@ -1,6 +1,5 @@
-package uk.gov.hmcts.cmc.claimstore.services;
+package uk.gov.hmcts.cmc.claimstore.utils;
 
-import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
@@ -20,14 +19,17 @@ import static uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt.
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_DEFENCE;
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.PART_ADMISSION;
 
-@Service
-public class DirectionsQuestionnaireService {
+public class DirectionsQuestionnaireUtils {
 
-    public Optional<CaseEvent> prepareCaseEvent(ResponseRejection responseRejection, String preferredCourt) {
+    private DirectionsQuestionnaireUtils() {
+        // utility class, no instances
+    }
+    
+    public static Optional<CaseEvent> prepareCaseEvent(ResponseRejection responseRejection, Claim claim) {
         if (isOptedForMediation(responseRejection)) {
             return Optional.of(REFERRED_TO_MEDIATION);
         }
-
+        String preferredCourt = getPreferredCourt(claim);
         if (isPilotCourt(preferredCourt)) {
             return Optional.of(ASSIGN_FOR_DIRECTIONS);
         }
@@ -35,7 +37,7 @@ public class DirectionsQuestionnaireService {
         return Optional.empty();
     }
 
-    public String getPreferredCourt(Claim claim) {
+    private static String getPreferredCourt(Claim claim) {
         if (isDefendantBusiness(claim.getClaimData().getDefendant())) {
             ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
             return getClaimantHearingCourt(claimantResponse);
@@ -45,7 +47,7 @@ public class DirectionsQuestionnaireService {
         }
     }
 
-    public String getDefendantHearingCourt(Response defendantResponse) {
+    private static String getDefendantHearingCourt(Response defendantResponse) {
         if (defendantResponse.getResponseType() == FULL_DEFENCE) {
             return ((FullDefenceResponse) defendantResponse).getDirectionsQuestionnaire()
                 .orElseThrow(IllegalStateException::new)
@@ -59,7 +61,7 @@ public class DirectionsQuestionnaireService {
         }
     }
 
-    public String getClaimantHearingCourt(ClaimantResponse claimantResponse) {
+    private static String getClaimantHearingCourt(ClaimantResponse claimantResponse) {
         if (claimantResponse.getType() == REJECTION) {
             return ((ResponseRejection) claimantResponse).getDirectionsQuestionnaire()
                 .orElseThrow(IllegalStateException::new)

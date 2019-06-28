@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
@@ -8,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
+import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
@@ -41,7 +43,7 @@ public class ClaimantResponseService {
     private final FormaliseResponseAcceptanceService formaliseResponseAcceptanceService;
     private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
     private final CCDEventProducer ccdEventProducer;
-    private final DirectionsQuestionnaireService directionsQuestionnaireService;
+    @Value("${feature_toggles.directions_questionnaire_enabled:false}") boolean directionsQuestionnaireEnabled;
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     public ClaimantResponseService(
@@ -52,8 +54,7 @@ public class ClaimantResponseService {
         EventProducer eventProducer,
         FormaliseResponseAcceptanceService formaliseResponseAcceptanceService,
         DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator,
-        CCDEventProducer ccdEventProducer,
-        DirectionsQuestionnaireService directionsQuestionnaireService
+        CCDEventProducer ccdEventProducer
     ) {
         this.claimService = claimService;
         this.appInsights = appInsights;
@@ -63,7 +64,6 @@ public class ClaimantResponseService {
         this.formaliseResponseAcceptanceService = formaliseResponseAcceptanceService;
         this.directionsQuestionnaireDeadlineCalculator = directionsQuestionnaireDeadlineCalculator;
         this.ccdEventProducer = ccdEventProducer;
-        this.directionsQuestionnaireService = directionsQuestionnaireService;
     }
 
     @Transactional(transactionManager = "transactionManager")
@@ -93,10 +93,10 @@ public class ClaimantResponseService {
             caseRepository.saveCaseEvent(authorization, updatedClaim, SETTLED_PRE_JUDGMENT);
         }
 
-        if (claimantResponse.getType() == REJECTION) {
-            directionsQuestionnaireService.prepareCaseEvent((ResponseRejection) claimantResponse
-                , directionsQuestionnaireService.getPreferredCourt(updatedClaim)
-            ).ifPresent(caseEvent -> caseRepository.saveCaseEvent(authorization, updatedClaim, caseEvent));
+        if (directionsQuestionnaireEnabled && claimantResponse.getType() == REJECTION) {
+            DirectionsQuestionnaireUtils.prepareCaseEvent(
+                (ResponseRejection) claimantResponse, updatedClaim)
+                .ifPresent(caseEvent -> caseRepository.saveCaseEvent(authorization, updatedClaim, caseEvent));
         }
 
         ccdEventProducer.createCCDClaimantResponseEvent(claim, claimantResponse, authorization);

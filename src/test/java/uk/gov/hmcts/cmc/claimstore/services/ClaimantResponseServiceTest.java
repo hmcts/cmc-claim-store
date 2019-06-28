@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -35,10 +37,13 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGN_FOR_DIRECTIONS;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_RESPONSE_ACCEPTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_RESPONSE_REJECTED;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -69,9 +74,6 @@ public class ClaimantResponseServiceTest {
     @Mock
     private DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
 
-    @Mock
-    private DirectionsQuestionnaireService directionsQuestionnaireService;
-
     @Before
     public void setUp() {
         claimantResponseService = new ClaimantResponseService(
@@ -82,14 +84,12 @@ public class ClaimantResponseServiceTest {
             eventProducer,
             formaliseResponseAcceptanceService,
             directionsQuestionnaireDeadlineCalculator,
-            ccdEventProducer,
-            directionsQuestionnaireService
-            );
+            ccdEventProducer);
     }
 
     @Test
-    public void saveResponseRejection() {
-
+    public void saveResponseRejectionWithoutDirectionsQuestionnaire() {
+        ReflectionTestUtils.setField(claimantResponseService, "directionsQuestionnaireEnabled", true);
         ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultRejection();
 
         Claim claim = SampleClaim.builder()
@@ -113,6 +113,60 @@ public class ClaimantResponseServiceTest {
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
         verify(formaliseResponseAcceptanceService, times(0))
             .formalise(any(), any(), anyString());
+        verify(caseRepository, never()).saveCaseEvent(AUTHORISATION, claim, ASSIGN_FOR_DIRECTIONS);
+        verify(caseRepository, never()).saveCaseEvent(AUTHORISATION, claim, REFERRED_TO_MEDIATION);
+    }
+
+    @Test
+    public void saveResponseRejectionWithDirectionsQuestionnaireButDQDisabled() {
+        ClaimantResponse claimantResponse = ResponseRejection.builder()
+            .freeMediation(YES)
+            .directionsQuestionnaire(DirectionsQuestionnaire.builder()
+                .build())
+            .build();
+
+        Claim claim = SampleClaim.builder()
+            .withResponseDeadline(LocalDate.now().minusMonths(2))
+            .withResponse(SampleResponse.FullAdmission.validDefaults())
+            .withRespondedAt(LocalDateTime.now().minusDays(32))
+            .withClaimantResponse(claimantResponse)
+            .build();
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+        when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseRejection.class), eq(AUTHORISATION)))
+            .thenReturn(claim);
+
+        claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
+
+        verify(caseRepository, never()).saveCaseEvent(AUTHORISATION, claim, ASSIGN_FOR_DIRECTIONS);
+        verify(caseRepository, never()).saveCaseEvent(AUTHORISATION, claim, REFERRED_TO_MEDIATION);
+    }
+
+    @Test
+    public void saveResponseRejectionWithDirectionsQuestionnaire() {
+        ReflectionTestUtils.setField(claimantResponseService, "directionsQuestionnaireEnabled", true);
+
+        ClaimantResponse claimantResponse = ResponseRejection.builder()
+            .freeMediation(YES)
+            .directionsQuestionnaire(DirectionsQuestionnaire.builder()
+                .build())
+            .build();
+
+        Claim claim = SampleClaim.builder()
+            .withResponseDeadline(LocalDate.now().minusMonths(2))
+            .withResponse(SampleResponse.FullAdmission.validDefaults())
+            .withRespondedAt(LocalDateTime.now().minusDays(32))
+            .withClaimantResponse(claimantResponse)
+            .build();
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+        when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseRejection.class), eq(AUTHORISATION)))
+            .thenReturn(claim);
+
+        claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
+
+
+        verify(caseRepository).saveCaseEvent(AUTHORISATION, claim, REFERRED_TO_MEDIATION);
     }
 
     @Test
