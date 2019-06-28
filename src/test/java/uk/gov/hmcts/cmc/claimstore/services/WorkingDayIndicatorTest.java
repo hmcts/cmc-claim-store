@@ -8,7 +8,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.services.bankholidays.NonWorkingDaysCollection;
 import uk.gov.hmcts.cmc.claimstore.services.bankholidays.PublicHolidaysCollection;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,6 +23,7 @@ import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.toDate;
 @RunWith(MockitoJUnitRunner.class)
 public class WorkingDayIndicatorTest {
 
+    private static final LocalDate BANK_HOLIDAY_FRIDAY = toDate("2017-05-29");
     private static final LocalDate BANK_HOLIDAY = toDate("2017-05-29");
     private static final LocalDate NEXT_WORKING_DAY_AFTER_BANK_HOLIDAY = toDate("2017-05-30");
     private static final LocalDate SATURDAY_WEEK_BEFORE = toDate("2017-06-03");
@@ -113,14 +113,13 @@ public class WorkingDayIndicatorTest {
     }
 
     @Test
-    public void shouldReturnFollowingTuesdayForNextWorkingDayGivenABankHoliday() {
+    public void shouldReturnFollowingTuesdayForNextWorkingDayGivenABankHolidayFridayAndMonday() {
         when(publicHolidaysApiClient.getPublicHolidays()).thenReturn(
-            new HashSet<>(Collections.singletonList(BANK_HOLIDAY))
+            new HashSet<>(Arrays.asList(BANK_HOLIDAY_FRIDAY, BANK_HOLIDAY))
         );
 
-        LocalDate nextWorkingDay = service.getNextWorkingDay(BANK_HOLIDAY);
+        LocalDate nextWorkingDay = service.getNextWorkingDay(BANK_HOLIDAY_FRIDAY);
 
-        assertEquals(nextWorkingDay.getDayOfWeek(), DayOfWeek.TUESDAY);
         assertEquals(nextWorkingDay, NEXT_WORKING_DAY_AFTER_BANK_HOLIDAY);
     }
 }
