@@ -19,8 +19,7 @@ import java.time.LocalDate;
 @RestController
 @RequestMapping(
     path = "/calendar",
-    produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
-    consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
+    produces = MediaType.APPLICATION_JSON_UTF8_VALUE
 )
 public class CalendarController {
 
@@ -32,7 +31,7 @@ public class CalendarController {
     }
 
     @GetMapping(path = "/next-working-day")
-    @ApiOperation("Returns next working day from one given")
+    @ApiOperation("Returns next working day from date given")
     public NextWorkingDay getNextWorkingDay(
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam("date") LocalDate date
     ) {

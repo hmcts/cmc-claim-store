@@ -10,7 +10,7 @@ public class NextWorkingDay {
 
     private final LocalDate date;
 
-    public NextWorkingDay(@JsonProperty("date") LocalDate date) {
+    public NextWorkingDay(@JsonProperty("nextWorkingDay") LocalDate date) {
         this.date = date;
     }
 

@@ -47,7 +47,7 @@ public class CalendarTest extends BaseGetTest {
                         "/calendar/next-working-day?date=%s",
                         date
                     )
-                ).header(HttpHeaders.CONTENT_TYPE, "application/json")
+                )
             );
     }
 }
