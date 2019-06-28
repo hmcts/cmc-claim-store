@@ -37,7 +37,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGN_FOR_DIRECTIONS;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_RESPONSE_ACCEPTED;
@@ -113,7 +113,7 @@ public class ClaimantResponseServiceTest {
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
         verify(formaliseResponseAcceptanceService, times(0))
             .formalise(any(), any(), anyString());
-        verify(caseRepository, never()).saveCaseEvent(AUTHORISATION, claim, ASSIGN_FOR_DIRECTIONS);
+        verify(caseRepository, never()).saveCaseEvent(AUTHORISATION, claim, ASSIGNING_FOR_DIRECTIONS);
         verify(caseRepository, never()).saveCaseEvent(AUTHORISATION, claim, REFERRED_TO_MEDIATION);
     }
 
@@ -138,7 +138,7 @@ public class ClaimantResponseServiceTest {
 
         claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
 
-        verify(caseRepository, never()).saveCaseEvent(AUTHORISATION, claim, ASSIGN_FOR_DIRECTIONS);
+        verify(caseRepository, never()).saveCaseEvent(AUTHORISATION, claim, ASSIGNING_FOR_DIRECTIONS);
         verify(caseRepository, never()).saveCaseEvent(AUTHORISATION, claim, REFERRED_TO_MEDIATION);
     }
 
