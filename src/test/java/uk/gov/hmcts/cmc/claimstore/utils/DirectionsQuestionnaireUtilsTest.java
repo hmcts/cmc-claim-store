@@ -14,7 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGN_FOR_DIRECTIONS;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
 import static uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt.BIRMINGHAM;
 import static uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt.MANCHESTER;
@@ -109,7 +109,7 @@ public class DirectionsQuestionnaireUtilsTest {
             .build();
         CaseEvent caseEvent = DirectionsQuestionnaireUtils
             .prepareCaseEvent(CLAIMANT_REJECTION_PILOT, claim).get();
-        Assertions.assertThat(caseEvent).isEqualTo(ASSIGN_FOR_DIRECTIONS);
+        Assertions.assertThat(caseEvent).isEqualTo(ASSIGNING_FOR_DIRECTIONS);
     }
 
     @Test
@@ -138,7 +138,7 @@ public class DirectionsQuestionnaireUtilsTest {
             .build();
         CaseEvent caseEvent = DirectionsQuestionnaireUtils
             .prepareCaseEvent(CLAIMANT_REJECTION_NON_PILOT, claim).get();
-        Assertions.assertThat(caseEvent).isEqualTo(ASSIGN_FOR_DIRECTIONS);
+        Assertions.assertThat(caseEvent).isEqualTo(ASSIGNING_FOR_DIRECTIONS);
     }
 
     @Test

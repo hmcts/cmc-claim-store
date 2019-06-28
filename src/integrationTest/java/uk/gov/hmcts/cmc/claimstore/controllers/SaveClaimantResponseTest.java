@@ -51,7 +51,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGN_FOR_DIRECTIONS;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NOTIFICATION_FAILURE;
@@ -155,7 +155,7 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
 
         assertThat(claimantResponse.getFreeMediation()).isNotEmpty();
         assertThat(claimantResponse.getAmountPaid().orElse(null)).isEqualTo(BigDecimal.TEN);
-        verify(coreCaseDataService, never()).saveCaseEvent(BEARER_TOKEN, claim.getId(), ASSIGN_FOR_DIRECTIONS);
+        verify(coreCaseDataService, never()).saveCaseEvent(BEARER_TOKEN, claim.getId(), ASSIGNING_FOR_DIRECTIONS);
         verify(coreCaseDataService, never()).saveCaseEvent(BEARER_TOKEN, claim.getId(), REFERRED_TO_MEDIATION);
 
     }
@@ -228,7 +228,7 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
 
         assertThat(claimantResponse.getDirectionsQuestionnaire()).isNotEmpty();
         verify(coreCaseDataService)
-            .saveCaseEvent(AUTHORISATION_TOKEN, claimWithClaimantResponse.getId(), ASSIGN_FOR_DIRECTIONS);
+            .saveCaseEvent(AUTHORISATION_TOKEN, claimWithClaimantResponse.getId(), ASSIGNING_FOR_DIRECTIONS);
     }
 
     @Test
@@ -252,7 +252,7 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
         verify(coreCaseDataService, never())
             .saveCaseEvent(AUTHORISATION_TOKEN, claimWithClaimantResponse.getId(), REFERRED_TO_MEDIATION);
         verify(coreCaseDataService, never())
-            .saveCaseEvent(AUTHORISATION_TOKEN, claimWithClaimantResponse.getId(), ASSIGN_FOR_DIRECTIONS);
+            .saveCaseEvent(AUTHORISATION_TOKEN, claimWithClaimantResponse.getId(), ASSIGNING_FOR_DIRECTIONS);
     }
 
     @Test

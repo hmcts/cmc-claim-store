@@ -10,7 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.util.Optional;
 
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGN_FOR_DIRECTIONS;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isOptedForMediation;
 import static uk.gov.hmcts.cmc.claimstore.utils.TheirDetailsHelper.isDefendantBusiness;
@@ -31,7 +31,7 @@ public class DirectionsQuestionnaireUtils {
         }
         String preferredCourt = getPreferredCourt(claim);
         if (isPilotCourt(preferredCourt)) {
-            return Optional.of(ASSIGN_FOR_DIRECTIONS);
+            return Optional.of(ASSIGNING_FOR_DIRECTIONS);
         }
 
         return Optional.empty();

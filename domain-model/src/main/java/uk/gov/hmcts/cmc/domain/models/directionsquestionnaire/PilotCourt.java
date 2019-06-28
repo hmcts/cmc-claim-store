@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 @AllArgsConstructor
 public enum PilotCourt {
-    EDMONTON("Birmingham"),
+    EDMONTON("Edmonton"),
     MANCHESTER("Manchester"),
     BIRMINGHAM("Birmingham"),
     CLERKENWELL("Clerkenwell & Shoreditch");
