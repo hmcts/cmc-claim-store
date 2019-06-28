@@ -127,7 +127,7 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldSaveClaimantResponseRejection() throws Exception {
-        ClaimantResponse response = SampleClaimantResponse.validDefaultRejection();
+        ClaimantResponse response = SampleClaimantResponse.validRejectionWithDirectionsQuestionnaire();
 
         makeRequest(claim.getExternalId(), SUBMITTER_ID, response)
             .andExpect(status().isCreated());
