@@ -94,8 +94,9 @@ public class ClaimantResponseService {
         }
 
         if (claimantResponse.getType() == REJECTION) {
-            directionsQuestionnaireService.prepareCaseEvent((ResponseRejection) claimantResponse)
-                .ifPresent(caseEvent -> caseRepository.saveCaseEvent(authorization, updatedClaim, caseEvent));
+            directionsQuestionnaireService.prepareCaseEvent((ResponseRejection) claimantResponse
+                , directionsQuestionnaireService.getPreferredCourt(updatedClaim)
+            ).ifPresent(caseEvent -> caseRepository.saveCaseEvent(authorization, updatedClaim, caseEvent));
         }
 
         ccdEventProducer.createCCDClaimantResponseEvent(claim, claimantResponse, authorization);

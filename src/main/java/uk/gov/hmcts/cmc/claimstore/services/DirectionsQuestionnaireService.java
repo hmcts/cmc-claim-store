@@ -5,7 +5,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -24,16 +23,12 @@ import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.PART_ADMISSIO
 @Service
 public class DirectionsQuestionnaireService {
 
-    public Optional<CaseEvent> prepareCaseEvent(ResponseRejection responseRejection) {
-        DirectionsQuestionnaire directionsQuestionnaire = responseRejection.getDirectionsQuestionnaire()
-            .orElseThrow(IllegalStateException::new);
-
-        String courtName = directionsQuestionnaire.getHearingLocation().getCourtName();
+    public Optional<CaseEvent> prepareCaseEvent(ResponseRejection responseRejection, String preferredCourt) {
         if (isOptedForMediation(responseRejection)) {
             return Optional.of(REFERRED_TO_MEDIATION);
         }
 
-        if (isPilotCourt(courtName)) {
+        if (isPilotCourt(preferredCourt)) {
             return Optional.of(ASSIGN_FOR_DIRECTIONS);
         }
 
