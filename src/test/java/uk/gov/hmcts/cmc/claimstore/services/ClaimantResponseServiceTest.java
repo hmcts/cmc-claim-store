@@ -165,7 +165,6 @@ public class ClaimantResponseServiceTest {
 
         claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
 
-
         verify(caseRepository).saveCaseEvent(AUTHORISATION, claim, REFERRED_TO_MEDIATION);
     }
 
