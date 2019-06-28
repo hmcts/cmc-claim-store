@@ -69,9 +69,6 @@ public class ClaimantResponseServiceTest {
     @Mock
     private DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
 
-    @Mock
-    private DirectionsQuestionnaireService directionsQuestionnaireService;
-
     @Before
     public void setUp() {
         claimantResponseService = new ClaimantResponseService(
@@ -82,13 +79,12 @@ public class ClaimantResponseServiceTest {
             eventProducer,
             formaliseResponseAcceptanceService,
             directionsQuestionnaireDeadlineCalculator,
-            ccdEventProducer,
-            directionsQuestionnaireService
+            ccdEventProducer
             );
     }
 
     @Test
-    public void saveResponseRejection() {
+    public void saveResponseRejectionWithoutDirectionsQuestionnaire() {
 
         ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultRejection();
 
