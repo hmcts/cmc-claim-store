@@ -43,26 +43,34 @@ public class DirectionsQuestionnaireService {
     public String getPreferredCourt(Claim claim) {
         if (isDefendantBusiness(claim.getClaimData().getDefendant())) {
             ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
-            if (claimantResponse.getType() == REJECTION) {
-                return ((ResponseRejection) claimantResponse).getDirectionsQuestionnaire()
-                    .orElseThrow(IllegalStateException::new)
-                    .getHearingLocation().getCourtName();
-            } else {
-                throw new IllegalStateException("No preferred court as claimant response is not rejection.");
-            }
+            return getClaimantHearingCourt(claimantResponse);
         } else {
             Response defendantResponse = claim.getResponse().orElseThrow(IllegalStateException::new);
-            if (defendantResponse.getResponseType() == FULL_DEFENCE) {
-                return ((FullDefenceResponse) defendantResponse).getDirectionsQuestionnaire()
-                    .orElseThrow(IllegalStateException::new)
-                    .getHearingLocation().getCourtName();
-            } else if (defendantResponse.getResponseType() == PART_ADMISSION) {
-                return ((PartAdmissionResponse) defendantResponse).getDirectionsQuestionnaire()
-                    .orElseThrow(IllegalStateException::new)
-                    .getHearingLocation().getCourtName();
-            } else {
-                throw new IllegalStateException("No preferred court as defendant response is full admission");
-            }
+            return getDefendantHearingCourt(defendantResponse);
+        }
+    }
+
+    public String getDefendantHearingCourt(Response defendantResponse) {
+        if (defendantResponse.getResponseType() == FULL_DEFENCE) {
+            return ((FullDefenceResponse) defendantResponse).getDirectionsQuestionnaire()
+                .orElseThrow(IllegalStateException::new)
+                .getHearingLocation().getCourtName();
+        } else if (defendantResponse.getResponseType() == PART_ADMISSION) {
+            return ((PartAdmissionResponse) defendantResponse).getDirectionsQuestionnaire()
+                .orElseThrow(IllegalStateException::new)
+                .getHearingLocation().getCourtName();
+        } else {
+            throw new IllegalStateException("No preferred court as defendant response is full admission");
+        }
+    }
+
+    public String getClaimantHearingCourt(ClaimantResponse claimantResponse) {
+        if (claimantResponse.getType() == REJECTION) {
+            return ((ResponseRejection) claimantResponse).getDirectionsQuestionnaire()
+                .orElseThrow(IllegalStateException::new)
+                .getHearingLocation().getCourtName();
+        } else {
+            throw new IllegalStateException("No preferred court as claimant response is not rejection.");
         }
     }
 }
