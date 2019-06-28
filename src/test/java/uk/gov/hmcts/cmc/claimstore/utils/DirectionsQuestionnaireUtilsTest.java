@@ -155,7 +155,6 @@ public class DirectionsQuestionnaireUtilsTest {
             .prepareCaseEvent(CLAIMANT_REJECTION_PILOT, claim)).isEmpty();
     }
 
-
     @Test
     public void shouldReferToMediationIfPilotCourtAndFreeMediation() {
         ResponseRejection responseRejection = ResponseRejection.builder()
