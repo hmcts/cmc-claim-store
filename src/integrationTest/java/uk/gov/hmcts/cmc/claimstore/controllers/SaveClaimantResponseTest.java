@@ -2,12 +2,14 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
@@ -67,6 +69,9 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse.C
 public class SaveClaimantResponseTest extends BaseIntegrationTest {
 
     private Claim claim;
+
+    @MockBean
+    private CoreCaseDataService coreCaseDataService;
 
     @Before
     public void setUp() {
@@ -150,8 +155,8 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
 
         assertThat(claimantResponse.getFreeMediation()).isNotEmpty();
         assertThat(claimantResponse.getAmountPaid().orElse(null)).isEqualTo(BigDecimal.TEN);
-        verify(caseRepository, never()).saveCaseEvent(BEARER_TOKEN, claim, ASSIGN_FOR_DIRECTIONS);
-        verify(caseRepository, never()).saveCaseEvent(BEARER_TOKEN, claim, REFERRED_TO_MEDIATION);
+        verify(coreCaseDataService, never()).saveCaseEvent(BEARER_TOKEN, claim.getId(), ASSIGN_FOR_DIRECTIONS);
+        verify(coreCaseDataService, never()).saveCaseEvent(BEARER_TOKEN, claim.getId(), REFERRED_TO_MEDIATION);
 
     }
 
@@ -172,7 +177,8 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
             .orElseThrow(AssertionError::new);
 
         assertThat(claimantResponse.getDirectionsQuestionnaire()).isNotEmpty();
-        verify(caseRepository).saveCaseEvent(AUTHORISATION_TOKEN, claimWithClaimantResponse, REFERRED_TO_MEDIATION);
+        verify(coreCaseDataService)
+            .saveCaseEvent(AUTHORISATION_TOKEN, claimWithClaimantResponse.getId(), REFERRED_TO_MEDIATION);
     }
 
     @Test
@@ -196,7 +202,8 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
             .orElseThrow(AssertionError::new);
 
         assertThat(claimantResponse.getDirectionsQuestionnaire()).isNotEmpty();
-        verify(caseRepository).saveCaseEvent(AUTHORISATION_TOKEN, claimWithClaimantResponse, REFERRED_TO_MEDIATION);
+        verify(coreCaseDataService)
+            .saveCaseEvent(AUTHORISATION_TOKEN, claimWithClaimantResponse.getId(), REFERRED_TO_MEDIATION);
     }
 
     @Test
@@ -220,7 +227,8 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
             .orElseThrow(AssertionError::new);
 
         assertThat(claimantResponse.getDirectionsQuestionnaire()).isNotEmpty();
-        verify(caseRepository).saveCaseEvent(AUTHORISATION_TOKEN, claimWithClaimantResponse, ASSIGN_FOR_DIRECTIONS);
+        verify(coreCaseDataService)
+            .saveCaseEvent(AUTHORISATION_TOKEN, claimWithClaimantResponse.getId(), ASSIGN_FOR_DIRECTIONS);
     }
 
     @Test
@@ -241,10 +249,10 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
             .orElseThrow(AssertionError::new);
 
         assertThat(claimantResponse.getDirectionsQuestionnaire()).isNotEmpty();
-        verify(caseRepository, never())
-            .saveCaseEvent(AUTHORISATION_TOKEN, claimWithClaimantResponse, REFERRED_TO_MEDIATION);
-        verify(caseRepository, never())
-            .saveCaseEvent(AUTHORISATION_TOKEN, claimWithClaimantResponse, ASSIGN_FOR_DIRECTIONS);
+        verify(coreCaseDataService, never())
+            .saveCaseEvent(AUTHORISATION_TOKEN, claimWithClaimantResponse.getId(), REFERRED_TO_MEDIATION);
+        verify(coreCaseDataService, never())
+            .saveCaseEvent(AUTHORISATION_TOKEN, claimWithClaimantResponse.getId(), ASSIGN_FOR_DIRECTIONS);
     }
 
     @Test
