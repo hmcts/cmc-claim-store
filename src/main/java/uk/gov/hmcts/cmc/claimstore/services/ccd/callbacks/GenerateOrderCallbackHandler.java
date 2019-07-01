@@ -16,7 +16,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDResponseSubjectType;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalculator;
@@ -36,9 +35,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ACTION_REVIEW_COMMENTS;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.GENERATE_ORDER;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.DOCUMENTS;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYEWITNESS;
+
 @Service
 @ConditionalOnProperty(prefix = "doc_assembly", name = "url")
 public class GenerateOrderCallbackHandler extends CallbackHandler {
+    private static final String DOC_UPLOAD_DEADLINE = "docUploadDeadline";
+    private static final String EYEWITNESS_UPLOAD_DEADLINE = "eyewitnessUploadDeadline";
+    private static final String PREFERRED_COURT = "preferredCourt";
+    private static final String DOC_UPLOAD_FOR_PARTY = "docUploadForParty";
+    private static final String EYEWITNESS_UPLOAD_FOR_PARTY = "eyewitnessUploadForParty";
+    private static final String PAPER_DETERMINATION = "paperDetermination";
+    private static final String DRAFT_ORDER_DOC = "draftOrderDoc";
+    private static final String NEW_REQUESTED_COURT = "newRequestedCourt";
+    private static final String PREFERRED_COURT_OBJECTING_PARTY = "preferredCourtObjectingParty";
+    private static final String PREFERRED_COURT_OBJECTING_REASON = "preferredCourtObjectingReason";
+    private static final String DIRECTION_LIST = "directionList";
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Value("${doc_assembly.templateId}")
@@ -77,7 +93,7 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
 
     @Override
     public List<CaseEvent> handledEvents() {
-        return ImmutableList.of(CaseEvent.GENERATE_ORDER, CaseEvent.ACTION_REVIEW_COMMENTS);
+        return ImmutableList.of(GENERATE_ORDER, ACTION_REVIEW_COMMENTS);
     }
 
     private CallbackResponse prepopulateOrder(CallbackParams callbackParams) {
@@ -87,16 +103,16 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
             callbackRequest.getCaseDetails().getData(), CCDCase.class);
         LocalDate deadline = legalOrderGenerationDeadlinesCalculator.calculateOrderGenerationDeadlines();
         Map<String, Object> data = new HashMap<>();
-        data.put("directionList", ImmutableList.of(
-            CCDOrderDirectionType.DOCUMENTS.name(),
-            CCDOrderDirectionType.EYEWITNESS.name()
+        data.put(DIRECTION_LIST, ImmutableList.of(
+            DOCUMENTS.name(),
+            EYEWITNESS.name()
         ));
-        data.put("docUploadDeadline", deadline);
-        data.put("eyewitnessUploadDeadline", deadline);
-        data.put("preferredCourt", ccdCase.getPreferredCourt());
-        data.put("docUploadForParty", CCDDirectionPartyType.BOTH.name());
-        data.put("eyewitnessUploadForParty", CCDDirectionPartyType.BOTH.name());
-        data.put("paperDetermination", CCDYesNoOption.NO.name());
+        data.put(DOC_UPLOAD_DEADLINE, deadline);
+        data.put(EYEWITNESS_UPLOAD_DEADLINE, deadline);
+        data.put(PREFERRED_COURT, ccdCase.getPreferredCourt());
+        data.put(DOC_UPLOAD_FOR_PARTY, CCDDirectionPartyType.BOTH.name());
+        data.put(EYEWITNESS_UPLOAD_FOR_PARTY, CCDDirectionPartyType.BOTH.name());
+        data.put(PAPER_DETERMINATION, CCDYesNoOption.NO.name());
         addCourtData(ccdCase, data);
         return AboutToStartOrSubmitCallbackResponse
             .builder()
@@ -136,7 +152,7 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
         return AboutToStartOrSubmitCallbackResponse
             .builder()
             .data(ImmutableMap.of(
-                "draftOrderDoc",
+                DRAFT_ORDER_DOC,
                 CCDDocument.builder()
                     .documentUrl(docAssemblyResponse.getRenditionOutputLocation())
                     .build()
@@ -161,8 +177,8 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
             preferredCourtObjectingReason = respondent.getPreferredCourtReason();
         }
 
-        data.put("newRequestedCourt", newRequestedCourt);
-        data.put("preferredCourtObjectingParty", preferredCourtObjectingParty);
-        data.put("preferredCourtObjectingReason", preferredCourtObjectingReason);
+        data.put(NEW_REQUESTED_COURT, newRequestedCourt);
+        data.put(PREFERRED_COURT_OBJECTING_PARTY, preferredCourtObjectingParty);
+        data.put(PREFERRED_COURT_OBJECTING_REASON, preferredCourtObjectingReason);
     }
 }
