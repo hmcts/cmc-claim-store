@@ -74,5 +74,5 @@
   "displaycode":0,
   "hasFirstOrderDirections":true,
   "hasSecondOrderDirections":true,
-  "hearingRequired":true
+  "hearingRequired":false
 }
