@@ -172,8 +172,6 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
             .orElseThrow(AssertionError::new);
 
         assertThat(claimantResponse.getDirectionsQuestionnaire()).isNotEmpty();
-        verify(coreCaseDataService)
-            .saveCaseEvent(AUTHORISATION_TOKEN, claimWithClaimantResponse.getId(), REFERRED_TO_MEDIATION);
     }
 
     @Test
