@@ -115,22 +115,15 @@
 
 <header>
   <table>
-    {% set responseType = ccj.responseType %}
-    {% if responseType is defined and (responseType == 'FULL_ADMISSION' or responseType == 'PART_ADMISSION')  %}
-      {% set admissionResponse = true %}
-    {% else %}
-     {% set admissionResponse = false %}
-    {% endif %}
-
-    {% if admissionResponse == true  %}
-      <tr align="right">
+    <tr align="right">
+      {% if ccjType == 'DETERMINATION' %}
+        <td colspan="2"><h3 class="row-spacing">Judgment by determination</h3></td>
+      {% elseif ccjType == "ADMISSIONS" %}
         <td colspan="2"><h3 class="row-spacing">Judgment by admission</h3></td>
-      </tr>
-    {% else %}
-      <tr align="right">
+      {% else %}
         <td colspan="2"><h3 class="row-spacing">Request for judgment by default</h3></td>
-      </tr>
-    {% endif %}
+      {% endif %}
+    </tr>
     <tr>
       <td colspan="2"><p>In the County Court Business Centre</p></td>
     </tr>
