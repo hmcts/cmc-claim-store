@@ -12,7 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUser;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
+import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -54,7 +54,7 @@ public class LinkDefendantToClaimWithWithCoreCaseDataTest extends BaseIntegratio
     private static final String ANONYMOUS_USER_ID = "3";
 
     @Autowired
-    private CCDCaseDataToClaim ccdCaseDataToClaim;
+    private CaseDetailsConverter caseDetailsConverter;
 
     @Before
     public void init() {
@@ -151,7 +151,7 @@ public class LinkDefendantToClaimWithWithCoreCaseDataTest extends BaseIntegratio
     private List<Claim> extractClaims(List<CaseDetails> result) {
         return result
             .stream()
-            .map(entry -> ccdCaseDataToClaim.to(entry))
+            .map(entry -> caseDetailsConverter.extractClaim(entry))
             .collect(Collectors.toList());
     }
 }
