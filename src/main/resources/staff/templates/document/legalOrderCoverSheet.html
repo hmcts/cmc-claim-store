@@ -25,16 +25,15 @@
       padding: 0;
     }
 
-    .small-spacing {
-      margin-top: 8px;
-      margin-bottom: 5px;
+    .spacing {
+      margin-top: 1.5rem;
     }
 
     .address {
       font-size: 12px;
     }
 
-    .defendant-address {
+    .party-address {
       margin-top: 47px;
       margin-left: 10px;
       margin-bottom: 60px;
@@ -78,21 +77,21 @@
       {{ partyAddress.postcode }}
     </p>
 
-    <p style="margin-top: 4rem">
+    <p class="spacing">
       Dear {{ partyFullName }},
     </p>
-    <p class="no-spacing">
+    <p class="spacing">
       We’ve attached a court order to this letter which tells you the actions you must take before the hearing, for claim number {{ claimReferenceNumber }}.
     </p>
-    <p class="no-spacing">
+    <p class="spacing">
       You must read the order and do what it tells you by the deadline. If you don’t, your claim or defence will be cancelled.
     </p>
   </section>
   <section>
-    <p class="small-spacing">
+    <p class="spacing">
       <strong>Help and support</strong>
     </p>
-    <p class="no-spacing">
+    <p class="spacing">
       Telephone: 0300 123 7050<br/>
       Monday to Friday, 9am to 5pm<br/>
       Find out about call charges: https://www.gov.uk/call-charges<br/>
