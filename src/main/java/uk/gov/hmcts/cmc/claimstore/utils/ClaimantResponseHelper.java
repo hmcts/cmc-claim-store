@@ -38,12 +38,9 @@ public class ClaimantResponseHelper {
     }
 
     public static boolean isOptedForMediation(ClaimantResponse claimantResponse) {
-        if (claimantResponse.getType() == REJECTION) {
-            ResponseRejection responseRejection = (ResponseRejection) claimantResponse;
-            return responseRejection.getFreeMediation()
-                .filter(Predicate.isEqual(YES))
-                .isPresent();
-        }
-        return false;
+        return claimantResponse.getType() == REJECTION
+            && ((ResponseRejection) claimantResponse).getFreeMediation()
+            .filter(Predicate.isEqual(YES))
+            .isPresent();
     }
 }
