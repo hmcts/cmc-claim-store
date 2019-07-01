@@ -52,9 +52,6 @@ public class WorkingDayIndicator {
     public LocalDate getNextWorkingDay(LocalDate date) {
         requireNonNull(date);
 
-        if(isWorkingDay(date))
-            return date;
-        else
-            return getNextWorkingDay(date.plusDays(1));
+        return isWorkingDay(date) ? date : getNextWorkingDay(date.plusDays(1));
     }
 }
