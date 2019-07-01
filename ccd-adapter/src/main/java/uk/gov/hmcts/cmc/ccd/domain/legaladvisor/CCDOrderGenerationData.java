@@ -33,9 +33,6 @@ public class CCDOrderGenerationData {
     @Builder.Default
     private List<CCDCollectionElement<CCDOrderDirection>> otherDirections = Collections.emptyList();
 
-    @Builder.Default
-    private List<CCDCollectionElement<String>> extraDocUploadList = Collections.emptyList();
-
     private CCDYesNoOption paperDetermination;
 
     private String newRequestedCourt;
