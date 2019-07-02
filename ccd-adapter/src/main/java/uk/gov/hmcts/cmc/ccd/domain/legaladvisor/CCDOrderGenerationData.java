@@ -40,6 +40,8 @@ public class CCDOrderGenerationData {
 
     private String newRequestedCourt;
 
+    private String preferredDQCourt;
+
     private String preferredCourtObjectingReason;
 
     private CCDHearingCourtType hearingCourt;

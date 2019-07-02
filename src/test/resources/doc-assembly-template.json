@@ -18,14 +18,14 @@
   "eyewitnessUploadDeadline":"11-10-2020",
   "docUploadForParty":"CLAIMANT",
   "eyewitnessUploadForParty":"DEFENDANT",
-  "hearingCourtName":"Defendant Court",
+  "hearingCourtName":"Birmingham Court",
   "hearingCourtAddress":{
-    "AddressLine1": "Defendant Court address",
-    "AddressLine2": null,
+    "AddressLine1": "line1",
+    "AddressLine2": "line2",
     "AddressLine3": null,
     "Country": null,
     "PostCode": "SW1P4BB",
-    "PostTown": "London"
+    "PostTown": "Birmingham"
   },
   "estimatedHearingDuration":"FOUR_HOURS",
   "hearingStatement":"No idea",

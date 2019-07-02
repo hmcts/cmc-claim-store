@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -34,7 +36,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponse;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponseWithDQ;
 
 @TestPropertySource(
     properties = {
@@ -51,6 +53,9 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
 
     private static final String AUTHORISATION_TOKEN = "Bearer let me in";
     private static final String DOCUMENT_URL = "http://bla.test";
+
+    @Autowired
+    protected CaseDetailsConverter caseDetailsConverter;
 
     @Before
     public void setUp() {
@@ -125,7 +130,7 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
     }
 
     private ResultActions makeRequest(String callbackType) throws Exception {
-        CaseDetails caseDetailsTemp =  successfulCoreCaseDataStoreSubmitResponse();
+        CaseDetails caseDetailsTemp =  successfulCoreCaseDataStoreSubmitResponseWithDQ();
         CaseDetails caseDetailsBefore = CaseDetails.builder()
             .id(caseDetailsTemp.getId())
             .data(caseDetailsTemp.getData())
@@ -177,7 +182,7 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
     }
 
     private ResultActions makeRequestGenerateOrder(String callbackType) throws Exception {
-        CaseDetails caseDetailsTemp =  successfulCoreCaseDataStoreSubmitResponse();
+        CaseDetails caseDetailsTemp =  successfulCoreCaseDataStoreSubmitResponseWithDQ();
         Map<String, Object> data = new HashMap<>(caseDetailsTemp.getData());
         data.put("preferredDQCourt", "Preferred court");
 

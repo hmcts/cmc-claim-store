@@ -89,8 +89,6 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
         logger.info("Generate order callback: prepopulating order fields");
         CallbackRequest callbackRequest = callbackParams.getRequest();
 
-        CCDCase ccdCase = jsonMapper.fromMap(
-            callbackRequest.getCaseDetails().getData(), CCDCase.class);
         LocalDate deadline = legalOrderGenerationDeadlinesCalculator.calculateOrderGenerationDeadlines();
         Map<String, Object> data = new HashMap<>();
         data.put("directionList", ImmutableList.of(
@@ -99,12 +97,13 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
         ));
         data.put("docUploadDeadline", deadline);
         data.put("eyewitnessUploadDeadline", deadline);
+        Map<String, Object> caseData = callbackRequest.getCaseDetails().getData();
         Claim claim = caseDetailsConverter.extractClaim(
             CaseDetails.builder()
-                .data(callbackRequest.getCaseDetails().getData()
-                ).build()
+                .data(caseData)
+                .build()
         );
-        addCourtData(ccdCase, claim, data);
+        addCourtData(claim, caseData, data);
         return AboutToStartOrSubmitCallbackResponse
             .builder()
             .data(data)
@@ -151,33 +150,33 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
             .build();
     }
 
-    private void addCourtData(CCDCase ccdCase, Claim claim, Map<String, Object> data) {
-        String newRequestedCourt = null;
-        String preferredCourtObjectingParty = null;
-        String preferredCourtObjectingReason = null;
+    private void addCourtData(Claim claim, Map<String, Object> caseData, Map<String, Object> data) {
+        CCDCase ccdCase = jsonMapper.fromMap(caseData, CCDCase.class);
         CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
 
         CCDDirectionsQuestionnaire claimantDQ =
             ((CCDResponseRejection) respondent.getClaimantResponse()).getDirectionsQuestionnaire();
 
-        if (claimantDQ == null) {
-            throw new IllegalStateException();
-        }
+        CCDDirectionsQuestionnaire defendantDQ = respondent.getDirectionsQuestionnaire();
 
-        if (StringUtils.isNotBlank(claimantDQ.getExceptionalCircumstancesReason())) {
+        String newRequestedCourt = null;
+        String preferredCourtObjectingParty = null;
+        String preferredCourtObjectingReason = null;
+
+        if (claimantDQ != null && StringUtils.isNotBlank(claimantDQ.getExceptionalCircumstancesReason())) {
             newRequestedCourt = claimantDQ.getHearingLocation();
             preferredCourtObjectingParty = CCDResponseSubjectType.RES_CLAIMANT.getValue();
             preferredCourtObjectingReason = claimantDQ.getExceptionalCircumstancesReason();
-        } else if (StringUtils.isNotBlank(
-            respondent.getDirectionsQuestionnaire().getExceptionalCircumstancesReason())) {
-            newRequestedCourt = respondent.getDirectionsQuestionnaire().getHearingLocation();
+        } else if (defendantDQ != null && StringUtils.isNotBlank(
+            defendantDQ.getExceptionalCircumstancesReason())) {
+            newRequestedCourt = defendantDQ.getHearingLocation();
             preferredCourtObjectingParty = CCDResponseSubjectType.RES_DEFENDANT.getValue();
-            preferredCourtObjectingReason = respondent.getDirectionsQuestionnaire().getExceptionalCircumstancesReason();
+            preferredCourtObjectingReason = defendantDQ.getExceptionalCircumstancesReason();
         }
 
+        data.put("preferredDQCourt", DirectionsQuestionnaireUtils.getPreferredCourt(claim));
         data.put("newRequestedCourt", newRequestedCourt);
         data.put("preferredCourtObjectingParty", preferredCourtObjectingParty);
         data.put("preferredCourtObjectingReason", preferredCourtObjectingReason);
-        data.put("preferredDQCourt", DirectionsQuestionnaireUtils.getPreferredCourt(claim));
     }
 }
