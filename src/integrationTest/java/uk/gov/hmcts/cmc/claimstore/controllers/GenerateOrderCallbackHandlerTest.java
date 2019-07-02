@@ -96,7 +96,7 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
             .containsExactlyInAnyOrder("DOCUMENTS", "EYEWITNESS");
         assertThat(responseData.get("docUploadForParty")).isEqualTo("BOTH");
         assertThat(responseData.get("eyewitnessUploadForParty")).isEqualTo("BOTH");
-        assertThat(responseData.get("preferredCourt")).isEqualTo("Preferred court");
+        assertThat(responseData.get("preferredDQCourt")).isEqualTo("Preferred court");
         assertThat(responseData.get("paperDetermination")).isEqualTo("NO");
         assertThat(responseData.get("newRequestedCourt")).isNull();
         assertThat(responseData.get("preferredCourtObjectingParty")).isNull();
@@ -158,7 +158,7 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
                     "directionComment", "second",
                     "sendBy", "2019-06-04",
                     "forParty", "BOTH"))));
-        data.put("preferredCourt", "Preferred court");
+        data.put("preferredDQCourt", "Preferred court");
         data.put("newRequestedCourt", "Another court");
         data.put("preferredCourtObjectingReason", "Because");
         data.put("hearingCourt", "CLERKENWELL");
@@ -185,7 +185,7 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
     private ResultActions makeRequestGenerateOrder(String callbackType) throws Exception {
         CaseDetails caseDetailsTemp =  successfulCoreCaseDataStoreSubmitResponse();
         Map<String, Object> data = new HashMap<>(caseDetailsTemp.getData());
-        data.put("preferredCourt", "Preferred court");
+        data.put("preferredDQCourt", "Preferred court");
 
         CaseDetails caseDetails = CaseDetails.builder()
             .id(caseDetailsTemp.getId())

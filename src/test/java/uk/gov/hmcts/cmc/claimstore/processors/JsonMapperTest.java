@@ -42,7 +42,6 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 
 public class JsonMapperTest {
 
@@ -258,7 +257,7 @@ public class JsonMapperTest {
             .otherDirections(Collections.emptyList())
             .paperDetermination(NO)
             .eyewitnessUploadDeadline(LocalDate.parse("2019-06-03"))
-            .hearingCourt(CCDHearingCourtType.DEFENDANT_COURT)
+            .hearingCourt(CCDHearingCourtType.BIRMINGHAM)
             .eyewitnessUploadForParty(CCDDirectionPartyType.BOTH)
             .estimatedHearingDuration(CCDHearingDurationType.HALF_HOUR)
             .build();
