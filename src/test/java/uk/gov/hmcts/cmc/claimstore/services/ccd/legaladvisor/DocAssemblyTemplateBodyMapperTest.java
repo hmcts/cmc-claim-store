@@ -57,6 +57,13 @@ public class DocAssemblyTemplateBodyMapperTest  {
     @Before
     public void setUp() {
         docAssemblyTemplateBodyMapper = new DocAssemblyTemplateBodyMapper(clock, courtFinderApi);
+        when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString())).thenReturn(ImmutableList.of(Court.builder()
+            .name("Birmingham Court")
+            .slug("birmingham-court")
+            .address(Address.builder()
+                .addressLines(ImmutableList.of("line1", "line2"))
+                .postcode("SW1P4BB")
+                .town("Birmingham").build()).build()));
         ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         ccdCase.setOrderGenerationData(SampleData.getCCDOrderGenerationData());
         ccdCase.setRespondents(

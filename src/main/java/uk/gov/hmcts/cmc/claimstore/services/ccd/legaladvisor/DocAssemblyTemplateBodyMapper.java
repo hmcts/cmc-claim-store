@@ -3,10 +3,8 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
-import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
@@ -36,8 +34,8 @@ public class DocAssemblyTemplateBodyMapper {
         CCDOrderGenerationData ccdOrderGenerationData = ccdCase.getOrderGenerationData();
 
         HearingCourt hearingCourt = Optional.ofNullable(ccdOrderGenerationData.getHearingCourt())
-                .map(court -> mapHearingCourt(ccdCase, court))
-                .orElseGet(() -> HearingCourt.builder().build());
+            .map(this::findHearingCourtAddress)
+            .orElseGet(() -> HearingCourt.builder().build());
 
         return DocAssemblyTemplateBody.builder()
             .claimant(Party.builder()
@@ -104,28 +102,14 @@ public class DocAssemblyTemplateBodyMapper {
         return ccdAddressBuilder.build();
     }
 
-    private HearingCourt mapHearingCourt(CCDCase ccdCase, CCDHearingCourtType courtType) {
-        HearingCourt.HearingCourtBuilder courtBuilder = HearingCourt.builder();
-        switch (courtType) {
-            case CLAIMANT_COURT:
-                CCDApplicant applicant = ccdCase.getApplicants().get(0).getValue();
-                return courtBuilder.name(applicant.getPreferredCourtName())
-                    .address(applicant.getPreferredCourtAddress())
-                    .build();
-            case DEFENDANT_COURT:
-                CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
-                return courtBuilder.name(respondent.getPreferredCourtName())
-                    .address(respondent.getPreferredCourtAddress())
-                    .build();
-            default:
-                return courtFinderApi.findMoneyClaimCourtByPostcode(courtType.getPostcode())
-                    .stream()
-                    .findFirst()
-                    .map(court -> HearingCourt.builder()
-                        .name(court.getName())
-                        .address(mapHearingAddress(court.getAddress()))
-                        .build())
-                    .orElseThrow(IllegalArgumentException::new);
-        }
+    private HearingCourt findHearingCourtAddress(CCDHearingCourtType courtType) {
+        return courtFinderApi.findMoneyClaimCourtByPostcode(courtType.getPostcode())
+            .stream()
+            .findFirst()
+            .map(court -> HearingCourt.builder()
+                .name(court.getName())
+                .address(mapHearingAddress(court.getAddress()))
+                .build())
+            .orElseThrow(IllegalArgumentException::new);
     }
 }

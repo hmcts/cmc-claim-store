@@ -9,11 +9,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
-import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
+import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -21,6 +22,12 @@ import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
+import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
+import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
@@ -35,6 +42,7 @@ import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.MapEntry.entry;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.GENERATE_ORDER;
 
@@ -64,6 +72,8 @@ public class GenerateOrderCallbackHandlerTest {
     private AuthTokenGenerator authTokenGenerator;
     @Mock
     private DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
+    @Mock
+    private CaseDetailsConverter caseDetailsConverter;
 
     private CallbackRequest callbackRequest;
 
@@ -79,10 +89,23 @@ public class GenerateOrderCallbackHandlerTest {
             docAssemblyClient,
             authTokenGenerator,
             jsonMapper,
-            docAssemblyTemplateBodyMapper
-        );
+            docAssemblyTemplateBodyMapper,
+            caseDetailsConverter);
         ReflectionTestUtils.setField(generateOrderCallbackHandler, "templateId", "testTemplateId");
         ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
+        Claim claim =
+            SampleClaim.builder()
+                .withResponse(
+                    FullDefenceResponse.builder()
+                        .directionsQuestionnaire(DirectionsQuestionnaire.builder()
+                            .hearingLocation(
+                                HearingLocation.builder()
+                                    .courtName("Defendant Preferred Court")
+                                    .build()
+                            )
+                            .build()).build()
+                ).build();
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         when(legalOrderGenerationDeadlinesCalculator.calculateOrderGenerationDeadlines())
             .thenReturn(DEADLINE);
         when(userService.getUserDetails(BEARER_TOKEN)).thenReturn(JUDGE);
@@ -97,7 +120,17 @@ public class GenerateOrderCallbackHandlerTest {
     @Test
     public void shouldPrepopulateFieldsOnAboutToStartEventIfNobodyObjectsCourt() {
         when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
-
+        ccdCase.setRespondents(
+            ImmutableList.of(
+                CCDCollectionElement.<CCDRespondent>builder()
+                    .value(CCDRespondent.builder()
+                        .claimantResponse(CCDResponseRejection.builder()
+                            .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder().build())
+                            .build())
+                        .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder().build())
+                        .build())
+                    .build()
+            ));
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_START)
             .request(callbackRequest)
@@ -111,7 +144,7 @@ public class GenerateOrderCallbackHandlerTest {
             entry("directionList", ImmutableList.of("DOCUMENTS", "EYEWITNESS")),
             entry("docUploadDeadline", DEADLINE),
             entry("eyewitnessUploadDeadline", DEADLINE),
-            entry("preferredCourt", ccdCase.getPreferredCourt()),
+            entry("preferredDQCourt", "Defendant Preferred Court"),
             entry("newRequestedCourt", null),
             entry("preferredCourtObjectingParty", null),
             entry("preferredCourtObjectingReason", null)
@@ -120,14 +153,13 @@ public class GenerateOrderCallbackHandlerTest {
 
     @Test
     public void shouldPrepopulateFieldsOnAboutToStartEventIfClaimantsObjectsCourt() {
-        ccdCase.setApplicants(
+        when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
+        ccdCase.setRespondents(
             ImmutableList.of(
-                CCDCollectionElement.<CCDApplicant>builder()
-                    .value(SampleData.getIndividualApplicantWithDQ())
+                CCDCollectionElement.<CCDRespondent>builder()
+                    .value(SampleData.getIndividualRespondentWithDQInClaimantResponse())
                     .build()
             ));
-        when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
-
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_START)
             .request(callbackRequest)
@@ -141,7 +173,7 @@ public class GenerateOrderCallbackHandlerTest {
             entry("directionList", ImmutableList.of("DOCUMENTS", "EYEWITNESS")),
             entry("docUploadDeadline", DEADLINE),
             entry("eyewitnessUploadDeadline", DEADLINE),
-            entry("preferredCourt", ccdCase.getPreferredCourt()),
+            entry("preferredDQCourt", "Defendant Preferred Court"),
             entry("newRequestedCourt", "Claimant Court"),
             entry("preferredCourtObjectingParty", "Res_CLAIMANT"),
             entry("preferredCourtObjectingReason", "As a claimant I like this court more")
@@ -171,7 +203,7 @@ public class GenerateOrderCallbackHandlerTest {
             entry("directionList", ImmutableList.of("DOCUMENTS", "EYEWITNESS")),
             entry("docUploadDeadline", DEADLINE),
             entry("eyewitnessUploadDeadline", DEADLINE),
-            entry("preferredCourt", ccdCase.getPreferredCourt()),
+            entry("preferredDQCourt", "Defendant Preferred Court"),
             entry("newRequestedCourt", "Defendant Court"),
             entry("preferredCourtObjectingParty", "Res_DEFENDANT"),
             entry("preferredCourtObjectingReason", "As a defendant I like this court more")

@@ -246,7 +246,7 @@ public class JsonMapperTest {
         data.put("eyewitnessUploadForParty", "BOTH");
         data.put("eyewitnessUploadDeadline", "2019-06-03");
         data.put("docUploadDeadline", null);
-        data.put("hearingCourt", "DEFENDANT_COURT");
+        data.put("hearingCourt", "BIRMINGHAM");
         data.put("hearingStatement", null);
         data.put("hearingRequired", "Yes");
         data.put("otherDirections", new ArrayList<>());
@@ -260,7 +260,7 @@ public class JsonMapperTest {
             .otherDirections(Collections.emptyList())
             .hearingRequired(YES)
             .eyewitnessUploadDeadline(LocalDate.parse("2019-06-03"))
-            .hearingCourt(CCDHearingCourtType.DEFENDANT_COURT)
+            .hearingCourt(CCDHearingCourtType.BIRMINGHAM)
             .eyewitnessUploadForParty(CCDDirectionPartyType.BOTH)
             .estimatedHearingDuration(CCDHearingDurationType.HALF_HOUR)
             .build();
