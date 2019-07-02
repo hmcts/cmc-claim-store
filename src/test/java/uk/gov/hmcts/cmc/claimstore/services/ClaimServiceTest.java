@@ -479,12 +479,7 @@ public class ClaimServiceTest {
     @Test
     public void updateStateShouldCallCaseRepository() {
         claimService.updateClaimState(AUTHORISATION, claim, ClaimState.OPEN);
-
-        verify(caseRepository).updateClaimStateToOpen(
-            eq(AUTHORISATION),
-            eq(claim.getId()),
-            eq(ClaimState.OPEN)
-        );
+        verify(caseRepository).updateClaimState(eq(AUTHORISATION), eq(claim.getId()), eq(ClaimState.OPEN));
     }
 
     @Test

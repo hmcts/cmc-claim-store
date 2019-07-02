@@ -32,6 +32,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.rules.ClaimSubmissionOperationIndicatorRule;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
@@ -52,8 +53,6 @@ import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isReferredToJudge;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
-import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
-import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
 @RestController
 @RequestMapping("/support")
@@ -73,6 +72,7 @@ public class SupportController {
     private final ClaimantResponseStaffNotificationHandler claimantResponseStaffNotificationHandler;
     private final DocumentsService documentsService;
     private final PostClaimOrchestrationHandler postClaimOrchestrationHandler;
+    private final ClaimSubmissionOperationIndicatorRule claimSubmissionOperationIndicatorRule;
 
     @SuppressWarnings("squid:S00107")
     public SupportController(
@@ -85,7 +85,8 @@ public class SupportController {
         AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler,
         ClaimantResponseStaffNotificationHandler claimantResponseStaffNotificationHandler,
         DocumentsService documentsService,
-        @Autowired(required = false) PostClaimOrchestrationHandler postClaimOrchestrationHandler
+        @Autowired(required = false) PostClaimOrchestrationHandler postClaimOrchestrationHandler,
+        ClaimSubmissionOperationIndicatorRule claimSubmissionOperationIndicatorRule
     ) {
         this.claimService = claimService;
         this.userService = userService;
@@ -97,6 +98,7 @@ public class SupportController {
         this.claimantResponseStaffNotificationHandler = claimantResponseStaffNotificationHandler;
         this.documentsService = documentsService;
         this.postClaimOrchestrationHandler = postClaimOrchestrationHandler;
+        this.claimSubmissionOperationIndicatorRule = claimSubmissionOperationIndicatorRule;
     }
 
     @PutMapping("/claim/{referenceNumber}/event/{event}/resend-staff-notifications")
@@ -179,62 +181,16 @@ public class SupportController {
         }
         Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
             .orElseThrow(() -> new NotFoundException(String.format(CLAIM_DOES_NOT_EXIST, referenceNumber)));
-        validateClaimSubmissionOpsInd(claim.getClaimSubmissionOperationIndicators(),
+
+        claimSubmissionOperationIndicatorRule.assertOperationIndicatorUpdateIsValid(claim,
             claimSubmissionOperationIndicators);
+
         claim = claimService.updateClaimSubmissionOperationIndicators(
             authorisation,
             claim,
             claimSubmissionOperationIndicators
         );
         triggerAsyncOperation(authorisation, claim);
-    }
-
-    private void validateClaimSubmissionOpsInd(
-        ClaimSubmissionOperationIndicators existingClaimSubmissionOperationIndicators,
-        ClaimSubmissionOperationIndicators newClaimSubmissionOperationIndicators
-    ) {
-        List<String> invalidIndicators = new ArrayList<>();
-
-        if (existingClaimSubmissionOperationIndicators.getClaimIssueReceiptUpload().equals(NO)
-            && newClaimSubmissionOperationIndicators.getClaimIssueReceiptUpload().equals(YES)) {
-            invalidIndicators.add("claimIssueReceiptUpload");
-        }
-
-        if (existingClaimSubmissionOperationIndicators.getSealedClaimUpload().equals(NO)
-            && newClaimSubmissionOperationIndicators.getSealedClaimUpload().equals(YES)) {
-            invalidIndicators.add("sealedClaimUpload");
-        }
-
-        if (existingClaimSubmissionOperationIndicators.getBulkPrint().equals(NO)
-            && newClaimSubmissionOperationIndicators.getBulkPrint().equals(YES)) {
-            invalidIndicators.add("bulkPrint");
-        }
-
-        if (existingClaimSubmissionOperationIndicators.getClaimantNotification().equals(NO)
-            && newClaimSubmissionOperationIndicators.getClaimantNotification().equals(YES)) {
-            invalidIndicators.add("claimantNotification");
-        }
-
-        if (existingClaimSubmissionOperationIndicators.getDefendantNotification().equals(NO)
-            && newClaimSubmissionOperationIndicators.getDefendantNotification().equals(YES)) {
-            invalidIndicators.add("defendantNotification");
-        }
-
-        if (existingClaimSubmissionOperationIndicators.getRpa().equals(NO)
-            && newClaimSubmissionOperationIndicators.getRpa().equals(YES)) {
-            invalidIndicators.add("rpa");
-        }
-
-        if (existingClaimSubmissionOperationIndicators.getStaffNotification().equals(NO)
-            && newClaimSubmissionOperationIndicators.getStaffNotification().equals(YES)) {
-            invalidIndicators.add("staffNotification");
-        }
-
-        if (invalidIndicators.size() > 0) {
-            throw new BadRequestException("Invalid input. The following indicator(s)"
-                + invalidIndicators + " cannot be set to Yes");
-        }
-
     }
 
     @PutMapping("/claims/{referenceNumber}/recover-operations")

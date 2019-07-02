@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_DEFENDANT;
-import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service("caseRepository")
@@ -212,9 +211,11 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void updateClaimStateToOpen(String authorisation, Long claimId, ClaimState currentState) {
-        if (currentState == CREATE) {
+    public void updateClaimState(String authorisation, Long claimId, ClaimState state) {
+        if (state == ClaimState.OPEN) {
             coreCaseDataService.saveCaseEvent(authorisation, claimId, CaseEvent.ISSUE_CASE);
+        } else {
+            throw new UnsupportedOperationException("State transition not allowed for " + state.name());
         }
     }
 }
