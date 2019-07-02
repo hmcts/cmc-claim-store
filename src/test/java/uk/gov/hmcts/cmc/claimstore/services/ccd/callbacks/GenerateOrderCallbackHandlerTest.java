@@ -150,7 +150,7 @@ public class GenerateOrderCallbackHandlerTest {
             entry("eyewitnessUploadDeadline", DEADLINE),
             entry("eyewitnessUploadForParty", "BOTH"),
             entry("paperDetermination", "NO"),
-            entry("preferredDQCourt", ccdCase.getPreferredCourt()),
+            entry("preferredDQCourt", "Defendant Preferred Court"),
             entry("newRequestedCourt", null),
             entry("preferredCourtObjectingParty", null),
             entry("preferredCourtObjectingReason", null)
@@ -162,6 +162,17 @@ public class GenerateOrderCallbackHandlerTest {
         when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
         CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData();
         ccdOrderGenerationData.setOtherDirectionHeader(null);
+        ccdCase.setRespondents(
+            ImmutableList.of(
+                CCDCollectionElement.<CCDRespondent>builder()
+                    .value(CCDRespondent.builder()
+                        .claimantResponse(CCDResponseRejection.builder()
+                            .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder().build())
+                            .build())
+                        .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder().build())
+                        .build())
+                    .build()
+            ));
         ccdCase.setOrderGenerationData(ccdOrderGenerationData);
 
         CallbackParams callbackParams = CallbackParams.builder()
@@ -180,7 +191,7 @@ public class GenerateOrderCallbackHandlerTest {
             entry("eyewitnessUploadDeadline", DEADLINE),
             entry("eyewitnessUploadForParty", "BOTH"),
             entry("paperDetermination", "NO"),
-            entry("preferredDQCourt", ccdCase.getPreferredCourt()),
+            entry("preferredDQCourt", "Defendant Preferred Court"),
             entry("newRequestedCourt", null),
             entry("preferredCourtObjectingParty", null),
             entry("preferredCourtObjectingReason", null)
@@ -249,7 +260,7 @@ public class GenerateOrderCallbackHandlerTest {
             entry("eyewitnessUploadDeadline", DEADLINE),
             entry("eyewitnessUploadForParty", "BOTH"),
             entry("paperDetermination", "NO"),
-            entry("preferredDQCourt", ccdCase.getPreferredCourt()),
+            entry("preferredDQCourt", "Defendant Preferred Court"),
             entry("newRequestedCourt", "Defendant Court"),
             entry("preferredCourtObjectingParty", "Res_DEFENDANT"),
             entry("preferredCourtObjectingReason", "As a defendant I like this court more")
@@ -295,6 +306,22 @@ public class GenerateOrderCallbackHandlerTest {
         assertThat(response.getData()).containsExactly(
             entry("draftOrderDoc", document)
         );
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowIfClaimantResponseIsNotPresent() {
+        when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
+        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData();
+        ccdOrderGenerationData.setOtherDirectionHeader(null);
+        ccdCase.setOrderGenerationData(ccdOrderGenerationData);
+
+        CallbackParams callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_START)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+        generateOrderCallbackHandler
+            .handle(callbackParams);
     }
 
     @Test(expected = CallbackException.class)

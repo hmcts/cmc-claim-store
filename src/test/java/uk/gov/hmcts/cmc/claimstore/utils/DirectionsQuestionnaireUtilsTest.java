@@ -141,7 +141,6 @@ public class DirectionsQuestionnaireUtilsTest {
             .getPreferredCourt(claim)).isEqualTo(NON_PILOT_COURT_NAME);
     }
 
-
     @Test
     public void shouldReturnEmptyIfNoFreeMediationAndDefendantIsBusinessAndClaimantCourtIsNotPilot() {
         Claim claim = SampleClaim.builder()

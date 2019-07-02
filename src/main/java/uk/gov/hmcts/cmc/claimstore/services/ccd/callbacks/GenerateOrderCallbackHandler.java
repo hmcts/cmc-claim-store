@@ -11,12 +11,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
-import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDResponseSubjectType;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalculator;
@@ -39,9 +37,12 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.*;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ACTION_REVIEW_COMMENTS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.GENERATE_ORDER;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.*;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.DOCUMENTS;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYEWITNESS;
 
@@ -50,7 +51,6 @@ import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYE
 public class GenerateOrderCallbackHandler extends CallbackHandler {
     private static final String DOC_UPLOAD_DEADLINE = "docUploadDeadline";
     private static final String EYEWITNESS_UPLOAD_DEADLINE = "eyewitnessUploadDeadline";
-    private static final String PREFERRED_COURT = "preferredCourt";
     private static final String DOC_UPLOAD_FOR_PARTY = "docUploadForParty";
     private static final String EYEWITNESS_UPLOAD_FOR_PARTY = "eyewitnessUploadForParty";
     private static final String PAPER_DETERMINATION = "paperDetermination";
@@ -108,26 +108,24 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
         logger.info("Generate order callback: prepopulating order fields");
         CallbackRequest callbackRequest = callbackParams.getRequest();
 
-        CCDCase ccdCase = jsonMapper.fromMap(
-            callbackRequest.getCaseDetails().getData(), CCDCase.class);
         LocalDate deadline = legalOrderGenerationDeadlinesCalculator.calculateOrderGenerationDeadlines();
         Map<String, Object> data = new HashMap<>();
         data.put(DIRECTION_LIST, ImmutableList.of(
             DOCUMENTS.name(),
             EYEWITNESS.name()
         ));
+        Map<String, Object> caseData = callbackRequest.getCaseDetails().getData();
         Claim claim = caseDetailsConverter.extractClaim(
             CaseDetails.builder()
-                .data(callbackRequest.getCaseDetails().getData()
-                ).build()
+                .data(caseData)
+                .build()
         );
-        addCourtData(ccdCase, claim, data);
+        addCourtData(claim, caseData, data);
         data.put(DOC_UPLOAD_DEADLINE, deadline);
         data.put(EYEWITNESS_UPLOAD_DEADLINE, deadline);
-        data.put(PREFERRED_COURT, ccdCase.getPreferredCourt());
-        data.put(DOC_UPLOAD_FOR_PARTY, CCDDirectionPartyType.BOTH.name());
-        data.put(EYEWITNESS_UPLOAD_FOR_PARTY, CCDDirectionPartyType.BOTH.name());
-        data.put(PAPER_DETERMINATION, CCDYesNoOption.NO.name());
+        data.put(DOC_UPLOAD_FOR_PARTY, BOTH.name());
+        data.put(EYEWITNESS_UPLOAD_FOR_PARTY, BOTH.name());
+        data.put(PAPER_DETERMINATION, NO.name());
         return AboutToStartOrSubmitCallbackResponse
             .builder()
             .data(data)
@@ -174,28 +172,32 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
             .build();
     }
 
-    private void addCourtData(CCDCase ccdCase, Claim claim, Map<String, Object> data) {
+    private void addCourtData(Claim claim, Map<String, Object> caseData, Map<String, Object> data) {
+        CCDCase ccdCase = jsonMapper.fromMap(caseData, CCDCase.class);
+        CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
+
+        CCDResponseRejection claimantResponse = Optional.ofNullable(respondent.getClaimantResponse())
+            .map(r -> (CCDResponseRejection) r)
+            .orElseThrow(() -> new IllegalStateException("Claimant Response not present"));
+
+        CCDDirectionsQuestionnaire claimantDQ =
+            claimantResponse.getDirectionsQuestionnaire();
+
+        CCDDirectionsQuestionnaire defendantDQ = respondent.getDirectionsQuestionnaire();
+
         String newRequestedCourt = null;
         String preferredCourtObjectingParty = null;
         String preferredCourtObjectingReason = null;
-        CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
 
-        CCDDirectionsQuestionnaire claimantDQ =
-            ((CCDResponseRejection) respondent.getClaimantResponse()).getDirectionsQuestionnaire();
-
-        if (claimantDQ == null) {
-            throw new IllegalStateException();
-        }
-
-        if (StringUtils.isNotBlank(claimantDQ.getExceptionalCircumstancesReason())) {
+        if (claimantDQ != null && StringUtils.isNotBlank(claimantDQ.getExceptionalCircumstancesReason())) {
             newRequestedCourt = claimantDQ.getHearingLocation();
             preferredCourtObjectingParty = CCDResponseSubjectType.RES_CLAIMANT.getValue();
             preferredCourtObjectingReason = claimantDQ.getExceptionalCircumstancesReason();
-        } else if (StringUtils.isNotBlank(
-            respondent.getDirectionsQuestionnaire().getExceptionalCircumstancesReason())) {
-            newRequestedCourt = respondent.getDirectionsQuestionnaire().getHearingLocation();
+        } else if (defendantDQ != null && StringUtils.isNotBlank(
+            defendantDQ.getExceptionalCircumstancesReason())) {
+            newRequestedCourt = defendantDQ.getHearingLocation();
             preferredCourtObjectingParty = CCDResponseSubjectType.RES_DEFENDANT.getValue();
-            preferredCourtObjectingReason = respondent.getDirectionsQuestionnaire().getExceptionalCircumstancesReason();
+            preferredCourtObjectingReason = defendantDQ.getExceptionalCircumstancesReason();
         }
 
         data.put(NEW_REQUESTED_COURT, newRequestedCourt);
