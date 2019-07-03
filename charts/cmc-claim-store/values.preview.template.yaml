@@ -97,9 +97,9 @@ cmc-citizen-frontend:
         enabled: true
         permissions: cmc-new-features-consent-given
   idam-pr:
-    service:
-      name: Money Claims - Citizen
-      redirect_uri: https://www-${SERVICE_FQDN}/receiver
+    redirect_uris:
+      Money Claims - Citizen:
+        - https://www-${SERVICE_FQDN}/receiver
 
 ccd:
   ingressHost: ${SERVICE_FQDN}
