@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimantRejectOrgPaymentPlanSt
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 
@@ -47,6 +48,20 @@ public class ClaimantResponseActionsHandler {
     public void sendClaimantRejectOrganisationPaymentPlanNotificationToStaff(RejectOrganisationPaymentPlanEvent event) {
         this.claimantRejectOrgPaymentPlanStaffNotificationService
             .notifyStaffClaimantRejectOrganisationPaymentPlan(event.getClaim());
+    }
+
+    @EventListener
+    public void notifyDefendantOfIntentToProceed(ClaimantResponseEvent event) {
+        Claim claim = event.getClaim();
+        ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
+        if (isIntentToProceed(claimantResponse)) {
+            this.notificationService.notifyDefendantOfRejection(claim);
+        }
+    }
+
+    private boolean isIntentToProceed(ClaimantResponse claimantResponse) {
+        return claimantResponse.getType() == ClaimantResponseType.REJECTION
+            && ((ResponseRejection) claimantResponse).getDirectionsQuestionnaire().isPresent();
     }
 
     private boolean isRejectedStatesPaidOrPartAdmission(Claim claim) {
