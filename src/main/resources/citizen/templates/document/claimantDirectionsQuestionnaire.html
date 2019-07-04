@@ -1,0 +1,376 @@
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <title>Money Claim Claimant response receipt</title>
+  <style>
+    @page :first {
+      size: 8.5in 11in;
+      margin: 10%;
+      @top-right {
+        font-family: "Open Sans";
+      }
+    }
+
+    @page {
+      size: 8.5in 11in;
+      margin: 10%;
+
+      @top-right {
+        content: "Claim number: {{ claim.referenceNumber }}";
+        font-size: 12px;
+        font-family: "Open Sans";
+      }
+
+      @bottom-left {
+        content: "{{ formNumber }}";
+        /*noinspection CssNoGenericFontName*/
+        font-family: "Open Sans";
+        font-size: 10px;
+        font-weight: bold;
+      }
+
+      @bottom-center {
+        content: "For further details of the courts www.gov.uk/find-court-tribunal";
+        font-size: 10px;
+      }
+
+      @bottom-right {
+        content: "&#169; Crown copyright Page " counter(page) " of " counter(pages);
+        font-size: 10px;
+        padding-left: 50px;
+      }
+
+    }
+
+    html {
+      /*noinspection CssNoGenericFontName*/
+      font-family: "Open Sans";
+    }
+
+    body {
+      counter-reset: section;
+    }
+
+    .section {
+      margin-bottom: 25px;
+    }
+
+    .section .section-heading {
+      margin-bottom: 10px;
+      font-size: large;
+    }
+
+    .section .section-heading strong:before {
+      counter-increment: section;
+      content: counter(section) ". ";
+    }
+
+    .next-steps .section-heading strong:before {
+      content: "";
+    }
+
+    .no-border tr, .no-border th, .no-border td {
+      border: none;
+    }
+
+    table {
+      width: 100%;
+      border-spacing: 0;
+    }
+
+    table td {
+      border-top: 1px solid #999;
+      padding: 5px;
+    }
+
+    table tr:last-child td {
+      border-bottom: 1px solid #999;
+    }
+
+    table td:first-child {
+      width: 220px;
+      vertical-align: top;
+    }
+
+    table td:last-child {
+      width: auto;
+    }
+
+    header table td, header table tr:last-child td {
+      border: none;
+    }
+
+    div table tr td:first-child {
+      font-weight: bold;
+    }
+
+    header p, header h2 {
+      text-align: right;
+      margin: 0;
+      padding: 0;
+    }
+
+    header td {
+      margin: 0;
+      padding: 0;
+    }
+
+    .spacing-bottom {
+      padding-bottom: 20px;
+    }
+
+    .normal-font {
+      font-weight: normal;
+    }
+
+    .no-border tr, .no-border th, .no-border td {
+      border: none;
+    }
+
+    td.single-cell {
+      font-weight: 100 !important;
+    }
+
+    .no-padding-right {
+      padding-right: 0px;
+    }
+
+    .keep-formatting {
+      white-space: pre-line;
+    }
+
+  </style>
+</head>
+<body>
+
+<header>
+  <table>
+    <tr>
+      <td colspan="2" class="spacing-bottom"><h2 class="normal-font">Claimant’s response</h2></td>
+    </tr>
+    <tr>
+      <td colspan="2"><p>In the County Court Business Centre</p></td>
+    </tr>
+    <tr>
+      <td colspan="2" class="spacing-bottom"><p>Online Civil Money Claims</p></td>
+    </tr>
+    <tr>
+      <td colspan="2"><p><strong>Claim number: </strong>{{ claim.referenceNumber }}</p></td>
+    </tr>
+    <tr>
+      <td colspan="2"><p><strong>Issued on: </strong> {{ claim.issuedOn }}</p></td>
+    </tr>
+    <tr>
+      <td colspan="2" class="spacing-bottom"><p><strong>Claimant Response submitted on: </strong> {{ claimantSubmittedOn
+        }}</p>
+      </td>
+    </tr>
+  </table>
+</header>
+
+<br/>
+
+<div class="section">
+  <div class="section-heading">
+    <strong>Claimant's response to the claim</strong>
+  </div>
+  <div class="section-body">
+    <table>
+      <tr>
+        <td>Do you accept or reject the defendant’s admission?</td>
+        <td>
+          {{ defendantAdmissionAccepted }}
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Do you accept the defendant’s repayment plan?</strong></td>
+        <td>
+          {{ paymentPlanAccepted }}
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+{% if responseType == "ACCEPTATION" and hasClaimantPaymentIntention is defined %}
+<div class="section">
+  <div class="section-heading">
+    <strong>Claimant's requested repayment plan</strong>
+  </div>
+  <div class="section-body">
+    <table>
+      <tr>
+        <td><strong>How would you like the defendant to pay?</strong></td>
+        <td>
+          {{ paymentOption }}
+        </td>
+      </tr>
+
+      {% if repaymentPlan is defined and repaymentPlan.repaymentOption == "By instalments" %}
+      <tr class="no-border">
+        <td><strong>Regular payments of:</strong></td>
+        <td>
+          {{ repaymentPlan.instalmentAmount }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Frequency of payments:</strong></td>
+        <td>
+          {{ repaymentPlan.paymentSchedule }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>First payment by:</strong></td>
+        <td>
+          {{ repaymentPlan.firstPaymentDate }}
+        </td>
+      </tr>
+      {% endif %}
+
+      <tr class="no-border">
+        <td><strong>Last payment by:</strong></td>
+        <td>
+          {{ whenWillTheyFinishPaying }}
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+{% if courtDetermination is defined %}
+<div class="section">
+  <div class="section-heading">
+    <strong>Court's repayment plan</strong>
+  </div>
+  <div class="section-body">
+    <table>
+      {% if hasNegativeDisposableIncome is defined %}
+        {{ hasNegativeDisposableIncome }}
+      {% else %}
+        <tr>
+          <td><strong>How the defendant will pay?</strong></td>
+          <td>
+            {{ courtPaymentIntentionpaymentOption }}
+          </td>
+        </tr>
+
+        {% if courtPaymentIntentionrepaymentPlan is defined and courtPaymentIntentionrepaymentPlan.repaymentOption == "By instalments" %}
+        <tr class="no-border">
+          <td><strong>First payment by:</strong></td>
+          <td>
+            {{ courtPaymentIntentionrepaymentPlan.firstPaymentDate }}
+          </td>
+        </tr>
+        <tr class="no-border">
+          <td><strong>Regular payments of:</strong></td>
+          <td>
+            {{ courtPaymentIntentionrepaymentPlan.instalmentAmount }}
+          </td>
+        </tr>
+        <tr class="no-border">
+          <td><strong>Frequency of payments:</strong></td>
+          <td>
+            {{ courtPaymentIntentionrepaymentPlan.paymentSchedule }}
+          </td>
+        </tr>
+        {% endif %}
+
+        <tr class="no-border">
+          <td><strong>Last payment by:</strong></td>
+          <td>
+            {{ courtPaymentIntentionwhenWillTheyFinishPaying }}
+          </td>
+        </tr>
+      {% endif %}
+    </table>
+  </div>
+</div>
+<div class="section">
+  <div class="section-heading">
+    <strong>Court decision</strong>
+  </div>
+  <div class="section-body">
+    <table>
+      <tr>
+        <td><strong>How the defendant will pay?</strong></td>
+        <td>
+          {{ courtDecisionpaymentOption }}
+        </td>
+      </tr>
+
+      {% if courtDecisionrepaymentPlan is defined and courtDecisionrepaymentPlan.repaymentOption == "By instalments" %}
+      <tr class="no-border">
+        <td><strong>First payment by:</strong></td>
+        <td>
+          {{ courtDecisionrepaymentPlan.firstPaymentDate }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Regular payments of:</strong></td>
+        <td>
+          {{ courtDecisionrepaymentPlan.instalmentAmount }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Frequency of payments:</strong></td>
+        <td>
+          {{ courtDecisionrepaymentPlan.paymentSchedule }}
+        </td>
+      </tr>
+      {% endif %}
+
+      <tr class="no-border">
+        <td><strong>Last payment by:</strong></td>
+        <td>
+          {{ courtDecisionwhenWillTheyFinishPaying }}
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+{% endif %}
+<div class="section">
+  <div class="section-heading">
+    <strong>How the claimant wants to proceed</strong>
+  </div>
+  <div class="section-body">
+    <table>
+      <tr>
+        <td><strong>How do you want to formalise the repayment plan?</strong></td>
+        <td>
+          {{ formaliseOption }}
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+{% if ccj is defined %}
+<div class="section">
+  <div class="section-heading">
+    <strong>Judgment request</strong>
+  </div>
+  <div class="section-body">
+    <table>
+      <tr>
+        <td><strong>Has the defendant paid some of the amount owed?</strong></td>
+        <td>
+          {% if ccj.paidAmount is defined %}
+          {{'Yes'}}
+          {% else %}
+          {{ 'No' }}
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Total to be paid by defendant</strong></td>
+        <td>
+          {{ totalAmount }}
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endif %}
+</body>
+</html>
