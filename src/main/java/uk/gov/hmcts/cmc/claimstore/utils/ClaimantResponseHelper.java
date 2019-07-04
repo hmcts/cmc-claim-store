@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.utils;
 
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
@@ -42,5 +43,10 @@ public class ClaimantResponseHelper {
             && ((ResponseRejection) claimantResponse).getFreeMediation()
             .filter(Predicate.isEqual(YES))
             .isPresent();
+    }
+
+    public static boolean isIntentToProceed(ClaimantResponse claimantResponse) {
+        return claimantResponse.getType() == ClaimantResponseType.REJECTION
+            && ((ResponseRejection) claimantResponse).getDirectionsQuestionnaire().isPresent();
     }
 }
