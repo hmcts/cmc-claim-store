@@ -24,7 +24,7 @@ dependencyUpdates.resolutionStrategy = {
   }
 }
 
-def springBootVersion = '2.1.5.RELEASE'
+def springBootVersion = '2.1.6.RELEASE'
 def springCloudVersion = 'Greenwich.SR2'
 
 allprojects {
