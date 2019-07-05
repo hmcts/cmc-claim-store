@@ -379,8 +379,8 @@ public class SupportControllerTest {
         when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
             .thenReturn(Optional.of(claim));
         exceptionRule.expect(BadRequestException.class);
-        exceptionRule.expectMessage("Invalid input. The following indicator(s)[claimIssueReceiptUpload, "
-            + "sealedClaimUpload, bulkPrint, claimantNotification, defendantNotification, rpa, staffNotification] "
+        exceptionRule.expectMessage("Invalid input. The following indicator(s)[claimantNotification, "
+            + "defendantNotification, bulkPrint, rpa, staffNotification, sealedClaimUpload, claimIssueReceiptUpload] "
             + "cannot be set to Yes");
         controller.resetOperation(CLAIMREFERENCENUMBER,
             claimSubmissionOperationIndicators,

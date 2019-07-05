@@ -18,10 +18,9 @@ public enum ClaimState {
         return state;
     }
 
-    public static ClaimState fromValue(String state) {
+    public static ClaimState fromValue(String value) {
         return Arrays.stream(ClaimState.values())
-            .filter(claimState -> claimState.getValue().equalsIgnoreCase(state))
-            .findAny()
-            .orElseThrow(() -> new IllegalArgumentException(state + " is not a valid state."));
+            .filter(val -> val.name().equalsIgnoreCase(value))
+            .findFirst().orElseThrow(IllegalArgumentException::new);
     }
 }

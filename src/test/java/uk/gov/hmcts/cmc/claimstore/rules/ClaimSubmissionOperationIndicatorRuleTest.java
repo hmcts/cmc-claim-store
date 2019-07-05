@@ -29,8 +29,8 @@ public class ClaimSubmissionOperationIndicatorRuleTest {
             .build();
 
         exceptionRule.expect(BadRequestException.class);
-        exceptionRule.expectMessage("Invalid input. The following indicator(s)[claimIssueReceiptUpload, "
-            + "sealedClaimUpload, bulkPrint, claimantNotification, defendantNotification, rpa, staffNotification] "
+        exceptionRule.expectMessage("Invalid input. The following indicator(s)[claimantNotification, "
+            + "defendantNotification, bulkPrint, rpa, staffNotification, sealedClaimUpload, claimIssueReceiptUpload] "
             + "cannot be set to Yes");
 
         new ClaimSubmissionOperationIndicatorRule().assertOperationIndicatorUpdateIsValid(claim, input);
