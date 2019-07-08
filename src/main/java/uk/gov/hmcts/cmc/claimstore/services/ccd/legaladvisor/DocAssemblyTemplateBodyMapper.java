@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
@@ -70,57 +71,24 @@ public class DocAssemblyTemplateBodyMapper {
             .eyewitnessUploadForParty(
                 ccdOrderGenerationData.getEyewitnessUploadForParty())
             .hearingRequired(
-                ccdOrderGenerationData.getHearingIsRequired().toBoolean())
+                ccdOrderGenerationData.getHearingRequired().toBoolean())
             .hearingCourtName(
                 hearingCourt.getName())
             .hearingCourtAddress(
-                convertAddressToString(hearingCourt.getAddress()))
+                hearingCourt.getAddress())
             .estimatedHearingDuration(
                 ccdOrderGenerationData.getEstimatedHearingDuration())
             .hearingStatement(
                 ccdOrderGenerationData.getHearingStatement())
-            .otherDirectionList(
-                ccdOrderGenerationData.getOtherDirectionList()
+            .otherDirections(
+                ccdOrderGenerationData.getOtherDirections()
                     .stream()
                     .filter(direction -> direction != null && direction.getValue() != null)
-                    .map(direction -> OtherDirection.builder()
-                            .extraOrderDirection(direction.getValue().getExtraOrderDirection())
-                            .directionComment(direction.getValue().getOtherDirection())
-                            .forParty(direction.getValue().getForParty())
-                            .sendBy(direction.getValue().getSendBy())
-                            .build()
-                ).collect(Collectors.toList()))
+                    .map(CCDCollectionElement::getValue)
+                .collect(Collectors.toList()))
             .build();
     }
 
-    //this will be removed once the template is updated
-    private String convertAddressToString(CCDAddress ccdAddress) {
-        if (ccdAddress != null) {
-            StringBuilder stringBuilder = new StringBuilder();
-            if (ccdAddress.getAddressLine1() != null) {
-                stringBuilder.append(ccdAddress.getAddressLine1());
-                stringBuilder.append("\n");
-            }
-            if (ccdAddress.getAddressLine2() != null) {
-                stringBuilder.append(ccdAddress.getAddressLine2());
-                stringBuilder.append("\n");
-            }
-            if (ccdAddress.getAddressLine3() != null) {
-                stringBuilder.append(ccdAddress.getAddressLine3());
-                stringBuilder.append("\n");
-            }
-            if (ccdAddress.getPostCode() != null) {
-                stringBuilder.append(ccdAddress.getPostCode());
-                stringBuilder.append("\n");
-            }
-            if (ccdAddress.getPostTown() != null) {
-                stringBuilder.append(ccdAddress.getPostTown());
-            }
-            return stringBuilder.toString();
-        }
-        return null;
-    }
-    
     private CCDAddress mapHearingAddress(Address address) {
         CCDAddress.CCDAddressBuilder ccdAddressBuilder = CCDAddress.builder()
             .postTown(address.getTown())
