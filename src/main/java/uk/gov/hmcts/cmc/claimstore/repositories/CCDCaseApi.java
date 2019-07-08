@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
@@ -24,7 +23,6 @@ import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.UserId;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -291,15 +289,6 @@ public class CCDCaseApi {
             throw new DefendantLinkingException("Claim is not in issued yet, can not link defendant");
         }
         return Optional.of(ccdCaseDataToClaim.extractClaim(caseDetails));
-    }
-
-    public List<Claim> getMediationClaims(LocalDate mediationAgreedDate, String authorisation){
-        User user = userService.getUser(authorisation);
-        return getAllCasesBy(user, ImmutableMap.of(
-            "case.respondents.0.responseFreeMediationOption", CCDYesNoOption.YES.name(),
-            "case.respondents.0.claimantResponse.freeMediationOption", CCDYesNoOption.YES.name(),
-            "case.respondents.0.claimantResponse.submittedOn", mediationAgreedDate.toString()
-        ));
     }
 
     private String extractLetterHolderId(String role) {

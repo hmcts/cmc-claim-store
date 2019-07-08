@@ -87,7 +87,5 @@ public interface CaseRepository {
     void updateClaimState(String authorisation, Long claimId, ClaimState state);
 
     Claim linkLetterHolder(Long claimId, String letterHolderId);
-
-    List<Claim> getMediationClaims(String authorisation, LocalDate mediationAgreementDate);
 }
 

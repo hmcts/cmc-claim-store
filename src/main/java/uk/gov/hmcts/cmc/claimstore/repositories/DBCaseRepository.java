@@ -280,9 +280,4 @@ public class DBCaseRepository implements CaseRepository {
     public void updateClaimState(String authorisation, Long claimId, ClaimState state) {
         claimRepository.updateClaimState(claimId, state.name());
     }
-
-    @Override
-    public List<Claim> getMediationClaims(String authorisation, LocalDate agreementReachedDate) {
-        return claimRepository.getMediationClaimsForDate(agreementReachedDate);
-    }
 }

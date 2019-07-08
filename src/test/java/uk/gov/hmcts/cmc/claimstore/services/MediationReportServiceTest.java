@@ -11,7 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MediationCSVGenerationException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
-import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.CaseSearchApi;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
@@ -49,7 +49,7 @@ public class MediationReportServiceTest {
     @Mock
     private EmailService emailService;
     @Mock
-    private CaseRepository caseRepository;
+    private CaseSearchApi caseSearchApi;
     @Mock
     private UserService userService;
     @Mock
@@ -63,13 +63,13 @@ public class MediationReportServiceTest {
     public void setUp() {
         this.service = new MediationReportService(
             emailService,
-            caseRepository,
+            caseSearchApi,
             userService,
             appInsights,
             TO_ADDRESS,
             FROM_ADDRESS
         );
-        when(caseRepository.getMediationClaims(anyString(), any(LocalDate.class)))
+        when(caseSearchApi.getMediationClaims(anyString(), any(LocalDate.class)))
             .thenReturn(Collections.singletonList(SAMPLE_CLAIM));
     }
 
@@ -77,7 +77,7 @@ public class MediationReportServiceTest {
     public void shouldPrepareCSVDataAndInvokeEmailService() throws IOException {
         service.sendMediationReport(AUTHORISATION, LocalDate.now());
 
-        verify(caseRepository).getMediationClaims(AUTHORISATION, LocalDate.now());
+        verify(caseSearchApi).getMediationClaims(AUTHORISATION, LocalDate.now());
         verifyEmailData();
     }
 
@@ -90,7 +90,7 @@ public class MediationReportServiceTest {
         service.automatedMediationReport();
 
         verify(userService).authenticateAnonymousCaseWorker();
-        verify(caseRepository).getMediationClaims(AUTHORISATION, LocalDate.now().minusDays(1));
+        verify(caseSearchApi).getMediationClaims(AUTHORISATION, LocalDate.now().minusDays(1));
 
         verifyEmailData();
     }
@@ -101,7 +101,7 @@ public class MediationReportServiceTest {
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(mockUser);
         when(mockUser.getAuthorisation()).thenReturn(AUTHORISATION);
 
-        when(caseRepository.getMediationClaims(anyString(), any(LocalDate.class)))
+        when(caseSearchApi.getMediationClaims(anyString(), any(LocalDate.class)))
             .thenThrow(mock(RuntimeException.class));
 
         assertThatThrownBy(() -> service.automatedMediationReport())

@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MediationCSVGenerationException;
-import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.CaseSearchApi;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.MediationRow;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
@@ -75,7 +75,7 @@ public class MediationCSVGenerator {
 
     private static final String NULL_STRING = "null";
 
-    private final CaseRepository caseRepository;
+    private final CaseSearchApi caseRepository;
 
     private final LocalDate mediationDate;
 

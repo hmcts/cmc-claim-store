@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MediationCSVGenerationException;
-import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.CaseSearchApi;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
@@ -22,7 +22,7 @@ import java.util.Map;
 public class MediationReportService {
 
     private EmailService emailService;
-    private CaseRepository caseRepository;
+    private CaseSearchApi caseSearchApi;
     private UserService userService;
     private AppInsights appInsights;
 
@@ -32,14 +32,14 @@ public class MediationReportService {
     @Autowired
     public MediationReportService(
         EmailService emailService,
-        CaseRepository caseRepository,
+        CaseSearchApi caseSearchApi,
         UserService userService,
         AppInsights appInsights,
         @Value("${milo.recipient}") String emailToAddress,
         @Value("${milo.sender}") String emailFromAddress
     ) {
         this.emailService = emailService;
-        this.caseRepository = caseRepository;
+        this.caseSearchApi = caseSearchApi;
         this.userService = userService;
         this.appInsights = appInsights;
         this.emailToAddress = emailToAddress;
@@ -48,7 +48,7 @@ public class MediationReportService {
 
     public void sendMediationReport(String authorisation, LocalDate mediationDate) {
         try {
-            MediationCSVGenerator generator = new MediationCSVGenerator(caseRepository, mediationDate, authorisation);
+            MediationCSVGenerator generator = new MediationCSVGenerator(caseSearchApi, mediationDate, authorisation);
             generator.createMediationCSV();
             String csvData = generator.getCsvData();
 

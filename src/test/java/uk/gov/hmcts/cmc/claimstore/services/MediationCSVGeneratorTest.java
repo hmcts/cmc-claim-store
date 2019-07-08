@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MediationCSVGenerationException;
-import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.CaseSearchApi;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.time.LocalDate;
@@ -28,16 +28,16 @@ public class MediationCSVGeneratorTest {
     private MediationCSVGenerator mediationCSVGenerator;
 
     @Mock
-    private CaseRepository mockCaseRepository;
+    private CaseSearchApi caseSearchApi;
 
     private List<Claim> mediationClaims;
 
     @Before
     public void setUp() {
         mediationClaims = new ArrayList<>();
-        mediationCSVGenerator = new MediationCSVGenerator(mockCaseRepository, LocalDate.now(), AUTHORISATION);
+        mediationCSVGenerator = new MediationCSVGenerator(caseSearchApi, LocalDate.now(), AUTHORISATION);
 
-        when(mockCaseRepository.getMediationClaims(AUTHORISATION, LocalDate.now()))
+        when(caseSearchApi.getMediationClaims(AUTHORISATION, LocalDate.now()))
             .thenReturn(mediationClaims);
     }
 
@@ -45,8 +45,8 @@ public class MediationCSVGeneratorTest {
     public void shouldCreateMediationForClaim() {
         mediationClaims.add(getWithClaimantResponseRejectionForPartAdmissionAndMediation());
 
-        String expected = "4,000CM001,1,80.89,1,Mediation Contact Person,null,07999999999,4,5\r\n"
-            + "4,000CM001,1,80.89,2,Mediation Contact Person,null,07999999999,4,5\r\n";
+        String expected = "4,000CM001,1,81.90,1,Mediation Contact Person,null,07999999999,4,5\r\n"
+            + "4,000CM001,1,81.90,2,Mediation Contact Person,null,07999999999,4,5\r\n";
         mediationCSVGenerator.createMediationCSV();
         String mediationCSV = mediationCSVGenerator.getCsvData();
         assertThat(mediationCSV).isEqualTo(expected);
@@ -76,7 +76,7 @@ public class MediationCSVGeneratorTest {
 
     @Test(expected = MediationCSVGenerationException.class)
     public void shouldWrapProblemAsMediationException() {
-        when(mockCaseRepository.getMediationClaims(anyString(), any(LocalDate.class)))
+        when(caseSearchApi.getMediationClaims(anyString(), any(LocalDate.class)))
             .thenThrow(new RuntimeException());
 
         mediationCSVGenerator.createMediationCSV();

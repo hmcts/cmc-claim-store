@@ -185,11 +185,6 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public List<Claim> getMediationClaims(String authorisation, LocalDate mediationAgreementDate) {
-        return ccdCaseApi.getMediationClaims(mediationAgreementDate, authorisation);
-    }
-
-    @Override
     public Claim updateClaimSubmissionOperationStatus(String authorisation, Long claimId,
                                                       ClaimSubmissionOperationIndicators indicators,
                                                       CaseEvent caseEvent) {

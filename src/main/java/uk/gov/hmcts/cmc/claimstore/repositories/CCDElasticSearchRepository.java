@@ -1,7 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
+import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.elastic.Query;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -10,13 +12,14 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 
-@Service("searchRepository")
-public class CCDElasticSearchRepository {
+@Repository("searchRepository")
+public class CCDElasticSearchRepository  implements CaseSearchApi{
 
     private final CoreCaseDataApi coreCaseDataApi;
     private final AuthTokenGenerator authTokenGenerator;
@@ -32,6 +35,24 @@ public class CCDElasticSearchRepository {
         this.authTokenGenerator = authTokenGenerator;
         this.userService = userService;
         this.ccdCaseDetailsConverter = ccdCaseDataToClaim;
+    }
+
+    public List<Claim> getMediationClaims( String authorisation, LocalDate mediationAgreedDate) {
+        User user = userService.getUser(authorisation);
+
+        Query mediationQuery = new Query(
+            QueryBuilders.boolQuery()
+                .must(QueryBuilders.termQuery(
+                    "case.respondents.0.responseFreeMediationOption", CCDYesNoOption.YES.name()))
+                .must(QueryBuilders.termQuery(
+                    "case.respondents.0.claimantResponse.freeMediationOption", CCDYesNoOption.YES.name()))
+                .must(QueryBuilders.rangeQuery("case.respondents.0.claimantResponse.submittedOn")
+                    .from(mediationAgreedDate, true)
+                    .to(mediationAgreedDate, true))
+        );
+
+        return searchClaimsWith(user, mediationQuery);
+
     }
 
     private List<Claim> searchClaimsWith(User user,
