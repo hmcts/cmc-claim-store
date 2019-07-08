@@ -248,8 +248,8 @@ public class JsonMapperTest {
         data.put("docUploadDeadline", null);
         data.put("hearingCourt", "DEFENDANT_COURT");
         data.put("hearingStatement", null);
-        data.put("hearingIsRequired", "Yes");
-        data.put("otherDirectionList", new ArrayList<>());
+        data.put("hearingRequired", "Yes");
+        data.put("otherDirections", new ArrayList<>());
         data.put("directionList", ImmutableList.of("EYEWITNESS"));
         data.put("estimatedHearingDuration", "HALF_HOUR");
 
@@ -257,8 +257,8 @@ public class JsonMapperTest {
 
         CCDOrderGenerationData expected = CCDOrderGenerationData.builder()
             .directionList(Collections.singletonList(CCDOrderDirectionType.EYEWITNESS))
-            .otherDirectionList(Collections.emptyList())
-            .hearingIsRequired(YES)
+            .otherDirections(Collections.emptyList())
+            .hearingRequired(YES)
             .eyewitnessUploadDeadline(LocalDate.parse("2019-06-03"))
             .hearingCourt(CCDHearingCourtType.DEFENDANT_COURT)
             .eyewitnessUploadForParty(CCDDirectionPartyType.BOTH)
