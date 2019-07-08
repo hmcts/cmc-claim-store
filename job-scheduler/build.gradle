@@ -11,7 +11,7 @@ dependencies {
   compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
-  compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
+  compile group: 'org.postgresql', name: 'postgresql', version: '42.2.6'
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.8'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.6'
 
