@@ -17,7 +17,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_NEW_CASE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreStartResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponse;
 
@@ -50,7 +50,7 @@ public class SaveClaimAsynchronouslyAtCCDTest extends BaseSaveTest {
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(CREATE_NEW_CASE.getValue())
+            eq(CREATE_CASE.getValue())
             )
         ).willReturn(successfulCoreCaseDataStoreStartResponse());
 
@@ -71,7 +71,7 @@ public class SaveClaimAsynchronouslyAtCCDTest extends BaseSaveTest {
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
-            eq(CREATE_NEW_CASE.getValue())
+            eq(CREATE_CASE.getValue())
             )
         ).willReturn(successfulCoreCaseDataStoreStartResponse());
 
@@ -87,13 +87,6 @@ public class SaveClaimAsynchronouslyAtCCDTest extends BaseSaveTest {
         ).willReturn(successfulCoreCaseDataStoreSubmitResponse());
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
-
-        MvcResult prepayment = makePrePaymentRequest(claimData.getExternalId().toString())
-            .andExpect(status().isOk())
-            .andReturn();
-
-        assertThat(prepayment.getResponse().getContentAsString())
-            .isEqualTo(String.format("{\"case_reference\":\"%s\"}", claimData.getExternalId()));
 
         MvcResult result = makeIssueClaimRequest(claimData, AUTHORISATION_TOKEN)
             .andExpect(status().isOk())

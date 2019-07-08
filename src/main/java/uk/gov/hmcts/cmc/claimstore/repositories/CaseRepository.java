@@ -5,13 +5,13 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
-import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.time.LocalDate;
@@ -55,6 +55,8 @@ public interface CaseRepository {
 
     List<Claim> getByPaymentReference(String payReference, String authorisation);
 
+    List<Claim> getClaimsByState(ClaimState claimState, User user);
+
     Optional<Claim> getByLetterHolderId(String id, String authorisation);
 
     void requestMoreTimeForResponse(String authorisation, Claim claim, LocalDate newResponseDeadline);
@@ -62,8 +64,6 @@ public interface CaseRepository {
     void updateSettlement(Claim claim, Settlement settlement, String authorisation, CaseEvent caseEvent);
 
     void reachSettlementAgreement(Claim claim, Settlement settlement, String authorisation, CaseEvent caseEvent);
-
-    CaseReference savePrePaymentClaim(String externalId, String authorisation);
 
     Claim saveClaim(User user, Claim claim);
 
@@ -84,7 +84,7 @@ public interface CaseRepository {
         ClaimSubmissionOperationIndicators indicators,
         CaseEvent caseEvent);
 
-    void updateClaimState(String authorisation, Long claimId, String state);
+    void updateClaimState(String authorisation, Long claimId, ClaimState state);
 
     Claim linkLetterHolder(Long claimId, String letterHolderId);
 

@@ -157,7 +157,8 @@
     "externalReferenceNumber": "PBA1234567",
     "housingDisrepairOtherDamages": "MORE_THAN_THOUSAND_POUNDS",
     "personalInjuryGeneralDamages": "MORE_THAN_THOUSAND_POUNDS",
-    "housingDisrepairCostOfRepairDamages": "MORE_THAN_THOUSAND_POUNDS"
+    "housingDisrepairCostOfRepairDamages": "MORE_THAN_THOUSAND_POUNDS",
+    "claimSubmissionOperationIndicators": {"rpa": "YES", "bulkPrint": "YES", "sealedClaimUpload": "YES", "staffNotification": "YES", "claimantNotification": "YES", "defendantNotification": "YES", "claimIssueReceiptUpload": "YES"}
   }
 }
 

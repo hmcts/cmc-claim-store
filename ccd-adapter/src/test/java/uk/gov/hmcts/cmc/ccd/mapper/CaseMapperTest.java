@@ -11,12 +11,16 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.util.MapperUtil;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
+import static uk.gov.hmcts.cmc.ccd.util.SampleCCDClaimSubmissionOperationIndicators.CCDClaimSubmissionOperationIndicatorsWithPinSuccess;
+import static uk.gov.hmcts.cmc.ccd.util.SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicators;
 import static uk.gov.hmcts.cmc.ccd.util.SampleData.getAmountBreakDown;
 
 @SpringBootTest
@@ -97,5 +101,74 @@ public class CaseMapperTest {
 
         //when
         ccdCaseMapper.from(ccdCase);
+    }
+
+    @Test
+    public void shouldMapClaimSubmissionIndicatorsFromCCDCase() {
+        //given
+        CCDCase ccdCase = SampleData.getCCDCitizenCase(getAmountBreakDown());
+
+        //when
+        Claim claim = ccdCaseMapper.from(ccdCase);
+
+        //then
+        assertNotNull(claim.getClaimSubmissionOperationIndicators());
+        assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getClaimIssueReceiptUpload());
+        assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getBulkPrint());
+        assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getClaimantNotification());
+        assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getDefendantNotification());
+        assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getRpa());
+        assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getSealedClaimUpload());
+        assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getStaffNotification());
+    }
+
+    @Test
+    public void shouldMapSubmissionIndicatorsFromCCDCaseWithDefaultIndicators() {
+        //given
+        CCDCase ccdCase =
+            SampleData.getCCDCitizenCaseWithOperationIndicators(defaultCCDClaimSubmissionOperationIndicators);
+
+        //when
+        Claim claim = ccdCaseMapper.from(ccdCase);
+
+        //then
+        assertNotNull(claim.getClaimSubmissionOperationIndicators());
+        assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getClaimIssueReceiptUpload());
+        assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getBulkPrint());
+        assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getClaimantNotification());
+        assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getDefendantNotification());
+        assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getRpa());
+        assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getSealedClaimUpload());
+        assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getStaffNotification());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldMapSubmissionIndicatorsFromCCDCaseWithNullIndicators() {
+        //given
+        CCDCase ccdCase =
+            SampleData.getCCDCitizenCaseWithOperationIndicators(null);
+
+        //when
+        ccdCaseMapper.from(ccdCase);
+    }
+
+    @Test
+    public void shouldMapSubmissionIndicatorsFromCCDCaseWithPinSuccessIndicators() {
+        //given
+        CCDCase ccdCase =
+            SampleData.getCCDCitizenCaseWithOperationIndicators(CCDClaimSubmissionOperationIndicatorsWithPinSuccess);
+
+        //when
+        Claim claim = ccdCaseMapper.from(ccdCase);
+
+        //then
+        assertNotNull(claim.getClaimSubmissionOperationIndicators());
+        assertEquals(YesNoOption.YES, claim.getClaimSubmissionOperationIndicators().getBulkPrint());
+        assertEquals(YesNoOption.YES, claim.getClaimSubmissionOperationIndicators().getStaffNotification());
+        assertEquals(YesNoOption.YES, claim.getClaimSubmissionOperationIndicators().getDefendantNotification());
+        assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getClaimIssueReceiptUpload());
+        assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getClaimantNotification());
+        assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getRpa());
+        assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getSealedClaimUpload());
     }
 }

@@ -5,7 +5,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -31,9 +33,19 @@ public class ClaimDocumentCollectionMapper {
             claimDocumentCollection
                 .getClaimDocuments()
                 .stream()
+                .filter(this::isNotPin)
+                .filter(this::isNotCCJ)
                 .map(claimDocumentMapper::to)
                 .collect(Collectors.toList())
         );
+    }
+
+    private boolean isNotPin(ClaimDocument claimDocument) {
+        return !claimDocument.getDocumentType().equals(ClaimDocumentType.DEFENDANT_PIN_LETTER);
+    }
+
+    private boolean isNotCCJ(ClaimDocument claimDocument) {
+        return !claimDocument.getDocumentType().equals(ClaimDocumentType.CCJ_REQUEST);
     }
 
     public void from(CCDCase ccdCase, Claim.ClaimBuilder builder) {

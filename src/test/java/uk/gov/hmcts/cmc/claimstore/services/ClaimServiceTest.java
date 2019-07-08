@@ -23,9 +23,9 @@ import uk.gov.hmcts.cmc.claimstore.rules.ClaimDeadlineService;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.rules.PaidInFullRule;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
@@ -50,6 +50,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.CLAIM_ID;
@@ -98,15 +99,11 @@ public class ClaimServiceTest {
     @Mock
     private DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
     @Mock
-    private LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator;
-    @Mock
     private EventProducer eventProducer;
     @Mock
     private CCDEventProducer ccdEventProducer;
     @Mock
     private AppInsights appInsights;
-    @Mock
-    private CCDCaseDataToClaim ccdCaseDataToClaim;
 
     @Before
     public void setup() {
@@ -118,12 +115,10 @@ public class ClaimServiceTest {
             userService,
             issueDateCalculator,
             responseDeadlineCalculator,
-            legalOrderGenerationDeadlinesCalculator,
             directionsQuestionnaireDeadlineCalculator,
             new MoreTimeRequestRule(new ClaimDeadlineService()),
             eventProducer,
             appInsights,
-            ccdCaseDataToClaim,
             new PaidInFullRule(),
             ccdEventProducer,
             new ClaimAuthorisationRule(userService),
@@ -222,12 +217,10 @@ public class ClaimServiceTest {
             userService,
             issueDateCalculator,
             responseDeadlineCalculator,
-            legalOrderGenerationDeadlinesCalculator,
             directionsQuestionnaireDeadlineCalculator,
             new MoreTimeRequestRule(new ClaimDeadlineService()),
             eventProducer,
             appInsights,
-            ccdCaseDataToClaim,
             new PaidInFullRule(),
             ccdEventProducer,
             new ClaimAuthorisationRule(userService),
@@ -317,6 +310,16 @@ public class ClaimServiceTest {
             .thenReturn(singletonList(claim));
 
         List<Claim> claims = claimService.getClaimByDefendantEmail(claim.getDefendantEmail(), AUTHORISATION);
+
+        assertThat(claims).containsExactly(claim);
+    }
+
+    @Test
+    public void getClaimsByStateShouldCallCaseRepository() {
+        when(caseRepository.getClaimsByState(eq(CREATE), any()))
+            .thenReturn(singletonList(claim));
+
+        List<Claim> claims = claimService.getClaimsByState(CREATE, USER);
 
         assertThat(claims).containsExactly(claim);
     }
@@ -468,6 +471,17 @@ public class ClaimServiceTest {
             any(Response.class),
             eq(deadline),
             eq(AUTHORISATION)
+        );
+    }
+
+    @Test
+    public void updateStateShouldCallCaseRepository() {
+        claimService.updateClaimState(AUTHORISATION, claim, ClaimState.OPEN);
+
+        verify(caseRepository).updateClaimState(
+            eq(AUTHORISATION),
+            eq(claim.getId()),
+            eq(ClaimState.OPEN)
         );
     }
 

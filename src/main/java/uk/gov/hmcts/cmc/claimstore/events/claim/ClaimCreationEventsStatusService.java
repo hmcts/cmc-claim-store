@@ -26,7 +26,6 @@ public class ClaimCreationEventsStatusService {
                 case PIN_GENERATION_OPERATIONS:
                     updatedIndicator.defendantNotification(YesNoOption.YES)
                         .bulkPrint(YesNoOption.YES)
-                        .defendantPinLetterUpload(YesNoOption.YES)
                         .staffNotification(YesNoOption.YES);
                     break;
                 case CLAIM_ISSUE_RECEIPT_UPLOAD:
@@ -62,6 +61,19 @@ public class ClaimCreationEventsStatusService {
             authorisation,
             claim.getId(),
             updateClaimSubmissionIndicatorWithEvent.apply(claim.getClaimSubmissionOperationIndicators(), caseEvent),
+            caseEvent);
+    }
+
+    public Claim updateClaimOperationCompletion(
+        String authorisation,
+        Long claimId,
+        ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators,
+        CaseEvent caseEvent
+    ) {
+        return caseRepository.updateClaimSubmissionOperationStatus(
+            authorisation,
+            claimId,
+            claimSubmissionOperationIndicators,
             caseEvent);
     }
 }

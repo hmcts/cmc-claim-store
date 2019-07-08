@@ -92,6 +92,7 @@ public final class SampleClaim {
     private ClaimState state = null;
     private static Supplier<ClaimSubmissionOperationIndicators> getDefaultClaimSubmissionOperationIndicators =
         () -> ClaimSubmissionOperationIndicators.builder().build();
+    private Long ccdCaseId = 1023467890123456L;
 
     private SampleClaim() {
     }
@@ -109,7 +110,7 @@ public final class SampleClaim {
                 .withDefenceType(DefenceType.DISPUTE)
                 .withMediation(YES)
                 .build()
-            )
+            ).withState(ClaimState.OPEN)
             .build();
     }
 
@@ -447,6 +448,7 @@ public final class SampleClaim {
             claimData,
             createdAt,
             issuedOn,
+            issuedOn.plusDays(5),
             responseDeadline,
             isMoreTimeRequested,
             submitterEmail,
@@ -467,7 +469,8 @@ public final class SampleClaim {
             claimDocumentCollection,
             claimantResponseDeadline,
             state,
-            getDefaultClaimSubmissionOperationIndicators.get()
+            getDefaultClaimSubmissionOperationIndicators.get(),
+            ccdCaseId
         );
     }
 
@@ -573,6 +576,11 @@ public final class SampleClaim {
 
     public SampleClaim withReDeterminationRequestedAt(LocalDateTime reDeterminationRequestedAt) {
         this.reDeterminationRequestedAt = reDeterminationRequestedAt;
+        return this;
+    }
+
+    public SampleClaim withState(ClaimState claimState) {
+        this.state = claimState;
         return this;
     }
 

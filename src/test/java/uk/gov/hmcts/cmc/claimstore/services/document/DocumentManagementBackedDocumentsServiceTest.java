@@ -125,28 +125,6 @@ public class DocumentManagementBackedDocumentsServiceTest {
     }
 
     @Test
-    public void shouldGenerateCountyCourtJudgement() {
-        Claim claim = SampleClaim.getDefault();
-        when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(AUTHORISATION)))
-            .thenReturn(claim);
-        when(countyCourtJudgmentPdfService.createPdf(any(Claim.class))).thenReturn(PDF_BYTES);
-        byte[] pdf = documentManagementBackedDocumentsService.generateCountyCourtJudgement(
-            claim.getExternalId(),
-            AUTHORISATION);
-        verifyCommon(pdf, claim.getId());
-    }
-
-    @Test
-    public void shouldThrowErrorWhenCountyCourtJudgementDoesNotExist() {
-        Claim claim = SampleClaim.withFullClaimData();
-        exceptionRule.expect(NotFoundException.class);
-        exceptionRule.expectMessage("County Court Judgment does not exist for this claim");
-        when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(AUTHORISATION)))
-            .thenReturn(claim);
-        documentManagementBackedDocumentsService.generateCountyCourtJudgement(claim.getExternalId(), AUTHORISATION);
-    }
-
-    @Test
     public void shouldGenerateSettlementAgreement() {
         Claim claim = SampleClaim.builder().withSettlement(mock(Settlement.class)).build();
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(AUTHORISATION)))
@@ -166,19 +144,6 @@ public class DocumentManagementBackedDocumentsServiceTest {
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(AUTHORISATION)))
             .thenReturn(claim);
         documentManagementBackedDocumentsService.generateSettlementAgreement(claim.getExternalId(), AUTHORISATION);
-    }
-
-    @Test
-    public void shouldGenerateDefendantPinLetter() {
-        Claim claim = SampleClaim.getDefault();
-        when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(AUTHORISATION)))
-            .thenReturn(claim);
-        when(defendantPinLetterPdfService.createPdf(any(Claim.class), anyString())).thenReturn(PDF_BYTES);
-        documentManagementBackedDocumentsService.generateDefendantPinLetter(
-            claim.getExternalId(),
-            "pin",
-            AUTHORISATION);
-        verify(documentManagementService).uploadDocument(anyString(), any(PDF.class));
     }
 
     @Test

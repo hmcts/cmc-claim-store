@@ -30,8 +30,8 @@ import uk.gov.hmcts.reform.document.domain.UploadResponse;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 
 import java.net.URI;
+import java.util.List;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.DOCUMENT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DOCUMENT_MANAGEMENT_DOWNLOAD_FAILURE;
@@ -51,7 +51,7 @@ public class DocumentManagementService {
     private final AuthTokenGenerator authTokenGenerator;
     private final UserService userService;
     private final AppInsights appInsights;
-    private final String userRoles;
+    private final List<String> userRoles;
 
     @Autowired
     public DocumentManagementService(
@@ -61,7 +61,7 @@ public class DocumentManagementService {
         AuthTokenGenerator authTokenGenerator,
         UserService userService,
         AppInsights appInsights,
-        @Value("${document_management.userRoles}") String userRoles
+        @Value("${document_management.userRoles}") List<String> userRoles
     ) {
         this.documentMetadataDownloadClient = documentMetadataDownloadApi;
         this.documentDownloadClient = documentDownloadClientApi;
@@ -84,7 +84,7 @@ public class DocumentManagementService {
                 authorisation,
                 authTokenGenerator.generate(),
                 userDetails.getId(),
-                asList(userRoles),
+                userRoles,
                 Classification.RESTRICTED,
                 singletonList(file)
             );
@@ -96,6 +96,7 @@ public class DocumentManagementService {
 
             return ClaimDocument.builder()
                 .documentManagementUrl(URI.create(document.links.self.href))
+                .documentManagementBinaryUrl(URI.create(document.links.binary.href))
                 .documentName(originalFileName)
                 .documentType(pdf.getClaimDocumentType())
                 .createdDatetime(LocalDateTimeFactory.nowInUTC())
@@ -124,6 +125,7 @@ public class DocumentManagementService {
     public byte[] downloadDocument(String authorisation, URI documentSelf, String baseFileName) {
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
+            String userRoles = String.join(",", this.userRoles);
             Document documentMetadata = documentMetadataDownloadClient.getDocumentMetadata(
                 authorisation,
                 authTokenGenerator.generate(),

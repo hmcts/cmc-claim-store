@@ -21,7 +21,6 @@ import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
-import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.time.LocalDate;
@@ -29,7 +28,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATED;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service("caseRepository")
@@ -173,6 +172,11 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
+    public List<Claim> getClaimsByState(ClaimState claimState, User user) {
+        return claimRepository.getClaimsByState(claimState);
+    }
+
+    @Override
     public Optional<Claim> getByLetterHolderId(String id, String authorisation) {
         return claimRepository.getByLetterHolderId(id);
     }
@@ -203,14 +207,6 @@ public class DBCaseRepository implements CaseRepository {
         );
     }
 
-    /**
-     * For non-CCD datastore it always new CaseReference(externalId) as there is no pre payment step for non-ccd env.
-     */
-    @Override
-    public CaseReference savePrePaymentClaim(String externalId, String authorisation) {
-        return new CaseReference(externalId);
-    }
-
     @Override
     @LogExecutionTime
     public Claim saveClaim(User user, Claim claim) {
@@ -222,7 +218,7 @@ public class DBCaseRepository implements CaseRepository {
                 claim.getResponseDeadline(), claim.getExternalId(), claim.getSubmitterEmail(), features,
                 claimSubmissionOperationIndicator);
         } else {
-            ClaimState state = this.saveClaimStateEnabled ? CREATED : null;
+            ClaimState state = this.saveClaimStateEnabled ? CREATE : null;
             claimRepository.saveSubmittedByClaimant(claimDataString,
                 claim.getSubmitterId(), claim.getLetterHolderId(),
                 claim.getIssuedOn(), claim.getResponseDeadline(), claim.getExternalId(),
@@ -281,8 +277,8 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void updateClaimState(String authorisation, Long claimId, String state) {
-        claimRepository.updateClaimState(claimId, state);
+    public void updateClaimState(String authorisation, Long claimId, ClaimState state) {
+        claimRepository.updateClaimState(claimId, state.name());
     }
 
     @Override

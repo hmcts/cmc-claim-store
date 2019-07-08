@@ -16,7 +16,7 @@ public class SampleTheirDetails {
 
     public static final String DEFENDANT_EMAIL = "j.smith@example.com";
 
-    private String name = "John Smith";
+    private String name = "Dr. John Smith";
     private String firstName = "John";
     private String lastName = "Smith";
     private Address address = SampleAddress.builder().build();

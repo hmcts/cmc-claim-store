@@ -5,6 +5,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRow;
 import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestDateType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestEndDateType;
@@ -66,7 +67,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPaymentF
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebtType.ELECTRICITY;
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDResidenceType.JOINT_OWN_HOME;
 import static uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceType.EXPERT_WITNESS;
-import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOTH;
+import static uk.gov.hmcts.cmc.ccd.util.SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicators;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
 
@@ -110,6 +111,7 @@ public class SampleData {
         .paymentId("PaymentId")
         .paymentAmount("400000")
         .paymentReference("RC-1524-6488-1670-7520")
+        .claimSubmissionOperationIndicators(defaultCCDClaimSubmissionOperationIndicators)
         .timeline(singletonList(CCDCollectionElement.<CCDTimelineEvent>builder()
             .value(CCDTimelineEvent.builder().date("some Date").description("description of event").build())
             .build()))
@@ -243,6 +245,11 @@ public class SampleData {
                     .dateOfBirth(LocalDate.of(1950, 01, 01))
                     .correspondenceAddress(ccdAddress)
                     .build())
+            .partyDetail(
+                CCDParty.builder()
+                    .emailAddress("defendant@email.test")
+                    .build()
+            )
             .claimantProvidedPartyName("Individual")
             .claimantProvidedRepresentativeOrganisationAddress(ccdAddress)
             .claimantProvidedRepresentativeOrganisationName("My Org")
@@ -316,6 +323,7 @@ public class SampleData {
             .partyDetail(CCDParty.builder()
                 .type(INDIVIDUAL)
                 .primaryAddress(ccdAddress)
+                .emailAddress("claimant@email.test")
                 .telephoneNumber(CCDTelephone.builder().telephoneNumber("07987654321").build())
                 .dateOfBirth(LocalDate.of(1950, 01, 01))
                 .correspondenceAddress(ccdAddress)
@@ -326,6 +334,59 @@ public class SampleData {
             .representativeOrganisationPhone("07987654321")
             .representativeOrganisationEmail("my@email.com")
             .representativeOrganisationDxAddress("dx123")
+            .build();
+    }
+
+    public static CCDApplicant getIndividualApplicantWithDQ() {
+        CCDAddress ccdAddress = getCCDAddress();
+        return CCDApplicant.builder()
+            .partyDetail(CCDParty.builder()
+                .type(INDIVIDUAL)
+                .primaryAddress(ccdAddress)
+                .telephoneNumber(CCDTelephone.builder().telephoneNumber("07987654321").build())
+                .dateOfBirth(LocalDate.of(1950, 01, 01))
+                .correspondenceAddress(ccdAddress)
+                .build())
+            .partyName("Individual")
+            .representativeOrganisationAddress(ccdAddress)
+            .representativeOrganisationName("My Org")
+            .representativeOrganisationPhone("07987654321")
+            .representativeOrganisationEmail("my@email.com")
+            .representativeOrganisationDxAddress("dx123")
+            .preferredCourtName("Claimant Court")
+            .preferredCourtAddress(CCDAddress.builder()
+                .addressLine1("Claimant Court address")
+                .postCode("SW1P4BB")
+                .postTown("London")
+                .build())
+            .preferredCourtReason("As a claimant I like this court more")
+            .build();
+    }
+
+    public static CCDRespondent getIndividualRespondentWithDQ() {
+        CCDAddress ccdAddress = getCCDAddress();
+        return CCDRespondent.builder()
+            .partyName("Mary Richards")
+            .claimantProvidedDetail(
+                CCDParty.builder()
+                    .type(INDIVIDUAL)
+                    .primaryAddress(ccdAddress)
+                    .dateOfBirth(LocalDate.of(1950, 01, 01))
+                    .correspondenceAddress(ccdAddress)
+                    .build())
+            .claimantProvidedPartyName("Individual")
+            .claimantProvidedRepresentativeOrganisationAddress(ccdAddress)
+            .claimantProvidedRepresentativeOrganisationName("My Org")
+            .claimantProvidedRepresentativeOrganisationPhone("07987654321")
+            .claimantProvidedRepresentativeOrganisationPhone("my@email.com")
+            .claimantProvidedRepresentativeOrganisationDxAddress("dx123")
+            .preferredCourtName("Defendant Court")
+            .preferredCourtAddress(CCDAddress.builder()
+                .addressLine1("Defendant Court address")
+                .postCode("SW1P4BB")
+                .postTown("London")
+                .build())
+            .preferredCourtReason("As a defendant I like this court more")
             .build();
     }
 
@@ -424,6 +485,7 @@ public class SampleData {
             .preferredCourt("London Court")
             .applicants(applicants)
             .respondents(respondents)
+            .claimSubmissionOperationIndicators(defaultCCDClaimSubmissionOperationIndicators)
             .build();
     }
 
@@ -444,14 +506,42 @@ public class SampleData {
         return CCDOrderGenerationData.builder()
             .directionList(ImmutableList.of(
                 CCDOrderDirectionType.DOCUMENTS, CCDOrderDirectionType.EYEWITNESS))
-            .otherDirectionList(ImmutableList.of(
-                CCDOrderDirection.builder()
-                    .extraOrderDirection(CCDOrderDirectionType.OTHER)
-                    .otherDirection("a direction")
-                    .forParty(BOTH)
-                    .sendBy(LocalDate.parse("2020-10-11"))
+            .otherDirections(ImmutableList.of(
+                CCDCollectionElement.<CCDOrderDirection>builder().value(
+                    CCDOrderDirection.builder()
+                        .extraOrderDirection(CCDOrderDirectionType.OTHER)
+                        .directionComment("a direction")
+                        .forParty(CCDDirectionPartyType.BOTH)
+                        .sendBy(LocalDate.parse("2020-10-11"))
+                        .build()
+                ).build(),
+                CCDCollectionElement.<CCDOrderDirection>builder().value(
+                    CCDOrderDirection.builder()
+                        .sendBy(LocalDate.parse("2020-10-11"))
+                        .extraOrderDirection(CCDOrderDirectionType.EXPERT_REPORT_PERMISSION)
+                        .forParty(CCDDirectionPartyType.BOTH)
+                        .expertReports(
+                            ImmutableList.of(
+                                CCDCollectionElement.<String>builder()
+                                    .value("first")
+                                    .build(),
+                                CCDCollectionElement.<String>builder()
+                                    .value("second")
+                                    .build(),
+                                CCDCollectionElement.<String>builder()
+                                    .value("third")
+                                    .build()))
+                        .extraDocUploadList(
+                            ImmutableList.of(
+                                CCDCollectionElement.<String>builder()
+                                    .value("first document")
+                                    .build(),
+                                CCDCollectionElement.<String>builder()
+                                    .value("second document")
+                                    .build()))
+                        .build())
                     .build()))
-            .hearingIsRequired(YES)
+            .hearingRequired(YES)
             .docUploadDeadline(LocalDate.parse("2020-10-11"))
             .eyewitnessUploadDeadline(LocalDate.parse("2020-10-11"))
             .hearingCourt(CCDHearingCourtType.DEFENDANT_COURT)
@@ -548,4 +638,18 @@ public class SampleData {
             .build();
     }
 
+    public static CCDCase getCCDCitizenCaseWithOperationIndicators(
+        CCDClaimSubmissionOperationIndicators claimIndicatorSupplier) {
+        List<CCDCollectionElement<CCDApplicant>> applicants
+            = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
+        List<CCDCollectionElement<CCDRespondent>> respondents
+            = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(getCCDRespondentIndividual()).build());
+
+        return ccdBuilderWithDefault.get()
+            .amountBreakDown(getAmountBreakDown())
+            .applicants(applicants)
+            .respondents(respondents)
+            .claimSubmissionOperationIndicators(claimIndicatorSupplier)
+            .build();
+    }
 }

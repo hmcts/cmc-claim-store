@@ -26,6 +26,7 @@ public class CCDRespondent {
     private String letterHolderId;
     private String defendantId;
     private LocalDate responseDeadline;
+    private LocalDate servedDate;
 
     private CCDParty claimantProvidedDetail;
     private String claimantProvidedPartyName;
@@ -79,5 +80,9 @@ public class CCDRespondent {
     private String redeterminationExplanation;
     private LocalDateTime redeterminationRequestedDate;
     private CCDMadeBy redeterminationMadeBy;
+
+    private String preferredCourtName;
+    private CCDAddress preferredCourtAddress;
+    private String preferredCourtReason;
 
 }

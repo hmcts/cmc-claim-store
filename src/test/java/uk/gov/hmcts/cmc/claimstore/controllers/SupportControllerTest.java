@@ -49,7 +49,6 @@ import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
@@ -155,7 +154,8 @@ public class SupportControllerTest {
         when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER))).thenReturn(Optional.of(sampleClaim));
         when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(USER_DETAILS);
 
-        when(claimService.linkLetterHolder(eq(sampleClaim.getId()), eq(letterHolderId))).thenReturn(sampleClaim);
+        when(claimService.linkLetterHolder(eq(sampleClaim), eq(letterHolderId), eq(AUTHORISATION)))
+            .thenReturn(sampleClaim);
 
         controller.resendRPANotifications(AUTHORISATION, sendList);
 
@@ -178,7 +178,9 @@ public class SupportControllerTest {
         // when
         when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER))).thenReturn(Optional.of(sampleClaim));
         when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(USER_DETAILS);
-        when(claimService.linkLetterHolder(eq(sampleClaim.getId()), eq(letterHolderId))).thenReturn(sampleClaim);
+
+        when(claimService.linkLetterHolder(eq(sampleClaim), eq(letterHolderId), eq(AUTHORISATION)))
+            .thenReturn(sampleClaim);
 
         controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claim-issued", AUTHORISATION);
 
@@ -300,15 +302,6 @@ public class SupportControllerTest {
             .thenReturn(Optional.of(claim));
         controller.uploadDocumentToDocumentManagement(CLAIMREFERENCENUMBER, DEFENDANT_RESPONSE_RECEIPT, AUTHORISATION);
         verify(documentsService).generateDefendantResponseReceipt(claim.getExternalId(), AUTHORISATION);
-    }
-
-    @Test
-    public void shouldUploadCCJDocument() {
-        Claim claim = SampleClaim.getWithCCJRequestDocument();
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
-            .thenReturn(Optional.of(claim));
-        controller.uploadDocumentToDocumentManagement(CLAIMREFERENCENUMBER, CCJ_REQUEST, AUTHORISATION);
-        verify(documentsService).generateCountyCourtJudgement(claim.getExternalId(), AUTHORISATION);
     }
 
     @Test

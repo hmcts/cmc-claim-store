@@ -75,6 +75,9 @@ public interface ClaimRepository {
             + "AND DATE(claim.claimant_responded_at) = :report_date")
     List<Claim> getMediationClaimsForDate(@Bind("report_date") LocalDate reportDate);
 
+    @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.state = :state")
+    List<Claim> getClaimsByState(@Bind("state") ClaimState state);
+
     @SingleValueResult
     @SqlQuery(SELECT_FROM_STATEMENT + " WHERE claim.id = :id")
     Optional<Claim> getById(@Bind("id") Long id);

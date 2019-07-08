@@ -1,49 +1,60 @@
 package uk.gov.hmcts.cmc.claimstore.events.operations;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
-import uk.gov.hmcts.cmc.claimstore.events.DocumentUploadHandler;
-import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimCreationEventsStatusService;
+import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
+import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
-import static java.util.Collections.singletonList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UploadOperationServiceTest {
     public static final Claim CLAIM = SampleClaim.getDefault();
     public static final String AUTHORISATION = "AUTHORISATION";
-    private static final PDF pinLetterClaim = new PDF("0000-pin", "test".getBytes(), DEFENDANT_PIN_LETTER);
+    private static final PDF SEALED_CLAIM_PDF = new PDF("000MC001-claim", "test".getBytes(), SEALED_CLAIM);
 
     @Mock
-    private DocumentUploadHandler documentUploadHandler;
-    @Mock
-    private ClaimCreationEventsStatusService eventsStatusService;
+    private DocumentsService documentsService;
+    private UploadOperationService uploadOperationService;
+
+    @Before
+    public void before() {
+        uploadOperationService = new UploadOperationService(documentsService);
+    }
 
     @Test
     public void shouldUploadDocument() {
-        //Given
-        UploadOperationService uploadOperationService = new UploadOperationService(documentUploadHandler,
-            eventsStatusService);
         //when
-        when(documentUploadHandler.uploadToDocumentManagement(eq(CLAIM), eq(AUTHORISATION), any())).thenReturn(CLAIM);
+        when(documentsService.uploadToDocumentManagement(any(), eq(AUTHORISATION), eq(CLAIM))).thenReturn(CLAIM);
 
-        uploadOperationService.uploadDocument(CLAIM, AUTHORISATION, pinLetterClaim,
-            CaseEvent.CLAIM_ISSUE_RECEIPT_UPLOAD);
+        uploadOperationService.uploadDocument(CLAIM, AUTHORISATION, SEALED_CLAIM_PDF);
         //verify
 
-        verify(documentUploadHandler)
-            .uploadToDocumentManagement(eq(CLAIM), eq(AUTHORISATION), eq(singletonList(pinLetterClaim)));
-        verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM),
-            eq(CaseEvent.CLAIM_ISSUE_RECEIPT_UPLOAD));
+        verify(documentsService).uploadToDocumentManagement(eq(SEALED_CLAIM_PDF), eq(AUTHORISATION), eq(CLAIM));
+    }
+
+    @Test(expected = DocumentManagementException.class)
+    public void shouldNotUpdateFlagWhenUploadDocumentFails() {
+        //when
+        when(documentsService.uploadToDocumentManagement(eq(SEALED_CLAIM_PDF), eq(AUTHORISATION), eq(CLAIM)))
+            .thenThrow(new DocumentManagementException("bad files"));
+
+        try {
+            uploadOperationService.uploadDocument(CLAIM, AUTHORISATION, SEALED_CLAIM_PDF);
+        } finally {
+
+            //verify
+            verify(documentsService).uploadToDocumentManagement(eq(SEALED_CLAIM_PDF), eq(AUTHORISATION), eq(CLAIM));
+        }
     }
 }

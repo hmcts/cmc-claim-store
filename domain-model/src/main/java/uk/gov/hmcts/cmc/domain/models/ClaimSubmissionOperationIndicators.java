@@ -1,10 +1,14 @@
 package uk.gov.hmcts.cmc.domain.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Value;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.Objects;
+import java.util.stream.Stream;
+
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
 @Value
 @Builder(toBuilder = true)
@@ -17,7 +21,6 @@ public class ClaimSubmissionOperationIndicators {
     private YesNoOption staffNotification;
     private YesNoOption sealedClaimUpload;
     private YesNoOption claimIssueReceiptUpload;
-    private YesNoOption defendantPinLetterUpload;
 
     public static ClaimSubmissionOperationIndicatorsBuilder builder() {
         return new ClaimSubmissionOperationIndicatorsBuilder() {
@@ -30,7 +33,6 @@ public class ClaimSubmissionOperationIndicators {
                 super.staffNotification = setDefaultIfNull(super.staffNotification);
                 super.sealedClaimUpload = setDefaultIfNull(super.sealedClaimUpload);
                 super.claimIssueReceiptUpload = setDefaultIfNull(super.claimIssueReceiptUpload);
-                super.defendantPinLetterUpload = setDefaultIfNull(super.defendantPinLetterUpload);
 
                 return super.build();
             }
@@ -39,5 +41,27 @@ public class ClaimSubmissionOperationIndicators {
                 return Objects.isNull(prop) ? YesNoOption.NO : prop;
             }
         };
+    }
+
+    @JsonIgnore
+    public boolean isPinOperationSuccess() {
+        return Stream.of(
+            bulkPrint,
+            staffNotification,
+            defendantNotification
+        ).allMatch(ind -> ind.equals(YES));
+    }
+
+    @JsonIgnore
+    public boolean isAllSuccess() {
+        return Stream.of(
+            claimantNotification,
+            defendantNotification,
+            bulkPrint,
+            rpa,
+            staffNotification,
+            sealedClaimUpload,
+            claimIssueReceiptUpload
+        ).allMatch(option -> option == YES);
     }
 }

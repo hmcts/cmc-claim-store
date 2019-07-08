@@ -62,14 +62,6 @@ public abstract class BaseIntegrationTest extends MockSpringTest {
             );
     }
 
-    protected ResultActions makePrePaymentRequest(String externalId) throws Exception {
-        return webClient
-            .perform(post("/claims/" + externalId + "/pre-payment")
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
-            );
-    }
-
     protected ImmutableMap<String, String> searchCriteria(String externalId) {
         return ImmutableMap.of(
             "page", "1",
