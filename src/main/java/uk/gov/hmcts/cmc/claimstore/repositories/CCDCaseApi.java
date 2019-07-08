@@ -396,7 +396,7 @@ public class CCDCaseApi {
     private List<Claim> extractClaims(List<CaseDetails> result) {
         return result
             .stream()
-            .map(entry -> ccdCaseDataToClaim.extractClaim(entry))
+            .map(ccdCaseDataToClaim::extractClaim)
             .collect(Collectors.toList());
     }
 
