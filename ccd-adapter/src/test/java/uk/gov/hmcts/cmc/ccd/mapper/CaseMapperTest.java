@@ -19,9 +19,8 @@ import static org.junit.Assert.assertNotNull;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
-import static uk.gov.hmcts.cmc.ccd.util.SampleCCDClaimSubmissionOperationIndicators.getCCDClaimSubmissionOperationIndicatorsWithPinSuccess;
-import static uk.gov.hmcts.cmc.ccd.util.SampleCCDClaimSubmissionOperationIndicators.getDefaultCCDClaimSubmissionOperationIndicators;
-import static uk.gov.hmcts.cmc.ccd.util.SampleCCDClaimSubmissionOperationIndicators.getNullCCDClaimSubmissionOperationIndicators;
+import static uk.gov.hmcts.cmc.ccd.util.SampleCCDClaimSubmissionOperationIndicators.CCDClaimSubmissionOperationIndicatorsWithPinSuccess;
+import static uk.gov.hmcts.cmc.ccd.util.SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicators;
 import static uk.gov.hmcts.cmc.ccd.util.SampleData.getAmountBreakDown;
 
 @SpringBootTest
@@ -127,7 +126,7 @@ public class CaseMapperTest {
     public void shouldMapSubmissionIndicatorsFromCCDCaseWithDefaultIndicators() {
         //given
         CCDCase ccdCase =
-            SampleData.getCCDCitizenCaseWithOperationIndicators(getDefaultCCDClaimSubmissionOperationIndicators);
+            SampleData.getCCDCitizenCaseWithOperationIndicators(defaultCCDClaimSubmissionOperationIndicators);
 
         //when
         Claim claim = ccdCaseMapper.from(ccdCase);
@@ -147,7 +146,7 @@ public class CaseMapperTest {
     public void shouldMapSubmissionIndicatorsFromCCDCaseWithNullIndicators() {
         //given
         CCDCase ccdCase =
-            SampleData.getCCDCitizenCaseWithOperationIndicators(getNullCCDClaimSubmissionOperationIndicators);
+            SampleData.getCCDCitizenCaseWithOperationIndicators(null);
 
         //when
         ccdCaseMapper.from(ccdCase);
@@ -157,7 +156,7 @@ public class CaseMapperTest {
     public void shouldMapSubmissionIndicatorsFromCCDCaseWithPinSuccessIndicators() {
         //given
         CCDCase ccdCase =
-            SampleData.getCCDCitizenCaseWithOperationIndicators(getCCDClaimSubmissionOperationIndicatorsWithPinSuccess);
+            SampleData.getCCDCitizenCaseWithOperationIndicators(CCDClaimSubmissionOperationIndicatorsWithPinSuccess);
 
         //when
         Claim claim = ccdCaseMapper.from(ccdCase);
