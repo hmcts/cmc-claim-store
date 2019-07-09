@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 
 @Service
 public class SealedClaimPdfService implements PdfService {
@@ -45,5 +46,10 @@ public class SealedClaimPdfService implements PdfService {
             Document document = citizenServiceDocumentsService.sealedClaimDocument(claim);
             return pdfServiceClient.generateFromHtml(document.template.getBytes(), document.values);
         }
+    }
+
+    @Override
+    public String filename(Claim claim) {
+        return buildSealedClaimFileBaseName(claim.getReferenceNumber());
     }
 }
