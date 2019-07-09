@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.elastic.Query;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.claimstore.utils.DateUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 
 @Repository("searchRepository")
-public class CCDElasticSearchRepository  implements CaseSearchApi{
+public class CCDElasticSearchRepository implements CaseSearchApi {
 
     private final CoreCaseDataApi coreCaseDataApi;
     private final AuthTokenGenerator authTokenGenerator;
@@ -37,18 +38,18 @@ public class CCDElasticSearchRepository  implements CaseSearchApi{
         this.ccdCaseDetailsConverter = ccdCaseDataToClaim;
     }
 
-    public List<Claim> getMediationClaims( String authorisation, LocalDate mediationAgreedDate) {
+    public List<Claim> getMediationClaims(String authorisation, LocalDate mediationAgreedDate) {
         User user = userService.getUser(authorisation);
 
         Query mediationQuery = new Query(
             QueryBuilders.boolQuery()
                 .must(QueryBuilders.termQuery(
-                    "case.respondents.0.responseFreeMediationOption", CCDYesNoOption.YES.name()))
+                    "data.respondents.value.responseFreeMediationOption", CCDYesNoOption.YES.name()))
                 .must(QueryBuilders.termQuery(
-                    "case.respondents.0.claimantResponse.freeMediationOption", CCDYesNoOption.YES.name()))
-                .must(QueryBuilders.rangeQuery("case.respondents.0.claimantResponse.submittedOn")
-                    .from(mediationAgreedDate, true)
-                    .to(mediationAgreedDate, true))
+                    "data.respondents.value.claimantResponse.freeMediationOption", CCDYesNoOption.YES.name()))
+                .must(QueryBuilders.rangeQuery("data.respondents.value.claimantResponse.submittedOn")
+                    .from(DateUtils.startOfDay(mediationAgreedDate), true)
+                    .to(DateUtils.endOfDay(mediationAgreedDate), true))
         );
 
         return searchClaimsWith(user, mediationQuery);
