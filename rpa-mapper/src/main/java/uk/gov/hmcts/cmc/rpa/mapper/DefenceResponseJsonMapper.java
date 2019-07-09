@@ -1,8 +1,10 @@
 package uk.gov.hmcts.cmc.rpa.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.codec.multipart.Part;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
@@ -132,10 +134,12 @@ public class DefenceResponseJsonMapper {
         switch (response.getResponseType()) {
             case FULL_DEFENCE:
                 FullDefenceResponse fullDefenceResponse = (FullDefenceResponse)response;
-                return fullDefenceResponse.getDirectionsQuestionnaire().isPresent();
+                return fullDefenceResponse.getDirectionsQuestionnaire().isPresent() &&
+                    fullDefenceResponse.getDirectionsQuestionnaire().get().isDisabledAccessSelected();
             case PART_ADMISSION:
                 PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse)response;
-                return partAdmissionResponse.getDirectionsQuestionnaire().isPresent();
+                return partAdmissionResponse.getDirectionsQuestionnaire().isPresent() &&
+                    partAdmissionResponse.getDirectionsQuestionnaire().get().isDisabledAccessSelected();
             case FULL_ADMISSION:
             default:
                 return false;

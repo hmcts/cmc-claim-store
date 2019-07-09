@@ -8,8 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.RequireSupport;
+import uk.gov.hmcts.cmc.domain.models.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAddress;
@@ -153,7 +152,7 @@ public class DefenceResponseJsonMapperTest extends BaseResponseJsonMapper {
 
         Claim claim = withCommonDefEmailAndRespondedAt()
             .withResponse(SampleResponse.FullDefence.builder()
-                .withDirectionsQuestionnaire(DirectionsQuestionnaire.builder().requireSupport(RequireSupport.builder().disabledAccess(YesNoOption.YES).build()).build())
+                .withDirectionsQuestionnaire(DirectionsQuestionnaire.builder().disabledAccessSelected(true).build())
                 .withDefendantDetails(SampleParty.builder()
                 .withCorrespondenceAddress(SampleAddress.builder().line1("102").build()).individual()).build())
             .withClaimData(SampleClaimData.builder()
@@ -168,28 +167,10 @@ public class DefenceResponseJsonMapperTest extends BaseResponseJsonMapper {
     }
 
     @Test
-    public void shouldMapHearingRequirementsToFalseWhenDQFeatureIsEnabledAndNoDQIsPresent() throws JSONException {
-        Claim claim = withCommonDefEmailAndRespondedAt()
-            .withResponse(SampleResponse.FullDefence.builder()
-                .withDirectionsQuestionnaire(null)
-                .withDefendantDetails(SampleParty.builder()
-                    .withCorrespondenceAddress(SampleAddress.builder().line1("102").build()).individual()).build())
-            .withClaimData(SampleClaimData.builder()
-                .withDefendant(SampleTheirDetails.builder().individualDetails())
-                .build())
-            .withFeatures(Collections.singletonList("directionsQuestionnaire"))
-            .build();
-
-        String expected = new ResourceReader().read(INDIVIDUAL).trim();
-
-        assertEquals(expected, mapper.map(claim).toString(), STRICT);
-    }
-
-    @Test
     public void shouldNotMapHearingRequirementsToRPAWhenDQFeatureIsDisabled() throws JSONException {
         Claim claim = withCommonDefEmailAndRespondedAt()
             .withResponse(SampleResponse.FullDefence.builder()
-                .withDirectionsQuestionnaire(DirectionsQuestionnaire.builder().requireSupport(RequireSupport.builder().disabledAccess(YesNoOption.YES).build()).build())
+                .withDirectionsQuestionnaire(DirectionsQuestionnaire.builder().disabledAccessSelected(true).build())
                 .withDefendantDetails(SampleParty.builder()
                     .withCorrespondenceAddress(SampleAddress.builder().line1("102").build()).individual()).build())
             .withClaimData(SampleClaimData.builder()
