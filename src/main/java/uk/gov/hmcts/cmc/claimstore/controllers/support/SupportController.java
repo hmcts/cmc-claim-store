@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -169,7 +168,7 @@ public class SupportController {
                 .orElseThrow(() -> new NotFoundException("Unable to upload the document. Please try again later")));
     }
 
-    @PostMapping("/claim/{referenceNumber}/reset-operation")
+    @PutMapping("/claim/{referenceNumber}/reset-operation")
     @ApiOperation("Redo any failed operation. Use the claim submission indicators to indicate the operation to redo.")
     public void resetOperation(
         @PathVariable("referenceNumber") String referenceNumber,
