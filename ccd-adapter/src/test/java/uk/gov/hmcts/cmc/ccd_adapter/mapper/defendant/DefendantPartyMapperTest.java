@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd-adapter.mapper.defendant;
+package uk.gov.hmcts.cmc.ccd_adapter.mapper.defendant;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.hmcts.cmc.ccd.assertion.defendant.DefendantPartyAssert;
+import uk.gov.hmcts.cmc.ccd_adapter.assertion.defendant.DefendantPartyAssert;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
@@ -16,10 +16,10 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 
 import java.util.UUID;
 
-import static uk.gov.hmcts.cmc.ccd.util.SampleCCDDefendant.withPartyCompany;
-import static uk.gov.hmcts.cmc.ccd.util.SampleCCDDefendant.withPartyIndividual;
-import static uk.gov.hmcts.cmc.ccd.util.SampleCCDDefendant.withPartyOrganisation;
-import static uk.gov.hmcts.cmc.ccd.util.SampleCCDDefendant.withPartySoleTrader;
+import static uk.gov.hmcts.cmc.ccd_adapter.util.SampleCCDDefendant.withPartyCompany;
+import static uk.gov.hmcts.cmc.ccd_adapter.util.SampleCCDDefendant.withPartyIndividual;
+import static uk.gov.hmcts.cmc.ccd_adapter.util.SampleCCDDefendant.withPartyOrganisation;
+import static uk.gov.hmcts.cmc.ccd_adapter.util.SampleCCDDefendant.withPartySoleTrader;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)

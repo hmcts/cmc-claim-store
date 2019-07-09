@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd-adapter.mapper;
+package uk.gov.hmcts.cmc.ccd_adapter.mapper;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,7 +10,7 @@ import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 
 import java.math.BigDecimal;
 
-import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;
+import static uk.gov.hmcts.cmc.ccd_adapter.assertion.Assertions.assertMoney;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd-adapter.mapper.defendant;
+package uk.gov.hmcts.cmc.ccd_adapter.mapper.defendant;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -11,7 +11,7 @@ import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
-import uk.gov.hmcts.cmc.ccd.util.SampleCCDDefendant;
+import uk.gov.hmcts.cmc.ccd_adapter.util.SampleCCDDefendant;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;

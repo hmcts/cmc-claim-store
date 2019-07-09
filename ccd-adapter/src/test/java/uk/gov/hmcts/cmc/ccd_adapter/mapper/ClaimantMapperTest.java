@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd-adapter.mapper;
+package uk.gov.hmcts.cmc.ccd_adapter.mapper;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,13 +17,13 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd_adapter.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
-import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDApplicantCompany;
-import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDApplicantIndividual;
-import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDApplicantOrganisation;
-import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDApplicantSoleTrader;
+import static uk.gov.hmcts.cmc.ccd_adapter.util.SampleData.getCCDApplicantCompany;
+import static uk.gov.hmcts.cmc.ccd_adapter.util.SampleData.getCCDApplicantIndividual;
+import static uk.gov.hmcts.cmc.ccd_adapter.util.SampleData.getCCDApplicantOrganisation;
+import static uk.gov.hmcts.cmc.ccd_adapter.util.SampleData.getCCDApplicantSoleTrader;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)

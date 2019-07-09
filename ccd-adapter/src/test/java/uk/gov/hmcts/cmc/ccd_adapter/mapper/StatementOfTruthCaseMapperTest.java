@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd-adapter.mapper;
+package uk.gov.hmcts.cmc.ccd_adapter.mapper;
 
 import org.junit.Assert;
 import org.junit.Test;

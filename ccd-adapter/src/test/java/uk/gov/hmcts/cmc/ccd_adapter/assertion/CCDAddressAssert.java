@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd-adapter.assertion;
+package uk.gov.hmcts.cmc.ccd_adapter.assertion;
 
 import org.assertj.core.api.AbstractAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;

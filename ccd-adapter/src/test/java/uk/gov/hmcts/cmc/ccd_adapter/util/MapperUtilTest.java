@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd-adapter.util;
+package uk.gov.hmcts.cmc.ccd_adapter.util;
 
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.Claim;

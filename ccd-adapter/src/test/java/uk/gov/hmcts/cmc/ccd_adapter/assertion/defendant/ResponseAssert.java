@@ -1,9 +1,9 @@
-package uk.gov.hmcts.cmc.ccd-adapter.assertion.defendant;
+package uk.gov.hmcts.cmc.ccd_adapter.assertion.defendant;
 
 import org.assertj.core.api.AbstractAssert;
-import uk.gov.hmcts.cmc.ccd.assertion.EvidenceRowAssert;
-import uk.gov.hmcts.cmc.ccd.assertion.TimelineEventAssert;
-import uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans.StatementOfMeansAssert;
+import uk.gov.hmcts.cmc.ccd_adapter.assertion.EvidenceRowAssert;
+import uk.gov.hmcts.cmc.ccd_adapter.assertion.TimelineEventAssert;
+import uk.gov.hmcts.cmc.ccd_adapter.assertion.defendant.statementofmeans.StatementOfMeansAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
@@ -28,7 +28,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import static org.junit.Assert.assertEquals;
-import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;
+import static uk.gov.hmcts.cmc.ccd_adapter.assertion.Assertions.assertMoney;
 
 public class ResponseAssert extends AbstractAssert<ResponseAssert, Response> {
 

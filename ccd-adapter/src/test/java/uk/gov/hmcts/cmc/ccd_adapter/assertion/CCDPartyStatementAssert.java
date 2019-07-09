@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd-adapter.assertion;
+package uk.gov.hmcts.cmc.ccd_adapter.assertion;
 
 import org.assertj.core.api.AbstractAssert;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
@@ -7,7 +7,7 @@ import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 import java.util.Objects;
 import java.util.Optional;
 
-import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.isAnyNotNull;
+import static uk.gov.hmcts.cmc.ccd_adapter.util.MapperUtil.isAnyNotNull;
 
 public class CCDPartyStatementAssert extends AbstractAssert<CCDPartyStatementAssert, CCDPartyStatement> {
 

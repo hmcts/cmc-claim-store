@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd-adapter.mapper.defendant.statementofmeans;
+package uk.gov.hmcts.cmc.ccd_adapter.mapper.defendant.statementofmeans;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,7 +12,7 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDisabilityStatu
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDLivingPartner;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.LivingPartner;
 
-import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd_adapter.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.models.statementofmeans.DisabilityStatus.NO;
 
 @SpringBootTest

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd-adapter.assertion.defendant.statementofmeans;
+package uk.gov.hmcts.cmc.ccd_adapter.assertion.defendant.statementofmeans;
 
 import org.assertj.core.api.AbstractAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd_adapter.assertion.Assertions.assertThat;
 
 public class StatementOfMeansAssert extends AbstractAssert<StatementOfMeansAssert, StatementOfMeans> {
 

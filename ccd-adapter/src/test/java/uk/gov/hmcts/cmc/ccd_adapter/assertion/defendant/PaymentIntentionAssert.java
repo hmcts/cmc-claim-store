@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd-adapter.assertion.defendant;
+package uk.gov.hmcts.cmc.ccd_adapter.assertion.defendant;
 
 import org.assertj.core.api.AbstractAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentIntention;
@@ -6,7 +6,7 @@ import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
 import java.util.Objects;
 
-import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;
+import static uk.gov.hmcts.cmc.ccd_adapter.assertion.Assertions.assertMoney;
 
 public class PaymentIntentionAssert extends AbstractAssert<PaymentIntentionAssert, PaymentIntention> {
 

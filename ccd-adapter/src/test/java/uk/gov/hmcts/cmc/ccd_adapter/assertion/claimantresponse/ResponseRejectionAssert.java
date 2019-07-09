@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd-adapter.assertion.claimantresponse;
+package uk.gov.hmcts.cmc.ccd_adapter.assertion.claimantresponse;
 
 import org.assertj.core.api.AbstractAssert;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
@@ -6,7 +6,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 
 import java.util.Objects;
 
-import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;
+import static uk.gov.hmcts.cmc.ccd_adapter.assertion.Assertions.assertMoney;
 
 public class ResponseRejectionAssert extends AbstractAssert<ResponseRejectionAssert, ResponseRejection> {
     public ResponseRejectionAssert(ResponseRejection responseRejection) {

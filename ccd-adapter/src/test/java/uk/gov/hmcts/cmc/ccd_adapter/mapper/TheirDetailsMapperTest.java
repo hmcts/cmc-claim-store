@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd-adapter.mapper;
+package uk.gov.hmcts.cmc.ccd_adapter.mapper;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,11 +15,11 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDRespondentCompany;
-import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDRespondentIndividual;
-import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDRespondentOrganisation;
-import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDRespondentSoleTrader;
+import static uk.gov.hmcts.cmc.ccd_adapter.assertion.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd_adapter.util.SampleData.getCCDRespondentCompany;
+import static uk.gov.hmcts.cmc.ccd_adapter.util.SampleData.getCCDRespondentIndividual;
+import static uk.gov.hmcts.cmc.ccd_adapter.util.SampleData.getCCDRespondentOrganisation;
+import static uk.gov.hmcts.cmc.ccd_adapter.util.SampleData.getCCDRespondentSoleTrader;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)

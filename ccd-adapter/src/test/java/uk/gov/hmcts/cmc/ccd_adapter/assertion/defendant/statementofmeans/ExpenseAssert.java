@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd-adapter.assertion.defendant.statementofmeans;
+package uk.gov.hmcts.cmc.ccd_adapter.assertion.defendant.statementofmeans;
 
 import org.assertj.core.api.AbstractAssert;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpense;
@@ -7,7 +7,7 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
 import java.util.Objects;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;
+import static uk.gov.hmcts.cmc.ccd_adapter.assertion.Assertions.assertMoney;
 
 public class ExpenseAssert extends AbstractAssert<ExpenseAssert, Expense> {
 

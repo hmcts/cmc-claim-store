@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd-adapter.assertion;
+package uk.gov.hmcts.cmc.ccd_adapter.assertion;
 
 import org.assertj.core.api.AbstractAssert;
 import org.junit.Assert;
@@ -8,7 +8,7 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import java.util.Objects;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;
+import static uk.gov.hmcts.cmc.ccd_adapter.assertion.Assertions.assertMoney;
 
 public class CountyCourtJudgmentAssert extends AbstractAssert<CountyCourtJudgmentAssert, CountyCourtJudgment> {
 
