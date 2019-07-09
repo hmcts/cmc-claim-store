@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.hmcts.cmc.ccd.adapter.assertion.Assertions;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPaymentFrequency;
@@ -43,7 +42,7 @@ public class PriorityDebtMapperTest {
         CCDCollectionElement<CCDPriorityDebt> ccdPriorityDebt = mapper.to(priorityDebt);
 
         //then
-        Assertions.assertThat(priorityDebt).isEqualTo(ccdPriorityDebt.getValue());
+        assertThat(priorityDebt).isEqualTo(ccdPriorityDebt.getValue());
         assertThat(priorityDebt.getId()).isEqualTo(ccdPriorityDebt.getId());
     }
 
@@ -64,7 +63,7 @@ public class PriorityDebtMapperTest {
             .value(ccdPriorityDebt).build());
 
         //then
-        Assertions.assertThat(priorityDebt).isEqualTo(ccdPriorityDebt);
+        assertThat(priorityDebt).isEqualTo(ccdPriorityDebt);
         assertThat(priorityDebt.getId()).isEqualTo(collectionId);
     }
 }

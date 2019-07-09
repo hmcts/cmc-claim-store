@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.hmcts.cmc.ccd.adapter.assertion.Assertions;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDEmployer;
@@ -37,7 +36,7 @@ public class EmployerMapperTest {
         CCDCollectionElement<CCDEmployer> ccdEmployer = mapper.to(employer);
 
         //then
-        Assertions.assertThat(employer).isEqualTo(ccdEmployer.getValue());
+        assertThat(employer).isEqualTo(ccdEmployer.getValue());
         assertThat(employer.getId()).isEqualTo(ccdEmployer.getId());
     }
 
@@ -57,7 +56,7 @@ public class EmployerMapperTest {
             .value(ccdEmployer).build());
 
         //then
-        Assertions.assertThat(employer).isEqualTo(ccdEmployer);
+        assertThat(employer).isEqualTo(ccdEmployer);
         assertThat(employer.getId()).isEqualTo(collectionId);
     }
 }

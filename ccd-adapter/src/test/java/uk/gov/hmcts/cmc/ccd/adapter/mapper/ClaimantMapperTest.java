@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.hmcts.cmc.ccd.adapter.assertion.Assertions;
 import uk.gov.hmcts.cmc.ccd.adapter.util.SampleData;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
@@ -43,7 +42,7 @@ public class ClaimantMapperTest {
 
         //then
         assertThat(applicant.getLeadApplicantIndicator()).isEqualTo(YES);
-        Assertions.assertThat(party).isEqualTo(applicant);
+        assertThat(party).isEqualTo(applicant);
         assertThat(applicant.getPartyDetail().getEmailAddress()).isEqualTo(claim.getSubmitterEmail());
     }
 
@@ -58,7 +57,7 @@ public class ClaimantMapperTest {
 
         //then
         assertThat(applicant.getLeadApplicantIndicator()).isEqualTo(NO);
-        Assertions.assertThat(party).isEqualTo(applicant);
+        assertThat(party).isEqualTo(applicant);
         assertThat(applicant.getPartyDetail().getEmailAddress()).isEqualTo(claim.getSubmitterEmail());
     }
 
@@ -73,7 +72,7 @@ public class ClaimantMapperTest {
 
         //then
         assertThat(applicant.getLeadApplicantIndicator()).isEqualTo(YES);
-        Assertions.assertThat(party).isEqualTo(applicant);
+        assertThat(party).isEqualTo(applicant);
         assertThat(applicant.getPartyDetail().getEmailAddress()).isEqualTo(claim.getSubmitterEmail());
     }
 
@@ -88,7 +87,7 @@ public class ClaimantMapperTest {
 
         //then
         assertThat(applicant.getLeadApplicantIndicator()).isEqualTo(YES);
-        Assertions.assertThat(party).isEqualTo(applicant);
+        assertThat(party).isEqualTo(applicant);
         assertThat(applicant.getPartyDetail().getEmailAddress()).isEqualTo(claim.getSubmitterEmail());
     }
 
@@ -105,7 +104,7 @@ public class ClaimantMapperTest {
                 .value(ccdParty).build());
 
         //then
-        Assertions.assertThat(party).isEqualTo(ccdParty);
+        assertThat(party).isEqualTo(ccdParty);
         assertThat(party.getId()).isEqualTo(collectionId);
     }
 
@@ -122,7 +121,7 @@ public class ClaimantMapperTest {
                 .value(ccdParty).build());
 
         //then
-        Assertions.assertThat(party).isEqualTo(ccdParty);
+        assertThat(party).isEqualTo(ccdParty);
         assertThat(party.getId()).isEqualTo(collectionId);
     }
 
@@ -139,7 +138,7 @@ public class ClaimantMapperTest {
                 .value(ccdParty).build());
 
         //then
-        Assertions.assertThat(party).isEqualTo(ccdParty);
+        assertThat(party).isEqualTo(ccdParty);
         assertThat(party.getId()).isEqualTo(collectionId);
     }
 
@@ -156,7 +155,7 @@ public class ClaimantMapperTest {
                 .value(ccdParty).build());
 
         //then
-        Assertions.assertThat(party).isEqualTo(ccdParty);
+        assertThat(party).isEqualTo(ccdParty);
         assertThat(party.getId()).isEqualTo(collectionId);
     }
 

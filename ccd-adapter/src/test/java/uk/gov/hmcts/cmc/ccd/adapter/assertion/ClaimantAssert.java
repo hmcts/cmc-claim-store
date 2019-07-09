@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 
 import java.util.Objects;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.adapter.assertion.Assertions.assertThat;
 
 public class ClaimantAssert extends AbstractAssert<ClaimantAssert, Party> {
@@ -65,9 +64,11 @@ public class ClaimantAssert extends AbstractAssert<ClaimantAssert, Party> {
 
     private void assertSoleTrader(CCDApplicant applicant) {
         SoleTrader actual = (SoleTrader) this.actual;
-        Assertions.assertThat(actual.getAddress()).isEqualTo(applicant.getPartyDetail().getPrimaryAddress());
+        assertThat(actual.getAddress()).isEqualTo(applicant.getPartyDetail().getPrimaryAddress());
 
-        actual.getTitle().ifPresent(title -> assertThat(applicant.getPartyDetail().getTitle()).isEqualTo(title));
+        actual.getTitle().ifPresent(title -> assertThat(
+            applicant.getPartyDetail().getTitle()).isEqualTo(title)
+        );
 
         if (!Objects.equals(actual.getName(), applicant.getPartyName())) {
             failWithMessage("Expected CCDSoleTrader.name to be <%s> but was <%s>",
@@ -87,7 +88,7 @@ public class ClaimantAssert extends AbstractAssert<ClaimantAssert, Party> {
         }
 
         actual.getCorrespondenceAddress().ifPresent(address ->
-            Assertions.assertThat(applicant.getPartyDetail().getCorrespondenceAddress()).isEqualTo(address)
+            assertThat(applicant.getPartyDetail().getCorrespondenceAddress()).isEqualTo(address)
         );
 
         actual.getRepresentative()
@@ -97,7 +98,7 @@ public class ClaimantAssert extends AbstractAssert<ClaimantAssert, Party> {
     private void assertCompany(CCDApplicant ccdParty) {
         Company actual = (Company) this.actual;
 
-        Assertions.assertThat(actual.getAddress()).isEqualTo(ccdParty.getPartyDetail().getPrimaryAddress());
+        assertThat(actual.getAddress()).isEqualTo(ccdParty.getPartyDetail().getPrimaryAddress());
         if (!Objects.equals(actual.getName(), ccdParty.getPartyName())) {
             failWithMessage("Expected CCDCompany.name to be <%s> but was <%s>",
                 ccdParty.getPartyName(), actual.getName());
@@ -116,7 +117,7 @@ public class ClaimantAssert extends AbstractAssert<ClaimantAssert, Party> {
         }
 
         actual.getCorrespondenceAddress().ifPresent(address ->
-            Assertions.assertThat(ccdParty.getPartyDetail().getCorrespondenceAddress()).isEqualTo(address)
+            assertThat(ccdParty.getPartyDetail().getCorrespondenceAddress()).isEqualTo(address)
         );
 
         actual.getRepresentative()
@@ -126,7 +127,7 @@ public class ClaimantAssert extends AbstractAssert<ClaimantAssert, Party> {
     private void assertOrganisation(CCDApplicant ccdParty) {
         Organisation actual = (Organisation) this.actual;
 
-        Assertions.assertThat((actual).getAddress()).isEqualTo(ccdParty.getPartyDetail().getPrimaryAddress());
+        assertThat((actual).getAddress()).isEqualTo(ccdParty.getPartyDetail().getPrimaryAddress());
         if (!Objects.equals(actual.getName(), ccdParty.getPartyName())) {
             failWithMessage("Expected CCDOrganisation.name to be <%s> but was <%s>",
                 ccdParty.getPartyName(), actual.getName());
@@ -152,7 +153,7 @@ public class ClaimantAssert extends AbstractAssert<ClaimantAssert, Party> {
         }
 
         actual.getCorrespondenceAddress().ifPresent(address ->
-            Assertions.assertThat(ccdParty.getPartyDetail().getCorrespondenceAddress()).isEqualTo(address)
+            assertThat(ccdParty.getPartyDetail().getCorrespondenceAddress()).isEqualTo(address)
         );
 
         actual.getRepresentative()
@@ -173,10 +174,10 @@ public class ClaimantAssert extends AbstractAssert<ClaimantAssert, Party> {
                 ccdParty.getPartyDetail().getDateOfBirth(), actual.getDateOfBirth());
 
         }
-        Assertions.assertThat((actual).getAddress()).isEqualTo(ccdParty.getPartyDetail().getPrimaryAddress());
+        assertThat((actual).getAddress()).isEqualTo(ccdParty.getPartyDetail().getPrimaryAddress());
 
         actual.getCorrespondenceAddress().ifPresent(address ->
-            Assertions.assertThat(ccdParty.getPartyDetail().getCorrespondenceAddress()).isEqualTo(address)
+            assertThat(ccdParty.getPartyDetail().getCorrespondenceAddress()).isEqualTo(address)
         );
 
         actual.getRepresentative()
@@ -189,8 +190,7 @@ public class ClaimantAssert extends AbstractAssert<ClaimantAssert, Party> {
                 ccdParty.getRepresentativeOrganisationName(), representative.getOrganisationName());
         }
 
-        Assertions.assertThat(representative.getOrganisationAddress())
-            .isEqualTo(ccdParty.getRepresentativeOrganisationAddress());
+        assertThat(representative.getOrganisationAddress()).isEqualTo(ccdParty.getRepresentativeOrganisationAddress());
 
         representative.getOrganisationContactDetails().ifPresent(contactDetails -> {
 

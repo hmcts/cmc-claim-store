@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.hmcts.cmc.ccd.adapter.assertion.Assertions;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncome;
@@ -43,7 +42,7 @@ public class IncomeMapperTest {
         CCDCollectionElement<CCDIncome> ccdIncome = mapper.to(income);
 
         //then
-        Assertions.assertThat(income).isEqualTo(ccdIncome.getValue());
+        assertThat(income).isEqualTo(ccdIncome.getValue());
         assertThat(income.getId()).isEqualTo(ccdIncome.getId());
     }
 
@@ -65,7 +64,7 @@ public class IncomeMapperTest {
             .build());
 
         //then
-        Assertions.assertThat(income).isEqualTo(ccdIncome);
+        assertThat(income).isEqualTo(ccdIncome);
         assertThat(income.getId()).isEqualTo(collectionId);
     }
 }

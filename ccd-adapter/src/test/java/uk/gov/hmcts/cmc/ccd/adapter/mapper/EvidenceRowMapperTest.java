@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.hmcts.cmc.ccd.adapter.assertion.Assertions;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
@@ -34,7 +33,7 @@ public class EvidenceRowMapperTest {
         CCDCollectionElement<CCDEvidenceRow> ccdEvidenceRow = mapper.to(evidenceRow);
 
         //then
-        Assertions.assertThat(evidenceRow).isEqualTo(ccdEvidenceRow.getValue());
+        assertThat(evidenceRow).isEqualTo(ccdEvidenceRow.getValue());
         assertThat(evidenceRow.getId()).isEqualTo(ccdEvidenceRow.getId());
     }
 
@@ -47,7 +46,7 @@ public class EvidenceRowMapperTest {
         CCDCollectionElement<CCDEvidenceRow> ccdEvidenceRow = mapper.to(evidenceRow);
 
         //then
-        Assertions.assertThat(evidenceRow).isEqualTo(ccdEvidenceRow.getValue());
+        assertThat(evidenceRow).isEqualTo(ccdEvidenceRow.getValue());
         assertThat(evidenceRow.getId()).isEqualTo(ccdEvidenceRow.getId());
     }
 
@@ -64,7 +63,7 @@ public class EvidenceRowMapperTest {
             .value(ccdEvidenceRow).build());
 
         //then
-        Assertions.assertThat(evidenceRow).isEqualTo(ccdEvidenceRow);
+        assertThat(evidenceRow).isEqualTo(ccdEvidenceRow);
     }
 
     @Test
@@ -79,6 +78,6 @@ public class EvidenceRowMapperTest {
             .value(ccdEvidenceRow).build());
 
         //then
-        Assertions.assertThat(evidenceRow).isEqualTo(ccdEvidenceRow);
+        assertThat(evidenceRow).isEqualTo(ccdEvidenceRow);
     }
 }

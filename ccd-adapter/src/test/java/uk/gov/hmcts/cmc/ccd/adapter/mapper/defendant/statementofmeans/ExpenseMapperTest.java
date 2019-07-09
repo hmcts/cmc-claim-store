@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.hmcts.cmc.ccd.adapter.assertion.Assertions;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpense;
@@ -43,7 +42,7 @@ public class ExpenseMapperTest {
         CCDCollectionElement<CCDExpense> ccdExpense = mapper.to(expense);
 
         //then
-        Assertions.assertThat(expense).isEqualTo(ccdExpense.getValue());
+        assertThat(expense).isEqualTo(ccdExpense.getValue());
         assertThat(expense.getId()).isEqualTo(ccdExpense.getId());
     }
 
@@ -64,7 +63,7 @@ public class ExpenseMapperTest {
             .value(ccdExpense).build());
 
         //then
-        Assertions.assertThat(expense).isEqualTo(ccdExpense);
+        assertThat(expense).isEqualTo(ccdExpense);
         assertThat(expense.getId()).isEqualTo(collectionId);
     }
 }

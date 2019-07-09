@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.hmcts.cmc.ccd.adapter.assertion.Assertions;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDCourtOrder;
@@ -39,7 +38,7 @@ public class CourtOrderMapperTest {
         CCDCollectionElement<CCDCourtOrder> ccdCourtOrder = mapper.to(courtOrder);
 
         //then
-        Assertions.assertThat(courtOrder).isEqualTo(ccdCourtOrder.getValue());
+        assertThat(courtOrder).isEqualTo(ccdCourtOrder.getValue());
         assertThat(courtOrder.getId()).isEqualTo(ccdCourtOrder.getId());
     }
 
@@ -61,7 +60,7 @@ public class CourtOrderMapperTest {
             .build());
 
         //then
-        Assertions.assertThat(courtOrder).isEqualTo(ccdCourtOrder);
+        assertThat(courtOrder).isEqualTo(ccdCourtOrder);
         assertThat(courtOrder.getId()).isEqualTo(collectionId);
     }
 }
