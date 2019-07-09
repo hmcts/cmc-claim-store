@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.config;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import uk.gov.hmcts.cmc.ccd_adapter.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.ccd.adapter.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDCaseHandler;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDTestingSupportHandler;

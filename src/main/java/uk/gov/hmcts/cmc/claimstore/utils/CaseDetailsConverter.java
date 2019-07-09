@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.utils;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.adapter.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd_adapter.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
