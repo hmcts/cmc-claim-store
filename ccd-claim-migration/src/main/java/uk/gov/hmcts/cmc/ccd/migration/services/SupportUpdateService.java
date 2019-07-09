@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.ccd_adapter.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.migration.ccd.services.UpdateCCDCaseService;
 import uk.gov.hmcts.cmc.ccd.migration.idam.models.User;
 

@@ -16,7 +16,7 @@ import uk.gov.hmcts.cmc.ccd.migration.services.ClaimDataPatcher;
 @SpringBootApplication(scanBasePackages = {
     "uk.gov.hmcts.reform.authorisation",
     "uk.gov.hmcts.cmc.ccd.migration",
-    "uk.gov.hmcts.cmc.ccd.mapper"
+    "uk.gov.hmcts.cmc.ccd_adapter.mapper"
 })
 @SuppressWarnings(
     {"HideUtilityClassConstructor", "squid:S1118"}
