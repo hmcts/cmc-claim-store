@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimIssueReceiptFileBaseName;
 
 @Service
 public class ClaimIssueReceiptService implements PdfService {
@@ -33,6 +34,11 @@ public class ClaimIssueReceiptService implements PdfService {
             documentTemplates.getClaimIssueReceipt(),
             claimContentProvider.createContent(claim)
         );
+    }
+
+    @Override
+    public String filename(Claim claim) {
+        return buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber());
     }
 
 }
