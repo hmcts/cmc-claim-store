@@ -62,9 +62,9 @@ withPipeline("java", product, component) {
   }
 
   before('akschartsinstall') {
-    sh('export CCD_VERSION=$(cat ccd-adapter/VERSION.yaml | sed \'s/TAG: //\')')
+    sh('CCD_VERSION=$(cat ccd-adapter/VERSION.yaml | sed \'s/TAG: //\')')
     //do a manual envsubst - the helm install jenkins lib code only uses specific env vars & secrets
-    sh "envsubst < charts/cmc-claim-store/values.preview.template.yaml"
+    sh "sed 's/{{CCD_VERSION}}/'\"${CCD_VERSION}\"'/' charts/cmc-claim-store/values.preview.template.yaml"
   }
 
   loadVaultSecrets(secrets)

@@ -151,7 +151,7 @@ ccd:
       userProfileDatabaseName: user-profile
     definition:
       enabled: true
-      image: hmcts.azurecr.io/hmcts/cmc-ccd-definition-importer:${CCD_VERSION}
+      image: hmcts.azurecr.io/hmcts/cmc-ccd-definition-importer:{{CCD_VERSION}}
       kvSecretRef: kvcreds
       gitSecretRef: kvcreds
       redirectUri: https://case-management-web-${SERVICE_FQDN}/oauth2redirect
