@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import java.net.URI;
 
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
 public class ClaimSubmissionOperationIndicatorRuleTest {
@@ -60,6 +61,31 @@ public class ClaimSubmissionOperationIndicatorRuleTest {
         exceptionRule.expectMessage("Invalid input. The following indicator(s)[claimantNotification, "
             + "defendantNotification, bulkPrint, rpa, staffNotification, sealedClaimUpload, claimIssueReceiptUpload] "
             + "cannot be set to Yes");
+
+        new ClaimSubmissionOperationIndicatorRule().assertOperationIndicatorUpdateIsValid(claim, input);
+    }
+
+    @Test
+    public void shouldNotAssertOperationIndicatorUpdateIsInvalidWhenDocumentsArePresentAndNotRequested() {
+        Claim claim = SampleClaim.builder()
+            .withSealedClaimDocument(URI.create("SealedClaim"))
+            .withClaimIssueReceiptDocument(URI.create("ClaimIssueReceipt"))
+            .build();
+
+        final ClaimSubmissionOperationIndicators input = ClaimSubmissionOperationIndicators
+            .builder()
+            .claimIssueReceiptUpload(NO)
+            .sealedClaimUpload(NO)
+            .bulkPrint(YES)
+            .claimantNotification(YES)
+            .rpa(YES)
+            .defendantNotification(YES)
+            .staffNotification(YES)
+            .build();
+
+        exceptionRule.expect(BadRequestException.class);
+        exceptionRule.expectMessage("Invalid input. The following indicator(s)[claimantNotification, "
+            + "defendantNotification, bulkPrint, rpa, staffNotification] cannot be set to Yes");
 
         new ClaimSubmissionOperationIndicatorRule().assertOperationIndicatorUpdateIsValid(claim, input);
     }
