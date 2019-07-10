@@ -372,7 +372,3 @@ bootRun {
     jvmArgs = ['-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005']
   }
 }
-
-apiTest.doFirst {
-  if (true) { throw new StopExecutionException() }
-}
