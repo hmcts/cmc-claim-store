@@ -98,7 +98,7 @@ public class ClaimSubmissionOperationIndicatorRule {
         YesNoOption newValue,
         boolean isDocumentPresent
     ) {
-        return isDocumentPresent || oldValue.equals(NO) && newValue.equals(YES)
+        return (newValue.equals(YES) && isDocumentPresent) || (oldValue.equals(NO) && newValue.equals(YES))
             ? ImmutableList.of(fieldName)
             : Collections.emptyList();
     }
