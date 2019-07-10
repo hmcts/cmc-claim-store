@@ -63,14 +63,12 @@ withPipeline("java", product, component) {
 
   before('build') {
     //do manual templating - the helm install jenkins lib code only uses specific env vars & secrets
-    def CCD_VERSION = sh(returnStdout: true, script: 'cat ccd-adapter/VERSION.yaml | sed \'s/TAG: //\'').replace('\r?\n', '')
+    def CCD_VERSION = sh(returnStdout: true, script: 'cat ccd-adapter/VERSION.yaml | sed \'s/TAG: //\'').replaceAll('\r?\n', '')
     sh "sed -i 's/{{CCD_VERSION}}/" + CCD_VERSION + "/' charts/cmc-claim-store/values.preview.template.yaml"
   }
 
   before('akschartsinstall') {
     //do manual templating - the helm install jenkins lib code only uses specific env vars & secrets
-//    def CCD_VERSION = sh(returnStdout: true, script: 'cat ccd-adapter/VERSION.yaml | sed \'s/TAG: //\'').replace('\\\\r?\\\\n', '')
-//    sh "sed -i 's/{{CCD_VERSION}}/" + CCD_VERSION + "/' charts/cmc-claim-store/values.preview.template.yaml"
   }
 
   loadVaultSecrets(secrets)
