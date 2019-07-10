@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.hmcts.cmc.ccd.adapter.assertion.Assertions;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTimelineEvent;
@@ -34,7 +33,7 @@ public class TimelineEventMapperTest {
         CCDCollectionElement<CCDTimelineEvent> ccdTimelineEvent = mapper.to(timelineEvent);
 
         //then
-        Assertions.assertThat(timelineEvent).isEqualTo(ccdTimelineEvent.getValue());
+        assertThat(timelineEvent).isEqualTo(ccdTimelineEvent.getValue());
         assertThat(timelineEvent.getId()).isEqualTo(ccdTimelineEvent.getId());
     }
 
@@ -56,7 +55,7 @@ public class TimelineEventMapperTest {
         );
 
         //then
-        Assertions.assertThat(timelineEvent).isEqualTo(ccdTimelineEvent);
+        assertThat(timelineEvent).isEqualTo(ccdTimelineEvent);
         assertThat(timelineEvent.getId()).isEqualTo(collectionId);
     }
 }

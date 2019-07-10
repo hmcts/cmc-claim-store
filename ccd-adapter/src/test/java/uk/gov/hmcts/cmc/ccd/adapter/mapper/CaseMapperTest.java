@@ -1,13 +1,11 @@
 package uk.gov.hmcts.cmc.ccd.adapter.mapper;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.hmcts.cmc.ccd.adapter.assertion.Assertions;
 import uk.gov.hmcts.cmc.ccd.adapter.util.MapperUtil;
 import uk.gov.hmcts.cmc.ccd.adapter.util.SampleData;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
@@ -18,9 +16,9 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static uk.gov.hmcts.cmc.ccd.adapter.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.adapter.util.SampleCCDClaimSubmissionOperationIndicators.CCDClaimSubmissionOperationIndicatorsWithPinSuccess;
 import static uk.gov.hmcts.cmc.ccd.adapter.util.SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicators;
-import static uk.gov.hmcts.cmc.ccd.adapter.util.SampleData.getAmountBreakDown;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 
@@ -41,10 +39,10 @@ public class CaseMapperTest {
         CCDCase ccdCase = ccdCaseMapper.to(claim);
 
         //then
-        Assertions.assertThat(claim).isEqualTo(ccdCase);
+        assertThat(claim).isEqualTo(ccdCase);
         assertEquals(NO, ccdCase.getMigratedFromClaimStore());
         assertEquals(NO, ccdCase.getApplicants().get(0).getValue().getLeadApplicantIndicator());
-        Assert.assertEquals(MapperUtil.toCaseName.apply(claim), ccdCase.getCaseName());
+        assertEquals(MapperUtil.toCaseName.apply(claim), ccdCase.getCaseName());
     }
 
     @Test
@@ -56,7 +54,7 @@ public class CaseMapperTest {
         CCDCase ccdCase = ccdCaseMapper.to(claim);
 
         //then
-        Assertions.assertThat(claim).isEqualTo(ccdCase);
+        assertThat(claim).isEqualTo(ccdCase);
         assertEquals(NO, ccdCase.getMigratedFromClaimStore());
         assertEquals(YES, ccdCase.getApplicants().get(0).getValue().getLeadApplicantIndicator());
         assertEquals(MapperUtil.toCaseName.apply(claim), ccdCase.getCaseName());
@@ -80,19 +78,19 @@ public class CaseMapperTest {
         Claim claim = ccdCaseMapper.from(ccdCase);
 
         //then
-        Assertions.assertThat(claim).isEqualTo(ccdCase);
+        assertThat(claim).isEqualTo(ccdCase);
     }
 
     @Test
     public void shouldMapCitizenClaimFromCCD() {
         //given
-        CCDCase ccdCase = SampleData.getCCDCitizenCase(getAmountBreakDown());
+        CCDCase ccdCase = SampleData.getCCDCitizenCase(SampleData.getAmountBreakDown());
 
         //when
         Claim claim = ccdCaseMapper.from(ccdCase);
 
         //then
-        Assertions.assertThat(claim).isEqualTo(ccdCase);
+        assertThat(claim).isEqualTo(ccdCase);
     }
 
     @Test(expected = NullPointerException.class)
