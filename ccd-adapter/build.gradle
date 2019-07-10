@@ -1,13 +1,22 @@
+buildscript {
+  dependencies {
+    classpath group: 'org.yaml', name: 'snakeyaml', version: '1.24'
+  }
+}
+
 plugins {
   id 'jacoco'
 }
+
+def versionYaml = new org.yaml.snakeyaml.Yaml().load(new File("ccd-adapter/VERSION.yaml").newInputStream())
+def ccdDomainVersion = versionYaml.TAG
 
 apply plugin: 'net.ltgt.apt'
 
 dependencies {
   compile project(':domain-model')
 
-  compile group: 'uk.gov.hmcts.reform.cmc', name: 'ccd-domain', version: '1.2.13'
+  compile group: 'uk.gov.hmcts.reform.cmc', name: 'ccd-domain', version: ccdDomainVersion
   compile group: 'org.springframework.boot', name: 'spring-boot-starter'
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.8'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.6'

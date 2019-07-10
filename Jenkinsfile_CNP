@@ -61,6 +61,10 @@ withPipeline("java", product, component) {
     }
   }
 
+  before('functionalTest:aat') {
+    sh('export CCD_VERSION=$(cat VERSION.yaml | sed \'s/TAG: //\')')
+  }
+
   loadVaultSecrets(secrets)
   enableSlackNotifications(notificationsChannel)
   enableDockerBuild()
