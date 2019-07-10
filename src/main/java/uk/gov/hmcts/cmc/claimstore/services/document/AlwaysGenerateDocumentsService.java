@@ -45,15 +45,19 @@ public class AlwaysGenerateDocumentsService implements DocumentsService {
     public byte[] generateDocument(String externalId, ClaimDocumentType claimDocumentType, String authorisation) {
         switch (claimDocumentType) {
             case CLAIM_ISSUE_RECEIPT:
-                return claimIssueReceiptService.createPdf(getClaimByExternalId(externalId, authorisation));
+                return claimIssueReceiptService.createPdf(
+                    getClaimByExternalId(externalId, authorisation)).getBytes();
             case SEALED_CLAIM:
-                return sealedClaimPdfService.createPdf(getClaimByExternalId(externalId, authorisation));
+                return sealedClaimPdfService.createPdf(
+                    getClaimByExternalId(externalId, authorisation)).getBytes();
             case DEFENDANT_RESPONSE_RECEIPT:
-                return defendantResponseReceiptService.createPdf(getClaimByExternalId(externalId, authorisation));
+                return defendantResponseReceiptService.createPdf(
+                    getClaimByExternalId(externalId, authorisation)).getBytes();
             case SETTLEMENT_AGREEMENT:
-                return settlementAgreementCopyService.createPdf(getClaimByExternalId(externalId, authorisation));
+                return settlementAgreementCopyService.createPdf(
+                    getClaimByExternalId(externalId, authorisation)).getBytes();
             default:
-                throw new RuntimeException(
+                throw new IllegalArgumentException(
                     "Unknown document service for document of type " + claimDocumentType.name());
         }
     }
