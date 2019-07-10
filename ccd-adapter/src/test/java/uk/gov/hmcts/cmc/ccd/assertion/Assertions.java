@@ -166,8 +166,4 @@ public class Assertions {
     public static MoneyAssert assertMoney(BigDecimal amount) {
         return new MoneyAssert(amount);
     }
-
-    public static ReviewOrderAssert assertThat(ReviewOrder reviewOrder) {
-        return new ReviewOrderAssert(reviewOrder);
-    }
 }
