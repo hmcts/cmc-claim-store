@@ -61,7 +61,7 @@ withPipeline("java", product, component) {
     }
   }
 
-  before('functionalTest:aat') {
+  before('akschartsinstall') {
     sh('export CCD_VERSION=$(cat VERSION.yaml | sed \'s/TAG: //\')')
   }
 
