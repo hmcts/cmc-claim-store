@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Builder
 public class CCDReviewOrder {
 
-    public enum PartyType {CLAIMANT, DEFENDANT}
+    public enum PartyType { CLAIMANT, DEFENDANT }
 
     private String reason;
     private PartyType requestedBy;

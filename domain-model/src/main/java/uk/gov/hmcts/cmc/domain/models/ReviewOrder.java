@@ -9,13 +9,12 @@ import java.util.Optional;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-
 @Builder
 @EqualsAndHashCode
 @Getter
 public class ReviewOrder {
 
-    public enum PartyType {CLAIMANT, DEFENDANT}
+    public enum PartyType { CLAIMANT, DEFENDANT }
 
     @Size(max = 1000)
     private final String reason;

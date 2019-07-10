@@ -149,11 +149,11 @@ public class Assertions {
         return new EmployerAssert(employer);
     }
 
-    public static MoneyAssert assertMoney(BigDecimal amount) {
-        return new MoneyAssert(amount);
-    }
-
     public static ReviewOrderAssert assertThat(ReviewOrder reviewOrder) {
         return new ReviewOrderAssert(reviewOrder);
+    }
+
+    public static MoneyAssert assertMoney(BigDecimal amount) {
+        return new MoneyAssert(amount);
     }
 }
