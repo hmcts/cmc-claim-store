@@ -62,7 +62,8 @@ withPipeline("java", product, component) {
   }
 
   before('akschartsinstall') {
-    sh('export CCD_VERSION=$(cat VERSION.yaml | sed \'s/TAG: //\')')
+    sh('export CCD_VERSION=$(cat ccd-adapter/VERSION.yaml | sed \'s/TAG: //\')')
+    sh('echo $CCD_VERSION')
   }
 
   loadVaultSecrets(secrets)
