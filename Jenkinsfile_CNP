@@ -47,6 +47,10 @@ String notificationsChannel = '#cmc-tech-notification'
 
 withPipeline("java", product, component) {
   after('checkout') {
+
+    def CCD_VERSION = sh(returnStdout: true, script: 'cat ccd-adapter/VERSION.yaml | sed \'s/TAG: //\'').replace('\\R', '')
+    sh "sed -i 's/{{CCD_VERSION}}/" + CCD_VERSION + "/' charts/cmc-claim-store/values.preview.template.yaml"
+
     onMaster {
       withCredentials([usernamePassword(credentialsId: 'jenkins-github-hmcts-api-token', passwordVariable: 'BEARER_TOKEN', usernameVariable: 'USERNAME')]) {
         try {
@@ -54,9 +58,6 @@ withPipeline("java", product, component) {
           sh('git remote set-url origin ' + url)
           sh('git fetch origin demo:demo')
           sh('git push --force origin HEAD:demo')
-
-          def CCD_VERSION = sh(returnStdout: true, script: 'cat ccd-adapter/VERSION.yaml | sed \'s/TAG: //\'').replace('\\R', '')
-          sh "sed -i 's/{{CCD_VERSION}}/" + CCD_VERSION + "/' charts/cmc-claim-store/values.preview.template.yaml"
         } catch (err) {
           notifyBuildEvent channel: notificationsChannel, color: 'warning', message: 'Failed to update demo branch'
         }
