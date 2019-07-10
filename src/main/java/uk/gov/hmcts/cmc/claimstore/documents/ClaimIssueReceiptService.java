@@ -3,11 +3,13 @@ package uk.gov.hmcts.cmc.claimstore.documents;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
+import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimIssueReceiptFileBaseName;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 
 @Service
 public class ClaimIssueReceiptService implements PdfService {
@@ -27,18 +29,15 @@ public class ClaimIssueReceiptService implements PdfService {
         this.claimContentProvider = claimContentProvider;
     }
 
-    public byte[] createPdf(Claim claim) {
+    public PDF createPdf(Claim claim) {
         requireNonNull(claim);
 
-        return pdfServiceClient.generateFromHtml(
-            documentTemplates.getClaimIssueReceipt(),
-            claimContentProvider.createContent(claim)
+        return new PDF(
+            buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber()),
+            pdfServiceClient.generateFromHtml(
+                documentTemplates.getClaimIssueReceipt(),
+                claimContentProvider.createContent(claim)),
+            CLAIM_ISSUE_RECEIPT
         );
     }
-
-    @Override
-    public String filename(Claim claim) {
-        return buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber());
-    }
-
 }

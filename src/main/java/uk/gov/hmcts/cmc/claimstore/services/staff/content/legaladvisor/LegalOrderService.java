@@ -11,6 +11,8 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.claimstore.events.legaladvisor.DirectionsOrderReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.net.URI;
@@ -73,8 +75,12 @@ public class LegalOrderService {
     private Document downloadLegalOrder(String authorisation, CCDDocument ccdLegalOrder) throws URISyntaxException {
         return new Document(Base64.getEncoder().encodeToString(documentManagementService.downloadDocument(
             authorisation,
-            new URI(ccdLegalOrder.getDocumentUrl()),
-            ccdLegalOrder.getDocumentFileName())),
+            ClaimDocument.builder()
+                .documentName(ccdLegalOrder.getDocumentFileName())
+                .documentType(ClaimDocumentType.ORDER_DIRECTIONS)
+                .documentManagementUrl(new URI(ccdLegalOrder.getDocumentUrl()))
+                .documentManagementBinaryUrl(new URI(ccdLegalOrder.getDocumentBinaryUrl()))
+                .build())),
             Collections.emptyMap());
     }
 }

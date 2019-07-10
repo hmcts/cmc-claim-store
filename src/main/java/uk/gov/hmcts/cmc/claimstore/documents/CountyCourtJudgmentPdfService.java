@@ -3,12 +3,13 @@ package uk.gov.hmcts.cmc.claimstore.documents;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
+import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.ContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForJudgementFileBaseName;
 
 @Service
@@ -30,16 +31,16 @@ public class CountyCourtJudgmentPdfService implements PdfService {
     }
 
     @Override
-    public byte[] createPdf(Claim claim) {
+    public PDF createPdf(Claim claim) {
         requireNonNull(claim);
 
-        return pdfServiceClient.generateFromHtml(documentTemplates.getCountyCourtJudgmentByRequest(),
-            contentProvider.createContent(claim));
-    }
-
-    @Override
-    public String filename(Claim claim) {
-        return buildRequestForJudgementFileBaseName(claim.getReferenceNumber(),
-            claim.getClaimData().getDefendant().getName()) + EXTENSION;
+        return new PDF(
+            buildRequestForJudgementFileBaseName(claim.getReferenceNumber(),
+                claim.getClaimData().getDefendant().getName()),
+            pdfServiceClient.generateFromHtml(
+                documentTemplates.getCountyCourtJudgmentByRequest(),
+                contentProvider.createContent(claim)),
+            ClaimDocumentType.CCJ_REQUEST
+        );
     }
 }

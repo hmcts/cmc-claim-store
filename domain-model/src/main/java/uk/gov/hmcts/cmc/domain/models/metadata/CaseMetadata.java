@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.Payment;
@@ -62,7 +63,9 @@ public class CaseMetadata {
             ClaimantResponseMetadata.fromClaim(claim),
             SettlementMetadata.fromClaim(claim),
             RedeterminationMetadata.fromClaim(claim),
-            claim.getClaimDocument(SEALED_CLAIM).orElse(null),
+            claim.getClaimDocument(SEALED_CLAIM)
+                .map(ClaimDocument::getDocumentManagementUrl)
+                .orElse(null),
             Optional.ofNullable(claim.getClaimData().getPayment())
                 .map(Payment::getReference)
                 .orElse(null),

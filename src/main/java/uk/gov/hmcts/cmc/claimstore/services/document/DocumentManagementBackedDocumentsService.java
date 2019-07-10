@@ -20,7 +20,6 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 
-import java.net.URI;
 import java.util.Optional;
 
 @Service("documentsService")
@@ -76,7 +75,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
             case SETTLEMENT_AGREEMENT:
                 return settlementAgreementCopyService;
             default:
-                throw new RuntimeException(
+                throw new IllegalArgumentException(
                     "Unknown document service for document of type " + claimDocumentType.name());
         }
     }
@@ -96,23 +95,21 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         ClaimDocumentType claimDocumentType,
         PdfService pdfService
     ) {
-        Optional<URI> claimDocument = claim.getClaimDocument(claimDocumentType);
+        Optional<ClaimDocument> claimDocument = claim.getClaimDocument(claimDocumentType);
         try {
             if (claimDocument.isPresent()) {
-                URI documentSelfPath = claimDocument.get();
                 return documentManagementService.downloadDocument(
                     authorisation,
-                    documentSelfPath,
-                    pdfService.filename(claim));
+                    claimDocument.get());
             } else {
-                PDF document = new PDF(pdfService.filename(claim), pdfService.createPdf(claim), claimDocumentType);
+                PDF document = pdfService.createPdf(claim);
                 uploadToDocumentManagement(document,
                     authorisation,
                     claim);
                 return document.getBytes();
             }
         } catch (Exception ex) {
-            return pdfService.createPdf(claim);
+            return pdfService.createPdf(claim).getBytes();
         }
     }
 

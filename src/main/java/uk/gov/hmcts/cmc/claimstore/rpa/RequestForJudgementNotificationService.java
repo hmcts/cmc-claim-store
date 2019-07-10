@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
+import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.rpa.config.EmailProperties;
 import uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils;
@@ -78,12 +79,11 @@ public class RequestForJudgementNotificationService {
     }
 
     private EmailAttachment generateCountyCourtJudgmentPdf(Claim claim) {
-        byte[] generatedPdf = countyCourtJudgmentPdfService.createPdf(claim);
+        PDF generatedPdf = countyCourtJudgmentPdfService.createPdf(claim);
 
         return pdf(
-            generatedPdf,
-            countyCourtJudgmentPdfService.filename(claim)
-        );
+            generatedPdf.getBytes(),
+            generatedPdf.getFilename());
     }
 
 }
