@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MediationCSVGenerationException;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseSearchApi;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -17,16 +18,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.domain.models.MediationRow.MediationRowBuilder;
 
 @RequiredArgsConstructor
 public class MediationCSVGenerator {
-    private static final String SITE_ID = "4";
+    private static final String SITE_ID = "5";
     private static final String CASE_TYPE = "1";
     private static final String CHECK_LIST = "4";
     private static final String PARTY_STATUS = "5";
@@ -34,34 +33,34 @@ public class MediationCSVGenerator {
     private static final int CLAIMANT_PARTY_TYPE = 1;
     private static final int DEFENDANT_PARTY_TYPE = 2;
 
-    private static final Map<Integer, Function<Claim, Optional<String>>> CONTACT_PERSON_EXTRACTORS =
+    private static final Map<Integer, Function<Claim, String>> CONTACT_PERSON_EXTRACTORS =
         ImmutableMap.of(
             CLAIMANT_PARTY_TYPE,
             claim -> claim.getClaimantResponse()
                 .filter(ResponseRejection.class::isInstance)
                 .map(ResponseRejection.class::cast)
-                .orElseThrow(invalidMediationStateException("Missing rejection response"))
-                .getMediationContactPerson(),
+                .orElseThrow(() -> new MediationCSVGenerationException("Missing rejection response"))
+                .getMediationContactPerson().orElse(claim.getClaimData().getClaimant().getName()),
 
             DEFENDANT_PARTY_TYPE,
             claim -> claim.getResponse()
-                .orElseThrow(invalidMediationStateException("Missing response data"))
-                .getMediationContactPerson()
+                .orElseThrow(() -> new MediationCSVGenerationException("Missing response data"))
+                .getMediationContactPerson().orElse(claim.getClaimData().getDefendant().getName())
         );
 
-    private static final Map<Integer, Function<Claim, Optional<String>>> CONTACT_NUMBER_EXTRACTORS =
+    private static final Map<Integer, Function<Claim, String>> CONTACT_NUMBER_EXTRACTORS =
         ImmutableMap.of(
             CLAIMANT_PARTY_TYPE,
             claim -> claim.getClaimantResponse()
                 .filter(ResponseRejection.class::isInstance)
                 .map(ResponseRejection.class::cast)
-                .orElseThrow(invalidMediationStateException("Missing rejection response"))
-                .getMediationPhoneNumber(),
+                .orElseThrow(() -> new MediationCSVGenerationException("Missing rejection response"))
+                .getMediationPhoneNumber().orElse(StringUtils.EMPTY),
 
             DEFENDANT_PARTY_TYPE,
             claim -> claim.getResponse()
-                .orElseThrow(invalidMediationStateException("Missing response data"))
-                .getMediationPhoneNumber()
+                .orElseThrow(() -> new MediationCSVGenerationException("Missing response data"))
+                .getMediationPhoneNumber().orElse((StringUtils.EMPTY))
         );
 
     private static final Map<Integer, Function<Claim, String>> CONTACT_EMAIL_EXTRACTORS =
@@ -133,22 +132,15 @@ public class MediationCSVGenerator {
             .partyStatus(PARTY_STATUS)
             .caseNumber(claim.getReferenceNumber())
             .amount(String.valueOf(claim.getTotalAmountTillToday()
-                .orElseThrow(invalidMediationStateException("Unable to find total amount of claim"))))
+                .orElseThrow(() -> new MediationCSVGenerationException("Unable to find total amount of claim"))))
             .partyType(String.valueOf(partyType))
             .emailAddress(CONTACT_EMAIL_EXTRACTORS.get(partyType)
+                .apply(claim))
+            .contactName(CONTACT_PERSON_EXTRACTORS.get(partyType)
+                .apply(claim))
+            .contactNumber(CONTACT_NUMBER_EXTRACTORS.get(partyType)
                 .apply(claim));
 
-        CONTACT_PERSON_EXTRACTORS.get(partyType)
-            .apply(claim)
-            .ifPresent(mediationRowBuilder::contactName);
-        CONTACT_NUMBER_EXTRACTORS.get(partyType)
-            .apply(claim)
-            .ifPresent(mediationRowBuilder::contactNumber);
-
         return mediationRowBuilder.build();
-    }
-
-    private static Supplier<RuntimeException> invalidMediationStateException(String reason) {
-        return () -> new MediationCSVGenerationException(reason);
     }
 }

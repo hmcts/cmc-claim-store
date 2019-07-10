@@ -15,8 +15,8 @@ public class Query {
 
     @Override
     public String toString() {
-        return "{" + "\"query\": " +
-            queryBuilder.toString() +
-            '}';
+        return "{" + "\"query\": "
+            + queryBuilder.toString()
+            + '}';
     }
 }

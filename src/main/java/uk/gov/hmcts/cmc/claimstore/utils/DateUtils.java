@@ -7,6 +7,10 @@ import java.time.LocalTime;
 import static java.util.Objects.requireNonNull;
 
 public class DateUtils {
+    private DateUtils() {
+        // Utility class, no instances
+    }
+
     public static LocalDateTime startOfDay(LocalDate localDate) {
         requireNonNull(localDate);
 
