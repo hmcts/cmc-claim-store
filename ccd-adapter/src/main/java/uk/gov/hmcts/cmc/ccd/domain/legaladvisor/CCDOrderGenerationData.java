@@ -23,6 +23,9 @@ public class CCDOrderGenerationData {
 
     private CCDDirectionPartyType docUploadForParty;
 
+    @Builder.Default
+    private List<CCDCollectionElement<String>> extraDocUploadList = Collections.emptyList();
+
     private LocalDate eyewitnessUploadDeadline;
 
     private CCDDirectionPartyType eyewitnessUploadForParty;

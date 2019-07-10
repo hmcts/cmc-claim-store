@@ -68,6 +68,8 @@ public class DocAssemblyTemplateBodyMapper {
                 ccdOrderGenerationData.getEyewitnessUploadDeadline())
             .docUploadForParty(
                 ccdOrderGenerationData.getDocUploadForParty())
+            .extraDocUploadList(
+                ccdOrderGenerationData.getExtraDocUploadList())
             .eyewitnessUploadForParty(
                 ccdOrderGenerationData.getEyewitnessUploadForParty())
             .paperDetermination(

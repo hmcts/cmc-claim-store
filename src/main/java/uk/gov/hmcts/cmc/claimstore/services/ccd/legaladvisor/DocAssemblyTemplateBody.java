@@ -9,6 +9,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import lombok.Builder;
 import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
@@ -77,5 +78,5 @@ public class DocAssemblyTemplateBody implements FormPayload {
     @JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
     private List<CCDOrderDirection> otherDirections;
 
-    private List<String> extraDocUploadList;
+    private List<CCDCollectionElement<String>> extraDocUploadList;
 }

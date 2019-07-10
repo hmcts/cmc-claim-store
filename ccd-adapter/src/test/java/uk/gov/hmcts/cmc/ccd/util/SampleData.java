@@ -66,11 +66,11 @@ import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPaymentF
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebtType.ELECTRICITY;
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDResidenceType.JOINT_OWN_HOME;
 import static uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceType.EXPERT_WITNESS;
-import static uk.gov.hmcts.cmc.ccd.util.SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicators;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.DOCUMENTS;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EXPERT_REPORT_PERMISSION;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYEWITNESS;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.OTHER;
+import static uk.gov.hmcts.cmc.ccd.util.SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicators;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
 
@@ -552,6 +552,14 @@ public class SampleData {
             .hearingStatement("No idea")
             .newRequestedCourt("Another court")
             .docUploadForParty(CCDDirectionPartyType.CLAIMANT)
+            .extraDocUploadList(
+                ImmutableList.of(
+                    CCDCollectionElement.<String>builder()
+                        .value("first document")
+                        .build(),
+                    CCDCollectionElement.<String>builder()
+                        .value("second document")
+                        .build()))
             .eyewitnessUploadForParty(CCDDirectionPartyType.DEFENDANT)
             .estimatedHearingDuration(CCDHearingDurationType.FOUR_HOURS)
             .build();

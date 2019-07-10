@@ -85,6 +85,14 @@ public class DocAssemblyTemplateBodyMapperTest  {
             .judicial(Judicial.builder().firstName("Judge").lastName("McJudge").build())
             .referenceNumber("ref no")
             .hearingCourtName("Defendant Court")
+            .extraDocUploadList(
+                ImmutableList.of(
+                    CCDCollectionElement.<String>builder()
+                        .value("first document")
+                        .build(),
+                    CCDCollectionElement.<String>builder()
+                        .value("second document")
+                        .build()))
             .hearingCourtAddress(CCDAddress.builder()
                 .addressLine1("Defendant Court address")
                 .postCode("SW1P4BB")
@@ -167,6 +175,14 @@ public class DocAssemblyTemplateBodyMapperTest  {
                 .postCode("SW1P4BB")
                 .postTown("Birmingham")
                 .build())
+            .extraDocUploadList(
+                ImmutableList.of(
+                    CCDCollectionElement.<String>builder()
+                        .value("first document")
+                        .build(),
+                    CCDCollectionElement.<String>builder()
+                        .value("second document")
+                        .build()))
             .docUploadForParty(CLAIMANT)
             .eyewitnessUploadForParty(DEFENDANT)
             .estimatedHearingDuration(FOUR_HOURS)

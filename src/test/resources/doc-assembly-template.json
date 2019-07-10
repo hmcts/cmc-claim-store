@@ -17,6 +17,16 @@
   "docUploadDeadline":"11-10-2020",
   "eyewitnessUploadDeadline":"11-10-2020",
   "docUploadForParty":"CLAIMANT",
+  "extraDocUploadList": [
+    {
+      "id": null,
+      "value": "first document"
+    },
+    {
+      "id": null,
+      "value": "second document"
+    }
+  ],
   "eyewitnessUploadForParty":"DEFENDANT",
   "hearingCourtName":"Defendant Court",
   "hearingCourtAddress":{
