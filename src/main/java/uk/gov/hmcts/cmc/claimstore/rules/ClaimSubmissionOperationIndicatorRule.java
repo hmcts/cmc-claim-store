@@ -13,6 +13,8 @@ import java.util.Collections;
 import java.util.List;
 import javax.validation.constraints.NotNull;
 
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
@@ -27,7 +29,7 @@ public class ClaimSubmissionOperationIndicatorRule {
         ClaimSubmissionOperationIndicators oldIndicators = claim.getClaimSubmissionOperationIndicators();
 
         for (Field field : ClaimSubmissionOperationIndicators.class.getDeclaredFields()) {
-            invalidIndicators.addAll(validateFieldFlagChange(field, oldIndicators, newIndicators));
+            invalidIndicators.addAll(validateFieldFlagChange(field, claim, newIndicators));
         }
 
         if (invalidIndicators.size() > 0) {
@@ -38,10 +40,11 @@ public class ClaimSubmissionOperationIndicatorRule {
 
     private List<String> validateFieldFlagChange(
         Field field,
-        ClaimSubmissionOperationIndicators oldIndicators,
+        Claim claim,
         ClaimSubmissionOperationIndicators newIndicators
     ) {
         String fieldName = field.getName();
+        ClaimSubmissionOperationIndicators oldIndicators = claim.getClaimSubmissionOperationIndicators();
         switch (fieldName) {
             case "claimantNotification":
                 return isFlagChangeValid(fieldName,
@@ -69,14 +72,16 @@ public class ClaimSubmissionOperationIndicatorRule {
                     newIndicators.getStaffNotification()
                 );
             case "sealedClaimUpload":
-                return isFlagChangeValid(fieldName,
+                return isFlagChangeValidForDocumentUpload(fieldName,
                     oldIndicators.getSealedClaimUpload(),
-                    newIndicators.getSealedClaimUpload()
+                    newIndicators.getSealedClaimUpload(),
+                    claim.getClaimDocument(SEALED_CLAIM).isPresent()
                 );
             case "claimIssueReceiptUpload":
-                return isFlagChangeValid(fieldName,
+                return isFlagChangeValidForDocumentUpload(fieldName,
                     oldIndicators.getClaimIssueReceiptUpload(),
-                    newIndicators.getClaimIssueReceiptUpload()
+                    newIndicators.getClaimIssueReceiptUpload(),
+                    claim.getClaimDocument(CLAIM_ISSUE_RECEIPT).isPresent()
                 );
             default:
                 return Collections.emptyList();
@@ -85,5 +90,16 @@ public class ClaimSubmissionOperationIndicatorRule {
 
     private List<String> isFlagChangeValid(String fieldName, YesNoOption oldValue, YesNoOption newValue) {
         return oldValue.equals(NO) && newValue.equals(YES) ? ImmutableList.of(fieldName) : Collections.emptyList();
+    }
+
+    private List<String> isFlagChangeValidForDocumentUpload(
+        String fieldName,
+        YesNoOption oldValue,
+        YesNoOption newValue,
+        boolean isDocumentPresent
+    ) {
+        return isDocumentPresent || oldValue.equals(NO) && newValue.equals(YES)
+            ? ImmutableList.of(fieldName)
+            : Collections.emptyList();
     }
 }
