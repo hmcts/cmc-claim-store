@@ -4,7 +4,7 @@ import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 
 import java.time.LocalDateTime;
 
-import static uk.gov.hmcts.cmc.domain.models.ReviewOrder.PartyType.CLAIMANT;
+import static uk.gov.hmcts.cmc.domain.models.ReviewOrder.RequestedBy.CLAIMANT;
 
 public class SampleReviewOrder {
 
