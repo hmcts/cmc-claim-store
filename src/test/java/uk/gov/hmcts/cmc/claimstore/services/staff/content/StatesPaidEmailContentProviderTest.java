@@ -18,7 +18,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.staff.StatesPaidStaffNotifica
 
 public class StatesPaidEmailContentProviderTest {
     private static final String DEFENDANT_EMAIL = "defendant@mail.com";
-    private static final String DEFENDANT_MOBILE = "07980111222";
+    private static final String DEFENDANT_PHONE = "07980111222";
 
     private TemplateService templateService = new TemplateService(
         new PebbleConfiguration().pebbleEngine()
@@ -43,7 +43,7 @@ public class StatesPaidEmailContentProviderTest {
             .withResponse(
                 SampleResponse.FullDefence
                     .builder()
-                    .withDefendantDetails(SampleParty.builder().withMobilePhone(DEFENDANT_MOBILE).individual())
+                    .withDefendantDetails(SampleParty.builder().withPhone(DEFENDANT_PHONE).individual())
                     .build())
             .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
             .build();
@@ -51,7 +51,7 @@ public class StatesPaidEmailContentProviderTest {
         assertThat(content.getBody())
             .contains("Email: " + DEFENDANT_EMAIL)
             .contains("Mobile number: " + claim.getResponse().orElseThrow(IllegalStateException::new).getDefendant()
-                .getMobilePhone().orElseThrow(IllegalStateException::new));
+                .getPhone().orElseThrow(IllegalStateException::new));
     }
 
     @Test
@@ -59,7 +59,7 @@ public class StatesPaidEmailContentProviderTest {
         Claim claim = SampleClaim.builder()
             .withResponse(
                 SampleResponse.FullDefence.builder()
-                    .withDefendantDetails(SampleParty.builder().withMobilePhone("").individual())
+                    .withDefendantDetails(SampleParty.builder().withPhone("").individual())
                     .build())
             .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
             .build();
@@ -78,7 +78,7 @@ public class StatesPaidEmailContentProviderTest {
                     .builder()
                     .withDefenceType(DefenceType.ALREADY_PAID)
                     .withMediation(null)
-                    .withDefendantDetails(SampleParty.builder().withMobilePhone(DEFENDANT_MOBILE).individual())
+                    .withDefendantDetails(SampleParty.builder().withPhone(DEFENDANT_PHONE).individual())
                     .build())
             .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
             .build();
@@ -97,7 +97,7 @@ public class StatesPaidEmailContentProviderTest {
                     .builder()
                     .withDefenceType(DefenceType.ALREADY_PAID)
                     .withMediation(null)
-                    .withDefendantDetails(SampleParty.builder().withMobilePhone(DEFENDANT_MOBILE).individual())
+                    .withDefendantDetails(SampleParty.builder().withPhone(DEFENDANT_PHONE).individual())
                     .build())
             .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
             .build();
@@ -117,7 +117,7 @@ public class StatesPaidEmailContentProviderTest {
                     .builder()
                     .withDefenceType(DefenceType.ALREADY_PAID)
                     .withMediation(null)
-                    .withDefendantDetails(SampleParty.builder().withMobilePhone(DEFENDANT_MOBILE).individual())
+                    .withDefendantDetails(SampleParty.builder().withPhone(DEFENDANT_PHONE).individual())
                     .build()
             )
             .withClaimantResponse(SampleClaimantResponse.validDefaultRejection())

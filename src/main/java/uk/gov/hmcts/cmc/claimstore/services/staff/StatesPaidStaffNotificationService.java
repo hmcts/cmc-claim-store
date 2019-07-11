@@ -68,9 +68,9 @@ public class StatesPaidStaffNotificationService {
         map.put("response", response);
         map.put("claimantResponse", claimantResponse.getType());
         map.put("defendantEmail", claim.getDefendantEmail());
-        map.put("defendantMobilePhone", response
+        map.put("defendantPhone", response
                 .getDefendant()
-                .getMobilePhone()
+                .getPhone()
                 .orElse(null));
 
         return map;

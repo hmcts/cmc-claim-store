@@ -52,7 +52,7 @@ public class SealedClaimJsonMapper {
                 .add("name", claimant.getName())
                 .add("address", mapAddress(claimant.getAddress()))
                 .add("correspondenceAddress", claimant.getCorrespondenceAddress().map(this::mapAddress).orElse(null))
-                .add("phoneNumber", claimant.getMobilePhone().orElse(null))
+                .add("phoneNumber", claimant.getPhone().orElse(null))
                 .add("dateOfBirth", extractFromSubclass(claimant, Individual.class, individual -> DateFormatter.format(individual.getDateOfBirth())))
                 .add("businessName", extractOptionalFromSubclass(claimant, SoleTrader.class, value -> value.getBusinessName().map(RPAMapperHelper::prependWithTradingAs)))
                 .add("contactPerson", extractOptionalFromSubclass(claimant, HasContactPerson.class, HasContactPerson::getContactPerson))

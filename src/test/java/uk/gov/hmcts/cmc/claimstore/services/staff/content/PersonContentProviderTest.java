@@ -15,7 +15,7 @@ public class PersonContentProviderTest {
     private Address address;
     private Address correspondenceAddress;
     private String emailAddress;
-    private String mobileNumber;
+    private String phoneNumber;
     private String dateOfBirth;
 
     private PersonContentProvider provider = new PersonContentProvider();
@@ -37,7 +37,7 @@ public class PersonContentProviderTest {
             .postcode("CQ9 6FS")
             .build();
         emailAddress = "blah@blah.com";
-        mobileNumber = "07786556746";
+        phoneNumber = "07786556746";
         dateOfBirth = "1 January 1987";
     }
 
@@ -66,7 +66,7 @@ public class PersonContentProviderTest {
             emailAddress,
             null,
             null,
-            mobileNumber,
+            phoneNumber,
             dateOfBirth
         );
     }
@@ -81,7 +81,7 @@ public class PersonContentProviderTest {
             null,
             null,
             null,
-            mobileNumber,
+            phoneNumber,
             dateOfBirth
         );
 
@@ -98,7 +98,7 @@ public class PersonContentProviderTest {
             emailAddress,
             null,
             null,
-            mobileNumber,
+            phoneNumber,
             dateOfBirth
         );
 
@@ -119,7 +119,7 @@ public class PersonContentProviderTest {
             emailAddress,
             null,
             null,
-            mobileNumber,
+            phoneNumber,
             dateOfBirth
         );
 
@@ -140,7 +140,7 @@ public class PersonContentProviderTest {
             emailAddress,
             null,
             null,
-            mobileNumber,
+            phoneNumber,
             dateOfBirth
         );
 
@@ -157,7 +157,7 @@ public class PersonContentProviderTest {
             null,
             null,
             null,
-            mobileNumber,
+            phoneNumber,
             dateOfBirth
         );
 
@@ -174,11 +174,11 @@ public class PersonContentProviderTest {
             emailAddress,
             null,
             null,
-            mobileNumber,
+            phoneNumber,
             dateOfBirth
         );
 
-        assertThat(content.getMobileNumber()).isEqualTo(mobileNumber);
+        assertThat(content.getMobileNumber()).isEqualTo(phoneNumber);
         assertThat(content.getDateOfBirth()).isEqualTo(dateOfBirth);
     }
 

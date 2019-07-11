@@ -53,7 +53,7 @@ public class FullDefenceStaffEmailContentProviderTest {
         assertThat(content.getBody())
             .contains("Email: " + DEFENDANT_EMAIL)
             .contains("Mobile number: " + claim.getResponse().orElseThrow(IllegalStateException::new).getDefendant()
-                .getMobilePhone().orElseThrow(IllegalStateException::new));
+                .getPhone().orElseThrow(IllegalStateException::new));
     }
 
     @Test
@@ -62,7 +62,7 @@ public class FullDefenceStaffEmailContentProviderTest {
             SampleResponse.FullDefence.builder()
                 .withDefendantDetails(
                     SampleParty.builder()
-                        .withMobilePhone(null)
+                        .withPhone(null)
                         .individual())
                 .build())
             .build();

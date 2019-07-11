@@ -16,10 +16,10 @@ Defendant's details can be found on the attached defence copy. Additional contac
 
 Email: {{ defendantEmail }}
 
-{% if defendantMobilePhone is not empty %}
-Mobile number: {{ defendantMobilePhone }}
+{% if defendantPhone is not empty %}
+Phone number: {{ defendantPhone }}
 {% else %}
-Mobile number: not given
+Phone number: not given
 {% endif %}
 
 This email has been sent from HM Courts & Tribunals Service Civil Money Claims online court.

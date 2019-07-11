@@ -30,7 +30,7 @@ public abstract class BaseCCJPdfTest extends BasePdfTest {
         assertThat(pdfAsText).contains("Name: " + claimData.getClaimant().getName());
         assertThat(pdfAsText).contains("Address: "
             + getFullAddressString(claimData.getClaimant().getAddress()));
-        claimData.getClaimant().getMobilePhone()
+        claimData.getClaimant().getPhone()
             .ifPresent(value -> assertThat(pdfAsText).contains("Telephone: " + value));
         assertThat(pdfAsText).contains("Defendant details");
         assertThat(pdfAsText).contains("Name: " + claimData.getDefendant().getName());
