@@ -50,7 +50,7 @@ public class StatesPaidEmailContentProviderTest {
         EmailContent content = service.createContent(wrapInMap(claim));
         assertThat(content.getBody())
             .contains("Email: " + DEFENDANT_EMAIL)
-            .contains("Mobile number: " + claim.getResponse().orElseThrow(IllegalStateException::new).getDefendant()
+            .contains("Phone number: " + claim.getResponse().orElseThrow(IllegalStateException::new).getDefendant()
                 .getPhone().orElseThrow(IllegalStateException::new));
     }
 
@@ -66,7 +66,7 @@ public class StatesPaidEmailContentProviderTest {
 
         EmailContent content = service.createContent(wrapInMap(claim));
         assertThat(content.getBody())
-            .contains("Mobile number: not given");
+            .contains("Phone number: not given");
     }
 
     @Test

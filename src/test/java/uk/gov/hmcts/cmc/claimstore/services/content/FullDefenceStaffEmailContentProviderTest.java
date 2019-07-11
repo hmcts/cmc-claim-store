@@ -52,7 +52,7 @@ public class FullDefenceStaffEmailContentProviderTest {
         EmailContent content = service.createContent(wrapInMap(claim, DEFENDANT_EMAIL));
         assertThat(content.getBody())
             .contains("Email: " + DEFENDANT_EMAIL)
-            .contains("Mobile number: " + claim.getResponse().orElseThrow(IllegalStateException::new).getDefendant()
+            .contains("Phone number: " + claim.getResponse().orElseThrow(IllegalStateException::new).getDefendant()
                 .getPhone().orElseThrow(IllegalStateException::new));
     }
 
@@ -71,7 +71,7 @@ public class FullDefenceStaffEmailContentProviderTest {
             claim, DEFENDANT_EMAIL
         ));
         assertThat(content.getBody())
-            .contains("Mobile number: not given");
+            .contains("Phone number: not given");
     }
 
     @Test
