@@ -70,7 +70,7 @@ public class ClaimSubmissionOperationIndicatorRuleTest {
 
         exceptionRule.expect(BadRequestException.class);
         exceptionRule.expectMessage("Invalid input. The following indicator(s)[sealedClaimUpload,"
-            + " claimIssueReceiptUpload] cannot be set to Yes");
+            + " claimIssueReceiptUpload] cannot be set to NO");
 
         new ClaimSubmissionOperationIndicatorRule().assertOperationIndicatorUpdateIsValid(claim, input);
     }

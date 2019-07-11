@@ -14,17 +14,25 @@ import java.util.List;
 import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
 @Service
 public class ClaimSubmissionOperationIndicatorRule {
 
+    private YesNoOption sealedClaimUpload;
+    private YesNoOption claimIssueReceiptUpload;
+
     public void assertOperationIndicatorUpdateIsValid(
         @NotNull Claim claim,
         ClaimSubmissionOperationIndicators newIndicators
     ) {
+        validateIndividualIndicator(claim, newIndicators);
+
+        validateClaimDocumentUpload(claim, newIndicators);
+    }
+
+    private void validateIndividualIndicator(@NotNull Claim claim, ClaimSubmissionOperationIndicators newIndicators) {
         List<String> invalidIndicators = new ArrayList<>();
 
         for (Field field : ClaimSubmissionOperationIndicators.class.getDeclaredFields()) {
@@ -34,6 +42,28 @@ public class ClaimSubmissionOperationIndicatorRule {
         if (invalidIndicators.size() > 0) {
             throw new BadRequestException("Invalid input. The following indicator(s)"
                 + invalidIndicators + " cannot be set to Yes");
+        }
+    }
+
+    private void validateClaimDocumentUpload(Claim claim, ClaimSubmissionOperationIndicators newIndicators) {
+        ClaimSubmissionOperationIndicators oldIndicators = claim.getClaimSubmissionOperationIndicators();
+        List<String> invalidIndicators = new ArrayList<>();
+
+        invalidIndicators.addAll(isFlagChangeValidForDocumentUpload("sealedClaimUpload",
+            oldIndicators.getSealedClaimUpload(),
+            newIndicators.getSealedClaimUpload(),
+            claim.getClaimDocument(CLAIM_ISSUE_RECEIPT).isPresent()
+        ));
+
+        invalidIndicators.addAll(isFlagChangeValidForDocumentUpload("claimIssueReceiptUpload",
+            oldIndicators.getClaimIssueReceiptUpload(),
+            newIndicators.getClaimIssueReceiptUpload(),
+            claim.getClaimDocument(CLAIM_ISSUE_RECEIPT).isPresent()
+        ));
+
+        if (invalidIndicators.size() > 0) {
+            throw new BadRequestException("Invalid input. The following indicator(s)"
+                + invalidIndicators + " cannot be set to NO");
         }
     }
 
@@ -71,16 +101,14 @@ public class ClaimSubmissionOperationIndicatorRule {
                     newIndicators.getStaffNotification()
                 );
             case "sealedClaimUpload":
-                return isFlagChangeValidForDocumentUpload(fieldName,
+                return isFlagChangeValid(fieldName,
                     oldIndicators.getSealedClaimUpload(),
-                    newIndicators.getSealedClaimUpload(),
-                    claim.getClaimDocument(SEALED_CLAIM).isPresent()
+                    newIndicators.getSealedClaimUpload()
                 );
             case "claimIssueReceiptUpload":
-                return isFlagChangeValidForDocumentUpload(fieldName,
+                return isFlagChangeValid(fieldName,
                     oldIndicators.getClaimIssueReceiptUpload(),
-                    newIndicators.getClaimIssueReceiptUpload(),
-                    claim.getClaimDocument(CLAIM_ISSUE_RECEIPT).isPresent()
+                    newIndicators.getClaimIssueReceiptUpload()
                 );
             default:
                 return Collections.emptyList();
@@ -97,8 +125,7 @@ public class ClaimSubmissionOperationIndicatorRule {
         YesNoOption newValue,
         boolean isDocumentPresent
     ) {
-        return (newValue.equals(YES) && oldValue.equals(NO))
-            || (newValue.equals(NO) && oldValue.equals(YES) && isDocumentPresent)
+        return newValue.equals(NO) && oldValue.equals(YES) && isDocumentPresent
             ? ImmutableList.of(fieldName)
             : Collections.emptyList();
     }
