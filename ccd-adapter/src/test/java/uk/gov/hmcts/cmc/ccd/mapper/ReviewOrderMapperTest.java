@@ -10,12 +10,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 
 import java.time.LocalDateTime;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDReviewOrder.RequestedBy.DEFENDANT;
-import static uk.gov.hmcts.cmc.domain.models.ReviewOrder.RequestedBy.CLAIMANT;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -27,11 +27,7 @@ public class ReviewOrderMapperTest {
 
     @Test
     public void shouldMapReviewOrderToCCD() {
-        ReviewOrder reviewOrder = ReviewOrder.builder()
-            .reason("My reason")
-            .requestedBy(CLAIMANT)
-            .requestedAt(LocalDateTime.now())
-            .build();
+        ReviewOrder reviewOrder = SampleReviewOrder.getDefault();
 
         CCDReviewOrder ccdReviewOrder = mapper.to(reviewOrder);
 
