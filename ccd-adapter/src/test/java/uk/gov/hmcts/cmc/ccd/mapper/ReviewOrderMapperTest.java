@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 
 import java.time.LocalDateTime;
 
+import static org.junit.Assert.assertNull;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDReviewOrder.RequestedBy.DEFENDANT;
 
@@ -37,7 +37,7 @@ public class ReviewOrderMapperTest {
     @Test
     public void shouldMapNullReviewOrderToCCD() {
         CCDReviewOrder ccdReviewOrder = mapper.to(null);
-        Assertions.assertThat(ccdReviewOrder).isNull();
+        assertNull(ccdReviewOrder);
     }
 
     @Test
@@ -56,7 +56,6 @@ public class ReviewOrderMapperTest {
     @Test
     public void shouldMapNullCCDReviewOrderFromCCD() {
         ReviewOrder reviewOrder = mapper.from(null);
-        Assertions.assertThat(reviewOrder).isNull();
+        assertNull(reviewOrder);
     }
-
 }
