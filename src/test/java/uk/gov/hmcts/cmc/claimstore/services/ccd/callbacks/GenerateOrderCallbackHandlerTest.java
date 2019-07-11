@@ -166,6 +166,7 @@ public class GenerateOrderCallbackHandlerTest {
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
             generateOrderCallbackHandler
                 .handle(callbackParams);
+
         assertThat(response.getData()).contains(
             entry("directionList", ImmutableList.of("DOCUMENTS", "EYEWITNESS")),
             entry("docUploadDeadline", DEADLINE),

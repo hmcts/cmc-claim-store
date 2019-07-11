@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
@@ -81,16 +82,44 @@ public class DocAssemblyTemplateBodyMapperTest  {
             .judicial(Judicial.builder().firstName("Judge").lastName("McJudge").build())
             .referenceNumber("ref no")
             .hearingCourtName("Defendant Court")
-            .hearingCourtAddress("Defendant Court address\nSW1P4BB\nLondon")
+            .hearingCourtAddress(CCDAddress.builder()
+                .addressLine1("Defendant Court address")
+                .postCode("SW1P4BB")
+                .postTown("London")
+                .build())
             .docUploadForParty(CCDDirectionPartyType.CLAIMANT)
             .eyewitnessUploadForParty(CCDDirectionPartyType.DEFENDANT)
             .estimatedHearingDuration(CCDHearingDurationType.FOUR_HOURS)
-            .otherDirectionList(ImmutableList.of(
-                OtherDirection.builder()
+            .otherDirections(ImmutableList.of(
+                CCDOrderDirection.builder()
                     .sendBy(LocalDate.parse("2020-10-11"))
                     .directionComment("a direction")
                     .extraOrderDirection(CCDOrderDirectionType.OTHER)
                     .forParty(CCDDirectionPartyType.BOTH)
+                    .build(),
+                CCDOrderDirection.builder()
+                    .sendBy(LocalDate.parse("2020-10-11"))
+                    .extraOrderDirection(CCDOrderDirectionType.EXPERT_REPORT_PERMISSION)
+                    .forParty(CCDDirectionPartyType.BOTH)
+                    .expertReports(
+                        ImmutableList.of(
+                            CCDCollectionElement.<String>builder()
+                                .value("first")
+                                .build(),
+                            CCDCollectionElement.<String>builder()
+                                .value("second")
+                                .build(),
+                            CCDCollectionElement.<String>builder()
+                                .value("third")
+                                .build()))
+                    .extraDocUploadList(
+                        ImmutableList.of(
+                            CCDCollectionElement.<String>builder()
+                                .value("first document")
+                                .build(),
+                            CCDCollectionElement.<String>builder()
+                                .value("second document")
+                                .build()))
                     .build()
             ));
         //when
@@ -129,16 +158,45 @@ public class DocAssemblyTemplateBodyMapperTest  {
             .judicial(Judicial.builder().firstName("Judge").lastName("McJudge").build())
             .referenceNumber("ref no")
             .hearingCourtName("Birmingham Court")
-            .hearingCourtAddress("line1\nline2\nSW1P4BB\nBirmingham")
+            .hearingCourtAddress(CCDAddress.builder()
+                .addressLine1("line1")
+                .addressLine2("line2")
+                .postTown("Birmingham")
+                .postCode("SW1P4BB")
+                .build())
             .docUploadForParty(CCDDirectionPartyType.CLAIMANT)
             .eyewitnessUploadForParty(CCDDirectionPartyType.DEFENDANT)
             .estimatedHearingDuration(CCDHearingDurationType.FOUR_HOURS)
-            .otherDirectionList(ImmutableList.of(
-                OtherDirection.builder()
+            .otherDirections(ImmutableList.of(
+                CCDOrderDirection.builder()
                     .sendBy(LocalDate.parse("2020-10-11"))
                     .directionComment("a direction")
                     .extraOrderDirection(CCDOrderDirectionType.OTHER)
                     .forParty(CCDDirectionPartyType.BOTH)
+                    .build(),
+                CCDOrderDirection.builder()
+                    .sendBy(LocalDate.parse("2020-10-11"))
+                    .extraOrderDirection(CCDOrderDirectionType.EXPERT_REPORT_PERMISSION)
+                    .forParty(CCDDirectionPartyType.BOTH)
+                    .expertReports(
+                        ImmutableList.of(
+                            CCDCollectionElement.<String>builder()
+                                .value("first")
+                                .build(),
+                            CCDCollectionElement.<String>builder()
+                                .value("second")
+                                .build(),
+                            CCDCollectionElement.<String>builder()
+                                .value("third")
+                                .build()))
+                    .extraDocUploadList(
+                        ImmutableList.of(
+                            CCDCollectionElement.<String>builder()
+                                .value("first document")
+                                .build(),
+                            CCDCollectionElement.<String>builder()
+                                .value("second document")
+                                .build()))
                     .build()
             )).build();
 
@@ -170,14 +228,14 @@ public class DocAssemblyTemplateBodyMapperTest  {
     @Test
     public void shouldMapTemplateBodyWhenOtherDirectionIsNull() {
         CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData();
-        ccdOrderGenerationData.setOtherDirectionList(ImmutableList.of(
+        ccdOrderGenerationData.setOtherDirections(ImmutableList.of(
             CCDCollectionElement.<CCDOrderDirection>builder().value(null).build()));
         ccdCase.setOrderGenerationData(ccdOrderGenerationData);
         DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
             ccdCase,
             userDetails);
 
-        docAssemblyTemplateBodyBuilder.otherDirectionList(Collections.emptyList());
+        docAssemblyTemplateBodyBuilder.otherDirections(Collections.emptyList());
         DocAssemblyTemplateBody expectedBody = docAssemblyTemplateBodyBuilder.build();
 
         assertThat(requestBody).isEqualTo(expectedBody);

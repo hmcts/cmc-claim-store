@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.processors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.json.JSONException;
+import org.junit.Assert;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
@@ -179,7 +180,7 @@ public class JsonMapperTest {
 
         //then
         Response expected = SampleResponse.validDefaults();
-        assertThat(output).isEqualTo(expected);
+        Assert.assertEquals(output, expected);
     }
 
     @Test
@@ -232,8 +233,6 @@ public class JsonMapperTest {
                 CCDOrderGenerationData
                     .builder()
                     .build())
-            //.responseDeadline(date.plusDays(14))
-            //.moreTimeRequested(CCDYesNoOption.NO)
             .build();
 
         assertThat(ccdCase).isEqualTo(expected);
@@ -249,8 +248,8 @@ public class JsonMapperTest {
         data.put("docUploadDeadline", null);
         data.put("hearingCourt", "DEFENDANT_COURT");
         data.put("hearingStatement", null);
-        data.put("hearingIsRequired", "Yes");
-        data.put("otherDirectionList", new ArrayList<>());
+        data.put("hearingRequired", "Yes");
+        data.put("otherDirections", new ArrayList<>());
         data.put("directionList", ImmutableList.of("EYEWITNESS"));
         data.put("estimatedHearingDuration", "HALF_HOUR");
 
@@ -258,8 +257,8 @@ public class JsonMapperTest {
 
         CCDOrderGenerationData expected = CCDOrderGenerationData.builder()
             .directionList(Collections.singletonList(CCDOrderDirectionType.EYEWITNESS))
-            .otherDirectionList(Collections.emptyList())
-            .hearingIsRequired(YES)
+            .otherDirections(Collections.emptyList())
+            .hearingRequired(YES)
             .eyewitnessUploadDeadline(LocalDate.parse("2019-06-03"))
             .hearingCourt(CCDHearingCourtType.DEFENDANT_COURT)
             .eyewitnessUploadForParty(CCDDirectionPartyType.BOTH)
