@@ -14,8 +14,8 @@ import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import java.time.LocalDateTime;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDReviewOrder.PartyType.DEFENDANT;
-import static uk.gov.hmcts.cmc.domain.models.ReviewOrder.PartyType.CLAIMANT;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDReviewOrder.RequestedBy.DEFENDANT;
+import static uk.gov.hmcts.cmc.domain.models.ReviewOrder.RequestedBy.CLAIMANT;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
