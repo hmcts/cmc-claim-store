@@ -25,6 +25,8 @@ import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
@@ -91,6 +93,14 @@ public class Assertions {
 
     public static EvidenceRowAssert assertThat(EvidenceRow evidenceRow) {
         return new EvidenceRowAssert(evidenceRow);
+    }
+
+    public static ExpertReportAssert assertThat(ExpertReport expertReportRow) {
+        return new ExpertReportAssert(expertReportRow);
+    }
+
+    public static DirectionsQuestionnaireAssert assertThat(DirectionsQuestionnaire directionsQuestionnaire) {
+        return new DirectionsQuestionnaireAssert(directionsQuestionnaire);
     }
 
     public static ClaimAssert assertThat(Claim claim) {
