@@ -13,7 +13,9 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.MediationCSVGenerationException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseSearchApi;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.amount.NotKnown;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
@@ -108,6 +110,27 @@ public class MediationReportServiceTest {
             .isInstanceOf(MediationCSVGenerationException.class);
 
         verify(appInsights).trackEvent(eq(AppInsightsEvent.MEDIATION_REPORT_FAILURE), anyString(), any());
+    }
+
+    @Test
+    public void shouldReportAppInsightsEventOnProblematicRecords() {
+        User mockUser = mock(User.class);
+        Claim claimWithNoClaimData = SampleClaim.builder()
+            .withResponse(SampleResponse.FullDefence.validDefaults())
+            .withClaimantResponse(SampleClaimantResponse.validDefaultRejection())
+            .withClaimData(SampleClaimData.builder().withAmount(new NotKnown()).build())
+            .build();
+        when(caseSearchApi.getMediationClaims(anyString(), any(LocalDate.class)))
+            .thenReturn(Collections.singletonList(claimWithNoClaimData));
+        when(userService.authenticateAnonymousCaseWorker()).thenReturn(mockUser);
+        when(mockUser.getAuthorisation()).thenReturn(AUTHORISATION);
+
+        service.automatedMediationReport();
+
+        verify(appInsights).trackEvent(
+            eq(AppInsightsEvent.MEDIATION_REPORT_FAILURE),
+            anyString(),
+            eq("{000CM001=Unable to find total amount of claim}"));
     }
 
     private static String inputStreamToString(InputStream is) {

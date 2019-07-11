@@ -28,6 +28,7 @@ import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.MediationRequest;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -38,6 +39,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -46,7 +48,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
@@ -348,6 +352,15 @@ public class SupportControllerTest {
             .thenReturn(Optional.of(claim));
         controller.recoverClaimIssueOperations(CLAIMREFERENCENUMBER, AUTHORISATION);
         verify(postClaimOrchestrationHandler).representativeIssueHandler(any(RepresentedClaimCreatedEvent.class));
+    }
+
+    @Test
+    public void shouldSendAppInsightIfMediationReportFails() {
+        LocalDate mediationSearchDate = LocalDate.of(2019, 07, 07);
+        doNothing().when(mediationReportService).sendMediationReport(eq(AUTHORISATION), any());
+        controller.sendMediation(AUTHORISATION, new MediationRequest(mediationSearchDate, "Holly@cow.com"));
+        verify(mediationReportService, times(1))
+            .sendMediationReport(eq(AUTHORISATION), eq(mediationSearchDate));
     }
 
 }
