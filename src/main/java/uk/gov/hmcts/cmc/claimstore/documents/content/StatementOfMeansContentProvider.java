@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.OnTaxPayments;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Residence;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.SelfEmployment;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
+import uk.gov.hmcts.cmc.domain.models.statementofmeans.Unemployment;
 
 import java.util.Map;
 
@@ -214,6 +215,8 @@ public class StatementOfMeansContentProvider {
                 return "Self-employed";
             } else if (employment.getEmployers().size() > 0) {
                 return "Employed";
+            } else if (employment.getUnemployment().map(Unemployment::isRetired).orElse(false)) {
+                return "Retired";
             } else {
                 return "Unemployed";
             }

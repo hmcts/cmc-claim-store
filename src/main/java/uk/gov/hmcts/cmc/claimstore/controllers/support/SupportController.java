@@ -30,6 +30,7 @@ import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimSubmissionOperationIndicatorRule;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
@@ -194,11 +195,11 @@ public class SupportController {
 
     @PutMapping("/claims/{referenceNumber}/recover-operations")
     @ApiOperation("Recovers the failed operations which are mandatory to issue a claim.")
-    public void recoverClaimIssueOperations(
-        @PathVariable("referenceNumber") String referenceNumber,
-        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation
-    ) {
-        Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
+    public void recoverClaimIssueOperations(@PathVariable("referenceNumber") String referenceNumber) {
+        User user = userService.authenticateAnonymousCaseWorker();
+        String authorisation = user.getAuthorisation();
+
+        Claim claim = claimService.getClaimByReference(referenceNumber, authorisation)
             .orElseThrow(() -> new NotFoundException(String.format(CLAIM_DOES_NOT_EXIST, referenceNumber)));
         triggerAsyncOperation(authorisation, claim);
     }

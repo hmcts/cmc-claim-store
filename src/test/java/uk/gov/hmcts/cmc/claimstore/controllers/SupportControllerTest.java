@@ -20,6 +20,7 @@ import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimCreatedEvent
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimSubmissionOperationIndicatorRule;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
@@ -63,6 +64,7 @@ public class SupportControllerTest {
     private static final String CLAIMREFERENCENUMBER = "000CM001";
     private static final String RESPONSESUBMITTED = "response-submitted";
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder().build();
+    private static final User USER = new User(AUTHORISATION, USER_DETAILS);
 
     @Mock
     private ClaimService claimService;
@@ -326,18 +328,20 @@ public class SupportControllerTest {
     @Test
     public void shouldRecoverCitizenClaimIssueOperations() {
         Claim claim = SampleClaim.getDefault();
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
+        when(claimService.getClaimByReference(CLAIMREFERENCENUMBER, AUTHORISATION))
             .thenReturn(Optional.of(claim));
-        controller.recoverClaimIssueOperations(CLAIMREFERENCENUMBER, AUTHORISATION);
+        when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
+        controller.recoverClaimIssueOperations(CLAIMREFERENCENUMBER);
         verify(postClaimOrchestrationHandler).citizenIssueHandler(any(CitizenClaimCreatedEvent.class));
     }
 
     @Test
     public void shouldRecoverRepresentativeClaimIssueOperations() {
         Claim claim = SampleClaim.getDefaultForLegal();
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
+        when(claimService.getClaimByReference(CLAIMREFERENCENUMBER, AUTHORISATION))
             .thenReturn(Optional.of(claim));
-        controller.recoverClaimIssueOperations(CLAIMREFERENCENUMBER, AUTHORISATION);
+        when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
+        controller.recoverClaimIssueOperations(CLAIMREFERENCENUMBER);
         verify(postClaimOrchestrationHandler).representativeIssueHandler(any(RepresentedClaimCreatedEvent.class));
     }
 
