@@ -12,8 +12,6 @@ import java.util.Arrays;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
-import static uk.gov.hmcts.cmc.ccd.mapper.ClaimSubmissionOperationIndicatorMapper.mapClaimSubmissionOperationIndicatorsToCCD;
-import static uk.gov.hmcts.cmc.ccd.mapper.ClaimSubmissionOperationIndicatorMapper.mapFromCCDClaimSubmissionOperationIndicators;
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.toCaseName;
 
 @Component
@@ -22,15 +20,18 @@ public class CaseMapper {
     private final ClaimMapper claimMapper;
     private final boolean isMigrated;
     private final ClaimDocumentCollectionMapper claimDocumentCollectionMapper;
+    private final ClaimSubmissionOperationIndicatorMapper claimSubmissionOperationIndicatorMapper;
 
     public CaseMapper(
         ClaimMapper claimMapper,
         @Value("${migration.cases.flag:false}") boolean isMigrated,
-        ClaimDocumentCollectionMapper claimDocumentCollectionMapper
+        ClaimDocumentCollectionMapper claimDocumentCollectionMapper,
+        ClaimSubmissionOperationIndicatorMapper claimSubmissionOperationIndicatorMapper
     ) {
         this.claimMapper = claimMapper;
         this.isMigrated = isMigrated;
         this.claimDocumentCollectionMapper = claimDocumentCollectionMapper;
+        this.claimSubmissionOperationIndicatorMapper = claimSubmissionOperationIndicatorMapper;
     }
 
     public CCDCase to(Claim claim) {
@@ -57,7 +58,7 @@ public class CaseMapper {
             .migratedFromClaimStore(isMigrated ? YES : NO)
             .caseName(toCaseName.apply(claim))
             .claimSubmissionOperationIndicators(
-                mapClaimSubmissionOperationIndicatorsToCCD.apply(claim.getClaimSubmissionOperationIndicators()))
+                claimSubmissionOperationIndicatorMapper.to(claim.getClaimSubmissionOperationIndicators()))
             .build();
     }
 
@@ -78,7 +79,7 @@ public class CaseMapper {
             .issuedOn(ccdCase.getIssuedOn())
             .submitterEmail(ccdCase.getSubmitterEmail())
             .claimSubmissionOperationIndicators(
-                mapFromCCDClaimSubmissionOperationIndicators.apply(ccdCase.getClaimSubmissionOperationIndicators()));
+                claimSubmissionOperationIndicatorMapper.from(ccdCase.getClaimSubmissionOperationIndicators()));
 
         if (ccdCase.getFeatures() != null) {
             builder.features(Arrays.asList(ccdCase.getFeatures().split(",")));

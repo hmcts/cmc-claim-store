@@ -1,37 +1,40 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 
-import java.util.function.Function;
+@Component
+public class ClaimSubmissionOperationIndicatorMapper {
 
-import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.mapFrom;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.name;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.valueOf;
-import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.fromValue;
+    private final YesNoMapper yesNoMapper;
 
-public interface ClaimSubmissionOperationIndicatorMapper {
-    Function<CCDClaimSubmissionOperationIndicators, ClaimSubmissionOperationIndicators>
-        mapFromCCDClaimSubmissionOperationIndicators = claimSubmissionOperationIndicators ->
-        ClaimSubmissionOperationIndicators.builder()
-            .claimantNotification(fromValue(claimSubmissionOperationIndicators.getClaimantNotification().name()))
-            .defendantNotification(fromValue(name(claimSubmissionOperationIndicators.getDefendantNotification())))
-            .bulkPrint(fromValue(claimSubmissionOperationIndicators.getBulkPrint().name()))
-            .rpa(fromValue(name(claimSubmissionOperationIndicators.getRpa())))
-            .staffNotification(fromValue(claimSubmissionOperationIndicators.getStaffNotification().name()))
-            .sealedClaimUpload(fromValue(claimSubmissionOperationIndicators.getSealedClaimUpload().name()))
-            .claimIssueReceiptUpload(fromValue(name(claimSubmissionOperationIndicators.getClaimIssueReceiptUpload())))
+    public ClaimSubmissionOperationIndicatorMapper(YesNoMapper yesNoMapper) {
+        this.yesNoMapper = yesNoMapper;
+    }
+
+    public ClaimSubmissionOperationIndicators from(CCDClaimSubmissionOperationIndicators ccdOperationIndicators) {
+        return ClaimSubmissionOperationIndicators.builder()
+            .claimantNotification(yesNoMapper.from(ccdOperationIndicators.getClaimantNotification()))
+            .defendantNotification(yesNoMapper.from(ccdOperationIndicators.getDefendantNotification()))
+            .bulkPrint(yesNoMapper.from(ccdOperationIndicators.getBulkPrint()))
+            .rpa(yesNoMapper.from(ccdOperationIndicators.getRpa()))
+            .staffNotification(yesNoMapper.from(ccdOperationIndicators.getStaffNotification()))
+            .sealedClaimUpload(yesNoMapper.from(ccdOperationIndicators.getSealedClaimUpload()))
+            .claimIssueReceiptUpload(yesNoMapper.from(ccdOperationIndicators.getClaimIssueReceiptUpload()))
             .build();
+    }
 
-    Function<ClaimSubmissionOperationIndicators, CCDClaimSubmissionOperationIndicators>
-        mapClaimSubmissionOperationIndicatorsToCCD = claimSubmissionOperationIndicators ->
-        CCDClaimSubmissionOperationIndicators.builder()
-            .claimantNotification(valueOf(claimSubmissionOperationIndicators.getClaimantNotification().name()))
-            .defendantNotification(mapFrom(claimSubmissionOperationIndicators.getDefendantNotification()))
-            .bulkPrint(valueOf(claimSubmissionOperationIndicators.getBulkPrint().name()))
-            .rpa(mapFrom(claimSubmissionOperationIndicators.getRpa()))
-            .staffNotification(valueOf(claimSubmissionOperationIndicators.getStaffNotification().name()))
-            .sealedClaimUpload(valueOf(claimSubmissionOperationIndicators.getSealedClaimUpload().name()))
-            .claimIssueReceiptUpload(mapFrom(claimSubmissionOperationIndicators.getClaimIssueReceiptUpload()))
+    public CCDClaimSubmissionOperationIndicators to(ClaimSubmissionOperationIndicators operationIndicators) {
+
+        return CCDClaimSubmissionOperationIndicators.builder()
+            .claimantNotification(yesNoMapper.to(operationIndicators.getClaimantNotification()))
+            .defendantNotification(yesNoMapper.to(operationIndicators.getDefendantNotification()))
+            .bulkPrint(yesNoMapper.to(operationIndicators.getBulkPrint()))
+            .rpa(yesNoMapper.to(operationIndicators.getRpa()))
+            .staffNotification(yesNoMapper.to(operationIndicators.getStaffNotification()))
+            .sealedClaimUpload(yesNoMapper.to(operationIndicators.getSealedClaimUpload()))
+            .claimIssueReceiptUpload(yesNoMapper.to(operationIndicators.getClaimIssueReceiptUpload()))
             .build();
+    }
 }
