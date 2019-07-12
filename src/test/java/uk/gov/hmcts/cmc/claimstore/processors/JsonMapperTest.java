@@ -43,7 +43,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 
 public class JsonMapperTest {
 
@@ -248,7 +248,7 @@ public class JsonMapperTest {
         data.put("docUploadDeadline", null);
         data.put("hearingCourt", "DEFENDANT_COURT");
         data.put("hearingStatement", null);
-        data.put("hearingRequired", "Yes");
+        data.put("paperDetermination", "No");
         data.put("otherDirections", new ArrayList<>());
         data.put("directionList", ImmutableList.of("EYEWITNESS"));
         data.put("estimatedHearingDuration", "HALF_HOUR");
@@ -258,7 +258,7 @@ public class JsonMapperTest {
         CCDOrderGenerationData expected = CCDOrderGenerationData.builder()
             .directionList(Collections.singletonList(CCDOrderDirectionType.EYEWITNESS))
             .otherDirections(Collections.emptyList())
-            .hearingRequired(YES)
+            .paperDetermination(NO)
             .eyewitnessUploadDeadline(LocalDate.parse("2019-06-03"))
             .hearingCourt(CCDHearingCourtType.DEFENDANT_COURT)
             .eyewitnessUploadForParty(CCDDirectionPartyType.BOTH)

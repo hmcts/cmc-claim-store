@@ -93,7 +93,7 @@ public class DrawOrderCallbackHandlerTest {
     @Test
     public void shouldAddDraftDocumentToEmptyCaseDocumentsOnEventStart() {
         callbackParams = CallbackParams.builder()
-            .type(CallbackType.ABOUT_TO_START)
+            .type(CallbackType.ABOUT_TO_SUBMIT)
             .request(callbackRequest)
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
@@ -118,7 +118,7 @@ public class DrawOrderCallbackHandlerTest {
     @Test
     public void shouldAddDraftDocumentToExistingCaseDocumentsOnEventStart() {
         callbackParams = CallbackParams.builder()
-            .type(CallbackType.ABOUT_TO_START)
+            .type(CallbackType.ABOUT_TO_SUBMIT)
             .request(callbackRequest)
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
@@ -153,7 +153,7 @@ public class DrawOrderCallbackHandlerTest {
     @Test(expected = CallbackException.class)
     public void shouldThrowIfDraftOrderIsNotPresent() {
         callbackParams = CallbackParams.builder()
-            .type(CallbackType.ABOUT_TO_START)
+            .type(CallbackType.ABOUT_TO_SUBMIT)
             .request(callbackRequest)
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();

@@ -402,7 +402,7 @@ public class CCDCaseApi {
 
     private List<Claim> extractClaims(List<CaseDetails> result) {
         return asStream(result)
-            .map(entry -> ccdCaseDataToClaim.extractClaim(entry))
+            .map(ccdCaseDataToClaim::extractClaim)
             .collect(Collectors.toList());
     }
 }
