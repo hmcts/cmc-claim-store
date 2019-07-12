@@ -27,12 +27,9 @@ public class ClaimSubmissionOperationIndicators {
             @Override
             public ClaimSubmissionOperationIndicators build() {
                 super.claimantNotification = setDefaultIfNull(super.claimantNotification);
-                super.defendantNotification = setDefaultIfNull(super.defendantNotification);
                 super.bulkPrint = setDefaultIfNull(super.bulkPrint);
-                super.rpa = setDefaultIfNull(super.rpa);
                 super.staffNotification = setDefaultIfNull(super.staffNotification);
                 super.sealedClaimUpload = setDefaultIfNull(super.sealedClaimUpload);
-                super.claimIssueReceiptUpload = setDefaultIfNull(super.claimIssueReceiptUpload);
 
                 return super.build();
             }
@@ -48,7 +45,7 @@ public class ClaimSubmissionOperationIndicators {
         return Stream.of(
             bulkPrint,
             staffNotification,
-            defendantNotification
+            setDefaultIfNull(defendantNotification)
         ).allMatch(ind -> ind.equals(YES));
     }
 
@@ -56,12 +53,16 @@ public class ClaimSubmissionOperationIndicators {
     public boolean isAllSuccess() {
         return Stream.of(
             claimantNotification,
-            defendantNotification,
+            setDefaultIfNull(defendantNotification),
             bulkPrint,
-            rpa,
+            setDefaultIfNull(rpa),
             staffNotification,
             sealedClaimUpload,
-            claimIssueReceiptUpload
+            setDefaultIfNull(claimIssueReceiptUpload)
         ).allMatch(option -> option == YES);
+    }
+
+    public static YesNoOption setDefaultIfNull(YesNoOption prop) {
+        return Objects.isNull(prop) ? YesNoOption.NO : prop;
     }
 }

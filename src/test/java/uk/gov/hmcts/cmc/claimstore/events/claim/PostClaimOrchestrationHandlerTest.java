@@ -42,7 +42,7 @@ public class PostClaimOrchestrationHandlerTest {
     public static final Claim CLAIM = SampleClaim.getDefault();
     private static final String SUBMITTER_NAME = "submitter-name";
     public static final String AUTHORISATION = "AUTHORISATION";
-    private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
+    private static final byte[] PDF_BYTES = new byte[] {1, 2, 3, 4};
 
     private Map<String, Object> claimContents = new HashMap<>();
     private String claimTemplate = "claimTemplate";
@@ -439,7 +439,6 @@ public class PostClaimOrchestrationHandlerTest {
         verify(claimantOperationService)
             .confirmRepresentative(eq(CLAIM), eq(SUBMITTER_NAME), anyString(), eq(AUTHORISATION));
 
-        verify(rpaOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
         verify(notifyStaffOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
         verify(uploadOperationService).uploadDocument(eq(CLAIM), eq(AUTHORISATION), any());
     }

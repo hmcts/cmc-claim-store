@@ -21,6 +21,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators.setDefaultIfNull;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 
 @Async("threadPoolTaskExecutor")
@@ -65,12 +66,12 @@ public class PostClaimOrchestrationHandler {
                 : claim;
 
         uploadClaimIssueReceiptOperation = (claim, authorisation, claimIssueReceipt) ->
-            claim.getClaimSubmissionOperationIndicators().getClaimIssueReceiptUpload() == NO
+            setDefaultIfNull(claim.getClaimSubmissionOperationIndicators().getClaimIssueReceiptUpload()) == NO
                 ? uploadOperationService.uploadDocument(claim, authorisation, claimIssueReceipt)
                 : claim;
 
         rpaOperation = (claim, authorisation, sealedClaim) ->
-            claim.getClaimSubmissionOperationIndicators().getRpa() == NO
+            setDefaultIfNull(claim.getClaimSubmissionOperationIndicators().getRpa()) == NO
                 ? rpaOperationService.notify(claim, authorisation, sealedClaim)
                 : claim;
 
@@ -136,7 +137,6 @@ public class PostClaimOrchestrationHandler {
 
             Supplier<Claim> updatedClaim = () ->
                 doUploadSealedClaim
-                    .andThen(c -> rpaOperation.perform(c, authorisation, sealedClaim))
                     .andThen(c -> notifyStaffOperation.perform(c, authorisation, sealedClaim))
                     .andThen(c -> notifyRepresentativeOperation.perform(c, event))
                     .apply(claim);

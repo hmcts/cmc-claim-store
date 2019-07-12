@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
+
 public enum CCDYesNoOption {
     YES("yes"),
     NO("no");
@@ -20,5 +22,13 @@ public enum CCDYesNoOption {
 
     public static CCDYesNoOption valueOf(boolean value) {
         return value ? YES : NO;
+    }
+
+    public static CCDYesNoOption mapFrom(YesNoOption value) {
+        if (value == null) {
+            return null;
+        }
+
+        return CCDYesNoOption.valueOf(value.name());
     }
 }
