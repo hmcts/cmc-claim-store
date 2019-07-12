@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import java.util.function.Function;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.mapFrom;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.name;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.valueOf;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.fromValue;
 
@@ -14,12 +15,12 @@ public interface ClaimSubmissionOperationIndicatorMapper {
         mapFromCCDClaimSubmissionOperationIndicators = claimSubmissionOperationIndicators ->
         ClaimSubmissionOperationIndicators.builder()
             .claimantNotification(fromValue(claimSubmissionOperationIndicators.getClaimantNotification().name()))
-            .defendantNotification(fromValue(claimSubmissionOperationIndicators.getDefendantNotification().name()))
+            .defendantNotification(fromValue(name(claimSubmissionOperationIndicators.getDefendantNotification())))
             .bulkPrint(fromValue(claimSubmissionOperationIndicators.getBulkPrint().name()))
-            .rpa(fromValue(claimSubmissionOperationIndicators.getRpa().name()))
+            .rpa(fromValue(name(claimSubmissionOperationIndicators.getRpa())))
             .staffNotification(fromValue(claimSubmissionOperationIndicators.getStaffNotification().name()))
             .sealedClaimUpload(fromValue(claimSubmissionOperationIndicators.getSealedClaimUpload().name()))
-            .claimIssueReceiptUpload(fromValue(claimSubmissionOperationIndicators.getClaimIssueReceiptUpload().name()))
+            .claimIssueReceiptUpload(fromValue(name(claimSubmissionOperationIndicators.getClaimIssueReceiptUpload())))
             .build();
 
     Function<ClaimSubmissionOperationIndicators, CCDClaimSubmissionOperationIndicators>

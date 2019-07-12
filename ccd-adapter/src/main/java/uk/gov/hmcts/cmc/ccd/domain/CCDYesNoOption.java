@@ -31,4 +31,12 @@ public enum CCDYesNoOption {
 
         return CCDYesNoOption.valueOf(value.name());
     }
+
+    public static String name(CCDYesNoOption value) {
+        if (value == null) {
+            return null;
+        }
+
+        return value.name();
+    }
 }
