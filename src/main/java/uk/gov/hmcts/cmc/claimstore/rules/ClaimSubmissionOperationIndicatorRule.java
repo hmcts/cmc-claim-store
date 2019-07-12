@@ -20,15 +20,11 @@ import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 @Service
 public class ClaimSubmissionOperationIndicatorRule {
 
-    private YesNoOption sealedClaimUpload;
-    private YesNoOption claimIssueReceiptUpload;
-
     public void assertOperationIndicatorUpdateIsValid(
         @NotNull Claim claim,
         ClaimSubmissionOperationIndicators newIndicators
     ) {
         validateIndividualIndicator(claim, newIndicators);
-
         validateClaimDocumentUpload(claim, newIndicators);
     }
 
