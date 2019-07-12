@@ -87,14 +87,17 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
 
-        assertThat(responseData).hasSize(4);
+        assertThat(responseData).hasSize(7);
         assertThat(LocalDate.parse(responseData.get("docUploadDeadline").toString()))
-            .isAfterOrEqualTo(LocalDate.now().plusDays(33));
+            .isAfterOrEqualTo(LocalDate.now().plusDays(42));
         assertThat(LocalDate.parse(responseData.get("eyewitnessUploadDeadline").toString()))
-            .isAfterOrEqualTo(LocalDate.now().plusDays(33));
+            .isAfterOrEqualTo(LocalDate.now().plusDays(42));
         assertThat(responseData).flatExtracting("directionList")
             .containsExactlyInAnyOrder("DOCUMENTS", "EYEWITNESS");
+        assertThat(responseData.get("docUploadForParty")).isEqualTo("BOTH");
+        assertThat(responseData.get("eyewitnessUploadForParty")).isEqualTo("BOTH");
         assertThat(responseData.get("preferredCourt")).isEqualTo("Preferred court");
+        assertThat(responseData.get("paperDetermination")).isEqualTo("NO");
         assertThat(responseData.get("newRequestedCourt")).isNull();
         assertThat(responseData.get("preferredCourtObjectingParty")).isNull();
         assertThat(responseData.get("preferredCourtObjectingReason")).isNull();
@@ -131,12 +134,15 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
             .data(caseDetailsTemp.getData())
             .build();
         Map<String, Object> data = new HashMap<>(caseDetailsTemp.getData());
-        data.put("hearingRequired", "Yes");
+        data.put("paperDetermination", "No");
         data.put("docUploadDeadline", "2019-06-03");
         data.put("docUploadForParty", "BOTH");
         data.put("eyewitnessUploadDeadline", "2019-06-03");
         data.put("eyewitnessUploadForParty", "CLAIMANT");
         data.put("directionList", ImmutableList.of("EYEWITNESS", "DOCUMENTS"));
+        data.put("extraDocUploadList", ImmutableList.of(ImmutableMap.of(
+            "id", "",
+            "value", "text")));
         data.put("otherDirections", ImmutableList.of(
             ImmutableMap.of(
                 "id", "",
