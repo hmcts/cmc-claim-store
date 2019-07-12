@@ -46,7 +46,7 @@ public class DrawOrderCallbackHandlerTest extends MockSpringTest {
 
     @Test
     public void shouldAddDraftDocumentToEmptyCaseDocumentsOnEventStart() throws Exception {
-        MvcResult mvcResult = makeRequest(CallbackType.ABOUT_TO_START.getValue())
+        MvcResult mvcResult = makeRequest(CallbackType.ABOUT_TO_SUBMIT.getValue())
             .andExpect(status().isOk())
             .andReturn();
         Map<String, Object> responseData = deserializeObjectFrom(
