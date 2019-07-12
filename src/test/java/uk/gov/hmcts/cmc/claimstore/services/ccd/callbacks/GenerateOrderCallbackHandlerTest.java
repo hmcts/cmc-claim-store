@@ -110,7 +110,10 @@ public class GenerateOrderCallbackHandlerTest {
         assertThat(response.getData()).contains(
             entry("directionList", ImmutableList.of("DOCUMENTS", "EYEWITNESS")),
             entry("docUploadDeadline", DEADLINE),
+            entry("docUploadForParty", "BOTH"),
             entry("eyewitnessUploadDeadline", DEADLINE),
+            entry("eyewitnessUploadForParty", "BOTH"),
+            entry("paperDetermination", "NO"),
             entry("preferredCourt", ccdCase.getPreferredCourt()),
             entry("newRequestedCourt", null),
             entry("preferredCourtObjectingParty", null),
@@ -140,7 +143,10 @@ public class GenerateOrderCallbackHandlerTest {
         assertThat(response.getData()).contains(
             entry("directionList", ImmutableList.of("DOCUMENTS", "EYEWITNESS")),
             entry("docUploadDeadline", DEADLINE),
+            entry("docUploadForParty", "BOTH"),
             entry("eyewitnessUploadDeadline", DEADLINE),
+            entry("eyewitnessUploadForParty", "BOTH"),
+            entry("paperDetermination", "NO"),
             entry("preferredCourt", ccdCase.getPreferredCourt()),
             entry("newRequestedCourt", "Claimant Court"),
             entry("preferredCourtObjectingParty", "Res_CLAIMANT"),
@@ -170,7 +176,10 @@ public class GenerateOrderCallbackHandlerTest {
         assertThat(response.getData()).contains(
             entry("directionList", ImmutableList.of("DOCUMENTS", "EYEWITNESS")),
             entry("docUploadDeadline", DEADLINE),
+            entry("docUploadForParty", "BOTH"),
             entry("eyewitnessUploadDeadline", DEADLINE),
+            entry("eyewitnessUploadForParty", "BOTH"),
+            entry("paperDetermination", "NO"),
             entry("preferredCourt", ccdCase.getPreferredCourt()),
             entry("newRequestedCourt", "Defendant Court"),
             entry("preferredCourtObjectingParty", "Res_DEFENDANT"),
@@ -185,7 +194,7 @@ public class GenerateOrderCallbackHandlerTest {
         when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
             .templateId("testTemplateId")
-            .outputType(OutputType.DOC)
+            .outputType(OutputType.PDF)
             .formPayload(docAssemblyTemplateBodyMapper
                 .from(ccdCase, userService.getUserDetails(BEARER_TOKEN)))
             .build();
