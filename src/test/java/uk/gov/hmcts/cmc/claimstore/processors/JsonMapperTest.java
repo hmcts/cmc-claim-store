@@ -34,7 +34,6 @@ import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -249,7 +248,7 @@ public class JsonMapperTest {
         data.put("hearingCourt", "DEFENDANT_COURT");
         data.put("hearingStatement", null);
         data.put("paperDetermination", "No");
-        data.put("otherDirections", new ArrayList<>());
+        data.put("otherDirections", Collections.emptyList());
         data.put("directionList", ImmutableList.of("EYEWITNESS"));
         data.put("estimatedHearingDuration", "HALF_HOUR");
 

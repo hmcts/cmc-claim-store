@@ -116,7 +116,6 @@ public class GenerateOrderCallbackHandlerTest {
             entry("eyewitnessUploadDeadline", DEADLINE),
             entry("eyewitnessUploadForParty", "BOTH"),
             entry("paperDetermination", "NO"),
-            entry("otherDirectionHeaders", "HEADER_UPLOAD"),
             entry("preferredCourt", ccdCase.getPreferredCourt()),
             entry("newRequestedCourt", null),
             entry("preferredCourtObjectingParty", null),
@@ -153,7 +152,7 @@ public class GenerateOrderCallbackHandlerTest {
             entry("preferredCourtObjectingReason", null)
         ).doesNotContain(
             entry("otherDirectionHeaders", null)
-        );;
+        );
     }
 
     @Test

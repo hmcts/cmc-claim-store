@@ -21,6 +21,8 @@ public class CCDOrderDirection {
 
     private CCDOrderDirectionType extraOrderDirection;
 
+    private CCDOtherDirectionHeaderType otherDirectionHeaders;
+
     private String directionComment;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
@@ -42,6 +44,4 @@ public class CCDOrderDirection {
     List<CCDCollectionElement<String>> getExpertReports() {
         return expertReports;
     }
-
-    private CCDOtherDirectionHeaderType otherDirectionHeaders;
 }
