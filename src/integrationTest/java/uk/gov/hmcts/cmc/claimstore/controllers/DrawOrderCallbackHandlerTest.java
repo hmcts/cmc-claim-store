@@ -1,22 +1,31 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import com.google.common.collect.ImmutableMap;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
+import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
+import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +33,8 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -42,6 +53,23 @@ public class DrawOrderCallbackHandlerTest extends MockSpringTest {
 
     @MockBean
     private OrderDrawnNotificationService orderDrawnNotificationService;
+    @MockBean
+    private DocumentManagementService documentManagementService;
+    @MockBean
+    private LegalOrderService legalOrderService;
+    @MockBean
+    private CaseDetailsConverter caseDetailsConverter;
+
+    @Before
+    public void setUp() throws URISyntaxException {
+        given(documentManagementService
+            .downloadDocument(
+                AUTHORISATION_TOKEN,
+                new URI(DOCUMENT_URL),
+                null)).willReturn("template".getBytes());
+        Claim claim = SampleClaim.builder().build();
+        given(caseDetailsConverter.extractClaim(any(CaseDetails.class))).willReturn(claim);
+    }
 
     @Test
     public void shouldAddDraftDocumentToEmptyCaseDocumentsOnEventStart() throws Exception {
@@ -67,15 +95,25 @@ public class DrawOrderCallbackHandlerTest extends MockSpringTest {
     }
 
     @Test
-    public void shouldNotifyPartiesOnEventSubmitted() throws Exception {
-        makeRequest(CallbackType.SUBMITTED.getValue())
+    public void shouldNotifyPartiesAndBulkPrintLegalOrderAndSheetOnSubmittedEvent() throws Exception {
+        MvcResult mvcResult = makeRequest(CallbackType.SUBMITTED.getValue())
             .andExpect(status().isOk())
             .andReturn();
-
+        SubmittedCallbackResponse response = deserializeObjectFrom(
+            mvcResult,
+            SubmittedCallbackResponse.class
+        );
         verify(orderDrawnNotificationService)
             .notifyClaimant(any(Claim.class));
         verify(orderDrawnNotificationService)
             .notifyDefendant(any(Claim.class));
+        verify(legalOrderService).print(
+            eq(AUTHORISATION_TOKEN),
+            any(Claim.class),
+            any(CCDDocument.class)
+        );
+        assertThat(response.getConfirmationHeader()).isNull();
+        assertThat(response.getConfirmationBody()).isNull();
     }
 
     private ResultActions makeRequest(String callbackType) throws Exception {
