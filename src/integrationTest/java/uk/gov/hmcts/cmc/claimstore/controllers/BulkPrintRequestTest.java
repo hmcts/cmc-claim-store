@@ -14,7 +14,6 @@ import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
 import uk.gov.hmcts.cmc.claimstore.services.staff.BulkPrintStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
-import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.util.UUID;
 
@@ -22,6 +21,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -62,7 +62,8 @@ public class BulkPrintRequestTest extends BaseSaveTest {
             .andReturn();
 
         verify(bulkPrintNotificationService, never())
-            .notifyFailedBulkPrint(any(Document.class), any(Document.class),
+            .notifyFailedBulkPrint(
+                anyList(),
                 eq(deserializeObjectFrom(result, Claim.class)));
     }
 
@@ -82,7 +83,8 @@ public class BulkPrintRequestTest extends BaseSaveTest {
             .andReturn();
 
         verify(bulkPrintNotificationService)
-            .notifyFailedBulkPrint(any(Document.class), any(Document.class),
+            .notifyFailedBulkPrint(
+                anyList(),
                 any(Claim.class));
     }
 
@@ -102,7 +104,8 @@ public class BulkPrintRequestTest extends BaseSaveTest {
             .andReturn();
 
         verify(bulkPrintNotificationService)
-            .notifyFailedBulkPrint(any(Document.class), any(Document.class),
+            .notifyFailedBulkPrint(
+                anyList(),
                 any(Claim.class));
     }
 }
