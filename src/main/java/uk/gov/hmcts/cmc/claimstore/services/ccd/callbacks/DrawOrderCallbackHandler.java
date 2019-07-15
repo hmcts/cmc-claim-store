@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
-import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
@@ -28,8 +27,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.ORDER_DIRECTIONS;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DRAW_ORDER;
+
 @Service
 public class DrawOrderCallbackHandler extends CallbackHandler {
+    private static final String CASE_DOCUMENTS = "caseDocuments";
+
     private final Clock clock;
     private final JsonMapper jsonMapper;
     private final OrderDrawnNotificationService orderDrawnNotificationService;
@@ -51,7 +55,7 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
     @Override
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
-            CallbackType.ABOUT_TO_START, this::copyDraftToCaseDocument,
+            CallbackType.ABOUT_TO_SUBMIT, this::copyDraftToCaseDocument,
             CallbackType.SUBMITTED, this::notifyParties
         );
     }
@@ -68,7 +72,7 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
 
     @Override
     public List<CaseEvent> handledEvents() {
-        return Collections.singletonList(CaseEvent.DRAW_ORDER);
+        return Collections.singletonList(DRAW_ORDER);
     }
 
     private CallbackResponse copyDraftToCaseDocument(CallbackParams callbackParams) {
@@ -85,7 +89,7 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
                 .value(CCDClaimDocument.builder()
                     .documentLink(draftOrderDoc)
                     .createdDatetime(LocalDateTime.now(clock))
-                    .documentType(CCDClaimDocumentType.ORDER_DIRECTIONS)
+                    .documentType(ORDER_DIRECTIONS)
                     .build())
                 .build();
 
@@ -97,7 +101,7 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
         return AboutToStartOrSubmitCallbackResponse
             .builder()
             .data(ImmutableMap.of(
-                "caseDocuments", currentCaseDocuments))
+                CASE_DOCUMENTS, currentCaseDocuments))
             .build();
     }
 }
