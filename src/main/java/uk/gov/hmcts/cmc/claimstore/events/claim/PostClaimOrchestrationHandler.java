@@ -149,10 +149,6 @@ public class PostClaimOrchestrationHandler {
     }
 
     private boolean isDefaultedToNo(YesNoOption input) {
-        if (input == null) {
-            return false;
-        }
-
         return input == YesNoOption.NO;
     }
 }
