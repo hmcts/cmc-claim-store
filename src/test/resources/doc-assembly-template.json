@@ -44,7 +44,7 @@
       "OtherDirection":{
         "extraOrderDirection":"OTHER",
         "directionComment":"a direction",
-        "otherDirectionHeaders": "HEADER_UPLOAD",
+        "otherDirectionHeaders": "UPLOAD",
         "sendBy":"11-10-2020",
         "forParty":"BOTH"
       }
@@ -52,7 +52,7 @@
     {
       "OtherDirection":{
         "extraOrderDirection":"EXPERT_REPORT_PERMISSION",
-        "expertReportPermissionStatementList": [
+        "expertReports": [
           {
             "id": null,
             "value": "first"
