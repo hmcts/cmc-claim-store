@@ -146,7 +146,6 @@ staff-notifications:
 
 feature_toggles:
   watermark_pdf: false
-  emailToStaff: true
   reminderEmails: false
   ccd_async_enabled: false
   ccd_enabled: false
