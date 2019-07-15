@@ -122,7 +122,6 @@ public class SampleData {
             .value(CCDEvidenceRow.builder().type(EXPERT_WITNESS).description("description of evidence").build())
             .build()));
 
-
     //Utility class
     private SampleData() {
     }

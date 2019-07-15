@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplate
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.PrintService;
+import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
@@ -24,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
@@ -34,14 +36,14 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimSubmissionOpe
 
 @RunWith(MockitoJUnitRunner.class)
 public class PinOrchestrationServiceTest {
-    public static final Claim CLAIM = SampleClaim.getDefault();
-    public static final String AUTHORISATION = "AUTHORISATION";
-    public static final String SUBMITTER_NAME = "submitter-name";
-    public static final String PIN = "PIN";
+    private static final Claim CLAIM = SampleClaim.getDefault();
+    private static final String AUTHORISATION = "AUTHORISATION";
+    private static final String SUBMITTER_NAME = "submitter-name";
+    private static final String PIN = "PIN";
 
-    public static final PDF defendantPinLetter = new PDF("0000-pin", "test".getBytes(), DEFENDANT_PIN_LETTER);
-    public static final PDF sealedClaim = new PDF("0000-sealed-claim", "test".getBytes(), SEALED_CLAIM);
-    public static final String DEFENDANT_EMAIL_TEMPLATE = "Defendant Email Template";
+    private static final PDF defendantPinLetter = new PDF("0000-pin", "test".getBytes(), DEFENDANT_PIN_LETTER);
+    private static final PDF sealedClaim = new PDF("0000-sealed-claim", "test".getBytes(), SEALED_CLAIM);
+    private static final String DEFENDANT_EMAIL_TEMPLATE = "Defendant Email PrintableTemplate";
 
     private Map<String, Object> pinContents = new HashMap<>();
     private String pinTemplate = "pinTemplate";
@@ -105,7 +107,16 @@ public class PinOrchestrationServiceTest {
         pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
 
         //then
-        verify(bulkPrintService).print(eq(CLAIM), eq(defendantPinLetterDocument), eq(sealedClaimLetterDocument));
+        verify(bulkPrintService).print(
+            eq(CLAIM),
+            eq(ImmutableList.of(
+                new PrintableTemplate(
+                    defendantPinLetterDocument,
+                    CLAIM.getReferenceNumber() + "-defendant-pin-letter"),
+                new PrintableTemplate(
+                    sealedClaimLetterDocument,
+                    CLAIM.getReferenceNumber() + "-claim-form")
+            )));
 
         verify(claimIssuedStaffNotificationService)
             .notifyStaffOfClaimIssue(eq(CLAIM), eq(ImmutableList.of(sealedClaim, defendantPinLetter)));
@@ -135,7 +146,8 @@ public class PinOrchestrationServiceTest {
         given(documentOrchestrationService.generateForCitizen(eq(CLAIM), eq(AUTHORISATION)))
             .willReturn(generatedDocuments);
 
-        doThrow(new RuntimeException("bulk print failed")).when(bulkPrintService).print(any(), any(), any());
+        doThrow(new RuntimeException("bulk print failed")).when(bulkPrintService).print(
+            any(), anyList());
 
         //when
         try {
