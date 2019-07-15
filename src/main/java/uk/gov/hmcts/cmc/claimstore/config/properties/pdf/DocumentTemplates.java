@@ -39,4 +39,8 @@ public class DocumentTemplates {
         return readBytes("/staff/templates/document/settlementAgreement.html");
     }
 
+    public byte[] getLegalOrderCoverSheet() {
+        return readBytes("/staff/templates/document/legalOrderCoverSheet.html");
+    }
+
 }

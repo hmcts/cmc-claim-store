@@ -4,6 +4,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
+import com.google.common.collect.ImmutableList;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,6 +14,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
+import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
@@ -49,7 +51,12 @@ public class DummyBulkPrintServiceTest {
         Map<String, Object> claimContents = new HashMap<>();
         Document sealedClaimDocument = new Document("sealedClaimTemplate", claimContents);
 
-        new DummyBulkPrintService().print(SampleClaim.getDefault(), defendantLetterDocument, sealedClaimDocument);
+        new DummyBulkPrintService().print(
+            SampleClaim.getDefault(),
+            ImmutableList.of(
+                new PrintableTemplate(defendantLetterDocument, "filename"),
+                new PrintableTemplate(sealedClaimDocument, "filename")
+            ));
         assertWasLogged("No bulk print operation need to be performed as 'Bulk print url' is switched off.");
     }
 

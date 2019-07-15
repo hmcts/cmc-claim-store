@@ -89,4 +89,15 @@ public class DocumentNameUtils {
         return format("%s-settlement-agreement", number);
     }
 
+    public static String buildDirectionsOrderFileBaseName(String number) {
+        requireNonBlank(number);
+
+        return format("%s-directions-order", number);
+    }
+
+    public static String buildCoverSheetFileBaseName(String number) {
+        requireNonBlank(number);
+
+        return format("%s-directions-order-cover-sheet", number);
+    }
 }

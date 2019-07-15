@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
+import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
 import uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -15,7 +17,6 @@ import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
-import java.io.IOException;
 import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,16 +41,22 @@ public class BulkPrintStaffNotificationServiceTest extends MockSpringTest {
     @Autowired
     private StaffEmailProperties emailProperties;
 
-    private Document defendantLetterDocument;
-    private Document sealedClaimDocument;
+    private PrintableTemplate defendantLetterDocument;
+    private PrintableTemplate sealedClaimDocument;
 
     private Claim claim;
 
     @Before
     public void setUp() {
-        defendantLetterDocument = new Document("defendantPinTemplate", new HashMap<>());
-        sealedClaimDocument = new Document("sealedClaimTemplate", new HashMap<>());
-
+        defendantLetterDocument =
+            new PrintableTemplate(
+                new Document("defendantPinTemplate", new HashMap<>()),
+                "000CM001-defendant-pin-letter"
+            );
+        sealedClaimDocument = new PrintableTemplate(
+            new Document("sealedClaimTemplate", new HashMap<>()),
+            "000CM001-claim-form"
+        );
         claim = SampleClaim
             .builder()
             .build();
@@ -60,22 +67,30 @@ public class BulkPrintStaffNotificationServiceTest extends MockSpringTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaim() {
-        service.notifyFailedBulkPrint(defendantLetterDocument, sealedClaimDocument, null);
+        service.notifyFailedBulkPrint(
+            ImmutableList.of(defendantLetterDocument, sealedClaimDocument),
+            null);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullDefendantLetterDocument() {
-        service.notifyFailedBulkPrint(null, sealedClaimDocument, claim);
+        service.notifyFailedBulkPrint(
+            ImmutableList.of(null, sealedClaimDocument),
+            claim);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullSealedClaimDocument() {
-        service.notifyFailedBulkPrint(defendantLetterDocument, null, claim);
+        service.notifyFailedBulkPrint(
+            ImmutableList.of(defendantLetterDocument, null),
+            claim);
     }
 
     @Test
     public void shouldSendEmailToExpectedRecipient() {
-        service.notifyFailedBulkPrint(defendantLetterDocument, sealedClaimDocument, claim);
+        service.notifyFailedBulkPrint(
+            ImmutableList.of(defendantLetterDocument, sealedClaimDocument),
+            claim);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
@@ -84,7 +99,9 @@ public class BulkPrintStaffNotificationServiceTest extends MockSpringTest {
 
     @Test
     public void shouldSendEmailWithExpectedContent() {
-        service.notifyFailedBulkPrint(defendantLetterDocument, sealedClaimDocument, claim);
+        service.notifyFailedBulkPrint(
+            ImmutableList.of(defendantLetterDocument, sealedClaimDocument),
+            claim);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
@@ -92,13 +109,15 @@ public class BulkPrintStaffNotificationServiceTest extends MockSpringTest {
             .getSubject()).startsWith("Print for claim 000CM001 failed");
         assertThat(emailDataArgument.getValue()
             .getMessage()).startsWith(
-            "The bulk print for this claim failed, please print and post the pin letter and claim form to the defendant"
+            "The bulk print for this claim failed, please print and post the attached documents"
         );
     }
 
     @Test
-    public void shouldSendEmailWithExpectedPDFAttachments() throws IOException {
-        service.notifyFailedBulkPrint(defendantLetterDocument, sealedClaimDocument, claim);
+    public void shouldSendEmailWithExpectedPDFAttachments() {
+        service.notifyFailedBulkPrint(
+            ImmutableList.of(defendantLetterDocument, sealedClaimDocument),
+            claim);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
