@@ -8,9 +8,8 @@ import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
 import uk.gov.hmcts.cmc.claimstore.services.staff.BulkPrintStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
-import uk.gov.hmcts.reform.sendletter.api.Document;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -36,7 +35,8 @@ public class DummyBulkPrintRequestTest extends BaseSaveTest {
             .andReturn();
 
         verify(bulkPrintNotificationService, never())
-            .notifyFailedBulkPrint(any(Document.class), any(Document.class),
+            .notifyFailedBulkPrint(
+                anyList(),
                 eq(deserializeObjectFrom(result, Claim.class)));
     }
 
