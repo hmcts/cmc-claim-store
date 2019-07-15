@@ -30,6 +30,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimSubmissionOperationIndicators.withAllOperationDefaulted;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PinOrchestrationServiceTest {
@@ -118,7 +119,7 @@ public class PinOrchestrationServiceTest {
             eq(SUBMITTER_NAME)
         );
 
-        ClaimSubmissionOperationIndicators operationIndicators = ClaimSubmissionOperationIndicators.builder()
+        ClaimSubmissionOperationIndicators operationIndicators = withAllOperationDefaulted.get().toBuilder()
             .bulkPrint(YesNoOption.YES)
             .staffNotification(YesNoOption.YES)
             .defendantNotification(YesNoOption.YES)
@@ -143,7 +144,7 @@ public class PinOrchestrationServiceTest {
         } finally {
             //then
             verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION), eq(CLAIM.getId()),
-                eq(ClaimSubmissionOperationIndicators.builder().build()), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
+                eq(withAllOperationDefaulted.get()), eq(CaseEvent.PIN_GENERATION_OPERATIONS));
         }
     }
 
@@ -159,7 +160,7 @@ public class PinOrchestrationServiceTest {
             pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
         } finally {
             //then
-            ClaimSubmissionOperationIndicators operationIndicators = ClaimSubmissionOperationIndicators.builder()
+            ClaimSubmissionOperationIndicators operationIndicators = withAllOperationDefaulted.get().toBuilder()
                 .bulkPrint(YesNoOption.YES)
                 .build();
 
@@ -180,7 +181,7 @@ public class PinOrchestrationServiceTest {
             pinOrchestrationService.process(CLAIM, AUTHORISATION, SUBMITTER_NAME);
         } finally {
             //then
-            ClaimSubmissionOperationIndicators operationIndicators = ClaimSubmissionOperationIndicators.builder()
+            ClaimSubmissionOperationIndicators operationIndicators = withAllOperationDefaulted.get().toBuilder()
                 .bulkPrint(YesNoOption.YES)
                 .staffNotification(YesNoOption.YES)
                 .build();
