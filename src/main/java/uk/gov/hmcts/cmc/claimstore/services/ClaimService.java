@@ -358,6 +358,8 @@ public class ClaimService {
         Claim claim = getClaimByExternalId(externalId, authorisation);
         claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorisation);
         reviewOrderRule.assertReviewOrder(claim);
-        return caseRepository.saveReviewOrder(claim.getId(), reviewOrder, authorisation);
+        Claim updatedClaim = caseRepository.saveReviewOrder(claim.getId(), reviewOrder, authorisation);
+        eventProducer.createReviewOrderEvent(updatedClaim);
+        return updatedClaim;
     }
 }
