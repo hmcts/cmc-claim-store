@@ -43,7 +43,7 @@ public class PinOrchestrationService {
         Claim updatedClaim = documents.getClaim();
 
         ClaimSubmissionOperationIndicators.ClaimSubmissionOperationIndicatorsBuilder updatedOperationIndicator =
-            ClaimSubmissionOperationIndicators.builder();
+            claim.getClaimSubmissionOperationIndicators().toBuilder();
 
         try {
             bulkPrintService.print(updatedClaim, documents.getDefendantPinLetterDoc(),

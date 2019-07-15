@@ -9,8 +9,15 @@ import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
 public class SampleClaimSubmissionOperationIndicators {
 
-    public static Supplier<ClaimSubmissionOperationIndicators> withPinOperationSuccess =
+    public static Supplier<ClaimSubmissionOperationIndicators> withAllOperationDefaulted =
         () -> ClaimSubmissionOperationIndicators.builder()
+            .defendantNotification(NO)
+            .rpa(NO)
+            .claimIssueReceiptUpload(NO)
+            .build();
+
+    public static Supplier<ClaimSubmissionOperationIndicators> withPinOperationSuccess =
+        () -> withAllOperationDefaulted.get().toBuilder()
             .bulkPrint(YES)
             .staffNotification(YES)
             .defendantNotification(YES)

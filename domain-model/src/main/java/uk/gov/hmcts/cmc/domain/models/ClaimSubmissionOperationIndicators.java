@@ -45,7 +45,7 @@ public class ClaimSubmissionOperationIndicators {
         return Stream.of(
             bulkPrint,
             staffNotification,
-            setDefaultIfNull(defendantNotification)
+            defendantNotification
         ).allMatch(ind -> ind.equals(YES));
     }
 
@@ -53,16 +53,12 @@ public class ClaimSubmissionOperationIndicators {
     public boolean isAllSuccess() {
         return Stream.of(
             claimantNotification,
-            setDefaultIfNull(defendantNotification),
+            defendantNotification,
             bulkPrint,
-            setDefaultIfNull(rpa),
+            rpa,
             staffNotification,
             sealedClaimUpload,
-            setDefaultIfNull(claimIssueReceiptUpload)
+            claimIssueReceiptUpload
         ).allMatch(option -> option == YES);
-    }
-
-    public static YesNoOption setDefaultIfNull(YesNoOption prop) {
-        return Objects.isNull(prop) ? YesNoOption.NO : prop;
     }
 }

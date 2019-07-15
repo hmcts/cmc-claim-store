@@ -31,20 +31,19 @@ import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @Component
@@ -63,10 +62,6 @@ public class ClaimService {
     private final ClaimAuthorisationRule claimAuthorisationRule;
     private final boolean asyncEventOperationEnabled;
     private CCDEventProducer ccdEventProducer;
-
-    private static Supplier<ClaimSubmissionOperationIndicators> getDefaultClaimSubmissionOperationIndicators =
-        () -> ClaimSubmissionOperationIndicators.builder()
-            .build();
 
     @SuppressWarnings("squid:S00107") //Constructor need all parameters
     @Autowired
@@ -217,7 +212,7 @@ public class ClaimService {
             .createdAt(nowInLocalZone())
             .letterHolderId(letterHolderId.orElse(null))
             .features(features)
-            .claimSubmissionOperationIndicators(getDefaultClaimSubmissionOperationIndicators.get())
+            .claimSubmissionOperationIndicators(getDefaultIndicators(claimData))
             .build();
 
         Claim savedClaim = caseRepository.saveClaim(user, claim);
@@ -242,6 +237,18 @@ public class ClaimService {
         trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
 
         return savedClaim;
+    }
+
+    private ClaimSubmissionOperationIndicators getDefaultIndicators(ClaimData claimData) {
+        if (claimData.isClaimantRepresented()) {
+            return ClaimSubmissionOperationIndicators.builder().build();
+        } else {
+            return ClaimSubmissionOperationIndicators.builder()
+                .rpa(NO)
+                .defendantNotification(NO)
+                .claimIssueReceiptUpload(NO)
+                .build();
+        }
     }
 
     private Optional<GeneratePinResponse> getPinResponse(ClaimData claimData, String authorisation) {
@@ -337,7 +344,7 @@ public class ClaimService {
 
     private static boolean isFullDefenceWithNoMediation(Response response) {
         return response.getResponseType().equals(ResponseType.FULL_DEFENCE)
-            && response.getFreeMediation().filter(Predicate.isEqual(YesNoOption.NO)).isPresent();
+            && response.getFreeMediation().filter(Predicate.isEqual(NO)).isPresent();
     }
 
     public void saveReDetermination(

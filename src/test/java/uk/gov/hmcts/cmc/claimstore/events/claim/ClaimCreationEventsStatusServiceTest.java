@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimSubmissionOperationIndicators;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -35,7 +36,8 @@ public class ClaimCreationEventsStatusServiceTest {
     @Test
     public void updateClaimOperationByPinOperationCaseEvent() {
         ClaimSubmissionOperationIndicators operationIndicatorWithPinCompletion =
-            ClaimSubmissionOperationIndicators.builder().defendantNotification(YES)
+            SampleClaimSubmissionOperationIndicators.withAllOperationDefaulted.get().toBuilder()
+                .defendantNotification(YES)
                 .bulkPrint(YES)
                 .staffNotification(YES).build();
 
@@ -51,7 +53,7 @@ public class ClaimCreationEventsStatusServiceTest {
     @Test
     public void updateClaimOperationByClaimIssueReceiptUploadEvent() {
         ClaimSubmissionOperationIndicators operationIndicatorWithPinCompletion =
-            ClaimSubmissionOperationIndicators.builder()
+            SampleClaimSubmissionOperationIndicators.withAllOperationDefaulted.get().toBuilder()
                 .claimIssueReceiptUpload(YES)
                 .build();
 
@@ -67,7 +69,7 @@ public class ClaimCreationEventsStatusServiceTest {
     @Test
     public void updateClaimOperationByLinkSealedClaimEvent() {
         ClaimSubmissionOperationIndicators operationIndicatorWithPinCompletion =
-            ClaimSubmissionOperationIndicators.builder()
+            SampleClaimSubmissionOperationIndicators.withAllOperationDefaulted.get().toBuilder()
                 .sealedClaimUpload(YES)
                 .build();
 
@@ -83,7 +85,7 @@ public class ClaimCreationEventsStatusServiceTest {
     @Test
     public void updateClaimOperationBySendRpaEvent() {
         ClaimSubmissionOperationIndicators operationIndicatorWithPinCompletion =
-            ClaimSubmissionOperationIndicators.builder()
+            SampleClaimSubmissionOperationIndicators.withAllOperationDefaulted.get().toBuilder()
                 .rpa(YES)
                 .build();
 
@@ -99,7 +101,7 @@ public class ClaimCreationEventsStatusServiceTest {
     @Test
     public void updateClaimOperationBySendClaimantNotificationEvent() {
         ClaimSubmissionOperationIndicators operationIndicatorWithPinCompletion =
-            ClaimSubmissionOperationIndicators.builder()
+            SampleClaimSubmissionOperationIndicators.withAllOperationDefaulted.get().toBuilder()
                 .claimantNotification(YES)
                 .build();
 

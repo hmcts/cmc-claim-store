@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.events.operations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimCreationEventsStatusService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -13,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 
 import java.util.Arrays;
 
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.PIN_GENERATION_OPERATIONS;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
 @Component
@@ -46,10 +46,9 @@ public class NotifyStaffOperationService {
 
             return eventsStatusService.updateClaimOperationCompletion(authorisation, claim.getId(),
                 indicators,
-                CaseEvent.PIN_GENERATION_OPERATIONS);
+                PIN_GENERATION_OPERATIONS);
         } else {
-            return eventsStatusService.updateClaimOperationCompletion(authorisation, claim,
-                CaseEvent.PIN_GENERATION_OPERATIONS);
+            return eventsStatusService.updateClaimOperationCompletion(authorisation, claim, PIN_GENERATION_OPERATIONS);
         }
     }
 }

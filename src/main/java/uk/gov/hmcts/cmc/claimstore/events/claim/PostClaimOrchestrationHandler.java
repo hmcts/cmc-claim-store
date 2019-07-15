@@ -17,11 +17,11 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators.setDefaultIfNull;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 
 @Async("threadPoolTaskExecutor")
@@ -66,12 +66,12 @@ public class PostClaimOrchestrationHandler {
                 : claim;
 
         uploadClaimIssueReceiptOperation = (claim, authorisation, claimIssueReceipt) ->
-            setDefaultIfNull(claim.getClaimSubmissionOperationIndicators().getClaimIssueReceiptUpload()) == NO
+            isDefaultedToNo(claim.getClaimSubmissionOperationIndicators().getClaimIssueReceiptUpload())
                 ? uploadOperationService.uploadDocument(claim, authorisation, claimIssueReceipt)
                 : claim;
 
         rpaOperation = (claim, authorisation, sealedClaim) ->
-            setDefaultIfNull(claim.getClaimSubmissionOperationIndicators().getRpa()) == NO
+            isDefaultedToNo(claim.getClaimSubmissionOperationIndicators().getRpa())
                 ? rpaOperationService.notify(claim, authorisation, sealedClaim)
                 : claim;
 
@@ -146,5 +146,13 @@ public class PostClaimOrchestrationHandler {
         } catch (Exception e) {
             logger.error("Failed operation processing for event ()", event, e);
         }
+    }
+
+    private boolean isDefaultedToNo(YesNoOption input) {
+        if (input == null) {
+            return false;
+        }
+
+        return input == YesNoOption.NO;
     }
 }
