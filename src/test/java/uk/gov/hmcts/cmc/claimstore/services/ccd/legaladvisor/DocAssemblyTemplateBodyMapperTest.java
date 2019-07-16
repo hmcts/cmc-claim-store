@@ -40,6 +40,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType.BIRMI
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType.FOUR_HOURS;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EXPERT_REPORT_PERMISSION;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.OTHER;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOtherDirectionHeaderType.UPLOAD;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DocAssemblyTemplateBodyMapperTest  {
@@ -79,7 +80,6 @@ public class DocAssemblyTemplateBodyMapperTest  {
             .docUploadDeadline(LocalDate.parse("2020-10-11"))
             .eyewitnessUploadDeadline(LocalDate.parse("2020-10-11"))
             .currentDate(LocalDate.parse("2019-04-24"))
-            .hearingStatement("No idea")
             .claimant(Party.builder().partyName("Individual").build())
             .defendant(Party.builder().partyName("Mary Richards").build())
             .judicial(Judicial.builder().firstName("Judge").lastName("McJudge").build())
@@ -106,6 +106,7 @@ public class DocAssemblyTemplateBodyMapperTest  {
                     .sendBy(LocalDate.parse("2020-10-11"))
                     .directionComment("a direction")
                     .extraOrderDirection(OTHER)
+                    .otherDirectionHeaders(UPLOAD)
                     .forParty(BOTH)
                     .build(),
                 CCDOrderDirection.builder()
@@ -163,7 +164,6 @@ public class DocAssemblyTemplateBodyMapperTest  {
             .docUploadDeadline(LocalDate.parse("2020-10-11"))
             .eyewitnessUploadDeadline(LocalDate.parse("2020-10-11"))
             .currentDate(LocalDate.parse("2019-04-24"))
-            .hearingStatement("No idea")
             .claimant(Party.builder().partyName("Individual").build())
             .defendant(Party.builder().partyName("Mary Richards").build())
             .judicial(Judicial.builder().firstName("Judge").lastName("McJudge").build())
@@ -190,6 +190,7 @@ public class DocAssemblyTemplateBodyMapperTest  {
                 CCDOrderDirection.builder()
                     .sendBy(LocalDate.parse("2020-10-11"))
                     .directionComment("a direction")
+                    .otherDirectionHeaders(UPLOAD)
                     .extraOrderDirection(OTHER)
                     .forParty(BOTH)
                     .build(),
