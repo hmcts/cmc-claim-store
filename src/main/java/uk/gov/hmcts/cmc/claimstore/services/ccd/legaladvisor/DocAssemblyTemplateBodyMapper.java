@@ -80,8 +80,6 @@ public class DocAssemblyTemplateBodyMapper {
                 hearingCourt.getAddress())
             .estimatedHearingDuration(
                 ccdOrderGenerationData.getEstimatedHearingDuration())
-            .hearingStatement(
-                ccdOrderGenerationData.getHearingStatement())
             .otherDirections(
                 ccdOrderGenerationData.getOtherDirections()
                     .stream()

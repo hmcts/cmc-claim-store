@@ -551,7 +551,6 @@ public class SampleData {
             .eyewitnessUploadDeadline(LocalDate.parse("2020-10-11"))
             .hearingCourt(CCDHearingCourtType.DEFENDANT_COURT)
             .preferredCourtObjectingReason("I like this court more")
-            .hearingStatement("No idea")
             .newRequestedCourt("Another court")
             .docUploadForParty(CCDDirectionPartyType.CLAIMANT)
             .extraDocUploadList(

@@ -46,8 +46,6 @@ public class CCDOrderGenerationData {
 
     private CCDHearingDurationType estimatedHearingDuration;
 
-    private String hearingStatement;
-
     private CCDDocument draftOrderDoc;
 
     private CCDOtherDirectionHeaderType otherDirectionHeader;
