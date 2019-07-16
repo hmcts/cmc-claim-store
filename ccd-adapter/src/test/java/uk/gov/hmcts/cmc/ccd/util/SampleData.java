@@ -36,7 +36,6 @@ import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
@@ -67,6 +66,10 @@ import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPaymentF
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebtType.ELECTRICITY;
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDResidenceType.JOINT_OWN_HOME;
 import static uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceType.EXPERT_WITNESS;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.DOCUMENTS;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EXPERT_REPORT_PERMISSION;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYEWITNESS;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.OTHER;
 import static uk.gov.hmcts.cmc.ccd.util.SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicators;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
@@ -118,7 +121,6 @@ public class SampleData {
         .evidence(singletonList(CCDCollectionElement.<CCDEvidenceRow>builder()
             .value(CCDEvidenceRow.builder().type(EXPERT_WITNESS).description("description of evidence").build())
             .build()));
-
 
     //Utility class
     private SampleData() {
@@ -505,11 +507,11 @@ public class SampleData {
     public static CCDOrderGenerationData getCCDOrderGenerationData() {
         return CCDOrderGenerationData.builder()
             .directionList(ImmutableList.of(
-                CCDOrderDirectionType.DOCUMENTS, CCDOrderDirectionType.EYEWITNESS))
+                DOCUMENTS, EYEWITNESS))
             .otherDirections(ImmutableList.of(
                 CCDCollectionElement.<CCDOrderDirection>builder().value(
                     CCDOrderDirection.builder()
-                        .extraOrderDirection(CCDOrderDirectionType.OTHER)
+                        .extraOrderDirection(OTHER)
                         .directionComment("a direction")
                         .forParty(CCDDirectionPartyType.BOTH)
                         .sendBy(LocalDate.parse("2020-10-11"))
@@ -518,7 +520,7 @@ public class SampleData {
                 CCDCollectionElement.<CCDOrderDirection>builder().value(
                     CCDOrderDirection.builder()
                         .sendBy(LocalDate.parse("2020-10-11"))
-                        .extraOrderDirection(CCDOrderDirectionType.EXPERT_REPORT_PERMISSION)
+                        .extraOrderDirection(EXPERT_REPORT_PERMISSION)
                         .forParty(CCDDirectionPartyType.BOTH)
                         .expertReports(
                             ImmutableList.of(
@@ -541,7 +543,7 @@ public class SampleData {
                                     .build()))
                         .build())
                     .build()))
-            .hearingRequired(YES)
+            .paperDetermination(NO)
             .docUploadDeadline(LocalDate.parse("2020-10-11"))
             .eyewitnessUploadDeadline(LocalDate.parse("2020-10-11"))
             .hearingCourt(CCDHearingCourtType.DEFENDANT_COURT)
@@ -549,6 +551,14 @@ public class SampleData {
             .hearingStatement("No idea")
             .newRequestedCourt("Another court")
             .docUploadForParty(CCDDirectionPartyType.CLAIMANT)
+            .extraDocUploadList(
+                ImmutableList.of(
+                    CCDCollectionElement.<String>builder()
+                        .value("first document")
+                        .build(),
+                    CCDCollectionElement.<String>builder()
+                        .value("second document")
+                        .build()))
             .eyewitnessUploadForParty(CCDDirectionPartyType.DEFENDANT)
             .estimatedHearingDuration(CCDHearingDurationType.FOUR_HOURS)
             .build();
