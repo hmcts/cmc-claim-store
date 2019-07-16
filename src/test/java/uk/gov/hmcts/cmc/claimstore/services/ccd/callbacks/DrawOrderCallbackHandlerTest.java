@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.ccd.util.SampleData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
+import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -50,6 +51,8 @@ public class DrawOrderCallbackHandlerTest {
     private Clock clock;
     @Mock
     private OrderDrawnNotificationService orderDrawnNotificationService;
+    @Mock
+    private LegalOrderService legalOrderService;
 
     private CallbackParams callbackParams;
 
@@ -77,7 +80,8 @@ public class DrawOrderCallbackHandlerTest {
             clock,
             jsonMapper,
             orderDrawnNotificationService,
-            caseDetailsConverter);
+            caseDetailsConverter,
+            legalOrderService);
         when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
         callbackRequest = CallbackRequest
@@ -166,11 +170,30 @@ public class DrawOrderCallbackHandlerTest {
     }
 
     @Test
-    public void shouldNotifyPartiesOnEventSubmitted() {
+    public void shouldNotifyPartiesAndPrintDocumentsOnEventSubmitted() {
         callbackParams = CallbackParams.builder()
             .type(CallbackType.SUBMITTED)
             .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
+        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
+        ccdCase.setOrderGenerationData(
+            CCDOrderGenerationData.builder()
+                .draftOrderDoc(DOCUMENT)
+                .build()
+        );
+        CCDCollectionElement<CCDClaimDocument> existingDocument =
+            CCDCollectionElement.<CCDClaimDocument>builder()
+                .value(CCDClaimDocument.builder()
+                    .documentLink(CCDDocument
+                        .builder()
+                        .documentUrl("http://anotherbla.test")
+                        .build())
+                    .build())
+                .build();
+        ccdCase.setCaseDocuments(ImmutableList.of(existingDocument));
+        when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class))
+            .thenReturn(ccdCase);
         Claim claim = SampleClaim.builder().build();
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         drawOrderCallbackHandler
@@ -178,5 +201,9 @@ public class DrawOrderCallbackHandlerTest {
 
         verify(orderDrawnNotificationService).notifyDefendant(claim);
         verify(orderDrawnNotificationService).notifyClaimant(claim);
+        verify(legalOrderService).print(
+            BEARER_TOKEN,
+            claim,
+            DOCUMENT);
     }
 }
