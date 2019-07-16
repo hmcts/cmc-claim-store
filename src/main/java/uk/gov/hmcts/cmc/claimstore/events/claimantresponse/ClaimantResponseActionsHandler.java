@@ -46,9 +46,16 @@ public class ClaimantResponseActionsHandler {
         ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
         Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
         return claimantResponse.getType() == ClaimantResponseType.REJECTION
-            && (((ResponseRejection) claimantResponse).getFreeMediation().isPresent()
-            && ((ResponseRejection) claimantResponse).getFreeMediation().get() == YES)
-            && (response.getFreeMediation().isPresent() && response.getFreeMediation().get() == YES);
+            && freeMediationAcceptedInClaimantResponse((ResponseRejection) claimantResponse)
+            && freeMediationAcceptedInDefendantResponse(response);
+    }
+
+    private boolean freeMediationAcceptedInDefendantResponse(Response response) {
+        return response.getFreeMediation().filter(mediation -> mediation == YES).isPresent();
+    }
+
+    private boolean freeMediationAcceptedInClaimantResponse(ResponseRejection claimantResponse) {
+        return claimantResponse.getFreeMediation().filter(mediation -> mediation == YES).isPresent();
     }
 
     @EventListener

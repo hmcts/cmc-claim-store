@@ -17,7 +17,9 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse.PartAdmission;
 
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -48,6 +50,19 @@ public class ClaimantResponseActionsHandlerTest {
         handler.sendNotificationToDefendant(event);
         //then
         verify(notificationService).notifyDefendantOfFreeMediationConfirmationByClaimant(eq(claim));
+    }
+
+    @Test
+    public void shouldNotSendNotificationToDefendantWhenFreeMediationNotConfirmed() {
+        //given
+        ClaimantResponse claimantResponse = ClaimantResponseRejection.validRejectionWithFreeMediation();
+        Response response = SampleResponse.FullDefence.builder().withMediation(NO).build();
+        Claim claim = SampleClaim.builder().withResponse(response).withClaimantResponse(claimantResponse).build();
+        ClaimantResponseEvent event = new ClaimantResponseEvent(claim);
+        //when
+        handler.sendNotificationToDefendant(event);
+        //then
+        verify(notificationService, never()).notifyDefendantOfFreeMediationConfirmationByClaimant(eq(claim));
     }
 
     @Test
