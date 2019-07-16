@@ -57,7 +57,7 @@ public class FullDefenceStaffEmailContentProviderTest {
     }
 
     @Test
-    public void shouldDisplayAppropriateMessageWhenMobileNumberIsNotGiven() {
+    public void shouldDisplayAppropriateMessageWhenPhoneNumberIsNotGiven() {
         Claim claim = SampleClaim.builder().withResponse(
             SampleResponse.FullDefence.builder()
                 .withDefendantDetails(

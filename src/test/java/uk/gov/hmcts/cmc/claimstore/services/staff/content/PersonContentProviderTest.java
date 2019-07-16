@@ -165,7 +165,7 @@ public class PersonContentProviderTest {
     }
 
     @Test
-    public void shouldProvideExpectedMobileNumberAndDateOfBirth() {
+    public void shouldProvideExpectedPhoneNumberAndDateOfBirth() {
         PersonContent content = provider.createContent(
             partyType,
             name,
@@ -178,12 +178,12 @@ public class PersonContentProviderTest {
             dateOfBirth
         );
 
-        assertThat(content.getMobileNumber()).isEqualTo(phoneNumber);
+        assertThat(content.getPhoneNumber()).isEqualTo(phoneNumber);
         assertThat(content.getDateOfBirth()).isEqualTo(dateOfBirth);
     }
 
     @Test
-    public void shouldAcceptNullMobileNumberAndDateOfBirth() {
+    public void shouldAcceptNullPhoneNumberAndDateOfBirth() {
         PersonContent content = provider.createContent(
             partyType,
             name,
@@ -197,6 +197,6 @@ public class PersonContentProviderTest {
         );
 
         assertThat(content.getDateOfBirth()).isEqualTo(null);
-        assertThat(content.getMobileNumber()).isEqualTo(null);
+        assertThat(content.getPhoneNumber()).isEqualTo(null);
     }
 }

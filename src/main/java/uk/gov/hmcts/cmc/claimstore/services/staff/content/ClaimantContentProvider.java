@@ -43,7 +43,7 @@ public class ClaimantContentProvider {
             submitterEmail,
             personContent.getContactPerson(),
             personContent.getBusinessName(),
-            personContent.getMobileNumber(),
+            personContent.getPhoneNumber(),
             personContent.getDateOfBirth()
         );
     }

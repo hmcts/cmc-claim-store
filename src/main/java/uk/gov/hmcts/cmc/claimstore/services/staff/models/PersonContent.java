@@ -65,7 +65,7 @@ public class PersonContent {
         return businessName;
     }
 
-    public String getMobileNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
