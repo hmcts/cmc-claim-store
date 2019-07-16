@@ -225,4 +225,11 @@ public class Claim {
         return ReflectionToStringBuilder.toString(this, ourStyle());
     }
 
+    @JsonProperty("mediationDeadline")
+    public Optional<LocalDate> getMediationDeadline() {
+        if (this.respondedAt != null) {
+            return Optional.ofNullable(new NextWorkingDay(this.respondedAt.toLocalDate().plusDays(5)).getDate());
+        }
+        return Optional.empty();
+    }
 }
