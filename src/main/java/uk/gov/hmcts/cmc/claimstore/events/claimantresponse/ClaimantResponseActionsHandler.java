@@ -35,14 +35,14 @@ public class ClaimantResponseActionsHandler {
     public void sendNotificationToDefendant(ClaimantResponseEvent event) {
         if (isRejectedStatesPaidOrPartAdmission(event.getClaim())) {
             this.notificationService.notifyDefendantOfRejection(event.getClaim());
-        } else if (freeMediationConfirmed(event.getClaim())) {
+        } else if (isFreeMediationConfirmed(event.getClaim())) {
             this.notificationService.notifyDefendantOfFreeMediationConfirmationByClaimant(event.getClaim());
         } else {
             this.notificationService.notifyDefendant(event.getClaim());
         }
     }
 
-    private boolean freeMediationConfirmed(Claim claim) {
+    private boolean isFreeMediationConfirmed(Claim claim) {
         ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
         Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
         return claimantResponse.getType() == ClaimantResponseType.REJECTION
