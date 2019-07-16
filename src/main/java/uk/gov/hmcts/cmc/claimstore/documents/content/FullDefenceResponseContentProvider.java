@@ -1,7 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import com.google.common.collect.ImmutableMap;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.claimstore.documents.content.directionsquestionnaire.DirectionsQuestionnaireContentProvider;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.EvidenceContent;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
@@ -26,6 +28,13 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ParagraphEnumerator.split;
 public class FullDefenceResponseContentProvider {
 
     private static final String DEFENCE_FORM_NO = "OCON9B";
+    private final DirectionsQuestionnaireContentProvider hearingContentProvider;
+
+    @Autowired
+    public FullDefenceResponseContentProvider(DirectionsQuestionnaireContentProvider hearingContentProvider) {
+        this.hearingContentProvider = hearingContentProvider;
+    }
+
 
     public Map<String, Object> createContent(FullDefenceResponse fullDefenceResponse) {
         requireNonNull(fullDefenceResponse);
@@ -70,6 +79,9 @@ public class FullDefenceResponseContentProvider {
         content.put("evidences", evidences);
         content.put("evidenceComment", evidenceComment);
         content.put("formNumber", DEFENCE_FORM_NO);
+
+        content.put("hearingContent", fullDefenceResponse.getDirectionsQuestionnaire()
+            .map(DirectionsQuestionnaireContentProvider::));
         return content;
     }
 

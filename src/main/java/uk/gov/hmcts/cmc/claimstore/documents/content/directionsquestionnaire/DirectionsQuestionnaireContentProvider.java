@@ -1,35 +1,62 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content.directionsquestionnaire;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.ClaimantContentProvider;
-import uk.gov.hmcts.cmc.domain.models.Claim;
+import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.claimstore.services.staff.models.HearingContent;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertRequest;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.RequireSupport;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+@Component
 public class DirectionsQuestionnaireContentProvider {
 
-    private final ClaimantContentProvider claimantContentProvider;
+    private static BiConsumer<RequireSupport, HearingContent.HearingContentBuilder> mapSupportRequirement =
+        (support, builder) -> {
+            List<String> supportNeeded = new ArrayList<>();
+            support.getLanguageInterpreter().ifPresent(supportNeeded::add);
+            support.getSignLanguageInterpreter().ifPresent(supportNeeded::add);
+            support.getOtherSupport().ifPresent(supportNeeded::add);
+            support.getDisabledAccess()
+                .map(YesNoOption::name)
+                .filter(access -> access.equals(YesNoOption.YES.name()))
+                .ifPresent(x -> supportNeeded.add("Disabled Access"));
+            builder.supportRequired(supportNeeded);
+        };
 
-    @Autowired
-    public DirectionsQuestionnaireContentProvider(ClaimantContentProvider claimantContentProvider) {
-        this.claimantContentProvider = claimantContentProvider;
+    private static BiConsumer<ExpertRequest, HearingContent.HearingContentBuilder> mapWitnessDetails =
+        (expertRequest, builder) -> {
+            builder.hasExpertReport("YES");
+            builder.courtPermissionForExpertReport("YES");
+            builder.reasonWhyExpertAdvice(expertRequest.getReasonForExpertAdvice());
+            builder.expertExamineNeeded(expertRequest.getExpertEvidenceToExamine());
+        };
 
-    }
+    public Function<DirectionsQuestionnaire, HearingContent> mapDirectionQuestionnaire =
+        questionnaire -> {
+            HearingContent.HearingContentBuilder contentBuilder = HearingContent.builder();
 
-    public Map<String, Object> getClaimantContent(Claim claim){
-        Map<String, Object> contentDetails = new HashMap<>();
-        contentDetails.put("claimant",  claimantContentProvider.createContent(
-            claim.getClaimData().getClaimant(),
-            claim.getSubmitterEmail())
-        );
+            questionnaire.getExpertRequest()
+                .map(ExpertRequest::getReasonForExpertAdvice)
+                .ifPresent(contentBuilder::courtPermissionForExpertReport);
 
-        return contentDetails;
-    }
+            questionnaire.getRequireSupport()
+                .ifPresent(support -> mapSupportRequirement.accept(support, contentBuilder));
 
+            contentBuilder.hearingLocation(questionnaire.getHearingLocation().getCourtName());
+            contentBuilder.locationReason(questionnaire.getHearingLocation().getExceptionalCircumstancesReason().orElse(""));
+            contentBuilder.hasExpertReport(questionnaire.getExpertReports().isEmpty() ? "NO" : "YES");
 
-    public Function<Claim, Map<String, String>> getDefendantContent = directionQuestionnaire -> Collections.EMPTY_MAP;
+            questionnaire.getExpertRequest().ifPresent(req -> mapWitnessDetails.accept(req, contentBuilder));
+
+            contentBuilder.expertReports(Optional.ofNullable(questionnaire.getExpertReports()).orElse(Collections.emptyList()));
+            return contentBuilder.build();
+        };
 
 }

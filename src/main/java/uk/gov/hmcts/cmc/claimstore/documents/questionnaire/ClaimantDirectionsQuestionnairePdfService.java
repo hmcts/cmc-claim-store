@@ -5,6 +5,7 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.claimstore.documents.PdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.content.directionsquestionnaire.DirectionsQuestionnaireContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
 public class ClaimantDirectionsQuestionnairePdfService implements PdfService {
@@ -24,7 +25,9 @@ public class ClaimantDirectionsQuestionnairePdfService implements PdfService {
 
     @Override
     public byte[] createPdf(Claim claim) {
+        claim.getClaimantResponse(ClaimantResponse::)
+            .map(DirectionsQuestionnaireContentProvider::)
         return pdfServiceClient.generateFromHtml(documentTemplates.getClaimantDirectionsQuestionnaire(),
-            contentProvider.getClaimantContent.apply(claim.getDi))
+            contentProvider.mapDirectionQuestionnaire.apply(claim.get))
     }
 }
