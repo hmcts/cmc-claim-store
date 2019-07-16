@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.junit.Test;
+import uk.gov.hmcts.cmc.claimstore.documents.content.directionsquestionnaire.DirectionsQuestionnaireContentProvider;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
@@ -17,7 +18,8 @@ public class PartAdmissionResponseContentProviderTest {
     private PartAdmissionResponseContentProvider provider =
         new PartAdmissionResponseContentProvider(
             new PaymentIntentionContentProvider(),
-            new StatementOfMeansContentProvider()
+            new StatementOfMeansContentProvider(),
+            new DirectionsQuestionnaireContentProvider()
         );
 
     @Test(expected = NullPointerException.class)

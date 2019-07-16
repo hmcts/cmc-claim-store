@@ -82,7 +82,7 @@ public class ClaimantResponseService {
         if (!isSettlementAgreement(claim, claimantResponse)
             && (!isReferredToJudge(claimantResponse)
             || (isReferredToJudge(claimantResponse) && PartyUtils.isCompanyOrOrganisation(response.getDefendant())))) {
-            eventProducer.createClaimantResponseEvent(updatedClaim);
+            eventProducer.createClaimantResponseEvent(updatedClaim, authorization);
         }
 
         if (isSettlePreJudgment(claimantResponse)) {

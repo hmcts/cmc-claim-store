@@ -42,7 +42,8 @@ public enum CaseEvent {
     SUPPORT_UPDATE("SupportUpdate"),
     GENERATE_ORDER("GenerateOrder"),
     ACTION_REVIEW_COMMENTS("ActionReviewComments"),
-    DRAW_ORDER("DrawOrder");
+    DRAW_ORDER("DrawOrder"),
+    CLAIMANT_DIRECTIONS_QUESTIONNAIRE_UPLOAD("ClaimantDirectionsQuestionnaireUpload");
 
     private String value;
 

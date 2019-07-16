@@ -1,13 +1,18 @@
 package uk.gov.hmcts.cmc.claimstore.documents.questionnaire;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.claimstore.documents.PdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.content.directionsquestionnaire.DirectionsQuestionnaireContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
+import java.util.HashMap;
+import java.util.Map;
+
+@Component
 public class ClaimantDirectionsQuestionnairePdfService implements PdfService {
 
     private final DocumentTemplates documentTemplates;
@@ -25,9 +30,17 @@ public class ClaimantDirectionsQuestionnairePdfService implements PdfService {
 
     @Override
     public byte[] createPdf(Claim claim) {
-        claim.getClaimantResponse(ClaimantResponse::)
-            .map(DirectionsQuestionnaireContentProvider::)
-        return pdfServiceClient.generateFromHtml(documentTemplates.getClaimantDirectionsQuestionnaire(),
-            contentProvider.mapDirectionQuestionnaire.apply(claim.get))
+
+        claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
+
+        ResponseRejection responseRejection = claim.getClaimantResponse()
+            .filter(ResponseRejection.class::isInstance)
+            .map(ResponseRejection.class::cast)
+            .orElseThrow(IllegalStateException::new);
+
+        Map<String, Object> content = new HashMap<>();
+        content.put("hearingContent", contentProvider.mapDirectionQuestionnaire
+                                        .apply(responseRejection.getDirectionsQuestionnaire().orElseGet(null)) );
+        return pdfServiceClient.generateFromHtml(documentTemplates.getClaimantDirectionsQuestionnaire(), content);
     }
 }

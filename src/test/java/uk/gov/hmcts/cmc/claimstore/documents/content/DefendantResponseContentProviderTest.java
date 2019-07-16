@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
+import uk.gov.hmcts.cmc.claimstore.documents.content.directionsquestionnaire.DirectionsQuestionnaireContentProvider;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.PartyDetailsContent;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.InterestContentProvider;
@@ -23,6 +24,8 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 public class DefendantResponseContentProviderTest {
 
     private Claim claim = SampleClaim.getWithDefaultResponse();
+    private DirectionsQuestionnaireContentProvider hearingContentProvider =
+        new DirectionsQuestionnaireContentProvider();
 
     private DefendantResponseContentProvider provider = new DefendantResponseContentProvider(
         new PartyDetailsContentProvider(),
@@ -32,14 +35,15 @@ public class DefendantResponseContentProviderTest {
             )
         ),
         new NotificationsProperties(),
-        new FullDefenceResponseContentProvider(),
+        new FullDefenceResponseContentProvider(hearingContentProvider),
         new FullAdmissionResponseContentProvider(
             new PaymentIntentionContentProvider(),
             new StatementOfMeansContentProvider()
         ),
         new PartAdmissionResponseContentProvider(
             new PaymentIntentionContentProvider(),
-            new StatementOfMeansContentProvider()
+            new StatementOfMeansContentProvider(),
+            hearingContentProvider
         )
     );
 

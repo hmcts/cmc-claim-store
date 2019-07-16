@@ -103,7 +103,7 @@ public class ClaimantResponseServiceTest {
         claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
 
         inOrder.verify(caseRepository, once()).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
-        inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class));
+        inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class), anyString());
         inOrder.verify(appInsights, once()).trackEvent(eq(CLAIMANT_RESPONSE_REJECTED),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
         verify(formaliseResponseAcceptanceService, times(0))
@@ -136,7 +136,7 @@ public class ClaimantResponseServiceTest {
         inOrder.verify(caseRepository, once()).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
         inOrder.verify(formaliseResponseAcceptanceService, once())
             .formalise(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION));
-        inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class));
+        inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class), anyString());
         inOrder.verify(appInsights, once()).trackEvent(eq(CLAIMANT_RESPONSE_ACCEPTED),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
 
@@ -174,7 +174,7 @@ public class ClaimantResponseServiceTest {
             REFERENCE_NUMBER,
             claim.getReferenceNumber());
 
-        verify(eventProducer, never()).createClaimantResponseEvent(any(Claim.class));
+        verify(eventProducer, never()).createClaimantResponseEvent(any(Claim.class), anyString());
     }
 
     @Test
@@ -210,7 +210,7 @@ public class ClaimantResponseServiceTest {
         inOrder.verify(caseRepository, once()).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
         inOrder.verify(formaliseResponseAcceptanceService, once())
             .formalise(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION));
-        inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class));
+        inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class), anyString());
         inOrder.verify(ccdEventProducer)
             .createCCDClaimantResponseEvent(any(Claim.class), eq(claimantResponse), eq(AUTHORISATION));
         inOrder.verify(appInsights, once()).trackEvent(CLAIMANT_RESPONSE_ACCEPTED,
@@ -253,7 +253,7 @@ public class ClaimantResponseServiceTest {
         inOrder.verify(caseRepository, once()).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
         inOrder.verify(formaliseResponseAcceptanceService, once())
             .formalise(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION));
-        inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class));
+        inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class), anyString());
         inOrder.verify(ccdEventProducer)
             .createCCDClaimantResponseEvent(any(Claim.class), eq(claimantResponse), eq(AUTHORISATION));
         inOrder.verify(appInsights, once()).trackEvent(CLAIMANT_RESPONSE_ACCEPTED,
@@ -289,7 +289,7 @@ public class ClaimantResponseServiceTest {
         inOrder.verify(caseRepository, once()).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
         inOrder.verify(formaliseResponseAcceptanceService, never())
             .formalise(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION));
-        inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class));
+        inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class), anyString());
         inOrder.verify(appInsights, once()).trackEvent(eq(CLAIMANT_RESPONSE_ACCEPTED),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
@@ -321,7 +321,7 @@ public class ClaimantResponseServiceTest {
         verify(directionsQuestionnaireDeadlineCalculator)
             .calculateDirectionsQuestionnaireDeadlineCalculator(any(LocalDateTime.class));
         verify(caseRepository).updateDirectionsQuestionnaireDeadline(any(Claim.class), eq(dqDeadline), anyString());
-        verify(eventProducer).createClaimantResponseEvent(any(Claim.class));
+        verify(eventProducer).createClaimantResponseEvent(any(Claim.class), anyString());
         verify(appInsights).trackEvent(eq(CLAIMANT_RESPONSE_REJECTED),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
@@ -356,7 +356,7 @@ public class ClaimantResponseServiceTest {
         inOrder.verify(caseRepository, once()).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
         inOrder.verify(formaliseResponseAcceptanceService, never())
             .formalise(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION));
-        inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class));
+        inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class), anyString());
         inOrder.verify(appInsights, once()).trackEvent(eq(CLAIMANT_RESPONSE_ACCEPTED),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
@@ -393,6 +393,6 @@ public class ClaimantResponseServiceTest {
         inOrder.verify(appInsights, once()).trackEvent(eq(CLAIMANT_RESPONSE_ACCEPTED),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
 
-        verify(eventProducer, never()).createClaimantResponseEvent(any(Claim.class));
+        verify(eventProducer, never()).createClaimantResponseEvent(any(Claim.class), anyString());
     }
 }

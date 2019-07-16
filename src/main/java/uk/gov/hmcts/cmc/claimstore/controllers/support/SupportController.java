@@ -123,7 +123,7 @@ public class SupportController {
                 resendStaffNotificationOnAgreementCountersigned(claim, authorisation);
                 break;
             case "claimant-response":
-                resendStaffNotificationClaimantResponse(claim);
+                resendStaffNotificationClaimantResponse(claim, authorisation);
                 break;
             default:
                 throw new NotFoundException("Event " + event + " is not supported");
@@ -280,14 +280,14 @@ public class SupportController {
         }
     }
 
-    private void resendStaffNotificationClaimantResponse(Claim claim) {
+    private void resendStaffNotificationClaimantResponse(Claim claim, String authorization) {
         ClaimantResponse claimantResponse = claim.getClaimantResponse()
             .orElseThrow(IllegalArgumentException::new);
         Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
         if (!isSettlementAgreement(claim, claimantResponse) && (!isReferredToJudge(claimantResponse)
             || (isReferredToJudge(claimantResponse) && PartyUtils.isCompanyOrOrganisation(response.getDefendant())))
         ) {
-            claimantResponseStaffNotificationHandler.onClaimantResponse(new ClaimantResponseEvent(claim));
+            claimantResponseStaffNotificationHandler.onClaimantResponse(new ClaimantResponseEvent(claim, authorization));
         }
     }
 

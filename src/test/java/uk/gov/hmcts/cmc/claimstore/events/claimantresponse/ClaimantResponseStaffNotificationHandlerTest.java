@@ -25,6 +25,8 @@ public class ClaimantResponseStaffNotificationHandlerTest {
     @Mock
     private ClaimantRejectionStaffNotificationService claimantRejectionStaffNotificationService;
 
+    private final String authorisation = "Bearer authorisation";
+
     @Before
     public void setUp() {
         handler = new ClaimantResponseStaffNotificationHandler(
@@ -36,7 +38,7 @@ public class ClaimantResponseStaffNotificationHandlerTest {
     @Test
     public void notifyStaffClaimantResponseStatesPaidSubmittedFor() {
         ClaimantResponseEvent event = new ClaimantResponseEvent(
-            SampleClaim.getClaimFullDefenceStatesPaidWithAcceptation());
+            SampleClaim.getClaimFullDefenceStatesPaidWithAcceptation(), authorisation);
         handler.onClaimantResponse(event);
 
         verify(statesPaidStaffNotificationService, once())
@@ -46,7 +48,7 @@ public class ClaimantResponseStaffNotificationHandlerTest {
     @Test
     public void notifyStaffClaimantResponseRejectedPartAdmission() {
         ClaimantResponseEvent event = new ClaimantResponseEvent(
-            SampleClaim.getWithClaimantResponseRejectionForPartAdmissionAndMediation()
+            SampleClaim.getWithClaimantResponseRejectionForPartAdmissionAndMediation(), authorisation
         );
         handler.onClaimantResponse(event);
 
@@ -54,10 +56,10 @@ public class ClaimantResponseStaffNotificationHandlerTest {
             .notifyStaffClaimantRejectPartAdmission(eq(event.getClaim()));
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void throwExceptionWhenResponseNotPresent() {
         ClaimantResponseEvent event = new ClaimantResponseEvent(
-            SampleClaim.builder().build()
+            SampleClaim.builder().build(), authorisation
         );
         handler.onClaimantResponse(event);
 

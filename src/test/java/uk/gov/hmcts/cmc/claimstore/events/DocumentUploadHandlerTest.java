@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
+import uk.gov.hmcts.cmc.claimstore.documents.questionnaire.ClaimantDirectionsQuestionnairePdfService;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
@@ -72,6 +73,8 @@ public class DocumentUploadHandlerTest {
     private DefendantPinLetterPdfService defendantPinLetterPdfService;
     @Mock
     private DocumentsService documentService;
+    @Mock
+    private ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService;
 
     private DocumentUploadHandler documentUploadHandler;
 
@@ -102,7 +105,8 @@ public class DocumentUploadHandlerTest {
             countyCourtJudgmentPdfService,
             settlementAgreementCopyService,
             claimIssueReceiptService,
-            documentService);
+            documentService,
+            claimantDirectionsQuestionnairePdfService);
     }
 
     @Test

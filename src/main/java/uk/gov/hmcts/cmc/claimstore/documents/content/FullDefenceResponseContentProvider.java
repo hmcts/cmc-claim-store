@@ -81,7 +81,7 @@ public class FullDefenceResponseContentProvider {
         content.put("formNumber", DEFENCE_FORM_NO);
 
         content.put("hearingContent", fullDefenceResponse.getDirectionsQuestionnaire()
-            .map(DirectionsQuestionnaireContentProvider::));
+            .map(questionnaire -> hearingContentProvider.mapDirectionQuestionnaire.apply(questionnaire)));
         return content;
     }
 
