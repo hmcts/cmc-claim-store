@@ -1,23 +1,10 @@
 package uk.gov.hmcts.cmc.domain.models.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.Arrays;
 
 public enum YesNoOption {
     @JsonProperty("yes")
     YES,
     @JsonProperty("no")
     NO;
-
-    public static YesNoOption fromValue(String value) {
-        if (StringUtils.isBlank(value)) {
-            return null;
-        }
-
-        return Arrays.stream(YesNoOption.values())
-            .filter(val -> val.name().equalsIgnoreCase(value))
-            .findFirst().orElseThrow(IllegalArgumentException::new);
-    }
 }

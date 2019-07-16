@@ -10,7 +10,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimCreationEventsStatusService;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
-import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUser;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
@@ -18,7 +17,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
@@ -37,17 +35,13 @@ public class NotifyStaffOperationServiceTest {
     private ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService;
     @Mock
     private ClaimCreationEventsStatusService eventsStatusService;
-    @Mock
-    private UserService userService;
 
     @Before
     public void before() {
         notifyStaffOperationService = new NotifyStaffOperationService(
             claimIssuedStaffNotificationService,
-            eventsStatusService,
-            userService
+            eventsStatusService
         );
-
     }
 
     @Test
@@ -58,7 +52,6 @@ public class NotifyStaffOperationServiceTest {
             .withUserDetails(SampleUserDetails.builder().withRoles("citizen").build())
             .build();
 
-        given(userService.getUser(AUTHORISATION)).willReturn(citizen);
         //when
         notifyStaffOperationService.notify(CLAIM, AUTHORISATION, pinLetterClaim, sealedClaim);
 
@@ -75,24 +68,19 @@ public class NotifyStaffOperationServiceTest {
     @Test
     public void shouldNotifyStaffForRepresentativeProcess() {
         //given
-        User citizen = SampleUser.builder()
-            .withAuthorisation(AUTHORISATION)
-            .withUserDetails(SampleUserDetails.builder().withRoles("solicitor").build())
-            .build();
-
-        given(userService.getUser(AUTHORISATION)).willReturn(citizen);
+        Claim claim = SampleClaim.getDefaultForLegal();
         //when
-        notifyStaffOperationService.notify(CLAIM, AUTHORISATION, pinLetterClaim, sealedClaim);
+        notifyStaffOperationService.notify(claim, AUTHORISATION, pinLetterClaim, sealedClaim);
 
         //verify
         verify(claimIssuedStaffNotificationService).notifyStaffOfClaimIssue(
-            eq(CLAIM),
+            eq(claim),
             eq(ImmutableList.of(pinLetterClaim, sealedClaim))
         );
 
         verify(eventsStatusService).updateClaimOperationCompletion(eq(AUTHORISATION),
-            eq(CLAIM.getId()),
-            eq(CLAIM.getClaimSubmissionOperationIndicators().toBuilder()
+            eq(claim.getId()),
+            eq(claim.getClaimSubmissionOperationIndicators().toBuilder()
                 .defendantNotification(null)
                 .staffNotification(YES)
                 .bulkPrint(YES)

@@ -5,7 +5,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimCreationEventsStatusService;
-import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
@@ -20,24 +19,21 @@ import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 public class NotifyStaffOperationService {
     private final ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService;
     private final ClaimCreationEventsStatusService eventsStatusService;
-    private final UserService userService;
 
     @Autowired
     public NotifyStaffOperationService(
         ClaimIssuedStaffNotificationService claimIssuedStaffNotificationService,
-        ClaimCreationEventsStatusService eventsStatusService,
-        UserService userService
+        ClaimCreationEventsStatusService eventsStatusService
     ) {
         this.claimIssuedStaffNotificationService = claimIssuedStaffNotificationService;
         this.eventsStatusService = eventsStatusService;
-        this.userService = userService;
     }
 
     public Claim notify(Claim claim, String authorisation, PDF... documents) {
 
         claimIssuedStaffNotificationService.notifyStaffOfClaimIssue(claim, Arrays.asList(documents));
 
-        if (userService.getUser(authorisation).isRepresented()) {
+        if (claim.getClaimData().isClaimantRepresented()) {
             ClaimSubmissionOperationIndicators indicators = claim.getClaimSubmissionOperationIndicators().toBuilder()
                 .defendantNotification(null)
                 .staffNotification(YES)

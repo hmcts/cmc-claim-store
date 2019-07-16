@@ -212,7 +212,7 @@ public class ClaimService {
             .createdAt(nowInLocalZone())
             .letterHolderId(letterHolderId.orElse(null))
             .features(features)
-            .claimSubmissionOperationIndicators(getDefaultIndicators(claimData))
+            .claimSubmissionOperationIndicators(getDefaultIndicators(claimData.isClaimantRepresented()))
             .build();
 
         Claim savedClaim = caseRepository.saveClaim(user, claim);
@@ -239,8 +239,8 @@ public class ClaimService {
         return savedClaim;
     }
 
-    private ClaimSubmissionOperationIndicators getDefaultIndicators(ClaimData claimData) {
-        if (claimData.isClaimantRepresented()) {
+    private ClaimSubmissionOperationIndicators getDefaultIndicators(Boolean claimantRepresented) {
+        if (claimantRepresented) {
             return ClaimSubmissionOperationIndicators.builder().build();
         } else {
             return ClaimSubmissionOperationIndicators.builder()
