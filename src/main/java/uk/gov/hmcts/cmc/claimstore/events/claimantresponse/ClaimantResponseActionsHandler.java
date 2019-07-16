@@ -8,9 +8,11 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimantRejectOrgPaymentPlanSt
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseStatesPaid;
 
 @Component
@@ -33,9 +35,20 @@ public class ClaimantResponseActionsHandler {
     public void sendNotificationToDefendant(ClaimantResponseEvent event) {
         if (isRejectedStatesPaidOrPartAdmission(event.getClaim())) {
             this.notificationService.notifyDefendantOfRejection(event.getClaim());
+        } else if (freeMediationConfirmed(event.getClaim())) {
+            this.notificationService.notifyDefendantOfFreeMediationConfirmationByClaimant(event.getClaim());
         } else {
             this.notificationService.notifyDefendant(event.getClaim());
         }
+    }
+
+    private boolean freeMediationConfirmed(Claim claim) {
+        ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
+        Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
+        return claimantResponse.getType() == ClaimantResponseType.REJECTION
+            && (((ResponseRejection) claimantResponse).getFreeMediation().isPresent()
+            && ((ResponseRejection) claimantResponse).getFreeMediation().get() == YES)
+            && (response.getFreeMediation().isPresent() && response.getFreeMediation().get() == YES);
     }
 
     @EventListener

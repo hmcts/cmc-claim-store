@@ -26,6 +26,7 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
     private static final String CLAIMANT_RESPONSE_TEMPLATE = "templateId";
     private static final String DEFENDANT_EMAIL = "defendant@email.com";
     private static final String INTERLOCUTORY_JUDGEMENT_TEMPLATE = "interlocutoryJudgementTemplateId";
+    private static final String FREE_MEDIATION_CONFIRMATION_TEMPLATE = "freeMediationConfirmationTemplateId";
 
     private NotificationToDefendantService service;
     private Claim claim;
@@ -110,6 +111,19 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
 
         verify(notificationClient).sendEmail(
             eq(INTERLOCUTORY_JUDGEMENT_TEMPLATE),
+            eq(DEFENDANT_EMAIL),
+            anyMap(),
+            eq(REFERENCE)
+        );
+    }
+
+    @Test
+    public void shouldSendEmailToDefendantUsingFreeMediationConfirmationTemplate() throws Exception {
+        when(emailTemplates.getDefendantFreeMediationConfirmation()).thenReturn(FREE_MEDIATION_CONFIRMATION_TEMPLATE);
+        service.notifyDefendantOfFreeMediationConfirmationByClaimant(claim);
+
+        verify(notificationClient).sendEmail(
+            eq(FREE_MEDIATION_CONFIRMATION_TEMPLATE),
             eq(DEFENDANT_EMAIL),
             anyMap(),
             eq(REFERENCE)

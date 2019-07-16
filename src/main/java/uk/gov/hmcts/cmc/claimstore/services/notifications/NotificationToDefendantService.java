@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.notifications;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -18,8 +16,6 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 
 @Service
 public class NotificationToDefendantService {
-    private final Logger logger = LoggerFactory.getLogger(NotificationToDefendantService.class);
-
     private final NotificationService notificationService;
     private final NotificationsProperties notificationsProperties;
 
@@ -66,10 +62,22 @@ public class NotificationToDefendantService {
 
     }
 
+    public void notifyDefendantOfFreeMediationConfirmationByClaimant(Claim claim) {
+        Map<String, String> parameters = aggregateParams(claim);
+        parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
+        notificationService.sendMail(
+            claim.getDefendantEmail(),
+            notificationsProperties.getTemplates().getEmail().getDefendantFreeMediationConfirmation(),
+            parameters,
+            referenceForDefendant(claim.getReferenceNumber())
+        );
+    }
+
     private Map<String, String> aggregateParams(Claim claim) {
 
         HashMap<String, String> parameters = new HashMap<>();
         parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
+        parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
 

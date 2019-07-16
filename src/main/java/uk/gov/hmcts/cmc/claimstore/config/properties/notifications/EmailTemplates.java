@@ -117,4 +117,7 @@ public class EmailTemplates {
 
     @NotEmpty
     private String defendantLegalOrderDrawn;
+
+    @NotEmpty
+    private String defendantFreeMediationConfirmation;
 }
