@@ -1,10 +1,8 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.CourtLocationType;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertRequest;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.RequireSupport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.UnavailableDate;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.Witness;
@@ -37,12 +35,7 @@ public class SampleDirectionsQuestionnaire {
                 .hearingLoop(NO)
                 .build()
             )
-            .hearingLocation(HearingLocation.builder()
-                .courtName("A Court")
-                .hearingLocationSlug("a-court")
-                .courtAddress(SampleAddress.builder().build())
-                .locationOption(CourtLocationType.ALTERNATE_COURT)
-                .build()
+            .hearingLocation(SampleHearingLocation.defaultHearingLocation.get()
             )
             .expertRequest(ExpertRequest.builder()
                 .reasonForExpertAdvice("A valid reason")

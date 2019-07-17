@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.documents.content.directionsquestionnaire.DirectionsQuestionnaireContentProvider;
+import uk.gov.hmcts.cmc.claimstore.documents.content.directionsquestionnaire.HearingContentProvider;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.EvidenceContent;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
@@ -29,12 +29,12 @@ public class PartAdmissionResponseContentProvider {
 
     private final PaymentIntentionContentProvider paymentIntentionContentProvider;
     private final StatementOfMeansContentProvider statementOfMeansContentProvider;
-    private final DirectionsQuestionnaireContentProvider hearingContentProvider;
+    private final HearingContentProvider hearingContentProvider;
 
     public PartAdmissionResponseContentProvider(
         PaymentIntentionContentProvider paymentIntentionContentProvider,
         StatementOfMeansContentProvider statementOfMeansContentProvider,
-        DirectionsQuestionnaireContentProvider hearingContentProvider
+        HearingContentProvider hearingContentProvider
     ) {
         this.paymentIntentionContentProvider = paymentIntentionContentProvider;
         this.statementOfMeansContentProvider = statementOfMeansContentProvider;
@@ -109,7 +109,9 @@ public class PartAdmissionResponseContentProvider {
 
         content.put("formNumber", ADMISSIONS_FORM_NO);
         content.put("hearingContent", partAdmissionResponse.getDirectionsQuestionnaire()
-            .map(questinnaire -> hearingContentProvider.mapDirectionQuestionnaire.apply(questinnaire)));
+            .map(questionnaire -> hearingContentProvider.mapDirectionQuestionnaire.apply(questionnaire))
+            .orElse(null)
+        );
 
         return content;
     }

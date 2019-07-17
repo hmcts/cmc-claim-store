@@ -15,9 +15,11 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 @Component
-public class DirectionsQuestionnaireContentProvider {
+public class HearingContentProvider {
 
-    private static BiConsumer<RequireSupport, HearingContent.HearingContentBuilder> mapSupportRequirement =
+    public final String DISABLED_ACCESS = "Disabled Access";
+
+    private BiConsumer<RequireSupport, HearingContent.HearingContentBuilder> mapSupportRequirement =
         (support, builder) -> {
             List<String> supportNeeded = new ArrayList<>();
             support.getLanguageInterpreter().ifPresent(supportNeeded::add);
@@ -26,11 +28,11 @@ public class DirectionsQuestionnaireContentProvider {
             support.getDisabledAccess()
                 .map(YesNoOption::name)
                 .filter(access -> access.equals(YesNoOption.YES.name()))
-                .ifPresent(x -> supportNeeded.add("Disabled Access"));
+                .ifPresent(x -> supportNeeded.add(DISABLED_ACCESS));
             builder.supportRequired(supportNeeded);
         };
 
-    private static BiConsumer<ExpertRequest, HearingContent.HearingContentBuilder> mapWitnessDetails =
+    private BiConsumer<ExpertRequest, HearingContent.HearingContentBuilder> mapExpertRequest =
         (expertRequest, builder) -> {
             builder.hasExpertReport("YES");
             builder.courtPermissionForExpertReport("YES");
@@ -40,20 +42,22 @@ public class DirectionsQuestionnaireContentProvider {
 
     public Function<DirectionsQuestionnaire, HearingContent> mapDirectionQuestionnaire =
         questionnaire -> {
-            HearingContent.HearingContentBuilder contentBuilder = HearingContent.builder();
 
-            questionnaire.getExpertRequest()
-                .map(ExpertRequest::getReasonForExpertAdvice)
-                .ifPresent(contentBuilder::courtPermissionForExpertReport);
+            Optional.ofNullable(questionnaire).orElseThrow(IllegalArgumentException::new);
+
+            HearingContent.HearingContentBuilder contentBuilder = HearingContent.builder();
 
             questionnaire.getRequireSupport()
                 .ifPresent(support -> mapSupportRequirement.accept(support, contentBuilder));
 
             contentBuilder.hearingLocation(questionnaire.getHearingLocation().getCourtName());
-            contentBuilder.locationReason(questionnaire.getHearingLocation().getExceptionalCircumstancesReason().orElse(""));
+            contentBuilder.locationReason(questionnaire.getHearingLocation().getExceptionalCircumstancesReason()
+                .orElse(""));
             contentBuilder.hasExpertReport(questionnaire.getExpertReports().isEmpty() ? "NO" : "YES");
 
-            questionnaire.getExpertRequest().ifPresent(req -> mapWitnessDetails.accept(req, contentBuilder));
+            questionnaire.getWitness().ifPresent(contentBuilder::witness);
+            questionnaire.getExpertRequest().ifPresent(req -> mapExpertRequest.accept(req, contentBuilder));
+            contentBuilder.unavailableDates(questionnaire.getUnavailableDates());
 
             contentBuilder.expertReports(Optional.ofNullable(questionnaire.getExpertReports()).orElse(Collections.emptyList()));
             return contentBuilder.build();
