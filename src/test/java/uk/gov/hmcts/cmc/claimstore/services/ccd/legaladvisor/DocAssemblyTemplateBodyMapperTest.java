@@ -10,14 +10,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
@@ -36,6 +33,14 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOTH;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.CLAIMANT;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.DEFENDANT;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType.BIRMINGHAM;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType.FOUR_HOURS;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EXPERT_REPORT_PERMISSION;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.OTHER;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOtherDirectionHeaderType.UPLOAD;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DocAssemblyTemplateBodyMapperTest  {
@@ -69,28 +74,64 @@ public class DocAssemblyTemplateBodyMapperTest  {
             .withSurname("McJudge")
             .build();
         docAssemblyTemplateBodyBuilder = DocAssemblyTemplateBody.builder()
-            .hearingRequired(true)
+            .paperDetermination(false)
             .hasFirstOrderDirections(true)
             .hasSecondOrderDirections(true)
             .docUploadDeadline(LocalDate.parse("2020-10-11"))
             .eyewitnessUploadDeadline(LocalDate.parse("2020-10-11"))
             .currentDate(LocalDate.parse("2019-04-24"))
-            .hearingStatement("No idea")
             .claimant(Party.builder().partyName("Individual").build())
             .defendant(Party.builder().partyName("Mary Richards").build())
             .judicial(Judicial.builder().firstName("Judge").lastName("McJudge").build())
             .referenceNumber("ref no")
             .hearingCourtName("Defendant Court")
-            .hearingCourtAddress("Defendant Court address\nSW1P4BB\nLondon")
-            .docUploadForParty(CCDDirectionPartyType.CLAIMANT)
-            .eyewitnessUploadForParty(CCDDirectionPartyType.DEFENDANT)
-            .estimatedHearingDuration(CCDHearingDurationType.FOUR_HOURS)
-            .otherDirectionList(ImmutableList.of(
-                OtherDirection.builder()
+            .extraDocUploadList(
+                ImmutableList.of(
+                    CCDCollectionElement.<String>builder()
+                        .value("first document")
+                        .build(),
+                    CCDCollectionElement.<String>builder()
+                        .value("second document")
+                        .build()))
+            .hearingCourtAddress(CCDAddress.builder()
+                .addressLine1("Defendant Court address")
+                .postCode("SW1P4BB")
+                .postTown("London")
+                .build())
+            .docUploadForParty(CLAIMANT)
+            .eyewitnessUploadForParty(DEFENDANT)
+            .estimatedHearingDuration(FOUR_HOURS)
+            .otherDirections(ImmutableList.of(
+                CCDOrderDirection.builder()
                     .sendBy(LocalDate.parse("2020-10-11"))
                     .directionComment("a direction")
-                    .extraOrderDirection(CCDOrderDirectionType.OTHER)
-                    .forParty(CCDDirectionPartyType.BOTH)
+                    .extraOrderDirection(OTHER)
+                    .otherDirectionHeaders(UPLOAD)
+                    .forParty(BOTH)
+                    .build(),
+                CCDOrderDirection.builder()
+                    .sendBy(LocalDate.parse("2020-10-11"))
+                    .extraOrderDirection(EXPERT_REPORT_PERMISSION)
+                    .forParty(BOTH)
+                    .expertReports(
+                        ImmutableList.of(
+                            CCDCollectionElement.<String>builder()
+                                .value("first")
+                                .build(),
+                            CCDCollectionElement.<String>builder()
+                                .value("second")
+                                .build(),
+                            CCDCollectionElement.<String>builder()
+                                .value("third")
+                                .build()))
+                    .extraDocUploadList(
+                        ImmutableList.of(
+                            CCDCollectionElement.<String>builder()
+                                .value("first document")
+                                .build(),
+                            CCDCollectionElement.<String>builder()
+                                .value("second document")
+                                .build()))
                     .build()
             ));
         //when
@@ -102,7 +143,7 @@ public class DocAssemblyTemplateBodyMapperTest  {
     @Test
     public void shouldMapAddressFromCourtFinder() {
         CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData();
-        ccdOrderGenerationData.setHearingCourt(CCDHearingCourtType.BIRMINGHAM);
+        ccdOrderGenerationData.setHearingCourt(BIRMINGHAM);
         when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString())).thenReturn(ImmutableList.of(Court.builder()
             .name("Birmingham Court")
             .slug("birmingham-court")
@@ -117,28 +158,65 @@ public class DocAssemblyTemplateBodyMapperTest  {
             userDetails);
 
         DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
-            .hearingRequired(true)
+            .paperDetermination(false)
             .hasFirstOrderDirections(true)
             .hasSecondOrderDirections(true)
             .docUploadDeadline(LocalDate.parse("2020-10-11"))
             .eyewitnessUploadDeadline(LocalDate.parse("2020-10-11"))
             .currentDate(LocalDate.parse("2019-04-24"))
-            .hearingStatement("No idea")
             .claimant(Party.builder().partyName("Individual").build())
             .defendant(Party.builder().partyName("Mary Richards").build())
             .judicial(Judicial.builder().firstName("Judge").lastName("McJudge").build())
             .referenceNumber("ref no")
             .hearingCourtName("Birmingham Court")
-            .hearingCourtAddress("line1\nline2\nSW1P4BB\nBirmingham")
-            .docUploadForParty(CCDDirectionPartyType.CLAIMANT)
-            .eyewitnessUploadForParty(CCDDirectionPartyType.DEFENDANT)
-            .estimatedHearingDuration(CCDHearingDurationType.FOUR_HOURS)
-            .otherDirectionList(ImmutableList.of(
-                OtherDirection.builder()
+            .hearingCourtAddress(CCDAddress.builder()
+                .addressLine1("line1")
+                .addressLine2("line2")
+                .postCode("SW1P4BB")
+                .postTown("Birmingham")
+                .build())
+            .extraDocUploadList(
+                ImmutableList.of(
+                    CCDCollectionElement.<String>builder()
+                        .value("first document")
+                        .build(),
+                    CCDCollectionElement.<String>builder()
+                        .value("second document")
+                        .build()))
+            .docUploadForParty(CLAIMANT)
+            .eyewitnessUploadForParty(DEFENDANT)
+            .estimatedHearingDuration(FOUR_HOURS)
+            .otherDirections(ImmutableList.of(
+                CCDOrderDirection.builder()
                     .sendBy(LocalDate.parse("2020-10-11"))
                     .directionComment("a direction")
-                    .extraOrderDirection(CCDOrderDirectionType.OTHER)
-                    .forParty(CCDDirectionPartyType.BOTH)
+                    .otherDirectionHeaders(UPLOAD)
+                    .extraOrderDirection(OTHER)
+                    .forParty(BOTH)
+                    .build(),
+                CCDOrderDirection.builder()
+                    .sendBy(LocalDate.parse("2020-10-11"))
+                    .extraOrderDirection(EXPERT_REPORT_PERMISSION)
+                    .forParty(BOTH)
+                    .expertReports(
+                        ImmutableList.of(
+                            CCDCollectionElement.<String>builder()
+                                .value("first")
+                                .build(),
+                            CCDCollectionElement.<String>builder()
+                                .value("second")
+                                .build(),
+                            CCDCollectionElement.<String>builder()
+                                .value("third")
+                                .build()))
+                    .extraDocUploadList(
+                        ImmutableList.of(
+                            CCDCollectionElement.<String>builder()
+                                .value("first document")
+                                .build(),
+                            CCDCollectionElement.<String>builder()
+                                .value("second document")
+                                .build()))
                     .build()
             )).build();
 
@@ -170,14 +248,14 @@ public class DocAssemblyTemplateBodyMapperTest  {
     @Test
     public void shouldMapTemplateBodyWhenOtherDirectionIsNull() {
         CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData();
-        ccdOrderGenerationData.setOtherDirectionList(ImmutableList.of(
+        ccdOrderGenerationData.setOtherDirections(ImmutableList.of(
             CCDCollectionElement.<CCDOrderDirection>builder().value(null).build()));
         ccdCase.setOrderGenerationData(ccdOrderGenerationData);
         DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
             ccdCase,
             userDetails);
 
-        docAssemblyTemplateBodyBuilder.otherDirectionList(Collections.emptyList());
+        docAssemblyTemplateBodyBuilder.otherDirections(Collections.emptyList());
         DocAssemblyTemplateBody expectedBody = docAssemblyTemplateBodyBuilder.build();
 
         assertThat(requestBody).isEqualTo(expectedBody);
@@ -202,7 +280,7 @@ public class DocAssemblyTemplateBodyMapperTest  {
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowIfCourtIsNotFound() {
         CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData();
-        ccdOrderGenerationData.setHearingCourt(CCDHearingCourtType.BIRMINGHAM);
+        ccdOrderGenerationData.setHearingCourt(BIRMINGHAM);
         ccdCase.setOrderGenerationData(ccdOrderGenerationData);
         when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString())).thenReturn(Collections.emptyList());
         docAssemblyTemplateBodyMapper.from(
