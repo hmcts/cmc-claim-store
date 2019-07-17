@@ -19,11 +19,18 @@ import uk.gov.hmcts.cmc.email.EmailService;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
 
 @Service
 public class ClaimantRejectionStaffNotificationService {
+
+    public static final String CLAIM_REFERENCE_NUMBER = "claimReferenceNumber";
+    public static final String CLAIMANT_NAME = "claimantName";
+    public static final String DEFENDANT_NAME = "defendantName";
+    public static final String DEFENDANT_FREE_MEDIATION = "defendantFreeMediation";
+    public static final String CLAIMANT_FREE_MEDIATION = "claimantFreeMediation";
 
     private final EmailService emailService;
     private final StaffEmailProperties staffEmailProperties;
@@ -74,15 +81,16 @@ public class ClaimantRejectionStaffNotificationService {
                 .to(staffEmailProperties.getRecipient())
                 .subject(emailContent.getSubject())
                 .message(emailContent.getBody())
+                .attachments(emptyList())
                 .build()
         );
     }
 
     public static Map<String, Object> getParameters(Claim claim) {
         return new ImmutableMap.Builder<String, Object>()
-            .put("claimReferenceNumber", claim.getReferenceNumber())
-            .put("claimantName", claim.getClaimData().getClaimant().getName())
-            .put("defendantName", claim.getClaimData().getDefendant().getName())
+            .put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber())
+            .put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName())
+            .put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName())
             .build();
     }
 
@@ -91,14 +99,14 @@ public class ClaimantRejectionStaffNotificationService {
         Response defendantResponse = claim.getResponse().orElseThrow(IllegalStateException::new);
         ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
 
-        map.put("claimReferenceNumber", claim.getReferenceNumber());
-        map.put("claimantName", claim.getClaimData().getClaimant().getName());
-        map.put("defendantName", claim.getClaimData().getDefendant().getName());
-        map.put("defendantFreeMediation", defendantResponse.getFreeMediation()
+        map.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
+        map.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
+        map.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
+        map.put(DEFENDANT_FREE_MEDIATION, defendantResponse.getFreeMediation()
             .orElse(YesNoOption.NO)
             .name()
             .toLowerCase());
-        map.put("claimantFreeMediation", ((ResponseRejection) claimantResponse).getFreeMediation()
+        map.put(CLAIMANT_FREE_MEDIATION, ((ResponseRejection) claimantResponse).getFreeMediation()
             .orElse(YesNoOption.NO)
             .name()
             .toLowerCase());
