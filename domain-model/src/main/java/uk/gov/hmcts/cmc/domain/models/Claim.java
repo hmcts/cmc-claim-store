@@ -227,9 +227,10 @@ public class Claim {
 
     @JsonProperty("mediationDeadline")
     public Optional<LocalDate> getMediationDeadline() {
-        if (this.respondedAt != null) {
-            return Optional.ofNullable(new NextWorkingDay(this.respondedAt.toLocalDate().plusDays(5)).getDate());
-        }
-        return Optional.empty();
+        return Optional.ofNullable(this.respondedAt)
+            .map(LocalDateTime::toLocalDate)
+            .map(date -> date.plusDays(5))
+            .map(NextWorkingDay::new)
+            .map(NextWorkingDay::getDate);
     }
 }

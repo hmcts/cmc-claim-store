@@ -97,6 +97,16 @@ public class ClaimTest {
             .contains();
     }
 
+    @Test
+    public void shouldGetMediationDeadLineDate() {
+        LocalDateTime someDate = LocalDate.of(2019,7, 7).atStartOfDay();
+        Claim claim = SampleClaim.builder()
+            .withRespondedAt(someDate)
+            .build();
+        claim.getMediationDeadline().ifPresent(
+            result -> assertThat(result).isEqualTo(LocalDate.of(2019,7, 12)));
+    }
+
     private static Claim customValues() {
         return customCreatedAt(NOW_IN_LOCAL_ZONE);
     }
