@@ -9,9 +9,6 @@ import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimCreationEventsStatusService;
-import uk.gov.hmcts.cmc.claimstore.idam.models.User;
-import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUser;
-import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -46,12 +43,6 @@ public class NotifyStaffOperationServiceTest {
 
     @Test
     public void shouldNotifyStaffForCitizenProcess() {
-        //given
-        User citizen = SampleUser.builder()
-            .withAuthorisation(AUTHORISATION)
-            .withUserDetails(SampleUserDetails.builder().withRoles("citizen").build())
-            .build();
-
         //when
         notifyStaffOperationService.notify(CLAIM, AUTHORISATION, pinLetterClaim, sealedClaim);
 
