@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
@@ -7,6 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
+import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
@@ -29,6 +31,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isReferre
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isSettlePreJudgment;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper.isOptedForMediation;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
 
 @Service
 public class ClaimantResponseService {
@@ -41,6 +44,7 @@ public class ClaimantResponseService {
     private final FormaliseResponseAcceptanceService formaliseResponseAcceptanceService;
     private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
     private final CCDEventProducer ccdEventProducer;
+    @Value("${feature_toggles.directions_questionnaire_enabled:false}") boolean directionsQuestionnaireEnabled;
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     public ClaimantResponseService(
@@ -89,6 +93,12 @@ public class ClaimantResponseService {
 
         if (isSettlePreJudgment(claimantResponse)) {
             caseRepository.saveCaseEvent(authorization, updatedClaim, SETTLED_PRE_JUDGMENT);
+        }
+
+        if (directionsQuestionnaireEnabled && claimantResponse.getType() == REJECTION) {
+            DirectionsQuestionnaireUtils.prepareCaseEvent(
+                (ResponseRejection) claimantResponse, updatedClaim)
+                .ifPresent(caseEvent -> caseRepository.saveCaseEvent(authorization, updatedClaim, caseEvent));
         }
 
         ccdEventProducer.createCCDClaimantResponseEvent(claim, claimantResponse, authorization);
