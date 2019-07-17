@@ -362,6 +362,39 @@ public class ClaimantResponseServiceTest {
     }
 
     @Test
+    public void saveResponseRejectionShouldSucceedWhenFreeMediationHasBeenConfirmed() {
+
+        ClaimantResponse claimantResponse = SampleClaimantResponse
+            .ClaimantResponseRejection
+            .builder()
+            .buildRejectionWithFreeMediation();
+
+        Claim claim = SampleClaim.builder()
+            .withResponseDeadline(LocalDate.now().minusMonths(2))
+            .withResponse(
+                SampleResponse.PartAdmission.builder().buildWithFreeMediation()
+            )
+            .withRespondedAt(LocalDateTime.now().minusDays(32))
+            .withClaimantResponse(claimantResponse)
+            .build();
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+        when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseRejection.class), eq(AUTHORISATION)))
+            .thenReturn(claim);
+
+        InOrder inOrder = inOrder(caseRepository, formaliseResponseAcceptanceService, eventProducer, appInsights);
+
+        claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
+
+        inOrder.verify(caseRepository, once()).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
+        inOrder.verify(formaliseResponseAcceptanceService, never())
+            .formalise(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION));
+        inOrder.verify(eventProducer, once()).createFreeMediationEvent(any(Claim.class));
+        inOrder.verify(appInsights, once()).trackEvent(eq(CLAIMANT_RESPONSE_REJECTED),
+            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+    }
+
+    @Test
     public void shouldNotRaiseGenericClaimantResponseEventOnSettlementAgreement() {
         ClaimantResponse claimantResponse = SampleClaimantResponse
             .ClaimantResponseAcceptation

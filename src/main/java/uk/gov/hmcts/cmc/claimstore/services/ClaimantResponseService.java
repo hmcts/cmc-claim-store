@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
@@ -25,8 +24,10 @@ import java.time.LocalDateTime;
 import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
+import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isOptedForMediation;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isReferredToJudge;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isSettlePreJudgment;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper.isOptedForMediation;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
 
 @Service
@@ -62,7 +63,6 @@ public class ClaimantResponseService {
         this.ccdEventProducer = ccdEventProducer;
     }
 
-    @Transactional(transactionManager = "transactionManager")
     public void save(
         String externalId,
         String claimantId,
@@ -81,7 +81,9 @@ public class ClaimantResponseService {
         Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
         if (!isSettlementAgreement(claim, claimantResponse)
             && (!isReferredToJudge(claimantResponse)
-            || (isReferredToJudge(claimantResponse) && PartyUtils.isCompanyOrOrganisation(response.getDefendant())))) {
+            || (isReferredToJudge(claimantResponse) && PartyUtils.isCompanyOrOrganisation(response.getDefendant())))
+            || isFreeMediationConfirmed(claimantResponse, response)
+        ) {
             eventProducer.createClaimantResponseEvent(updatedClaim);
         }
 
@@ -93,12 +95,17 @@ public class ClaimantResponseService {
         appInsights.trackEvent(getAppInsightsEvent(claimantResponse), "referenceNumber", claim.getReferenceNumber());
     }
 
+    private boolean isFreeMediationConfirmed(ClaimantResponse claimantResponse, Response response) {
+        return isOptedForMediation(claimantResponse) && isOptedForMediation(response);
+    }
+
     private boolean isSettlementAgreement(Claim claim, ClaimantResponse claimantResponse) {
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
 
         if (shouldFormaliseResponseAcceptance(response, claimantResponse)) {
             return ((ResponseAcceptation) claimantResponse).getFormaliseOption()
-                .filter(Predicate.isEqual(FormaliseOption.SETTLEMENT)).isPresent();
+                .filter(Predicate.isEqual(FormaliseOption.SETTLEMENT))
+                .isPresent();
         }
         return false;
     }

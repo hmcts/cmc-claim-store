@@ -8,11 +8,11 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimantRejectOrgPaymentPlanSt
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 
-import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
+import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isOptedForMediation;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper.isOptedForMediation;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseStatesPaid;
 
 @Component
@@ -33,10 +33,10 @@ public class ClaimantResponseActionsHandler {
 
     @EventListener
     public void sendNotificationToDefendant(ClaimantResponseEvent event) {
-        if (isRejectedStatesPaidOrPartAdmission(event.getClaim())) {
-            this.notificationService.notifyDefendantOfRejection(event.getClaim());
-        } else if (isFreeMediationConfirmed(event.getClaim())) {
+        if (isFreeMediationConfirmed(event.getClaim())) {
             this.notificationService.notifyDefendantOfFreeMediationConfirmationByClaimant(event.getClaim());
+        } else if (isRejectedStatesPaidOrPartAdmission(event.getClaim())) {
+            this.notificationService.notifyDefendantOfRejection(event.getClaim());
         } else {
             this.notificationService.notifyDefendant(event.getClaim());
         }
@@ -46,16 +46,8 @@ public class ClaimantResponseActionsHandler {
         ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
         Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
         return claimantResponse.getType() == ClaimantResponseType.REJECTION
-            && freeMediationAcceptedInClaimantResponse((ResponseRejection) claimantResponse)
-            && freeMediationAcceptedInDefendantResponse(response);
-    }
-
-    private boolean freeMediationAcceptedInDefendantResponse(Response response) {
-        return response.getFreeMediation().filter(mediation -> mediation == YES).isPresent();
-    }
-
-    private boolean freeMediationAcceptedInClaimantResponse(ResponseRejection claimantResponse) {
-        return claimantResponse.getFreeMediation().filter(mediation -> mediation == YES).isPresent();
+            && isOptedForMediation(claimantResponse)
+            && isOptedForMediation(response);
     }
 
     @EventListener
