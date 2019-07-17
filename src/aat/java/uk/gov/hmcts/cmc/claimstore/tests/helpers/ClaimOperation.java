@@ -16,7 +16,7 @@ import java.util.Optional;
 @Service
 public class ClaimOperation {
 
-    @Retryable(value = RuntimeException.class, maxAttempts = 20, backoff = @Backoff(delay = 500))
+    @Retryable(value = RuntimeException.class, maxAttempts = 25, backoff = @Backoff(delay = 500))
     public Claim getClaimWithLetterHolder(String externalId, String userAuthentication) {
 
         Optional<CaseMetadata> caseMetadata = Optional.of(retrieveCaseMetaData(externalId));
