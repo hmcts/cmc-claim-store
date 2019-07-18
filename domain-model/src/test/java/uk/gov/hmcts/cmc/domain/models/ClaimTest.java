@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -103,9 +104,11 @@ public class ClaimTest {
         Claim claim = SampleClaim.builder()
             .withRespondedAt(someDate)
             .build();
-        claim.getMediationDeadline().ifPresent(
+        Optional<LocalDate> mediationDeadline = claim.getMediationDeadline();
+
+        mediationDeadline.ifPresent(
             result -> assertThat(result).isEqualTo(LocalDate.of(2019,7, 12)));
-        assertThat(claim.getMediationDeadline().isPresent()).isTrue();
+        assertThat(mediationDeadline.isPresent()).isTrue();
 
     }
 
@@ -115,9 +118,11 @@ public class ClaimTest {
         Claim claim = SampleClaim.builder()
             .withClaimantRespondedAt(someDate)
             .build();
-        claim.getAcceptedPaymentPlanClaimantDeadline().ifPresent(
+        Optional<LocalDate> acceptedPaymentPlanClaimantDeadline = claim.getAcceptedPaymentPlanClaimantDeadline();
+
+        acceptedPaymentPlanClaimantDeadline.ifPresent(
             result -> assertThat(result).isEqualTo(LocalDate.of(2019,7, 14)));
-        assertThat(claim.getAcceptedPaymentPlanClaimantDeadline().isPresent()).isTrue();
+        assertThat(acceptedPaymentPlanClaimantDeadline.isPresent()).isTrue();
     }
 
     private static Claim customValues() {
