@@ -70,6 +70,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.DOC
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EXPERT_REPORT_PERMISSION;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYEWITNESS;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.OTHER;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOtherDirectionHeaderType.UPLOAD;
 import static uk.gov.hmcts.cmc.ccd.util.SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicators;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
@@ -124,7 +125,6 @@ public class SampleData {
         .evidence(singletonList(CCDCollectionElement.<CCDEvidenceRow>builder()
             .value(CCDEvidenceRow.builder().type(EXPERT_WITNESS).description("description of evidence").build())
             .build()));
-
 
     //Utility class
     private SampleData() {
@@ -511,6 +511,7 @@ public class SampleData {
 
     public static CCDOrderGenerationData getCCDOrderGenerationData() {
         return CCDOrderGenerationData.builder()
+            .otherDirectionHeader(UPLOAD)
             .directionList(ImmutableList.of(
                 DOCUMENTS, EYEWITNESS))
             .otherDirections(ImmutableList.of(
@@ -518,6 +519,7 @@ public class SampleData {
                     CCDOrderDirection.builder()
                         .extraOrderDirection(OTHER)
                         .directionComment("a direction")
+                        .otherDirectionHeaders(UPLOAD)
                         .forParty(CCDDirectionPartyType.BOTH)
                         .sendBy(LocalDate.parse("2020-10-11"))
                         .build()
@@ -553,7 +555,6 @@ public class SampleData {
             .eyewitnessUploadDeadline(LocalDate.parse("2020-10-11"))
             .hearingCourt(CCDHearingCourtType.DEFENDANT_COURT)
             .preferredCourtObjectingReason("I like this court more")
-            .hearingStatement("No idea")
             .newRequestedCourt("Another court")
             .docUploadForParty(CCDDirectionPartyType.CLAIMANT)
             .extraDocUploadList(

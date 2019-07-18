@@ -1,9 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff;
 
-import com.google.common.collect.ImmutableList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
+import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.Printable;
 import uk.gov.hmcts.cmc.claimstore.documents.content.bulkprint.BulkPrintEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -11,15 +11,12 @@ import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
-import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
@@ -35,26 +32,18 @@ public class BulkPrintStaffNotificationService {
         EmailService emailService,
         StaffEmailProperties emailProperties,
         BulkPrintEmailContentProvider emailContentProvider,
-        PDFServiceClient pdfServiceClient
-    ) {
+        PDFServiceClient pdfServiceClient) {
         this.emailService = emailService;
         this.emailProperties = emailProperties;
         this.emailContentProvider = emailContentProvider;
         this.pdfServiceClient = pdfServiceClient;
     }
 
-    public void notifyFailedBulkPrint(Document defendantLetterDocument, Document sealedClaimDocument, Claim claim) {
+    public void notifyFailedBulkPrint(List<Printable> documents, Claim claim) {
+        List<EmailAttachment> emailAttachments = documents.stream()
+            .map(d -> pdf(d.getContent(pdfServiceClient), d.getFileName()))
+            .collect(Collectors.toList());
         EmailContent emailContent = emailContentProvider.createContent(wrapInMap(claim));
-
-        EmailAttachment defendantLetter = pdf(
-            createPdf(defendantLetterDocument),
-            buildDefendantLetterFileBaseName(claim.getReferenceNumber()) + EXTENSION
-        );
-
-        EmailAttachment sealedClaim = pdf(
-            createPdf(sealedClaimDocument),
-            buildSealedClaimFileBaseName(claim.getReferenceNumber()) + EXTENSION
-        );
 
         emailService.sendEmail(
             emailProperties.getSender(),
@@ -62,7 +51,7 @@ public class BulkPrintStaffNotificationService {
                 emailProperties.getRecipient(),
                 emailContent.getSubject(),
                 emailContent.getBody(),
-                ImmutableList.of(defendantLetter, sealedClaim)
+                emailAttachments
             )
         );
     }
@@ -71,11 +60,5 @@ public class BulkPrintStaffNotificationService {
         Map<String, Object> map = new HashMap<>();
         map.put("claimReferenceNumber", claim.getReferenceNumber());
         return map;
-    }
-
-    private byte[] createPdf(Document document) {
-        requireNonNull(document);
-
-        return pdfServiceClient.generateFromHtml(document.template.getBytes(), document.values);
     }
 }
