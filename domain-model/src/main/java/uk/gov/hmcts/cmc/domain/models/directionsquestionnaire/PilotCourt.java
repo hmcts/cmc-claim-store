@@ -6,10 +6,11 @@ import java.util.Arrays;
 
 @AllArgsConstructor
 public enum PilotCourt {
-    EDMONTON("Edmonton"),
-    MANCHESTER("Manchester"),
-    BIRMINGHAM("Birmingham"),
-    CLERKENWELL("Clerkenwell & Shoreditch");
+    EDMONTON("edmonton"),
+    MANCHESTER("manchester"),
+    BIRMINGHAM("birmingham"),
+    CLERKENWELL("clerkenwell"),
+    SHOREDITCH("shoreditch");
 
     private String name;
 
@@ -18,7 +19,10 @@ public enum PilotCourt {
     }
 
     public static boolean isPilotCourt(String courtName) {
+        if (courtName == null) {
+            return false;
+        }
         return Arrays.stream(PilotCourt.values())
-            .anyMatch(val -> val.name().equalsIgnoreCase(courtName));
+            .anyMatch(pilotCourt -> courtName.toLowerCase().contains(pilotCourt.name));
     }
 }
