@@ -36,14 +36,12 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
-import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
@@ -132,8 +130,8 @@ public class SupportController {
             case "claimant-response":
                 resendStaffNotificationClaimantResponse(claim);
                 break;
-            case "intent-to-proceed-with-dq":
-                resendStaffNotificationForIntentToProceedWithDq(claim);
+            case "intent-to-proceed":
+                resendStaffNotificationForIntentToProceed(claim);
                 break;
             default:
                 throw new NotFoundException("Event " + event + " is not supported");
@@ -245,15 +243,12 @@ public class SupportController {
 
     }
 
-    private void resendStaffNotificationForIntentToProceedWithDq(Claim claim) {
-        ClaimantResponse claimantResponse = claim.getClaimantResponse()
-            .orElseThrow(IllegalArgumentException::new);
+    private void resendStaffNotificationForIntentToProceed(Claim claim) {
+        ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalArgumentException::new);
 
         if (directionsQuestionnaireEnabled && claimantResponse.getType() == REJECTION) {
-            DirectionsQuestionnaireUtils.prepareCaseEvent((ResponseRejection) claimantResponse, claim)
-                .ifPresent(caseEvent -> claimantResponseStaffNotificationHandler
-                    .notifyStaffWithClaimantsIntentionToProceed(new ClaimantResponseEvent(claim)));
-
+            claimantResponseStaffNotificationHandler
+                .notifyStaffWithClaimantsIntentionToProceed(new ClaimantResponseEvent(claim));
         }
     }
 
