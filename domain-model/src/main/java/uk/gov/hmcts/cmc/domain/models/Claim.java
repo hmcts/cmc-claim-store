@@ -233,4 +233,13 @@ public class Claim {
             .map(NextWorkingDay::new)
             .map(NextWorkingDay::getDate);
     }
+
+    @JsonProperty("acceptedPaymentPlanClaimantDeadline")
+    public Optional<LocalDate> getAcceptedPaymentPlanClaimantDeadline() {
+        return Optional.ofNullable(this.claimantRespondedAt)
+            .map(LocalDateTime::toLocalDate)
+            .map(date -> date.plusDays(7))
+            .map(NextWorkingDay::new)
+            .map(NextWorkingDay::getDate);
+    }
 }

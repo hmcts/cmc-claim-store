@@ -107,6 +107,16 @@ public class ClaimTest {
             result -> assertThat(result).isEqualTo(LocalDate.of(2019,7, 12)));
     }
 
+    @Test
+    public void shouldGetAcceptedPaymentPlanClaimantDeadline() {
+        LocalDateTime someDate = LocalDate.of(2019,7, 7).atStartOfDay();
+        Claim claim = SampleClaim.builder()
+            .withClaimantRespondedAt(someDate)
+            .build();
+        claim.getAcceptedPaymentPlanClaimantDeadline().ifPresent(
+            result -> assertThat(result).isEqualTo(LocalDate.of(2019,7, 14)));
+    }
+
     private static Claim customValues() {
         return customCreatedAt(NOW_IN_LOCAL_ZONE);
     }
