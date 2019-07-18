@@ -26,10 +26,8 @@ import java.time.LocalDateTime;
 import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
-import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isOptedForMediation;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isReferredToJudge;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isSettlePreJudgment;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper.isOptedForMediation;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
 
@@ -85,9 +83,7 @@ public class ClaimantResponseService {
         Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
         if (!isSettlementAgreement(claim, claimantResponse)
             && (!isReferredToJudge(claimantResponse)
-            || (isReferredToJudge(claimantResponse) && PartyUtils.isCompanyOrOrganisation(response.getDefendant())))
-            || isFreeMediationConfirmed(claimantResponse, response)
-        ) {
+            || (isReferredToJudge(claimantResponse) && PartyUtils.isCompanyOrOrganisation(response.getDefendant())))) {
             eventProducer.createClaimantResponseEvent(updatedClaim);
         }
 
@@ -103,10 +99,6 @@ public class ClaimantResponseService {
 
         ccdEventProducer.createCCDClaimantResponseEvent(claim, claimantResponse, authorization);
         appInsights.trackEvent(getAppInsightsEvent(claimantResponse), "referenceNumber", claim.getReferenceNumber());
-    }
-
-    private boolean isFreeMediationConfirmed(ClaimantResponse claimantResponse, Response response) {
-        return isOptedForMediation(claimantResponse) && isOptedForMediation(response);
     }
 
     private boolean isSettlementAgreement(Claim claim, ClaimantResponse claimantResponse) {
