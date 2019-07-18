@@ -31,6 +31,10 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
         return ClaimantResponseRejection.builder().buildRejectionWithFreeMediation();
     }
 
+    public static ClaimantResponse validRejectionWithDirectionsQuestionnaire() {
+        return ClaimantResponseRejection.builder().buildRejectionWithDirectionsQuestionnaire();
+    }
+
     public static class ClaimantResponseAcceptation extends SampleClaimantResponse<ClaimantResponseAcceptation> {
 
         private BigDecimal amountPaid = TEN;

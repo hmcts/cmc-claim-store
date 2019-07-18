@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
     <suppress>
         <notes><![CDATA[
          Specific to deserialisation of AtomicDoubleArray and CompoundOrdering classes: https://github.com/google/guava/wiki/CVE-2018-10237
@@ -132,13 +132,6 @@
     </suppress>
     <suppress>
         <notes><![CDATA[
-			The offending library and class and not used in our code
-			]]></notes>
-        <gav regex="true">.*</gav>
-        <cve>CVE-2018-8088</cve>
-    </suppress>
-    <suppress>
-        <notes><![CDATA[
 			Not applicable - relates to XML processing
 			]]></notes>
         <gav regex="true">.*</gav>
@@ -152,11 +145,10 @@
         <cve>CVE-2019-3795</cve>
     </suppress>
     <suppress>
-        <notes><![CDATA[No fix is available]]></notes>
-        <gav regex="true">^org\.springframework\.security:spring-security-rsa:1\.0\.7\.RELEASE$</gav>
-        <cve>CVE-2011-2731</cve>
-        <cve>CVE-2011-2732</cve>
-        <cve>CVE-2012-5055</cve>
-        <cve>CVE-2018-1260</cve>
+        <notes><![CDATA[
+           no fix available, not affected anyway
+           ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson-databind@.*$</packageUrl>
+        <cve>CVE-2019-12814</cve>
     </suppress>
 </suppressions>
