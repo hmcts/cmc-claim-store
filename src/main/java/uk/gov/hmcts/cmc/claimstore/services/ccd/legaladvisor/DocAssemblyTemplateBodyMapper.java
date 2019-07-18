@@ -68,18 +68,18 @@ public class DocAssemblyTemplateBodyMapper {
                 ccdOrderGenerationData.getEyewitnessUploadDeadline())
             .docUploadForParty(
                 ccdOrderGenerationData.getDocUploadForParty())
+            .extraDocUploadList(
+                ccdOrderGenerationData.getExtraDocUploadList())
             .eyewitnessUploadForParty(
                 ccdOrderGenerationData.getEyewitnessUploadForParty())
-            .hearingRequired(
-                ccdOrderGenerationData.getHearingRequired().toBoolean())
+            .paperDetermination(
+                ccdOrderGenerationData.getPaperDetermination().toBoolean())
             .hearingCourtName(
                 hearingCourt.getName())
             .hearingCourtAddress(
                 hearingCourt.getAddress())
             .estimatedHearingDuration(
                 ccdOrderGenerationData.getEstimatedHearingDuration())
-            .hearingStatement(
-                ccdOrderGenerationData.getHearingStatement())
             .otherDirections(
                 ccdOrderGenerationData.getOtherDirections()
                     .stream()
@@ -98,7 +98,7 @@ public class DocAssemblyTemplateBodyMapper {
             ccdAddressBuilder.addressLine1(address.getAddressLines().get(0));
             ccdAddressBuilder.addressLine2(address.getAddressLines().get(1));
             ccdAddressBuilder.addressLine3(address.getAddressLines().get(2));
-        } catch (ArrayIndexOutOfBoundsException exc) {
+        } catch (IndexOutOfBoundsException exc) {
             //the address line out of bounds is going to be set as null, which is ok
         }
         return ccdAddressBuilder.build();

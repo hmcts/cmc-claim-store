@@ -28,6 +28,7 @@ public class CaseEventMapper {
             .build();
 
     private CaseEventMapper() {
+
     }
 
     public static CaseEvent map(ClaimDocumentType type) {

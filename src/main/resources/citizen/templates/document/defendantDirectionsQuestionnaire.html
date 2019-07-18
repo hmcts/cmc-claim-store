@@ -1,173 +1,13 @@
 <html>
-<head>
-  <meta charset="UTF-8"/>
-  <style>
-    @page :first {
-      size: 8.5in 11in;
-      margin: 10%;
-      @top-right {
-        /*noinspection CssNoGenericFontName*/
-        font-family: "Open Sans";
-      }
-    }
-
-    @page {
-      size: 8.5in 11in;
-      margin: 10%;
-
-      @top-right {
-        content: "Claim number: {{ claim.referenceNumber }}";
-        font-size: 12px;
-        /*noinspection CssNoGenericFontName*/
-        font-family: "Open Sans";
-      }
-
-      @bottom-left {
-        content: "{{ formNumber }}";
-        /*noinspection CssNoGenericFontName*/
-        font-family: "Open Sans";
-        font-size: 10px;
-        font-weight: bold;
-      }
-
-      @bottom-center {
-        content: "For further details of the courts www.gov.uk/find-court-tribunal";
-        font-size: 10px;
-      }
-
-      @bottom-right {
-        content: "&#169; Crown copyright Page " counter(page) " of " counter(pages);
-        font-size: 10px;
-        padding-left: 50px;
-      }
-
-    }
-
-    html {
-      /*noinspection CssNoGenericFontName*/
-      font-family: "Open Sans";
-    }
-
-    body {
-      counter-reset: section;
-    }
-
-    .section {
-      margin-bottom: 25px;
-    }
-
-    .section .section-heading {
-      margin-bottom: 10px;
-      font-size: large;
-      page-break-after: avoid;
-    }
-
-    .section .section-heading strong:before {
-      counter-increment: section;
-      content: counter(section) ". ";
-    }
-
-    .next-steps .section-heading strong:before {
-      content: "";
-    }
-
-    .no-border tr, .no-border th, .no-border td {
-      border: none;
-    }
-
-    table {
-      width: 100%;
-      border-spacing: 0;
-    }
-
-    table td {
-      border-top: 1px solid #999;
-      padding: 5px;
-    }
-
-    table tr:last-child td {
-      border-bottom: 1px solid #999;
-    }
-
-    table td:first-child {
-      width: 220px;
-      vertical-align: top;
-    }
-
-    table td:last-child {
-      width: auto;
-    }
-
-    header table td, header table tr:last-child td {
-      border: none;
-    }
-
-    div table tr td:first-child {
-      font-weight: bold;
-    }
-
-    header p, header h2 {
-      text-align: right;
-      margin: 0;
-      padding: 0;
-    }
-
-    header td {
-      margin: 0;
-      padding: 0;
-    }
-
-    ol.enumerate {
-      margin-top: 0;
-      counter-reset: enumerated;
-      list-style: none;
-    }
-
-    ol.enumerate li::before {
-      content: counter(section) "." counter(enumerated) ". ";
-      counter-increment: enumerated;
-      color: #888;
-    }
-
-    ol.enumerate li {
-      margin-bottom: 5px;
-    }
-
-    .spacing-bottom {
-      padding-bottom: 20px;
-    }
-
-    .normal-font {
-      font-weight: normal;
-    }
-
-    .no-border tr, .no-border th, .no-border td {
-      border: none;
-    }
-
-    td.single-cell {
-      font-weight: 100 !important;
-    }
-
-    .no-padding-right {
-      padding-right: 0;
-    }
-
-    .keep-formatting {
-      white-space: pre-line;
-    }
-
-  </style>
-</head>
 <body>
 
 <header>
   <table>
     <tr>
-      <td colspan="2" class="spacing-bottom"><h2 class="normal-font">Defendant's hearing requirements</h2></td>
+      <td colspan="2" class="spacing-bottom"><h2 class="normal-font">Directions Questionnaire Online</h2></td>
     </tr>
     <tr>
-      <td colspan="2"><p>In the County Court Business Centre</p></td>
+      <td colspan="2"><p>In the County Court Business Centre </p></td>
     </tr>
     <tr>
       <td colspan="2" class="spacing-bottom"><p>Online Civil Money Claims</p></td>
@@ -179,17 +19,17 @@
       <td colspan="2"><p><strong>Issued on: </strong> {{ claim.issuedOn }}</p></td>
     </tr>
     <tr>
-      <td colspan="2" class="spacing-bottom"><p><strong>Response received on: </strong> {{ defenceSubmittedOn }}</p>
+      <td colspan="2" class="spacing-bottom"><p><strong>Claimant Response submitted on: </strong> {{ claimantSubmittedOn
+        }}</p>
       </td>
     </tr>
   </table>
 </header>
 
 <br/>
-
 <div class="section">
   <div class="section-heading">
-    <strong>Your details - Defendant</strong>
+    <strong>Defendant’s details</strong>
   </div>
   <div class="section-body">
     <table>
@@ -283,6 +123,7 @@
   </div>
 </div>
 
+<br/>
 <div class="section">
   <div class="section-heading">
     <strong>About the hearing</strong>
@@ -290,84 +131,100 @@
   <div class="section-body">
     <table>
       <tr>
-        <td>Support required for a hearing</td>
-        <td>{{}}</td>
+        <td>
+          Support required for a hearing
+        </td>
+        <td>
+          {% for support in hearingContent.supportRequired %}
+          {{ support }}
+          {% endfor %}
+        </td>
       </tr>
       <tr>
         <td>Hearing location</td>
       </tr>
       <tr>
-        <td>Preferred hearing centre</td>
-        <td>{{ }}</td>
+        <td><strong>Preferred hearing centre</strong></td>
+        <td>
+          {{ hearingContent.hearingLocation }}
+        </td>
       </tr>
       <tr>
-        <td>Briefly explain your reasons</td>
-        <td>{{ }}</td>
+        <td><strong>Briefly explain your reasons</strong></td>
+        <td>
+          {{ hearingContent.locationReason }}
+        </td>
       </tr>
-    </table>
-  </div>
-  <div class="section-body">
-    <table>
       <tr>
         <td>Expert evidence</td>
       </tr>
       <tr>
-        <td>Have you already got a report written by an expert?</td>
-        <td>{{ }}</td>
+        <td><strong>Have you already got a report written by an expert?</strong></td>
+        <td>
+          {{ hearingContent.hasExpertReport }}
+        </td>
       </tr>
       <tr>
-        <td>Report 1</td>
-        <td>{{ }}</td>
+        <td><strong>Have you already got a report written by an expert?</strong></td>
+        <td>
+          {{ hearingContent.hasExpertReport }}
+        </td>
+      </tr>
+      {% for report in hearingContent.expertReports %}
+      <tr>
+        <td><strong>Report</strong></td>
+        <td>
+          {{ report.expertName }} <br>
+          {{ report.expertReportDate }}
+        </td>
+      </tr>
+      {% endfor %}
+      <tr>
+        <td><strong>Do you want the court's permission to hire an expert?</strong></td>
+        <td>
+          {{ hearingContent.courtPermissionForExpertReport }}
+        </td>
       </tr>
       <tr>
-        <td>Do you want the court's permission to hire an expert?</td>
-        <td>{{ }}</td>
+        <td><strong>Does the claim involve something an expert can still examine?</strong></td>
+        <td>
+          {{ hearingContent.expertExamineNeeded }}
+        </td>
       </tr>
       <tr>
-        <td>Does the claim involve something an expert can still examine?</td>
-        <td>{{ }}</td>
+        <td><strong>What is there to examine?</strong></td>
+        <td>
+          {{ hearingContent.whatToExamine }}
+        </td>
       </tr>
       <tr>
-        <td>What is there to examine?</td>
-        <td>{{ }}</td>
+        <td><strong>Briefly explain why you believe an expert is needed</strong></td>
+        <td>
+          {{ hearingContent.reasonWhyExpertAdvice }}
+        </td>
       </tr>
-      <tr>
-        <td>Briefly explain why you believe an expert is needed</td>
-        <td>{{ }}</td>
-      </tr>
-    </table>
-  </div>
-  <div class="section-body">
-    <table>
       <tr>
         <td>Witnesses</td>
       </tr>
       <tr>
-        <td>Do you want to give evidence?</td>
-        <td>{{  }}</td>
+        <td><strong>Do you want to give evidence?</strong></td>
+        <td>
+          {{ hearingContent.witness.selfWitness }}
+        </td>
       </tr>
       <tr>
-        <td>Other witnesses</td>
-        <td>{{  }}</td>
+        <td><strong>Other witnesses</strong></td>
+        <td>
+          {{ hearingContent.witness.noOfOtherWitness }}
+        </td>
       </tr>
       <tr>
-        <td>Other witnesses</td>
-        <td>{{  }}</td>
-      </tr>
-      <tr>
-        <td>Dates unavailable</td>
-        <td>{{  }}</td>
-      </tr>
-    </table>
-  </div>
-  <div class="section-body">
-    <table>
-      <tr>
-        <td>Signature</td>
-      </tr>
-      <tr>
-        <td>Signed</td>
-        <td>{{  }}</td>
+        <td><strong>Dates unavailable</strong></td>
+        <td>
+          {% for unavailableDate in hearingContent.unavailableDates %}
+          {{ unavailableDate }} <br>
+          {% endfor %}
+        </td>
       </tr>
     </table>
   </div>

@@ -39,12 +39,12 @@ public class DocumentTemplates {
         return readBytes("/staff/templates/document/settlementAgreement.html");
     }
 
-    public byte[] getClaimantDirectionsQuestionnaire(){
-        return readBytes("/citizen/templates/document/claimantDirectionsQuestionnaire.html");
+    public byte[] getLegalOrderCoverSheet() {
+        return readBytes("/staff/templates/document/legalOrderCoverSheet.html");
     }
 
-    public byte[] getDefendantDirectionsQuestionnaire(){
-        return readBytes("/citizen/templates/document/defendantDirectionsQuestionnaire.html");
+    public byte[] getClaimantDirectionsQuestionnaire(){
+        return readBytes("/citizen/templates/document/claimantDirectionsQuestionnaire.html");
     }
 
 }

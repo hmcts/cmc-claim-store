@@ -6,11 +6,15 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.PrintService;
+import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
+
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled", havingValue = "true")
@@ -46,8 +50,16 @@ public class PinOrchestrationService {
             ClaimSubmissionOperationIndicators.builder();
 
         try {
-            bulkPrintService.print(updatedClaim, documents.getDefendantPinLetterDoc(),
-                documents.getSealedClaimDoc());
+            bulkPrintService.print(
+                updatedClaim,
+                ImmutableList.of(
+                    new PrintableTemplate(
+                        documents.getDefendantPinLetterDoc(),
+                        buildDefendantLetterFileBaseName(claim.getReferenceNumber())),
+                    new PrintableTemplate(
+                        documents.getSealedClaimDoc(),
+                        buildSealedClaimFileBaseName(claim.getReferenceNumber())))
+            );
             updatedOperationIndicator.bulkPrint(YesNoOption.YES);
 
             claimIssuedStaffNotificationService.notifyStaffOfClaimIssue(
