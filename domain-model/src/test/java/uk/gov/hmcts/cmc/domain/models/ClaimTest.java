@@ -105,6 +105,8 @@ public class ClaimTest {
             .build();
         claim.getMediationDeadline().ifPresent(
             result -> assertThat(result).isEqualTo(LocalDate.of(2019,7, 12)));
+        assertThat(claim.getMediationDeadline().isPresent()).isTrue();
+
     }
 
     @Test
@@ -115,6 +117,7 @@ public class ClaimTest {
             .build();
         claim.getAcceptedPaymentPlanClaimantDeadline().ifPresent(
             result -> assertThat(result).isEqualTo(LocalDate.of(2019,7, 14)));
+        assertThat(claim.getAcceptedPaymentPlanClaimantDeadline().isPresent()).isTrue();
     }
 
     private static Claim customValues() {
