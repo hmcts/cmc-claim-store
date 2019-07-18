@@ -105,7 +105,7 @@ public class SupportControllerTest {
         controller = new SupportController(claimService, userService, documentGenerator,
             moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
             ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
-            claimantResponseStaffNotificationHandler, documentsService, postClaimOrchestrationHandler
+            claimantResponseStaffNotificationHandler, documentsService, postClaimOrchestrationHandler,
         );
         sampleClaim = SampleClaim.getDefault();
     }
