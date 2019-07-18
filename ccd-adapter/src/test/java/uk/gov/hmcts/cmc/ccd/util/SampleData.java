@@ -340,8 +340,7 @@ public class SampleData {
             .representativeOrganisationDxAddress("dx123")
             .build();
     }
-
-
+    
     public static CCDRespondent getIndividualRespondentWithDQ() {
         CCDAddress ccdAddress = getCCDAddress();
         return CCDRespondent.builder()

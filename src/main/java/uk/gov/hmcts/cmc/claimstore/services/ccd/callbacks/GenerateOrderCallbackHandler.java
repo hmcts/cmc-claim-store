@@ -39,10 +39,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.*;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ACTION_REVIEW_COMMENTS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.GENERATE_ORDER;
-import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.*;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOTH;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.DOCUMENTS;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYEWITNESS;
 
