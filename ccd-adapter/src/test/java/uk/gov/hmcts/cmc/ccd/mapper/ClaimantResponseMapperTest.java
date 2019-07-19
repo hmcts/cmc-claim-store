@@ -110,6 +110,18 @@ public class ClaimantResponseMapperTest {
     }
 
     @Test
+    public void shouldMapClaimantRejectionDQtoCCDDirectionsQuestionnaire() {
+        ClaimantResponse response = SampleClaimantResponse.ClaimantResponseRejection.builder()
+            .buildRejectionWithDirectionsQuestionnaire();
+        Claim claim = Claim.builder().claimantResponse(response)
+            .claimantRespondedAt(LocalDateTimeFactory.nowInLocalZone())
+            .build();
+        CCDClaimantResponse ccdResponse = mapper.to(claim);
+        assertThat((ResponseRejection) response).isEqualTo((CCDResponseRejection) ccdResponse);
+        assertNotNull(ccdResponse.getSubmittedOn());
+    }
+
+    @Test
     public void shouldMapCCDResponseAcceptationWithCCJFormalisationToResponseAcceptation() {
         CCDResponseAcceptation ccdResponse = SampleData.getResponseAcceptation(CCJ);
         Claim.ClaimBuilder claimBuilder = Claim.builder();

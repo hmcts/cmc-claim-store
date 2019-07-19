@@ -31,9 +31,12 @@ public class CCDOrderGenerationData {
     private List<CCDOrderDirectionType> directionList = Collections.emptyList();
 
     @Builder.Default
-    private List<CCDCollectionElement<CCDOrderDirection>> otherDirectionList = Collections.emptyList();
+    private List<CCDCollectionElement<CCDOrderDirection>> otherDirections = Collections.emptyList();
 
-    private CCDYesNoOption hearingIsRequired;
+    @Builder.Default
+    private List<CCDCollectionElement<String>> extraDocUploadList = Collections.emptyList();
+
+    private CCDYesNoOption paperDetermination;
 
     private String newRequestedCourt;
 
@@ -43,8 +46,7 @@ public class CCDOrderGenerationData {
 
     private CCDHearingDurationType estimatedHearingDuration;
 
-    private String hearingStatement;
-
     private CCDDocument draftOrderDoc;
 
+    private CCDOtherDirectionHeaderType otherDirectionHeader;
 }

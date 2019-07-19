@@ -1,14 +1,18 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import lombok.Builder;
 import lombok.Value;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.reform.docassembly.domain.FormPayload;
 
 import java.time.LocalDate;
@@ -18,6 +22,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.TemplateCons
 
 @Builder
 @Value
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class DocAssemblyTemplateBody implements FormPayload {
     private final int rowNum = 0;
 
@@ -43,22 +48,20 @@ public class DocAssemblyTemplateBody implements FormPayload {
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate currentDate;
 
-    @JsonProperty("orderDirections1isIncluded")
     private boolean hasFirstOrderDirections;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate docUploadDeadline;
 
-    @JsonProperty("orderDirections2isIncluded")
     private boolean hasSecondOrderDirections;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate eyewitnessUploadDeadline;
 
-    @JsonProperty("hearingisRequired")
-    private boolean hearingRequired;
+    @JsonProperty("hearingRequired")
+    private boolean paperDetermination;
 
     private CCDDirectionPartyType docUploadForParty;
 
@@ -66,12 +69,12 @@ public class DocAssemblyTemplateBody implements FormPayload {
 
     private String hearingCourtName;
 
-    private String hearingCourtAddress;
+    private CCDAddress hearingCourtAddress;
 
     private CCDHearingDurationType estimatedHearingDuration;
 
-    private String hearingStatement;
-
     @JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
-    private List<OtherDirection> otherDirectionList;
+    private List<CCDOrderDirection> otherDirections;
+
+    private List<CCDCollectionElement<String>> extraDocUploadList;
 }
