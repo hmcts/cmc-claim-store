@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.claimstore.documents.PdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
-import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -48,7 +47,6 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
     private final SettlementAgreementCopyService settlementAgreementCopyService;
     private final DefendantPinLetterPdfService defendantPinLetterPdfService;
-    private final CCDEventProducer ccdEventProducer;
 
     @Autowired
     @SuppressWarnings("squid:S00107")
@@ -61,8 +59,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         DefendantResponseReceiptService defendantResponseReceiptService,
         CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
         SettlementAgreementCopyService settlementAgreementCopyService,
-        DefendantPinLetterPdfService defendantPinLetterPdfService,
-        CCDEventProducer ccdEventProducer
+        DefendantPinLetterPdfService defendantPinLetterPdfService
     ) {
         this.claimService = claimService;
         this.documentManagementService = documentManagementService;
@@ -72,7 +69,6 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
         this.settlementAgreementCopyService = settlementAgreementCopyService;
         this.defendantPinLetterPdfService = defendantPinLetterPdfService;
-        this.ccdEventProducer = ccdEventProducer;
     }
 
     @Override
@@ -149,17 +145,10 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         ClaimDocument claimDocument = documentManagementService.uploadDocument(authorisation, document);
         ClaimDocumentCollection claimDocumentCollection = getClaimDocumentCollection(claim, claimDocument);
 
-        Claim newClaim = claimService.saveClaimDocuments(authorisation,
+        return claimService.saveClaimDocuments(authorisation,
             claim.getId(),
             claimDocumentCollection,
             document.getClaimDocumentType());
-
-        ccdEventProducer.saveClaimDocumentCCDEvent(authorisation,
-            claim,
-            claimDocumentCollection,
-            document.getClaimDocumentType());
-
-        return newClaim;
     }
 
     private ClaimDocumentCollection getClaimDocumentCollection(Claim claim, ClaimDocument claimDocument) {

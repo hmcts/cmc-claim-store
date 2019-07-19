@@ -23,8 +23,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
 
 @TestPropertySource(
     properties = {
-        "document_management.url=false",
-        "feature_toggles.ccd_async_enabled=true"
+        "document_management.url=false"
     }
 )
 @Ignore("Need to enable only when CCDCaseHandler.saveClaim is enabled for event listener")

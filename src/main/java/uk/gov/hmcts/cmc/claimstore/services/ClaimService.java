@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
-import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -62,7 +61,6 @@ public class ClaimService {
     private final PaidInFullRule paidInFullRule;
     private final ClaimAuthorisationRule claimAuthorisationRule;
     private final boolean asyncEventOperationEnabled;
-    private CCDEventProducer ccdEventProducer;
 
     private static Supplier<ClaimSubmissionOperationIndicators> getDefaultClaimSubmissionOperationIndicators =
         () -> ClaimSubmissionOperationIndicators.builder()
@@ -81,7 +79,6 @@ public class ClaimService {
         EventProducer eventProducer,
         AppInsights appInsights,
         PaidInFullRule paidInFullRule,
-        CCDEventProducer ccdEventProducer,
         ClaimAuthorisationRule claimAuthorisationRule,
         @Value("${feature_toggles.async_event_operations_enabled:false}") boolean asyncEventOperationEnabled
     ) {
@@ -95,7 +92,6 @@ public class ClaimService {
         this.appInsights = appInsights;
         this.directionsQuestionnaireDeadlineCalculator = directionsQuestionnaireDeadlineCalculator;
         this.paidInFullRule = paidInFullRule;
-        this.ccdEventProducer = ccdEventProducer;
         this.claimAuthorisationRule = claimAuthorisationRule;
         this.asyncEventOperationEnabled = asyncEventOperationEnabled;
     }
@@ -221,7 +217,6 @@ public class ClaimService {
             .build();
 
         Claim savedClaim = caseRepository.saveClaim(user, claim);
-        ccdEventProducer.createCCDClaimIssuedEvent(savedClaim, user);
 
         if (asyncEventOperationEnabled) {
             eventProducer.createClaimCreatedEvent(
@@ -269,15 +264,12 @@ public class ClaimService {
         claim = getClaimByExternalId(externalId, authorisation);
         UserDetails defendant = userService.getUserDetails(authorisation);
         eventProducer.createMoreTimeForResponseRequestedEvent(claim, newDeadline, defendant.getEmail());
-        ccdEventProducer.createMoreTimeForCCDResponseRequestedEvent(authorisation, externalId, newDeadline);
-
         appInsights.trackEvent(RESPONSE_MORE_TIME_REQUESTED, REFERENCE_NUMBER, claim.getReferenceNumber());
         return claim;
     }
 
     public void linkDefendantToClaim(String authorisation) {
         caseRepository.linkDefendant(authorisation);
-        ccdEventProducer.linkDefendantCCDEvent(authorisation);
     }
 
     public Claim saveClaimDocuments(
@@ -291,7 +283,6 @@ public class ClaimService {
 
     public Claim linkLetterHolder(Claim claim, String letterHolderId, String authorisation) {
         Claim updated = caseRepository.linkLetterHolder(claim.getId(), letterHolderId);
-        ccdEventProducer.createCCDLinkLetterHolderEvent(claim, letterHolderId, authorisation);
         return updated;
     }
 
@@ -302,7 +293,6 @@ public class ClaimService {
     ) {
         claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorisation);
         caseRepository.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
-        ccdEventProducer.createCCDCountyCourtJudgmentEvent(claim, authorisation, countyCourtJudgment);
     }
 
     public void saveDefendantResponse(
@@ -331,7 +321,6 @@ public class ClaimService {
         Claim updatedClaim = getClaimByExternalId(externalId, authorisation);
         this.eventProducer.createPaidInFullEvent(updatedClaim);
         appInsights.trackEvent(AppInsightsEvent.PAID_IN_FULL, REFERENCE_NUMBER, claim.getReferenceNumber());
-        this.ccdEventProducer.createCCDPaidInFullEvent(authorisation, claim, paidInFull);
         return updatedClaim;
     }
 
@@ -347,7 +336,6 @@ public class ClaimService {
     ) {
         claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorisation);
         caseRepository.saveReDetermination(authorisation, claim, redetermination);
-        ccdEventProducer.createCCDReDetermination(claim, authorisation, redetermination);
     }
 
     public void updateClaimState(String authorisation, Claim claim, ClaimState state) {

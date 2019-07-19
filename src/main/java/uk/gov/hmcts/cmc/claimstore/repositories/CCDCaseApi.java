@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
@@ -49,7 +48,6 @@ public class CCDCaseApi {
     private final CoreCaseDataService coreCaseDataService;
     private final CaseDetailsConverter ccdCaseDataToClaim;
     private final JobSchedulerService jobSchedulerService;
-    private final boolean ccdAsyncEnabled;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CCDCaseApi.class);
     // CCD has a page size of 25 currently, it is configurable so assume it'll never be less than 10
@@ -66,8 +64,7 @@ public class CCDCaseApi {
         CaseAccessApi caseAccessApi,
         CoreCaseDataService coreCaseDataService,
         CaseDetailsConverter ccdCaseDataToClaim,
-        JobSchedulerService jobSchedulerService,
-        @Value("${feature_toggles.ccd_async_enabled}") boolean ccdAsyncEnabled
+        JobSchedulerService jobSchedulerService
     ) {
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;
@@ -76,7 +73,6 @@ public class CCDCaseApi {
         this.coreCaseDataService = coreCaseDataService;
         this.ccdCaseDataToClaim = ccdCaseDataToClaim;
         this.jobSchedulerService = jobSchedulerService;
-        this.ccdAsyncEnabled = ccdAsyncEnabled;
     }
 
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
@@ -213,10 +209,8 @@ public class CCDCaseApi {
         String defendantEmail = defendantUser.getUserDetails().getEmail();
         CaseDetails caseDetails = this.updateDefendantIdAndEmail(defendantUser, caseId, defendantId, defendantEmail);
 
-        if (!ccdAsyncEnabled) {
-            Claim claim = ccdCaseDataToClaim.extractClaim(caseDetails);
-            jobSchedulerService.scheduleEmailNotificationsForDefendantResponse(claim);
-        }
+        Claim claim = ccdCaseDataToClaim.extractClaim(caseDetails);
+        jobSchedulerService.scheduleEmailNotificationsForDefendantResponse(claim);
     }
 
     private void grantAccessToCase(User anonymousCaseWorker, String caseId, String defendantId) {
