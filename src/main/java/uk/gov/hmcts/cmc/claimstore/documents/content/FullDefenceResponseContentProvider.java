@@ -35,7 +35,6 @@ public class FullDefenceResponseContentProvider {
         this.hearingContentProvider = hearingContentProvider;
     }
 
-
     public Map<String, Object> createContent(FullDefenceResponse fullDefenceResponse) {
         requireNonNull(fullDefenceResponse);
         Map<String, Object> content = new HashMap<>();

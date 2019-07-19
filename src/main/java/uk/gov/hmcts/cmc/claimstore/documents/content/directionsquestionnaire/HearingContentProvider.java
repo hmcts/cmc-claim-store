@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Component
 public class HearingContentProvider {
 
-    private final String DISABLED_ACCESS = "Disabled Access";
+    private static final String DISABLED_ACCESS = "Disabled Access";
 
     private Function<UnavailableDate, String> mapToISOFullStyle = unavailableDate ->
                                 Optional.ofNullable(unavailableDate)
