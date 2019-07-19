@@ -141,7 +141,7 @@
         </td>
         <td>
           {% for support in hearingContent.supportRequired %}
-            {{ support }}
+            {{ support }}<br/>
           {% endfor %}
         </td>
       </tr>
@@ -179,7 +179,7 @@
         <tr>
           <td><strong>Report</strong></td>
           <td>
-            {{ report.expertName }} <br>
+            {{ report.expertName }} <br/>
             {{ report.expertReportDate }}
           </td>
         </tr>
@@ -227,7 +227,7 @@
         <td><strong>Dates unavailable</strong></td>
         <td>
           {% for unavailableDate in hearingContent.unavailableDates %}
-            {{ unavailableDate }} <br>
+          {{ unavailableDate.unavailableDate }} <br/>
           {% endfor %}
         </td>
       </tr>

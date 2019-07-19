@@ -815,7 +815,111 @@
 </div>
 {% endif %}
 {% if hearingContent is defined %}
-
+<div class="section">
+  <div class="section-heading">
+    <strong>About the hearing</strong>
+  </div>
+  <div class="section-body">
+    <table>
+      <tr>
+        <td>
+          Support required for a hearing
+        </td>
+        <td>
+          {% for support in hearingContent.supportRequired %}
+          {{ support }}<br/>
+          {% endfor %}
+        </td>
+      </tr>
+      <tr>
+        <td>Hearing location</td>
+      </tr>
+      <tr>
+        <td><strong>Preferred hearing centre</strong></td>
+        <td>
+          {{ hearingContent.hearingLocation }}
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Briefly explain your reasons</strong></td>
+        <td>
+          {{ hearingContent.locationReason }}
+        </td>
+      </tr>
+      <tr>
+        <td>Expert evidence</td>
+      </tr>
+      <tr>
+        <td><strong>Have you already got a report written by an expert?</strong></td>
+        <td>
+          {{ hearingContent.hasExpertReport }}
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Have you already got a report written by an expert?</strong></td>
+        <td>
+          {{ hearingContent.hasExpertReport }}
+        </td>
+      </tr>
+      {% for report in hearingContent.expertReports %}
+      <tr>
+        <td><strong>Report</strong></td>
+        <td>
+          {{ report.expertName }} <br/>
+          {{ report.expertReportDate }}
+        </td>
+      </tr>
+      {% endfor %}
+      <tr>
+        <td><strong>Do you want the court's permission to hire an expert?</strong></td>
+        <td>
+          {{ hearingContent.courtPermissionForExpertReport }}
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Does the claim involve something an expert can still examine?</strong></td>
+        <td>
+          {{ hearingContent.expertExamineNeeded }}
+        </td>
+      </tr>
+      <tr>
+        <td><strong>What is there to examine?</strong></td>
+        <td>
+          {{ hearingContent.whatToExamine }}
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Briefly explain why you believe an expert is needed</strong></td>
+        <td>
+          {{ hearingContent.reasonWhyExpertAdvice }}
+        </td>
+      </tr>
+      <tr>
+        <td>Witnesses</td>
+      </tr>
+      <tr>
+        <td><strong>Do you want to give evidence?</strong></td>
+        <td>
+          {{ hearingContent.witness.selfWitness }}
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Other witnesses</strong></td>
+        <td>
+          {{ hearingContent.witness.noOfOtherWitness }}
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Dates unavailable</strong></td>
+        <td>
+          {% for unavailableDate in hearingContent.unavailableDates %}
+          {{ unavailableDate.unavailableDate }} <br/>
+          {% endfor %}
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
 {% endif %}
 </body>
 </html>

@@ -7,16 +7,21 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
-import uk.gov.hmcts.cmc.claimstore.documents.content.directionsquestionnaire.HearingContentProvider;
+import uk.gov.hmcts.cmc.claimstore.documents.content.directionsquestionnaire.ClaimantDirectionsQuestionnaireContentProvider;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
+
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClaimantDirectionsQuestionnairePdfServiceTest {
 
     @Mock
     private PDFServiceClient pdfServiceClient;
+
+    @Mock
+    private ClaimantDirectionsQuestionnaireContentProvider claimantDirectionsQuestionnaireContentProvider;
 
     private ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService;
 
@@ -25,7 +30,7 @@ public class ClaimantDirectionsQuestionnairePdfServiceTest {
         claimantDirectionsQuestionnairePdfService = new ClaimantDirectionsQuestionnairePdfService(
             new DocumentTemplates(),
             pdfServiceClient,
-            new HearingContentProvider()
+            claimantDirectionsQuestionnaireContentProvider
         );
     }
 
@@ -34,15 +39,9 @@ public class ClaimantDirectionsQuestionnairePdfServiceTest {
         claimantDirectionsQuestionnairePdfService.createPdf(SampleClaim.getDefault());
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void createPdfThrowsExceptionWhenResponseIsAcceptation() {
         claimantDirectionsQuestionnairePdfService.createPdf(SampleClaim.getWithClaimantResponse());
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void createPdfThrowsExceptionWhenQuestionnaireIsNull() {
-        claimantDirectionsQuestionnairePdfService.createPdf(
-            SampleClaim.getWithClaimantResponse(SampleClaimantResponse.validDefaultRejection()));
     }
 
     @Test
@@ -56,6 +55,6 @@ public class ClaimantDirectionsQuestionnairePdfServiceTest {
             )
         );
 
-        Mockito.verify(pdfServiceClient).generateFromHtml(Mockito.any(), Mockito.anyMap());
+        verify(pdfServiceClient).generateFromHtml(Mockito.any(), Mockito.anyMap());
     }
 }

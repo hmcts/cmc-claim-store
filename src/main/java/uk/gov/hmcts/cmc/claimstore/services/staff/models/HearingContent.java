@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.services.staff.models;
 import lombok.Builder;
 import lombok.Value;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.UnavailableDate;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.Witness;
 
 import java.util.List;
@@ -22,5 +21,5 @@ public class HearingContent {
     String reasonWhyExpertAdvice;
     String evidenceRequired;
     Witness witness;
-    List<UnavailableDate> unavailableDates;
+    List<String> unavailableDates;
 }

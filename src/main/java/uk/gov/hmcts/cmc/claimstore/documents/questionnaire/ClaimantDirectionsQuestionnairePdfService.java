@@ -4,25 +4,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.claimstore.documents.PdfService;
-import uk.gov.hmcts.cmc.claimstore.documents.content.directionsquestionnaire.HearingContentProvider;
+import uk.gov.hmcts.cmc.claimstore.documents.content.directionsquestionnaire.ClaimantDirectionsQuestionnaireContentProvider;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
 public class ClaimantDirectionsQuestionnairePdfService implements PdfService {
 
     private final DocumentTemplates documentTemplates;
     private final PDFServiceClient pdfServiceClient;
-    private final HearingContentProvider contentProvider;
+    private final ClaimantDirectionsQuestionnaireContentProvider contentProvider;
 
     @Autowired
     public ClaimantDirectionsQuestionnairePdfService(DocumentTemplates documentTemplates,
                                                      PDFServiceClient pdfServiceClient,
-                                                     HearingContentProvider contentProvider) {
+                                                     ClaimantDirectionsQuestionnaireContentProvider contentProvider) {
         this.documentTemplates = documentTemplates;
         this.pdfServiceClient = pdfServiceClient;
         this.contentProvider = contentProvider;
@@ -33,14 +30,12 @@ public class ClaimantDirectionsQuestionnairePdfService implements PdfService {
 
         claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
 
-        ResponseRejection responseRejection = claim.getClaimantResponse()
+        claim.getClaimantResponse()
             .filter(ResponseRejection.class::isInstance)
             .map(ResponseRejection.class::cast)
-            .orElseThrow(IllegalStateException::new);
+            .orElseThrow(IllegalArgumentException::new);
 
-        Map<String, Object> content = new HashMap<>();
-        content.put("hearingContent", contentProvider.mapDirectionQuestionnaire
-                                        .apply(responseRejection.getDirectionsQuestionnaire().orElse(null)) );
-        return pdfServiceClient.generateFromHtml(documentTemplates.getClaimantDirectionsQuestionnaire(), content);
+        return pdfServiceClient.generateFromHtml(documentTemplates.getClaimantDirectionsQuestionnaire(),
+            contentProvider.createContent(claim));
     }
 }
