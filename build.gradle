@@ -107,7 +107,7 @@ allprojects {
       }
       dependencySet(
         group: 'com.fasterxml.jackson.datatype',
-        version: '2.9.9'
+        version: '2.10.0.pr1'
         //version: dependencyManagement.importedProperties['jackson.version'] solves CVE-2019-12086
       ) {
         entry 'jackson-datatype-jdk8'
