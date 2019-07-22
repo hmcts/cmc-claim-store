@@ -22,7 +22,6 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
 
 @TestPropertySource(
     properties = {
-        "document_management.url=false",
         "feature_toggles.ccd_enabled=true",
         "feature_toggles.async_event_operations_enabled=false"
     }

@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.events;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
@@ -33,7 +32,6 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
 
 @Component
-@ConditionalOnProperty(prefix = "document_management", name = "url")
 public class DocumentUploadHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(DocumentUploadHandler.class);

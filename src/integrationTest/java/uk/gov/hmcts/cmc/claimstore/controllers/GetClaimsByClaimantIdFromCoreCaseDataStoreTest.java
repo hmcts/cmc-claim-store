@@ -31,7 +31,6 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetails
 
 @TestPropertySource(
     properties = {
-        "document_management.url=false",
         "feature_toggles.ccd_enabled=true"
     }
 )

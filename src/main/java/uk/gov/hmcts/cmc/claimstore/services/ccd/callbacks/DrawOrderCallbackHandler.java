@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
@@ -33,7 +32,6 @@ import java.util.Optional;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.ORDER_DIRECTIONS;
 
 @Service
-@ConditionalOnProperty(prefix = "document_management", name = "url")
 public class DrawOrderCallbackHandler extends CallbackHandler {
     private static final String CASE_DOCUMENTS = "caseDocuments";
 

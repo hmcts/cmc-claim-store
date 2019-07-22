@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -21,11 +20,6 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreStartResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponse;
 
-@TestPropertySource(
-    properties = {
-        "document_management.url=false"
-    }
-)
 @Ignore("Need to enable only when CCDCaseHandler.saveClaim is enabled for event listener")
 public class SaveClaimAsynchronouslyAtCCDTest extends BaseSaveTest {
 
