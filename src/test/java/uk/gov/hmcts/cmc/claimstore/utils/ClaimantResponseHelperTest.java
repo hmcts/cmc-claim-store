@@ -2,11 +2,16 @@ package uk.gov.hmcts.cmc.claimstore.utils;
 
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleDirectionsQuestionnaire;
 
+import static java.math.BigDecimal.TEN;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isOptedForMediation;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isReferredToJudge;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isSettlePreJudgment;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 
 public class ClaimantResponseHelperTest {
 
@@ -44,4 +49,38 @@ public class ClaimantResponseHelperTest {
         assertThat(isReferredToJudge(claimantResponse)).isFalse();
     }
 
+    @Test
+    public void shouldReturnTrueWhenOptedForMediation() {
+        ClaimantResponse claimantResponse = SampleClaimantResponse.ClaimantResponseRejection.builder()
+            .buildRejectionWithDirectionsQuestionnaire();
+        assertThat(isOptedForMediation(claimantResponse)).isTrue();
+    }
+
+    @Test
+    public void shouldReturnFalseWhenNotOptedForMediation() {
+        ClaimantResponse claimantResponse = ResponseRejection.builder()
+            .amountPaid(TEN)
+            .freeMediation(NO)
+            .mediationPhoneNumber("07999999999")
+            .mediationContactPerson("Mediation Contact Person")
+            .reason("Some valid reason")
+            .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder().build())
+            .build();
+
+        assertThat(isOptedForMediation(claimantResponse)).isFalse();
+    }
+
+    @Test
+    public void shouldReturnFalseWhenFreeMEdiationIsNull() {
+        ClaimantResponse claimantResponse = ResponseRejection.builder()
+            .amountPaid(TEN)
+            .freeMediation(null)
+            .mediationPhoneNumber("07999999999")
+            .mediationContactPerson("Mediation Contact Person")
+            .reason("Some valid reason")
+            .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder().build())
+            .build();
+
+        assertThat(isOptedForMediation(claimantResponse)).isFalse();
+    }
 }
