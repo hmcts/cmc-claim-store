@@ -124,7 +124,7 @@ public class DocumentUploadHandler {
             .map(ResponseRejection.class::cast)
             .orElse(null);
 
-        if(responseRejection != null && responseRejection.getDirectionsQuestionnaire().isPresent()){
+        if (responseRejection != null && responseRejection.getDirectionsQuestionnaire().isPresent()) {
             PDF claimantDirectionsQuestionnaire = new PDF(buildClaimantHearingFileBaseName(claim.getReferenceNumber()),
                 claimantDirectionsQuestionnairePdfService.createPdf(claim),
                 CLAIMANT_DIRECTION_QUESTIONNAIRE);

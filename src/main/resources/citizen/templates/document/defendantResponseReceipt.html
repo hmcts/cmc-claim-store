@@ -1,5 +1,5 @@
 <html>
-<head>
+<head>x
   <meta charset="UTF-8"/>
   <title>Money Claim response receipt</title>
   <style>
@@ -172,9 +172,28 @@
     table.new-dq td:last-child div {
       border: 1px solid gray;
       padding: 5px;
+      min-height: 18px;
+    }
+    table.new-dq tr {
+      border: none;
     }
     table.new-dq td {
       padding: 0.63158em 1.05263em 0.67368em 0;
+      border-top: none;
+      border-bottom: none !important;
+      min-height: 18px;
+    }
+
+    .new-dq h2 {
+      color: #000;
+      background-color: #EDEDED;
+      font-size: 21px !important;
+    }
+    .heading-medium {
+      padding-bottom: 0;
+      margin-bottom: 0.4em;
+      margin-top: 1.5em;
+      font-size: 22px;
     }
   </style>
 </head>
@@ -834,24 +853,29 @@
 {% endif %}
 {% if hearingContent is defined %}
 <p style="page-break-before: always" ></p>
-
-  <table class="crestLogo">
-    <tbody>
-      <tr>
-        <td></td>
-        <td rowspan="2" class="claim-details">
-          <h1>Defendant's hearing requirements</h1>
-          <p>In the County Court Business Centre Online Civil Money Claims</p>
-          <p>
-            <strong>Claim number:</strong>{ claim.referenceNumber }}<br/>
-            <strong>Issued on:</strong> {{ claim.issuedOn }}<br/>
-            <strong>Response received on:</strong>{{ defenceSubmittedOn }}
-          </p>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
+<header>
+<table>
+  <tr>
+    <td colspan="2" class="spacing-bottom"><h2 class="normal-font">Defendant's hearing requirements</h2></td>
+  </tr>
+  <tr>
+    <td colspan="2"><p>In the County Court Business Centre</p></td>
+  </tr>
+  <tr>
+    <td colspan="2" class="spacing-bottom"><p>Online Civil Money Claims</p></td>
+  </tr>
+  <tr>
+    <td colspan="2"><p><strong>Claim number: </strong>{{ claim.referenceNumber }}</p></td>
+  </tr>
+  <tr>
+    <td colspan="2"><p><strong>Issued on: </strong> {{ claim.issuedOn }}</p></td>
+  </tr>
+  <tr>
+    <td colspan="2" class="spacing-bottom"><p><strong>Response received on: </strong> {{ defenceSubmittedOn }}</p>
+    </td>
+  </tr>
+</table>
+</header>
 <table style="width: 80%" class="new-dq">
   <thead>
   <tr>
@@ -869,7 +893,8 @@
     <td><div>{{ defendant.fullName }}</div></td>
   </tr>
   <tr>
-  </tr><tr>
+  </tr>
+  <tr>
     <td>
       Address:
     </td>
@@ -897,8 +922,8 @@
       {{ defendant.dateOfBirth }}
     </div></td>
   </tr>
+  <tr></tr>
   <tr>
-  </tr><tr>
     <td><div>
       Telephone:
     </div></td>
@@ -1016,7 +1041,9 @@
     </div></td>
   </tr>
 
-  <tr><td><b>Witnesses</b></td></tr>
+  <tr>
+    <td><b>Witnesses</b></td>
+  </tr>
   <tr>
     <td><div>
       Do you want to give evidence?
@@ -1063,24 +1090,6 @@
       <td><div>{{ defendant.fullName }}<br/>{{ defenceSubmittedOn }}</div></td>
     </tr>
 </tbody>
-</table>
-
-
-<table class="footer">
-  <tbody>
-  <tr>
-  </tr><tr>
-    <td>
-      OCON180
-    </td>
-    <td>
-      For further details of the courts www.gov.uk/find-court-tribunal
-    </td>
-    <td>
-      © Crown copyright Page 1 of 1
-    </td>
-  </tr>
-  </tbody>
 </table>
 
 {% endif %}

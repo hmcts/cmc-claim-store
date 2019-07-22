@@ -32,11 +32,11 @@ public class HearingContentProvider {
             List<String> supportNeeded = new ArrayList<>();
             support.getLanguageInterpreter().ifPresent(supportNeeded::add);
             support.getSignLanguageInterpreter().ifPresent(supportNeeded::add);
-            support.getOtherSupport().ifPresent(supportNeeded::add);
             support.getDisabledAccess()
                 .map(YesNoOption::name)
                 .filter(access -> access.equals(YesNoOption.YES.name()))
                 .ifPresent(x -> supportNeeded.add(DISABLED_ACCESS));
+            support.getOtherSupport().ifPresent(supportNeeded::add);
             builder.supportRequired(supportNeeded);
         };
 
@@ -69,7 +69,8 @@ public class HearingContentProvider {
                 questionnaire.getUnavailableDates().stream().map(mapToISOFullStyle).collect(Collectors.toList())
             );
 
-            contentBuilder.expertReports(Optional.ofNullable(questionnaire.getExpertReports()).orElse(Collections.emptyList()));
+            contentBuilder.expertReports(Optional.ofNullable(questionnaire.getExpertReports())
+                .orElse(Collections.emptyList()));
             return contentBuilder.build();
         };
 

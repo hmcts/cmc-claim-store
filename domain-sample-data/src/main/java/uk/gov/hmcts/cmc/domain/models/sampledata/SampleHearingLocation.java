@@ -7,6 +7,10 @@ import java.util.function.Supplier;
 
 public class SampleHearingLocation {
 
+    private SampleHearingLocation(){
+        // Do Nothing constructor
+    }
+
     public static Supplier<HearingLocation> defaultHearingLocation = () -> HearingLocation.builder()
         .courtName("A Court")
         .hearingLocationSlug("a-court")

@@ -241,7 +241,8 @@ public class SupportController {
         }
 
         // Defendant email is not available at this point however it is not used in staff notifications
-        MoreTimeRequestedEvent event = new MoreTimeRequestedEvent(claim, claim.getResponseDeadline(), null);
+        MoreTimeRequestedEvent event =
+            new MoreTimeRequestedEvent(claim, claim.getResponseDeadline(), null);
         moreTimeRequestedStaffNotificationHandler.sendNotifications(event);
     }
 
@@ -287,7 +288,8 @@ public class SupportController {
         if (!isSettlementAgreement(claim, claimantResponse) && (!isReferredToJudge(claimantResponse)
             || (isReferredToJudge(claimantResponse) && PartyUtils.isCompanyOrOrganisation(response.getDefendant())))
         ) {
-            claimantResponseStaffNotificationHandler.onClaimantResponse(new ClaimantResponseEvent(claim, authorization));
+            claimantResponseStaffNotificationHandler
+                .onClaimantResponse(new ClaimantResponseEvent(claim, authorization));
         }
     }
 

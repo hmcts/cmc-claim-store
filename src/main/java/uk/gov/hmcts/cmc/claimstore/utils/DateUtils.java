@@ -25,8 +25,8 @@ public class DateUtils {
         return LocalDateTime.of(localDate, LocalTime.MAX);
     }
 
-    public static String toISOFullStyle(LocalDate localDate){
+    public static String toISOFullStyle(LocalDate localDate) {
         requireNonNull(localDate);
-        return  localDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL));
+        return localDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL));
     }
 }
