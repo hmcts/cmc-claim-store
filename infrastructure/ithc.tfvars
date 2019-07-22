@@ -4,7 +4,6 @@ respond_to_claim_url = "https://moneyclaims.ithc.platform.hmcts.net/first-contac
 db_host = "preprod-data-lb.moneyclaim.reform.hmcts.net"
 capacity = "2"
 ccd_enabled = "true"
-ccd_async_enabled = "false"
 dm_url = "http://dm-store-ithc.service.core-compute-ithc.internal"
 async_event_operations_enabled = "true"
 save_claim_state_enabled = "true"

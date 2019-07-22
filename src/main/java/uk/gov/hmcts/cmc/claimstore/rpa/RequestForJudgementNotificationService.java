@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.rpa;
 
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
@@ -23,7 +22,6 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestFo
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service("rpa/request-judgement-notification-service")
-@ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff", havingValue = "true")
 public class RequestForJudgementNotificationService {
 
     private final EmailService emailService;

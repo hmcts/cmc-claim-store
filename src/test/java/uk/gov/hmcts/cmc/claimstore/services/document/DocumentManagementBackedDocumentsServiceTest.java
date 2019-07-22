@@ -14,7 +14,6 @@ import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
-import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -39,7 +38,7 @@ import static org.mockito.Mockito.when;
 public class DocumentManagementBackedDocumentsServiceTest {
 
     private static final String AUTHORISATION = "Bearer: aaa";
-    private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
+    private static final byte[] PDF_BYTES = new byte[] {1, 2, 3, 4};
 
     private DocumentManagementBackedDocumentsService documentManagementBackedDocumentsService;
 
@@ -61,8 +60,6 @@ public class DocumentManagementBackedDocumentsServiceTest {
     private SettlementAgreementCopyService settlementAgreementCopyService;
     @Mock
     private DefendantPinLetterPdfService defendantPinLetterPdfService;
-    @Mock
-    private CCDEventProducer ccdEventProducer;
 
     @Before
     public void setUp() {
@@ -74,8 +71,8 @@ public class DocumentManagementBackedDocumentsServiceTest {
             defendantResponseReceiptService,
             countyCourtJudgmentPdfService,
             settlementAgreementCopyService,
-            defendantPinLetterPdfService,
-            ccdEventProducer);
+            defendantPinLetterPdfService
+        );
     }
 
     @Test

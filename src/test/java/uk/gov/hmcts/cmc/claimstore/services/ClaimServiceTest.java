@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
-import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
@@ -101,8 +100,6 @@ public class ClaimServiceTest {
     @Mock
     private EventProducer eventProducer;
     @Mock
-    private CCDEventProducer ccdEventProducer;
-    @Mock
     private AppInsights appInsights;
 
     @Before
@@ -120,7 +117,6 @@ public class ClaimServiceTest {
             eventProducer,
             appInsights,
             new PaidInFullRule(),
-            ccdEventProducer,
             new ClaimAuthorisationRule(userService),
             false
         );
@@ -198,8 +194,6 @@ public class ClaimServiceTest {
         verify(caseRepository, once()).saveClaim(any(User.class), any(Claim.class));
         verify(eventProducer, once()).createClaimIssuedEvent(eq(createdClaim), eq(null),
             anyString(), eq(AUTHORISATION));
-
-        verify(ccdEventProducer, once()).createCCDClaimIssuedEvent(eq(createdClaim), eq(USER));
     }
 
     @Test
@@ -222,7 +216,6 @@ public class ClaimServiceTest {
             eventProducer,
             appInsights,
             new PaidInFullRule(),
-            ccdEventProducer,
             new ClaimAuthorisationRule(userService),
             true
         );
@@ -240,8 +233,6 @@ public class ClaimServiceTest {
         verify(caseRepository, once()).saveClaim(any(User.class), any(Claim.class));
         verify(eventProducer, once()).createClaimCreatedEvent(eq(createdClaim), eq(null),
             anyString(), eq(AUTHORISATION));
-
-        verify(ccdEventProducer, once()).createCCDClaimIssuedEvent(eq(createdClaim), eq(USER));
     }
 
     @Test

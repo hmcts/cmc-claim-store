@@ -8,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
-import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
@@ -63,9 +62,6 @@ public class ClaimantResponseServiceTest {
     private EventProducer eventProducer;
 
     @Mock
-    private CCDEventProducer ccdEventProducer;
-
-    @Mock
     private AppInsights appInsights;
 
     @Mock
@@ -83,8 +79,8 @@ public class ClaimantResponseServiceTest {
             new ClaimantResponseRule(),
             eventProducer,
             formaliseResponseAcceptanceService,
-            directionsQuestionnaireDeadlineCalculator,
-            ccdEventProducer);
+            directionsQuestionnaireDeadlineCalculator
+        );
     }
 
     @Test
@@ -221,13 +217,11 @@ public class ClaimantResponseServiceTest {
 
         claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
 
-        InOrder inOrder = inOrder(caseRepository, formaliseResponseAcceptanceService, ccdEventProducer, appInsights);
+        InOrder inOrder = inOrder(caseRepository, formaliseResponseAcceptanceService, appInsights);
 
         inOrder.verify(caseRepository, once()).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
         inOrder.verify(formaliseResponseAcceptanceService, once())
             .formalise(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION));
-        inOrder.verify(ccdEventProducer)
-            .createCCDClaimantResponseEvent(any(Claim.class), eq(claimantResponse), eq(AUTHORISATION));
         inOrder.verify(appInsights, once()).trackEvent(CLAIMANT_RESPONSE_ACCEPTED,
             REFERENCE_NUMBER,
             claim.getReferenceNumber());
@@ -262,15 +256,12 @@ public class ClaimantResponseServiceTest {
             caseRepository,
             formaliseResponseAcceptanceService,
             eventProducer,
-            ccdEventProducer,
             appInsights);
 
         inOrder.verify(caseRepository, once()).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
         inOrder.verify(formaliseResponseAcceptanceService, once())
             .formalise(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION));
         inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class));
-        inOrder.verify(ccdEventProducer)
-            .createCCDClaimantResponseEvent(any(Claim.class), eq(claimantResponse), eq(AUTHORISATION));
         inOrder.verify(appInsights, once()).trackEvent(CLAIMANT_RESPONSE_ACCEPTED,
             REFERENCE_NUMBER,
             claim.getReferenceNumber());
@@ -305,15 +296,12 @@ public class ClaimantResponseServiceTest {
         InOrder inOrder = inOrder(caseRepository,
             formaliseResponseAcceptanceService,
             eventProducer,
-            ccdEventProducer,
             appInsights);
 
         inOrder.verify(caseRepository, once()).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
         inOrder.verify(formaliseResponseAcceptanceService, once())
             .formalise(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION));
         inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class));
-        inOrder.verify(ccdEventProducer)
-            .createCCDClaimantResponseEvent(any(Claim.class), eq(claimantResponse), eq(AUTHORISATION));
         inOrder.verify(appInsights, once()).trackEvent(CLAIMANT_RESPONSE_ACCEPTED,
             REFERENCE_NUMBER,
             claim.getReferenceNumber());
