@@ -1001,7 +1001,7 @@ public class CoreCaseDataService {
                 String.format(
                     CCD_UPDATE_FAILURE_MESSAGE,
                     caseId,
-                    SETTLED_PRE_JUDGMENT
+                    ORDER_REVIEW_REQUESTED
                 ), exception
             );
         }
