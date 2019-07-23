@@ -108,10 +108,8 @@ public class PartAdmissionResponseContentProvider {
         );
 
         content.put("formNumber", ADMISSIONS_FORM_NO);
-        content.put("hearingContent", partAdmissionResponse.getDirectionsQuestionnaire()
-            .map(questionnaire -> hearingContentProvider.mapDirectionQuestionnaire.apply(questionnaire))
-            .orElse(null)
-        );
+        partAdmissionResponse.getDirectionsQuestionnaire().ifPresent(dq ->
+            content.put("hearingContent", hearingContentProvider.mapDirectionQuestionnaire.apply(dq)));
 
         return content;
     }

@@ -79,10 +79,9 @@ public class FullDefenceResponseContentProvider {
         content.put("evidenceComment", evidenceComment);
         content.put("formNumber", DEFENCE_FORM_NO);
 
-        content.put("hearingContent", fullDefenceResponse.getDirectionsQuestionnaire()
-            .map(questionnaire -> hearingContentProvider.mapDirectionQuestionnaire.apply(questionnaire))
-            .orElse(null)
-        );
+        fullDefenceResponse.getDirectionsQuestionnaire().ifPresent(dq ->
+            content.put("hearingContent", hearingContentProvider.mapDirectionQuestionnaire.apply(dq)));
+
         return content;
     }
 
