@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.ccd.domain.legaladvisor;
 
 public enum CCDHearingDurationType {
-    HALF_HOUR,
-    ONE_HOUR,
-    ONE_AND_HALF_HOUR,
-    TWO_HOURS,
-    THREE_HOURS,
+    ONE_DAY,
     FOUR_HOURS,
-    ONE_DAY
+    THREE_HOURS,
+    TWO_HOURS,
+    HALF_HOUR,
+    ONE_AND_HALF_HOUR,
+    ONE_HOUR
 }
