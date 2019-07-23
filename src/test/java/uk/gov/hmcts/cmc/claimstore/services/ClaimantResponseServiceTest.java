@@ -208,41 +208,6 @@ public class ClaimantResponseServiceTest {
             .builder()
             .buildAcceptationReferToJudgeWithCourtDetermination();
 
-        Claim claim = SampleClaim.builder()
-            .withResponseDeadline(LocalDate.now().minusMonths(2))
-            .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionInstalments())
-            .withRespondedAt(LocalDateTime.now().minusDays(32))
-            .withClaimantResponse(claimantResponse)
-            .build();
-
-        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
-        when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION)))
-            .thenReturn(claim);
-
-        claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
-
-        InOrder inOrder = inOrder(caseRepository, formaliseResponseAcceptanceService, ccdEventProducer, appInsights);
-
-        inOrder.verify(caseRepository, once()).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
-        inOrder.verify(formaliseResponseAcceptanceService, once())
-            .formalise(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION));
-        inOrder.verify(ccdEventProducer)
-            .createCCDClaimantResponseEvent(any(Claim.class), eq(claimantResponse), eq(AUTHORISATION));
-        inOrder.verify(appInsights, once()).trackEvent(CLAIMANT_RESPONSE_ACCEPTED,
-            REFERENCE_NUMBER,
-            claim.getReferenceNumber());
-
-        verify(eventProducer, never()).createClaimantResponseEvent(any(Claim.class));
-    }
-
-    @Test
-    public void saveResponseAcceptationReferredToJudgeWithDefendantAsCompany() {
-
-        ClaimantResponse claimantResponse = SampleClaimantResponse
-            .ClaimantResponseAcceptation
-            .builder()
-            .buildAcceptationReferToJudgeWithCourtDetermination();
-
         Party company = SampleParty.builder().company();
 
         Claim claim = SampleClaim.builder()
@@ -260,49 +225,6 @@ public class ClaimantResponseServiceTest {
 
         InOrder inOrder = inOrder(
             caseRepository,
-            formaliseResponseAcceptanceService,
-            eventProducer,
-            ccdEventProducer,
-            appInsights);
-
-        inOrder.verify(caseRepository, once()).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
-        inOrder.verify(formaliseResponseAcceptanceService, once())
-            .formalise(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION));
-        inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class));
-        inOrder.verify(ccdEventProducer)
-            .createCCDClaimantResponseEvent(any(Claim.class), eq(claimantResponse), eq(AUTHORISATION));
-        inOrder.verify(appInsights, once()).trackEvent(CLAIMANT_RESPONSE_ACCEPTED,
-            REFERENCE_NUMBER,
-            claim.getReferenceNumber());
-    }
-
-    @Test
-    public void saveResponseAcceptationReferredToJudgeWithDefendantAsOrganisation() {
-
-        ClaimantResponse claimantResponse = SampleClaimantResponse
-            .ClaimantResponseAcceptation
-            .builder()
-            .buildAcceptationReferToJudgeWithCourtDetermination();
-
-        Party organisation = SampleParty.builder().organisation();
-
-        Claim claim = SampleClaim.builder()
-            .withResponseDeadline(LocalDate.now().minusMonths(2))
-            .withResponse(SampleResponse
-                .PartAdmission
-                .builder()
-                .buildWithPaymentOptionInstalmentsAndParty(organisation))
-            .withRespondedAt(LocalDateTime.now().minusDays(32))
-            .withClaimantResponse(claimantResponse)
-            .build();
-
-        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
-        when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION)))
-            .thenReturn(claim);
-
-        claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
-
-        InOrder inOrder = inOrder(caseRepository,
             formaliseResponseAcceptanceService,
             eventProducer,
             ccdEventProducer,

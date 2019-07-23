@@ -82,10 +82,8 @@ public class ClaimantResponseService {
         if (isRejectPartAdmitNoMediation(claimantResponse, updatedClaim)) {
             updateDirectionsQuestionnaireDeadline(updatedClaim, authorization);
         }
-        Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
-        if (!isSettlementAgreement(claim, claimantResponse)
-            && (!isReferredToJudge(claimantResponse)
-            || (isReferredToJudge(claimantResponse) && PartyUtils.isCompanyOrOrganisation(response.getDefendant())))) {
+
+        if (!isSettlementAgreement(claim, claimantResponse)) {
             eventProducer.createClaimantResponseEvent(updatedClaim);
         }
 
