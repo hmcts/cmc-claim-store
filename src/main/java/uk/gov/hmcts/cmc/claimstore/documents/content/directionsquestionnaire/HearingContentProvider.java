@@ -25,6 +25,8 @@ import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
 public class HearingContentProvider {
 
     private static final String DISABLED_ACCESS = "Disabled Access";
+    private static final String YES = "YES";
+    private static final String NO = "NO";
 
     private Function<ExpertReport, ExpertReportContent> mapExpertReport = report ->
         ExpertReportContent.builder().expertName(report.getExpertName())
@@ -50,8 +52,8 @@ public class HearingContentProvider {
 
     private BiConsumer<ExpertRequest, HearingContent.HearingContentBuilder> mapExpertRequest =
         (expertRequest, builder) -> {
-            builder.hasExpertReport("YES");
-            builder.courtPermissionForExpertReport("YES");
+            builder.hasExpertReport(YES);
+            builder.courtPermissionForExpertReport(YES);
             builder.reasonWhyExpertAdvice(expertRequest.getReasonForExpertAdvice());
             builder.expertExamineNeeded(expertRequest.getExpertEvidenceToExamine());
         };
@@ -69,7 +71,7 @@ public class HearingContentProvider {
             contentBuilder.hearingLocation(questionnaire.getHearingLocation().getCourtName());
             contentBuilder.locationReason(questionnaire.getHearingLocation().getExceptionalCircumstancesReason()
                 .orElse(""));
-            contentBuilder.hasExpertReport(questionnaire.getExpertReports().isEmpty() ? "NO" : "YES");
+            contentBuilder.hasExpertReport(questionnaire.getExpertReports().isEmpty() ? NO : YES);
 
             questionnaire.getWitness().ifPresent(contentBuilder::witness);
             questionnaire.getExpertRequest().ifPresent(req -> mapExpertRequest.accept(req, contentBuilder));

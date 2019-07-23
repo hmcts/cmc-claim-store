@@ -3,9 +3,12 @@ package uk.gov.hmcts.cmc.claimstore.documents.content.directionsquestionnaire;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
+import uk.gov.hmcts.cmc.claimstore.services.staff.models.ExpertReportContent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.HearingContent;
 import uk.gov.hmcts.cmc.claimstore.utils.DateUtils;
+import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.RequireSupport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.UnavailableDate;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleDirectionsQuestionnaire;
@@ -49,7 +52,7 @@ public class HearingContentProviderTest {
                 assertEquals(request.getExpertEvidenceToExamine(), hearingContent.getExpertExamineNeeded());
             });
         assertEquals(dq.getHearingLocation().getCourtName(), hearingContent.getHearingLocation());
-        assertArrayEquals(dq.getExpertReports().toArray(), hearingContent.getExpertReports().toArray());
+        compareExpertReport(dq.getExpertReports(), hearingContent.getExpertReports());
         assertArrayEquals(
             unavailabeDatesToISOString(dq.getUnavailableDates()),
             hearingContent.getUnavailableDates().toArray()
@@ -91,5 +94,13 @@ public class HearingContentProviderTest {
             .map(UnavailableDate::getUnavailableDate)
             .map(DateUtils::toISOFullStyle)
             .toArray();
+    }
+
+    private void compareExpertReport(List<ExpertReport> report, List<ExpertReportContent> reportContents) {
+        assertArrayEquals(report.stream().map(reportItem -> ExpertReportContent.builder()
+            .expertName(reportItem.getExpertName())
+            .expertReportDate(Formatting.formatDate(reportItem.getExpertReportDate()))
+            .build())
+            .toArray(), reportContents.toArray());
     }
 }
