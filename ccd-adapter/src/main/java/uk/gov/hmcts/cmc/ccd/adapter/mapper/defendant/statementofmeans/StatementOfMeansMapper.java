@@ -36,9 +36,9 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static uk.gov.hmcts.cmc.ccd.adapter.util.StreamUtil.asStream;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
-import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
 
 @Component
 public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, StatementOfMeans> {

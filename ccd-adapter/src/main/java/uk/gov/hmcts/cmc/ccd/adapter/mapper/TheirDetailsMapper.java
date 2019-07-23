@@ -2,9 +2,9 @@ package uk.gov.hmcts.cmc.ccd.adapter.mapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.adapter.exception.MappingException;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
-import uk.gov.hmcts.cmc.ccd.exception.MappingException;
 import uk.gov.hmcts.cmc.domain.models.otherparty.CompanyDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.OrganisationDetails;

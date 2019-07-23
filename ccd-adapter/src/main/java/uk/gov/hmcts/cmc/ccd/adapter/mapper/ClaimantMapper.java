@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
-import uk.gov.hmcts.cmc.ccd.exception.MappingException;
+import uk.gov.hmcts.cmc.ccd.adapter.exception.MappingException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.party.Company;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;

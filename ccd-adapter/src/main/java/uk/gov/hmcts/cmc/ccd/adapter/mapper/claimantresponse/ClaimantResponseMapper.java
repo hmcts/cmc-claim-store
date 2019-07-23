@@ -10,7 +10,7 @@ import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDClaimantResponse;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseAcceptation;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
-import uk.gov.hmcts.cmc.ccd.exception.MappingException;
+import uk.gov.hmcts.cmc.ccd.adapter.exception.MappingException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;

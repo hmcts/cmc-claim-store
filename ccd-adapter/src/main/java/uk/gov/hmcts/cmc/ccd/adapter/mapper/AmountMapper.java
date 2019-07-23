@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.ccd.adapter.mapper;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.exception.MappingException;
+import uk.gov.hmcts.cmc.ccd.adapter.exception.MappingException;
 import uk.gov.hmcts.cmc.domain.models.amount.Amount;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;

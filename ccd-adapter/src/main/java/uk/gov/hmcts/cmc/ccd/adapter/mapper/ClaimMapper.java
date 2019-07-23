@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.math.NumberUtils.createBigInteger;
-import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
+import static uk.gov.hmcts.cmc.ccd.adapter.util.StreamUtil.asStream;
 
 @Component
 public class ClaimMapper {

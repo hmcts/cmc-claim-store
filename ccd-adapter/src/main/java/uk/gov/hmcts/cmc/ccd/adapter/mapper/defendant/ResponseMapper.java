@@ -13,7 +13,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
-import uk.gov.hmcts.cmc.ccd.exception.MappingException;
+import uk.gov.hmcts.cmc.ccd.adapter.exception.MappingException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isAllBlank;
-import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
+import static uk.gov.hmcts.cmc.ccd.adapter.util.StreamUtil.asStream;
 
 @Component
 public class ResponseMapper {
