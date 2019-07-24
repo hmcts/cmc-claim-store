@@ -16,8 +16,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DayAssert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LegalOrderGenerationDeadlinesCalculatorTest {
-    private static final int DAYS_FOR_RESPONSE = 28;
-    private static final int DAYS_FOR_SERVICE = 5;
+    private static final int DAYS_FOR_RESPONSE = 42;
     private static final LocalDate TODAY = LocalDate.of(2019, 1, 2);
 
     private LegalOrderGenerationDeadlinesCalculator calculator;
@@ -42,7 +41,7 @@ public class LegalOrderGenerationDeadlinesCalculatorTest {
         when(workingDayIndicator.isWorkingDay(any(LocalDate.class))).thenReturn(true);
 
         LocalDate responseDeadline = calculator.calculateOrderGenerationDeadlines();
-        LocalDate expected = TODAY.plusDays(DAYS_FOR_RESPONSE + DAYS_FOR_SERVICE);
+        LocalDate expected = TODAY.plusDays(DAYS_FOR_RESPONSE);
 
         assertThat(responseDeadline).isWeekday().isTheSame(expected);
     }
@@ -51,7 +50,7 @@ public class LegalOrderGenerationDeadlinesCalculatorTest {
     public void shouldCalculateDeadlineAsTheNextWorkingDayIfDeadlineIsOnAHoliday() {
         when(workingDayIndicator.isWorkingDay(any(LocalDate.class)))
             .thenReturn(false, true);
-        LocalDate expected = TODAY.plusDays(DAYS_FOR_RESPONSE + DAYS_FOR_SERVICE + 1);
+        LocalDate expected = TODAY.plusDays(DAYS_FOR_RESPONSE + 1);
         LocalDate responseDeadline = calculator.calculateOrderGenerationDeadlines();
 
         assertThat(responseDeadline).isTheSame(expected);
