@@ -101,6 +101,7 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
         assertThat(responseData.get("newRequestedCourt")).isNull();
         assertThat(responseData.get("preferredCourtObjectingParty")).isNull();
         assertThat(responseData.get("preferredCourtObjectingReason")).isNull();
+        assertThat(responseData.get("otherDirectionHeaders")).isNull();
     }
 
     @Test
@@ -162,7 +163,6 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
         data.put("preferredCourtObjectingReason", "Because");
         data.put("hearingCourt", "CLERKENWELL");
         data.put("estimatedHearingDuration", "HALF_HOUR");
-        data.put("hearingStatement", "some");
 
         CaseDetails caseDetails = CaseDetails.builder()
             .id(caseDetailsTemp.getId())
