@@ -144,6 +144,8 @@ ccd:
         - CMC
       users:
         - civilmoneyclaims+ccd@gmail.com|CMC|MoneyClaimCase|open
+        - civilmoneyclaims+judge@gmail.com|CMC|MoneyClaimCase|readyForDirections
+        - civilmoneyclaims+la@gmail.com|CMC|MoneyClaimCase|readyForDirections
       userProfileDatabaseHost: ${SERVICE_NAME}-postgres
       userProfileDatabasePort: 5432
       userProfileDatabaseUser: hmcts
@@ -164,3 +166,5 @@ ccd:
         - letter-holder
         - caseworker-autotest1
         - caseworker-cmc-anonymouscitizen
+        - caseworker-cmc-judge
+        - caseworker-cmc-legaladvisor
