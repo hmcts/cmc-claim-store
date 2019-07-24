@@ -23,9 +23,6 @@ public class CCDOrderGenerationData {
 
     private CCDDirectionPartyType docUploadForParty;
 
-    @Builder.Default
-    private List<CCDCollectionElement<String>> extraDocUploadList = Collections.emptyList();
-
     private LocalDate eyewitnessUploadDeadline;
 
     private CCDDirectionPartyType eyewitnessUploadForParty;
@@ -35,6 +32,9 @@ public class CCDOrderGenerationData {
 
     @Builder.Default
     private List<CCDCollectionElement<CCDOrderDirection>> otherDirections = Collections.emptyList();
+
+    @Builder.Default
+    private List<CCDCollectionElement<String>> extraDocUploadList = Collections.emptyList();
 
     private CCDYesNoOption paperDetermination;
 
@@ -46,8 +46,7 @@ public class CCDOrderGenerationData {
 
     private CCDHearingDurationType estimatedHearingDuration;
 
-    private String hearingStatement;
-
     private CCDDocument draftOrderDoc;
 
+    private CCDOtherDirectionHeaderType otherDirectionHeader;
 }
