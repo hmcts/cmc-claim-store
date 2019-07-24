@@ -1,5 +1,5 @@
 <html>
-<head>
+<head>x
   <meta charset="UTF-8"/>
   <title>Money Claim response receipt</title>
   <style>
@@ -158,6 +158,43 @@
       white-space: pre-line;
     }
 
+    .heading-medium {
+      padding-bottom: 0;
+      margin-bottom: 0.4em;
+      margin-top: 1.5em;
+      font-size: 22px;
+    }
+    .new-dq h2 span {
+      color: #fff;
+      background-color: #5D514D;
+      padding: 5px;
+    }
+    table.new-dq td:last-child div {
+      border: 1px solid gray;
+      padding: 5px;
+      min-height: 18px;
+    }
+    table.new-dq tr {
+      border: none;
+    }
+    table.new-dq td {
+      padding: 0.63158em 1.05263em 0.67368em 0;
+      border-top: none;
+      border-bottom: none !important;
+      min-height: 18px;
+    }
+
+    .new-dq h2 {
+      color: #000;
+      background-color: #EDEDED;
+      font-size: 21px !important;
+    }
+    .heading-medium {
+      padding-bottom: 0;
+      margin-bottom: 0.4em;
+      margin-top: 1.5em;
+      font-size: 22px;
+    }
   </style>
 </head>
 <body>
@@ -813,6 +850,248 @@
     </tr>
   </table>
 </div>
+{% endif %}
+{% if hearingContent is defined %}
+<p style="page-break-before: always" ></p>
+<header>
+<table>
+  <tr>
+    <td colspan="2" class="spacing-bottom"><h2 class="normal-font">Defendant's hearing requirements</h2></td>
+  </tr>
+  <tr>
+    <td colspan="2"><p>In the County Court Business Centre</p></td>
+  </tr>
+  <tr>
+    <td colspan="2" class="spacing-bottom"><p>Online Civil Money Claims</p></td>
+  </tr>
+  <tr>
+    <td colspan="2"><p><strong>Claim number: </strong>{{ claim.referenceNumber }}</p></td>
+  </tr>
+  <tr>
+    <td colspan="2"><p><strong>Issued on: </strong> {{ claim.issuedOn }}</p></td>
+  </tr>
+  <tr>
+    <td colspan="2" class="spacing-bottom"><p><strong>Response received on: </strong> {{ defenceSubmittedOn }}</p>
+    </td>
+  </tr>
+</table>
+</header>
+<table style="width: 80%" class="new-dq">
+  <thead>
+  <tr>
+    <th colspan="2">
+      <h2 class="heading-medium" id="name">
+        <span>A</span> Your details - Defendant
+      </h2>
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td><div>
+      <strong>Name:</strong></div></td>
+    <td><div>{{ defendant.fullName }}</div></td>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+    <td>
+      Address:
+    </td>
+    <td><div>
+      {{ defendant.address.line1 }}
+      <br/>
+      {% if defendant.address.line2 is defined and defendant.address.line2 is not empty %}
+      {{ defendant.address.line2 }}
+      <br/>
+      {% endif %}
+      {% if defendant.address.line3 is defined and defendant.address.line3 is not empty %}
+      {{ defendant.address.line3 }}
+      <br/>
+      {% endif %}
+      {{ defendant.address.city }}
+      <br/>
+      {{ defendant.address.postcode }}
+    </div></td>
+  </tr>
+  <tr>
+    <td><div>
+      Date of birth:
+    </div></td>
+    <td><div>
+      {{ defendant.dateOfBirth }}
+    </div></td>
+  </tr>
+  <tr></tr>
+  <tr>
+    <td><div>
+      Telephone:
+    </div></td>
+    <td><div>
+      {% if defendant.mobilePhone is defined and defendant.mobilePhone is not empty %}
+        {{ defendant.mobilePhone }}
+      {% endif %}
+    </div></td>
+  </tr>
+  <tr>
+    <td><div>
+      Email:
+    </div></td>
+    <td><div>{{ defendant.email }}</div></td>
+  </tr>
+  </tbody>
+</table>
+
+<table style="width: 80%" class="new-dq">
+  <thead>
+  <tr>
+    <th colspan="2">
+      <h2 class="heading-medium">
+        <span>B</span> About the hearing
+      </h2>
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+
+  <tr>
+    <td>
+      <div>
+        Support required for a hearing
+      </div>
+    </td>
+    <td>
+      <div>
+        {% for support in hearingContent.supportRequired %}
+        {{ support }}<br/>
+        {% endfor %}
+      </div>
+    </td>
+  </tr>
+
+  <tr><td><b>Hearing location</b></td></tr>
+  <tr>
+    <td>
+      Preferred hearing centre
+    </td>
+    <td><div>{{ hearingContent.hearingLocation }}</div>
+    </td>
+  </tr>
+  <tr>
+    <td><div>
+      Briefly explain your reasons
+    </div></td>
+    <td><div>
+      {{ hearingContent.locationReason }}
+    </div></td></tr>
+
+  <tr><td><b>Expert evidence</b></td></tr>
+  <tr>
+    <td>
+      Have you already got a report written by an expert?
+    </td>
+    <td><div>
+      {{ hearingContent.hasExpertReport }}
+    </div></td>
+  </tr>
+  {% set reportNo = 0 %}
+  {% for report in hearingContent.expertReports %}
+  {% set reportNo = reportNo + 1 %}
+  <tr>
+    <td><div>
+      Report {{ reportNo }}
+    </div></td>
+    <td><div>
+      {{ report.expertName }} <br/>
+      {{ report.expertReportDate }}
+    </div></td>
+  </tr>
+  {% endfor %}
+
+  <tr>
+    <td><div>
+      Do you want the court's permission to hire an expert?
+    </div></td>
+    <td><div>
+      {{ hearingContent.courtPermissionForExpertReport }}
+    </div></td>
+  </tr>
+  <tr>
+    <td><div>
+      Does the claim involve something an expert can still examine?
+    </div></td>
+    <td><div>
+      {{ hearingContent.expertExamineNeeded }}
+    </div></td>
+  </tr>
+  <tr>
+    <td><div>
+      What is there to examine?
+    </div></td>
+    <td><div>
+      {{ hearingContent.whatToExamine }}
+    </div></td>
+  </tr>
+  <tr>
+    <td><div>
+      Briefly explain why you believe an expert is needed
+    </div></td>
+    <td><div>
+      {{ hearingContent.reasonWhyExpertAdvice }}
+    </div></td>
+  </tr>
+
+  <tr>
+    <td><b>Witnesses</b></td>
+  </tr>
+  <tr>
+    <td><div>
+      Do you want to give evidence?
+    </div></td>
+    <td><div>
+      {{ hearingContent.witness.selfWitness }}
+    </div></td>
+
+  </tr>
+  <tr>
+    <td><div>
+      Other witnesses
+    </div></td>
+    <td><div>
+      {{ hearingContent.witness.noOfOtherWitness }}
+    </div></td>
+  </tr>
+  <tr>
+    <td><div>Dates unavailable</div></td>
+    <td>
+      <div>
+        {% for unavailableDate in hearingContent.unavailableDates %}
+        {{ unavailableDate }} <br/>
+        {% endfor %}
+      </div>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<table style="width: 80%" class="new-dq">
+  <thead>
+  <tr>
+    <th colspan="2">
+      <h2 class="heading-medium">
+        <span>C</span> Signature
+      </h2>
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Signed</td>
+      <td><div>{{ defendant.fullName }}<br/>{{ defenceSubmittedOn }}</div></td>
+    </tr>
+</tbody>
+</table>
+
 {% endif %}
 </body>
 </html>

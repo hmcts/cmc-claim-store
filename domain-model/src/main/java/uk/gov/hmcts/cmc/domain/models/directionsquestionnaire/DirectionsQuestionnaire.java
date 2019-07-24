@@ -53,7 +53,7 @@ public class DirectionsQuestionnaire {
     }
 
     public List<UnavailableDate> getUnavailableDates() {
-        return unavailableDates == null ? emptyList() : unavailableDates;
+        return Optional.ofNullable(unavailableDates).orElse(emptyList());
     }
 
     public Optional<ExpertRequest> getExpertRequest() {
@@ -61,7 +61,7 @@ public class DirectionsQuestionnaire {
     }
 
     public List<ExpertReport> getExpertReports() {
-        return expertReports == null ? emptyList() : expertReports;
+        return Optional.ofNullable(expertReports).orElse(emptyList());
     }
 
     @Override

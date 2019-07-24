@@ -13,6 +13,8 @@ public enum ClaimDocumentType {
     CCJ_REQUEST,
     SETTLEMENT_AGREEMENT("settlementAgreement"),
     DEFENDANT_PIN_LETTER,
+    CLAIMANT_DIRECTION_QUESTIONNAIRE,
+    COVER_SHEET
     COVER_SHEET;
 
     private List<String> values;
