@@ -27,13 +27,6 @@ import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimIssueReceiptFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimantHearingFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSettlementReachedFileBaseName;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIMANT_DIRECTION_QUESTIONNAIRE;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @Component
@@ -117,9 +110,7 @@ public class DocumentUploadHandler {
             .orElse(null);
 
         if (responseRejection != null && responseRejection.getDirectionsQuestionnaire().isPresent()) {
-            PDF claimantDirectionsQuestionnaire = new PDF(buildClaimantHearingFileBaseName(claim.getReferenceNumber()),
-                claimantDirectionsQuestionnairePdfService.createPdf(claim),
-                CLAIMANT_DIRECTION_QUESTIONNAIRE);
+            PDF claimantDirectionsQuestionnaire = claimantDirectionsQuestionnairePdfService.createPdf(claim);
             uploadToDocumentManagement(claim, event.getAuthorisation(), singletonList(claimantDirectionsQuestionnaire));
         }
 
@@ -134,7 +125,7 @@ public class DocumentUploadHandler {
         uploadToDocumentManagement(claim, authorisation, singletonList(document));
     }
 
-    public Claim uploadToDocumentManagement(Claim claim, String authorisation, List<PDF> documents) {
+    private void uploadToDocumentManagement(Claim claim, String authorisation, List<PDF> documents) {
         Claim updatedClaim = claim;
         for (PDF document : documents) {
             try {
@@ -144,6 +135,5 @@ public class DocumentUploadHandler {
                     document.getFilename()), ex);
             }
         }
-        return updatedClaim;
     }
 }

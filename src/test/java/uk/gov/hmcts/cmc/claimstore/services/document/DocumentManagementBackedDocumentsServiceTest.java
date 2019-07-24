@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
+import uk.gov.hmcts.cmc.claimstore.documents.questionnaire.ClaimantDirectionsQuestionnairePdfService;
 import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -62,6 +63,8 @@ public class DocumentManagementBackedDocumentsServiceTest {
     private DefendantPinLetterPdfService defendantPinLetterPdfService;
     @Mock
     private CCDEventProducer ccdEventProducer;
+    @Mock
+    private ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService;
 
     @Before
     public void setUp() {
@@ -74,6 +77,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
             countyCourtJudgmentPdfService,
             settlementAgreementCopyService,
             defendantPinLetterPdfService,
+            claimantDirectionsQuestionnairePdfService,
             ccdEventProducer);
     }
 

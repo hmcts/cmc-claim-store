@@ -16,11 +16,11 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Base64;
 import java.util.Collections;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -64,11 +64,10 @@ public class LegalOrderServiceTest {
     }
 
     @Test
-    public void shouldSendPrintEventForOrderAndCoverSheetIfOrderIsInDocStore() throws Exception {
+    public void shouldSendPrintEventForOrderAndCoverSheetIfOrderIsInDocStore() {
         when(documentManagementService.downloadDocument(
             BEARER_TOKEN,
-            new URI(DOCUMENT_URL),
-            null)).thenReturn("legalOrder".getBytes());
+            any())).thenReturn("legalOrder".getBytes());
         legalOrderService.print(
             BEARER_TOKEN,
             claim,
@@ -99,11 +98,10 @@ public class LegalOrderServiceTest {
     }
 
     @Test(expected = Exception.class)
-    public void shouldThrowExceptionIfDocumentUrlIsWrong() throws Exception {
+    public void shouldThrowExceptionIfDocumentUrlIsWrong() {
         when(documentManagementService.downloadDocument(
             BEARER_TOKEN,
-            new URI(DOCUMENT_URL),
-            null)).thenThrow(new URISyntaxException("nope", "nope"));
+            any())).thenThrow(new URISyntaxException("nope", "nope"));
         legalOrderService.print(
             BEARER_TOKEN,
             claim,
@@ -112,11 +110,10 @@ public class LegalOrderServiceTest {
     }
 
     @Test(expected = Exception.class)
-    public void shouldThrowExceptionIfOrderIsNotInDocStore() throws Exception {
+    public void shouldThrowExceptionIfOrderIsNotInDocStore() {
         when(documentManagementService.downloadDocument(
             BEARER_TOKEN,
-            new URI(DOCUMENT_URL),
-            null)).thenThrow(new DocumentManagementException("nope"));
+            any())).thenThrow(new DocumentManagementException("nope"));
         legalOrderService.print(
             BEARER_TOKEN,
             claim,
