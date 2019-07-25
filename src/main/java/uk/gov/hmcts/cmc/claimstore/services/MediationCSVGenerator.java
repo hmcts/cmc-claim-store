@@ -33,6 +33,20 @@ public class MediationCSVGenerator {
     private static final int CLAIMANT_PARTY_TYPE = 1;
     private static final int DEFENDANT_PARTY_TYPE = 2;
 
+    private static final MediationRow reportHeader = MediationRow.builder()
+        .siteId("SITE_ID")
+        .caseNumber("CASE_NUMBER")
+        .caseType("CASE_TYPE")
+        .amount("AMOUNT")
+        .partyType("PARTY_TYPE")
+        .contactName("CONTACT_NAME")
+        .contactDetail("CONTACT_DETAIL")
+        .contactNumber("CONTACT_NUMBER")
+        .checkList("CHECK_LIST")
+        .partyStatus("PARTY_STATUS")
+        .emailAddress("EMAIL_ADDRESS").build();
+
+
     private static final Map<Integer, Function<Claim, String>> CONTACT_PERSON_EXTRACTORS =
         ImmutableMap.of(
             CLAIMANT_PARTY_TYPE,
@@ -40,12 +54,14 @@ public class MediationCSVGenerator {
                 .filter(ResponseRejection.class::isInstance)
                 .map(ResponseRejection.class::cast)
                 .orElseThrow(() -> new MediationCSVGenerationException("Missing rejection response"))
-                .getMediationContactPerson().orElse(claim.getClaimData().getClaimant().getName()),
+                .getMediationContactPerson()
+                .orElse(claim.getClaimData().getClaimant().getName()),
 
             DEFENDANT_PARTY_TYPE,
             claim -> claim.getResponse()
                 .orElseThrow(() -> new MediationCSVGenerationException("Missing response data"))
-                .getMediationContactPerson().orElse(claim.getClaimData().getDefendant().getName())
+                .getMediationContactPerson()
+                .orElse(claim.getClaimData().getDefendant().getName())
         );
 
     private static final Map<Integer, Function<Claim, String>> CONTACT_NUMBER_EXTRACTORS =
@@ -90,6 +106,7 @@ public class MediationCSVGenerator {
         problematicRecords.clear();
         StringBuilder stringBuilder = new StringBuilder();
         try (CSVPrinter csvPrinter = new CSVPrinter(stringBuilder, CSVFormat.DEFAULT.withNullString(NULL_STRING))) {
+            csvPrinter.printRecord(reportHeader);
             csvPrinter.printRecords(createMediationRowForEachParty());
             csvPrinter.flush();
             csvData = stringBuilder.toString();
