@@ -34,4 +34,9 @@ public class DBTestingSupportRepository implements SupportRepository {
     public void linkDefendantToClaim(Claim claim, String defendantId) {
         this.testingSupportRepository.updateDefendantId(claim.getExternalId(), defendantId);
     }
+
+    @Override
+    public Claim saveClaim(String authorisation, Claim claim) {
+        return null; //todo
+    }
 }

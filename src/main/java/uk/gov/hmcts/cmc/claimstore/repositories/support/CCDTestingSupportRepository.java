@@ -50,4 +50,10 @@ public class CCDTestingSupportRepository implements SupportRepository {
     public void linkDefendantToClaim(Claim claim, String defendantId) {
         this.ccdCaseApi.linkDefendant(claim.getId().toString(), defendantId, "defendant@example.com");
     }
+
+    @Override
+    public Claim saveClaim(String authorisation, Claim claim) {
+        User user = userService.getUser(authorisation);
+        return this.coreCaseDataService.createNewCase(user, claim);
+    }
 }

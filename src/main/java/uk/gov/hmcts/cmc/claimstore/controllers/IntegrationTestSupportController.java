@@ -7,12 +7,14 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
+import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.support.SupportRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
@@ -25,19 +27,31 @@ public class IntegrationTestSupportController {
 
     private final SupportRepository supportRepository;
     private CCDEventProducer ccdEventProducer;
+    private final JsonMapper jsonMapper;
 
     @Autowired
     public IntegrationTestSupportController(
         SupportRepository supportRepository,
-        CCDEventProducer ccdEventProducer
-    ) {
+        CCDEventProducer ccdEventProducer,
+        JsonMapper jsonMapper) {
         this.supportRepository = supportRepository;
         this.ccdEventProducer = ccdEventProducer;
+        this.jsonMapper = jsonMapper;
     }
 
     @GetMapping("/trigger-server-error")
     public void throwAnError() {
         throw new IllegalStateException("Something really bad happened!");
+    }
+
+    @PostMapping("/claims")
+    @ApiOperation("Create a claim in a specific state")
+    public Claim createClaim(
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation,
+        String claimBody
+    ) {
+        Claim claim = jsonMapper.fromJson(claimBody, Claim.class);
+        return supportRepository.saveClaim(authorisation, claim);
     }
 
     @GetMapping("/claims/{claimReferenceNumber}")

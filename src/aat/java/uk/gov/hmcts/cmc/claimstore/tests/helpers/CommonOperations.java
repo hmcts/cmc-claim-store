@@ -39,6 +39,33 @@ public class CommonOperations {
         this.claimOperation = claimOperation;
     }
 
+    public Claim submitClaimViaTestingSupport(
+        String userAuthentication,
+        String defendantEmail,
+        uk.gov.hmcts.cmc.domain.models.response.Response response) {
+        ClaimData claimData = testData.submittedByClaimantBuilder()
+            .withDefendant(SampleTheirDetails.builder()
+                .withEmail(defendantEmail).individualDetails()
+            )
+            .withExternalId(UUID.randomUUID())
+            .build();
+        Claim claim = Claim.builder()
+            .claimData(claimData)
+            .response(response)
+            .build();
+        return RestAssured
+            .given()
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .header(HttpHeaders.AUTHORIZATION, userAuthentication)
+            .body(jsonMapper.toJson(claim))
+            .when()
+            .post("/testing-support/claims/")
+            .then()
+            .extract()
+            .body()
+            .as(Claim.class);
+    }
+
     public Claim submitClaimWithDefendantCollectionId(String userAuthentication, String userId, String collectionId) {
         UUID externalId = UUID.randomUUID();
         return submitClaim(userAuthentication, userId, testData.submittedByClaimantBuilder()

@@ -26,19 +26,22 @@ public class SettlementOfferTest extends BaseTest {
 
     @Test
     public void shouldBeAbleToSuccessfullySubmitOffer() {
-        String claimantId = claimant.getUserDetails().getId();
-        Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimantId
-        );
+        User defendant = idamTestService.createDefendant("abc");
 
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
-        Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
+        Response response = SampleResponse.FullDefence.builder()
+            .withDefenceType(DefenceType.DISPUTE)
+            .build();
+
+        Claim createdCase = commonOperations.submitClaimViaTestingSupport(
+            claimant.getAuthorisation(),
+            defendant.getUserDetails().getEmail(),
+            response
+        );
 
         Offer offer = SampleOffer.builder().build();
 
         Claim caseWithOffer = commonOperations
-            .submitOffer(offer, updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
+            .submitOffer(offer, createdCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
             .then()
             .statusCode(HttpStatus.CREATED.value())
             .and()
@@ -51,44 +54,49 @@ public class SettlementOfferTest extends BaseTest {
 
     @Test
     public void shouldFailForMultipleOfferFromOneUser() {
-        String claimantId = claimant.getUserDetails().getId();
-        Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimantId
-        );
+        User defendant = idamTestService.createDefendant("abc");
+        Response response = SampleResponse.FullDefence.builder()
+            .withDefenceType(DefenceType.DISPUTE)
+            .build();
 
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
-        Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
+        Claim createdCase = commonOperations.submitClaimViaTestingSupport(
+            claimant.getAuthorisation(),
+            defendant.getUserDetails().getEmail(),
+            response
+        );
 
         Offer offer = SampleOffer.builder().build();
 
         commonOperations
-            .submitOffer(offer, updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
+            .submitOffer(offer, createdCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
             .then()
             .statusCode(HttpStatus.CREATED.value())
             .and()
             .extract().body().as(Claim.class);
 
         commonOperations
-            .submitOffer(offer, updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
+            .submitOffer(offer, createdCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
             .then()
             .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
     public void shouldBeAbleToSuccessfullyAcceptOffer() {
-        String claimantId = claimant.getUserDetails().getId();
-        Claim createdCase = commonOperations.submitClaim(
+        User defendant = idamTestService.createDefendant("abc");
+        Response response = SampleResponse.FullDefence.builder()
+            .withDefenceType(DefenceType.DISPUTE)
+            .build();
+
+        Claim createdCase = commonOperations.submitClaimViaTestingSupport(
             claimant.getAuthorisation(),
-            claimantId
+            defendant.getUserDetails().getEmail(),
+            response
         );
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
-        Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
 
         Offer offer = SampleOffer.builder().build();
 
         Claim caseWithOffer = commonOperations
-            .submitOffer(offer, updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
+            .submitOffer(offer, createdCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
             .then()
             .statusCode(HttpStatus.CREATED.value())
             .and()
@@ -108,36 +116,40 @@ public class SettlementOfferTest extends BaseTest {
 
     @Test
     public void shouldFailAcceptOfferWithoutExistingOfferFromUser() {
-        String claimantId = claimant.getUserDetails().getId();
-        Claim createdCase = commonOperations.submitClaim(
+        User defendant = idamTestService.createDefendant("abc");
+        Response response = SampleResponse.FullDefence.builder()
+            .withDefenceType(DefenceType.DISPUTE)
+            .build();
+
+        Claim createdCase = commonOperations.submitClaimViaTestingSupport(
             claimant.getAuthorisation(),
-            claimantId
+            defendant.getUserDetails().getEmail(),
+            response
         );
 
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
-        Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
-
         commonOperations
-            .acceptOffer(updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.CLAIMANT)
+            .acceptOffer(createdCase.getExternalId(), defendant.getAuthorisation(), MadeBy.CLAIMANT)
             .then()
             .statusCode(HttpStatus.CONFLICT.value());
     }
 
     @Test
     public void shouldBeAbleToSuccessfullyRejectOffer() {
-        String claimantId = claimant.getUserDetails().getId();
-        Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimantId
-        );
+        User defendant = idamTestService.createDefendant("abc");
+        Response response = SampleResponse.FullDefence.builder()
+            .withDefenceType(DefenceType.DISPUTE)
+            .build();
 
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
-        Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
+        Claim createdCase = commonOperations.submitClaimViaTestingSupport(
+            claimant.getAuthorisation(),
+            defendant.getUserDetails().getEmail(),
+            response
+        );
 
         Offer offer = SampleOffer.builder().build();
 
         Claim caseWithOffer = commonOperations
-            .submitOffer(offer, updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
+            .submitOffer(offer, createdCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
             .then()
             .statusCode(HttpStatus.CREATED.value())
             .and()
@@ -157,46 +169,48 @@ public class SettlementOfferTest extends BaseTest {
 
     @Test
     public void shouldFailRejectOfferWithoutExistingOfferFromUser() {
-        String claimantId = claimant.getUserDetails().getId();
-        Claim createdCase = commonOperations.submitClaim(
+        User defendant = idamTestService.createDefendant("abc");
+        Response response = SampleResponse.FullDefence.builder()
+            .withDefenceType(DefenceType.DISPUTE)
+            .build();
+
+        Claim createdCase = commonOperations.submitClaimViaTestingSupport(
             claimant.getAuthorisation(),
-            claimantId
+            defendant.getUserDetails().getEmail(),
+            response
         );
 
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
-        Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
-
         commonOperations
-            .rejectOffer(updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.CLAIMANT)
+            .rejectOffer(createdCase.getExternalId(), defendant.getAuthorisation(), MadeBy.CLAIMANT)
             .then()
             .statusCode(HttpStatus.CONFLICT.value());
     }
 
     @Test
     public void shouldBeAbleToSuccessfullyCountersignOffer() {
-        String claimantId = claimant.getUserDetails().getId();
-        Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimantId
-        );
-
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
-
-        Claim caseWithCounterSign = countersignAnOffer(createdCase, defendant);
+        User defendant = idamTestService.createDefendant("abc");
+        Claim caseWithCounterSign = countersignAnOffer(defendant);
 
         assertThat(caseWithCounterSign.getSettlement().isPresent()).isTrue();
         assertThat(caseWithCounterSign.getSettlement().get().getPartyStatements().size()).isEqualTo(3);
         assertThat(caseWithCounterSign.getSettlementReachedAt()).isNotNull();
     }
 
-    private Claim countersignAnOffer(Claim createdCase, User defendant) {
+    private Claim countersignAnOffer(User defendant) {
+        Response response = SampleResponse.FullDefence.builder()
+            .withDefenceType(DefenceType.DISPUTE)
+            .build();
 
-        Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
+        Claim createdCase = commonOperations.submitClaimViaTestingSupport(
+            claimant.getAuthorisation(),
+            defendant.getUserDetails().getEmail(),
+            response
+        );
 
         Offer offer = SampleOffer.builder().build();
 
         Claim caseWithOffer = commonOperations
-            .submitOffer(offer, updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
+            .submitOffer(offer, createdCase.getExternalId(), defendant.getAuthorisation(), MadeBy.DEFENDANT)
             .then()
             .statusCode(HttpStatus.CREATED.value())
             .and()
@@ -219,15 +233,8 @@ public class SettlementOfferTest extends BaseTest {
 
     @Test
     public void shouldFailRejectOfferWhenAlreadySettled() {
-        String claimantId = claimant.getUserDetails().getId();
-        Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimantId
-        );
-
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
-
-        Claim updatedCase = countersignAnOffer(createdCase, defendant);
+        User defendant = idamTestService.createDefendant("abc");
+        Claim updatedCase = countersignAnOffer(defendant);
 
         commonOperations
             .rejectOffer(updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.CLAIMANT)
@@ -237,60 +244,12 @@ public class SettlementOfferTest extends BaseTest {
 
     @Test
     public void shouldFailAcceptOfferWhenAlreadySettled() {
-        String claimantId = claimant.getUserDetails().getId();
-        Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimantId
-        );
-
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
-        commonOperations.linkDefendant(
-            defendant.getAuthorisation()
-        );
-
-        Claim updatedCase = countersignAnOffer(createdCase, defendant);
+        User defendant = idamTestService.createDefendant("abc");
+        Claim updatedCase = countersignAnOffer(defendant);
 
         commonOperations
             .acceptOffer(updatedCase.getExternalId(), defendant.getAuthorisation(), MadeBy.CLAIMANT)
             .then()
             .statusCode(HttpStatus.CONFLICT.value());
-    }
-
-    private Claim createClaimWithDisputeResponse(Claim createdCase, User defendant) {
-
-        commonOperations.linkDefendant(
-            defendant.getAuthorisation()
-        );
-
-        Response response = SampleResponse.FullDefence.builder()
-            .withDefenceType(DefenceType.DISPUTE)
-            .build();
-
-        return commonOperations.submitResponse(response, createdCase.getExternalId(), defendant)
-            .then()
-            .statusCode(HttpStatus.OK.value())
-            .and()
-            .extract().body().as(Claim.class);
-    }
-
-    private Claim createClaimWithFullAdmissionResponse() {
-        String claimantId = claimant.getUserDetails().getId();
-        Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimantId
-        );
-
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
-        commonOperations.linkDefendant(
-            defendant.getAuthorisation()
-        );
-
-        Response response = SampleResponse.FullAdmission.builder().build();
-
-        return commonOperations.submitResponse(response, createdCase.getExternalId(), defendant)
-            .then()
-            .statusCode(HttpStatus.OK.value())
-            .and()
-            .extract().body().as(Claim.class);
     }
 }
