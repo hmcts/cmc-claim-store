@@ -344,6 +344,7 @@ sonarqube {
       "**/CCDReDetermination.java," +
       "**/CCDEventProducer.java," +
       "**/GeneratedDocuments.java," +
+      "**/DBCaseRepository.java," +
       "**/CCDCaseApi.java"
   }
 }
