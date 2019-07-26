@@ -63,7 +63,8 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             toNullableClaimState(result.getString("state")),
             toNullableEntity(result.getString("submission_operation_indicators"),
                 ClaimSubmissionOperationIndicators.class),
-            null
+            null,
+            null // Not implemented to save review order in claim store database
         );
     }
 
