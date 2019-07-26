@@ -70,4 +70,5 @@ public class CCDCase {
 
     @JsonUnwrapped
     private CCDOrderGenerationData orderGenerationData;
+    private CCDReviewOrder reviewOrder;
 }
