@@ -9,9 +9,9 @@ import java.time.LocalDateTime;
 @Builder
 public class CCDReviewOrder {
 
-    public enum PartyType { CLAIMANT, DEFENDANT }
+    public enum RequestedBy { CLAIMANT, DEFENDANT }
 
     private String reason;
-    private PartyType requestedBy;
+    private RequestedBy requestedBy;
     private LocalDateTime requestedAt;
 }

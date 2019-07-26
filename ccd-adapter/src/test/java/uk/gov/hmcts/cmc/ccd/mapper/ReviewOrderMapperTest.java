@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,12 +9,13 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 
 import java.time.LocalDateTime;
 
+import static org.junit.Assert.assertNull;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDReviewOrder.PartyType.DEFENDANT;
-import static uk.gov.hmcts.cmc.domain.models.ReviewOrder.PartyType.CLAIMANT;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDReviewOrder.RequestedBy.DEFENDANT;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -27,11 +27,7 @@ public class ReviewOrderMapperTest {
 
     @Test
     public void shouldMapReviewOrderToCCD() {
-        ReviewOrder reviewOrder = ReviewOrder.builder()
-            .reason("My reason")
-            .requestedBy(CLAIMANT)
-            .requestedAt(LocalDateTime.now())
-            .build();
+        ReviewOrder reviewOrder = SampleReviewOrder.getDefault();
 
         CCDReviewOrder ccdReviewOrder = mapper.to(reviewOrder);
 
@@ -41,7 +37,7 @@ public class ReviewOrderMapperTest {
     @Test
     public void shouldMapNullReviewOrderToCCD() {
         CCDReviewOrder ccdReviewOrder = mapper.to(null);
-        Assertions.assertThat(ccdReviewOrder).isNull();
+        assertNull(ccdReviewOrder);
     }
 
     @Test
@@ -60,7 +56,6 @@ public class ReviewOrderMapperTest {
     @Test
     public void shouldMapNullCCDReviewOrderFromCCD() {
         ReviewOrder reviewOrder = mapper.from(null);
-        Assertions.assertThat(reviewOrder).isNull();
+        assertNull(reviewOrder);
     }
-
 }

@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
+import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
 
 import java.util.List;
@@ -130,5 +131,13 @@ public class ClaimController {
         @Valid @NotNull @RequestBody PaidInFull paidInFull,
         @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation) {
         return claimService.paidInFull(externalId, paidInFull, authorisation);
+    }
+
+    @PutMapping(value = "/{externalId:" + UUID_PATTERN + "}/review-order")
+    public Claim saveReviewOrder(
+        @PathVariable("externalId") String externalId,
+        @Valid @NotNull @RequestBody ReviewOrder reviewOrder,
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation) {
+        return claimService.saveReviewOrder(externalId, reviewOrder, authorisation);
     }
 }
