@@ -25,7 +25,7 @@ public class ReviewOrderRuleTest {
     }
 
     @Test(expected = Test.None.class)
-    public void shouldAllowForValidPaidInFull() {
+    public void shouldAllowForValidReviewOrder() {
         Claim claim = SampleClaim.getDefault();
         reviewOrderRule.assertReviewOrder(claim);
     }
