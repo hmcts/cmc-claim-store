@@ -32,7 +32,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
+import static uk.gov.hmcts.cmc.ccd.adapter.util.StreamUtil.asStream;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
 
 @Service
@@ -402,7 +402,7 @@ public class CCDCaseApi {
 
     private List<Claim> extractClaims(List<CaseDetails> result) {
         return asStream(result)
-            .map(entry -> ccdCaseDataToClaim.extractClaim(entry))
+            .map(ccdCaseDataToClaim::extractClaim)
             .collect(Collectors.toList());
     }
 }

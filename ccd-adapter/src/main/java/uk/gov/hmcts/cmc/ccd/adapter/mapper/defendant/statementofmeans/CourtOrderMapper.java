@@ -2,9 +2,9 @@ package uk.gov.hmcts.cmc.ccd.adapter.mapper.defendant.statementofmeans;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.adapter.mapper.MoneyMapper;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDCourtOrder;
+import uk.gov.hmcts.cmc.ccd.adapter.mapper.MoneyMapper;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
 
 @Component

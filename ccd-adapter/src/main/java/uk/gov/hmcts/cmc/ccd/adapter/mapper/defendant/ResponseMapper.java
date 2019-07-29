@@ -1,12 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.adapter.mapper.defendant;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.adapter.mapper.EvidenceRowMapper;
-import uk.gov.hmcts.cmc.ccd.adapter.mapper.MoneyMapper;
-import uk.gov.hmcts.cmc.ccd.adapter.mapper.PaymentIntentionMapper;
-import uk.gov.hmcts.cmc.ccd.adapter.mapper.TelephoneMapper;
-import uk.gov.hmcts.cmc.ccd.adapter.mapper.TimelineEventMapper;
-import uk.gov.hmcts.cmc.ccd.adapter.mapper.defendant.statementofmeans.StatementOfMeansMapper;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
@@ -14,6 +8,13 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
 import uk.gov.hmcts.cmc.ccd.adapter.exception.MappingException;
+import uk.gov.hmcts.cmc.ccd.adapter.mapper.DirectionsQuestionnaireMapper;
+import uk.gov.hmcts.cmc.ccd.adapter.mapper.EvidenceRowMapper;
+import uk.gov.hmcts.cmc.ccd.adapter.mapper.MoneyMapper;
+import uk.gov.hmcts.cmc.ccd.adapter.mapper.PaymentIntentionMapper;
+import uk.gov.hmcts.cmc.ccd.adapter.mapper.TelephoneMapper;
+import uk.gov.hmcts.cmc.ccd.adapter.mapper.TimelineEventMapper;
+import uk.gov.hmcts.cmc.ccd.adapter.mapper.defendant.statementofmeans.StatementOfMeansMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
@@ -45,6 +46,7 @@ public class ResponseMapper {
     private final StatementOfMeansMapper statementOfMeansMapper;
     private final TelephoneMapper telephoneMapper;
     private final MoneyMapper moneyMapper;
+    private final DirectionsQuestionnaireMapper directionsQuestionnaireMapper;
 
     public ResponseMapper(
         EvidenceRowMapper evidenceRowMapper,
@@ -53,7 +55,8 @@ public class ResponseMapper {
         PaymentIntentionMapper paymentIntentionMapper,
         StatementOfMeansMapper statementOfMeansMapper,
         TelephoneMapper telephoneMapper,
-        MoneyMapper moneyMapper
+        MoneyMapper moneyMapper,
+        DirectionsQuestionnaireMapper directionsQuestionnaireMapper
     ) {
         this.evidenceRowMapper = evidenceRowMapper;
         this.timelineEventMapper = timelineEventMapper;
@@ -62,6 +65,7 @@ public class ResponseMapper {
         this.statementOfMeansMapper = statementOfMeansMapper;
         this.telephoneMapper = telephoneMapper;
         this.moneyMapper = moneyMapper;
+        this.directionsQuestionnaireMapper = directionsQuestionnaireMapper;
     }
 
     public void to(
@@ -142,13 +146,18 @@ public class ResponseMapper {
         builder.responseDefence(response.getDefence());
         response.getEvidence().ifPresent(mapDefendantEvidence(builder));
         response.getTimeline().ifPresent(mapDefendantTimeline(builder));
-        response.getPaymentIntention().ifPresent(
-            paymentIntention -> builder.defendantPaymentIntention(paymentIntentionMapper.to(paymentIntention))
-        );
 
-        response.getStatementOfMeans().ifPresent(
-            statementOfMeans -> builder.statementOfMeans(statementOfMeansMapper.to(statementOfMeans))
-        );
+        response.getPaymentIntention()
+            .map(paymentIntentionMapper::to)
+            .ifPresent(builder::defendantPaymentIntention);
+
+        response.getStatementOfMeans()
+            .map(statementOfMeansMapper::to)
+            .ifPresent(builder::statementOfMeans);
+
+        response.getDirectionsQuestionnaire()
+            .map(directionsQuestionnaireMapper::to)
+            .ifPresent(builder::directionsQuestionnaire);
     }
 
     private void toFullAdmissionResponse(CCDRespondent.CCDRespondentBuilder builder, FullAdmissionResponse response) {
@@ -169,6 +178,10 @@ public class ResponseMapper {
         fullDefenceResponse.getPaymentDeclaration().ifPresent(mapPaymentDeclaration(builder));
         fullDefenceResponse.getEvidence().ifPresent(mapDefendantEvidence(builder));
         fullDefenceResponse.getTimeline().ifPresent(mapDefendantTimeline(builder));
+
+        fullDefenceResponse.getDirectionsQuestionnaire()
+            .map(directionsQuestionnaireMapper::to)
+            .ifPresent(builder::directionsQuestionnaire);
     }
 
     private Consumer<DefendantTimeline> mapDefendantTimeline(CCDRespondent.CCDRespondentBuilder builder) {
@@ -218,6 +231,7 @@ public class ResponseMapper {
             .evidence(extractDefendantEvidence(respondent))
             .timeline(extractDefendantTimeline(respondent))
             .paymentDeclaration(extractPaymentDeclaration(respondent))
+            .directionsQuestionnaire(directionsQuestionnaireMapper.from(respondent.getDirectionsQuestionnaire()))
             .build();
     }
 
@@ -279,6 +293,7 @@ public class ResponseMapper {
             .evidence(extractDefendantEvidence(respondent))
             .timeline(extractDefendantTimeline(respondent))
             .statementOfMeans(statementOfMeansMapper.from(respondent.getStatementOfMeans()))
+            .directionsQuestionnaire(directionsQuestionnaireMapper.from(respondent.getDirectionsQuestionnaire()))
             .build();
     }
 

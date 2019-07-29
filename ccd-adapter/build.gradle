@@ -16,7 +16,7 @@ apply plugin: 'net.ltgt.apt'
 dependencies {
   compile project(':domain-model')
 
-  compile group: 'uk.gov.hmcts.reform.cmc', name: 'ccd-domain', version: ccdDomainVersion
+  compile group: 'uk.gov.hmcts.reform', name: 'cmc-ccd-domain', version: ccdDomainVersion
   compile group: 'org.springframework.boot', name: 'spring-boot-starter'
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.8'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.6'

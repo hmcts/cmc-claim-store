@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.adapter.assertion.Assertions.assertThat;
 
 public class ClaimantAssert extends AbstractAssert<ClaimantAssert, Party> {
 
@@ -67,9 +66,7 @@ public class ClaimantAssert extends AbstractAssert<ClaimantAssert, Party> {
         SoleTrader actual = (SoleTrader) this.actual;
         assertThat(actual.getAddress()).isEqualTo(applicant.getPartyDetail().getPrimaryAddress());
 
-        actual.getTitle().ifPresent(title -> assertThat(
-            applicant.getPartyDetail().getTitle()).isEqualTo(title)
-        );
+        actual.getTitle().ifPresent(title -> assertThat(applicant.getPartyDetail().getTitle()).isEqualTo(title));
 
         if (!Objects.equals(actual.getName(), applicant.getPartyName())) {
             failWithMessage("Expected CCDSoleTrader.name to be <%s> but was <%s>",
@@ -191,7 +188,8 @@ public class ClaimantAssert extends AbstractAssert<ClaimantAssert, Party> {
                 ccdParty.getRepresentativeOrganisationName(), representative.getOrganisationName());
         }
 
-        assertThat(representative.getOrganisationAddress()).isEqualTo(ccdParty.getRepresentativeOrganisationAddress());
+        assertThat(representative.getOrganisationAddress())
+            .isEqualTo(ccdParty.getRepresentativeOrganisationAddress());
 
         representative.getOrganisationContactDetails().ifPresent(contactDetails -> {
 

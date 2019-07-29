@@ -2,11 +2,11 @@ package uk.gov.hmcts.cmc.ccd.adapter.mapper.offers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.adapter.mapper.PaymentIntentionMapper;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
 import uk.gov.hmcts.cmc.ccd.domain.offers.CCDMadeBy;
 import uk.gov.hmcts.cmc.ccd.domain.offers.CCDStatementType;
+import uk.gov.hmcts.cmc.ccd.adapter.mapper.PaymentIntentionMapper;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;

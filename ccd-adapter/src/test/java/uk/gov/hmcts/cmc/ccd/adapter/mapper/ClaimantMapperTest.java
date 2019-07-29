@@ -6,8 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.hmcts.cmc.ccd.adapter.util.SampleData;
-import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
+import uk.gov.hmcts.cmc.ccd.adapter.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -18,9 +17,12 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.adapter.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
+import static uk.gov.hmcts.cmc.ccd.adapter.util.SampleData.getCCDApplicantCompany;
+import static uk.gov.hmcts.cmc.ccd.adapter.util.SampleData.getCCDApplicantIndividual;
+import static uk.gov.hmcts.cmc.ccd.adapter.util.SampleData.getCCDApplicantOrganisation;
+import static uk.gov.hmcts.cmc.ccd.adapter.util.SampleData.getCCDApplicantSoleTrader;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -94,7 +96,7 @@ public class ClaimantMapperTest {
     @Test
     public void shouldMapIndividualFromCCD() {
         //given
-        CCDApplicant ccdParty = SampleData.getCCDApplicantIndividual();
+        CCDApplicant ccdParty = getCCDApplicantIndividual();
         String collectionId = UUID.randomUUID().toString();
 
         //when
@@ -111,7 +113,7 @@ public class ClaimantMapperTest {
     @Test
     public void shouldMapCompanyFromCCD() {
         //given
-        CCDApplicant ccdParty = SampleData.getCCDApplicantCompany();
+        CCDApplicant ccdParty = getCCDApplicantCompany();
         String collectionId = UUID.randomUUID().toString();
 
         //when
@@ -128,7 +130,7 @@ public class ClaimantMapperTest {
     @Test
     public void shouldMapOrganisationFromCCD() {
         //given
-        CCDApplicant ccdParty = SampleData.getCCDApplicantOrganisation();
+        CCDApplicant ccdParty = getCCDApplicantOrganisation();
         String collectionId = UUID.randomUUID().toString();
 
         //when
@@ -145,7 +147,7 @@ public class ClaimantMapperTest {
     @Test
     public void shouldMapSoleTraderFromCCD() {
         //given
-        CCDApplicant ccdParty = SampleData.getCCDApplicantSoleTrader();
+        CCDApplicant ccdParty = getCCDApplicantSoleTrader();
         String collectionId = UUID.randomUUID().toString();
 
         //when

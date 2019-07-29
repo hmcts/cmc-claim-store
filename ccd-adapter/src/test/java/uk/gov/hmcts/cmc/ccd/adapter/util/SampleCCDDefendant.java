@@ -24,6 +24,9 @@ import static uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType.FULL_ADMISSI
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType.FULL_DEFENCE;
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType.PART_ADMISSION;
 import static uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceType.OTHER;
+import static uk.gov.hmcts.cmc.ccd.adapter.util.SampleData.getCCDAddress;
+import static uk.gov.hmcts.cmc.ccd.adapter.util.SampleData.getCCDPaymentIntention;
+import static uk.gov.hmcts.cmc.ccd.adapter.util.SampleData.getCCDStatementOfMeans;
 
 public class SampleCCDDefendant {
 
@@ -51,8 +54,8 @@ public class SampleCCDDefendant {
 
     private static CCDParty.CCDPartyBuilder withPartyDetails() {
         return CCDParty.builder().type(COMPANY)
-            .primaryAddress(SampleData.getCCDAddress())
-            .correspondenceAddress(SampleData.getCCDAddress())
+            .primaryAddress(getCCDAddress())
+            .correspondenceAddress(getCCDAddress())
             .telephoneNumber(
                 CCDTelephone.builder()
                     .telephoneNumber("07123456789")
@@ -65,7 +68,7 @@ public class SampleCCDDefendant {
         return CCDRespondent.builder()
             .partyName("Mr Norman")
             .representativeOrganisationName("Trading ltd")
-            .representativeOrganisationAddress(SampleData.getCCDAddress())
+            .representativeOrganisationAddress(getCCDAddress())
             .representativeOrganisationPhone("07123456789")
             .representativeOrganisationEmail("representative@example.org")
             .representativeOrganisationDxAddress("DX123456");
@@ -145,8 +148,8 @@ public class SampleCCDDefendant {
     public static CCDRespondent.CCDRespondentBuilder withFullAdmissionResponse() {
         return withResponse()
             .responseType(FULL_ADMISSION)
-            .statementOfMeans(SampleData.getCCDStatementOfMeans())
-            .defendantPaymentIntention(SampleData.getCCDPaymentIntention());
+            .statementOfMeans(getCCDStatementOfMeans())
+            .defendantPaymentIntention(getCCDPaymentIntention());
     }
 
     public static CCDRespondent.CCDRespondentBuilder withReDetermination() {
@@ -162,9 +165,9 @@ public class SampleCCDDefendant {
             .responseAmount("1000")
             .paymentDeclarationPaidDate(now())
             .paymentDeclarationExplanation("Payment declaration explanation")
-            .defendantPaymentIntention(SampleData.getCCDPaymentIntention())
+            .defendantPaymentIntention(getCCDPaymentIntention())
             .responseDefence("This is my defence")
-            .statementOfMeans(SampleData.getCCDStatementOfMeans())
+            .statementOfMeans(getCCDStatementOfMeans())
             .defendantTimeLineComment("Time line comments")
             .defendantTimeLineEvents(asList(
                 CCDCollectionElement.<CCDTimelineEvent>builder().value(CCDTimelineEvent.builder()

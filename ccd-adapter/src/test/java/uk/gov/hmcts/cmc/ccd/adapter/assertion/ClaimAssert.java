@@ -19,6 +19,7 @@ import static java.time.format.DateTimeFormatter.ISO_DATE;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.math.NumberUtils.createBigInteger;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.adapter.assertion.Assertions.assertMoney;
 
 public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
 
@@ -60,7 +61,7 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
         }
         actual.getTotalAmountTillDateOfIssue().ifPresent(totalAmount -> {
             if (ccdCase.getTotalAmount() != null) {
-                Assertions.assertMoney(totalAmount)
+                assertMoney(totalAmount)
                     .isEqualTo(ccdCase.getTotalAmount(),
                         format("Expected CCDCase.totalAmount to be <%s> but was <%s>",
                             ccdCase.getTotalAmount(), totalAmount)
@@ -70,7 +71,7 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
 
         actual.getTotalInterestTillDateOfIssue().ifPresent(currentInterestAmount -> {
             if (ccdCase.getCurrentInterestAmount() != null) {
-                Assertions.assertMoney(currentInterestAmount)
+                assertMoney(currentInterestAmount)
                     .isEqualTo(ccdCase.getCurrentInterestAmount(),
                         format("Expected CCDCase.currentInterestAmount to be <%s> but was <%s>",
                             ccdCase.getCurrentInterestAmount(), currentInterestAmount)
@@ -129,19 +130,19 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
 
             String message = format("Expected CCDCase.amount to be <%s> but was <%s>",
                 ccdAmountRow.getAmount(), amountRow.getAmount());
-            Assertions.assertMoney(amountRow.getAmount()).isEqualTo(ccdAmountRow.getAmount(), message);
+            assertMoney(amountRow.getAmount()).isEqualTo(ccdAmountRow.getAmount(), message);
 
         } else if (amount instanceof AmountRange) {
 
             AmountRange amountRange = (AmountRange) amount;
             String message = format("Expected CCDCase.amountHigherValue to be <%s> but was <%s>",
                 ccdCase.getAmountHigherValue(), amountRange.getHigherValue());
-            Assertions.assertMoney(amountRange.getHigherValue()).isEqualTo(ccdCase.getAmountHigherValue(), message);
+            assertMoney(amountRange.getHigherValue()).isEqualTo(ccdCase.getAmountHigherValue(), message);
 
             amountRange.getLowerValue().ifPresent(lowerAmount -> {
                 String errorMessage = format("Expected CCDCase.amountLowerValue to be <%s> but was <%s>",
                     ccdCase.getAmountHigherValue(), amountRange.getHigherValue());
-                Assertions.assertMoney(lowerAmount).isEqualTo(ccdCase.getAmountLowerValue(), errorMessage);
+                assertMoney(lowerAmount).isEqualTo(ccdCase.getAmountLowerValue(), errorMessage);
             });
         } else {
             assertThat(amount).isInstanceOf(NotKnown.class);
@@ -161,7 +162,7 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
                         ccdCase.getInterestReason(), interest.getRate());
                 }
                 interest.getSpecificDailyAmount().ifPresent(dailyAmount -> {
-                    Assertions.assertMoney(dailyAmount)
+                    assertMoney(dailyAmount)
                         .isEqualTo(ccdCase.getInterestSpecificDailyAmount(),
                             format("Expected CCDCase.interestSpecificDailyAmount to be <%s> but was <%s>",
                                 ccdCase.getInterestSpecificDailyAmount(), dailyAmount)
@@ -204,7 +205,7 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
 
                 String message = format("Expected CCDCase.paymentAmount to be <%s> but was <%s>",
                     ccdCase.getPaymentAmount(), payment.getAmount());
-                Assertions.assertMoney(payment.getAmount()).isEqualTo(ccdCase.getPaymentAmount(), message);
+                assertMoney(payment.getAmount()).isEqualTo(ccdCase.getPaymentAmount(), message);
 
                 if (!Objects.equals(LocalDate.parse(payment.getDateCreated(), ISO_DATE),
                     ccdCase.getPaymentDateCreated())
@@ -257,6 +258,9 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
 
         assertThat(claimData.getClaimants().size()).isEqualTo(ccdCase.getApplicants().size());
         assertThat(claimData.getDefendants().size()).isEqualTo(ccdCase.getRespondents().size());
+
+        actual.getReviewOrder()
+            .ifPresent(reviewOrder -> assertThat(reviewOrder).isEqualTo(ccdCase.getReviewOrder()));
 
         return this;
     }

@@ -2,15 +2,16 @@ package uk.gov.hmcts.cmc.ccd.adapter.mapper.claimantresponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.adapter.mapper.MoneyMapper;
-import uk.gov.hmcts.cmc.ccd.adapter.mapper.PaymentIntentionMapper;
-import uk.gov.hmcts.cmc.ccd.adapter.mapper.TelephoneMapper;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDClaimantResponse;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseAcceptation;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.adapter.exception.MappingException;
+import uk.gov.hmcts.cmc.ccd.adapter.mapper.DirectionsQuestionnaireMapper;
+import uk.gov.hmcts.cmc.ccd.adapter.mapper.MoneyMapper;
+import uk.gov.hmcts.cmc.ccd.adapter.mapper.PaymentIntentionMapper;
+import uk.gov.hmcts.cmc.ccd.adapter.mapper.TelephoneMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
@@ -29,18 +30,21 @@ public class ClaimantResponseMapper {
     private final CourtDeterminationMapper courtDeterminationMapper;
     private final TelephoneMapper telephoneMapper;
     private final MoneyMapper moneyMapper;
+    private final DirectionsQuestionnaireMapper directionsQuestionnaireMapper;
 
     @Autowired
     public ClaimantResponseMapper(
         PaymentIntentionMapper paymentIntentionMapper,
         CourtDeterminationMapper courtDeterminationMapper,
         TelephoneMapper telephoneMapper,
-        MoneyMapper moneyMapper
+        MoneyMapper moneyMapper,
+        DirectionsQuestionnaireMapper directionsQuestionnaireMapper
     ) {
         this.paymentIntentionMapper = paymentIntentionMapper;
         this.courtDeterminationMapper = courtDeterminationMapper;
         this.telephoneMapper = telephoneMapper;
         this.moneyMapper = moneyMapper;
+        this.directionsQuestionnaireMapper = directionsQuestionnaireMapper;
     }
 
     public CCDClaimantResponse to(Claim claim) {
@@ -83,6 +87,9 @@ public class ClaimantResponseMapper {
             .map(YesNoOption::name)
             .map(CCDYesNoOption::valueOf)
             .ifPresent(rejection::settleForAmount);
+        responseRejection.getDirectionsQuestionnaire()
+            .map(directionsQuestionnaireMapper::to)
+            .ifPresent(rejection::directionsQuestionnaire);
         claim.getClaimantRespondedAt().ifPresent(rejection::submittedOn);
         return rejection.build();
     }
@@ -149,6 +156,9 @@ public class ClaimantResponseMapper {
         if (ccdResponseRejection.getSettleForAmount() != null) {
             builder.settleForAmount(YesNoOption.valueOf(ccdResponseRejection.getSettleForAmount().name()));
         }
+
+        builder.directionsQuestionnaire(
+            directionsQuestionnaireMapper.from(ccdResponseRejection.getDirectionsQuestionnaire()));
 
         claimBuilder.claimantResponse(builder.build())
             .claimantRespondedAt(ccdClaimantResponse.getSubmittedOn());

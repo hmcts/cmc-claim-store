@@ -2,10 +2,10 @@ package uk.gov.hmcts.cmc.ccd.adapter.mapper.ccj;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.adapter.mapper.MoneyMapper;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
 import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
 import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgmentType;
+import uk.gov.hmcts.cmc.ccd.adapter.mapper.MoneyMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;

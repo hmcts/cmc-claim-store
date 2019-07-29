@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.ccd.adapter.mapper.defendant.statementofmeans;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.adapter.mapper.Mapper;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDisabilityStatus;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDLivingPartner;
+import uk.gov.hmcts.cmc.ccd.adapter.mapper.Mapper;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.DisabilityStatus;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.LivingPartner;
 

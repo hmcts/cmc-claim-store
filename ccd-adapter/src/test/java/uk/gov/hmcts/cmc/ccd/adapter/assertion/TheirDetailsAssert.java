@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.adapter.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.COMPANY;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.ORGANISATION;

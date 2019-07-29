@@ -24,7 +24,9 @@ public class CaseEventMapper {
         .put(SETTLEMENT_AGREEMENT, SETTLEMENT_AGREEMENT_UPLOAD)
         .build();
 
-    private CaseEventMapper() {}
+    private CaseEventMapper() {
+
+    }
 
     public static CaseEvent map(ClaimDocumentType type) {
 

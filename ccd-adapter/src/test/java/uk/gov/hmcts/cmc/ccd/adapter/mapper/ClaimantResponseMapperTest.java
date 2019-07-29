@@ -6,12 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import uk.gov.hmcts.cmc.ccd.adapter.mapper.claimantresponse.ClaimantResponseMapper;
-import uk.gov.hmcts.cmc.ccd.adapter.util.SampleData;
-import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
+import uk.gov.hmcts.cmc.ccd.adapter.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDClaimantResponse;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseAcceptation;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
+import uk.gov.hmcts.cmc.ccd.adapter.mapper.claimantresponse.ClaimantResponseMapper;
+import uk.gov.hmcts.cmc.ccd.adapter.util.SampleData;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
@@ -22,7 +22,6 @@ import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import static java.time.LocalDateTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
-import static uk.gov.hmcts.cmc.ccd.adapter.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption.CCJ;
@@ -106,6 +105,18 @@ public class ClaimantResponseMapperTest {
             .build();
         CCDClaimantResponse ccdResponse = mapper.to(claim);
         assertThat((ResponseAcceptation) response).isEqualTo((CCDResponseAcceptation) ccdResponse);
+        assertNotNull(ccdResponse.getSubmittedOn());
+    }
+
+    @Test
+    public void shouldMapClaimantRejectionDQtoCCDDirectionsQuestionnaire() {
+        ClaimantResponse response = SampleClaimantResponse.ClaimantResponseRejection.builder()
+            .buildRejectionWithDirectionsQuestionnaire();
+        Claim claim = Claim.builder().claimantResponse(response)
+            .claimantRespondedAt(LocalDateTimeFactory.nowInLocalZone())
+            .build();
+        CCDClaimantResponse ccdResponse = mapper.to(claim);
+        assertThat((ResponseRejection) response).isEqualTo((CCDResponseRejection) ccdResponse);
         assertNotNull(ccdResponse.getSubmittedOn());
     }
 

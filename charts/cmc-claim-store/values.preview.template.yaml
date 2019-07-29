@@ -53,7 +53,7 @@ java:
 
 cmc-citizen-frontend:
   nodejs:
-    image: hmcts.azurecr.io/hmcts/cmc-citizen-frontend:latest  # master
+    image: hmctspublic.azurecr.io/cmc/citizen-frontend:latest  # master
     ingressIP: ${INGRESS_IP}
     consulIP: ${CONSUL_LB_IP}
     releaseNameOverride: ${SERVICE_NAME}-nodejs

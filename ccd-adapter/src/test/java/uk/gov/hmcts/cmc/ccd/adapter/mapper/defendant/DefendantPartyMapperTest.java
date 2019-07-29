@@ -7,8 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.adapter.assertion.defendant.DefendantPartyAssert;
-import uk.gov.hmcts.cmc.ccd.adapter.util.SampleCCDDefendant;
-import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
+import uk.gov.hmcts.cmc.ccd.adapter.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
@@ -16,6 +15,11 @@ import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 
 import java.util.UUID;
+
+import static uk.gov.hmcts.cmc.ccd.adapter.util.SampleCCDDefendant.withPartyCompany;
+import static uk.gov.hmcts.cmc.ccd.adapter.util.SampleCCDDefendant.withPartyIndividual;
+import static uk.gov.hmcts.cmc.ccd.adapter.util.SampleCCDDefendant.withPartyOrganisation;
+import static uk.gov.hmcts.cmc.ccd.adapter.util.SampleCCDDefendant.withPartySoleTrader;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -96,7 +100,7 @@ public class DefendantPartyMapperTest {
     @Test
     public void shouldMapIndividualFromCCD() {
         //given
-        CCDRespondent ccdRespondent = SampleCCDDefendant.withPartyIndividual()
+        CCDRespondent ccdRespondent = withPartyIndividual()
             .claimantProvidedDetail(CCDParty.builder()
                 .title("Mrs.")
                 .firstName("Mary")
@@ -118,7 +122,7 @@ public class DefendantPartyMapperTest {
     @Test
     public void shouldMapCompanyFromCCD() {
         //given
-        CCDRespondent ccdRespondent = SampleCCDDefendant.withPartyCompany().build();
+        CCDRespondent ccdRespondent = withPartyCompany().build();
 
         CCDCollectionElement<CCDRespondent> respondentElement = CCDCollectionElement.<CCDRespondent>builder()
             .value(ccdRespondent)
@@ -135,7 +139,7 @@ public class DefendantPartyMapperTest {
     @Test
     public void shouldMapSoleTraderFromCCD() {
         //given
-        CCDRespondent ccdRespondent = SampleCCDDefendant.withPartySoleTrader()
+        CCDRespondent ccdRespondent = withPartySoleTrader()
             .claimantProvidedDetail(CCDParty.builder()
                 .title("Mrs.")
                 .firstName("Mary")
@@ -157,7 +161,7 @@ public class DefendantPartyMapperTest {
     @Test
     public void shouldMapOrganisationFromCCD() {
         //given
-        CCDRespondent ccdRespondent = SampleCCDDefendant.withPartyOrganisation().build();
+        CCDRespondent ccdRespondent = withPartyOrganisation().build();
 
         CCDCollectionElement<CCDRespondent> respondentElement = CCDCollectionElement.<CCDRespondent>builder()
             .value(ccdRespondent)

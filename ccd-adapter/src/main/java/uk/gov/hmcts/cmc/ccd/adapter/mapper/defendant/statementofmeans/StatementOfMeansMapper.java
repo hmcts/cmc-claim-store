@@ -2,14 +2,14 @@ package uk.gov.hmcts.cmc.ccd.adapter.mapper.defendant.statementofmeans;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.adapter.mapper.Mapper;
-import uk.gov.hmcts.cmc.ccd.adapter.mapper.MoneyMapper;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDChildCategory;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDisabilityStatus;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDResidenceType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
+import uk.gov.hmcts.cmc.ccd.adapter.mapper.Mapper;
+import uk.gov.hmcts.cmc.ccd.adapter.mapper.MoneyMapper;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
@@ -36,9 +36,9 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static uk.gov.hmcts.cmc.ccd.adapter.util.StreamUtil.asStream;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
+import static uk.gov.hmcts.cmc.ccd.adapter.util.StreamUtil.asStream;
 
 @Component
 public class StatementOfMeansMapper implements Mapper<CCDStatementOfMeans, StatementOfMeans> {

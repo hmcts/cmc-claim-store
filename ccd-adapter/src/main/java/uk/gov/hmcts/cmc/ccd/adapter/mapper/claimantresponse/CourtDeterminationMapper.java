@@ -1,11 +1,11 @@
 package uk.gov.hmcts.cmc.ccd.adapter.mapper.claimantresponse;
 
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDCourtDetermination;
+import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDDecisionType;
 import uk.gov.hmcts.cmc.ccd.adapter.mapper.Mapper;
 import uk.gov.hmcts.cmc.ccd.adapter.mapper.MoneyMapper;
 import uk.gov.hmcts.cmc.ccd.adapter.mapper.PaymentIntentionMapper;
-import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDCourtDetermination;
-import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDDecisionType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType;
 
