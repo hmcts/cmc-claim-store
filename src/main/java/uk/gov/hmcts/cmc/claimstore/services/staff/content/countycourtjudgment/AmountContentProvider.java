@@ -26,6 +26,22 @@ public class AmountContentProvider {
         this.interestContentProvider = interestContentProvider;
     }
 
+    private BigDecimal getPartAdmissionAmount(Claim claim, PartAdmissionResponse response) {
+        return response.getAmount().subtract(
+            claim.getClaimData().getFeesPaidInPound())
+            .max(new BigDecimal(0));
+    }
+
+    private BigDecimal getPartAdmissionClaimFeeInPound(Claim claim,
+                                                       PartAdmissionResponse response, BigDecimal admissionAmount) {
+        if (admissionAmount.equals(ZERO)
+            && admissionAmount.compareTo(claim.getClaimData().getFeesPaidInPound()) < 0) {
+            return response.getAmount();
+        } else {
+            return claim.getClaimData().getFeesPaidInPound();
+        }
+    }
+
     public AmountContent create(Claim claim) {
         BigDecimal claimAmount = ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount();
 
@@ -36,8 +52,13 @@ public class AmountContentProvider {
             .filter(claimantResponse -> ClaimantResponseType.ACCEPTATION.equals(claimantResponse.getType()))
             .isPresent();
         BigDecimal admittedAmount = isPartAdmissionResponse
-            ? ((PartAdmissionResponse) response).getAmount()
+            ? getPartAdmissionAmount(claim, (PartAdmissionResponse) response)
             : claimAmount;
+
+        BigDecimal feeAmount = isPartAdmissionResponse
+            ? getPartAdmissionClaimFeeInPound(claim, (PartAdmissionResponse) response, admittedAmount)
+            : claim.getClaimData().getFeesPaidInPound();
+
         BigDecimal ccjAmount = usePartAdmitAmount ? admittedAmount : claimAmount;
 
         requireNonNull(claim.getCountyCourtJudgment());
@@ -60,13 +81,13 @@ public class AmountContentProvider {
         return new AmountContent(
             formatMoney(claimAmount),
             formatMoney(ccjAmount
-                .add(claim.getClaimData().getFeesPaidInPound())
+                .add(feeAmount)
                 .add(interestRealValue)),
             interestContent,
-            formatMoney(claim.getClaimData().getFeesPaidInPound()),
+            formatMoney(feeAmount),
             formatMoney(paidAmount),
             formatMoney(ccjAmount
-                .add(claim.getClaimData().getFeesPaidInPound())
+                .add(feeAmount)
                 .add(interestRealValue)
                 .subtract(paidAmount)),
             formatMoney(admittedAmount)
