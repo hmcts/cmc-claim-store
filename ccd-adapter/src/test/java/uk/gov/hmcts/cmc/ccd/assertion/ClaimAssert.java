@@ -259,6 +259,9 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
         assertThat(claimData.getClaimants().size()).isEqualTo(ccdCase.getApplicants().size());
         assertThat(claimData.getDefendants().size()).isEqualTo(ccdCase.getRespondents().size());
 
+        actual.getReviewOrder()
+            .ifPresent(reviewOrder -> assertThat(reviewOrder).isEqualTo(ccdCase.getReviewOrder()));
+
         return this;
     }
 
