@@ -18,3 +18,4 @@ ignore:
   - "**/CCDCaseHandler.java"
   - "**/GeneratedDocuments.java"
   - "**/CCDCaseApi.java"
+  - "**/DBCaseRepository.java"

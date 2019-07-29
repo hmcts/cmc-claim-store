@@ -14,12 +14,12 @@ import javax.validation.constraints.Size;
 @Getter
 public class ReviewOrder {
 
-    public enum PartyType { CLAIMANT, DEFENDANT }
+    public enum RequestedBy { CLAIMANT, DEFENDANT }
 
     @Size(max = 1000)
     private final String reason;
     @NotNull
-    private final PartyType requestedBy;
+    private final RequestedBy requestedBy;
     @NotNull
     private final LocalDateTime requestedAt;
 
