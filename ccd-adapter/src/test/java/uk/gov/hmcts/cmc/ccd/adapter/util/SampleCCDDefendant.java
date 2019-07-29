@@ -15,6 +15,9 @@ import java.util.List;
 
 import static java.time.LocalDate.now;
 import static java.util.Arrays.asList;
+import static uk.gov.hmcts.cmc.ccd.adapter.util.SampleData.getCCDAddress;
+import static uk.gov.hmcts.cmc.ccd.adapter.util.SampleData.getCCDPaymentIntention;
+import static uk.gov.hmcts.cmc.ccd.adapter.util.SampleData.getCCDStatementOfMeans;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.COMPANY;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
@@ -24,9 +27,6 @@ import static uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType.FULL_ADMISSI
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType.FULL_DEFENCE;
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType.PART_ADMISSION;
 import static uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceType.OTHER;
-import static uk.gov.hmcts.cmc.ccd.adapter.util.SampleData.getCCDAddress;
-import static uk.gov.hmcts.cmc.ccd.adapter.util.SampleData.getCCDPaymentIntention;
-import static uk.gov.hmcts.cmc.ccd.adapter.util.SampleData.getCCDStatementOfMeans;
 
 public class SampleCCDDefendant {
 

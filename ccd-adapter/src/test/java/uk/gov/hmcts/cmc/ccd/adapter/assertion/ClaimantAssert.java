@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.adapter.assertion.Assertions.assertThat;
 
 public class ClaimantAssert extends AbstractAssert<ClaimantAssert, Party> {
 

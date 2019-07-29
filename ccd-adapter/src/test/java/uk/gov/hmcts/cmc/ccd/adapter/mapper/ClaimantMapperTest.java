@@ -17,12 +17,13 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
-import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
+import static uk.gov.hmcts.cmc.ccd.adapter.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.adapter.util.SampleData.getCCDApplicantCompany;
 import static uk.gov.hmcts.cmc.ccd.adapter.util.SampleData.getCCDApplicantIndividual;
 import static uk.gov.hmcts.cmc.ccd.adapter.util.SampleData.getCCDApplicantOrganisation;
 import static uk.gov.hmcts.cmc.ccd.adapter.util.SampleData.getCCDApplicantSoleTrader;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)

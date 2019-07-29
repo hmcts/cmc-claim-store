@@ -2,13 +2,13 @@ package uk.gov.hmcts.cmc.ccd.adapter.mapper.defendant;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.adapter.exception.MappingException;
+import uk.gov.hmcts.cmc.ccd.adapter.mapper.AddressMapper;
+import uk.gov.hmcts.cmc.ccd.adapter.mapper.TelephoneMapper;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
-import uk.gov.hmcts.cmc.ccd.adapter.exception.MappingException;
-import uk.gov.hmcts.cmc.ccd.adapter.mapper.AddressMapper;
-import uk.gov.hmcts.cmc.ccd.adapter.mapper.TelephoneMapper;
 import uk.gov.hmcts.cmc.domain.models.legalrep.ContactDetails;
 import uk.gov.hmcts.cmc.domain.models.legalrep.Representative;
 import uk.gov.hmcts.cmc.domain.models.party.Company;

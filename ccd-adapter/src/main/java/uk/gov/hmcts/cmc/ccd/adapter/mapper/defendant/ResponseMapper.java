@@ -1,12 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.adapter.mapper.defendant;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
-import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
 import uk.gov.hmcts.cmc.ccd.adapter.exception.MappingException;
 import uk.gov.hmcts.cmc.ccd.adapter.mapper.DirectionsQuestionnaireMapper;
 import uk.gov.hmcts.cmc.ccd.adapter.mapper.EvidenceRowMapper;
@@ -15,6 +9,12 @@ import uk.gov.hmcts.cmc.ccd.adapter.mapper.PaymentIntentionMapper;
 import uk.gov.hmcts.cmc.ccd.adapter.mapper.TelephoneMapper;
 import uk.gov.hmcts.cmc.ccd.adapter.mapper.TimelineEventMapper;
 import uk.gov.hmcts.cmc.ccd.adapter.mapper.defendant.statementofmeans.StatementOfMeansMapper;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;

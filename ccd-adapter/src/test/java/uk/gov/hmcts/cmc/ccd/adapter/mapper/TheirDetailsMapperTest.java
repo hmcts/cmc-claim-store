@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.adapter.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.adapter.util.SampleData.getCCDRespondentCompany;
 import static uk.gov.hmcts.cmc.ccd.adapter.util.SampleData.getCCDRespondentIndividual;
 import static uk.gov.hmcts.cmc.ccd.adapter.util.SampleData.getCCDRespondentOrganisation;
