@@ -44,7 +44,8 @@ public enum CaseEvent {
     ACTION_REVIEW_COMMENTS("ActionReviewComments"),
     ASSIGNING_FOR_DIRECTIONS("AssigningForDirections"),
     REFERRED_TO_MEDIATION("ReferredToMediation"),
-    DRAW_ORDER("DrawOrder");
+    DRAW_ORDER("DrawOrder"),
+    ORDER_REVIEW_REQUESTED("OrderReviewRequested");
 
     private String value;
 

@@ -2,15 +2,19 @@ package uk.gov.hmcts.cmc.domain.models.directionsquestionnaire;
 
 import org.junit.Test;
 
+import java.util.Arrays;
+
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt.MANCHESTER;
 
 public class PilotCourtTest {
 
     @Test
     public void shouldReturnTrueForPilotCourt() {
-        assertTrue(PilotCourt.isPilotCourt(MANCHESTER.getName()));
+        Arrays.stream(PilotCourt.values()).forEach(
+            court -> assertTrue(PilotCourt.isPilotCourt(court.getName() + randomAlphabetic(15)))
+        );
     }
 
     @Test
