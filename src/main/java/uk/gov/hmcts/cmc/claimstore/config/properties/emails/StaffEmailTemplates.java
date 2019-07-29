@@ -102,4 +102,12 @@ public class StaffEmailTemplates {
     public String getClaimantRejectPartAdmissionEmailSubject() {
         return readString("/staff/templates/email/claimantResponse/rejection/partAdmission/subject.txt");
     }
+
+    public String getReviewOrderEmailBody() {
+        return readString("/staff/templates/email/reviewOrder/body.txt");
+    }
+
+    public String getReviewOrderEmailSubject() {
+        return readString("/staff/templates/email/reviewOrder/subject.txt");
+    }
 }

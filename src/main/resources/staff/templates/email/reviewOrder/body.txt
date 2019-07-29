@@ -1,0 +1,7 @@
+{{ partyName }} has requested a review of the Directions Order, please see their comments below.
+
+{% if reviewReason is defined %}
+{{ reviewReason }}
+{% else %}
+No supporting comments were entered by this party
+{% endif %}
