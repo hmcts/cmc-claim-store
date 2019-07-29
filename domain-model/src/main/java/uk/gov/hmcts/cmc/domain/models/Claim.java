@@ -67,6 +67,7 @@ public class Claim {
     private final ClaimState state;
     private final ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
     private final Long ccdCaseId;
+    private final ReviewOrder reviewOrder;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -102,7 +103,8 @@ public class Claim {
         LocalDate claimantResponseDeadline,
         ClaimState state,
         ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators,
-        Long ccdCaseId
+        Long ccdCaseId,
+        ReviewOrder reviewOrder
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -136,6 +138,7 @@ public class Claim {
         this.state = state;
         this.ccdCaseId = ccdCaseId;
         this.claimSubmissionOperationIndicators = claimSubmissionOperationIndicators;
+        this.reviewOrder = reviewOrder;
     }
 
     public Optional<Response> getResponse() {
@@ -218,6 +221,10 @@ public class Claim {
     @JsonIgnore
     public Optional<ClaimState> getState() {
         return Optional.ofNullable(state);
+    }
+
+    public Optional<ReviewOrder> getReviewOrder() {
+        return Optional.ofNullable(reviewOrder);
     }
 
     @Override
