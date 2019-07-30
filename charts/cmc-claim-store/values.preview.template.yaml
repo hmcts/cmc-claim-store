@@ -151,7 +151,7 @@ ccd:
       userProfileDatabaseName: user-profile
     definition:
       enabled: true
-      image: hmcts.azurecr.io/hmcts/cmc-ccd-definition-importer:1.2.12
+      image: hmctspublic.azurecr.io/cmc/ccd-definition-importer:1.2.18
       kvSecretRef: kvcreds
       gitSecretRef: kvcreds
       redirectUri: https://case-management-web-${SERVICE_FQDN}/oauth2redirect
@@ -164,3 +164,5 @@ ccd:
         - letter-holder
         - caseworker-autotest1
         - caseworker-cmc-anonymouscitizen
+        - caseworker-cmc-judge
+        - caseworker-cmc-legaladvisor
