@@ -14,6 +14,8 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
+import java.time.LocalDateTime;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
@@ -170,5 +172,33 @@ public class CaseMapperTest {
         assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getClaimantNotification());
         assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getRpa());
         assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getSealedClaimUpload());
+    }
+
+    @Test
+    public void shouldMapDirectionOrderCreatedOnFromCCDCase() {
+        //given
+        CCDCase ccdCase = SampleData.getCCDCitizenCase(getAmountBreakDown()).toBuilder()
+            .directionOrderCreatedOn(LocalDateTime.now())
+            .build();
+
+        //when
+        Claim claim = ccdCaseMapper.from(ccdCase);
+
+        //then
+        assertEquals(claim.getDirectionOrderCreatedOn(), ccdCase.getDirectionOrderCreatedOn());
+    }
+
+    @Test
+    public void shouldMapDirectionOrderCreatedOnFromClaim() {
+        //given
+        Claim claim = SampleClaim.getCitizenClaim().toBuilder()
+            .directionOrderCreatedOn(LocalDateTime.now())
+            .build();
+
+        //when
+        CCDCase ccdCase = ccdCaseMapper.to(claim);
+
+        //then
+        assertEquals(ccdCase.getDirectionOrderCreatedOn(), claim.getDirectionOrderCreatedOn());
     }
 }

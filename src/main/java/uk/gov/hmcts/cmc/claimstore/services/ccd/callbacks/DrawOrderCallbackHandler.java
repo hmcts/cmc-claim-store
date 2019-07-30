@@ -24,14 +24,14 @@ import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.ORDER_DIRECTIONS;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @Service
 @ConditionalOnProperty(prefix = "document_management", name = "url")
@@ -73,61 +73,57 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
 
     private CallbackResponse notifyPartiesAndPrintOrder(CallbackParams callbackParams) {
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
-        notifyParties(caseDetails);
-        String authorisation = callbackParams.getParams()
-            .get(CallbackParams.Params.BEARER_TOKEN).toString();
-        return printOrder(authorisation, caseDetails);
+        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+        notifyParties(claim);
+        String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
+        return printOrder(authorisation, claim, ccdCase.getOrderGenerationData());
     }
 
-    private void notifyParties(CaseDetails caseDetails) {
-        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
+    private void notifyParties(Claim claim) {
         orderDrawnNotificationService.notifyClaimant(claim);
         orderDrawnNotificationService.notifyDefendant(claim);
     }
 
-    private CallbackResponse printOrder(String authorisation, CaseDetails caseDetails) {
-        CCDCase ccdCase = jsonMapper.fromMap(
-            caseDetails.getData(), CCDCase.class);
-        CCDDocument draftOrderDoc = ccdCase.getOrderGenerationData().getDraftOrderDoc();
-        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
-        legalOrderService.print(
-            authorisation,
-            claim,
-            draftOrderDoc);
-        return SubmittedCallbackResponse.builder()
-            .build();
+    private CallbackResponse printOrder(String authorisation, Claim claim, CCDOrderGenerationData orderGenerationData) {
+        CCDDocument draftOrderDoc = orderGenerationData.getDraftOrderDoc();
+        legalOrderService.print(authorisation, claim, draftOrderDoc);
+        return SubmittedCallbackResponse.builder().build();
     }
 
     private CallbackResponse copyDraftToCaseDocument(CallbackParams callbackParams) {
         CallbackRequest callbackRequest = callbackParams.getRequest();
-        Map<String, Object> caseData = callbackRequest.getCaseDetails().getData();
-        CCDCase ccdCase = jsonMapper.fromMap(caseData, CCDCase.class);
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
 
         CCDDocument draftOrderDoc = Optional.ofNullable(ccdCase.getOrderGenerationData())
             .map(CCDOrderGenerationData::getDraftOrderDoc)
             .orElseThrow(() -> new CallbackException("Draft order not present"));
 
-        CCDCollectionElement<CCDClaimDocument> claimDocument =
-            CCDCollectionElement.<CCDClaimDocument>builder()
-                .value(CCDClaimDocument.builder()
-                    .documentLink(draftOrderDoc)
-                    .createdDatetime(LocalDateTime.now(clock))
-                    .documentType(ORDER_DIRECTIONS)
-                    .build())
-                .build();
-
-        List<CCDCollectionElement<CCDClaimDocument>> currentCaseDocuments =
-            Optional.ofNullable(ccdCase.getCaseDocuments())
-                .map(ArrayList::new)
-                .orElse(new ArrayList<>());
-        currentCaseDocuments.add(claimDocument);
-
-        Map<String, Object> newCaseData = new HashMap<>(caseData);
-        newCaseData.put(CASE_DOCUMENTS, currentCaseDocuments);
+        CCDCase updated = ccdCase.toBuilder()
+            .caseDocuments(updateCaseDocumentsWithOrder(ccdCase, draftOrderDoc))
+            .directionOrderCreatedOn(nowInLocalZone())
+            .build();
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()
-            .data(newCaseData)
+            .data(caseDetailsConverter.toMap(updated))
             .build();
+    }
+
+    private List<CCDCollectionElement<CCDClaimDocument>> updateCaseDocumentsWithOrder(
+        CCDCase ccdCase,
+        CCDDocument draftOrderDoc
+    ) {
+        CCDCollectionElement<CCDClaimDocument> claimDocument = CCDCollectionElement.<CCDClaimDocument>builder()
+            .value(CCDClaimDocument.builder()
+                .documentLink(draftOrderDoc)
+                .createdDatetime(LocalDateTime.now(clock))
+                .documentType(ORDER_DIRECTIONS)
+                .build())
+            .build();
+
+        List<CCDCollectionElement<CCDClaimDocument>> caseDocuments = ccdCase.getCaseDocuments();
+        caseDocuments.add(claimDocument);
+        return caseDocuments;
     }
 }

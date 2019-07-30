@@ -68,6 +68,7 @@ public class Claim {
     private final ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
     private final Long ccdCaseId;
     private final ReviewOrder reviewOrder;
+    private final LocalDateTime directionOrderCreatedOn;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -104,7 +105,8 @@ public class Claim {
         ClaimState state,
         ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators,
         Long ccdCaseId,
-        ReviewOrder reviewOrder
+        ReviewOrder reviewOrder,
+        LocalDateTime directionOrderCreatedOn
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -139,6 +141,7 @@ public class Claim {
         this.ccdCaseId = ccdCaseId;
         this.claimSubmissionOperationIndicators = claimSubmissionOperationIndicators;
         this.reviewOrder = reviewOrder;
+        this.directionOrderCreatedOn = directionOrderCreatedOn;
     }
 
     public Optional<Response> getResponse() {
@@ -225,6 +228,10 @@ public class Claim {
 
     public Optional<ReviewOrder> getReviewOrder() {
         return Optional.ofNullable(reviewOrder);
+    }
+
+    public Optional<LocalDateTime> getDirectionOrderCreatedOn() {
+        return Optional.ofNullable(directionOrderCreatedOn);
     }
 
     @Override

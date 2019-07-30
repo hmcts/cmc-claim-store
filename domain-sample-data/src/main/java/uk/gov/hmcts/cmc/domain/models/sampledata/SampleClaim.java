@@ -95,6 +95,7 @@ public final class SampleClaim {
         () -> ClaimSubmissionOperationIndicators.builder().build();
     private Long ccdCaseId = 1023467890123456L;
     private ReviewOrder reviewOrder;
+    private LocalDateTime directionOrderCreatedOn;
 
     private SampleClaim() {
     }
@@ -462,7 +463,8 @@ public final class SampleClaim {
             state,
             getDefaultClaimSubmissionOperationIndicators.get(),
             ccdCaseId,
-            reviewOrder
+            reviewOrder,
+            directionOrderCreatedOn
         );
     }
 

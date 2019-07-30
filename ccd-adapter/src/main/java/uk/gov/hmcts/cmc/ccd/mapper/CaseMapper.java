@@ -48,6 +48,8 @@ public class CaseMapper {
             .map(reviewOrderMapper::to)
             .ifPresent(builder::reviewOrder);
 
+        claim.getDirectionOrderCreatedOn().ifPresent(builder::directionOrderCreatedOn);
+
         return builder
             .id(claim.getId())
             .externalId(claim.getExternalId())
@@ -82,6 +84,7 @@ public class CaseMapper {
             .externalId(ccdCase.getExternalId())
             .referenceNumber(ccdCase.getPreviousServiceCaseReference())
             .createdAt(ccdCase.getSubmittedOn())
+            .directionOrderCreatedOn(ccdCase.getDirectionOrderCreatedOn())
             .issuedOn(ccdCase.getIssuedOn())
             .submitterEmail(ccdCase.getSubmitterEmail())
             .claimSubmissionOperationIndicators(
