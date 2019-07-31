@@ -96,6 +96,15 @@ public class DrawOrderCallbackHandlerTest {
 
     @Test
     public void shouldAddDraftDocumentToEmptyCaseDocumentsOnEventStart() {
+        callbackRequest = CallbackRequest
+            .builder()
+            .eventId(DRAW_ORDER.getValue())
+            .caseDetails(CaseDetails.builder()
+                .id(3L)
+                .data(ImmutableMap.of("data", "existingData"))
+                .build())
+            .build();
+
         callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_SUBMIT)
             .request(callbackRequest)
@@ -107,7 +116,7 @@ public class DrawOrderCallbackHandlerTest {
                 .draftOrderDoc(DOCUMENT)
                 .build()
         );
-        when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class))
+        when(jsonMapper.fromMap(ImmutableMap.of("data", "existingData"), CCDCase.class))
             .thenReturn(ccdCase);
 
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
@@ -115,7 +124,8 @@ public class DrawOrderCallbackHandlerTest {
                 .handle(callbackParams);
 
         assertThat(response.getData()).contains(
-            entry("caseDocuments", ImmutableList.of(CLAIM_DOCUMENT))
+            entry("caseDocuments", ImmutableList.of(CLAIM_DOCUMENT)),
+            entry("data", "existingData")
         );
     }
 
