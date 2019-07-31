@@ -123,8 +123,6 @@ public class DefendantResponseContentProviderTest {
         Map<String, Object> content = provider.createContent(claim);
 
         assertThat(content)
-            .containsKey("freeMediation")
-            .containsValue("yes")
-        ;
+            .containsEntry("mediation", true);
     }
 }
