@@ -155,6 +155,6 @@ public class MediationReportServiceTest {
         //noinspection OptionalGetWithoutIsPresent
         assertThat(inputStreamToString(attachment.getData().getInputStream()))
             .contains(SAMPLE_CLAIM.getReferenceNumber())
-            .contains(SAMPLE_CLAIM.getTotalAmountTillToday().get().toString());
+            .contains(SAMPLE_CLAIM.getTotalClaimAmount().get().toString());
     }
 }

@@ -27,8 +27,8 @@ public class MediationCSVGeneratorTest {
 
     private MediationCSVGenerator mediationCSVGenerator;
 
-    private static final String REPORT_HEADER = "SITE_ID,CASE_NUMBER,CASE_TYPE,AMOUNT,PARTY_TYPE,CONTACT_NAME," +
-        "CONTACT_DETAIL,CONTACT_NUMBER,CHECK_LIST,EMAIL_ADDRESS,PARTY_STATUS\r\n";
+    private static final String REPORT_HEADER = "SITE_ID,CASE_TYPE,CHECK_LIST,PARTY_STATUS,CASE_NUMBER,AMOUNT,"
+        + "PARTY_TYPE,CONTACT_NAME,CONTACT_NUMBER,CONTACT_EMAIL\r\n";
 
     @Mock
     private CaseSearchApi caseSearchApi;
@@ -49,8 +49,8 @@ public class MediationCSVGeneratorTest {
         mediationClaims.add(getWithClaimantResponseRejectionForPartAdmissionAndMediation());
 
         String expected = REPORT_HEADER
-            + "5,000CM001,1,81.90,1,Mediation Contact Person,null,07999999999,4,claimant@mail.com,5\r\n"
-            + "5,000CM001,1,81.90,2,Mediation Contact Person,null,07999999999,4,j.smith@example.com,5\r\n";
+            + "5,1,4,5,000CM001,40.99,1,Mediation Contact Person,07999999999,claimant@mail.com\r\n"
+            + "5,1,4,5,000CM001,40.99,2,Mediation Contact Person,07999999999,j.smith@example.com\r\n";
         mediationCSVGenerator.createMediationCSV();
         String mediationCSV = mediationCSVGenerator.getCsvData();
         assertThat(mediationCSV).isEqualTo(expected);
@@ -58,7 +58,7 @@ public class MediationCSVGeneratorTest {
 
     @Test
     public void shouldCreateMediationCSVEvenWhenNoClaimsWithMediation() {
-        String expected = REPORT_HEADER + "null,null,null,null,null,null,null,null,null,null,null\r\n";
+        String expected = REPORT_HEADER + "null,null,null,null,null,null,null,null,null,null\r\n";
         mediationCSVGenerator.createMediationCSV();
         String mediationCSV = mediationCSVGenerator.getCsvData();
         assertThat(mediationCSV).isEqualTo(expected);
