@@ -115,6 +115,33 @@ public class DirectionsQuestionnaireUtilsTest {
     }
 
     @Test
+    public void shouldPreferClaimantCourtIfDefendantIsBusiness() {
+        Claim claim = SampleClaim.builder()
+            .withClaimantResponse(CLAIMANT_REJECTION_PILOT)
+            .withClaimData(SampleClaimData
+                .builder()
+                .withDefendant(CompanyDetails.builder().build())
+                .build())
+            .build();
+        Assertions.assertThat(DirectionsQuestionnaireUtils
+            .getPreferredCourt(claim)).isEqualTo(BIRMINGHAM.getName());
+    }
+
+    @Test
+    public void shouldPreferDefendantCourtIfDefendantIsNotBusiness() {
+        Claim claim = SampleClaim.builder()
+            .withClaimantResponse(CLAIMANT_REJECTION_PILOT)
+            .withResponse(DEFENDANT_PART_ADMISSION_NON_PILOT)
+            .withClaimData(SampleClaimData
+                .builder()
+                .withDefendant(IndividualDetails.builder().build())
+                .build())
+            .build();
+        Assertions.assertThat(DirectionsQuestionnaireUtils
+            .getPreferredCourt(claim)).isEqualTo(NON_PILOT_COURT_NAME);
+    }
+
+    @Test
     public void shouldReturnEmptyIfNoFreeMediationAndDefendantIsBusinessAndClaimantCourtIsNotPilot() {
         Claim claim = SampleClaim.builder()
             .withClaimantResponse(CLAIMANT_REJECTION_NON_PILOT)
@@ -213,10 +240,6 @@ public class DirectionsQuestionnaireUtilsTest {
 
     @Test(expected =  IllegalStateException.class)
     public void shouldThrowIfDefendantIsBusinessAndClaimantResponseDoesNotExist() {
-        ResponseRejection responseRejection = ResponseRejection.builder()
-            .freeMediation(NO)
-            .directionsQuestionnaire(null)
-            .build();
         Claim claim = SampleClaim.builder()
             .withClaimantResponse(null)
             .withClaimData(SampleClaimData
@@ -226,7 +249,7 @@ public class DirectionsQuestionnaireUtilsTest {
             .build();
 
         DirectionsQuestionnaireUtils
-            .prepareCaseEvent(responseRejection, claim);
+            .getPreferredCourt(claim);
     }
 
     @Test(expected =  IllegalStateException.class)
@@ -244,15 +267,11 @@ public class DirectionsQuestionnaireUtilsTest {
             .build();
 
         DirectionsQuestionnaireUtils
-            .prepareCaseEvent(responseRejection, claim);
+            .getPreferredCourt(claim);
     }
 
     @Test(expected =  IllegalStateException.class)
     public void shouldThrowIfDefendantIsBusinessAndClaimantResponseIsNotRejection() {
-        ResponseRejection responseRejection = ResponseRejection.builder()
-            .freeMediation(NO)
-            .directionsQuestionnaire(null)
-            .build();
         ResponseAcceptation responseAcceptation = ResponseAcceptation.builder()
             .build();
         Claim claim = SampleClaim.builder()
@@ -264,22 +283,17 @@ public class DirectionsQuestionnaireUtilsTest {
             .build();
 
         DirectionsQuestionnaireUtils
-            .prepareCaseEvent(responseRejection, claim);
+            .getPreferredCourt(claim);
     }
 
     @Test(expected =  IllegalStateException.class)
     public void shouldThrowIfDefendantIsIndividualAndFullDefenceDefendantResponseHasNoDQObject() {
-        ResponseRejection responseRejection = ResponseRejection.builder()
-            .freeMediation(NO)
-            .build();
-
         FullDefenceResponse defenceResponse = FullDefenceResponse.builder()
             .freeMediation(NO)
             .directionsQuestionnaire(null)
             .build();
 
         Claim claim = SampleClaim.builder()
-            .withClaimantResponse(responseRejection)
             .withResponse(defenceResponse)
             .withClaimData(SampleClaimData
                 .builder()
@@ -288,22 +302,17 @@ public class DirectionsQuestionnaireUtilsTest {
             .build();
 
         DirectionsQuestionnaireUtils
-            .prepareCaseEvent(responseRejection, claim);
+            .getPreferredCourt(claim);
     }
 
     @Test(expected =  IllegalStateException.class)
     public void shouldThrowIfDefendantIsIndividualAndPartAdmitDefendantResponseHasNoDQObject() {
-        ResponseRejection responseRejection = ResponseRejection.builder()
-            .freeMediation(NO)
-            .build();
-
         PartAdmissionResponse defenceResponse = PartAdmissionResponse.builder()
             .freeMediation(NO)
             .directionsQuestionnaire(null)
             .build();
 
         Claim claim = SampleClaim.builder()
-            .withClaimantResponse(responseRejection)
             .withResponse(defenceResponse)
             .withClaimData(SampleClaimData
                 .builder()
@@ -312,21 +321,16 @@ public class DirectionsQuestionnaireUtilsTest {
             .build();
 
         DirectionsQuestionnaireUtils
-            .prepareCaseEvent(responseRejection, claim);
+            .getPreferredCourt(claim);
     }
 
     @Test(expected =  IllegalStateException.class)
     public void shouldThrowIfDefendantIsIndividualAndDefendantResponseIsFullAdmission() {
-        ResponseRejection responseRejection = ResponseRejection.builder()
-            .freeMediation(NO)
-            .build();
-
         FullAdmissionResponse defenceResponse = FullAdmissionResponse.builder()
             .freeMediation(NO)
             .build();
 
         Claim claim = SampleClaim.builder()
-            .withClaimantResponse(responseRejection)
             .withResponse(defenceResponse)
             .withClaimData(SampleClaimData
                 .builder()
@@ -335,6 +339,6 @@ public class DirectionsQuestionnaireUtilsTest {
             .build();
 
         DirectionsQuestionnaireUtils
-            .prepareCaseEvent(responseRejection, claim);
+            .getPreferredCourt(claim);
     }
 }
