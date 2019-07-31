@@ -48,7 +48,7 @@ public class DocumentsController {
         ClaimDocumentType claimDocumentType = ClaimDocumentType.fromValue(documentType);
 
         logger.info("Received request to create/download pdf of type " + claimDocumentType.name());
-        
+
         byte[] pdfDocument = documentsService.generateDocument(externalId, claimDocumentType, authorisation);
 
         return ResponseEntity

@@ -155,10 +155,9 @@ public class DocumentManagementService {
     public byte[] logDownloadDocumentFailure(
         DocumentManagementException exception,
         String authorisation,
-        URI documentSelf,
-        String baseFileName
+        ClaimDocument claimDocument
     ) {
-        String filename = baseFileName + ".pdf";
+        String filename = claimDocument.getDocumentName() + ".pdf";
         logger.warn(exception.getMessage() + " " + exception.getCause(), exception);
         appInsights.trackEvent(DOCUMENT_MANAGEMENT_DOWNLOAD_FAILURE, DOCUMENT_NAME, filename);
         throw exception;

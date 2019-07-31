@@ -53,7 +53,7 @@ public class ClaimDocumentTypeTest {
             .isEqualTo(DEFENDANT_PIN_LETTER);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void shouldThrowIfUnknownEnum() {
         fromValue("nope");
     }

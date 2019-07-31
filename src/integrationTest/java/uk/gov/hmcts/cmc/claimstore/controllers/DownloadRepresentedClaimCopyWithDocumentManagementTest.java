@@ -85,7 +85,7 @@ public class DownloadRepresentedClaimCopyWithDocumentManagementTest extends Base
             .getClaimDocument(SEALED_CLAIM)
             .get()
             .getDocumentManagementUrl())
-            .isEqualTo(Optional.of(URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4")));
+            .isEqualTo(URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4"));
     }
 
     @Test

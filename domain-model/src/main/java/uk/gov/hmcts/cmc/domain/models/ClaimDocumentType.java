@@ -29,6 +29,6 @@ public enum ClaimDocumentType {
         return Arrays.stream(values())
             .filter(v -> v.values.contains(value) || v.name().equals(value))
             .findFirst()
-            .orElseThrow(() -> new RuntimeException("Unknown Claim Document Type: " + value));
+            .orElseThrow(() -> new IllegalArgumentException("Unknown Claim Document Type: " + value));
     }
 }
