@@ -26,7 +26,7 @@ public class RequireSupportTest {
     }
 
     @Test
-    public void shouldBeValidationMessagesForLanguageInterpreterThanMax() {
+    public void shouldBeValidationMessagesWhenLanguageInterpreterIsLongerThanMax() {
         RequireSupport requireSupport = RequireSupport
             .builder()
             .languageInterpreter(randomAlphabetic(101))
@@ -34,43 +34,37 @@ public class RequireSupportTest {
             .otherSupport("Some other support")
             .build();
 
-        //when
         Set<String> messages = validate(requireSupport);
 
-        //then
         assertThat(messages)
             .hasSize(1)
             .contains("languageInterpreter : size must be between 0 and 100");
     }
 
     @Test
-    public void shouldBeValidationMessagesForSignLanguageInterpreterThanMax() {
+    public void shouldBeValidationMessagesWhenSignLanguageInterpreterIsLongerThanMax() {
         RequireSupport requireSupport = RequireSupport
             .builder()
             .signLanguageInterpreter(randomAlphabetic(101))
             .otherSupport("Some other support")
             .build();
 
-        //when
         Set<String> messages = validate(requireSupport);
 
-        //then
         assertThat(messages)
             .hasSize(1)
             .contains("signLanguageInterpreter : size must be between 0 and 100");
     }
 
     @Test
-    public void shouldBeValidationMessagesForOtherSupportThanMax() {
+    public void shouldBeValidationMessagesWhenOtherSupportIsLongerThanMax() {
         RequireSupport requireSupport = RequireSupport
             .builder()
             .otherSupport(randomAlphabetic(99001))
             .build();
 
-        //when
         Set<String> messages = validate(requireSupport);
 
-        //then
         assertThat(messages)
             .hasSize(1)
             .contains("otherSupport : size must be between 0 and 99000");

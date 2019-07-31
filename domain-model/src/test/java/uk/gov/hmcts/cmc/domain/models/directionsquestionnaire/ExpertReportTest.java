@@ -54,7 +54,7 @@ public class ExpertReportTest {
     }
 
     @Test
-    public void shouldBeValidationMessagesForExpertReportNameThanMax() {
+    public void shouldBeValidationMessagesWhenExpertReportNameIsLongerThanMax() {
         ExpertReport expertReport = ExpertReport
             .builder()
             .expertName(randomAlphabetic(101))
