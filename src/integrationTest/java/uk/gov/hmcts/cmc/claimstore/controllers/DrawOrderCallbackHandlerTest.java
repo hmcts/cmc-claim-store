@@ -81,7 +81,7 @@ public class DrawOrderCallbackHandlerTest extends MockSpringTest {
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
 
-        assertThat(responseData).hasSize(1);
+        assertThat(responseData).hasSize(22);
         List<Map<String, Object>> caseDocuments =
             (List<Map<String, Object>>) responseData.get("caseDocuments");
         Map<String, Object> document =
