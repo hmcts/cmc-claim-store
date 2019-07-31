@@ -3,6 +3,8 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -23,6 +25,7 @@ import javax.validation.constraints.NotBlank;
 @RequestMapping("/documents")
 public class DocumentsController {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final DocumentsService documentsService;
 
     @Autowired
@@ -43,6 +46,9 @@ public class DocumentsController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
         ClaimDocumentType claimDocumentType = ClaimDocumentType.fromValue(documentType);
+
+        logger.info("Received request to create/download pdf of type " + claimDocumentType.name());
+        
         byte[] pdfDocument = documentsService.generateDocument(externalId, claimDocumentType, authorisation);
 
         return ResponseEntity
