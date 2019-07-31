@@ -22,8 +22,9 @@ public class DirectionsQuestionnaire {
     @NotNull
     private final HearingLocation hearingLocation;
     private final Witness witness;
-    @Size(min = 1)
+    @Size(min = 1, max = 20)
     private final List<ExpertReport> expertReports;
+    @Size(max = 280)
     private final List<UnavailableDate> unavailableDates;
     private final ExpertRequest expertRequest;
 

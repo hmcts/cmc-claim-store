@@ -7,6 +7,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.Optional;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
@@ -19,6 +20,7 @@ public class Witness {
     @NotNull
     private final YesNoOption selfWitness;
     @Min(1)
+    @Max(100)
     private final Integer noOfOtherWitness;
 
     @Builder
