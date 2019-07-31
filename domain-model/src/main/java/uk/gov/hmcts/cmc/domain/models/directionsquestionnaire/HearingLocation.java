@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.domain.models.Address;
 
 import java.util.Optional;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
@@ -16,6 +17,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 public class HearingLocation {
 
     @NotNull
+    @Size(max = 200)
     private final String courtName;
     private final String hearingLocationSlug;
     private final Address courtAddress;

@@ -24,7 +24,7 @@ public class DirectionsQuestionnaireUtils {
     private DirectionsQuestionnaireUtils() {
         // utility class, no instances
     }
-    
+
     public static Optional<CaseEvent> prepareCaseEvent(ResponseRejection responseRejection, Claim claim) {
         if (isOptedForMediation(responseRejection)) {
             return Optional.of(REFERRED_TO_MEDIATION);
@@ -51,11 +51,15 @@ public class DirectionsQuestionnaireUtils {
         if (defendantResponse.getResponseType() == FULL_DEFENCE) {
             return ((FullDefenceResponse) defendantResponse).getDirectionsQuestionnaire()
                 .orElseThrow(IllegalStateException::new)
-                .getHearingLocation().getCourtName();
+                .getHearingLocation()
+                .orElseThrow(IllegalStateException::new)
+                .getCourtName();
         } else if (defendantResponse.getResponseType() == PART_ADMISSION) {
             return ((PartAdmissionResponse) defendantResponse).getDirectionsQuestionnaire()
                 .orElseThrow(IllegalStateException::new)
-                .getHearingLocation().getCourtName();
+                .getHearingLocation()
+                .orElseThrow(IllegalStateException::new)
+                .getCourtName();
         } else {
             throw new IllegalStateException("No preferred court as defendant response is full admission");
         }
@@ -65,7 +69,9 @@ public class DirectionsQuestionnaireUtils {
         if (claimantResponse.getType() == REJECTION) {
             return ((ResponseRejection) claimantResponse).getDirectionsQuestionnaire()
                 .orElseThrow(IllegalStateException::new)
-                .getHearingLocation().getCourtName();
+                .getHearingLocation()
+                .orElseThrow(IllegalStateException::new)
+                .getCourtName();
         } else {
             throw new IllegalStateException("No preferred court as claimant response is not rejection.");
         }
