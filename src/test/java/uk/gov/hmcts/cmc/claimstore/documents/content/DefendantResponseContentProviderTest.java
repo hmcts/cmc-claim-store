@@ -117,4 +117,14 @@ public class DefendantResponseContentProviderTest {
         assertThat(content)
             .containsKeys("timelineComment", "events");
     }
+
+    @Test
+    public void shouldProvideMediation() {
+        Map<String, Object> content = provider.createContent(claim);
+
+        assertThat(content)
+            .containsKey("freeMediation")
+            .containsValue("yes")
+        ;
+    }
 }
