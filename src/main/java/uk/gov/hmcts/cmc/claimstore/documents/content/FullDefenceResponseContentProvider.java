@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.documents.content;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.EvidenceContent;
+import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
@@ -40,6 +41,10 @@ public class FullDefenceResponseContentProvider {
         content.put("responseTypeSelected", fullDefenceResponse.getDefenceType().getDescription());
         if (fullDefenceResponse.getDefenceType().equals(DefenceType.ALREADY_PAID)) {
             content.put("hasDefendantAlreadyPaid", true);
+            fullDefenceResponse.getPaymentDeclaration()
+                .flatMap(PaymentDeclaration::getPaidAmount)
+                .map(Formatting::formatMoney)
+                .ifPresent(amount -> content.put("amount", amount));
         }
 
         fullDefenceResponse.getPaymentDeclaration().ifPresent(paymentDeclaration ->
