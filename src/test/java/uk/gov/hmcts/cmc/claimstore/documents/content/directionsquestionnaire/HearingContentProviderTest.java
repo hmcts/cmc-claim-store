@@ -12,20 +12,20 @@ import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.RequireSupport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.UnavailableDate;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleDirectionsQuestionnaire;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleHearingLocation;
 
 import java.util.List;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleHearingLocation.defaultHearingLocation;
 
 public class HearingContentProviderTest {
 
     private HearingContentProvider hearingContentProvider = new HearingContentProvider();
     private final String disabledAccess = "Disabled Access";
-    private final String yes = "YES";
-    private final String no = "NO";
+    private final String yes = "Yes";
+    private final String no = "No";
 
     @Test(expected = IllegalArgumentException.class)
     public void mapDirectionsQuestionnaireThrowsException() {
@@ -68,7 +68,7 @@ public class HearingContentProviderTest {
     @Test
     public void mapDirectionsQuestionnaireDontFailWhenOptionalIsEmpty() {
         DirectionsQuestionnaire dq = DirectionsQuestionnaire.builder()
-            .hearingLocation(SampleHearingLocation.defaultHearingLocation.get())
+            .hearingLocation(defaultHearingLocation)
             .build();
         HearingContent hearingContent = hearingContentProvider.mapDirectionQuestionnaire.apply(dq);
 

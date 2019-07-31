@@ -54,6 +54,7 @@
     .crestLogo {
       margin-top: 40px;
     }
+
     .claim-details {
       text-align: right;
     }
@@ -82,7 +83,7 @@
       border-spacing: 0;
     }
 
-    table.new-dq  td, table.new-dq th {
+    table.new-dq td, table.new-dq th {
       border-bottom: none;
     }
 
@@ -100,14 +101,17 @@
       background-color: #5D514D;
       padding: 5px;
     }
+
     table.new-dq td:last-child div {
       border: 1px solid gray;
       padding: 5px;
       min-height: 18px;
     }
+
     table.new-dq tr {
       border: none;
     }
+
     table.new-dq td {
       padding: 0.63158em 1.05263em 0.67368em 0;
       border-top: none;
@@ -120,6 +124,7 @@
       background-color: #EDEDED;
       font-size: 21px !important;
     }
+
     .heading-medium {
       padding-bottom: 0;
       margin-bottom: 0.4em;
@@ -130,7 +135,6 @@
   </style>
 </head>
 <body>
-
 
 <header>
   <table>
@@ -155,35 +159,40 @@
     </tr>
   </table>
 </header>
-
-  <table style="width: 80%" class="new-dq">
-    <thead>
-    <tr>
-      <th colspan="2">
-        <h2 class="heading-medium" id="name">
-          <span>A</span> Your details - Claimant
-        </h2>
-      </th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-      <td><div>{% if claimant.partyType == 'on behalf of a company' %}
+<table style="width: 80%" class="new-dq">
+  <thead>
+  <tr>
+    <th colspan="2">
+      <h2 class="heading-medium" id="name">
+        <span>A</span> Your details - Claimant
+      </h2>
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>
+      <div>{% if claimant.partyType == 'on behalf of a company' %}
         {% set claimantNameLabel = 'Company name' %}
         {% elseif claimant.partyType == 'on behalf of an organisation' %}
         {% set claimantNameLabel = 'Organisation name' %}
         {% else %}
         {% set claimantNameLabel = 'Name' %}
         {% endif %}
-        <strong>{{ claimantNameLabel }}:</strong></div></td>
-      <td><div>{{ claimant.fullName }}</div></td>
-    </tr>
-    <tr>
-    </tr><tr>
-      <td>
-        Address:
-      </td>
-      <td><div>
+        <strong>{{ claimantNameLabel }}:</strong></div>
+    </td>
+    <td>
+      <div>{{ claimant.fullName }}</div>
+    </td>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+    <td>
+      Address:
+    </td>
+    <td>
+      <div>
         {{ claimant.address.line1 }}
         <br/>
         {% if claimant.address.line2 is defined and claimant.address.line2 is not empty %}
@@ -197,192 +206,245 @@
         {{ claimant.address.city }}
         <br/>
         {{ claimant.address.postcode }}
-      </div></td>
-    </tr>
-    <tr>
-      <td><div>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <div>
         Date of birth:
-      </div></td>
-      <td><div>
+      </div>
+    </td>
+    <td>
+      <div>
         {{ claimant.dateOfBirth }}
-      </div></td>
-    </tr>
-    <tr>
-    </tr><tr>
-      <td><div>
+      </div>
+    </td>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+    <td>
+      <div>
         Telephone:
-      </div></td>
-      <td><div>{{ claimant.mobileNumber }}</div></td>
-    </tr>
-    <tr>
-      <td><div>
+      </div>
+    </td>
+    <td>
+      <div>{{ claimant.mobileNumber }}</div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <div>
         Email:
-      </div></td>
-      <td><div>{{ claimant.email }}</div></td>
-    </tr>
-    </tbody>
-  </table>
+      </div>
+    </td>
+    <td>
+      <div>{{ claimant.email }}</div>
+    </td>
+  </tr>
+  </tbody>
+</table>
+<table style="width: 80%" class="new-dq">
+  <thead>
+  <tr>
+    <th colspan="2">
+      <h2 class="heading-medium">
+        <span>B</span> About the hearing
+      </h2>
+    </th>
+  </tr>
+  </thead>
+  <tbody>
 
+  <tr>
+    <td>
+      <div>
+        Support required for a hearing
+      </div>
+    </td>
+    <td>
+      <div>
+        {% for support in hearingContent.supportRequired %}
+        {{ support }}<br/>
+        {% endfor %}
+      </div>
+    </td>
+  </tr>
 
-
-
-
-  <table style="width: 80%" class="new-dq">
-    <thead>
-    <tr>
-      <th colspan="2">
-        <h2 class="heading-medium">
-          <span>B</span> About the hearing
-        </h2>
-      </th>
-    </tr>
-    </thead>
-    <tbody>
-
-    <tr>
-      <td>
-        <div>
-          Support required for a hearing
-        </div>
-      </td>
-      <td>
-        <div>
-          {% for support in hearingContent.supportRequired %}
-          {{ support }}<br/>
-          {% endfor %}
-        </div>
-      </td>
-    </tr>
-
-    <tr><td><b>Hearing location</b></td></tr>
-    <tr>
-      <td>
-        Preferred hearing centre
-      </td>
-      <td><div>{{ hearingContent.hearingLocation }}</div>
-      </td>
-    </tr>
-    <tr>
-      <td><div>
+  <tr>
+    <td><b>Hearing location</b></td>
+  </tr>
+  <tr>
+    <td>
+      Preferred hearing centre
+    </td>
+    <td>
+      <div>{{ hearingContent.hearingLocation }}</div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <div>
         Briefly explain your reasons
-      </div></td>
-      <td><div>
+      </div>
+    </td>
+    <td>
+      <div>
         {{ hearingContent.locationReason }}
-      </div></td></tr>
+      </div>
+    </td>
+  </tr>
 
-    <tr><td><b>Expert evidence</b></td></tr>
-    <tr>
-      <td>
-        Have you already got a report written by an expert?
-      </td>
-      <td><div>
+  <tr>
+    <td><b>Expert evidence</b></td>
+  </tr>
+  <tr>
+    <td>
+      Have you already got a report written by an expert?
+    </td>
+    <td>
+      <div>
         {{ hearingContent.hasExpertReport }}
-      </div></td>
-    </tr>
-    {% set reportNo = 0 %}
-    {% for report in hearingContent.expertReports %}
-    {% set reportNo = reportNo + 1 %}
-    <tr>
-      <td><div>
+      </div>
+    </td>
+  </tr>
+  {% set reportNo = 0 %}
+  {% for report in hearingContent.expertReports %}
+  {% set reportNo = reportNo + 1 %}
+  <tr>
+    <td>
+      <div>
         Report {{ reportNo }}
-      </div></td>
-      <td><div>
+      </div>
+    </td>
+    <td>
+      <div>
         {{ report.expertName }} <br/>
         {{ report.expertReportDate }}
-      </div></td>
-    </tr>
-    {% endfor %}
-
-    <tr>
-      <td><div>
+      </div>
+    </td>
+  </tr>
+  {% endfor %}
+  <tr>
+    <td>
+      <div>
         Do you want the court's permission to hire an expert?
-      </div></td>
-      <td><div>
+      </div>
+    </td>
+    <td>
+      <div>
         {{ hearingContent.courtPermissionForExpertReport }}
-      </div></td>
-    </tr>
-    <tr>
-      <td><div>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <div>
         Does the claim involve something an expert can still examine?
-      </div></td>
-      <td><div>
+      </div>
+    </td>
+    <td>
+      <div>
         {{ hearingContent.expertExamineNeeded }}
-      </div></td>
-    </tr>
-    <tr>
-      <td><div>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <div>
         What is there to examine?
-      </div></td>
-      <td><div>
+      </div>
+    </td>
+    <td>
+      <div>
         {{ hearingContent.whatToExamine }}
-      </div></td>
-    </tr>
-    <tr>
-      <td><div>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <div>
         Briefly explain why you believe an expert is needed
-      </div></td>
-      <td><div>
+      </div>
+    </td>
+    <td>
+      <div>
         {{ hearingContent.reasonWhyExpertAdvice }}
-      </div></td>
-    </tr>
-
-    <tr><td><b>Witnesses</b></td></tr>
-    <tr>
-      <td><div>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td><b>Witnesses</b></td>
+  </tr>
+  <tr>
+    <td>
+      <div>
         Do you want to give evidence?
-      </div></td>
-      <td><div>
+      </div>
+    </td>
+    <td>
+      <div>
         {{ hearingContent.witness.selfWitness }}
-      </div></td>
+      </div>
+    </td>
 
-    </tr>
-    <tr>
-      <td><div>
+  </tr>
+  <tr>
+    <td>
+      <div>
         Other witnesses
-      </div></td>
-      <td><div>
+      </div>
+    </td>
+    <td>
+      <div>
         {{ hearingContent.witness.noOfOtherWitness }}
-      </div></td>
+      </div>
+    </td>
 
-    </tr>
+  </tr>
 
-    <tr>
-      <td><div>
+  <tr>
+    <td>
+      <div>
         Dates unavailable
-      </div></td>
-      <td><div>
+      </div>
+    </td>
+    <td>
+      <div>
         {% for unavailableDate in hearingContent.unavailableDates %}
         {{ unavailableDate }} <br/>
         {% endfor %}
-      </div></td>
-
-    </tr>
-    </tbody>
-  </table>
-
-  <table style="width: 80%" class="new-dq">
-    <thead>
-    <tr>
-      <th colspan="2">
-        <h2 class="heading-medium">
-          <span>C</span> Signature
-        </h2>
-      </th>
-    </tr>
-    </thead>
-    <tbody>
-    </tbody><tbody>
-  <tr>
-    <td>
-
-      Signed
+      </div>
     </td>
-    <td><div>{{ claimant.fullName }}<br/>{{ claimantSubmittedOn }}
-    </div></td>
+
   </tr>
   </tbody>
-  </table>
+</table>
 
-
+<table style="width: 80%" class="new-dq">
+  <thead>
+  <tr>
+    <th colspan="2">
+      <h2 class="heading-medium">
+        <span>C</span> Signature
+      </h2>
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  </tbody>
+  <tbody>
+  <tr>
+    <td>
+      Signed
+    </td>
+    <td>
+      <div>{{ claimant.fullName }}<br/>{{ claimantSubmittedOn }}
+      </div>
+    </td>
+  </tr>
+  </tbody>
+</table>
 </body>
 </html>

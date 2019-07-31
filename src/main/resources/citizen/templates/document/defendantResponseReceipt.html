@@ -1,5 +1,5 @@
 <html>
-<head>x
+<head>
   <meta charset="UTF-8"/>
   <title>Money Claim response receipt</title>
   <style>
@@ -164,19 +164,23 @@
       margin-top: 1.5em;
       font-size: 22px;
     }
+
     .new-dq h2 span {
       color: #fff;
       background-color: #5D514D;
       padding: 5px;
     }
+
     table.new-dq td:last-child div {
       border: 1px solid gray;
       padding: 5px;
       min-height: 18px;
     }
+
     table.new-dq tr {
       border: none;
     }
+
     table.new-dq td {
       padding: 0.63158em 1.05263em 0.67368em 0;
       border-top: none;
@@ -189,6 +193,7 @@
       background-color: #EDEDED;
       font-size: 21px !important;
     }
+
     .heading-medium {
       padding-bottom: 0;
       margin-bottom: 0.4em;
@@ -281,11 +286,13 @@
         <td>
           {{ defendant.correspondenceAddress.line1 }}
           <br/>
-          {% if defendant.correspondenceAddress.line2 is defined and defendant.correspondenceAddress.line2 is not empty %}
+          {% if defendant.correspondenceAddress.line2 is defined and defendant.correspondenceAddress.line2 is not empty
+          %}
           {{ defendant.correspondenceAddress.line2 }}
           <br/>
           {% endif %}
-          {% if defendant.correspondenceAddress.line3 is defined and defendant.correspondenceAddress.line3 is not empty %}
+          {% if defendant.correspondenceAddress.line3 is defined and defendant.correspondenceAddress.line3 is not empty
+          %}
           {{ defendant.correspondenceAddress.line3 }}
           <br/>
           {% endif %}
@@ -335,62 +342,62 @@
       </tr>
 
       {% if responseType == "PART_ADMISSION" %}
-        {% if paymentDeclarationIsPresent %}
-          <tr>
-            <td>Amount they have paid</td>
-            <td>
-              {{ amount }}
-            </td>
-          </tr>
-          {% if paymentDate is defined %}
-          <tr>
-            <td>When they paid this amount</td>
-            <td>
-              {{ paymentDate }}
-            </td>
-          </tr>
-          {% endif %}
-          {% if paymentMethod is defined and paymentMethod is not empty %}
-          <tr>
-            <td>How they paid the amount</td>
-            <td>
-              {{ paymentMethod | trim }}
-            </td>
-          </tr>
-          {% endif %}
-        {% else %}
-          <tr>
-            <td>Amount they admit they owe</td>
-            <td>
-              {{ amount }}
-            </td>
-          </tr>
-        {% endif %}
-          <tr>
-            <td>Why they dispute the claim</td>
-            <td>
-              <ol class="enumerate">
-                {% for responseDefenceLine in responseDefence %}
-                <li>{{ responseDefenceLine }}</li>
-                {% endfor %}
-              </ol>
-            </td>
-          </tr>
+      {% if paymentDeclarationIsPresent %}
+      <tr>
+        <td>Amount they have paid</td>
+        <td>
+          {{ amount }}
+        </td>
+      </tr>
+      {% if paymentDate is defined %}
+      <tr>
+        <td>When they paid this amount</td>
+        <td>
+          {{ paymentDate }}
+        </td>
+      </tr>
+      {% endif %}
+      {% if paymentMethod is defined and paymentMethod is not empty %}
+      <tr>
+        <td>How they paid the amount</td>
+        <td>
+          {{ paymentMethod | trim }}
+        </td>
+      </tr>
+      {% endif %}
       {% else %}
-        {% if responseDefence is defined and responseDefence is not empty %}
-        <tr>
-          <td class="no-border" colspan="2"><strong>Why they dispute the claim</strong></td>
-        </tr>
-        <tr class="no-border">
-          <td colspan="2" class="single-cell">
-            <ol class="enumerate">
-              {% for responseDefenceLine in responseDefence %}
-              <li>{{ responseDefenceLine }}</li>
-              {% endfor %}
-            </ol>
-          </td>
-        </tr>
-        {% endif %}
+      <tr>
+        <td>Amount they admit they owe</td>
+        <td>
+          {{ amount }}
+        </td>
+      </tr>
+      {% endif %}
+      <tr>
+        <td>Why they dispute the claim</td>
+        <td>
+          <ol class="enumerate">
+            {% for responseDefenceLine in responseDefence %}
+            <li>{{ responseDefenceLine }}</li>
+            {% endfor %}
+          </ol>
+        </td>
+      </tr>
+      {% else %}
+      {% if responseDefence is defined and responseDefence is not empty %}
+      <tr>
+        <td class="no-border" colspan="2"><strong>Why they dispute the claim</strong></td>
+      </tr>
+      <tr class="no-border">
+        <td colspan="2" class="single-cell">
+          <ol class="enumerate">
+            {% for responseDefenceLine in responseDefence %}
+            <li>{{ responseDefenceLine }}</li>
+            {% endfor %}
+          </ol>
+        </td>
+      </tr>
+      {% endif %}
       {% endif %}
 
       {% if events is defined and events is not empty %}
@@ -452,7 +459,7 @@
   <div class="section-heading">
     <strong>How the defendant will pay
       {% if responseType == "PART_ADMISSION" %}
-        {{ amount }}
+      {{ amount }}
       {% endif %}
     </strong>
   </div>
@@ -498,7 +505,7 @@
   </div>
 </div>
 
-{% if statementOfMeans is defined  and (paymentOption == 'By instalments' or paymentOption == 'By a set date') %}
+{% if statementOfMeans is defined and (paymentOption == 'By instalments' or paymentOption == 'By a set date') %}
 <div class="section">
   <div class="section-heading">
     <strong>The defendant’s financial details</strong>
@@ -646,30 +653,30 @@
 
       <tr>
         <td><strong>Bank and savings accounts</strong></td>
-      {% if bankAccounts is defined and bankAccounts is not empty %}
+        {% if bankAccounts is defined and bankAccounts is not empty %}
       </tr>
       {% for bankAccount in bankAccounts %}
       <tr class="no-border">
         <td><strong>{% if loop.length > 1 %}{{ loop.index + 1 }}. {% endif %}Type of account</strong></td>
-          <td>
-            {{ bankAccount.type }}
-          </td>
-        </tr>
-        <tr class="no-border">
-          <td><strong>Balance</strong></td>
-          <td>
-            {{ bankAccount.balance }}
-          </td>
-        </tr>
-        <tr class="no-border">
-          <td><strong>Joint account</strong></td>
-          <td>
-            {{ bankAccount.joint ? "Yes" : "No" }}
-          </td>
-        </tr>
-        {% endfor %}
+        <td>
+          {{ bankAccount.type }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Balance</strong></td>
+        <td>
+          {{ bankAccount.balance }}
+        </td>
+      </tr>
+      <tr class="no-border">
+        <td><strong>Joint account</strong></td>
+        <td>
+          {{ bankAccount.joint ? "Yes" : "No" }}
+        </td>
+      </tr>
+      {% endfor %}
       {% else %}
-        <td>None</td>
+      <td>None</td>
       </tr>
       {% endif %}
 
@@ -852,29 +859,29 @@
 </div>
 {% endif %}
 {% if hearingContent is defined %}
-<p style="page-break-before: always" ></p>
+<p style="page-break-before: always"></p>
 <header>
-<table>
-  <tr>
-    <td colspan="2" class="spacing-bottom"><h2 class="normal-font">Defendant's hearing requirements</h2></td>
-  </tr>
-  <tr>
-    <td colspan="2"><p>In the County Court Business Centre</p></td>
-  </tr>
-  <tr>
-    <td colspan="2" class="spacing-bottom"><p>Online Civil Money Claims</p></td>
-  </tr>
-  <tr>
-    <td colspan="2"><p><strong>Claim number: </strong>{{ claim.referenceNumber }}</p></td>
-  </tr>
-  <tr>
-    <td colspan="2"><p><strong>Issued on: </strong> {{ claim.issuedOn }}</p></td>
-  </tr>
-  <tr>
-    <td colspan="2" class="spacing-bottom"><p><strong>Response received on: </strong> {{ defenceSubmittedOn }}</p>
-    </td>
-  </tr>
-</table>
+  <table>
+    <tr>
+      <td colspan="2" class="spacing-bottom"><h2 class="normal-font">Defendant's hearing requirements</h2></td>
+    </tr>
+    <tr>
+      <td colspan="2"><p>In the County Court Business Centre</p></td>
+    </tr>
+    <tr>
+      <td colspan="2" class="spacing-bottom"><p>Online Civil Money Claims</p></td>
+    </tr>
+    <tr>
+      <td colspan="2"><p><strong>Claim number: </strong>{{ claim.referenceNumber }}</p></td>
+    </tr>
+    <tr>
+      <td colspan="2"><p><strong>Issued on: </strong> {{ claim.issuedOn }}</p></td>
+    </tr>
+    <tr>
+      <td colspan="2" class="spacing-bottom"><p><strong>Response received on: </strong> {{ defenceSubmittedOn }}</p>
+      </td>
+    </tr>
+  </table>
 </header>
 <table style="width: 80%" class="new-dq">
   <thead>
@@ -888,9 +895,13 @@
   </thead>
   <tbody>
   <tr>
-    <td><div>
-      <strong>Name:</strong></div></td>
-    <td><div>{{ defendant.fullName }}</div></td>
+    <td>
+      <div>
+        <strong>Name:</strong></div>
+    </td>
+    <td>
+      <div>{{ defendant.fullName }}</div>
+    </td>
   </tr>
   <tr>
   </tr>
@@ -898,46 +909,60 @@
     <td>
       Address:
     </td>
-    <td><div>
-      {{ defendant.address.line1 }}
-      <br/>
-      {% if defendant.address.line2 is defined and defendant.address.line2 is not empty %}
-      {{ defendant.address.line2 }}
-      <br/>
-      {% endif %}
-      {% if defendant.address.line3 is defined and defendant.address.line3 is not empty %}
-      {{ defendant.address.line3 }}
-      <br/>
-      {% endif %}
-      {{ defendant.address.city }}
-      <br/>
-      {{ defendant.address.postcode }}
-    </div></td>
+    <td>
+      <div>
+        {{ defendant.address.line1 }}
+        <br/>
+        {% if defendant.address.line2 is defined and defendant.address.line2 is not empty %}
+        {{ defendant.address.line2 }}
+        <br/>
+        {% endif %}
+        {% if defendant.address.line3 is defined and defendant.address.line3 is not empty %}
+        {{ defendant.address.line3 }}
+        <br/>
+        {% endif %}
+        {{ defendant.address.city }}
+        <br/>
+        {{ defendant.address.postcode }}
+      </div>
+    </td>
   </tr>
   <tr>
-    <td><div>
-      Date of birth:
-    </div></td>
-    <td><div>
-      {{ defendant.dateOfBirth }}
-    </div></td>
+    <td>
+      <div>
+        Date of birth:
+      </div>
+    </td>
+    <td>
+      <div>
+        {{ defendant.dateOfBirth }}
+      </div>
+    </td>
   </tr>
   <tr></tr>
   <tr>
-    <td><div>
-      Telephone:
-    </div></td>
-    <td><div>
-      {% if defendant.mobilePhone is defined and defendant.mobilePhone is not empty %}
+    <td>
+      <div>
+        Telephone:
+      </div>
+    </td>
+    <td>
+      <div>
+        {% if defendant.mobilePhone is defined and defendant.mobilePhone is not empty %}
         {{ defendant.mobilePhone }}
-      {% endif %}
-    </div></td>
+        {% endif %}
+      </div>
+    </td>
   </tr>
   <tr>
-    <td><div>
-      Email:
-    </div></td>
-    <td><div>{{ defendant.email }}</div></td>
+    <td>
+      <div>
+        Email:
+      </div>
+    </td>
+    <td>
+      <div>{{ defendant.email }}</div>
+    </td>
   </tr>
   </tbody>
 </table>
@@ -969,100 +994,142 @@
     </td>
   </tr>
 
-  <tr><td><b>Hearing location</b></td></tr>
+  <tr>
+    <td><b>Hearing location</b></td>
+  </tr>
   <tr>
     <td>
       Preferred hearing centre
     </td>
-    <td><div>{{ hearingContent.hearingLocation }}</div>
+    <td>
+      <div>{{ hearingContent.hearingLocation }}</div>
     </td>
   </tr>
   <tr>
-    <td><div>
-      Briefly explain your reasons
-    </div></td>
-    <td><div>
-      {{ hearingContent.locationReason }}
-    </div></td></tr>
+    <td>
+      <div>
+        Briefly explain your reasons
+      </div>
+    </td>
+    <td>
+      <div>
+        {{ hearingContent.locationReason }}
+      </div>
+    </td>
+  </tr>
 
-  <tr><td><b>Expert evidence</b></td></tr>
+  <tr>
+    <td><b>Expert evidence</b></td>
+  </tr>
   <tr>
     <td>
       Have you already got a report written by an expert?
     </td>
-    <td><div>
-      {{ hearingContent.hasExpertReport }}
-    </div></td>
+    <td>
+      <div>
+        {{ hearingContent.hasExpertReport }}
+      </div>
+    </td>
   </tr>
   {% set reportNo = 0 %}
   {% for report in hearingContent.expertReports %}
   {% set reportNo = reportNo + 1 %}
   <tr>
-    <td><div>
-      Report {{ reportNo }}
-    </div></td>
-    <td><div>
-      {{ report.expertName }} <br/>
-      {{ report.expertReportDate }}
-    </div></td>
+    <td>
+      <div>
+        Report {{ reportNo }}
+      </div>
+    </td>
+    <td>
+      <div>
+        {{ report.expertName }} <br/>
+        {{ report.expertReportDate }}
+      </div>
+    </td>
   </tr>
   {% endfor %}
 
   <tr>
-    <td><div>
-      Do you want the court's permission to hire an expert?
-    </div></td>
-    <td><div>
-      {{ hearingContent.courtPermissionForExpertReport }}
-    </div></td>
+    <td>
+      <div>
+        Do you want the court's permission to hire an expert?
+      </div>
+    </td>
+    <td>
+      <div>
+        {{ hearingContent.courtPermissionForExpertReport }}
+      </div>
+    </td>
   </tr>
   <tr>
-    <td><div>
-      Does the claim involve something an expert can still examine?
-    </div></td>
-    <td><div>
-      {{ hearingContent.expertExamineNeeded }}
-    </div></td>
+    <td>
+      <div>
+        Does the claim involve something an expert can still examine?
+      </div>
+    </td>
+    <td>
+      <div>
+        {{ hearingContent.expertExamineNeeded }}
+      </div>
+    </td>
   </tr>
   <tr>
-    <td><div>
-      What is there to examine?
-    </div></td>
-    <td><div>
-      {{ hearingContent.whatToExamine }}
-    </div></td>
+    <td>
+      <div>
+        What is there to examine?
+      </div>
+    </td>
+    <td>
+      <div>
+        {{ hearingContent.whatToExamine }}
+      </div>
+    </td>
   </tr>
   <tr>
-    <td><div>
-      Briefly explain why you believe an expert is needed
-    </div></td>
-    <td><div>
-      {{ hearingContent.reasonWhyExpertAdvice }}
-    </div></td>
+    <td>
+      <div>
+        Briefly explain why you believe an expert is needed
+      </div>
+    </td>
+    <td>
+      <div>
+        {{ hearingContent.reasonWhyExpertAdvice }}
+      </div>
+    </td>
   </tr>
 
   <tr>
     <td><b>Witnesses</b></td>
   </tr>
   <tr>
-    <td><div>
-      Do you want to give evidence?
-    </div></td>
-    <td><div>
-      {{ hearingContent.witness.selfWitness }}
-    </div></td>
+    <td>
+      <div>
+        Do you want to give evidence?
+      </div>
+    </td>
+    <td>
+      <div>
+        {{ hearingContent.witness.selfWitness }}
+      </div>
+    </td>
 
   </tr>
   <tr>
-    <td><div>
-      Other witnesses
-    </div></td>
-    <td><div>
-      {{ hearingContent.witness.noOfOtherWitness }}
-    </div></td>
+    <td>
+      <div>
+        Other witnesses
+      </div>
+    </td>
+    <td>
+      <div>
+        {{ hearingContent.witness.noOfOtherWitness }}
+      </div>
+    </td>
   </tr>
   <tr>
-    <td><div>Dates unavailable</div></td>
+    <td>
+      <div>Dates unavailable</div>
+    </td>
     <td>
       <div>
         {% for unavailableDate in hearingContent.unavailableDates %}
@@ -1085,13 +1152,14 @@
   </tr>
   </thead>
   <tbody>
-    <tr>
-      <td>Signed</td>
-      <td><div>{{ defendant.fullName }}<br/>{{ defenceSubmittedOn }}</div></td>
-    </tr>
-</tbody>
+  <tr>
+    <td>Signed</td>
+    <td>
+      <div>{{ defendant.fullName }}<br/>{{ defenceSubmittedOn }}</div>
+    </td>
+  </tr>
+  </tbody>
 </table>
-
 {% endif %}
 </body>
 </html>

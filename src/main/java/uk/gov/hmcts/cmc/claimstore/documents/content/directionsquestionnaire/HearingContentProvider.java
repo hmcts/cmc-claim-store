@@ -25,8 +25,8 @@ import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
 public class HearingContentProvider {
 
     private static final String DISABLED_ACCESS = "Disabled Access";
-    private static final String YES = "YES";
-    private static final String NO = "NO";
+    private static final String YES = "Yes";
+    private static final String NO = "No";
 
     private Function<ExpertReport, ExpertReportContent> mapExpertReport = report ->
         ExpertReportContent.builder().expertName(report.getExpertName())
