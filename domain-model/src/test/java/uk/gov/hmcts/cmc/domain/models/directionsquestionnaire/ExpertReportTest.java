@@ -26,7 +26,7 @@ public class ExpertReportTest {
     }
 
     @Test
-    public void shouldBeSuccessfulValidationForMissingReportDate() {
+    public void shouldBeValidationMessagesWhenMissingReportDate() {
         ExpertReport expertReport = ExpertReport
             .builder()
             .expertName("Some name")
@@ -40,7 +40,7 @@ public class ExpertReportTest {
     }
 
     @Test
-    public void shouldBeSuccessfulValidationForMissingReportName() {
+    public void shouldBeValidationMessagesWhenMissingReportName() {
         ExpertReport expertReport = ExpertReport
             .builder()
             .expertReportDate(now())
