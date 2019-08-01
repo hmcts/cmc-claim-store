@@ -154,7 +154,7 @@ public class IdamTestService {
         //recommended delay from IDAM team to stop intermittent auth failures
         idamTestApi.createUser(createUserRequest);
         try {
-            Thread.sleep(5000);
+            Thread.sleep(15000);
         } catch (InterruptedException ex) {
             logger.error("Error trying to sleep after creating a user", ex);
         }
