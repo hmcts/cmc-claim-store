@@ -89,7 +89,8 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
         JsonMapper jsonMapper,
         DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper,
         CaseDetailsConverter caseDetailsConverter,
-        HearingCourtDetailsFinder hearingCourtDetailsFinder) {
+        HearingCourtDetailsFinder hearingCourtDetailsFinder
+    ) {
         this.docAssemblyClient = docAssemblyClient;
         this.authTokenGenerator = authTokenGenerator;
         this.jsonMapper = jsonMapper;
