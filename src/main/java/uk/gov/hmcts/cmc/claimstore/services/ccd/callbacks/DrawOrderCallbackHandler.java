@@ -26,6 +26,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -99,8 +100,8 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
 
     private CallbackResponse copyDraftToCaseDocument(CallbackParams callbackParams) {
         CallbackRequest callbackRequest = callbackParams.getRequest();
-        CCDCase ccdCase = jsonMapper.fromMap(
-            callbackRequest.getCaseDetails().getData(), CCDCase.class);
+        Map<String, Object> caseData = callbackRequest.getCaseDetails().getData();
+        CCDCase ccdCase = jsonMapper.fromMap(caseData, CCDCase.class);
 
         CCDDocument draftOrderDoc = Optional.ofNullable(ccdCase.getOrderGenerationData())
             .map(CCDOrderGenerationData::getDraftOrderDoc)
@@ -121,10 +122,12 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
                 .orElse(new ArrayList<>());
         currentCaseDocuments.add(claimDocument);
 
+        Map<String, Object> newCaseData = new HashMap<>(caseData);
+        newCaseData.put(CASE_DOCUMENTS, currentCaseDocuments);
+
         return AboutToStartOrSubmitCallbackResponse
             .builder()
-            .data(ImmutableMap.of(
-                CASE_DOCUMENTS, currentCaseDocuments))
+            .data(newCaseData)
             .build();
     }
 }

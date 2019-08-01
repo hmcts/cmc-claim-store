@@ -61,6 +61,13 @@ public class DocAssemblyTemplateBodyMapperTest  {
     @Before
     public void setUp() {
         docAssemblyTemplateBodyMapper = new DocAssemblyTemplateBodyMapper(clock, courtFinderApi);
+        when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString())).thenReturn(ImmutableList.of(Court.builder()
+            .name("Birmingham Court")
+            .slug("birmingham-court")
+            .address(Address.builder()
+                .addressLines(ImmutableList.of("line1", "line2"))
+                .postcode("SW1P4BB")
+                .town("Birmingham").build()).build()));
         ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         ccdCase.setOrderGenerationData(SampleData.getCCDOrderGenerationData());
         ccdCase.setRespondents(
@@ -84,7 +91,6 @@ public class DocAssemblyTemplateBodyMapperTest  {
             .defendant(Party.builder().partyName("Mary Richards").build())
             .judicial(Judicial.builder().firstName("Judge").lastName("McJudge").build())
             .referenceNumber("ref no")
-            .hearingCourtName("Defendant Court")
             .extraDocUploadList(
                 ImmutableList.of(
                     CCDCollectionElement.<String>builder()
@@ -93,10 +99,12 @@ public class DocAssemblyTemplateBodyMapperTest  {
                     CCDCollectionElement.<String>builder()
                         .value("second document")
                         .build()))
+            .hearingCourtName("Birmingham Court")
             .hearingCourtAddress(CCDAddress.builder()
-                .addressLine1("Defendant Court address")
+                .addressLine1("line1")
+                .addressLine2("line2")
                 .postCode("SW1P4BB")
-                .postTown("London")
+                .postTown("Birmingham")
                 .build())
             .docUploadForParty(CLAIMANT)
             .eyewitnessUploadForParty(DEFENDANT)
