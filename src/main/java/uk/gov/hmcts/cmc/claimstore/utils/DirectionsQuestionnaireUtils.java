@@ -38,7 +38,7 @@ public class DirectionsQuestionnaireUtils {
         return Optional.empty();
     }
 
-    private static String getPreferredCourt(Claim claim) {
+    public static String getPreferredCourt(Claim claim) {
         if (isDefendantBusiness(claim.getClaimData().getDefendant())) {
             ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
             return getClaimantHearingCourt(claimantResponse);

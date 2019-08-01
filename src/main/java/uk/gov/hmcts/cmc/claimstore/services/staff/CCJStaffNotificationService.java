@@ -9,7 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.content.countycourtjudgment.Re
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.utils.PartyUtils;    
+import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
@@ -73,6 +73,7 @@ public class CCJStaffNotificationService {
         map.put("defendantName", claim.getClaimData().getDefendant().getName());
         map.put("paymentType", claim.getCountyCourtJudgment().getPaymentOption().getDescription());
         map.put("admissionResponse", ResponseHelper.admissionResponse(claim.getResponse().orElse(null)));
+        map.put("ccjType", claim.getCountyCourtJudgment().getCcjType().name());
         Optional.ofNullable(submitterName).ifPresent(name -> map.put("partyName", name));
         claim.getReDetermination()
             .ifPresent(reDetermination -> map.put("reasonForReDetermination", reDetermination.getExplanation()));
