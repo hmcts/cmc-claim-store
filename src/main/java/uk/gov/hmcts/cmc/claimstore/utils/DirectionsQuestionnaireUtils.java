@@ -4,7 +4,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
-import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
@@ -49,17 +50,15 @@ public class DirectionsQuestionnaireUtils {
 
     private static String getDefendantHearingCourt(Response defendantResponse) {
         if (defendantResponse.getResponseType() == FULL_DEFENCE) {
-            return ((FullDefenceResponse) defendantResponse).getDirectionsQuestionnaire()
-                .orElseThrow(IllegalStateException::new)
-                .getHearingLocation()
-                .orElseThrow(IllegalStateException::new)
-                .getCourtName();
+            return ((PartAdmissionResponse) defendantResponse).getDirectionsQuestionnaire()
+                .flatMap(DirectionsQuestionnaire::getHearingLocation)
+                .map(HearingLocation::getCourtName)
+                .orElseThrow(IllegalStateException::new);
         } else if (defendantResponse.getResponseType() == PART_ADMISSION) {
             return ((PartAdmissionResponse) defendantResponse).getDirectionsQuestionnaire()
-                .orElseThrow(IllegalStateException::new)
-                .getHearingLocation()
-                .orElseThrow(IllegalStateException::new)
-                .getCourtName();
+                .flatMap(DirectionsQuestionnaire::getHearingLocation)
+                .map(HearingLocation::getCourtName)
+                .orElseThrow(IllegalStateException::new);
         } else {
             throw new IllegalStateException("No preferred court as defendant response is full admission");
         }
@@ -68,10 +67,9 @@ public class DirectionsQuestionnaireUtils {
     private static String getClaimantHearingCourt(ClaimantResponse claimantResponse) {
         if (claimantResponse.getType() == REJECTION) {
             return ((ResponseRejection) claimantResponse).getDirectionsQuestionnaire()
-                .orElseThrow(IllegalStateException::new)
-                .getHearingLocation()
-                .orElseThrow(IllegalStateException::new)
-                .getCourtName();
+                .flatMap(DirectionsQuestionnaire::getHearingLocation)
+                .map(HearingLocation::getCourtName)
+                .orElseThrow(IllegalStateException::new);
         } else {
             throw new IllegalStateException("No preferred court as claimant response is not rejection.");
         }
