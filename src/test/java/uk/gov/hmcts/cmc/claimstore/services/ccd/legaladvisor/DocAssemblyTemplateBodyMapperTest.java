@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
@@ -17,9 +16,6 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Address;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
@@ -30,7 +26,6 @@ import java.time.ZoneOffset;
 import java.util.Collections;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOTH;
@@ -41,33 +36,36 @@ import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType.FO
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EXPERT_REPORT_PERMISSION;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.OTHER;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOtherDirectionHeaderType.UPLOAD;
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DocAssemblyTemplateBodyMapperTest  {
+public class DocAssemblyTemplateBodyMapperTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Mock
     private Clock clock;
-    @Mock
-    private CourtFinderApi courtFinderApi;
 
     private DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
     private CCDCase ccdCase;
     private UserDetails userDetails;
+    private HearingCourt hearingCourt;
 
     private DocAssemblyTemplateBody.DocAssemblyTemplateBodyBuilder docAssemblyTemplateBodyBuilder;
 
     @Before
     public void setUp() {
-        docAssemblyTemplateBodyMapper = new DocAssemblyTemplateBodyMapper(clock, courtFinderApi);
-        when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString())).thenReturn(ImmutableList.of(Court.builder()
+        docAssemblyTemplateBodyMapper = new DocAssemblyTemplateBodyMapper(clock);
+        hearingCourt = HearingCourt.builder()
             .name("Birmingham Court")
-            .slug("birmingham-court")
-            .address(Address.builder()
-                .addressLines(ImmutableList.of("line1", "line2"))
-                .postcode("SW1P4BB")
-                .town("Birmingham").build()).build()));
+            .address(CCDAddress.builder()
+                .addressLine1("line1")
+                .addressLine2("line2")
+                .addressLine3("line3")
+                .postCode("SW1P4BB")
+                .postTown("Birmingham").build())
+            .build();
+
         ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         ccdCase.setOrderGenerationData(SampleData.getCCDOrderGenerationData());
         ccdCase.setRespondents(
@@ -103,6 +101,7 @@ public class DocAssemblyTemplateBodyMapperTest  {
             .hearingCourtAddress(CCDAddress.builder()
                 .addressLine1("line1")
                 .addressLine2("line2")
+                .addressLine3("line3")
                 .postCode("SW1P4BB")
                 .postTown("Birmingham")
                 .build())
@@ -143,27 +142,22 @@ public class DocAssemblyTemplateBodyMapperTest  {
                     .build()
             ));
         //when
-        Mockito.when(clock.instant()).thenReturn(LocalDate.parse("2019-04-24")
+        when(clock.instant()).thenReturn(LocalDate.parse("2019-04-24")
             .atStartOfDay().toInstant(ZoneOffset.UTC));
-        Mockito.when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.withZone(UTC_ZONE)).thenReturn(clock);
     }
 
     @Test
     public void shouldMapAddressFromCourtFinder() {
         CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData();
         ccdOrderGenerationData.setHearingCourt(BIRMINGHAM);
-        when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString())).thenReturn(ImmutableList.of(Court.builder()
-            .name("Birmingham Court")
-            .slug("birmingham-court")
-            .address(Address.builder()
-                .addressLines(ImmutableList.of("line1", "line2"))
-                .postcode("SW1P4BB")
-                .town("Birmingham").build()).build()));
 
         ccdCase.setOrderGenerationData(ccdOrderGenerationData);
         DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
             ccdCase,
-            userDetails);
+            userDetails,
+            hearingCourt);
 
         DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
             .paperDetermination(false)
@@ -180,6 +174,7 @@ public class DocAssemblyTemplateBodyMapperTest  {
             .hearingCourtAddress(CCDAddress.builder()
                 .addressLine1("line1")
                 .addressLine2("line2")
+                .addressLine3("line3")
                 .postCode("SW1P4BB")
                 .postTown("Birmingham")
                 .build())
@@ -236,7 +231,9 @@ public class DocAssemblyTemplateBodyMapperTest  {
         String output = objectMapper.writeValueAsString(
             docAssemblyTemplateBodyMapper.from(
                 ccdCase,
-                userDetails));
+                userDetails,
+                hearingCourt)
+        );
         assertThat(output).isNotNull();
         String expected = new ResourceReader().read("/doc-assembly-template.json");
         JSONAssert.assertEquals(expected, output, STRICT);
@@ -246,7 +243,8 @@ public class DocAssemblyTemplateBodyMapperTest  {
     public void shouldMapTemplateBody() {
         DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
             ccdCase,
-            userDetails);
+            userDetails,
+            hearingCourt);
 
         DocAssemblyTemplateBody expectedBody = docAssemblyTemplateBodyBuilder.build();
 
@@ -261,39 +259,12 @@ public class DocAssemblyTemplateBodyMapperTest  {
         ccdCase.setOrderGenerationData(ccdOrderGenerationData);
         DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
             ccdCase,
-            userDetails);
+            userDetails,
+            hearingCourt);
 
         docAssemblyTemplateBodyBuilder.otherDirections(Collections.emptyList());
         DocAssemblyTemplateBody expectedBody = docAssemblyTemplateBodyBuilder.build();
 
         assertThat(requestBody).isEqualTo(expectedBody);
     }
-
-    @Test
-    public void shouldMapTemplateBodyWhenHearingCourtIsNull() {
-        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData();
-        ccdOrderGenerationData.setHearingCourt(null);
-        ccdCase.setOrderGenerationData(ccdOrderGenerationData);
-        DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
-            ccdCase,
-            userDetails);
-
-        docAssemblyTemplateBodyBuilder.hearingCourtAddress(null);
-        docAssemblyTemplateBodyBuilder.hearingCourtName(null);
-        DocAssemblyTemplateBody expectedBody = docAssemblyTemplateBodyBuilder.build();
-
-        assertThat(requestBody).isEqualTo(expectedBody);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowIfCourtIsNotFound() {
-        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData();
-        ccdOrderGenerationData.setHearingCourt(BIRMINGHAM);
-        ccdCase.setOrderGenerationData(ccdOrderGenerationData);
-        when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString())).thenReturn(Collections.emptyList());
-        docAssemblyTemplateBodyMapper.from(
-            ccdCase,
-            userDetails);
-    }
-
 }

@@ -23,17 +23,20 @@ public class CaseMapper {
     private final boolean isMigrated;
     private final ClaimDocumentCollectionMapper claimDocumentCollectionMapper;
     private final ReviewOrderMapper reviewOrderMapper;
+    private final DirectionOrderMapper directionOrderMapper;
 
     public CaseMapper(
         ClaimMapper claimMapper,
         @Value("${migration.cases.flag:false}") boolean isMigrated,
         ClaimDocumentCollectionMapper claimDocumentCollectionMapper,
-        ReviewOrderMapper reviewOrderMapper
+        ReviewOrderMapper reviewOrderMapper,
+        DirectionOrderMapper directionOrderMapper
     ) {
         this.claimMapper = claimMapper;
         this.isMigrated = isMigrated;
         this.claimDocumentCollectionMapper = claimDocumentCollectionMapper;
         this.reviewOrderMapper = reviewOrderMapper;
+        this.directionOrderMapper = directionOrderMapper;
     }
 
     public CCDCase to(Claim claim) {
@@ -48,7 +51,8 @@ public class CaseMapper {
             .map(reviewOrderMapper::to)
             .ifPresent(builder::reviewOrder);
 
-        claim.getDirectionOrderCreatedOn().ifPresent(builder::directionOrderCreatedOn);
+        claim.getDirectionOrder()
+            .ifPresent(directionOrder -> builder.directionOrder(directionOrderMapper.to(directionOrder)));
 
         return builder
             .id(claim.getId())
@@ -84,11 +88,11 @@ public class CaseMapper {
             .externalId(ccdCase.getExternalId())
             .referenceNumber(ccdCase.getPreviousServiceCaseReference())
             .createdAt(ccdCase.getSubmittedOn())
-            .directionOrderCreatedOn(ccdCase.getDirectionOrderCreatedOn())
             .issuedOn(ccdCase.getIssuedOn())
             .submitterEmail(ccdCase.getSubmitterEmail())
             .claimSubmissionOperationIndicators(
                 mapFromCCDClaimSubmissionOperationIndicators.apply(ccdCase.getClaimSubmissionOperationIndicators()))
+            .directionOrder(directionOrderMapper.from(ccdCase.getDirectionOrder()))
             .reviewOrder(reviewOrderMapper.from(ccdCase.getReviewOrder()));
 
         if (ccdCase.getFeatures() != null) {

@@ -70,6 +70,6 @@ public class CCDCase {
 
     @JsonUnwrapped
     private CCDOrderGenerationData orderGenerationData;
-    private LocalDateTime directionOrderCreatedOn;
+    private CCDDirectionOrder directionOrder;
     private CCDReviewOrder reviewOrder;
 }

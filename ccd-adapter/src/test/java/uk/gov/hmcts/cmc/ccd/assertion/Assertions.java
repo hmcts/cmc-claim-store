@@ -20,6 +20,7 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
@@ -161,6 +162,10 @@ public class Assertions {
 
     public static ReviewOrderAssert assertThat(ReviewOrder reviewOrder) {
         return new ReviewOrderAssert(reviewOrder);
+    }
+
+    public static DirectionOrderAssert assertThat(DirectionOrder directionOrder) {
+        return new DirectionOrderAssert(directionOrder);
     }
 
     public static MoneyAssert assertMoney(BigDecimal amount) {

@@ -9,20 +9,28 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
+import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
+import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Address;
+import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtDetailsFinder;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtMapper;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
@@ -44,6 +52,7 @@ import java.util.Collections;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.MapEntry.entry;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.GENERATE_ORDER;
 
@@ -61,6 +70,15 @@ public class GenerateOrderCallbackHandlerTest {
         "McJudge",
         Collections.emptyList());
 
+    private HearingCourt hearingCourt = HearingCourt.builder()
+        .name("Birmingham Court")
+        .address(CCDAddress.builder()
+            .addressLine1("line1")
+            .addressLine2("line2")
+            .postCode("SW1P4BB")
+            .postTown("Birmingham").build())
+        .build();
+
     @Mock
     private LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator;
     @Mock
@@ -75,6 +93,9 @@ public class GenerateOrderCallbackHandlerTest {
     private DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
+
+    @Mock
+    private CourtFinderApi courtFinderApi;
 
     private CallbackRequest callbackRequest;
 
@@ -91,7 +112,17 @@ public class GenerateOrderCallbackHandlerTest {
             authTokenGenerator,
             jsonMapper,
             docAssemblyTemplateBodyMapper,
-            caseDetailsConverter);
+            caseDetailsConverter,
+            new HearingCourtDetailsFinder(courtFinderApi, new HearingCourtMapper()));
+
+        when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString())).thenReturn(ImmutableList.of(Court.builder()
+            .name("Birmingham Court")
+            .slug("birmingham-court")
+            .address(Address.builder()
+                .addressLines(ImmutableList.of("line1", "line2"))
+                .postcode("SW1P4BB")
+                .town("Birmingham").build()).build()));
+
         ReflectionTestUtils.setField(generateOrderCallbackHandler, "templateId", "testTemplateId");
         ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         Claim claim =
@@ -272,11 +303,12 @@ public class GenerateOrderCallbackHandlerTest {
         CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         ccdCase.setOrderGenerationData(SampleData.getCCDOrderGenerationData());
         when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
+
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
             .templateId("testTemplateId")
             .outputType(OutputType.PDF)
             .formPayload(docAssemblyTemplateBodyMapper
-                .from(ccdCase, userService.getUserDetails(BEARER_TOKEN)))
+                .from(ccdCase, userService.getUserDetails(BEARER_TOKEN), hearingCourt))
             .build();
 
         CallbackRequest callbackRequest = CallbackRequest
@@ -303,8 +335,10 @@ public class GenerateOrderCallbackHandlerTest {
                 .handle(callbackParams);
 
         CCDDocument document = CCDDocument.builder().documentUrl(DOC_URL).build();
-        assertThat(response.getData()).containsExactly(
-            entry("draftOrderDoc", document)
+        assertThat(response.getData()).contains(entry("draftOrderDoc", document));
+        assertThat(response.getData()).contains(entry("directionOrder", CCDDirectionOrder.builder()
+            .hearingCourtAddress(hearingCourt.getAddress())
+            .build())
         );
     }
 
@@ -320,6 +354,7 @@ public class GenerateOrderCallbackHandlerTest {
             .request(callbackRequest)
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
+
         generateOrderCallbackHandler
             .handle(callbackParams);
     }
@@ -331,6 +366,7 @@ public class GenerateOrderCallbackHandlerTest {
             .request(callbackRequest)
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
+
         generateOrderCallbackHandler
             .handle(callbackParams);
     }

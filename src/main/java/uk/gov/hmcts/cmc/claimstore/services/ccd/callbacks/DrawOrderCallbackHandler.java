@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
@@ -31,7 +33,8 @@ import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.ORDER_DIRECTIONS;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
-import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service
 @ConditionalOnProperty(prefix = "document_management", name = "url")
@@ -74,7 +77,8 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
     private CallbackResponse notifyPartiesAndPrintOrder(CallbackParams callbackParams) {
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
-        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+        Map<String, Object> caseData = caseDetails.getData();
+        CCDCase ccdCase = jsonMapper.fromMap(caseData, CCDCase.class);
         notifyParties(claim);
         String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
         return printOrder(authorisation, claim, ccdCase.getOrderGenerationData());
@@ -93,20 +97,23 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
 
     private CallbackResponse copyDraftToCaseDocument(CallbackParams callbackParams) {
         CallbackRequest callbackRequest = callbackParams.getRequest();
-        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
+        CCDCase ccdCase = jsonMapper.fromMap(callbackRequest.getCaseDetails().getData(), CCDCase.class);
 
         CCDDocument draftOrderDoc = Optional.ofNullable(ccdCase.getOrderGenerationData())
             .map(CCDOrderGenerationData::getDraftOrderDoc)
             .orElseThrow(() -> new CallbackException("Draft order not present"));
 
-        CCDCase updated = ccdCase.toBuilder()
+        CCDDirectionOrder directionOrder = Optional.ofNullable(ccdCase.getDirectionOrder())
+            .orElseThrow(() -> new CallbackException("Direction order not present"));
+
+        CCDCase updatedCase = ccdCase.toBuilder()
             .caseDocuments(updateCaseDocumentsWithOrder(ccdCase, draftOrderDoc))
-            .directionOrderCreatedOn(nowInLocalZone())
+            .directionOrder(directionOrder.toBuilder().createdOn(nowInUTC()).build())
             .build();
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()
-            .data(caseDetailsConverter.toMap(updated))
+            .data(caseDetailsConverter.convertToMap(updatedCase))
             .build();
     }
 
@@ -117,13 +124,14 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
         CCDCollectionElement<CCDClaimDocument> claimDocument = CCDCollectionElement.<CCDClaimDocument>builder()
             .value(CCDClaimDocument.builder()
                 .documentLink(draftOrderDoc)
-                .createdDatetime(LocalDateTime.now(clock))
+                .createdDatetime(LocalDateTime.now(clock.withZone(UTC_ZONE)))
                 .documentType(ORDER_DIRECTIONS)
                 .build())
             .build();
 
-        List<CCDCollectionElement<CCDClaimDocument>> caseDocuments = ccdCase.getCaseDocuments();
-        caseDocuments.add(claimDocument);
-        return caseDocuments;
+        return ImmutableList.<CCDCollectionElement<CCDClaimDocument>>builder()
+            .addAll(ccdCase.getCaseDocuments())
+            .add(claimDocument)
+            .build();
     }
 }

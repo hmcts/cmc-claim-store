@@ -10,16 +10,20 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDResponseSubjectType;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtDetailsFinder;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -55,6 +59,7 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
     private static final String EYEWITNESS_UPLOAD_FOR_PARTY = "eyewitnessUploadForParty";
     private static final String PAPER_DETERMINATION = "paperDetermination";
     private static final String DRAFT_ORDER_DOC = "draftOrderDoc";
+    private static final String DIRECTION_ORDER = "directionOrder";
     private static final String NEW_REQUESTED_COURT = "newRequestedCourt";
     private static final String PREFERRED_COURT_OBJECTING_PARTY = "preferredCourtObjectingParty";
     private static final String PREFERRED_COURT_OBJECTING_REASON = "preferredCourtObjectingReason";
@@ -73,6 +78,7 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
     private final UserService userService;
     private final DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
     private final CaseDetailsConverter caseDetailsConverter;
+    private final HearingCourtDetailsFinder hearingCourtDetailsFinder;
 
     @Autowired
     public GenerateOrderCallbackHandler(
@@ -81,7 +87,9 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
         DocAssemblyClient docAssemblyClient,
         AuthTokenGenerator authTokenGenerator,
         JsonMapper jsonMapper,
-        DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper, CaseDetailsConverter caseDetailsConverter) {
+        DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper,
+        CaseDetailsConverter caseDetailsConverter,
+        HearingCourtDetailsFinder hearingCourtDetailsFinder) {
         this.docAssemblyClient = docAssemblyClient;
         this.authTokenGenerator = authTokenGenerator;
         this.jsonMapper = jsonMapper;
@@ -89,6 +97,7 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
         this.legalOrderGenerationDeadlinesCalculator = legalOrderGenerationDeadlinesCalculator;
         this.docAssemblyTemplateBodyMapper = docAssemblyTemplateBodyMapper;
         this.caseDetailsConverter = caseDetailsConverter;
+        this.hearingCourtDetailsFinder = hearingCourtDetailsFinder;
     }
 
     @Override
@@ -143,12 +152,19 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
 
         logger.info("Generate order callback: creating request for doc assembly");
 
+        CCDOrderGenerationData ccdOrderGenerationData = ccdCase.getOrderGenerationData();
+
+        HearingCourt hearingCourt = Optional.ofNullable(ccdOrderGenerationData.getHearingCourt())
+            .map(hearingCourtDetailsFinder::findHearingCourtAddress)
+            .orElseGet(() -> HearingCourt.builder().build());
+
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
             .templateId(templateId)
             .outputType(OutputType.PDF)
             .formPayload(docAssemblyTemplateBodyMapper.from(
                 ccdCase,
-                userService.getUserDetails(authorisation)))
+                userService.getUserDetails(authorisation),
+                hearingCourt))
             .build();
 
         logger.info("Generate order callback: sending request to doc assembly");
@@ -167,7 +183,9 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
                 DRAFT_ORDER_DOC,
                 CCDDocument.builder()
                     .documentUrl(docAssemblyResponse.getRenditionOutputLocation())
-                    .build()
+                    .build(),
+                DIRECTION_ORDER,
+                CCDDirectionOrder.builder().hearingCourtAddress(hearingCourt.getAddress()).build()
             ))
             .build();
     }

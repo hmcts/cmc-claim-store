@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
+import uk.gov.hmcts.cmc.domain.models.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
@@ -95,7 +96,7 @@ public final class SampleClaim {
         () -> ClaimSubmissionOperationIndicators.builder().build();
     private Long ccdCaseId = 1023467890123456L;
     private ReviewOrder reviewOrder;
-    private LocalDateTime directionOrderCreatedOn;
+    private DirectionOrder directionOrder;
 
     private SampleClaim() {
     }
@@ -464,7 +465,7 @@ public final class SampleClaim {
             getDefaultClaimSubmissionOperationIndicators.get(),
             ccdCaseId,
             reviewOrder,
-            directionOrderCreatedOn
+            directionOrder
         );
     }
 
@@ -670,6 +671,11 @@ public final class SampleClaim {
 
     public SampleClaim withReviewOrder(ReviewOrder reviewOrder) {
         this.reviewOrder = reviewOrder;
+        return this;
+    }
+
+    public SampleClaim withDirectionOrder(DirectionOrder directionOrder) {
+        this.directionOrder = directionOrder;
         return this;
     }
 }
