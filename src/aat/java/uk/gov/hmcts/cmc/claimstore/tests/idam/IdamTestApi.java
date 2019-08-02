@@ -13,6 +13,9 @@ public interface IdamTestApi {
     @RequestMapping(method = RequestMethod.POST, value = "/accounts")
     void createUser(CreateUserRequest createUserRequest);
 
-    @RequestMapping(value = "/accounts/pin/{letterHolderId}", method = GET)
+    @RequestMapping(method = GET, value = "/accounts/pin/{letterHolderId}")
     String getPinByLetterHolderId(@PathVariable("letterHolderId") String letterHolderId);
+
+    @RequestMapping(method = RequestMethod.DELETE, value = "/account/{email}")
+    void deleteUser(String email);
 }

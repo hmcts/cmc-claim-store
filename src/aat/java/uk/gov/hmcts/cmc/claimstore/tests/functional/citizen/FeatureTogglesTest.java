@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,11 @@ public class FeatureTogglesTest extends BaseTest {
     @Before
     public void before() {
         user = idamTestService.createCitizen();
+    }
+
+    @After
+    public void after() {
+        idamTestService.deleteUser(user.getUserDetails().getEmail());
     }
 
     @Test

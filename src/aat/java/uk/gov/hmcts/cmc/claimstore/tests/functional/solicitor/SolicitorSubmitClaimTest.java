@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.solicitor;
 
+import org.junit.After;
 import org.junit.Before;
 import uk.gov.hmcts.cmc.claimstore.tests.functional.BaseSubmitClaimTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -17,6 +18,11 @@ public class SolicitorSubmitClaimTest extends BaseSubmitClaimTest {
     @Before
     public void before() {
         user = idamTestService.createSolicitor();
+    }
+
+    @After
+    public void after() {
+        idamTestService.deleteUser(user.getUserDetails().getEmail());
     }
 
     @Override

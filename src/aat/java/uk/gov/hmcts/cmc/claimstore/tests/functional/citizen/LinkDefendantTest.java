@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
 import io.restassured.RestAssured;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
@@ -18,6 +19,11 @@ public class LinkDefendantTest extends BaseTest {
     @Before
     public void before() {
         claimant = idamTestService.createCitizen();
+    }
+
+    @After
+    public void after() {
+        idamTestService.deleteUser(claimant.getUserDetails().getEmail());
     }
 
     @Test
@@ -39,6 +45,8 @@ public class LinkDefendantTest extends BaseTest {
             .statusCode(HttpStatus.OK.value());
 
         Claim claim = commonOperations.retrieveClaim(createdCase.getExternalId(), claimant.getAuthorisation());
+
+        idamTestService.deleteUser(defendant.getUserDetails().getEmail());
 
         assertThat(claim.getDefendantId()).isEqualTo(defendant.getUserDetails().getId());
     }

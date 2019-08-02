@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import static org.hamcrest.Matchers.containsString;
 public class ReDeterminationTest extends BaseTest {
 
     private User claimant;
+    private User defendant;
     private Claim claim;
 
     @Before
@@ -29,8 +31,14 @@ public class ReDeterminationTest extends BaseTest {
             claimant.getUserDetails().getId()
         );
 
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
+        defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
         claim = createClaimWithResponse(createdCase, defendant);
+    }
+
+    @After
+    public void after() {
+        idamTestService.deleteUser(claimant.getUserDetails().getEmail());
+        idamTestService.deleteUser(defendant.getUserDetails().getEmail());
     }
 
     @Test

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,11 @@ public class PaidInFullTest extends BaseTest {
     @Before
     public void before() {
         claimant = idamTestService.createCitizen();
+    }
+
+    @After
+    public void after() {
+        idamTestService.deleteUser(claimant.getUserDetails().getEmail());
     }
 
     @Test

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,7 @@ import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.SE
 public class ClaimantResponseTest extends BaseTest {
 
     private User claimant;
+    private User defendant;
     private Claim claim;
 
     @Before
@@ -35,8 +37,14 @@ public class ClaimantResponseTest extends BaseTest {
             claimantId
         );
 
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
+        defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
         claim = createClaimWithResponse(createdCase, defendant);
+    }
+
+    @After
+    public void after() {
+        idamTestService.deleteUser(claimant.getUserDetails().getEmail());
+        idamTestService.deleteUser(defendant.getUserDetails().getEmail());
     }
 
     @Test

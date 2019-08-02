@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.AuthenticateUserResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.Oauth2;
 import uk.gov.hmcts.cmc.claimstore.idam.models.TokenExchangeResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.tests.AATConfiguration;
 import uk.gov.hmcts.cmc.claimstore.tests.helpers.TestData;
@@ -89,6 +90,10 @@ public class IdamTestService {
 
         // Re-authenticate to get new roles on the user
         return userService.authenticateUser(email, password);
+    }
+
+    public void deleteUser(String email) {
+        idamTestApi.deleteUser(email);
     }
 
     private void upliftUser(String email, String password, TokenExchangeResponse exchangeResponse) {

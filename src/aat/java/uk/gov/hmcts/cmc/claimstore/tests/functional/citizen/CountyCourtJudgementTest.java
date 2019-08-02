@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
 import io.restassured.RestAssured;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
@@ -26,6 +27,11 @@ public class CountyCourtJudgementTest extends BaseTest {
     @Before
     public void before() {
         claimant = idamTestService.createCitizen();
+    }
+
+    @After
+    public void after() {
+        idamTestService.deleteUser(claimant.getUserDetails().getEmail());
     }
 
     @Test

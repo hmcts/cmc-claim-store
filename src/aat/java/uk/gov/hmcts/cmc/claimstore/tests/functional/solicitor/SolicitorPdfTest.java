@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.solicitor;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -21,6 +22,11 @@ public class SolicitorPdfTest extends BasePdfTest {
     @Before
     public void before() {
         user = idamTestService.createSolicitor();
+    }
+
+    @After
+    public void after() {
+        idamTestService.deleteUser(user.getUserDetails().getEmail());
     }
 
     @Test
