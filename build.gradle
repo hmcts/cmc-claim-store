@@ -4,7 +4,7 @@ plugins {
   id 'checkstyle'
   id 'io.spring.dependency-management' version '1.0.8.RELEASE'
   id 'org.springframework.boot' version '2.1.6.RELEASE'
-  id 'org.owasp.dependencycheck' version '5.1.0'
+  id 'org.owasp.dependencycheck' version '5.2.0'
   id 'org.sonarqube' version '2.7.1'
   id 'com.github.ben-manes.versions' version '0.21.0'
   id 'jacoco'
@@ -85,7 +85,7 @@ allprojects {
     }
     dependencies {
       // CVE-2019-0232 - command line injections on windows - fixed on spring boot master but not released
-      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.21') {
+      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.22') {
         entry 'tomcat-embed-core'
         entry 'tomcat-embed-el'
         entry 'tomcat-embed-websocket'
@@ -207,8 +207,8 @@ dependencies {
   testCompile group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock'
   
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.12.2'
-  testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.11.4'
-  testCompile group: 'org.mockito', name: 'mockito-core', version: '2.28.2'
+  testCompile group: 'org.mockito', name: 'mockito-core', version: '3.0.0'
+  testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.12.0'
   
   testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
   testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.4.0'
@@ -344,6 +344,7 @@ sonarqube {
       "**/CCDReDetermination.java," +
       "**/CCDEventProducer.java," +
       "**/GeneratedDocuments.java," +
+      "**/DBCaseRepository.java," +
       "**/CCDCaseApi.java"
   }
 }
