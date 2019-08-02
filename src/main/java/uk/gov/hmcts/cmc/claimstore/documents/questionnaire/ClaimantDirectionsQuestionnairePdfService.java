@@ -5,9 +5,13 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.claimstore.documents.PdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.content.directionsquestionnaire.ClaimantDirectionsQuestionnaireContentProvider;
+import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
+
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimantHearingFileBaseName;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIMANT_DIRECTIONS_QUESTIONNAIRE;
 
 @Component
 public class ClaimantDirectionsQuestionnairePdfService implements PdfService {
@@ -26,7 +30,7 @@ public class ClaimantDirectionsQuestionnairePdfService implements PdfService {
     }
 
     @Override
-    public byte[] createPdf(Claim claim) {
+    public PDF createPdf(Claim claim) {
 
         claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
 
@@ -35,7 +39,9 @@ public class ClaimantDirectionsQuestionnairePdfService implements PdfService {
             .map(ResponseRejection.class::cast)
             .orElseThrow(IllegalArgumentException::new);
 
-        return pdfServiceClient.generateFromHtml(documentTemplates.getClaimantDirectionsQuestionnaire(),
-            contentProvider.createContent(claim));
+        return new PDF(buildClaimantHearingFileBaseName(claim.getReferenceNumber()),
+            pdfServiceClient.generateFromHtml(documentTemplates.getClaimantDirectionsQuestionnaire(),
+                contentProvider.createContent(claim)),
+            CLAIMANT_DIRECTIONS_QUESTIONNAIRE);
     }
 }

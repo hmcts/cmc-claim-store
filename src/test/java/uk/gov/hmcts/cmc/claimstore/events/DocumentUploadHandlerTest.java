@@ -43,8 +43,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimIssueReceiptFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSettlementReachedFileBaseName;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIMANT_DIRECTIONS_QUESTIONNAIRE;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
@@ -56,8 +61,6 @@ public class DocumentUploadHandlerTest {
     private static final String AUTHORISATION = "Bearer: aaa";
     private static final String CLAIM_MUST_NOT_BE_NULL = "Claim must not be null";
 
-    private String submitterName = "Dr. John Smith";
-    private String pin = "123456";
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 
     @Rule
@@ -120,6 +123,12 @@ public class DocumentUploadHandlerTest {
         PDF pinLetter = new PDF(buildDefendantLetterFileBaseName(referenceNumber), PDF_CONTENT, DEFENDANT_PIN_LETTER);
         DocumentGeneratedEvent event = new DocumentGeneratedEvent(claim, AUTHORISATION, sealedClaim, pinLetter);
 
+        when(claimIssueReceiptService.createPdf(claim)).thenReturn(new PDF(
+            buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber()),
+            PDF_CONTENT,
+            CLAIM_ISSUE_RECEIPT
+        ));
+
         documentUploadHandler.uploadCitizenClaimDocument(event);
 
         verify(documentService, times(2))
@@ -165,6 +174,12 @@ public class DocumentUploadHandlerTest {
 
     @Test
     public void defendantResponseEventTriggersDocumentUpload() {
+        PDF defendantResponse = new PDF(buildResponseFileBaseName(
+            defendantResponseEvent.getClaim().getReferenceNumber()),
+            PDF_CONTENT,
+            DEFENDANT_RESPONSE_RECEIPT);
+        when(defendantResponseReceiptService.createPdf(defendantResponseEvent.getClaim()))
+            .thenReturn(defendantResponse);
         documentUploadHandler.uploadDefendantResponseDocument(defendantResponseEvent);
         assertCommon(DEFENDANT_RESPONSE_RECEIPT);
     }
@@ -185,6 +200,12 @@ public class DocumentUploadHandlerTest {
 
     @Test
     public void agreementCountersignedEventShouldTriggersDocumentUpload() {
+        PDF settlementAgreement = new PDF(buildSettlementReachedFileBaseName(
+            offerMadeByClaimant.getClaim().getReferenceNumber()),
+            PDF_CONTENT,
+            SETTLEMENT_AGREEMENT);
+        when(settlementAgreementCopyService.createPdf(offerMadeByClaimant.getClaim()))
+            .thenReturn(settlementAgreement);
         documentUploadHandler.uploadSettlementAgreementDocument(offerMadeByClaimant);
         assertCommon(SETTLEMENT_AGREEMENT);
     }
@@ -211,6 +232,12 @@ public class DocumentUploadHandlerTest {
 
     @Test
     public void countersignSettlementAgreementEventShouldTriggersDocumentUpload() {
+        PDF settlementAgreement = new PDF(buildSettlementReachedFileBaseName(
+            countersignSettlementAgreementEvent.getClaim().getReferenceNumber()),
+            PDF_CONTENT,
+            SETTLEMENT_AGREEMENT);
+        when(settlementAgreementCopyService.createPdf(countersignSettlementAgreementEvent.getClaim()))
+            .thenReturn(settlementAgreement);
         documentUploadHandler.uploadSettlementAgreementDocument(countersignSettlementAgreementEvent);
         assertCommon(SETTLEMENT_AGREEMENT);
     }
@@ -246,14 +273,18 @@ public class DocumentUploadHandlerTest {
 
     @Test
     public void claimantResponseWithQuestionnaireUploadsToDM() {
-        documentUploadHandler.uploadClaimantDirectionsQuestionnaireToDM(
-            new ClaimantResponseEvent(
-                SampleClaim.getWithClaimantResponse(
-                    SampleClaimantResponse.ClaimantResponseRejection.builder()
-                        .buildRejectionWithDirectionsQuestionnaire()
-                ), AUTHORISATION));
+        Claim claim = SampleClaim.getWithClaimantResponse(
+            SampleClaimantResponse.ClaimantResponseRejection.builder()
+                .buildRejectionWithDirectionsQuestionnaire());
 
-        assertCommon(ClaimDocumentType.CLAIMANT_DIRECTION_QUESTIONNAIRE);
+        when(claimantDirectionsQuestionnairePdfService.createPdf(any())).thenReturn(new PDF(
+            buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber()),
+            PDF_CONTENT,
+            CLAIMANT_DIRECTIONS_QUESTIONNAIRE
+        ));
+        documentUploadHandler.uploadClaimantDirectionsQuestionnaireToDM(
+            new ClaimantResponseEvent(claim, AUTHORISATION));
+        assertCommon(ClaimDocumentType.CLAIMANT_DIRECTIONS_QUESTIONNAIRE);
 
     }
 
