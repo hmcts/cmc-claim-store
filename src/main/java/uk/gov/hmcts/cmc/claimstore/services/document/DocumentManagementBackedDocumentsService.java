@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.PdfService;
+import uk.gov.hmcts.cmc.claimstore.documents.ReviewOrderService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
@@ -28,6 +29,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     private final ClaimIssueReceiptService claimIssueReceiptService;
     private final DefendantResponseReceiptService defendantResponseReceiptService;
     private final SettlementAgreementCopyService settlementAgreementCopyService;
+    private final ReviewOrderService reviewOrderService;
     private final CCDEventProducer ccdEventProducer;
 
     @Autowired
@@ -41,6 +43,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         DefendantResponseReceiptService defendantResponseReceiptService,
         SettlementAgreementCopyService settlementAgreementCopyService,
         CCDEventProducer ccdEventProducer
+        ReviewOrderService reviewOrderService, CCDEventProducer ccdEventProducer
     ) {
         this.claimService = claimService;
         this.documentManagementService = documentManagementService;
@@ -48,6 +51,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         this.claimIssueReceiptService = claimIssueReceiptService;
         this.defendantResponseReceiptService = defendantResponseReceiptService;
         this.settlementAgreementCopyService = settlementAgreementCopyService;
+        this.reviewOrderService = reviewOrderService;
         this.ccdEventProducer = ccdEventProducer;
     }
 
@@ -61,6 +65,8 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
                 return defendantResponseReceiptService;
             case SETTLEMENT_AGREEMENT:
                 return settlementAgreementCopyService;
+            case REVIEW_ORDER:
+                return reviewOrderService;
             default:
                 throw new IllegalArgumentException(
                     "Unknown document service for document of type " + claimDocumentType.name());

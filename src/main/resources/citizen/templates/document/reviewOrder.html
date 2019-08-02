@@ -1,0 +1,143 @@
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    html {
+      /*noinspection CssNoGenericFontName*/
+      font-family: "Open Sans";
+      max-width: 960px;
+      margin: 0 auto;
+      background:#fff
+    }
+    body {
+      counter-reset: section;
+      font-family: "nta", Arial, sans-serif;
+      font-weight: 400;
+      text-transform: none;
+      font-size: 19px;
+      line-height: 1.25;
+      -webkit-font-smoothing: antialiased;
+    }
+    .section {
+      margin-bottom: 25px;
+    }
+    .section {
+      margin-bottom: 10px;
+    }
+    .section .section-heading strong:before {
+      counter-increment: section;
+      content: counter(section) ". ";
+    }
+    table {
+      width: 100%;
+      border-spacing: 0;
+    }
+    table td {
+      text-align:left;
+      line-height: 1.25;
+      padding: 0.63158em 1.05263em 0.67368em 0;
+      font-size: 18px;
+      vertical-align:top;
+      border-bottom: 1px solid #999;
+    }
+    
+    p {
+      font-size: 18px;
+    }
+    table td:first-child {
+      width: 280px;
+      vertical-align: top;
+      font-weight:700;
+    }
+    table td:last-child {
+      width: auto;
+    }
+    header table td, header table tr:last-child td {
+      border: none;
+    }
+    header td {
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      font-weight:100;
+      font-size:24px;
+    }
+    .page-title span{
+      float:right
+    }
+    .crestLogo{
+      margin-top:40px
+    }
+    .claim-details{
+      text-align:right
+    }
+    .footer td{
+      font-size:10px;
+      padding-top:40px;
+      border-bottom: none;
+    }
+    .footer td:nth-child(3){
+      text-align:right
+    }
+  </style>
+</head>
+<body>
+<header>
+
+  <table class="crestLogo">
+    <tbody>
+    <tr>
+      <td></td>
+      <td class="claim-details">
+        <h1>Request for review of order</h1>
+        <p>In the County Court Business Centre Online Civil Money Claims</p>
+        <p><strong>Claim number:</strong> {{ claimReferenceNumber }}<br />
+          <strong>Date:</strong> {{ reviewDate }}</p></td>
+    </tr>
+    </tbody>
+  </table>
+</header>
+
+<div class="section">
+  <table>
+    <tbody>
+    <tr>
+      <td>
+        Party's name:
+      </td>
+      <td>
+        {{ partyFullName }}
+      </td>
+    </tr>
+    <tr>
+      <td>
+        Address:
+      </td>
+      <td>
+        {{ partyAddress.line1 }}
+        <br />
+        {% if partyAddress.line2 is defined and partyAddress.line2 is not empty %}
+        {{ partyAddress.line2 }}
+        <br />
+        {% endif %}
+        {% if partyAddress.line3 is defined and partyAddress.line3 is not empty %}
+        {{ partyAddress.line3 }}
+        <br />
+        {% endif %}
+        {{ partyAddress.city }}
+        <br />
+        {{ partyAddress.postcode }}
+      </td>
+    </tr>
+    <tr>
+      <td>
+        Reason for request:
+      </td>
+      <td>{{ reviewReason }}</td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+</body>
+</html>
