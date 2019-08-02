@@ -29,10 +29,10 @@ public class AmountContentProvider {
     private BigDecimal getPartAdmissionAmount(Claim claim, PartAdmissionResponse response) {
         return response.getAmount().subtract(
             claim.getClaimData().getFeesPaidInPound())
-            .max(new BigDecimal(0));
+            .max(ZERO);
     }
 
-    private BigDecimal getPartAdmissionClaimFeeInPound(Claim claim,
+    private BigDecimal getPartAdmissionClaimFeeInPounds(Claim claim,
                                                        PartAdmissionResponse response, BigDecimal admissionAmount) {
         if (admissionAmount.equals(ZERO)
             && admissionAmount.compareTo(claim.getClaimData().getFeesPaidInPound()) < 0) {
@@ -56,7 +56,7 @@ public class AmountContentProvider {
             : claimAmount;
 
         BigDecimal feeAmount = isPartAdmissionResponse
-            ? getPartAdmissionClaimFeeInPound(claim, (PartAdmissionResponse) response, admittedAmount)
+            ? getPartAdmissionClaimFeeInPounds(claim, (PartAdmissionResponse) response, admittedAmount)
             : claim.getClaimData().getFeesPaidInPound();
 
         BigDecimal ccjAmount = usePartAdmitAmount ? admittedAmount : claimAmount;
