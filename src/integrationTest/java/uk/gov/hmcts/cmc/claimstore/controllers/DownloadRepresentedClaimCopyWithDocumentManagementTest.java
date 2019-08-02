@@ -81,8 +81,11 @@ public class DownloadRepresentedClaimCopyWithDocumentManagementTest extends Base
             .andExpect(status().isOk())
             .andExpect(content().bytes(PDF_BYTES));
 
-        assertThat(claimStore.getClaim(claim.getId()).getClaimDocument(SEALED_CLAIM))
-            .isEqualTo(Optional.of(URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4")));
+        assertThat(claimStore.getClaim(claim.getId())
+            .getClaimDocument(SEALED_CLAIM)
+            .get()
+            .getDocumentManagementUrl())
+            .isEqualTo(URI.create("http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4"));
     }
 
     @Test
