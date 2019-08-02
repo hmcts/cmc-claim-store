@@ -16,10 +16,8 @@ import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.util.Optional;
 
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimIssueReceiptFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
@@ -70,7 +68,7 @@ public class DocumentOrchestrationService {
         Document sealedClaimDoc = citizenServiceDocumentsService.sealedClaimDocument(claim);
 
         return GeneratedDocuments.builder()
-            .claimIssueReceipt(getClaimIssueReceiptPdf(claim))
+            .claimIssueReceipt(claimIssueReceiptService.createPdf(claim))
             .defendantPinLetter(defendantPinLetter)
             .sealedClaim(getClaimPdf(claim, sealedClaimDoc))
             .defendantPinLetterDoc(defendantPinLetterDoc)
@@ -88,27 +86,19 @@ public class DocumentOrchestrationService {
     private PDF getClaimPdf(Claim claim, Document sealedClaimDoc) {
         return new PDF(buildSealedClaimFileBaseName(
             claim.getReferenceNumber()),
-            pdfServiceClient.generateFromHtml(sealedClaimDoc.template.getBytes(), sealedClaimDoc.values),
+            pdfServiceClient.generateFromHtml(
+                sealedClaimDoc.template.getBytes(), sealedClaimDoc.values),
             SEALED_CLAIM
         );
     }
 
     public PDF getClaimIssueReceiptPdf(Claim claim) {
-        return new PDF(buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber()),
-            claimIssueReceiptService.createPdf(claim),
-            CLAIM_ISSUE_RECEIPT
-        );
+        return claimIssueReceiptService.createPdf(claim);
     }
 
     public GeneratedDocuments getSealedClaimForRepresentative(Claim claim) {
-        PDF sealedClaim = new PDF(
-            buildSealedClaimFileBaseName(claim.getReferenceNumber()),
-            sealedClaimPdfService.createPdf(claim),
-            SEALED_CLAIM
-        );
-
         return GeneratedDocuments.builder()
-            .sealedClaim(sealedClaim)
+            .sealedClaim(sealedClaimPdfService.createPdf(claim))
             .build();
     }
 

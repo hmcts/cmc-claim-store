@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
+import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.StatesPaidEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -21,8 +22,6 @@ import java.util.Optional;
 
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
@@ -72,9 +71,9 @@ public class StatesPaidStaffNotificationService {
         map.put("claimantResponse", claimantResponse.getType());
         map.put("defendantEmail", claim.getDefendantEmail());
         map.put("defendantMobilePhone", response
-                .getDefendant()
-                .getMobilePhone()
-                .orElse(null));
+            .getDefendant()
+            .getMobilePhone()
+            .orElse(null));
 
         map.put("defendantFreeMediation", claim.getResponse()
             .flatMap(Response::getFreeMediation)
@@ -93,9 +92,11 @@ public class StatesPaidStaffNotificationService {
     }
 
     private EmailAttachment createResponsePdfAttachment(Claim claim) {
-        byte[] defendantResponse = defendantResponseReceiptService.createPdf(claim);
+        PDF defendantResponse = defendantResponseReceiptService.createPdf(claim);
         requireNonNull(defendantResponse);
 
-        return pdf(defendantResponse, buildResponseFileBaseName(claim.getReferenceNumber()) + EXTENSION);
+        return pdf(
+            defendantResponse.getBytes(),
+            defendantResponse.getFilename());
     }
 }
