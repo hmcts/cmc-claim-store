@@ -1,6 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.tests.idam;
 
 import feign.Response;
+import net.jodah.failsafe.Failsafe;
+import net.jodah.failsafe.RetryPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,8 @@ import uk.gov.hmcts.cmc.claimstore.tests.AATConfiguration;
 import uk.gov.hmcts.cmc.claimstore.tests.helpers.TestData;
 
 import java.nio.charset.Charset;
+import java.time.Duration;
+import java.util.concurrent.ExecutionException;
 
 import static uk.gov.hmcts.cmc.claimstore.services.UserService.AUTHORIZATION_CODE;
 
@@ -28,6 +32,11 @@ public class IdamTestService {
 
     private static final Logger logger = LoggerFactory.getLogger(IdamTestService.class);
     private static final String PIN_PREFIX = "Pin ";
+    private static final RetryPolicy<Object> retryPolicy = new RetryPolicy<>()
+        .handle(ExecutionException.class)
+        .withDelay(Duration.ofSeconds(1))
+        .onRetry(r -> logger.debug("Retrying IdamTestService"))
+        .withMaxRetries(3);
 
     private final IdamApi idamApi;
     private final IdamTestApi idamTestApi;
@@ -58,42 +67,48 @@ public class IdamTestService {
     }
 
     public User createSolicitor() {
-        String email = testData.nextUserEmail();
-        createUser(createSolicitorRequest(email, aatConfiguration.getSmokeTestSolicitor().getPassword()));
-        return userService.authenticateUser(email, aatConfiguration.getSmokeTestSolicitor().getPassword());
+        return Failsafe.with(retryPolicy).get(() -> {
+            String email = testData.nextUserEmail();
+            createUser(createSolicitorRequest(email, aatConfiguration.getSmokeTestSolicitor().getPassword()));
+            return userService.authenticateUser(email, aatConfiguration.getSmokeTestSolicitor().getPassword());
+        });
     }
 
     public User createCitizen() {
-        String email = testData.nextUserEmail();
-        createUser(createCitizenRequest(email, aatConfiguration.getSmokeTestCitizen().getPassword()));
-        return userService.authenticateUser(email, aatConfiguration.getSmokeTestCitizen().getPassword());
+        return Failsafe.with(retryPolicy).get(() -> {
+            String email = testData.nextUserEmail();
+            createUser(createCitizenRequest(email, aatConfiguration.getSmokeTestCitizen().getPassword()));
+            return userService.authenticateUser(email, aatConfiguration.getSmokeTestCitizen().getPassword());
+        });
     }
 
     public User createDefendant(final String letterHolderId) {
-        String email = testData.nextUserEmail();
-        String password = aatConfiguration.getSmokeTestCitizen().getPassword();
-        createUser(createCitizenRequest(email, password));
+        return Failsafe.with(retryPolicy).get(() -> {
+            String email = testData.nextUserEmail();
+            String password = aatConfiguration.getSmokeTestCitizen().getPassword();
+            createUser(createCitizenRequest(email, password));
 
-        String pin = idamTestApi.getPinByLetterHolderId(letterHolderId);
+            String pin = idamTestApi.getPinByLetterHolderId(letterHolderId);
 
-        AuthenticateUserResponse pinUserCode = authenticatePinUser(pin);
+            AuthenticateUserResponse pinUserCode = authenticatePinUser(pin);
 
-        TokenExchangeResponse exchangeResponse = idamApi.exchangeCode(
-            pinUserCode.getCode(),
-            AUTHORIZATION_CODE,
-            oauth2.getRedirectUrl(),
-            oauth2.getClientId(),
-            oauth2.getClientSecret()
-        );
+            TokenExchangeResponse exchangeResponse = idamApi.exchangeCode(
+                pinUserCode.getCode(),
+                AUTHORIZATION_CODE,
+                oauth2.getRedirectUrl(),
+                oauth2.getClientId(),
+                oauth2.getClientSecret()
+            );
 
-        upliftUser(email, password, exchangeResponse);
+            upliftUser(email, password, exchangeResponse);
 
-        // Re-authenticate to get new roles on the user
-        return userService.authenticateUser(email, password);
+            // Re-authenticate to get new roles on the user
+            return userService.authenticateUser(email, password);
+        });
     }
 
     public void deleteUser(String email) {
-        idamTestApi.deleteUser(email);
+        Failsafe.with(retryPolicy).run(() -> idamTestApi.deleteUser(email));
     }
 
     private void upliftUser(String email, String password, TokenExchangeResponse exchangeResponse) {
