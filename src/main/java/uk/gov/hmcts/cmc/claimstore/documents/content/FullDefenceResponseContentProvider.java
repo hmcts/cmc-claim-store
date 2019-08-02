@@ -80,7 +80,7 @@ public class FullDefenceResponseContentProvider {
         content.put("formNumber", DEFENCE_FORM_NO);
 
         fullDefenceResponse.getDirectionsQuestionnaire().ifPresent(dq ->
-            content.put("hearingContent", hearingContentProvider.mapDirectionQuestionnaire.apply(dq)));
+            content.put("hearingContent", hearingContentProvider.mapDirectionQuestionnaire(dq)));
 
         return content;
     }

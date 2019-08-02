@@ -35,8 +35,8 @@ public class ClaimantDirectionsQuestionnaireContentProvider {
 
         ImmutableMap.Builder<String, Object> contentBuilder = new ImmutableMap.Builder<>();
         contentBuilder.putAll(claimContentProvider.createContent(claim));
-        contentBuilder.put("hearingContent", hearingContentProvider.mapDirectionQuestionnaire
-            .apply(claimantDirectionsQuestionnaire));
+        contentBuilder.put("hearingContent", hearingContentProvider
+            .mapDirectionQuestionnaire(claimantDirectionsQuestionnaire));
         claim.getClaimantRespondedAt().ifPresent(respondedAt -> {
             contentBuilder.put("claimantSubmittedOn", formatDateTime(respondedAt));
         });

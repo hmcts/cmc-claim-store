@@ -29,13 +29,13 @@ public class HearingContentProviderTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void mapDirectionsQuestionnaireThrowsException() {
-        hearingContentProvider.mapDirectionQuestionnaire.apply(null);
+        hearingContentProvider.mapDirectionQuestionnaire(null);
     }
 
     @Test
     public void mapDirectionsQuestionnaireMapsHearingContent() {
         DirectionsQuestionnaire dq = SampleDirectionsQuestionnaire.builder().build();
-        HearingContent hearingContent = hearingContentProvider.mapDirectionQuestionnaire.apply(dq);
+        HearingContent hearingContent = hearingContentProvider.mapDirectionQuestionnaire(dq);
 
         dq.getWitness().ifPresent(
             witness -> assertEquals(witness, hearingContent.getWitness())
@@ -70,7 +70,7 @@ public class HearingContentProviderTest {
         DirectionsQuestionnaire dq = DirectionsQuestionnaire.builder()
             .hearingLocation(defaultHearingLocation)
             .build();
-        HearingContent hearingContent = hearingContentProvider.mapDirectionQuestionnaire.apply(dq);
+        HearingContent hearingContent = hearingContentProvider.mapDirectionQuestionnaire(dq);
 
         assertThat(hearingContent.getExpertReports(), Matchers.is(Matchers.empty()));
         assertThat(hearingContent.getUnavailableDates(), Matchers.is(Matchers.empty()));

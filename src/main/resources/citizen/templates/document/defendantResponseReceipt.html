@@ -1031,13 +1031,11 @@
       </div>
     </td>
   </tr>
-  {% set reportNo = 0 %}
   {% for report in hearingContent.expertReports %}
-  {% set reportNo = reportNo + 1 %}
   <tr>
     <td>
       <div>
-        Report {{ reportNo }}
+        Report {{ loop.index }}
       </div>
     </td>
     <td>

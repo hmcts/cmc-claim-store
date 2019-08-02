@@ -31,7 +31,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimIssu
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimantHearingFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSettlementReachedFileBaseName;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIMANT_DIRECTION_QUESTIONNAIRE;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIMANT_DIRECTIONS_QUESTIONNAIRE;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
@@ -127,7 +127,7 @@ public class DocumentUploadHandler {
         if (responseRejection != null && responseRejection.getDirectionsQuestionnaire().isPresent()) {
             PDF claimantDirectionsQuestionnaire = new PDF(buildClaimantHearingFileBaseName(claim.getReferenceNumber()),
                 claimantDirectionsQuestionnairePdfService.createPdf(claim),
-                CLAIMANT_DIRECTION_QUESTIONNAIRE);
+                CLAIMANT_DIRECTIONS_QUESTIONNAIRE);
             uploadToDocumentManagement(claim, event.getAuthorisation(), singletonList(claimantDirectionsQuestionnaire));
         }
 
