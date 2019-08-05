@@ -67,7 +67,7 @@ public class DocAssemblyTemplateBodyMapperTest {
             .build();
 
         ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
-        ccdCase.setOrderGenerationData(SampleData.getCCDOrderGenerationData());
+        ccdCase.setDirectionOrderData(SampleData.getCCDOrderGenerationData());
         ccdCase.setRespondents(
             ImmutableList.of(
                 CCDCollectionElement.<CCDRespondent>builder()
@@ -153,7 +153,7 @@ public class DocAssemblyTemplateBodyMapperTest {
         CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData();
         ccdOrderGenerationData.setHearingCourt(BIRMINGHAM);
 
-        ccdCase.setOrderGenerationData(ccdOrderGenerationData);
+        ccdCase.setDirectionOrderData(ccdOrderGenerationData);
         DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
             ccdCase,
             userDetails,
@@ -256,7 +256,7 @@ public class DocAssemblyTemplateBodyMapperTest {
         CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData();
         ccdOrderGenerationData.setOtherDirections(ImmutableList.of(
             CCDCollectionElement.<CCDOrderDirection>builder().value(null).build()));
-        ccdCase.setOrderGenerationData(ccdOrderGenerationData);
+        ccdCase.setDirectionOrderData(ccdOrderGenerationData);
         DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
             ccdCase,
             userDetails,

@@ -51,9 +51,6 @@ public class CaseMapper {
             .map(reviewOrderMapper::to)
             .ifPresent(builder::reviewOrder);
 
-        claim.getDirectionOrder()
-            .ifPresent(directionOrder -> builder.directionOrder(directionOrderMapper.to(directionOrder)));
-
         return builder
             .id(claim.getId())
             .externalId(claim.getExternalId())
@@ -92,7 +89,7 @@ public class CaseMapper {
             .submitterEmail(ccdCase.getSubmitterEmail())
             .claimSubmissionOperationIndicators(
                 mapFromCCDClaimSubmissionOperationIndicators.apply(ccdCase.getClaimSubmissionOperationIndicators()))
-            .directionOrder(directionOrderMapper.from(ccdCase.getDirectionOrder()))
+            .directionOrder(directionOrderMapper.from(ccdCase.getDirectionOrder(), ccdCase.getDirectionOrderData()))
             .reviewOrder(reviewOrderMapper.from(ccdCase.getReviewOrder()));
 
         if (ccdCase.getFeatures() != null) {

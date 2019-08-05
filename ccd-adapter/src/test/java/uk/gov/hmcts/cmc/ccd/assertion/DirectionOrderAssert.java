@@ -2,7 +2,7 @@ package uk.gov.hmcts.cmc.ccd.assertion;
 
 import org.assertj.core.api.AbstractAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
-import uk.gov.hmcts.cmc.domain.models.DirectionOrder;
+import uk.gov.hmcts.cmc.domain.orders.DirectionOrder;
 
 import java.util.Objects;
 

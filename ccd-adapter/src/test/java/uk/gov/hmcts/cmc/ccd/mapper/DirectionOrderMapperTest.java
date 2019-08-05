@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,13 +10,14 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
-import uk.gov.hmcts.cmc.domain.models.DirectionOrder;
+import uk.gov.hmcts.cmc.domain.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleDirectionOrder;
 
 import java.time.LocalDateTime;
 
 import static org.junit.Assert.assertNull;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDOrderGenerationData;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -26,35 +28,33 @@ public class DirectionOrderMapperTest {
     DirectionOrderMapper mapper;
 
     @Test
-    public void shouldMapDirectionOrderToCCD() {
-        DirectionOrder directionOrder = SampleDirectionOrder.getDefault();
-
-        CCDDirectionOrder ccdDirectionOrder = mapper.to(directionOrder);
-
-        assertThat(directionOrder).isEqualTo(ccdDirectionOrder);
-    }
-
-    @Test
-    public void shouldMapNullDirectionOrderToCCD() {
-        CCDDirectionOrder ccdReviewOrder = mapper.to(null);
-        assertNull(ccdReviewOrder);
-    }
-
-    @Test
     public void shouldMapDirectionOrderFromCCD() {
         CCDDirectionOrder ccdDirectionOrder = CCDDirectionOrder.builder()
             .hearingCourtAddress(SampleData.getCCDAddress())
             .createdOn(LocalDateTime.now())
             .build();
 
-        DirectionOrder directionOrder = mapper.from(ccdDirectionOrder);
+        DirectionOrder directionOrder = mapper.from(ccdDirectionOrder, getCCDOrderGenerationData());
 
         assertThat(directionOrder).isEqualTo(ccdDirectionOrder);
+        Assertions.assertThat(directionOrder.getDirections()).hasSize(4);
     }
 
     @Test
     public void shouldMapNullCCDDirectionOrderFromCCD() {
-        DirectionOrder directionOrder = mapper.from(null);
+        DirectionOrder directionOrder = mapper.from(null, getCCDOrderGenerationData());
+        assertNull(directionOrder);
+    }
+
+
+    @Test
+    public void shouldMapNullCCDOrderGenerationDataFromCCD() {
+        CCDDirectionOrder ccdDirectionOrder = CCDDirectionOrder.builder()
+            .hearingCourtAddress(SampleData.getCCDAddress())
+            .createdOn(LocalDateTime.now())
+            .build();
+
+        DirectionOrder directionOrder = mapper.from(ccdDirectionOrder, null);
         assertNull(directionOrder);
     }
 }

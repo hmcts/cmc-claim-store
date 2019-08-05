@@ -153,7 +153,7 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
 
         logger.info("Generate order callback: creating request for doc assembly");
 
-        CCDOrderGenerationData ccdOrderGenerationData = ccdCase.getOrderGenerationData();
+        CCDOrderGenerationData ccdOrderGenerationData = ccdCase.getDirectionOrderData();
 
         HearingCourt hearingCourt = Optional.ofNullable(ccdOrderGenerationData.getHearingCourt())
             .map(hearingCourtDetailsFinder::findHearingCourtAddress)

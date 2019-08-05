@@ -163,7 +163,7 @@ public class GenerateOrderCallbackHandlerTest {
                         .build())
                     .build()
             ));
-        ccdCase.setOrderGenerationData(SampleData.getCCDOrderGenerationData());
+        ccdCase.setDirectionOrderData(SampleData.getCCDOrderGenerationData());
 
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_START)
@@ -204,7 +204,7 @@ public class GenerateOrderCallbackHandlerTest {
                         .build())
                     .build()
             ));
-        ccdCase.setOrderGenerationData(ccdOrderGenerationData);
+        ccdCase.setDirectionOrderData(ccdOrderGenerationData);
 
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_START)
@@ -301,7 +301,7 @@ public class GenerateOrderCallbackHandlerTest {
     @Test
     public void shouldGenerateDocumentOnMidEvent() {
         CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
-        ccdCase.setOrderGenerationData(SampleData.getCCDOrderGenerationData());
+        ccdCase.setDirectionOrderData(SampleData.getCCDOrderGenerationData());
         when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
 
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
@@ -347,7 +347,7 @@ public class GenerateOrderCallbackHandlerTest {
         when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
         CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData();
         ccdOrderGenerationData.setOtherDirectionHeader(null);
-        ccdCase.setOrderGenerationData(ccdOrderGenerationData);
+        ccdCase.setDirectionOrderData(ccdOrderGenerationData);
 
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_START)

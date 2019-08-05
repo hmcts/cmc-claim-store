@@ -228,7 +228,7 @@ public class JsonMapperTest {
             .submitterId("2")
             .submittedOn(timestamp)
             .externalId(uuid)
-            .orderGenerationData(
+            .directionOrderData(
                 CCDOrderGenerationData
                     .builder()
                     .build())

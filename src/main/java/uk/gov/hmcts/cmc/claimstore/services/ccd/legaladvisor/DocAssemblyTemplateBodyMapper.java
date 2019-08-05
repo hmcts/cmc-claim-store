@@ -25,7 +25,7 @@ public class DocAssemblyTemplateBodyMapper {
     }
 
     public DocAssemblyTemplateBody from(CCDCase ccdCase, UserDetails userDetails, HearingCourt hearingCourt) {
-        CCDOrderGenerationData ccdOrderGenerationData = ccdCase.getOrderGenerationData();
+        CCDOrderGenerationData ccdOrderGenerationData = ccdCase.getDirectionOrderData();
 
         return DocAssemblyTemplateBody.builder()
             .claimant(Party.builder()

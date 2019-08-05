@@ -81,7 +81,7 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
         CCDCase ccdCase = jsonMapper.fromMap(caseData, CCDCase.class);
         notifyParties(claim);
         String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
-        return printOrder(authorisation, claim, ccdCase.getOrderGenerationData());
+        return printOrder(authorisation, claim, ccdCase.getDirectionOrderData());
     }
 
     private void notifyParties(Claim claim) {
@@ -99,7 +99,7 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = jsonMapper.fromMap(callbackRequest.getCaseDetails().getData(), CCDCase.class);
 
-        CCDDocument draftOrderDoc = Optional.ofNullable(ccdCase.getOrderGenerationData())
+        CCDDocument draftOrderDoc = Optional.ofNullable(ccdCase.getDirectionOrderData())
             .map(CCDOrderGenerationData::getDraftOrderDoc)
             .orElseThrow(() -> new CallbackException("Draft order not present"));
 

@@ -127,7 +127,7 @@ public class DrawOrderCallbackHandlerTest {
             .build();
 
         CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList()).toBuilder()
-            .orderGenerationData(CCDOrderGenerationData.builder().draftOrderDoc(DOCUMENT).build())
+            .directionOrderData(CCDOrderGenerationData.builder().draftOrderDoc(DOCUMENT).build())
             .directionOrder(CCDDirectionOrder.builder().hearingCourtAddress(SampleData.getCCDAddress()).build())
             .build();
 
@@ -181,7 +181,7 @@ public class DrawOrderCallbackHandlerTest {
                 .build();
 
         CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList()).toBuilder()
-            .orderGenerationData(CCDOrderGenerationData.builder().draftOrderDoc(DOCUMENT).build())
+            .directionOrderData(CCDOrderGenerationData.builder().draftOrderDoc(DOCUMENT).build())
             .directionOrder(CCDDirectionOrder.builder().hearingCourtAddress(SampleData.getCCDAddress()).build())
             .caseDocuments(ImmutableList.of(existingDocument))
             .build();
