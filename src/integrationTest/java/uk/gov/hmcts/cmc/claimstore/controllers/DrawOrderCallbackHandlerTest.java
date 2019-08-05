@@ -18,14 +18,13 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDraw
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,12 +60,11 @@ public class DrawOrderCallbackHandlerTest extends MockSpringTest {
     private CaseDetailsConverter caseDetailsConverter;
 
     @Before
-    public void setUp() throws URISyntaxException {
+    public void setUp() {
         given(documentManagementService
             .downloadDocument(
-                AUTHORISATION_TOKEN,
-                new URI(DOCUMENT_URL),
-                null)).willReturn("template".getBytes());
+                eq(AUTHORISATION_TOKEN),
+                any(ClaimDocument.class))).willReturn("template".getBytes());
         Claim claim = SampleClaim.builder().build();
         given(caseDetailsConverter.extractClaim(any(CaseDetails.class))).willReturn(claim);
     }
@@ -81,7 +79,7 @@ public class DrawOrderCallbackHandlerTest extends MockSpringTest {
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
 
-        assertThat(responseData).hasSize(1);
+        assertThat(responseData).hasSize(22);
         List<Map<String, Object>> caseDocuments =
             (List<Map<String, Object>>) responseData.get("caseDocuments");
         Map<String, Object> document =

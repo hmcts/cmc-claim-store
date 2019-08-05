@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentMetadataDownloadClientApi;
@@ -42,8 +43,8 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class DocumentManagementServiceTest {
 
-    public static final ImmutableList<String> USER_ROLES = ImmutableList.of("caseworker-cmc", "citizen");
-    public static final String USER_ROLES_JOINED = "caseworker-cmc,citizen";
+    private static final ImmutableList<String> USER_ROLES = ImmutableList.of("caseworker-cmc", "citizen");
+    private static final String USER_ROLES_JOINED = "caseworker-cmc,citizen";
 
     @Mock
     private DocumentMetadataDownloadClientApi documentMetadataDownloadClient;
@@ -134,7 +135,11 @@ public class DocumentManagementServiceTest {
             .downloadBinary(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString())
         ).thenReturn(responseEntity);
 
-        byte[] pdf = documentManagementService.downloadDocument("auth string", docUri, "0000-claim");
+        ClaimDocument claimDocument = ClaimDocument.builder()
+            .documentManagementUrl(docUri)
+            .documentName("0000-claim")
+            .build();
+        byte[] pdf = documentManagementService.downloadDocument("auth string", claimDocument);
         assertNotNull(pdf);
         assertArrayEquals("test".getBytes(), pdf);
 
@@ -158,6 +163,10 @@ public class DocumentManagementServiceTest {
             .getDocumentMetadata(anyString(), anyString(), eq(USER_ROLES_JOINED), anyString(), anyString())
         ).thenReturn(null);
 
-        documentManagementService.downloadDocument("auth string", docUri, "0000-claim");
+        ClaimDocument claimDocument = ClaimDocument.builder()
+            .documentManagementUrl(docUri)
+            .documentName("0000-claim")
+            .build();
+        documentManagementService.downloadDocument("auth string", claimDocument);
     }
 }

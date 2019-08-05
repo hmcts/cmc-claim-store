@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
+import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
@@ -182,6 +183,11 @@ public class CCDCaseRepository implements CaseRepository {
     @Override
     public Claim linkLetterHolder(Long claimId, String letterHolderId) {
         return coreCaseDataService.linkLetterHolder(claimId, letterHolderId);
+    }
+
+    @Override
+    public Claim saveReviewOrder(Long caseId, ReviewOrder reviewOrder, String authorisation) {
+        return coreCaseDataService.saveReviewOrder(caseId, reviewOrder, authorisation);
     }
 
     @Override
