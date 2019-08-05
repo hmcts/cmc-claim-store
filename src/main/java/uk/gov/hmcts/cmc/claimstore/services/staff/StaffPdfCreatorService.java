@@ -7,16 +7,11 @@ import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
+import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimantResponseFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForJudgementFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSettlementReachedFileBaseName;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Component
@@ -43,40 +38,47 @@ public class StaffPdfCreatorService {
     }
 
     public EmailAttachment createClaimantResponsePdfAttachment(Claim claim) {
-        byte[] claimantResponse = claimantResponseReceiptService.createPdf(claim);
+        PDF claimantResponse = claimantResponseReceiptService.createPdf(claim);
         requireNonNull(claimantResponse);
 
-        return pdf(claimantResponse, buildClaimantResponseFileBaseName(claim.getReferenceNumber()) + EXTENSION);
+        return pdf(
+            claimantResponse.getBytes(),
+            claimantResponse.getFilename());
     }
 
     public EmailAttachment createResponsePdfAttachment(Claim claim) {
-        byte[] defendantResponse = defendantResponseReceiptService.createPdf(claim);
+        PDF defendantResponse = defendantResponseReceiptService.createPdf(claim);
         requireNonNull(defendantResponse);
 
-        return pdf(defendantResponse, buildResponseFileBaseName(claim.getReferenceNumber()) + EXTENSION);
+        return pdf(
+            defendantResponse.getBytes(),
+            defendantResponse.getFilename());
     }
 
     public EmailAttachment createSettlementReachedPdfAttachment(Claim claim) {
-        byte[] settlementPdf = settlementAgreementCopyService.createPdf(claim);
+        PDF settlementPdf = settlementAgreementCopyService.createPdf(claim);
         requireNonNull(settlementPdf);
 
-        return pdf(settlementPdf, buildSettlementReachedFileBaseName(claim.getReferenceNumber()) + EXTENSION);
+        return pdf(
+            settlementPdf.getBytes(),
+            settlementPdf.getFilename());
     }
 
     public EmailAttachment createSealedClaimPdfAttachment(Claim claim) {
-        byte[] sealedClaimPdf = sealedClaimPdfService.createPdf(claim);
+        PDF sealedClaimPdf = sealedClaimPdfService.createPdf(claim);
         requireNonNull(sealedClaimPdf);
 
-        return pdf(sealedClaimPdf, buildSealedClaimFileBaseName(claim.getReferenceNumber()) + EXTENSION);
+        return pdf(
+            sealedClaimPdf.getBytes(),
+            sealedClaimPdf.getFilename());
     }
 
     public EmailAttachment generateCountyCourtJudgmentPdf(Claim claim) {
-        byte[] generatedPdf = countyCourtJudgmentPdfService.createPdf(claim);
+        PDF generatedPdf = countyCourtJudgmentPdfService.createPdf(claim);
 
         return pdf(
-            generatedPdf,
-            buildRequestForJudgementFileBaseName(claim.getReferenceNumber(),
-                claim.getClaimData().getDefendant().getName()) + EXTENSION
+            generatedPdf.getBytes(),
+            generatedPdf.getFilename()
         );
     }
 }
