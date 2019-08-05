@@ -1,9 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.document;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -15,15 +13,13 @@ import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
-import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
-
-import java.net.URI;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,6 +30,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DocumentManagementBackedDocumentsServiceTest {
@@ -43,8 +44,6 @@ public class DocumentManagementBackedDocumentsServiceTest {
 
     private DocumentManagementBackedDocumentsService documentManagementBackedDocumentsService;
 
-    @Rule
-    public ExpectedException exceptionRule = ExpectedException.none();
     @Mock
     private ClaimService claimService;
     @Mock
@@ -83,8 +82,15 @@ public class DocumentManagementBackedDocumentsServiceTest {
         Claim claim = SampleClaim.getDefault();
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(AUTHORISATION)))
             .thenReturn(claim);
-        when(sealedClaimPdfService.createPdf(any(Claim.class))).thenReturn(PDF_BYTES);
-        byte[] pdf = documentManagementBackedDocumentsService.generateSealedClaim(claim.getExternalId(), AUTHORISATION);
+        when(sealedClaimPdfService.createPdf(any(Claim.class))).thenReturn(new PDF(
+            "sealedClaim",
+            PDF_BYTES,
+            SEALED_CLAIM
+        ));
+        byte[] pdf = documentManagementBackedDocumentsService.generateDocument(
+            claim.getExternalId(),
+            SEALED_CLAIM,
+            AUTHORISATION);
         verifyCommon(pdf, claim.getId());
     }
 
@@ -93,9 +99,14 @@ public class DocumentManagementBackedDocumentsServiceTest {
         Claim claim = SampleClaim.getDefault();
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(AUTHORISATION)))
             .thenReturn(claim);
-        when(claimIssueReceiptService.createPdf(any(Claim.class))).thenReturn(PDF_BYTES);
-        byte[] pdf = documentManagementBackedDocumentsService.generateClaimIssueReceipt(
+        when(claimIssueReceiptService.createPdf(any(Claim.class))).thenReturn(new PDF(
+            "claimIssueReceipt",
+            PDF_BYTES,
+            CLAIM_ISSUE_RECEIPT
+        ));
+        byte[] pdf = documentManagementBackedDocumentsService.generateDocument(
             claim.getExternalId(),
+            CLAIM_ISSUE_RECEIPT,
             AUTHORISATION);
         verifyCommon(pdf, claim.getId());
     }
@@ -105,23 +116,16 @@ public class DocumentManagementBackedDocumentsServiceTest {
         Claim claim = SampleClaim.getDefault();
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(AUTHORISATION)))
             .thenReturn(claim);
-        when(defendantResponseReceiptService.createPdf(any(Claim.class))).thenReturn(PDF_BYTES);
-        byte[] pdf = documentManagementBackedDocumentsService.generateDefendantResponseReceipt(
+        when(defendantResponseReceiptService.createPdf(any(Claim.class))).thenReturn(new PDF(
+            "defendantResponseReceipt",
+            PDF_BYTES,
+            DEFENDANT_RESPONSE_RECEIPT
+        ));
+        byte[] pdf = documentManagementBackedDocumentsService.generateDocument(
             claim.getExternalId(),
+            DEFENDANT_RESPONSE_RECEIPT,
             AUTHORISATION);
         verifyCommon(pdf, claim.getId());
-    }
-
-    @Test
-    public void shouldThrowErrorWhenDefendantResponseDoesNotExist() {
-        Claim claim = SampleClaim.builder().build();
-        when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(AUTHORISATION)))
-            .thenReturn(claim);
-        exceptionRule.expect(NotFoundException.class);
-        exceptionRule.expectMessage("Defendant response does not exist for this claim");
-        documentManagementBackedDocumentsService.generateDefendantResponseReceipt(
-            claim.getExternalId(),
-            AUTHORISATION);
     }
 
     @Test
@@ -129,21 +133,16 @@ public class DocumentManagementBackedDocumentsServiceTest {
         Claim claim = SampleClaim.builder().withSettlement(mock(Settlement.class)).build();
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(AUTHORISATION)))
             .thenReturn(claim);
-        when(settlementAgreementCopyService.createPdf(any(Claim.class))).thenReturn(PDF_BYTES);
-        byte[] pdf = documentManagementBackedDocumentsService.generateSettlementAgreement(
+        when(settlementAgreementCopyService.createPdf(any(Claim.class))).thenReturn(new PDF(
+            "settlementAgreementCopy",
+            PDF_BYTES,
+            SETTLEMENT_AGREEMENT
+        ));
+        byte[] pdf = documentManagementBackedDocumentsService.generateDocument(
             claim.getExternalId(),
+            SETTLEMENT_AGREEMENT,
             AUTHORISATION);
         verifyCommon(pdf, claim.getId());
-    }
-
-    @Test
-    public void shouldThrowErrorWhenSettlementDoesNotExist() {
-        Claim claim = SampleClaim.getDefault();
-        exceptionRule.expect(NotFoundException.class);
-        exceptionRule.expectMessage("Settlement Agreement does not exist for this claim");
-        when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(AUTHORISATION)))
-            .thenReturn(claim);
-        documentManagementBackedDocumentsService.generateSettlementAgreement(claim.getExternalId(), AUTHORISATION);
     }
 
     @Test
@@ -151,14 +150,27 @@ public class DocumentManagementBackedDocumentsServiceTest {
         Claim claim = SampleClaim.getWithSealedClaimDocument();
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(AUTHORISATION)))
             .thenReturn(claim);
-        documentManagementBackedDocumentsService.generateSealedClaim(claim.getExternalId(), AUTHORISATION);
-        verify(documentManagementService, atLeastOnce()).downloadDocument(anyString(), any(URI.class), anyString());
+        documentManagementBackedDocumentsService.generateDocument(
+            claim.getExternalId(),
+            SEALED_CLAIM,
+            AUTHORISATION);
+        verify(documentManagementService, atLeastOnce()).downloadDocument(
+            eq(AUTHORISATION),
+            any(ClaimDocument.class));
         verify(documentManagementService, never()).uploadDocument(anyString(), any(PDF.class));
         verify(claimService, never()).saveClaimDocuments(
             eq(AUTHORISATION),
             eq(claim.getId()),
             any(ClaimDocumentCollection.class),
             any(ClaimDocumentType.class));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowIfDocumentTypeDoesNotHaveAService() {
+        documentManagementBackedDocumentsService.generateDocument(
+            "1234",
+            CCJ_REQUEST,
+            AUTHORISATION);
     }
 
     private void verifyCommon(byte[] pdf, Long claimId) {
