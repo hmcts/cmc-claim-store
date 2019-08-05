@@ -199,7 +199,7 @@ module "claim-store-api" {
     FEATURE_TOGGLES_CCD_ASYNC_ENABLED = "${var.ccd_async_enabled}"
     FEATURE_TOGGLES_SAVE_CLAIM_STATE_ENABLED = "${var.save_claim_state_enabled}"
     FEATURE_TOGGLES_ASYNC_EVENT_OPERATIONS_ENABLED = "${var.async_event_operations_enabled}"
-
+    FEATURE_TOGGLES_DIRECTIONS_QUESTIONNAIRE_ENABLED = "${var.directions_questionnaire_enabled}"
     //thread pool configs
     ASYNC_MAX_THREADPOOL_SIZE = 50
 
