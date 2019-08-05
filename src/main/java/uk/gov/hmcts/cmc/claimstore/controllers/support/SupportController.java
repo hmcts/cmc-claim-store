@@ -148,22 +148,8 @@ public class SupportController {
         if (StringUtils.isBlank(authorisation)) {
             throw new BadRequestException(AUTHORISATION_IS_REQUIRED);
         }
-        switch (claimDocumentType) {
-            case SEALED_CLAIM:
-                documentsService.generateSealedClaim(claim.getExternalId(), authorisation);
-                break;
-            case CLAIM_ISSUE_RECEIPT:
-                documentsService.generateClaimIssueReceipt(claim.getExternalId(), authorisation);
-                break;
-            case DEFENDANT_RESPONSE_RECEIPT:
-                documentsService.generateDefendantResponseReceipt(claim.getExternalId(), authorisation);
-                break;
-            case SETTLEMENT_AGREEMENT:
-                documentsService.generateSettlementAgreement(claim.getExternalId(), authorisation);
-                break;
-            default:
-                throw new BadRequestException("ClaimDocumentType " + claimDocumentType + " is not supported");
-        }
+        documentsService.generateDocument(claim.getExternalId(), claimDocumentType, authorisation);
+
         claimService.getClaimByReferenceAnonymous(referenceNumber)
             .ifPresent(updatedClaim -> updatedClaim.getClaimDocument(claimDocumentType)
                 .orElseThrow(() -> new NotFoundException("Unable to upload the document. Please try again later")));

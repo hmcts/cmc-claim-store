@@ -31,6 +31,7 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncome;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDLivingPartner;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebt;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
+import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType;
@@ -342,33 +343,7 @@ public class SampleData {
             .representativeOrganisationDxAddress("dx123")
             .build();
     }
-
-    public static CCDApplicant getIndividualApplicantWithDQ() {
-        CCDAddress ccdAddress = getCCDAddress();
-        return CCDApplicant.builder()
-            .partyDetail(CCDParty.builder()
-                .type(INDIVIDUAL)
-                .primaryAddress(ccdAddress)
-                .telephoneNumber(CCDTelephone.builder().telephoneNumber("07987654321").build())
-                .dateOfBirth(LocalDate.of(1950, 01, 01))
-                .correspondenceAddress(ccdAddress)
-                .build())
-            .partyName("Individual")
-            .representativeOrganisationAddress(ccdAddress)
-            .representativeOrganisationName("My Org")
-            .representativeOrganisationPhone("07987654321")
-            .representativeOrganisationEmail("my@email.com")
-            .representativeOrganisationDxAddress("dx123")
-            .preferredCourtName("Claimant Court")
-            .preferredCourtAddress(CCDAddress.builder()
-                .addressLine1("Claimant Court address")
-                .postCode("SW1P4BB")
-                .postTown("London")
-                .build())
-            .preferredCourtReason("As a claimant I like this court more")
-            .build();
-    }
-
+    
     public static CCDRespondent getIndividualRespondentWithDQ() {
         CCDAddress ccdAddress = getCCDAddress();
         return CCDRespondent.builder()
@@ -386,13 +361,43 @@ public class SampleData {
             .claimantProvidedRepresentativeOrganisationPhone("07987654321")
             .claimantProvidedRepresentativeOrganisationPhone("my@email.com")
             .claimantProvidedRepresentativeOrganisationDxAddress("dx123")
-            .preferredCourtName("Defendant Court")
-            .preferredCourtAddress(CCDAddress.builder()
-                .addressLine1("Defendant Court address")
-                .postCode("SW1P4BB")
-                .postTown("London")
+            .claimantResponse(CCDResponseRejection.builder()
+                .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder().build())
                 .build())
-            .preferredCourtReason("As a defendant I like this court more")
+            .directionsQuestionnaire(CCDDirectionsQuestionnaire
+                .builder()
+                .hearingLocation("Defendant Court")
+                .exceptionalCircumstancesReason("As a defendant I like this court more")
+                .build())
+            .build();
+    }
+
+    public static CCDRespondent getIndividualRespondentWithDQInClaimantResponse() {
+        CCDAddress ccdAddress = getCCDAddress();
+        return CCDRespondent.builder()
+            .partyName("Mary Richards")
+            .claimantProvidedDetail(
+                CCDParty.builder()
+                    .type(INDIVIDUAL)
+                    .primaryAddress(ccdAddress)
+                    .dateOfBirth(LocalDate.of(1950, 01, 01))
+                    .correspondenceAddress(ccdAddress)
+                    .build())
+            .claimantProvidedPartyName("Individual")
+            .claimantProvidedRepresentativeOrganisationAddress(ccdAddress)
+            .claimantProvidedRepresentativeOrganisationName("My Org")
+            .claimantProvidedRepresentativeOrganisationPhone("07987654321")
+            .claimantProvidedRepresentativeOrganisationPhone("my@email.com")
+            .claimantProvidedRepresentativeOrganisationDxAddress("dx123")
+            .claimantResponse(CCDResponseRejection.builder()
+                .directionsQuestionnaire(CCDDirectionsQuestionnaire
+                    .builder()
+                    .hearingLocation("Claimant Court")
+                    .exceptionalCircumstancesReason("As a claimant I like this court more").build())
+                .build())
+            .directionsQuestionnaire(CCDDirectionsQuestionnaire
+                .builder()
+                .build())
             .build();
     }
 
@@ -553,7 +558,7 @@ public class SampleData {
             .paperDetermination(NO)
             .docUploadDeadline(LocalDate.parse("2020-10-11"))
             .eyewitnessUploadDeadline(LocalDate.parse("2020-10-11"))
-            .hearingCourt(CCDHearingCourtType.DEFENDANT_COURT)
+            .hearingCourt(CCDHearingCourtType.BIRMINGHAM)
             .preferredCourtObjectingReason("I like this court more")
             .newRequestedCourt("Another court")
             .docUploadForParty(CCDDirectionPartyType.CLAIMANT)

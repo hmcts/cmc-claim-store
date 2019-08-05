@@ -9,6 +9,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import uk.gov.hmcts.cmc.claimstore.documents.CitizenServiceDocumentsService;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
+import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentGeneratedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.DocumentReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
@@ -24,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DocumentGeneratorTest {
@@ -69,7 +71,11 @@ public class DocumentGeneratorTest {
         when(citizenDocumentService.pinLetterDocument(claim, pin)).thenReturn(defendantLetterDocument);
 
         when(sealedClaimPdfService.createPdf(claim))
-            .thenReturn(PDF_CONTENT);
+            .thenReturn(new PDF(
+                "sealedClaim",
+                PDF_CONTENT,
+                SEALED_CLAIM
+            ));
 
         when(pdfServiceClient.generateFromHtml(pinTemplate.getBytes(), defendantLetterDocument.values))
             .thenReturn(PDF_CONTENT);
@@ -102,7 +108,11 @@ public class DocumentGeneratorTest {
     @Test
     public void shouldTriggerDocumentGeneratedEventForForRepresentedClaim() {
         Claim claim = SampleClaim.getDefault();
-        when(sealedClaimPdfService.createPdf(claim)).thenReturn(PDF_CONTENT);
+        when(sealedClaimPdfService.createPdf(claim)).thenReturn(new PDF(
+            "sealedClaim",
+            PDF_CONTENT,
+            SEALED_CLAIM
+        ));
         RepresentedClaimIssuedEvent event = new RepresentedClaimIssuedEvent(claim, submitterName, authorisation);
         documentGenerator.generateForRepresentedClaim(event);
         verify(publisher).publishEvent(any(DocumentGeneratedEvent.class));

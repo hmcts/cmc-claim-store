@@ -22,15 +22,18 @@ public class CaseMapper {
     private final ClaimMapper claimMapper;
     private final boolean isMigrated;
     private final ClaimDocumentCollectionMapper claimDocumentCollectionMapper;
+    private final ReviewOrderMapper reviewOrderMapper;
 
     public CaseMapper(
         ClaimMapper claimMapper,
         @Value("${migration.cases.flag:false}") boolean isMigrated,
-        ClaimDocumentCollectionMapper claimDocumentCollectionMapper
+        ClaimDocumentCollectionMapper claimDocumentCollectionMapper,
+        ReviewOrderMapper reviewOrderMapper
     ) {
         this.claimMapper = claimMapper;
         this.isMigrated = isMigrated;
         this.claimDocumentCollectionMapper = claimDocumentCollectionMapper;
+        this.reviewOrderMapper = reviewOrderMapper;
     }
 
     public CCDCase to(Claim claim) {
@@ -40,6 +43,10 @@ public class CaseMapper {
 
         claim.getClaimDocumentCollection()
             .ifPresent(claimDocumentCollection -> claimDocumentCollectionMapper.to(claimDocumentCollection, builder));
+
+        claim.getReviewOrder()
+            .map(reviewOrderMapper::to)
+            .ifPresent(builder::reviewOrder);
 
         return builder
             .id(claim.getId())
@@ -79,7 +86,8 @@ public class CaseMapper {
             .submitterEmail(ccdCase.getSubmitterEmail())
             .state(ClaimState.fromValue(ccdCase.getState()))
             .claimSubmissionOperationIndicators(
-                mapFromCCDClaimSubmissionOperationIndicators.apply(ccdCase.getClaimSubmissionOperationIndicators()));
+                mapFromCCDClaimSubmissionOperationIndicators.apply(ccdCase.getClaimSubmissionOperationIndicators()))
+            .reviewOrder(reviewOrderMapper.from(ccdCase.getReviewOrder()));
 
         if (ccdCase.getFeatures() != null) {
             builder.features(Arrays.asList(ccdCase.getFeatures().split(",")));

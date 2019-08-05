@@ -7,10 +7,6 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
 import uk.gov.hmcts.cmc.claimstore.repositories.mapping.JsonMapperFactory;
@@ -43,6 +39,10 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOTH;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType.BIRMINGHAM;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType.HALF_HOUR;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYEWITNESS;
 
 public class JsonMapperTest {
 
@@ -246,7 +246,7 @@ public class JsonMapperTest {
         data.put("eyewitnessUploadDeadline", "2019-06-03");
         data.put("docUploadDeadline", null);
         data.put("paperDetermination", "No");
-        data.put("hearingCourt", "DEFENDANT_COURT");
+        data.put("hearingCourt", "BIRMINGHAM");
         data.put("otherDirections", Collections.emptyList());
         data.put("directionList", ImmutableList.of("EYEWITNESS"));
         data.put("estimatedHearingDuration", "HALF_HOUR");
@@ -254,13 +254,13 @@ public class JsonMapperTest {
         CCDOrderGenerationData ccdOrderGenerationData = processor.convertValue(data, CCDOrderGenerationData.class);
 
         CCDOrderGenerationData expected = CCDOrderGenerationData.builder()
-            .directionList(Collections.singletonList(CCDOrderDirectionType.EYEWITNESS))
+            .directionList(Collections.singletonList(EYEWITNESS))
             .otherDirections(Collections.emptyList())
             .paperDetermination(NO)
             .eyewitnessUploadDeadline(LocalDate.parse("2019-06-03"))
-            .hearingCourt(CCDHearingCourtType.DEFENDANT_COURT)
-            .eyewitnessUploadForParty(CCDDirectionPartyType.BOTH)
-            .estimatedHearingDuration(CCDHearingDurationType.HALF_HOUR)
+            .hearingCourt(BIRMINGHAM)
+            .eyewitnessUploadForParty(BOTH)
+            .estimatedHearingDuration(HALF_HOUR)
             .build();
 
         assertThat(ccdOrderGenerationData).isEqualTo(expected);

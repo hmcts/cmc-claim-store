@@ -8,7 +8,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 
 import java.util.List;
 
@@ -18,6 +21,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.CLAIM;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.LETTER_HOLDER_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 
@@ -73,5 +77,20 @@ public class ClaimControllerTest {
 
         //then
         assertThat(output).isEqualTo(CLAIM);
+    }
+
+    @Test
+    public void shouldSaveReviewOrder() {
+        //given
+        ReviewOrder reviewOrder = SampleReviewOrder.getDefault();
+        Claim claim = SampleClaim.builder().withReviewOrder(reviewOrder).build();
+        when(claimService.saveReviewOrder(eq(EXTERNAL_ID), eq(reviewOrder), eq(AUTHORISATION)))
+            .thenReturn(claim);
+
+        //when
+        Claim output = claimController.saveReviewOrder(EXTERNAL_ID, reviewOrder, AUTHORISATION);
+
+        //then
+        assertThat(output).isEqualTo(claim);
     }
 }
