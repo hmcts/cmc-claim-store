@@ -284,7 +284,7 @@ public class DocumentUploadHandlerTest {
         ));
         documentUploadHandler.uploadClaimantDirectionsQuestionnaireToDM(
             new ClaimantResponseEvent(claim, AUTHORISATION));
-        assertCommon(ClaimDocumentType.CLAIMANT_DIRECTIONS_QUESTIONNAIRE);
+        assertCommon(CLAIMANT_DIRECTIONS_QUESTIONNAIRE);
 
     }
 

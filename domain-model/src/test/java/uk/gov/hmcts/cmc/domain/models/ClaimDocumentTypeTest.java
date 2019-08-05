@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIMANT_DIRECTIONS_QUESTIONNAIRE;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
@@ -31,6 +32,8 @@ public class ClaimDocumentTypeTest {
             .isEqualTo(DEFENDANT_RESPONSE_RECEIPT);
         assertThat(fromValue("settlementAgreement"))
             .isEqualTo(SETTLEMENT_AGREEMENT);
+        assertThat(fromValue("claimantHearingRequirement"))
+            .isEqualTo(CLAIMANT_DIRECTIONS_QUESTIONNAIRE);
     }
 
     @Test
@@ -51,6 +54,8 @@ public class ClaimDocumentTypeTest {
             .isEqualTo(CCJ_REQUEST);
         assertThat(fromValue("DEFENDANT_PIN_LETTER"))
             .isEqualTo(DEFENDANT_PIN_LETTER);
+        assertThat(fromValue("CLAIMANT_DIRECTIONS_QUESTIONNAIRE"))
+            .isEqualTo(CLAIMANT_DIRECTIONS_QUESTIONNAIRE);
     }
 
     @Test(expected = IllegalArgumentException.class)

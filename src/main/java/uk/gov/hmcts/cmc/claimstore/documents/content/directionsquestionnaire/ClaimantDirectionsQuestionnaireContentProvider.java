@@ -37,9 +37,9 @@ public class ClaimantDirectionsQuestionnaireContentProvider {
         contentBuilder.putAll(claimContentProvider.createContent(claim));
         contentBuilder.put("hearingContent", hearingContentProvider
             .mapDirectionQuestionnaire(claimantDirectionsQuestionnaire));
-        claim.getClaimantRespondedAt().ifPresent(respondedAt -> {
-            contentBuilder.put("claimantSubmittedOn", formatDateTime(respondedAt));
-        });
+        claim.getClaimantRespondedAt().ifPresent(respondedAt ->
+            contentBuilder.put("claimantSubmittedOn", formatDateTime(respondedAt))
+        );
         contentBuilder.put("formNumber", "OCON180");
         return contentBuilder.build();
     }

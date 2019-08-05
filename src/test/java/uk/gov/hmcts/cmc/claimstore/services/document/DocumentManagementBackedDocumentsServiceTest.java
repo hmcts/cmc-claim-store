@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
+import uk.gov.hmcts.cmc.claimstore.documents.questionnaire.ClaimantDirectionsQuestionnairePdfService;
 import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -31,6 +32,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIMANT_DIRECTIONS_QUESTIONNAIRE;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
@@ -62,6 +64,8 @@ public class DocumentManagementBackedDocumentsServiceTest {
     private DefendantPinLetterPdfService defendantPinLetterPdfService;
     @Mock
     private CCDEventProducer ccdEventProducer;
+    @Mock
+    private ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService;
 
     @Before
     public void setUp() {
@@ -74,6 +78,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
             countyCourtJudgmentPdfService,
             settlementAgreementCopyService,
             defendantPinLetterPdfService,
+            claimantDirectionsQuestionnairePdfService,
             ccdEventProducer);
     }
 
@@ -91,7 +96,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
             claim.getExternalId(),
             SEALED_CLAIM,
             AUTHORISATION);
-        verifyCommon(pdf, claim.getId());
+        verifyCommon(pdf);
     }
 
     @Test
@@ -108,7 +113,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
             claim.getExternalId(),
             CLAIM_ISSUE_RECEIPT,
             AUTHORISATION);
-        verifyCommon(pdf, claim.getId());
+        verifyCommon(pdf);
     }
 
     @Test
@@ -125,7 +130,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
             claim.getExternalId(),
             DEFENDANT_RESPONSE_RECEIPT,
             AUTHORISATION);
-        verifyCommon(pdf, claim.getId());
+        verifyCommon(pdf);
     }
 
     @Test
@@ -142,7 +147,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
             claim.getExternalId(),
             SETTLEMENT_AGREEMENT,
             AUTHORISATION);
-        verifyCommon(pdf, claim.getId());
+        verifyCommon(pdf);
     }
 
     @Test
@@ -173,7 +178,24 @@ public class DocumentManagementBackedDocumentsServiceTest {
             AUTHORISATION);
     }
 
-    private void verifyCommon(byte[] pdf, Long claimId) {
+    @Test
+    public void shouldGenerateClaimantHearingRequirement() {
+        Claim claim = SampleClaim.builder().withSettlement(mock(Settlement.class)).build();
+        when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(AUTHORISATION)))
+            .thenReturn(claim);
+        when(claimantDirectionsQuestionnairePdfService.createPdf(any(Claim.class))).thenReturn(new PDF(
+            "claimantDirectionsQuestionnaire",
+            PDF_BYTES,
+            CLAIMANT_DIRECTIONS_QUESTIONNAIRE
+        ));
+        byte[] pdf = documentManagementBackedDocumentsService.generateDocument(
+            claim.getExternalId(),
+            CLAIMANT_DIRECTIONS_QUESTIONNAIRE,
+            AUTHORISATION);
+        verifyCommon(pdf);
+    }
+
+    private void verifyCommon(byte[] pdf) {
         assertEquals(PDF_BYTES, pdf);
         verify(documentManagementService).uploadDocument(anyString(), any(PDF.class));
     }

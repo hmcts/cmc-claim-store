@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.PdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
+import uk.gov.hmcts.cmc.claimstore.documents.questionnaire.ClaimantDirectionsQuestionnairePdfService;
 import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -37,6 +38,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
     private final SettlementAgreementCopyService settlementAgreementCopyService;
     private final DefendantPinLetterPdfService defendantPinLetterPdfService;
+    private final ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService;
     private final CCDEventProducer ccdEventProducer;
 
     @Autowired
@@ -51,6 +53,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
         SettlementAgreementCopyService settlementAgreementCopyService,
         DefendantPinLetterPdfService defendantPinLetterPdfService,
+        ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService,
         CCDEventProducer ccdEventProducer
     ) {
         this.claimService = claimService;
@@ -61,6 +64,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
         this.settlementAgreementCopyService = settlementAgreementCopyService;
         this.defendantPinLetterPdfService = defendantPinLetterPdfService;
+        this.claimantDirectionsQuestionnairePdfService = claimantDirectionsQuestionnairePdfService;
         this.ccdEventProducer = ccdEventProducer;
     }
 
@@ -74,6 +78,8 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
                 return defendantResponseReceiptService;
             case SETTLEMENT_AGREEMENT:
                 return settlementAgreementCopyService;
+            case CLAIMANT_DIRECTIONS_QUESTIONNAIRE:
+                return claimantDirectionsQuestionnairePdfService;
             default:
                 throw new IllegalArgumentException(
                     "Unknown document service for document of type " + claimDocumentType.name());
