@@ -86,12 +86,12 @@ public class SampleParty {
     }
 
     public Party party() {
-        return new Individual(collectionId, name, address, correspondenceAddress, phone,
+        return new Individual(collectionId, name, address, correspondenceAddress, phone, null,
             representative, dateOfBirth);
     }
 
     public Individual individual() {
-        return new Individual(collectionId, name, address, correspondenceAddress, phone,
+        return new Individual(collectionId, name, address, correspondenceAddress, phone, null,
             representative, dateOfBirth);
     }
 
@@ -99,7 +99,7 @@ public class SampleParty {
         List<Party> individualDetailsList = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             individualDetailsList.add(
-                new Individual(collectionId, name, address, correspondenceAddress, phone,
+                new Individual(collectionId, name, address, correspondenceAddress, phone, null,
                     representative, dateOfBirth)
             );
         }
@@ -107,17 +107,17 @@ public class SampleParty {
     }
 
     public SoleTrader soleTrader() {
-        return new SoleTrader(collectionId, name, address, correspondenceAddress, phone,
+        return new SoleTrader(collectionId, name, address, correspondenceAddress, phone, null,
             representative, title, businessName);
     }
 
     public Company company() {
-        return new Company(collectionId, name, address, correspondenceAddress, phone,
+        return new Company(collectionId, name, address, correspondenceAddress, phone, null,
             representative, contactPerson);
     }
 
     public Organisation organisation() {
-        return new Organisation(collectionId, name, address, correspondenceAddress, phone,
+        return new Organisation(collectionId, name, address, correspondenceAddress, phone, null,
             representative, contactPerson, companiesHouseNumber);
     }
 }

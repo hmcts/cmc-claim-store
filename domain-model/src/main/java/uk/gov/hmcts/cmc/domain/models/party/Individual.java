@@ -25,10 +25,11 @@ public class Individual extends Party {
         Address address,
         Address correspondenceAddress,
         String phone,
+        String mobilePhone,
         Representative representative,
         LocalDate dateOfBirth
     ) {
-        super(id, name, address, correspondenceAddress, phone, representative);
+        super(id, name, address, correspondenceAddress, phone, mobilePhone, representative);
         this.dateOfBirth = dateOfBirth;
     }
 

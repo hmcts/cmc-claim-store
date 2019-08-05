@@ -39,7 +39,7 @@ public class PartyUtilsTest {
 
     @Test(expected = NotificationException.class)
     public void getTypeThrowsWhenPartyTypeUnknown() {
-        PartyUtils.getType(new Party(UUID.randomUUID().toString(), null, null, null, null, null) {
+        PartyUtils.getType(new Party(UUID.randomUUID().toString(), null, null, null, null, null, null) {
         });
     }
 

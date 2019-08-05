@@ -56,13 +56,14 @@ public abstract class Party extends CollectionId implements NamedParty {
         Address address,
         Address correspondenceAddress,
         String phone,
+        String mobilePhone,
         Representative representative
     ) {
         super(id);
         this.name = name;
         this.address = address;
         this.correspondenceAddress = correspondenceAddress;
-        this.phone = phone;
+        this.phone = Optional.ofNullable(phone).orElse(mobilePhone);
         this.representative = representative;
     }
 
