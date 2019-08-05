@@ -9,13 +9,16 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.content.StatesPaidEmailContent
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
@@ -71,6 +74,19 @@ public class StatesPaidStaffNotificationService {
                 .getDefendant()
                 .getPhone()
                 .orElse(null));
+
+        map.put("defendantFreeMediation", claim.getResponse()
+            .flatMap(Response::getFreeMediation)
+            .orElse(YesNoOption.NO)
+            .name()
+            .toLowerCase());
+        map.put("claimantFreeMediation", Optional.of(claimantResponse)
+            .filter(ResponseRejection.class::isInstance)
+            .map(ResponseRejection.class::cast)
+            .flatMap(ResponseRejection::getFreeMediation)
+            .orElse(YesNoOption.NO)
+            .name()
+            .toLowerCase());
 
         return map;
     }
