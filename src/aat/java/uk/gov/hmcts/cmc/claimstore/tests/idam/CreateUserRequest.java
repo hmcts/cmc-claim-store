@@ -3,8 +3,8 @@ package uk.gov.hmcts.cmc.claimstore.tests.idam;
 public class CreateUserRequest {
 
     private final String email;
-    private final String forename = "IDAM";
-    private final String surname = "One";
+    private final String forename = "John";
+    private final String surname = "Smith";
     private final Integer levelOfAccess = 0;
     private final UserGroup userGroup;
     private final String activationDate = "";

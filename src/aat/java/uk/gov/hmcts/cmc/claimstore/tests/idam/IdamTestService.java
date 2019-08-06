@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.tests.idam;
 
-import com.netflix.hystrix.exception.HystrixBadRequestException;
 import feign.FeignException;
 import feign.Response;
 import net.jodah.failsafe.Failsafe;
@@ -71,28 +70,16 @@ public class IdamTestService {
         String email = testData.nextUserEmail();
         return Failsafe.with(retryPolicy)
             .get(() -> {
-                try {
-                    idamTestApi.createUser(
-                        createSolicitorRequest(email, aatConfiguration.getSmokeTestCitizen().getPassword())
-                    );
-                } catch (ForbiddenException ex) {
-                    ex.printStackTrace();
-                }
+                createUser(createSolicitorRequest(email, aatConfiguration.getSmokeTestSolicitor().getPassword()));
                 return userService.authenticateUser(email, aatConfiguration.getSmokeTestSolicitor().getPassword());
             });
     }
 
     public User createCitizen() {
-        String email = "mryan321.hmcts.claimant@gmail.com"; //testData.nextUserEmail();
+        String email = testData.nextUserEmail();
         return Failsafe.with(retryPolicy)
             .get(() -> {
-                try {
-                    idamTestApi.createUser(
-                        createCitizenRequest(email, aatConfiguration.getSmokeTestCitizen().getPassword())
-                    );
-                } catch (ForbiddenException ex) {
-                    ex.printStackTrace();
-                }
+                createUser(createCitizenRequest(email, aatConfiguration.getSmokeTestCitizen().getPassword()));
                 return userService.authenticateUser(email, aatConfiguration.getSmokeTestCitizen().getPassword());
             });
     }
@@ -102,11 +89,7 @@ public class IdamTestService {
         String password = aatConfiguration.getSmokeTestCitizen().getPassword();
         return Failsafe.with(retryPolicy)
             .get(() -> {
-                try {
-                    idamTestApi.createUser(createCitizenRequest(email, password));
-                } catch (ForbiddenException ex) {
-                    ex.printStackTrace();
-                }
+                createUser(createCitizenRequest(email, password));
 
                 ResponseEntity<String> pin = idamTestApi.getPinByLetterHolderId(letterHolderId);
 
@@ -188,6 +171,14 @@ public class IdamTestService {
             new UserGroup("cmc-solicitor"),
             password
         );
+    }
+
+    private void createUser(CreateUserRequest userRequest) {
+        try {
+            idamTestApi.createUser(userRequest);
+        } catch (ForbiddenException ex) {
+            logger.warn("Ignoring 403 for IdamApi.createUser - user already exists");
+        }
     }
 
 }
