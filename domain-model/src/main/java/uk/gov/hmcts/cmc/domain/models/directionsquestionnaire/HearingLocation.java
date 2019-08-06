@@ -7,6 +7,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.Address;
 
 import java.util.Optional;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -22,6 +23,7 @@ public class HearingLocation {
     private final Address courtAddress;
     @NotNull
     private final CourtLocationType locationOption;
+    @Valid
     @Size(max = 99000)
     private final String exceptionalCircumstancesReason;
 

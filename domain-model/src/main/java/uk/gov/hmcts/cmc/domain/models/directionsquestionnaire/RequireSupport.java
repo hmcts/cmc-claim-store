@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.Optional;
+import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
@@ -13,12 +14,15 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @EqualsAndHashCode
 public class RequireSupport {
 
+    @Valid
     @Size(max = 100)
     private final String languageInterpreter;
+    @Valid
     @Size(max = 100)
     private final String signLanguageInterpreter;
     private final YesNoOption hearingLoop;
     private final YesNoOption disabledAccess;
+    @Valid
     @Size(max = 99000)
     private final String otherSupport;
 
