@@ -122,7 +122,7 @@ public class DocumentManagementService {
     }
 
     @Retryable(value = DocumentManagementException.class, backoff = @Backoff(delay = 200))
-    public byte[] downloadDocument(String authorisation, URI documentSelf, String baseFileName) {
+    public byte[] downloadDocument(String authorisation, ClaimDocument claimDocument) {
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
             String userRoles = String.join(",", this.userRoles);
@@ -131,7 +131,7 @@ public class DocumentManagementService {
                 authTokenGenerator.generate(),
                 userRoles,
                 userDetails.getId(),
-                documentSelf.getPath()
+                claimDocument.getDocumentManagementUrl().getPath()
             );
 
             ResponseEntity<Resource> responseEntity = documentDownloadClient.downloadBinary(
@@ -146,7 +146,8 @@ public class DocumentManagementService {
             return resource.getByteArray();
         } catch (Exception ex) {
             throw new DocumentManagementException(
-                String.format("Unable to download document %s from document management.", baseFileName), ex);
+                String.format("Unable to download document %s from document management.",
+                    claimDocument.getDocumentName()), ex);
         }
     }
 
@@ -154,10 +155,9 @@ public class DocumentManagementService {
     public byte[] logDownloadDocumentFailure(
         DocumentManagementException exception,
         String authorisation,
-        URI documentSelf,
-        String baseFileName
+        ClaimDocument claimDocument
     ) {
-        String filename = baseFileName + ".pdf";
+        String filename = claimDocument.getDocumentName() + ".pdf";
         logger.warn(exception.getMessage() + " " + exception.getCause(), exception);
         appInsights.trackEvent(DOCUMENT_MANAGEMENT_DOWNLOAD_FAILURE, DOCUMENT_NAME, filename);
         throw exception;

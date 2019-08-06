@@ -266,7 +266,7 @@ public class SupportControllerTest {
         Claim claim = SampleClaim.getWithSealedClaimDocument();
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
         controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SEALED_CLAIM, AUTHORISATION);
-        verify(documentsService).generateSealedClaim(claim.getExternalId(), AUTHORISATION);
+        verify(documentsService).generateDocument(claim.getExternalId(), SEALED_CLAIM, AUTHORISATION);
     }
 
     @Test
@@ -274,7 +274,7 @@ public class SupportControllerTest {
         Claim claim = SampleClaim.getWithClaimIssueReceiptDocument();
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
         controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, CLAIM_ISSUE_RECEIPT, AUTHORISATION);
-        verify(documentsService).generateClaimIssueReceipt(claim.getExternalId(), AUTHORISATION);
+        verify(documentsService).generateDocument(claim.getExternalId(), CLAIM_ISSUE_RECEIPT, AUTHORISATION);
     }
 
     @Test
@@ -282,7 +282,7 @@ public class SupportControllerTest {
         Claim claim = SampleClaim.getWithDefendantResponseReceiptDocument();
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
         controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, DEFENDANT_RESPONSE_RECEIPT, AUTHORISATION);
-        verify(documentsService).generateDefendantResponseReceipt(claim.getExternalId(), AUTHORISATION);
+        verify(documentsService).generateDocument(claim.getExternalId(), DEFENDANT_RESPONSE_RECEIPT, AUTHORISATION);
     }
 
     @Test
@@ -290,7 +290,7 @@ public class SupportControllerTest {
         Claim claim = SampleClaim.getWithSettlementAgreementDocument();
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
         controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SETTLEMENT_AGREEMENT, AUTHORISATION);
-        verify(documentsService).generateSettlementAgreement(claim.getExternalId(), AUTHORISATION);
+        verify(documentsService).generateDocument(claim.getExternalId(), SETTLEMENT_AGREEMENT, AUTHORISATION);
     }
 
     @Test
