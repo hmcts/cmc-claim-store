@@ -20,7 +20,6 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
-import uk.gov.hmcts.cmc.domain.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
@@ -44,6 +43,7 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.LivingPartner;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
+import uk.gov.hmcts.cmc.domain.orders.DirectionOrder;
 
 import java.math.BigDecimal;
 

@@ -150,8 +150,9 @@ public class DocAssemblyTemplateBodyMapperTest {
 
     @Test
     public void shouldMapAddressFromCourtFinder() {
-        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData();
-        ccdOrderGenerationData.setHearingCourt(BIRMINGHAM);
+        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData().toBuilder()
+            .hearingCourt(BIRMINGHAM)
+            .build();
 
         ccdCase.setDirectionOrderData(ccdOrderGenerationData);
         DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
@@ -253,9 +254,10 @@ public class DocAssemblyTemplateBodyMapperTest {
 
     @Test
     public void shouldMapTemplateBodyWhenOtherDirectionIsNull() {
-        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData();
-        ccdOrderGenerationData.setOtherDirections(ImmutableList.of(
-            CCDCollectionElement.<CCDOrderDirection>builder().value(null).build()));
+        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData().toBuilder()
+            .otherDirections(ImmutableList.of(CCDCollectionElement.<CCDOrderDirection>builder().value(null).build()))
+            .build();
+
         ccdCase.setDirectionOrderData(ccdOrderGenerationData);
         DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
             ccdCase,

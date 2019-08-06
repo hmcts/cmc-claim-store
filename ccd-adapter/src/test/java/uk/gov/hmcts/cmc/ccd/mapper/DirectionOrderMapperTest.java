@@ -11,7 +11,6 @@ import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
 import uk.gov.hmcts.cmc.domain.orders.DirectionOrder;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleDirectionOrder;
 
 import java.time.LocalDateTime;
 
@@ -45,7 +44,6 @@ public class DirectionOrderMapperTest {
         DirectionOrder directionOrder = mapper.from(null, getCCDOrderGenerationData());
         assertNull(directionOrder);
     }
-
 
     @Test
     public void shouldMapNullCCDOrderGenerationDataFromCCD() {

@@ -53,7 +53,7 @@ public class DirectionOrderMapper {
         addUploadDocumentDirection(directionOrderData, directionOrder);
         addEyeWitnessDirection(directionOrderData, directionOrder);
 
-        directionOrderData.getOtherDirections().stream()
+        asStream(directionOrderData.getOtherDirections())
             .map(CCDCollectionElement::getValue)
             .forEach(ccdOrderDirection -> directionOrder.addDirection(Direction.builder()
                 .directionType(DirectionType.valueOf(ccdOrderDirection.getExtraOrderDirection().name()))
@@ -69,7 +69,6 @@ public class DirectionOrderMapper {
                     .map(CCDCollectionElement::getValue)
                     .collect(Collectors.toList()))
                 .build()));
-
 
         return directionOrder;
     }

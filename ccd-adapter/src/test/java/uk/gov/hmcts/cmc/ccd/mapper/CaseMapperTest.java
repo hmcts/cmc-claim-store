@@ -12,10 +12,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.util.MapperUtil;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleDirectionOrder;
 
 import java.time.LocalDateTime;
 
@@ -186,6 +184,7 @@ public class CaseMapperTest {
                 .createdOn(LocalDateTime.now())
                 .hearingCourtAddress(SampleData.getCCDAddress())
                 .build())
+            .directionOrderData(SampleData.getCCDOrderGenerationData())
             .build();
 
         //when
@@ -194,20 +193,5 @@ public class CaseMapperTest {
         //then
         assertTrue(claim.getDirectionOrder().isPresent());
         assertThat(claim.getDirectionOrder().get()).isEqualTo(ccdCase.getDirectionOrder());
-    }
-
-    @Test
-    public void shouldMapDirectionOrderCreatedOnFromClaim() {
-        //given
-        DirectionOrder directionOrder = SampleDirectionOrder.getDefault();
-        Claim claim = SampleClaim.getCitizenClaim().toBuilder()
-            .directionOrder(directionOrder)
-            .build();
-
-        //when
-        CCDCase ccdCase = ccdCaseMapper.to(claim);
-
-        //then
-        assertThat(directionOrder).isEqualTo(ccdCase.getDirectionOrder());
     }
 }

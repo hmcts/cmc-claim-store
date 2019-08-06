@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.ccd.domain.legaladvisor;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
@@ -15,9 +16,10 @@ import java.util.List;
 
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor //see https://github.com/rzwitserloot/lombok/issues/1347
 @NoArgsConstructor
+@EqualsAndHashCode
 public class CCDOrderGenerationData {
     private LocalDate docUploadDeadline;
 

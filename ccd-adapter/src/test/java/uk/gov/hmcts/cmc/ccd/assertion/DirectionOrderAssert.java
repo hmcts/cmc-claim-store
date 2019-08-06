@@ -4,7 +4,10 @@ import org.assertj.core.api.AbstractAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.domain.orders.DirectionOrder;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
@@ -17,14 +20,20 @@ public class DirectionOrderAssert extends AbstractAssert<DirectionOrderAssert, D
     public DirectionOrderAssert isEqualTo(CCDDirectionOrder ccdDirectionOrder) {
         isNotNull();
 
-        if (!Objects.equals(actual.getCreatedOn(), ccdDirectionOrder.getCreatedOn())) {
-            failWithMessage("Expected DirectionOrder.createdOn to be <%s> but was <%s>",
-                ccdDirectionOrder.getCreatedOn(), actual.getCreatedOn());
-        }
+        Optional.ofNullable(ccdDirectionOrder.getCreatedOn()).ifPresent(isCreatedOnEqual());
 
         assertThat(actual.getHearingCourtAddress()).isEqualTo(ccdDirectionOrder.getHearingCourtAddress());
 
         return this;
+    }
+
+    private Consumer<LocalDateTime> isCreatedOnEqual() {
+        return createdOn -> {
+            if (!Objects.equals(actual.getCreatedOn(), createdOn)) {
+                failWithMessage("Expected DirectionOrder.createdOn to be <%s> but was <%s>",
+                    createdOn, actual.getCreatedOn());
+            }
+        };
     }
 
 }

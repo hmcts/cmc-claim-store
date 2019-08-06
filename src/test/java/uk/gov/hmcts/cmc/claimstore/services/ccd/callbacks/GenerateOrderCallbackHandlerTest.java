@@ -191,8 +191,10 @@ public class GenerateOrderCallbackHandlerTest {
     @Test
     public void shouldPrepopulateFieldsOnAboutToStartEventIfOtherDirectionHeaderIsNull() {
         when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
-        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData();
-        ccdOrderGenerationData.setOtherDirectionHeader(null);
+        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData().toBuilder()
+            .hearingCourt(null)
+            .build();
+
         ccdCase.setRespondents(
             ImmutableList.of(
                 CCDCollectionElement.<CCDRespondent>builder()
@@ -227,7 +229,7 @@ public class GenerateOrderCallbackHandlerTest {
             entry("preferredCourtObjectingParty", null),
             entry("preferredCourtObjectingReason", null)
         ).doesNotContain(
-            entry("otherDirectionHeaders", null)
+            entry("hearingCourt", null)
         );
     }
 
@@ -345,8 +347,10 @@ public class GenerateOrderCallbackHandlerTest {
     @Test(expected = IllegalStateException.class)
     public void shouldThrowIfClaimantResponseIsNotPresent() {
         when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
-        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData();
-        ccdOrderGenerationData.setOtherDirectionHeader(null);
+        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData().toBuilder()
+            .otherDirections(null)
+            .build();
+
         ccdCase.setDirectionOrderData(ccdOrderGenerationData);
 
         CallbackParams callbackParams = CallbackParams.builder()
