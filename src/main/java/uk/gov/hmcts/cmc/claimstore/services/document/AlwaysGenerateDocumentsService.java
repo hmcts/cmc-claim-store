@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 
 @Service("documentsService")
 @ConditionalOnProperty(prefix = "document_management", name = "url", havingValue = "false")
@@ -41,25 +42,26 @@ public class AlwaysGenerateDocumentsService implements DocumentsService {
     }
 
     @Override
-    public byte[] generateClaimIssueReceipt(String externalId, String authorisation) {
-        return claimIssueReceiptService.createPdf(getClaimByExternalId(externalId, authorisation));
+    public byte[] generateDocument(String externalId, ClaimDocumentType claimDocumentType, String authorisation) {
+        switch (claimDocumentType) {
+            case CLAIM_ISSUE_RECEIPT:
+                return claimIssueReceiptService.createPdf(
+                    getClaimByExternalId(externalId, authorisation)).getBytes();
+            case SEALED_CLAIM:
+                return sealedClaimPdfService.createPdf(
+                    getClaimByExternalId(externalId, authorisation)).getBytes();
+            case DEFENDANT_RESPONSE_RECEIPT:
+                return defendantResponseReceiptService.createPdf(
+                    getClaimByExternalId(externalId, authorisation)).getBytes();
+            case SETTLEMENT_AGREEMENT:
+                return settlementAgreementCopyService.createPdf(
+                    getClaimByExternalId(externalId, authorisation)).getBytes();
+            default:
+                throw new IllegalArgumentException(
+                    "Unknown document service for document of type " + claimDocumentType.name());
+        }
     }
 
-    @Override
-    public byte[] generateSealedClaim(String externalId, String authorisation) {
-        return sealedClaimPdfService.createPdf(getClaimByExternalId(externalId, authorisation));
-    }
-
-    @Override
-    public byte[] generateDefendantResponseReceipt(String externalId, String authorisation) {
-        return defendantResponseReceiptService.createPdf(getClaimByExternalId(externalId, authorisation));
-    }
-
-    @Override
-    public byte[] generateSettlementAgreement(String externalId, String authorisation) {
-        return settlementAgreementCopyService.createPdf(getClaimByExternalId(externalId, authorisation));
-    }
-    
     @Override
     public Claim uploadToDocumentManagement(PDF document, String authorisation, Claim claim) {
         throw new UnsupportedOperationException(
