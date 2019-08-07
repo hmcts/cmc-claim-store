@@ -117,4 +117,12 @@ public class DefendantResponseContentProviderTest {
         assertThat(content)
             .containsKeys("timelineComment", "events");
     }
+
+    @Test
+    public void shouldProvideAmountPaid() {
+        Claim statesPaidClaim = SampleClaim.getClaimWithFullDefenceAlreadyPaid();
+        Map<String, Object> content = provider.createContent(statesPaidClaim);
+
+        assertThat(content).containsEntry("paidAmount", "£100.99");
+    }
 }
