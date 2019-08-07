@@ -7,6 +7,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import java.util.List;
 import java.util.Optional;
+import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
 import static java.util.Collections.emptyList;
@@ -27,6 +28,7 @@ public class DirectionsQuestionnaire {
     @Builder
     public DirectionsQuestionnaire(
         RequireSupport requireSupport,
+        @Valid
         HearingLocation hearingLocation,
         Witness witness,
         List<ExpertReport> expertReports,
