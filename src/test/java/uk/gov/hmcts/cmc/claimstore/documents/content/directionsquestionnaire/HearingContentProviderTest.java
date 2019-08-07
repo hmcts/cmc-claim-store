@@ -24,6 +24,7 @@ public class HearingContentProviderTest {
 
     private HearingContentProvider hearingContentProvider = new HearingContentProvider();
     private final String disabledAccess = "Disabled Access";
+    private final String hearingLoop = "Hearing Loop";
     private final String yes = "Yes";
     private final String no = "No";
 
@@ -46,10 +47,10 @@ public class HearingContentProviderTest {
 
         dq.getExpertRequest()
             .ifPresent(request -> {
-                assertEquals(yes, hearingContent.getHasExpertReport());
+                assertEquals(yes, hearingContent.getExpertExamineNeeded());
                 assertEquals(yes, hearingContent.getCourtPermissionForExpertReport());
                 assertEquals(request.getReasonForExpertAdvice(), hearingContent.getReasonWhyExpertAdvice());
-                assertEquals(request.getExpertEvidenceToExamine(), hearingContent.getExpertExamineNeeded());
+                assertEquals(request.getExpertEvidenceToExamine(), hearingContent.getWhatToExamine());
             });
         assertEquals(dq.getHearingLocation().getCourtName(), hearingContent.getHearingLocation());
         compareExpertReport(dq.getExpertReports(), hearingContent.getExpertReports());
@@ -86,6 +87,8 @@ public class HearingContentProviderTest {
             .ifPresent(val -> Assert.assertTrue(mappedSupport.contains(val)));
         supportRequired.getLanguageInterpreter()
             .ifPresent(val -> Assert.assertTrue(mappedSupport.contains(val)));
+        supportRequired.getHearingLoop()
+            .ifPresent(val -> Assert.assertTrue(mappedSupport.contains(hearingLoop)));
     }
 
     private Object[] unavailabeDatesToISOString(List<UnavailableDate> unavailableDates) {

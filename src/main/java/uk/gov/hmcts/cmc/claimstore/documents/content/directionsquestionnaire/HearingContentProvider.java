@@ -24,6 +24,7 @@ import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
 public class HearingContentProvider {
 
     private static final String DISABLED_ACCESS = "Disabled Access";
+    private static final String HEARING_LOOP = "Hearing Loop";
     private static final String YES = "Yes";
     private static final String NO = "No";
 
@@ -43,6 +44,10 @@ public class HearingContentProvider {
         List<String> supportNeeded = new ArrayList<>();
         support.getLanguageInterpreter().ifPresent(supportNeeded::add);
         support.getSignLanguageInterpreter().ifPresent(supportNeeded::add);
+        support.getHearingLoop()
+            .map(YesNoOption::name)
+            .filter(hearingLoop -> hearingLoop.equals(YesNoOption.YES.name()))
+            .ifPresent(x -> supportNeeded.add(HEARING_LOOP));
         support.getDisabledAccess()
             .map(YesNoOption::name)
             .filter(access -> access.equals(YesNoOption.YES.name()))
@@ -53,11 +58,10 @@ public class HearingContentProvider {
     }
 
     private void mapExpertRequest(ExpertRequest expertRequest, HearingContent.HearingContentBuilder builder) {
-        builder.hasExpertReport(YES);
+        builder.expertExamineNeeded(YES);
         builder.courtPermissionForExpertReport(YES);
         builder.reasonWhyExpertAdvice(expertRequest.getReasonForExpertAdvice());
-        builder.expertExamineNeeded(expertRequest.getExpertEvidenceToExamine());
-
+        builder.whatToExamine(expertRequest.getExpertEvidenceToExamine());
     }
 
     public HearingContent mapDirectionQuestionnaire(DirectionsQuestionnaire questionnaire) {
