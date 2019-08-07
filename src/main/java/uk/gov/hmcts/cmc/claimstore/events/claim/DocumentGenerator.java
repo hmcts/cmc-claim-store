@@ -15,9 +15,7 @@ import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @Component
 public class DocumentGenerator {
@@ -48,8 +46,7 @@ public class DocumentGenerator {
             event.getPin());
         publisher.publishEvent(new DocumentReadyToPrintEvent(event.getClaim(), defendantLetterDoc, sealedClaimDoc));
 
-        PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(event.getClaim().getReferenceNumber()),
-            sealedClaimPdfService.createPdf(event.getClaim()), SEALED_CLAIM);
+        PDF sealedClaim = sealedClaimPdfService.createPdf(event.getClaim());
         PDF defendantLetter = new PDF(buildDefendantLetterFileBaseName(event.getClaim().getReferenceNumber()),
             pdfServiceClient.generateFromHtml(defendantLetterDoc.template.getBytes(), defendantLetterDoc.values),
             DEFENDANT_PIN_LETTER);
@@ -60,14 +57,12 @@ public class DocumentGenerator {
     @EventListener
     @LogExecutionTime
     public void generateForRepresentedClaim(RepresentedClaimIssuedEvent event) {
-        PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(event.getClaim().getReferenceNumber()),
-            sealedClaimPdfService.createPdf(event.getClaim()), SEALED_CLAIM);
+        PDF sealedClaim = sealedClaimPdfService.createPdf(event.getClaim());
         publisher.publishEvent(new DocumentGeneratedEvent(event.getClaim(), event.getAuthorisation(), sealedClaim));
     }
 
     public void generateForCitizenRPA(CitizenClaimIssuedEvent event) {
-        PDF sealedClaim = new PDF(buildSealedClaimFileBaseName(event.getClaim().getReferenceNumber()),
-            sealedClaimPdfService.createPdf(event.getClaim()), SEALED_CLAIM);
+        PDF sealedClaim = sealedClaimPdfService.createPdf(event.getClaim());
         publisher.publishEvent(new DocumentGeneratedEvent(event.getClaim(), event.getAuthorisation(),
             sealedClaim));
     }

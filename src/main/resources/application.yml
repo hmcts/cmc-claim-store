@@ -154,6 +154,7 @@ feature_toggles:
   ccd_enabled: false
   save_claim_state_enabled: false
   async_event_operations_enabled: false
+  directions_questionnaire_enabled: false
 
 feign:
   httpclient:

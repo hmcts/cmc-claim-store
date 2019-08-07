@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
@@ -23,15 +22,13 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
-import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -83,17 +80,13 @@ public class DrawOrderCallbackHandlerTest extends MockSpringTest {
     private DocumentManagementService documentManagementService;
     @MockBean
     private LegalOrderService legalOrderService;
-    @Autowired
-    private CaseDetailsConverter caseDetailsConverter;
 
     @Before
-    public void setUp() throws URISyntaxException {
+    public void setUp() {
         given(documentManagementService
             .downloadDocument(
-                AUTHORISATION_TOKEN,
-                new URI(DOCUMENT_URL),
-                null)).willReturn("template".getBytes());
-
+                eq(AUTHORISATION_TOKEN),
+                any(ClaimDocument.class))).willReturn("template".getBytes());
     }
 
     @Test

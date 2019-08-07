@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.cmc.domain.orders.HearingCourtType;
 import uk.gov.hmcts.cmc.domain.orders.HearingDurationType;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
@@ -34,14 +36,20 @@ public class DirectionOrderMapper {
             return null;
         }
 
-        DirectionOrder directionOrder = DirectionOrder.builder()
+        DirectionOrder.DirectionOrderBuilder builder = DirectionOrder.builder();
+
+        Optional.ofNullable(directionOrderData.getEstimatedHearingDuration()).ifPresent(estimatedDuration ->
+            builder.estimatedHearingDuration(HearingDurationType.valueOf(estimatedDuration.name())));
+
+        Optional.ofNullable(directionOrderData.getHearingCourt()).ifPresent(hearingCourt ->
+            builder.hearingCourt(HearingCourtType.valueOf(hearingCourt.name())));
+
+        Optional.ofNullable(directionOrderData.getPaperDetermination()).ifPresent(paperDetermination ->
+            builder.paperDetermination(YesNoOption.valueOf(paperDetermination.name())));
+
+        DirectionOrder directionOrder = builder
             .createdOn(ccdDirectionOrder.getCreatedOn())
             .hearingCourtAddress(addressMapper.from(ccdDirectionOrder.getHearingCourtAddress()))
-            .estimatedHearingDuration(HearingDurationType
-                .valueOf(directionOrderData.getEstimatedHearingDuration().name()))
-            .hearingCourt(HearingCourtType.valueOf(directionOrderData.getHearingCourt().name()))
-            .paperDetermination(YesNoOption.fromValue(directionOrderData.getPaperDetermination().name()))
-            .hearingCourt(HearingCourtType.valueOf(directionOrderData.getHearingCourt().name()))
             .preferredDQCourt(directionOrderData.getPreferredDQCourt())
             .preferredCourtObjectingReason(directionOrderData.getPreferredCourtObjectingReason())
             .newRequestedCourt(directionOrderData.getNewRequestedCourt())
@@ -100,18 +108,25 @@ public class DirectionOrderMapper {
     ) {
         switch (directionType) {
             case DOCUMENTS:
+                addDirectionParty(builder, directionOrderData.getDocUploadForParty());
+
                 builder.directionType(DirectionType.valueOf(directionType.name()))
-                    .directionParty(DirectionParty.valueOf(directionOrderData.getDocUploadForParty().name()))
                     .directionActionedBy(directionOrderData.getDocUploadDeadline());
                 return;
             case EYEWITNESS:
+                addDirectionParty(builder, directionOrderData.getEyewitnessUploadForParty());
+
                 builder.directionType(DirectionType.valueOf(directionType.name()))
-                    .directionParty(DirectionParty.valueOf(directionOrderData.getEyewitnessUploadForParty().name()))
                     .directionActionedBy(directionOrderData.getEyewitnessUploadDeadline());
                 return;
             default:
                 throw new IllegalArgumentException("Invalid direction type");
 
         }
+    }
+
+    private void addDirectionParty(Direction.DirectionBuilder builder, CCDDirectionPartyType directionPartyType) {
+        Optional.ofNullable(directionPartyType).ifPresent(party ->
+            builder.directionParty(DirectionParty.valueOf(party.name())));
     }
 }

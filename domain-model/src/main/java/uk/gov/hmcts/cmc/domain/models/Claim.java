@@ -15,7 +15,6 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.orders.DirectionOrder;
 
 import java.math.BigDecimal;
-import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -154,16 +153,9 @@ public class Claim {
     }
 
     @JsonIgnore
-    public Optional<URI> getClaimDocument(ClaimDocumentType claimDocumentType) {
-        if (claimDocumentCollection == null) {
-            return Optional.empty();
-        } else {
-            Optional<ClaimDocument> claimDocument = claimDocumentCollection.getDocument(claimDocumentType);
-            if (claimDocument.isPresent()) {
-                return Optional.ofNullable(claimDocument.get().getDocumentManagementUrl());
-            }
-        }
-        return Optional.empty();
+    public Optional<ClaimDocument> getClaimDocument(ClaimDocumentType claimDocumentType) {
+        return Optional.ofNullable(claimDocumentCollection)
+            .flatMap(c -> c.getDocument(claimDocumentType));
     }
 
     public LocalDate getServiceDate() {

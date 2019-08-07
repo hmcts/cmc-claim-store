@@ -24,13 +24,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimIssueReceiptFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSettlementReachedFileBaseName;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
 
 @Component
 @ConditionalOnProperty(prefix = "document_management", name = "url")
@@ -70,12 +64,7 @@ public class DocumentUploadHandler {
             .collect(Collectors.toList());
 
         if (!claim.getClaimData().isClaimantRepresented()) {
-            documents.add(
-                new PDF(buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber()),
-                    claimIssueReceiptService.createPdf(claim),
-                    CLAIM_ISSUE_RECEIPT
-                )
-            );
+            documents.add(claimIssueReceiptService.createPdf(claim));
         }
 
         uploadToDocumentManagement(claim, event.getAuthorisation(), documents);
@@ -89,9 +78,7 @@ public class DocumentUploadHandler {
         if (!claim.getResponse().isPresent() && null == claim.getRespondedAt()) {
             throw new NotFoundException("Defendant response does not exist for this claim");
         }
-        PDF defendantResponseDocument = new PDF(buildResponseFileBaseName(claim.getReferenceNumber()),
-            defendantResponseReceiptService.createPdf(claim),
-            DEFENDANT_RESPONSE_RECEIPT);
+        PDF defendantResponseDocument = defendantResponseReceiptService.createPdf(claim);
         uploadToDocumentManagement(claim, event.getAuthorization(), singletonList(defendantResponseDocument));
     }
 
@@ -112,9 +99,7 @@ public class DocumentUploadHandler {
         if (!claim.getSettlement().isPresent() && null == claim.getSettlementReachedAt()) {
             throw new NotFoundException("Settlement Agreement does not exist for this claim");
         }
-        PDF document = new PDF(buildSettlementReachedFileBaseName(claim.getReferenceNumber()),
-            settlementAgreementCopyService.createPdf(claim),
-            SETTLEMENT_AGREEMENT);
+        PDF document = settlementAgreementCopyService.createPdf(claim);
         uploadToDocumentManagement(claim, authorisation, singletonList(document));
     }
 
