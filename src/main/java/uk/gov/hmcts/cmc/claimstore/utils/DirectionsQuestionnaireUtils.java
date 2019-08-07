@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
+import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
@@ -50,7 +51,7 @@ public class DirectionsQuestionnaireUtils {
 
     private static String getDefendantHearingCourt(Response defendantResponse) {
         if (defendantResponse.getResponseType() == FULL_DEFENCE) {
-            return ((PartAdmissionResponse) defendantResponse).getDirectionsQuestionnaire()
+            return ((FullDefenceResponse) defendantResponse).getDirectionsQuestionnaire()
                 .flatMap(DirectionsQuestionnaire::getHearingLocation)
                 .map(HearingLocation::getCourtName)
                 .orElseThrow(IllegalStateException::new);
