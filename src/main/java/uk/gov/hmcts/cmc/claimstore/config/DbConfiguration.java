@@ -67,9 +67,4 @@ public class DbConfiguration {
     public OffersRepository offersRepository(DBI dbi) {
         return dbi.onDemand(OffersRepository.class);
     }
-
-    @Bean
-    public ReferenceNumberRepository referenceNumberRepository(DBI dbi) {
-        return dbi.onDemand(ReferenceNumberRepository.class);
-    }
 }
