@@ -14,24 +14,13 @@ import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
-import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 
-import java.net.URI;
 import java.util.Optional;
-
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimIssueReceiptFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSettlementReachedFileBaseName;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
 
 @Service("documentsService")
 @ConditionalOnProperty(prefix = "document_management", name = "url")
@@ -75,73 +64,52 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         this.ccdEventProducer = ccdEventProducer;
     }
 
-    @Override
-    public byte[] generateClaimIssueReceipt(String externalId, String authorisation) {
-        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        return processRequest(claim,
-            authorisation,
-            CLAIM_ISSUE_RECEIPT,
-            claimIssueReceiptService,
-            buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber()));
-    }
-
-    @Override
-    public byte[] generateSealedClaim(String externalId, String authorisation) {
-        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        return processRequest(claim,
-            authorisation,
-            SEALED_CLAIM,
-            sealedClaimPdfService,
-            buildSealedClaimFileBaseName(claim.getReferenceNumber()));
-    }
-
-    @Override
-    public byte[] generateDefendantResponseReceipt(String externalId, String authorisation) {
-        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        if (!claim.getResponse().isPresent() && null == claim.getRespondedAt()) {
-            throw new NotFoundException("Defendant response does not exist for this claim");
+    private PdfService getService(ClaimDocumentType claimDocumentType) {
+        switch (claimDocumentType) {
+            case CLAIM_ISSUE_RECEIPT:
+                return claimIssueReceiptService;
+            case SEALED_CLAIM:
+                return sealedClaimPdfService;
+            case DEFENDANT_RESPONSE_RECEIPT:
+                return defendantResponseReceiptService;
+            case SETTLEMENT_AGREEMENT:
+                return settlementAgreementCopyService;
+            default:
+                throw new IllegalArgumentException(
+                    "Unknown document service for document of type " + claimDocumentType.name());
         }
-        return processRequest(claim,
-            authorisation,
-            DEFENDANT_RESPONSE_RECEIPT,
-            defendantResponseReceiptService,
-            buildResponseFileBaseName(claim.getReferenceNumber()));
     }
 
     @Override
-    public byte[] generateSettlementAgreement(String externalId, String authorisation) {
+    public byte[] generateDocument(String externalId, ClaimDocumentType claimDocumentType, String authorisation) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        if (!claim.getSettlement().isPresent() && null == claim.getSettlementReachedAt()) {
-            throw new NotFoundException("Settlement Agreement does not exist for this claim");
-        }
         return processRequest(claim,
             authorisation,
-            SETTLEMENT_AGREEMENT,
-            settlementAgreementCopyService,
-            buildSettlementReachedFileBaseName(claim.getReferenceNumber()));
+            claimDocumentType,
+            getService(claimDocumentType));
     }
 
     private byte[] processRequest(
         Claim claim,
         String authorisation,
         ClaimDocumentType claimDocumentType,
-        PdfService pdfService,
-        String baseFileName
+        PdfService pdfService
     ) {
-        Optional<URI> claimDocument = claim.getClaimDocument(claimDocumentType);
+        Optional<ClaimDocument> claimDocument = claim.getClaimDocument(claimDocumentType);
         try {
             if (claimDocument.isPresent()) {
-                URI documentSelfPath = claimDocument.get();
-                return documentManagementService.downloadDocument(authorisation, documentSelfPath, baseFileName);
+                return documentManagementService.downloadDocument(
+                    authorisation,
+                    claimDocument.get());
             } else {
-                PDF document = new PDF(baseFileName, pdfService.createPdf(claim), claimDocumentType);
+                PDF document = pdfService.createPdf(claim);
                 uploadToDocumentManagement(document,
                     authorisation,
                     claim);
                 return document.getBytes();
             }
         } catch (Exception ex) {
-            return pdfService.createPdf(claim);
+            return pdfService.createPdf(claim).getBytes();
         }
     }
 

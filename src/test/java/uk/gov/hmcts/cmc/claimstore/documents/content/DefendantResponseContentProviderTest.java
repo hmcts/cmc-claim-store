@@ -129,4 +129,12 @@ public class DefendantResponseContentProviderTest {
             .containsEntry("paidAmount", "£100.99")
             .containsEntry("hasDefendantAlreadyPaid", true);
     }
+
+    @Test
+    public void shouldProvideMediation() {
+        Map<String, Object> content = provider.createContent(claim);
+
+        assertThat(content)
+            .containsEntry("mediation", true);
+    }
 }
