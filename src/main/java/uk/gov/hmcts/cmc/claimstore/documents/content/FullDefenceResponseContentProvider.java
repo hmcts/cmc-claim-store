@@ -44,7 +44,7 @@ public class FullDefenceResponseContentProvider {
             fullDefenceResponse.getPaymentDeclaration()
                 .flatMap(PaymentDeclaration::getPaidAmount)
                 .map(Formatting::formatMoney)
-                .ifPresent(amount -> content.put("amount", amount));
+                .ifPresent(amount -> content.put("paidAmount", amount));
         }
 
         fullDefenceResponse.getPaymentDeclaration().ifPresent(paymentDeclaration ->
