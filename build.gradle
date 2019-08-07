@@ -99,7 +99,7 @@ allprojects {
       // remove once spring manager incorporates this changes
       dependencySet(
         group: 'com.fasterxml.jackson.core',
-        version: '2.9.9'
+        version: '2.9.9.2'
         //version: dependencyManagement.importedProperties['jackson.version'] solves CVE-2019-12086
       ) {
         entry 'jackson-core'
@@ -107,7 +107,7 @@ allprojects {
       }
       dependencySet(
         group: 'com.fasterxml.jackson.datatype',
-        version: '2.9.9'
+        version: '2.9.9.2'
         //version: dependencyManagement.importedProperties['jackson.version'] solves CVE-2019-12086
       ) {
         entry 'jackson-datatype-jdk8'
@@ -115,7 +115,7 @@ allprojects {
       }
       dependencySet(
         group: 'com.fasterxml.jackson.module',
-        version: '2.9.9'
+        version: '2.9.9.2'
         //version: dependencyManagement.importedProperties['jackson.version'] solves CVE-2019-12086
       ) {
         entry 'jackson-module-parameter-names'
