@@ -10,7 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isPartAdmission;
-import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseFullDefenceStatesPaid;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseStatesPaid;
 
 @Component
 public class ClaimantResponseStaffNotificationHandler {
@@ -31,7 +31,7 @@ public class ClaimantResponseStaffNotificationHandler {
     public void onClaimantResponse(ClaimantResponseEvent event) {
         Claim claim = event.getClaim();
         Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
-        if (isResponseFullDefenceStatesPaid(response)) {
+        if (isResponseStatesPaid(response)) {
             this.statesPaidStaffNotificationService.notifyStaffClaimantResponseStatesPaidSubmittedFor(claim);
         }
         if (isPartAdmission(response)

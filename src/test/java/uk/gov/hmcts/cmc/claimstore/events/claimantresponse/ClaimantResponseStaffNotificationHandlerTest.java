@@ -44,6 +44,17 @@ public class ClaimantResponseStaffNotificationHandlerTest {
     }
 
     @Test
+    public void notifyStaffClaimantResponseStatesPaidRejectedFor() {
+        ClaimantResponseEvent event = new ClaimantResponseEvent(
+            SampleClaim.getClaimStatesPaidWithRejection());
+        handler.onClaimantResponse(event);
+
+        verify(statesPaidStaffNotificationService, once())
+            .notifyStaffClaimantResponseStatesPaidSubmittedFor(eq(event.getClaim()));
+    }
+
+
+    @Test
     public void notifyStaffClaimantResponseRejectedPartAdmission() {
         ClaimantResponseEvent event = new ClaimantResponseEvent(
             SampleClaim.getWithClaimantResponseRejectionForPartAdmissionAndMediation()
