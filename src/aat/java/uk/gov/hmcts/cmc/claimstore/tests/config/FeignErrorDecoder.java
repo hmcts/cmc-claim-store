@@ -10,7 +10,7 @@ public class FeignErrorDecoder implements ErrorDecoder {
 
     @Override
     public Exception decode(String methodKey, Response response) {
-        switch (response.status()){
+        switch (response.status()) {
             case 403:
                 //we want to handle and ignore this exception
                 //IDAM returns when creating with users that already exist
