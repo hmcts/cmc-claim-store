@@ -18,6 +18,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 public class DirectionsQuestionnaire {
 
     private final RequireSupport requireSupport;
+    @Valid
     private final HearingLocation hearingLocation;
     private final Witness witness;
     @Size(min = 1)
