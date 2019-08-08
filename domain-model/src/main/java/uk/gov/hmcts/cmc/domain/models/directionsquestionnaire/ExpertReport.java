@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.domain.models.CollectionId;
 
 import java.time.LocalDate;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
@@ -15,6 +16,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @EqualsAndHashCode(callSuper = true)
 public class ExpertReport extends CollectionId {
     @NotNull
+    @Size(max = 100)
     private final String expertName;
     @NotNull
     private final LocalDate expertReportDate;
