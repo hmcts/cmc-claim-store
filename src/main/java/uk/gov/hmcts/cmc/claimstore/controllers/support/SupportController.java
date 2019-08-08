@@ -100,8 +100,10 @@ public class SupportController {
     @ApiOperation("Resend staff notifications associated with provided event")
     public void resendStaffNotifications(
         @PathVariable("referenceNumber") String referenceNumber,
-        @PathVariable("event") String event,
-        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation) {
+        @PathVariable("event") String event
+    ) {
+        User user = userService.authenticateAnonymousCaseWorker();
+        String authorisation = user.getAuthorisation();
 
         Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
             .orElseThrow(() -> new NotFoundException(String.format(CLAIM_DOES_NOT_EXIST, referenceNumber)));
