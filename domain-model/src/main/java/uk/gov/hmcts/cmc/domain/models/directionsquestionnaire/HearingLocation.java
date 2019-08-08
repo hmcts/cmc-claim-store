@@ -25,6 +25,8 @@ public class HearingLocation {
     private final Address courtAddress;
     @NotNull
     private final CourtLocationType locationOption;
+    @Valid
+    @Size(max = 99000)
     private final String exceptionalCircumstancesReason;
 
     @Builder

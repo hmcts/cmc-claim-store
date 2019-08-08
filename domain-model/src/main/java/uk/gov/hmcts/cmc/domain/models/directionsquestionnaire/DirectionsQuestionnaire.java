@@ -17,19 +17,29 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @EqualsAndHashCode
 public class DirectionsQuestionnaire {
 
+    @Valid
     private final RequireSupport requireSupport;
+
     @Valid
     private final HearingLocation hearingLocation;
+
+    @Valid
     private final Witness witness;
-    @Size(min = 1)
+
+    @Valid
+    @Size(min = 1, max = 20)
     private final List<ExpertReport> expertReports;
+
+    @Valid
+    @Size(max = 280)
     private final List<UnavailableDate> unavailableDates;
+
+    @Valid
     private final ExpertRequest expertRequest;
 
     @Builder
     public DirectionsQuestionnaire(
         RequireSupport requireSupport,
-        @Valid
         HearingLocation hearingLocation,
         Witness witness,
         List<ExpertReport> expertReports,

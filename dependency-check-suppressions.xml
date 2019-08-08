@@ -150,5 +150,7 @@
            ]]></notes>
         <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson-databind@.*$</packageUrl>
         <cve>CVE-2019-12814</cve>
+        <cve>CVE-2019-14379</cve>
+        <cve>CVE-2019-14439</cve>
     </suppress>
 </suppressions>
