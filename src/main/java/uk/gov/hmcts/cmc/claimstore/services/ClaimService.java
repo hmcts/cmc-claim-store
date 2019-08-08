@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimAuthorisationRule;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.rules.PaidInFullRule;
+import uk.gov.hmcts.cmc.claimstore.rules.ReviewOrderRule;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -29,6 +30,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
+import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
@@ -38,7 +40,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
@@ -61,12 +62,9 @@ public class ClaimService {
     private final AppInsights appInsights;
     private final PaidInFullRule paidInFullRule;
     private final ClaimAuthorisationRule claimAuthorisationRule;
+    private final ReviewOrderRule reviewOrderRule;
     private final boolean asyncEventOperationEnabled;
     private CCDEventProducer ccdEventProducer;
-
-    private static Supplier<ClaimSubmissionOperationIndicators> getDefaultClaimSubmissionOperationIndicators =
-        () -> ClaimSubmissionOperationIndicators.builder()
-            .build();
 
     @SuppressWarnings("squid:S00107") //Constructor need all parameters
     @Autowired
@@ -83,6 +81,7 @@ public class ClaimService {
         PaidInFullRule paidInFullRule,
         CCDEventProducer ccdEventProducer,
         ClaimAuthorisationRule claimAuthorisationRule,
+        ReviewOrderRule reviewOrderRule,
         @Value("${feature_toggles.async_event_operations_enabled:false}") boolean asyncEventOperationEnabled
     ) {
         this.claimRepository = claimRepository;
@@ -97,6 +96,7 @@ public class ClaimService {
         this.paidInFullRule = paidInFullRule;
         this.ccdEventProducer = ccdEventProducer;
         this.claimAuthorisationRule = claimAuthorisationRule;
+        this.reviewOrderRule = reviewOrderRule;
         this.asyncEventOperationEnabled = asyncEventOperationEnabled;
     }
 
@@ -217,7 +217,7 @@ public class ClaimService {
             .createdAt(nowInLocalZone())
             .letterHolderId(letterHolderId.orElse(null))
             .features(features)
-            .claimSubmissionOperationIndicators(getDefaultClaimSubmissionOperationIndicators.get())
+            .claimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators.builder().build())
             .build();
 
         Claim savedClaim = caseRepository.saveClaim(user, claim);
@@ -352,5 +352,14 @@ public class ClaimService {
 
     public void updateClaimState(String authorisation, Claim claim, ClaimState state) {
         caseRepository.updateClaimState(authorisation, claim.getId(), state);
+    }
+
+    public Claim saveReviewOrder(String externalId, ReviewOrder reviewOrder, String authorisation) {
+        Claim claim = getClaimByExternalId(externalId, authorisation);
+        claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorisation);
+        reviewOrderRule.assertReviewOrder(claim);
+        Claim updatedClaim = caseRepository.saveReviewOrder(claim.getId(), reviewOrder, authorisation);
+        eventProducer.createReviewOrderEvent(updatedClaim);
+        return updatedClaim;
     }
 }
