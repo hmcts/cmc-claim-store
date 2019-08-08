@@ -33,11 +33,12 @@ public class ClaimantResponseStaffNotificationHandler {
         Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
         if (isResponseStatesPaid(response)) {
             this.statesPaidStaffNotificationService.notifyStaffClaimantResponseStatesPaidSubmittedFor(claim);
-        }
-        if (isPartAdmission(response)
-            && claim.getClaimantResponse().orElseThrow(IllegalArgumentException::new).getType()
-            == ClaimantResponseType.REJECTION && !isResponseStatesPaid(response)) {
-            claimantRejectionStaffNotificationService.notifyStaffClaimantRejectPartAdmission(claim);
+        } else {
+            if (isPartAdmission(response)
+                && claim.getClaimantResponse().orElseThrow(IllegalArgumentException::new).getType()
+                == ClaimantResponseType.REJECTION) {
+                claimantRejectionStaffNotificationService.notifyStaffClaimantRejectPartAdmission(claim);
+            }
         }
     }
 }
