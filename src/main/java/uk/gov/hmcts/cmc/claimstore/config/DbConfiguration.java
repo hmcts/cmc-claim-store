@@ -12,7 +12,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import uk.gov.hmcts.cmc.claimstore.config.db.OptionalContainerFactory;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.OffersRepository;
-import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.TestingSupportRepository;
 
 import javax.sql.DataSource;
