@@ -17,7 +17,9 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @EqualsAndHashCode
 public class HearingLocation {
 
+    @Valid
     @NotNull
+    @Size(max = 200)
     private final String courtName;
     private final String hearingLocationSlug;
     private final Address courtAddress;

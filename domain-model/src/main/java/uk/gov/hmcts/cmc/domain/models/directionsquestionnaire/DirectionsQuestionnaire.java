@@ -8,7 +8,6 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import static java.util.Collections.emptyList;
@@ -22,7 +21,6 @@ public class DirectionsQuestionnaire {
     private final RequireSupport requireSupport;
 
     @Valid
-    @NotNull
     private final HearingLocation hearingLocation;
 
     @Valid
@@ -60,12 +58,16 @@ public class DirectionsQuestionnaire {
         return Optional.ofNullable(requireSupport);
     }
 
+    public Optional<HearingLocation> getHearingLocation() {
+        return Optional.ofNullable(hearingLocation);
+    }
+
     public Optional<Witness> getWitness() {
         return Optional.ofNullable(witness);
     }
 
     public List<UnavailableDate> getUnavailableDates() {
-        return unavailableDates == null ? emptyList() : unavailableDates;
+        return Optional.ofNullable(unavailableDates).orElse(emptyList());
     }
 
     public Optional<ExpertRequest> getExpertRequest() {
@@ -73,7 +75,7 @@ public class DirectionsQuestionnaire {
     }
 
     public List<ExpertReport> getExpertReports() {
-        return expertReports == null ? emptyList() : expertReports;
+        return Optional.ofNullable(expertReports).orElse(emptyList());
     }
 
     @Override
