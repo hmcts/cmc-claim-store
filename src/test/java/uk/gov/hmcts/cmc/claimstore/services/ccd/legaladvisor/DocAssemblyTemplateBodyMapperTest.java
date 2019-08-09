@@ -16,6 +16,9 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
+import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
+import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Address;
+import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
@@ -26,6 +29,7 @@ import java.time.ZoneOffset;
 import java.util.Collections;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOTH;
@@ -45,26 +49,28 @@ public class DocAssemblyTemplateBodyMapperTest {
 
     @Mock
     private Clock clock;
+    @Mock
+    private CourtFinderApi courtFinderApi;
 
+    private HearingCourtDetailsFinder hearingCourtDetailsFinder;
     private DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
     private CCDCase ccdCase;
     private UserDetails userDetails;
-    private HearingCourt hearingCourt;
 
     private DocAssemblyTemplateBody.DocAssemblyTemplateBodyBuilder docAssemblyTemplateBodyBuilder;
 
     @Before
     public void setUp() {
-        docAssemblyTemplateBodyMapper = new DocAssemblyTemplateBodyMapper(clock);
-        hearingCourt = HearingCourt.builder()
+        hearingCourtDetailsFinder = new HearingCourtDetailsFinder(courtFinderApi, new HearingCourtMapper());
+        docAssemblyTemplateBodyMapper = new DocAssemblyTemplateBodyMapper(clock, hearingCourtDetailsFinder);
+
+        when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString())).thenReturn(ImmutableList.of(Court.builder()
             .name("Birmingham Court")
-            .address(CCDAddress.builder()
-                .addressLine1("line1")
-                .addressLine2("line2")
-                .addressLine3("line3")
-                .postCode("SW1P4BB")
-                .postTown("Birmingham").build())
-            .build();
+            .slug("birmingham-court")
+            .address(Address.builder()
+                .addressLines(ImmutableList.of("line1", "line2", "line3"))
+                .postcode("SW1P4BB")
+                .town("Birmingham").build()).build()));
 
         ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         ccdCase.setDirectionOrderData(SampleData.getCCDOrderGenerationData());
@@ -141,6 +147,7 @@ public class DocAssemblyTemplateBodyMapperTest {
                                 .build()))
                     .build()
             ));
+
         //when
         when(clock.instant()).thenReturn(LocalDate.parse("2019-04-24")
             .atStartOfDay().toInstant(ZoneOffset.UTC));
@@ -157,8 +164,8 @@ public class DocAssemblyTemplateBodyMapperTest {
         ccdCase.setDirectionOrderData(ccdOrderGenerationData);
         DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
             ccdCase,
-            userDetails,
-            hearingCourt);
+            userDetails
+        );
 
         DocAssemblyTemplateBody expectedBody = DocAssemblyTemplateBody.builder()
             .paperDetermination(false)
@@ -232,8 +239,8 @@ public class DocAssemblyTemplateBodyMapperTest {
         String output = objectMapper.writeValueAsString(
             docAssemblyTemplateBodyMapper.from(
                 ccdCase,
-                userDetails,
-                hearingCourt)
+                userDetails
+            )
         );
         assertThat(output).isNotNull();
         String expected = new ResourceReader().read("/doc-assembly-template.json");
@@ -244,8 +251,8 @@ public class DocAssemblyTemplateBodyMapperTest {
     public void shouldMapTemplateBody() {
         DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
             ccdCase,
-            userDetails,
-            hearingCourt);
+            userDetails
+        );
 
         DocAssemblyTemplateBody expectedBody = docAssemblyTemplateBodyBuilder.build();
 
@@ -261,8 +268,8 @@ public class DocAssemblyTemplateBodyMapperTest {
         ccdCase.setDirectionOrderData(ccdOrderGenerationData);
         DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
             ccdCase,
-            userDetails,
-            hearingCourt);
+            userDetails
+        );
 
         docAssemblyTemplateBodyBuilder.otherDirections(Collections.emptyList());
         DocAssemblyTemplateBody expectedBody = docAssemblyTemplateBodyBuilder.build();

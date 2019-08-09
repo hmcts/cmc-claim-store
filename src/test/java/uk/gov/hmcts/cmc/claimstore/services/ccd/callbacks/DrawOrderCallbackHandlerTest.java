@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtDetailsFinder;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -77,6 +78,8 @@ public class DrawOrderCallbackHandlerTest {
     private OrderDrawnNotificationService orderDrawnNotificationService;
     @Mock
     private LegalOrderService legalOrderService;
+    @Mock
+    private HearingCourtDetailsFinder hearingCourtDetailsFinder;
 
     private CallbackParams callbackParams;
 
@@ -91,7 +94,9 @@ public class DrawOrderCallbackHandlerTest {
             jsonMapper,
             orderDrawnNotificationService,
             caseDetailsConverter,
-            legalOrderService);
+            legalOrderService,
+            hearingCourtDetailsFinder
+        );
 
         when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);

@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
@@ -18,14 +19,20 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 public class DocAssemblyTemplateBodyMapper {
 
     private Clock clock;
+    private final HearingCourtDetailsFinder hearingCourtDetailsFinder;
 
     @Autowired
-    public DocAssemblyTemplateBodyMapper(Clock clock) {
+    public DocAssemblyTemplateBodyMapper(Clock clock, HearingCourtDetailsFinder hearingCourtDetailsFinder) {
         this.clock = clock;
+        this.hearingCourtDetailsFinder = hearingCourtDetailsFinder;
     }
 
-    public DocAssemblyTemplateBody from(CCDCase ccdCase, UserDetails userDetails, HearingCourt hearingCourt) {
+    public DocAssemblyTemplateBody from(CCDCase ccdCase, UserDetails userDetails) {
         CCDOrderGenerationData ccdOrderGenerationData = ccdCase.getDirectionOrderData();
+
+        HearingCourt hearingCourt = Optional.ofNullable(ccdOrderGenerationData.getHearingCourt())
+            .map(hearingCourtDetailsFinder::findHearingCourtAddress)
+            .orElseGet(() -> HearingCourt.builder().build());
 
         return DocAssemblyTemplateBody.builder()
             .claimant(Party.builder()

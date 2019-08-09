@@ -14,6 +14,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtDetailsFinder;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -46,6 +48,7 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
     private final OrderDrawnNotificationService orderDrawnNotificationService;
     private final CaseDetailsConverter caseDetailsConverter;
     private final LegalOrderService legalOrderService;
+    private final HearingCourtDetailsFinder hearingCourtDetailsFinder;
 
     @Autowired
     public DrawOrderCallbackHandler(
@@ -53,12 +56,15 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
         JsonMapper jsonMapper,
         OrderDrawnNotificationService orderDrawnNotificationService,
         CaseDetailsConverter caseDetailsConverter,
-        LegalOrderService legalOrderService) {
+        LegalOrderService legalOrderService,
+        HearingCourtDetailsFinder hearingCourtDetailsFinder
+    ) {
         this.clock = clock;
         this.jsonMapper = jsonMapper;
         this.orderDrawnNotificationService = orderDrawnNotificationService;
         this.caseDetailsConverter = caseDetailsConverter;
         this.legalOrderService = legalOrderService;
+        this.hearingCourtDetailsFinder = hearingCourtDetailsFinder;
     }
 
     @Override
@@ -103,12 +109,16 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
             .map(CCDOrderGenerationData::getDraftOrderDoc)
             .orElseThrow(() -> new CallbackException("Draft order not present"));
 
-        CCDDirectionOrder directionOrder = Optional.ofNullable(ccdCase.getDirectionOrder())
-            .orElseThrow(() -> new CallbackException("Direction order not present"));
+        HearingCourt hearingCourt = Optional.ofNullable(ccdCase.getDirectionOrderData().getHearingCourt())
+            .map(hearingCourtDetailsFinder::findHearingCourtAddress)
+            .orElseGet(() -> HearingCourt.builder().build());
 
         CCDCase updatedCase = ccdCase.toBuilder()
             .caseDocuments(updateCaseDocumentsWithOrder(ccdCase, draftOrderDoc))
-            .directionOrder(directionOrder.toBuilder().createdOn(nowInUTC()).build())
+            .directionOrder(CCDDirectionOrder.builder()
+                .createdOn(nowInUTC())
+                .hearingCourtAddress(hearingCourt.getAddress())
+                .build())
             .build();
 
         return AboutToStartOrSubmitCallbackResponse
