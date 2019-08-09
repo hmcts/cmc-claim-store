@@ -15,7 +15,7 @@ public class Direction extends CollectionId {
     private DirectionParty directionParty;
     private DirectionType directionType;
     private DirectionHeaderType directionHeaderType;
-    private LocalDate directionActionedBy;
+    private LocalDate directionActionedDate;
     private String directionComment;
     private List<String> extraDocuments;
     private List<String> expertReports;
@@ -26,7 +26,7 @@ public class Direction extends CollectionId {
         DirectionParty directionParty,
         DirectionType directionType,
         DirectionHeaderType directionHeaderType,
-        LocalDate directionActionedBy,
+        LocalDate directionActionDeadline,
         String directionComment,
         List<String> extraDocuments,
         List<String> expertReports
@@ -35,7 +35,7 @@ public class Direction extends CollectionId {
         this.directionParty = directionParty;
         this.directionType = directionType;
         this.directionHeaderType = directionHeaderType;
-        this.directionActionedBy = directionActionedBy;
+        this.directionActionedDate = directionActionDeadline;
         this.directionComment = directionComment;
         this.extraDocuments = extraDocuments;
         this.expertReports = expertReports;
