@@ -7,13 +7,13 @@ import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.orders.Direction;
 import uk.gov.hmcts.cmc.domain.orders.DirectionHeaderType;
 import uk.gov.hmcts.cmc.domain.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.orders.DirectionParty;
 import uk.gov.hmcts.cmc.domain.orders.DirectionType;
-import uk.gov.hmcts.cmc.domain.orders.HearingCourtType;
 import uk.gov.hmcts.cmc.domain.orders.HearingDurationType;
 
 import java.util.Objects;
@@ -42,7 +42,7 @@ public class DirectionOrderMapper {
             builder.estimatedHearingDuration(HearingDurationType.valueOf(estimatedDuration.name())));
 
         Optional.ofNullable(directionOrderData.getHearingCourt()).ifPresent(hearingCourt ->
-            builder.hearingCourt(HearingCourtType.valueOf(hearingCourt.name())));
+            builder.hearingCourt(PilotCourt.valueOf(hearingCourt.name())));
 
         Optional.ofNullable(directionOrderData.getPaperDetermination()).ifPresent(paperDetermination ->
             builder.paperDetermination(YesNoOption.valueOf(paperDetermination.name())));
