@@ -17,6 +17,8 @@ async:
       size: 50
 
 spring:
+  profiles:
+    active: non-async # not to be merged to master, temporary to test on pr
   main:
     allow-bean-definition-overriding: true  # https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.1-Release-Notes#bean-overriding
   application:
