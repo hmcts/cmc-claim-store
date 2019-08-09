@@ -24,7 +24,8 @@ public class DirectionsQuestionnaireAssert
 
         isNotNull();
 
-        isEqualToHearingLocation(ccdDirectionsQuestionnaire, actual.getHearingLocation());
+        actual.getHearingLocation()
+            .ifPresent(hearingLocation -> isEqualToHearingLocation(ccdDirectionsQuestionnaire, hearingLocation));
 
         actual.getRequireSupport().ifPresent(isEqualToRequireSupport(ccdDirectionsQuestionnaire));
 
