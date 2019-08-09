@@ -1,7 +1,7 @@
 idam_api_url = "https://idam-api.ithc.platform.hmcts.net"
 frontend_url = "https://moneyclaims.ithc.platform.hmcts.net"
 respond_to_claim_url = "https://moneyclaims.ithc.platform.hmcts.net/first-contact/start"
-db_host = "preprod-data-lb.moneyclaim.reform.hmcts.net"
+db_host = "cmc-ithc.postgres.database.azure.com"
 capacity = "2"
 ccd_enabled = "true"
 ccd_async_enabled = "false"
