@@ -82,9 +82,9 @@ public class DirectionOrderMapper {
     }
 
     private DirectionHeaderType getDirectionHeaderType(CCDOrderDirection ccdOrderDirection) {
-        return Optional.ofNullable(ccdOrderDirection.getOtherDirectionHeaders()).isPresent()
-            ? DirectionHeaderType.valueOf(ccdOrderDirection.getOtherDirectionHeaders().name())
-            : null;
+        return Optional.ofNullable(ccdOrderDirection.getOtherDirectionHeaders())
+            .map(headerType -> DirectionHeaderType.valueOf(headerType.name()))
+            .orElse(null);
     }
 
     private void addEyeWitnessDirection(CCDOrderGenerationData directionOrderData, DirectionOrder directionOrder) {
