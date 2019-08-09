@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,7 @@ import uk.gov.hmcts.cmc.domain.orders.DirectionOrder;
 
 import java.time.LocalDateTime;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNull;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDOrderGenerationData;
@@ -36,7 +36,7 @@ public class DirectionOrderMapperTest {
         DirectionOrder directionOrder = mapper.from(ccdDirectionOrder, getCCDOrderGenerationData());
 
         assertThat(directionOrder).isEqualTo(ccdDirectionOrder);
-        Assertions.assertThat(directionOrder.getDirections()).hasSize(4);
+        assertThat(directionOrder.getDirections()).hasSize(4);
     }
 
     @Test

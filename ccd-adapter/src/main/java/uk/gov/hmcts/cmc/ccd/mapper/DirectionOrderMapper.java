@@ -82,17 +82,21 @@ public class DirectionOrderMapper {
     }
 
     private DirectionHeaderType getDirectionHeaderType(CCDOrderDirection ccdOrderDirection) {
-        return ccdOrderDirection.getOtherDirectionHeaders() == null
-            ? null
-            : DirectionHeaderType.valueOf(ccdOrderDirection.getOtherDirectionHeaders().name());
+        return Optional.ofNullable(ccdOrderDirection.getOtherDirectionHeaders()).isPresent()
+            ? DirectionHeaderType.valueOf(ccdOrderDirection.getOtherDirectionHeaders().name())
+            : null;
     }
 
     private void addEyeWitnessDirection(CCDOrderGenerationData directionOrderData, DirectionOrder directionOrder) {
-        directionOrder.addDirection(mapDirectionData(directionOrderData, CCDOrderDirectionType.EYEWITNESS));
+        if (directionOrderData.getDirectionList().contains(CCDOrderDirectionType.EYEWITNESS)) {
+            directionOrder.addDirection(mapDirectionData(directionOrderData, CCDOrderDirectionType.EYEWITNESS));
+        }
     }
 
     private void addUploadDocumentDirection(CCDOrderGenerationData directionOrderData, DirectionOrder directionOrder) {
-        directionOrder.addDirection(mapDirectionData(directionOrderData, CCDOrderDirectionType.DOCUMENTS));
+        if (directionOrderData.getDirectionList().contains(CCDOrderDirectionType.DOCUMENTS)) {
+            directionOrder.addDirection(mapDirectionData(directionOrderData, CCDOrderDirectionType.DOCUMENTS));
+        }
     }
 
     private Direction mapDirectionData(CCDOrderGenerationData directionOrderData, CCDOrderDirectionType directionType) {
@@ -112,13 +116,13 @@ public class DirectionOrderMapper {
 
                 builder.directionType(DirectionType.valueOf(directionType.name()))
                     .directionActionedBy(directionOrderData.getDocUploadDeadline());
-                return;
+                break;
             case EYEWITNESS:
                 addDirectionParty(builder, directionOrderData.getEyewitnessUploadForParty());
 
                 builder.directionType(DirectionType.valueOf(directionType.name()))
                     .directionActionedBy(directionOrderData.getEyewitnessUploadDeadline());
-                return;
+                break;
             default:
                 throw new IllegalArgumentException("Invalid direction type");
 

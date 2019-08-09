@@ -16,7 +16,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
-import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtDetailsFinder;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
@@ -69,8 +68,6 @@ public class DrawOrderCallbackHandlerTest {
             .build();
 
     @Mock
-    private JsonMapper jsonMapper;
-    @Mock
     private CaseDetailsConverter caseDetailsConverter;
     @Mock
     private Clock clock;
@@ -91,7 +88,6 @@ public class DrawOrderCallbackHandlerTest {
     public void setUp() {
         drawOrderCallbackHandler = new DrawOrderCallbackHandler(
             clock,
-            jsonMapper,
             orderDrawnNotificationService,
             caseDetailsConverter,
             legalOrderService,
@@ -136,7 +132,8 @@ public class DrawOrderCallbackHandlerTest {
             .directionOrder(CCDDirectionOrder.builder().hearingCourtAddress(SampleData.getCCDAddress()).build())
             .build();
 
-        when(jsonMapper.fromMap(data, CCDCase.class)).thenReturn(ccdCase);
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+
         when(caseDetailsConverter.convertToMap(any(CCDCase.class)))
             .thenReturn(ImmutableMap.<String, Object>builder()
                 .put("data", "existingData")
@@ -162,8 +159,7 @@ public class DrawOrderCallbackHandlerTest {
             .build();
 
         CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
-        when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
-
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
         drawOrderCallbackHandler.handle(callbackParams);
     }
 
@@ -191,7 +187,7 @@ public class DrawOrderCallbackHandlerTest {
             .caseDocuments(ImmutableList.of(existingDocument))
             .build();
 
-        when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
 
         Claim claim = SampleClaim.builder().build();
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);

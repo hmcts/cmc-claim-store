@@ -17,7 +17,6 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
@@ -77,13 +76,8 @@ public class GenerateOrderCallbackHandlerTest {
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
 
-    @Mock
-    private CourtFinderApi courtFinderApi;
-
     private CallbackRequest callbackRequest;
-
     private GenerateOrderCallbackHandler generateOrderCallbackHandler;
-
     private CCDCase ccdCase;
 
     @Before

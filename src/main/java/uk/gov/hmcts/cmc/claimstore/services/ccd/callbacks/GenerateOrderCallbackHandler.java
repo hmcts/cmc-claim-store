@@ -55,7 +55,6 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
     private static final String EYEWITNESS_UPLOAD_FOR_PARTY = "eyewitnessUploadForParty";
     private static final String PAPER_DETERMINATION = "paperDetermination";
     private static final String DRAFT_ORDER_DOC = "draftOrderDoc";
-    private static final String DIRECTION_ORDER = "directionOrder";
     private static final String NEW_REQUESTED_COURT = "newRequestedCourt";
     private static final String PREFERRED_COURT_OBJECTING_PARTY = "preferredCourtObjectingParty";
     private static final String PREFERRED_COURT_OBJECTING_REASON = "preferredCourtObjectingReason";

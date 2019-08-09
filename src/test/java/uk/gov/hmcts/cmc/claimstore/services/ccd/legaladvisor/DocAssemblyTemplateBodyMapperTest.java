@@ -30,6 +30,7 @@ import java.util.Collections;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOTH;
@@ -52,16 +53,16 @@ public class DocAssemblyTemplateBodyMapperTest {
     @Mock
     private CourtFinderApi courtFinderApi;
 
-    private HearingCourtDetailsFinder hearingCourtDetailsFinder;
     private DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
     private CCDCase ccdCase;
     private UserDetails userDetails;
-
     private DocAssemblyTemplateBody.DocAssemblyTemplateBodyBuilder docAssemblyTemplateBodyBuilder;
 
     @Before
     public void setUp() {
-        hearingCourtDetailsFinder = new HearingCourtDetailsFinder(courtFinderApi, new HearingCourtMapper());
+        HearingCourtDetailsFinder hearingCourtDetailsFinder
+            = new HearingCourtDetailsFinder(courtFinderApi, new HearingCourtMapper());
+
         docAssemblyTemplateBodyMapper = new DocAssemblyTemplateBodyMapper(clock, hearingCourtDetailsFinder);
 
         when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString())).thenReturn(ImmutableList.of(Court.builder()
@@ -232,6 +233,7 @@ public class DocAssemblyTemplateBodyMapperTest {
             )).build();
 
         assertThat(requestBody).isEqualTo(expectedBody);
+        verify(courtFinderApi).findMoneyClaimCourtByPostcode(anyString());
     }
 
     @Test
@@ -245,6 +247,7 @@ public class DocAssemblyTemplateBodyMapperTest {
         assertThat(output).isNotNull();
         String expected = new ResourceReader().read("/doc-assembly-template.json");
         JSONAssert.assertEquals(expected, output, STRICT);
+        verify(courtFinderApi).findMoneyClaimCourtByPostcode(anyString());
     }
 
     @Test
@@ -257,6 +260,7 @@ public class DocAssemblyTemplateBodyMapperTest {
         DocAssemblyTemplateBody expectedBody = docAssemblyTemplateBodyBuilder.build();
 
         assertThat(requestBody).isEqualTo(expectedBody);
+        verify(courtFinderApi).findMoneyClaimCourtByPostcode(anyString());
     }
 
     @Test
@@ -275,5 +279,6 @@ public class DocAssemblyTemplateBodyMapperTest {
         DocAssemblyTemplateBody expectedBody = docAssemblyTemplateBodyBuilder.build();
 
         assertThat(requestBody).isEqualTo(expectedBody);
+        verify(courtFinderApi).findMoneyClaimCourtByPostcode(anyString());
     }
 }

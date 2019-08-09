@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
-import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtDetailsFinder;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
@@ -44,7 +43,6 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
     private static final String CASE_DOCUMENTS = "caseDocuments";
 
     private final Clock clock;
-    private final JsonMapper jsonMapper;
     private final OrderDrawnNotificationService orderDrawnNotificationService;
     private final CaseDetailsConverter caseDetailsConverter;
     private final LegalOrderService legalOrderService;
@@ -53,14 +51,12 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
     @Autowired
     public DrawOrderCallbackHandler(
         Clock clock,
-        JsonMapper jsonMapper,
         OrderDrawnNotificationService orderDrawnNotificationService,
         CaseDetailsConverter caseDetailsConverter,
         LegalOrderService legalOrderService,
         HearingCourtDetailsFinder hearingCourtDetailsFinder
     ) {
         this.clock = clock;
-        this.jsonMapper = jsonMapper;
         this.orderDrawnNotificationService = orderDrawnNotificationService;
         this.caseDetailsConverter = caseDetailsConverter;
         this.legalOrderService = legalOrderService;
@@ -83,8 +79,7 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
     private CallbackResponse notifyPartiesAndPrintOrder(CallbackParams callbackParams) {
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
-        Map<String, Object> caseData = caseDetails.getData();
-        CCDCase ccdCase = jsonMapper.fromMap(caseData, CCDCase.class);
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         notifyParties(claim);
         String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
         return printOrder(authorisation, claim, ccdCase.getDirectionOrderData());
@@ -103,7 +98,7 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
 
     private CallbackResponse copyDraftToCaseDocument(CallbackParams callbackParams) {
         CallbackRequest callbackRequest = callbackParams.getRequest();
-        CCDCase ccdCase = jsonMapper.fromMap(callbackRequest.getCaseDetails().getData(), CCDCase.class);
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
 
         CCDDocument draftOrderDoc = Optional.ofNullable(ccdCase.getDirectionOrderData())
             .map(CCDOrderGenerationData::getDraftOrderDoc)
