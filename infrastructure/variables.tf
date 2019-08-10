@@ -27,7 +27,7 @@ variable "respond_to_claim_url" {
 }
 
 variable "database-name" {
-  default = "claimstore"
+  default = "cmc"
 }
 
 variable "mail-host" {
@@ -65,7 +65,7 @@ variable "appinsights_instrumentation_key" {
 }
 
 variable "db_host" {
-  default = "test-data-lb.moneyclaim.reform.hmcts.net"
+  default = "cmc-preview.postgres.database.azure.com"
 }
 
 variable "capacity" {
