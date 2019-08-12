@@ -14,6 +14,7 @@ import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.WAITING_TRANSFER;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isOptedForMediation;
 import static uk.gov.hmcts.cmc.claimstore.utils.TheirDetailsHelper.isDefendantBusiness;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
@@ -23,8 +24,14 @@ import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.PART_ADMISSIO
 
 public class DirectionsQuestionnaireUtils {
 
+    private static final String DQ_FLAG = "directionsQuestionnaire";
+
     private DirectionsQuestionnaireUtils() {
         // utility class, no instances
+    }
+
+    public static boolean isOnlineDQ(Claim claim) {
+        return claim.getFeatures().contains(DQ_FLAG);
     }
 
     public static Optional<CaseEvent> prepareCaseEvent(ResponseRejection responseRejection, Claim claim) {
@@ -32,8 +39,12 @@ public class DirectionsQuestionnaireUtils {
             return Optional.of(REFERRED_TO_MEDIATION);
         }
         String preferredCourt = getPreferredCourt(claim);
-        if (isPilotCourt(preferredCourt)) {
-            return Optional.of(ASSIGNING_FOR_DIRECTIONS);
+        if (isOnlineDQ(claim)) {
+            if (isPilotCourt(preferredCourt)) {
+                return Optional.of(ASSIGNING_FOR_DIRECTIONS);
+            } else {
+                return Optional.of(WAITING_TRANSFER);
+            }
         }
 
         return Optional.empty();
