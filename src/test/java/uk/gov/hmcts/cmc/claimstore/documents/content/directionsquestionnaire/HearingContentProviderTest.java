@@ -28,7 +28,7 @@ public class HearingContentProviderTest {
     private final String yes = "Yes";
     private final String no = "No";
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void mapDirectionsQuestionnaireThrowsException() {
         hearingContentProvider.mapDirectionQuestionnaire(null);
     }
@@ -52,7 +52,9 @@ public class HearingContentProviderTest {
                 assertEquals(request.getReasonForExpertAdvice(), hearingContent.getReasonWhyExpertAdvice());
                 assertEquals(request.getExpertEvidenceToExamine(), hearingContent.getWhatToExamine());
             });
-        assertEquals(dq.getHearingLocation().getCourtName(), hearingContent.getHearingLocation());
+        dq.getHearingLocation().ifPresent(location ->
+            assertEquals(location.getCourtName(), hearingContent.getHearingLocation())
+        );
         compareExpertReport(dq.getExpertReports(), hearingContent.getExpertReports());
         assertArrayEquals(
             unavailabeDatesToISOString(dq.getUnavailableDates()),

@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
+import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimantHearingFileBaseName;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIMANT_DIRECTIONS_QUESTIONNAIRE;
 
@@ -32,12 +33,16 @@ public class ClaimantDirectionsQuestionnairePdfService implements PdfService {
     @Override
     public PDF createPdf(Claim claim) {
 
-        claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
+        requireNonNull(claim.getClaimantResponse());
+        if (!claim.getClaimantResponse().isPresent()) {
+            throw new IllegalStateException("Claimant Response should be present");
+        }
 
-        claim.getClaimantResponse()
+        if (!claim.getClaimantResponse()
             .filter(ResponseRejection.class::isInstance)
-            .map(ResponseRejection.class::cast)
-            .orElseThrow(IllegalArgumentException::new);
+            .map(ResponseRejection.class::cast).isPresent()) {
+            throw new IllegalArgumentException("Response should be of type Rejection");
+        }
 
         return new PDF(buildClaimantHearingFileBaseName(claim.getReferenceNumber()),
             pdfServiceClient.generateFromHtml(documentTemplates.getClaimantDirectionsQuestionnaire(),

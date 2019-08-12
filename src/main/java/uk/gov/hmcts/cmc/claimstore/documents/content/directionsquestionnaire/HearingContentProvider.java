@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertRequest;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.RequireSupport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.UnavailableDate;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
 
@@ -37,6 +39,13 @@ public class HearingContentProvider {
         Optional.ofNullable(unavailableDate)
             .map(UnavailableDate::getUnavailableDate)
             .map(DateUtils::toISOFullStyle).orElse("");
+
+    private void mapHearingLocationDetails(HearingLocation hearingLocation,
+                                           HearingContent.HearingContentBuilder contentBuilder) {
+        contentBuilder.hearingLocation(hearingLocation.getCourtName());
+        contentBuilder.locationReason(hearingLocation.getExceptionalCircumstancesReason()
+            .orElse(""));
+    }
 
     private void mapSupportRequirement(RequireSupport support,
                                        HearingContent.HearingContentBuilder builder) {
@@ -66,16 +75,16 @@ public class HearingContentProvider {
 
     public HearingContent mapDirectionQuestionnaire(DirectionsQuestionnaire questionnaire) {
 
-        Optional.ofNullable(questionnaire).orElseThrow(IllegalArgumentException::new);
+        requireNonNull(questionnaire, "Directions Questionnaire cant be null");
 
         HearingContent.HearingContentBuilder contentBuilder = HearingContent.builder();
 
         questionnaire.getRequireSupport()
             .ifPresent(support -> mapSupportRequirement(support, contentBuilder));
 
-        contentBuilder.hearingLocation(questionnaire.getHearingLocation().getCourtName());
-        contentBuilder.locationReason(questionnaire.getHearingLocation().getExceptionalCircumstancesReason()
-            .orElse(""));
+        questionnaire.getHearingLocation().ifPresent(hearingLocation -> mapHearingLocationDetails(hearingLocation,
+            contentBuilder));
+
         contentBuilder.hasExpertReport(questionnaire.getExpertReports().isEmpty() ? NO : YES);
 
         questionnaire.getWitness().ifPresent(contentBuilder::witness);
