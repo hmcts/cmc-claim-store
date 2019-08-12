@@ -46,7 +46,8 @@ public enum CaseEvent {
     REFERRED_TO_MEDIATION("ReferredToMediation"),
     DRAW_ORDER("DrawOrder"),
     CLAIMANT_DIRECTIONS_QUESTIONNAIRE_UPLOAD("ClaimantDirectionsQuestionnaireUpload"),
-    ORDER_REVIEW_REQUESTED("OrderReviewRequested");
+    ORDER_REVIEW_REQUESTED("OrderReviewRequested"),
+    WAITING_TRANSFER("WaitingTransfer");
 
     private String value;
 
