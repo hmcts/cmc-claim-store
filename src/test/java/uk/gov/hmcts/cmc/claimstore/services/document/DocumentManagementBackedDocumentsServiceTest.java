@@ -19,7 +19,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertArrayEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -166,7 +166,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
     }
 
     private void verifyCommon(byte[] pdf) {
-        assertEquals(PDF_BYTES, pdf);
+        assertArrayEquals(PDF_BYTES, pdf);
         verify(documentManagementService).uploadDocument(anyString(), any(PDF.class));
     }
 }
