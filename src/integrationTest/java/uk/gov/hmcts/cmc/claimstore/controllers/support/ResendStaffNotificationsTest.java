@@ -108,20 +108,6 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldRespond400AndNotProceedForClaimIssuedEventWhenAuthorisationIsMissing() throws Exception {
-        String event = "claim-issued";
-        Claim claim = claimStore.saveClaim(SampleClaimData.submittedByClaimant());
-
-        webClient
-            .perform(put("/support/claim/"
-                    + claim.getReferenceNumber()
-                    + "/event/" + event + "/resend-staff-notifications"))
-            .andExpect(status().isBadRequest());
-
-        verify(emailService, never()).sendEmail(any(), any());
-    }
-
-    @Test
     public void shouldRespond200AndSendNotificationsForClaimIssuedEvent() throws Exception {
         String event = "claim-issued";
 

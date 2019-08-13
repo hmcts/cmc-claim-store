@@ -46,7 +46,7 @@ public class ClaimantResponseHelper {
     }
 
     public static boolean isIntentToProceed(ClaimantResponse claimantResponse) {
-        return claimantResponse.getType() == ClaimantResponseType.REJECTION
+        return claimantResponse.getType() == REJECTION
             && ((ResponseRejection) claimantResponse).getDirectionsQuestionnaire().isPresent();
     }
 }
