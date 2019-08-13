@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers.support;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,6 +52,7 @@ import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isReferredToJudge;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
 
 @RestController
 @RequestMapping("/support")
@@ -70,6 +72,7 @@ public class SupportController {
     private final ClaimantResponseStaffNotificationHandler claimantResponseStaffNotificationHandler;
     private final DocumentsService documentsService;
     private final PostClaimOrchestrationHandler postClaimOrchestrationHandler;
+    private final boolean directionsQuestionnaireEnabled;
 
     @SuppressWarnings("squid:S00107")
     public SupportController(
@@ -82,7 +85,8 @@ public class SupportController {
         AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler,
         ClaimantResponseStaffNotificationHandler claimantResponseStaffNotificationHandler,
         DocumentsService documentsService,
-        @Autowired(required = false) PostClaimOrchestrationHandler postClaimOrchestrationHandler
+        @Autowired(required = false) PostClaimOrchestrationHandler postClaimOrchestrationHandler,
+        @Value("${feature_toggles.directions_questionnaire_enabled:false}") boolean directionsQuestionnaireEnabled
     ) {
         this.claimService = claimService;
         this.userService = userService;
@@ -94,6 +98,7 @@ public class SupportController {
         this.claimantResponseStaffNotificationHandler = claimantResponseStaffNotificationHandler;
         this.documentsService = documentsService;
         this.postClaimOrchestrationHandler = postClaimOrchestrationHandler;
+        this.directionsQuestionnaireEnabled = directionsQuestionnaireEnabled;
     }
 
     @PutMapping("/claim/{referenceNumber}/event/{event}/resend-staff-notifications")
@@ -126,6 +131,9 @@ public class SupportController {
                 break;
             case "claimant-response":
                 resendStaffNotificationClaimantResponse(claim, authorisation);
+                break;
+            case "intent-to-proceed":
+                resendStaffNotificationForIntentToProceed(claim);
                 break;
             default:
                 throw new NotFoundException("Event " + event + " is not supported");
@@ -221,6 +229,21 @@ public class SupportController {
             );
         }
 
+    }
+
+    private void resendStaffNotificationForIntentToProceed(Claim claim) {
+        ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalArgumentException::new);
+
+        if (!directionsQuestionnaireEnabled) {
+            throw new IllegalArgumentException("Direction Question Flag is mandatory for `intent-to-proceed` event");
+        }
+
+        if (claimantResponse.getType() != REJECTION) {
+            throw new IllegalArgumentException("Rejected Claimant Response is mandatory for `intent-to-proceed` event");
+        }
+
+        claimantResponseStaffNotificationHandler
+            .notifyStaffWithClaimantsIntentionToProceed(new ClaimantResponseEvent(claim));
     }
 
     private void resendStaffNotificationOnMoreTimeRequested(Claim claim) {
