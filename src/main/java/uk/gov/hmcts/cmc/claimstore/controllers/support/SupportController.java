@@ -234,10 +234,16 @@ public class SupportController {
     private void resendStaffNotificationForIntentToProceed(Claim claim) {
         ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalArgumentException::new);
 
-        if (directionsQuestionnaireEnabled && claimantResponse.getType() == REJECTION) {
-            claimantResponseStaffNotificationHandler
-                .notifyStaffWithClaimantsIntentionToProceed(new ClaimantResponseEvent(claim));
+        if (!directionsQuestionnaireEnabled) {
+            throw new IllegalArgumentException("Direction Question Flag is mandatory for `intent-to-proceed` event");
         }
+
+        if (claimantResponse.getType() != REJECTION) {
+            throw new IllegalArgumentException("Rejected Claimant Response is mandatory for `intent-to-proceed` event");
+        }
+
+        claimantResponseStaffNotificationHandler
+            .notifyStaffWithClaimantsIntentionToProceed(new ClaimantResponseEvent(claim));
     }
 
     private void resendStaffNotificationOnMoreTimeRequested(Claim claim) {
