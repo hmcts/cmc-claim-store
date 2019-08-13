@@ -66,7 +66,7 @@ public class ClaimantResponseActionsHandlerTest {
     }
 
     @Test
-    public void sendNotificationToDefendantOfRejection() {
+    public void sendNotificationToDefendantOfResponse() {
         //given
         ClaimantResponse claimantResponse = ClaimantResponseRejection.validDefaultRejection();
         Response response = PartAdmission.builder().buildWithStatesPaid(SampleParty.builder().individual());
@@ -75,6 +75,6 @@ public class ClaimantResponseActionsHandlerTest {
         //when
         handler.sendNotificationToDefendant(event);
         //then
-        verify(notificationService).notifyDefendantOfRejection(eq(claim));
+        verify(notificationService).notifyDefendantOfClaimantResponse(eq(claim));
     }
 }

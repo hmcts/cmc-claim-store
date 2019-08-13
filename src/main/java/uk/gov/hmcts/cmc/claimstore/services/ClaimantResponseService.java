@@ -42,7 +42,8 @@ public class ClaimantResponseService {
     private final FormaliseResponseAcceptanceService formaliseResponseAcceptanceService;
     private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
     private final CCDEventProducer ccdEventProducer;
-    @Value("${feature_toggles.directions_questionnaire_enabled:false}") boolean directionsQuestionnaireEnabled;
+    @Value("${feature_toggles.directions_questionnaire_enabled:false}")
+    boolean directionsQuestionnaireEnabled;
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     public ClaimantResponseService(
