@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimCreatedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
 import uk.gov.hmcts.cmc.claimstore.events.claim.PostClaimOrchestrationHandler;
+import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseStaffNotificationHandler;
@@ -28,18 +30,21 @@ import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse.ClaimantResponseAcceptation;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse.ClaimantResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse.PartAdmission;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -58,8 +63,8 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEM
 public class SupportControllerTest {
 
     private static final String AUTHORISATION = "Bearer: aaa";
-    private static final String CLAIMREFERENCENUMBER = "000CM001";
-    private static final String RESPONSESUBMITTED = "response-submitted";
+    private static final String CLAIM_REFERENCE = "000CM001";
+    private static final String RESPONSE_SUBMITTED = "response-submitted";
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder().build();
     private static final User USER = new User(AUTHORISATION, USER_DETAILS);
 
@@ -105,27 +110,25 @@ public class SupportControllerTest {
         controller = new SupportController(claimService, userService, documentGenerator,
             moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
             ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
-            claimantResponseStaffNotificationHandler, documentsService, postClaimOrchestrationHandler
+            claimantResponseStaffNotificationHandler, documentsService, postClaimOrchestrationHandler,
+            false
         );
         sampleClaim = SampleClaim.getDefault();
+        when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldNotResendRPANotificationsWhenRequestBodyIsEmpty() {
-        List<String> sendList = new ArrayList<>();
-        controller.resendRPANotifications(AUTHORISATION, sendList);
+        controller.resendRPANotifications(AUTHORISATION, Collections.emptyList());
     }
 
     @Test(expected = NotFoundException.class)
     public void shouldNotResendRPANotificationsWhenRequestBodyClaimsDoesNotExistForMultipleClaims() {
         // given
-        List<String> sendList = new ArrayList<>();
-        sendList.add(CLAIMREFERENCENUMBER);
-        sendList.add("000CM003");
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER))).thenReturn(Optional.of(sampleClaim));
+        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(sampleClaim));
 
         // when
-        controller.resendRPANotifications(AUTHORISATION, sendList);
+        controller.resendRPANotifications(AUTHORISATION, ImmutableList.of(CLAIM_REFERENCE, "000CM003"));
 
         // then
         verify(documentGenerator, never()).generateForCitizenRPA(any());
@@ -134,20 +137,17 @@ public class SupportControllerTest {
     @Test
     public void shouldResendRPANotifications() {
         // given
-        List<String> sendList = new ArrayList<>();
-        sendList.add(CLAIMREFERENCENUMBER);
         String letterHolderId = "333";
         GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", letterHolderId);
         given(userService.generatePin(anyString(), eq(AUTHORISATION))).willReturn(pinResponse);
 
         // when
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER))).thenReturn(Optional.of(sampleClaim));
-        when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(USER_DETAILS);
+        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(sampleClaim));
+        when(userService.getUserDetails(AUTHORISATION)).thenReturn(USER_DETAILS);
 
-        when(claimService.linkLetterHolder(eq(sampleClaim), eq(letterHolderId), eq(AUTHORISATION)))
-            .thenReturn(sampleClaim);
+        when(claimService.linkLetterHolder(sampleClaim, letterHolderId, AUTHORISATION)).thenReturn(sampleClaim);
 
-        controller.resendRPANotifications(AUTHORISATION, sendList);
+        controller.resendRPANotifications(AUTHORISATION, Collections.singletonList(CLAIM_REFERENCE));
 
         // then
         verify(documentGenerator).generateForCitizenRPA(any());
@@ -166,37 +166,112 @@ public class SupportControllerTest {
         given(userService.generatePin(anyString(), eq(AUTHORISATION))).willReturn(pinResponse);
 
         // when
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER))).thenReturn(Optional.of(sampleClaim));
-        when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(USER_DETAILS);
+        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(sampleClaim));
+        when(userService.getUserDetails(AUTHORISATION)).thenReturn(USER_DETAILS);
 
-        when(claimService.linkLetterHolder(eq(sampleClaim), eq(letterHolderId), eq(AUTHORISATION)))
-            .thenReturn(sampleClaim);
+        when(claimService.linkLetterHolder(sampleClaim, letterHolderId, AUTHORISATION)).thenReturn(sampleClaim);
 
-        controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claim-issued", AUTHORISATION);
+        controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claim-issued");
 
         // then
         verify(documentGenerator).generateForNonRepresentedClaim(any());
     }
 
     @Test
+    public void shouldResendStaffNotificationsForIntentToProceed() {
+        // given
+        ClaimantResponse claimantResponse = ClaimantResponseRejection.builder()
+            .buildRejectionWithDirectionsQuestionnaire();
+
+        sampleClaim = SampleClaim.builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withResponse(PartAdmission.builder().buildWithFreeMediation())
+            .withClaimantResponse(claimantResponse)
+            .build();
+
+        controller = new SupportController(claimService, userService, documentGenerator,
+            moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
+            ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
+            claimantResponseStaffNotificationHandler, documentsService, postClaimOrchestrationHandler,
+            true
+        );
+
+        // when
+        when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE))).thenReturn(Optional.of(sampleClaim));
+        controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "intent-to-proceed");
+
+        // then
+        verify(claimantResponseStaffNotificationHandler)
+            .notifyStaffWithClaimantsIntentionToProceed(new ClaimantResponseEvent(sampleClaim));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowForIntentToProceedIfDQFeatureToggledIsOff() {
+        // given
+        ClaimantResponse claimantResponse = ClaimantResponseRejection.builder()
+            .buildRejectionWithDirectionsQuestionnaire();
+
+        sampleClaim = SampleClaim.builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withResponse(PartAdmission.builder().buildWithFreeMediation())
+            .withClaimantResponse(claimantResponse)
+            .build();
+
+        controller = new SupportController(claimService, userService, documentGenerator,
+            moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
+            ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
+            claimantResponseStaffNotificationHandler, documentsService, postClaimOrchestrationHandler,
+            false
+        );
+
+        // when
+        when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE))).thenReturn(Optional.of(sampleClaim));
+
+        controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "intent-to-proceed");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowForIntentToProceedIfClaimantResponseIsNotRejection() {
+        // given
+        sampleClaim = SampleClaim.builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withResponse(PartAdmission.builder().buildWithFreeMediation())
+            .withClaimantResponse(ClaimantResponseAcceptation.builder().build())
+            .build();
+
+        controller = new SupportController(claimService, userService, documentGenerator,
+            moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
+            ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
+            claimantResponseStaffNotificationHandler, documentsService, postClaimOrchestrationHandler,
+            true
+        );
+
+        // when
+        when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE))).thenReturn(Optional.of(sampleClaim));
+
+        controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "intent-to-proceed");
+    }
+
+    @Test
     public void shouldThrowExceptionIfDefendantResponseSubmittedWhenNoDefendantResponse() {
         exceptionRule.expect(ConflictException.class);
-        exceptionRule.expectMessage("Claim " + CLAIMREFERENCENUMBER + " does not have associated response");
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
+        exceptionRule.expectMessage("Claim " + CLAIM_REFERENCE + " does not have associated response");
+
+        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE))
             .thenReturn(Optional.of(SampleClaim.withNoResponse()));
-        controller.resendStaffNotifications(CLAIMREFERENCENUMBER, RESPONSESUBMITTED, AUTHORISATION);
+        controller.resendStaffNotifications(CLAIM_REFERENCE, RESPONSE_SUBMITTED);
     }
 
     @Test
     public void shouldResendClaimantResponseNotifications() {
         sampleClaim = SampleClaim.builder()
-            .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionImmediately())
+            .withResponse(PartAdmission.builder().buildWithPaymentOptionImmediately())
             .withClaimantResponse(SampleClaimantResponse.validDefaultRejection())
             .build();
 
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER))).thenReturn(Optional.of(sampleClaim));
+        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(sampleClaim));
 
-        controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claimant-response", "");
+        controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claimant-response");
 
         verify(claimantResponseStaffNotificationHandler).onClaimantResponse(any());
     }
@@ -207,17 +282,17 @@ public class SupportControllerTest {
         Party company = SampleParty.builder().withCorrespondenceAddress(null).company();
         sampleClaim = SampleClaim.builder()
             .withResponse(
-                SampleResponse.PartAdmission.builder().buildWithPaymentIntentionAndParty(paymentIntention, company)
+                PartAdmission.builder().buildWithPaymentIntentionAndParty(paymentIntention, company)
             )
             .withClaimantResponse(
-                SampleClaimantResponse.ClaimantResponseAcceptation.builder()
+                ClaimantResponseAcceptation.builder()
                     .buildAcceptationReferToJudgeWithCourtDetermination()
             )
             .build();
 
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER))).thenReturn(Optional.of(sampleClaim));
+        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(sampleClaim));
 
-        controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claimant-response", "");
+        controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claimant-response");
 
         verify(claimantResponseStaffNotificationHandler).onClaimantResponse(any());
     }
@@ -225,16 +300,16 @@ public class SupportControllerTest {
     @Test
     public void shouldNotResendClaimantResponseNotificationsIfReferToJudge() {
         sampleClaim = SampleClaim.builder()
-            .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionImmediately())
+            .withResponse(PartAdmission.builder().buildWithPaymentOptionImmediately())
             .withClaimantResponse(
-                SampleClaimantResponse.ClaimantResponseAcceptation.builder()
+                ClaimantResponseAcceptation.builder()
                     .buildAcceptationReferToJudgeWithCourtDetermination()
             )
             .build();
 
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER))).thenReturn(Optional.of(sampleClaim));
+        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(sampleClaim));
 
-        controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claimant-response", "");
+        controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claimant-response");
 
         verify(claimantResponseStaffNotificationHandler, never()).onClaimantResponse(any());
     }
@@ -246,14 +321,14 @@ public class SupportControllerTest {
                 SampleResponse.FullDefence.builder().build()
             )
             .withClaimantResponse(
-                SampleClaimantResponse.ClaimantResponseAcceptation.builder()
+                ClaimantResponseAcceptation.builder()
                     .buildAcceptationIssueSettlementWithClaimantPaymentIntention()
             )
             .build();
 
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER))).thenReturn(Optional.of(sampleClaim));
+        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(sampleClaim));
 
-        controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claimant-response", "");
+        controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claimant-response");
 
         verify(claimantResponseStaffNotificationHandler, never()).onClaimantResponse(any());
     }
@@ -261,84 +336,76 @@ public class SupportControllerTest {
     @Test
     public void shouldThrowExceptionWhenClaimHasNoClaimantResponse() {
         exceptionRule.expect(IllegalArgumentException.class);
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER))).thenReturn(
+        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(
             Optional.of(SampleClaim.builder().withClaimantResponse(null).build()));
 
-        controller.resendStaffNotifications(CLAIMREFERENCENUMBER, "claimant-response", "");
+        controller.resendStaffNotifications(CLAIM_REFERENCE, "claimant-response");
     }
 
     @Test
     public void shouldUploadSealedClaimDocument() {
         Claim claim = SampleClaim.getWithSealedClaimDocument();
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
-            .thenReturn(Optional.of(claim));
-        controller.uploadDocumentToDocumentManagement(CLAIMREFERENCENUMBER, SEALED_CLAIM, AUTHORISATION);
-        verify(documentsService).generateSealedClaim(claim.getExternalId(), AUTHORISATION);
+        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
+        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SEALED_CLAIM, AUTHORISATION);
+        verify(documentsService).generateDocument(claim.getExternalId(), SEALED_CLAIM, AUTHORISATION);
     }
 
     @Test
     public void shouldUploadClaimIssueReceiptDocument() {
         Claim claim = SampleClaim.getWithClaimIssueReceiptDocument();
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
-            .thenReturn(Optional.of(claim));
-        controller.uploadDocumentToDocumentManagement(CLAIMREFERENCENUMBER, CLAIM_ISSUE_RECEIPT, AUTHORISATION);
-        verify(documentsService).generateClaimIssueReceipt(claim.getExternalId(), AUTHORISATION);
+        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
+        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, CLAIM_ISSUE_RECEIPT, AUTHORISATION);
+        verify(documentsService).generateDocument(claim.getExternalId(), CLAIM_ISSUE_RECEIPT, AUTHORISATION);
     }
 
     @Test
     public void shouldUploadDefendantResponseReceiptDocument() {
         Claim claim = SampleClaim.getWithDefendantResponseReceiptDocument();
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
-            .thenReturn(Optional.of(claim));
-        controller.uploadDocumentToDocumentManagement(CLAIMREFERENCENUMBER, DEFENDANT_RESPONSE_RECEIPT, AUTHORISATION);
-        verify(documentsService).generateDefendantResponseReceipt(claim.getExternalId(), AUTHORISATION);
+        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
+        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, DEFENDANT_RESPONSE_RECEIPT, AUTHORISATION);
+        verify(documentsService).generateDocument(claim.getExternalId(), DEFENDANT_RESPONSE_RECEIPT, AUTHORISATION);
     }
 
     @Test
     public void shouldUploadSettlementAgreementDocument() {
         Claim claim = SampleClaim.getWithSettlementAgreementDocument();
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
-            .thenReturn(Optional.of(claim));
-        controller.uploadDocumentToDocumentManagement(CLAIMREFERENCENUMBER, SETTLEMENT_AGREEMENT, AUTHORISATION);
-        verify(documentsService).generateSettlementAgreement(claim.getExternalId(), AUTHORISATION);
+        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
+        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SETTLEMENT_AGREEMENT, AUTHORISATION);
+        verify(documentsService).generateDocument(claim.getExternalId(), SETTLEMENT_AGREEMENT, AUTHORISATION);
     }
 
     @Test
     public void shouldThrowNotFoundExceptionWhenClaimIsNotFound() {
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
-            .thenReturn(Optional.empty());
+        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.empty());
         exceptionRule.expect(NotFoundException.class);
-        exceptionRule.expectMessage("Claim " + CLAIMREFERENCENUMBER + " does not exist");
-        controller.uploadDocumentToDocumentManagement(CLAIMREFERENCENUMBER, SEALED_CLAIM, AUTHORISATION);
+        exceptionRule.expectMessage("Claim " + CLAIM_REFERENCE + " does not exist");
+        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SEALED_CLAIM, AUTHORISATION);
     }
 
     @Test
     public void shouldThrowBadRequestExceptionWhenAuthorisationStringIsInvalid() {
         Claim claim = SampleClaim.getWithSettlement(SampleSettlement.validDefaults());
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIMREFERENCENUMBER)))
-            .thenReturn(Optional.of(claim));
+        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
         exceptionRule.expect(BadRequestException.class);
         exceptionRule.expectMessage("Authorisation is required");
-        controller.uploadDocumentToDocumentManagement(CLAIMREFERENCENUMBER, SEALED_CLAIM, "");
+        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SEALED_CLAIM, "");
     }
 
     @Test
     public void shouldRecoverCitizenClaimIssueOperations() {
         Claim claim = SampleClaim.getDefault();
-        when(claimService.getClaimByReference(CLAIMREFERENCENUMBER, AUTHORISATION))
-            .thenReturn(Optional.of(claim));
-        when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
-        controller.recoverClaimIssueOperations(CLAIMREFERENCENUMBER);
+        when(claimService.getClaimByReference(CLAIM_REFERENCE, AUTHORISATION)).thenReturn(Optional.of(claim));
+
+        controller.recoverClaimIssueOperations(CLAIM_REFERENCE);
         verify(postClaimOrchestrationHandler).citizenIssueHandler(any(CitizenClaimCreatedEvent.class));
     }
 
     @Test
     public void shouldRecoverRepresentativeClaimIssueOperations() {
         Claim claim = SampleClaim.getDefaultForLegal();
-        when(claimService.getClaimByReference(CLAIMREFERENCENUMBER, AUTHORISATION))
-            .thenReturn(Optional.of(claim));
-        when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
-        controller.recoverClaimIssueOperations(CLAIMREFERENCENUMBER);
+        when(claimService.getClaimByReference(CLAIM_REFERENCE, AUTHORISATION)).thenReturn(Optional.of(claim));
+
+        controller.recoverClaimIssueOperations(CLAIM_REFERENCE);
         verify(postClaimOrchestrationHandler).representativeIssueHandler(any(RepresentedClaimCreatedEvent.class));
     }
 

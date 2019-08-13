@@ -10,17 +10,18 @@ import org.springframework.context.ApplicationEventPublisher;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.claimstore.events.legaladvisor.DirectionsOrderReadyToPrintEvent;
-import uk.gov.hmcts.cmc.claimstore.exceptions.DocumentManagementException;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Base64;
 import java.util.Collections;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -32,6 +33,7 @@ public class LegalOrderServiceTest {
     private static final CCDDocument DOCUMENT = CCDDocument
         .builder()
         .documentUrl(DOCUMENT_URL)
+        .documentBinaryUrl(DOCUMENT_URL)
         .build();
 
     @Mock
@@ -64,11 +66,10 @@ public class LegalOrderServiceTest {
     }
 
     @Test
-    public void shouldSendPrintEventForOrderAndCoverSheetIfOrderIsInDocStore() throws Exception {
+    public void shouldSendPrintEventForOrderAndCoverSheetIfOrderIsInDocStore() {
         when(documentManagementService.downloadDocument(
-            BEARER_TOKEN,
-            new URI(DOCUMENT_URL),
-            null)).thenReturn("legalOrder".getBytes());
+            eq(BEARER_TOKEN),
+            any(ClaimDocument.class))).thenReturn("legalOrder".getBytes());
         legalOrderService.print(
             BEARER_TOKEN,
             claim,
@@ -99,10 +100,9 @@ public class LegalOrderServiceTest {
     }
 
     @Test(expected = Exception.class)
-    public void shouldThrowExceptionIfDocumentUrlIsWrong() throws Exception {
+    public void shouldThrowExceptionIfDocumentUrlIsWrong() {
         when(documentManagementService.downloadDocument(
             BEARER_TOKEN,
-            new URI(DOCUMENT_URL),
             null)).thenThrow(new URISyntaxException("nope", "nope"));
         legalOrderService.print(
             BEARER_TOKEN,
@@ -112,11 +112,7 @@ public class LegalOrderServiceTest {
     }
 
     @Test(expected = Exception.class)
-    public void shouldThrowExceptionIfOrderIsNotInDocStore() throws Exception {
-        when(documentManagementService.downloadDocument(
-            BEARER_TOKEN,
-            new URI(DOCUMENT_URL),
-            null)).thenThrow(new DocumentManagementException("nope"));
+    public void shouldThrowExceptionIfOrderIsNotInDocStore() {
         legalOrderService.print(
             BEARER_TOKEN,
             claim,

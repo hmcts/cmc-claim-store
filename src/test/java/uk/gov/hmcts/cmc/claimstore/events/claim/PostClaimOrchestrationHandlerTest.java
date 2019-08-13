@@ -36,6 +36,8 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PostClaimOrchestrationHandlerTest {
@@ -94,9 +96,17 @@ public class PostClaimOrchestrationHandlerTest {
         );
 
         given(citizenServiceDocumentsService.sealedClaimDocument(any())).willReturn(sealedClaimLetterDocument);
-        given(sealedClaimPdfService.createPdf(any())).willReturn(PDF_BYTES);
+        given(sealedClaimPdfService.createPdf(any())).willReturn(new PDF(
+            "sealedClaim",
+            PDF_BYTES,
+            SEALED_CLAIM
+        ));
+        given(claimIssueReceiptService.createPdf(any())).willReturn(new PDF(
+            "claimIssueReceipt",
+            PDF_BYTES,
+            CLAIM_ISSUE_RECEIPT
+        ));
         given(pdfServiceClient.generateFromHtml(any(), anyMap())).willReturn(PDF_BYTES);
-        given(claimIssueReceiptService.createPdf(any())).willReturn(PDF_BYTES);
 
         given(pinOrchestrationService.process(eq(CLAIM), anyString(), anyString())).willReturn(CLAIM);
         given(claimantOperationService.notifyCitizen(eq(CLAIM), any(), eq(AUTHORISATION))).willReturn(CLAIM);
