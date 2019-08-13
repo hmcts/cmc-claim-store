@@ -9,15 +9,16 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
-import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantPinLetterPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
+import uk.gov.hmcts.cmc.claimstore.documents.ReviewOrderService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
+import uk.gov.hmcts.cmc.claimstore.events.revieworder.ReviewOrderEvent;
 import uk.gov.hmcts.cmc.claimstore.events.settlement.CountersignSettlementAgreementEvent;
 import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 
 import java.util.Arrays;
@@ -48,6 +50,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSettlemen
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.REVIEW_ORDER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
 
@@ -63,8 +66,6 @@ public class DocumentUploadHandlerTest {
     @Mock
     private DefendantResponseReceiptService defendantResponseReceiptService;
     @Mock
-    private CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
-    @Mock
     private SettlementAgreementCopyService settlementAgreementCopyService;
     @Mock
     private SealedClaimPdfService sealedClaimPdfService;
@@ -72,6 +73,8 @@ public class DocumentUploadHandlerTest {
     private ClaimIssueReceiptService claimIssueReceiptService;
     @Mock
     private DefendantPinLetterPdfService defendantPinLetterPdfService;
+    @Mock
+    private ReviewOrderService reviewOrderService;
     @Mock
     private DocumentsService documentService;
 
@@ -98,13 +101,20 @@ public class DocumentUploadHandlerTest {
         new CountersignSettlementAgreementEvent(SampleClaim.builder().withSettlement(mock(Settlement.class)).build(),
             AUTHORISATION);
 
+    private final ReviewOrderEvent reviewOrderEvent = new ReviewOrderEvent(
+        AUTHORISATION,
+        SampleClaim.builder().withReviewOrder(SampleReviewOrder.getDefault()).build()
+    );
+
+
     @Before
     public void setUp() {
-        documentUploadHandler = new DocumentUploadHandler(defendantResponseReceiptService,
-            countyCourtJudgmentPdfService,
+        documentUploadHandler = new DocumentUploadHandler(
+            defendantResponseReceiptService,
             settlementAgreementCopyService,
             claimIssueReceiptService,
-            documentService);
+            documentService,
+            reviewOrderService);
     }
 
     @Test
@@ -247,5 +257,37 @@ public class DocumentUploadHandlerTest {
         verify(documentService, times(1))
             .uploadToDocumentManagement(argumentCaptor.capture(), anyString(), any(Claim.class));
         assertTrue(argumentCaptor.getValue().getClaimDocumentType() == claimDocumentType);
+    }
+
+    @Test
+    public void reviewOrderEventTriggersDocumentUpload() {
+        PDF reviewOrderDocument = new PDF(buildResponseFileBaseName(
+            reviewOrderEvent.getClaim().getReferenceNumber()),
+            PDF_CONTENT,
+            REVIEW_ORDER);
+        when(reviewOrderService.createPdf(reviewOrderEvent.getClaim()))
+            .thenReturn(reviewOrderDocument);
+        documentUploadHandler.uploadReviewOrderRequestDocument(reviewOrderEvent);
+        assertCommon(REVIEW_ORDER);
+    }
+
+    @Test
+    public void reviewOrderEventForDocumentUploadThrowsExceptionWhenClaimNotPresent() {
+        exceptionRule.expect(NullPointerException.class);
+        exceptionRule.expectMessage(CLAIM_MUST_NOT_BE_NULL);
+        documentUploadHandler.uploadReviewOrderRequestDocument(
+            new ReviewOrderEvent(AUTHORISATION, null)
+        );
+    }
+
+    @Test
+    public void reviewOrderEventForDocumentUploadThrowsExceptionWhenReviewOrderNotPresent() {
+        exceptionRule.expect(NotFoundException.class);
+        exceptionRule.expectMessage("Review Order does not exist for this claim");
+        documentUploadHandler.uploadReviewOrderRequestDocument(
+            new ReviewOrderEvent(
+                AUTHORISATION,
+                SampleClaim.getDefault()
+            ));
     }
 }

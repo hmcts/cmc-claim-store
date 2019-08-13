@@ -42,8 +42,8 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         ClaimIssueReceiptService claimIssueReceiptService,
         DefendantResponseReceiptService defendantResponseReceiptService,
         SettlementAgreementCopyService settlementAgreementCopyService,
+        ReviewOrderService reviewOrderService,
         CCDEventProducer ccdEventProducer
-        ReviewOrderService reviewOrderService, CCDEventProducer ccdEventProducer
     ) {
         this.claimService = claimService;
         this.documentManagementService = documentManagementService;
