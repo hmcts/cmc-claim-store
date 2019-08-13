@@ -6,8 +6,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
-import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
-import uk.gov.hmcts.cmc.claimstore.documents.DefendantPinLetterPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
@@ -55,11 +53,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
     @Mock
     private DefendantResponseReceiptService defendantResponseReceiptService;
     @Mock
-    private CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
-    @Mock
     private SettlementAgreementCopyService settlementAgreementCopyService;
-    @Mock
-    private DefendantPinLetterPdfService defendantPinLetterPdfService;
     @Mock
     private CCDEventProducer ccdEventProducer;
 
@@ -71,9 +65,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
             sealedClaimPdfService,
             claimIssueReceiptService,
             defendantResponseReceiptService,
-            countyCourtJudgmentPdfService,
             settlementAgreementCopyService,
-            defendantPinLetterPdfService,
             ccdEventProducer);
     }
 
@@ -91,7 +83,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
             claim.getExternalId(),
             SEALED_CLAIM,
             AUTHORISATION);
-        verifyCommon(pdf, claim.getId());
+        verifyCommon(pdf);
     }
 
     @Test
@@ -108,7 +100,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
             claim.getExternalId(),
             CLAIM_ISSUE_RECEIPT,
             AUTHORISATION);
-        verifyCommon(pdf, claim.getId());
+        verifyCommon(pdf);
     }
 
     @Test
@@ -125,7 +117,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
             claim.getExternalId(),
             DEFENDANT_RESPONSE_RECEIPT,
             AUTHORISATION);
-        verifyCommon(pdf, claim.getId());
+        verifyCommon(pdf);
     }
 
     @Test
@@ -142,7 +134,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
             claim.getExternalId(),
             SETTLEMENT_AGREEMENT,
             AUTHORISATION);
-        verifyCommon(pdf, claim.getId());
+        verifyCommon(pdf);
     }
 
     @Test
@@ -173,7 +165,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
             AUTHORISATION);
     }
 
-    private void verifyCommon(byte[] pdf, Long claimId) {
+    private void verifyCommon(byte[] pdf) {
         assertEquals(PDF_BYTES, pdf);
         verify(documentManagementService).uploadDocument(anyString(), any(PDF.class));
     }
