@@ -7,7 +7,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimantRejectionStaffNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.StatesPaidStaffNotificationService;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -65,7 +68,7 @@ public class ClaimantResponseStaffNotificationHandlerTest {
             .notifyStaffClaimantRejectPartAdmission(eq(event.getClaim()));
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void throwExceptionWhenResponseNotPresent() {
         ClaimantResponseEvent event = new ClaimantResponseEvent(
             SampleClaim.builder().build()
@@ -73,5 +76,32 @@ public class ClaimantResponseStaffNotificationHandlerTest {
         handler.onClaimantResponse(event);
 
         verifyZeroInteractions(statesPaidStaffNotificationService, claimantRejectionStaffNotificationService);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhenClaimantResponseNotPresent() {
+        ClaimantResponseEvent event = new ClaimantResponseEvent(
+            SampleClaim.builder().build()
+        );
+
+        handler.notifyStaffWithClaimantsIntentionToProceed(event);
+
+        verifyZeroInteractions(statesPaidStaffNotificationService, claimantRejectionStaffNotificationService);
+    }
+
+    public void shouldNotifyStaffWhenClaimantIntendsToProceed() {
+        Claim claim = Claim.builder()
+            .claimantRespondedAt(LocalDateTimeFactory.nowInLocalZone())
+            .claimantResponse(
+                SampleClaimantResponse.ClaimantResponseRejection.builder()
+                    .buildRejectionWithDirectionsQuestionnaire()
+            )
+            .build();
+        ClaimantResponseEvent event = new ClaimantResponseEvent(claim);
+
+        handler.notifyStaffWithClaimantsIntentionToProceed(event);
+
+        verify(claimantRejectionStaffNotificationService, once())
+            .notifyStaffClaimantRejectPartAdmission(eq(event.getClaim()));
     }
 }

@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.notifications;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -18,7 +16,6 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 
 @Service
 public class NotificationToDefendantService {
-    private final Logger logger = LoggerFactory.getLogger(NotificationToDefendantService.class);
 
     private final NotificationService notificationService;
     private final NotificationsProperties notificationsProperties;
@@ -42,7 +39,7 @@ public class NotificationToDefendantService {
         );
     }
 
-    public void notifyDefendantOfRejection(Claim claim) {
+    public void notifyDefendantOfClaimantResponse(Claim claim) {
         Map<String, String> parameters = aggregateParams(claim);
         parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
         notificationService.sendMail(

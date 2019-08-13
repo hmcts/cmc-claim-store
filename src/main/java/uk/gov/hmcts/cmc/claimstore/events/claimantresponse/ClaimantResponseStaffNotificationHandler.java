@@ -6,9 +6,11 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimantRejectionStaffNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.StatesPaidStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
+import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isIntentToProceed;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isPartAdmission;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseStatesPaid;
 
@@ -39,6 +41,16 @@ public class ClaimantResponseStaffNotificationHandler {
                 == ClaimantResponseType.REJECTION) {
                 claimantRejectionStaffNotificationService.notifyStaffClaimantRejectPartAdmission(claim);
             }
+        }
+    }
+
+    @EventListener
+    public void notifyStaffWithClaimantsIntentionToProceed(ClaimantResponseEvent event) {
+        ClaimantResponse claimantResponse = event.getClaim().getClaimantResponse()
+            .orElseThrow(IllegalArgumentException::new);
+
+        if (isIntentToProceed(claimantResponse)) {
+            claimantRejectionStaffNotificationService.notifyStaffWithClaimantsIntentionToProceed(event.getClaim());
         }
     }
 }
