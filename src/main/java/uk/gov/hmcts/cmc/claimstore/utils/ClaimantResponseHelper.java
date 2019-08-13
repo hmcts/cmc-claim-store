@@ -43,4 +43,9 @@ public class ClaimantResponseHelper {
             .filter(Predicate.isEqual(YES))
             .isPresent();
     }
+
+    public static boolean isIntentToProceed(ClaimantResponse claimantResponse) {
+        return claimantResponse.getType() == REJECTION
+            && ((ResponseRejection) claimantResponse).getDirectionsQuestionnaire().isPresent();
+    }
 }

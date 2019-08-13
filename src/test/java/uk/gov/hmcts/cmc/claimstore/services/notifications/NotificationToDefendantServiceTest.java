@@ -80,7 +80,7 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
         when(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
             .thenThrow(mock(NotificationClientException.class));
 
-        service.notifyDefendantOfRejection(claim);
+        service.notifyDefendantOfClaimantResponse(claim);
     }
 
     @Test
@@ -93,7 +93,7 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
 
         when(emailTemplates.getClaimantRejectedPartAdmitOrStatesPaidEmailToDefendant())
             .thenReturn(CLAIMANT_RESPONSE_TEMPLATE);
-        service.notifyDefendantOfRejection(claim);
+        service.notifyDefendantOfClaimantResponse(claim);
 
         verify(notificationClient).sendEmail(
             eq(CLAIMANT_RESPONSE_TEMPLATE),
