@@ -2,6 +2,32 @@
 <head>
   <meta charset="utf-8" />
   <style>
+    @page {
+      size: 8.5in 11in;
+      margin: 5%;
+
+      @bottom-center {
+        content: "For further details of the courts www.gov.uk/find-court-tribunal";
+        white-space: nowrap;
+        /*noinspection CssNoGenericFontName*/
+        font-family: "Open Sans";
+        font-size: 10px;
+      }
+
+      @bottom-right {
+        content: "© Crown copyright Page " counter(page) " of " counter(pages);
+        white-space: nowrap;
+        /*noinspection CssNoGenericFontName*/
+        font-family: "Open Sans";
+        font-size: 10px;
+      }
+    }
+
+    @page :first {
+      @top-right {
+        content: "";
+      }
+    }
     html {
       /*noinspection CssNoGenericFontName*/
       font-family: "Open Sans";
@@ -47,7 +73,6 @@
     table td:first-child {
       width: 280px;
       vertical-align: top;
-      font-weight:700;
     }
     table td:last-child {
       width: auto;
@@ -88,7 +113,6 @@
   <table class="crestLogo">
     <tbody>
     <tr>
-      <td></td>
       <td class="claim-details">
         <h1>Request for review of order</h1>
         <p>In the County Court Business Centre Online Civil Money Claims</p>
@@ -104,7 +128,7 @@
     <tbody>
     <tr>
       <td>
-        Party's name:
+        <strong>Party's name:</strong>
       </td>
       <td>
         {{ partyFullName }}
@@ -112,7 +136,7 @@
     </tr>
     <tr>
       <td>
-        Address:
+        <strong>Address:</strong>
       </td>
       <td>
         {{ partyAddress.line1 }}
@@ -132,7 +156,7 @@
     </tr>
     <tr>
       <td>
-        Reason for request:
+        <strong>Reason for request:</strong>
       </td>
       <td>{{ reviewReason }}</td>
     </tr>
