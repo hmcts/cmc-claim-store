@@ -14,7 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
@@ -57,8 +57,8 @@ public class ClaimantResponseActionHandlerTest {
             .build();
         ClaimantResponseEvent event = new ClaimantResponseEvent(claim);
         handler.notifyDefendantOfIntentToProceed(event);
-
-        verify(notificationService, times(0))
-            .notifyDefendantOfClaimantResponse(eq(event.getClaim()));
+      
+        verify(notificationService, never())
+            .notifyDefendantOfClaimantResponse(event.getClaim());
     }
 }

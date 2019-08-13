@@ -102,4 +102,12 @@ public class StaffEmailTemplates {
     public String getClaimantRejectPartAdmissionEmailSubject() {
         return readString("/staff/templates/email/claimantResponse/rejection/partAdmission/subject.txt");
     }
+
+    public String getClaimantDirectionsHearingEmailSubject() {
+        return readString("/staff/templates/email/claimantResponse/rejection/directionsHearing/subject.txt");
+    }
+
+    public String getClaimantDirectionsHearingEmailBody() {
+        return readString("/staff/templates/email/claimantResponse/rejection/directionsHearing/body.txt");
+    }
 }
