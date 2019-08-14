@@ -61,9 +61,7 @@ public class ClaimantResponseStaffNotificationHandlerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void throwExceptionWhenResponseNotPresent() {
-        ClaimantResponseEvent event = new ClaimantResponseEvent(
-            SampleClaim.builder().build(), authorisation
-        );
+        ClaimantResponseEvent event = new ClaimantResponseEvent(SampleClaim.builder().build(), authorisation);
         handler.onClaimantResponse(event);
 
         verifyZeroInteractions(statesPaidStaffNotificationService, claimantRejectionStaffNotificationService);
@@ -71,9 +69,7 @@ public class ClaimantResponseStaffNotificationHandlerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionWhenClaimantResponseNotPresent() {
-        ClaimantResponseEvent event = new ClaimantResponseEvent(
-            SampleClaim.builder().build()
-        );
+        ClaimantResponseEvent event = new ClaimantResponseEvent(SampleClaim.builder().build(), authorisation);
 
         handler.notifyStaffWithClaimantsIntentionToProceed(event);
 
@@ -88,7 +84,7 @@ public class ClaimantResponseStaffNotificationHandlerTest {
                     .buildRejectionWithDirectionsQuestionnaire()
             )
             .build();
-        ClaimantResponseEvent event = new ClaimantResponseEvent(claim);
+        ClaimantResponseEvent event = new ClaimantResponseEvent(claim, authorisation);
 
         handler.notifyStaffWithClaimantsIntentionToProceed(event);
 

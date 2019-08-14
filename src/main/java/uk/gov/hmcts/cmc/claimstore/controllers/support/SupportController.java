@@ -133,7 +133,7 @@ public class SupportController {
                 resendStaffNotificationClaimantResponse(claim, authorisation);
                 break;
             case "intent-to-proceed":
-                resendStaffNotificationForIntentToProceed(claim);
+                resendStaffNotificationForIntentToProceed(claim, authorisation);
                 break;
             default:
                 throw new NotFoundException("Event " + event + " is not supported");
@@ -231,7 +231,7 @@ public class SupportController {
 
     }
 
-    private void resendStaffNotificationForIntentToProceed(Claim claim) {
+    private void resendStaffNotificationForIntentToProceed(Claim claim, String authorization) {
         ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalArgumentException::new);
 
         if (!directionsQuestionnaireEnabled) {
@@ -243,7 +243,7 @@ public class SupportController {
         }
 
         claimantResponseStaffNotificationHandler
-            .notifyStaffWithClaimantsIntentionToProceed(new ClaimantResponseEvent(claim));
+            .notifyStaffWithClaimantsIntentionToProceed(new ClaimantResponseEvent(claim, authorization));
     }
 
     private void resendStaffNotificationOnMoreTimeRequested(Claim claim) {
