@@ -106,7 +106,6 @@ public class DocumentUploadHandlerTest {
         SampleClaim.builder().withReviewOrder(SampleReviewOrder.getDefault()).build()
     );
 
-
     @Before
     public void setUp() {
         documentUploadHandler = new DocumentUploadHandler(
