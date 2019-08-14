@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
@@ -42,7 +41,8 @@ public class ClaimantResponseService {
     private final FormaliseResponseAcceptanceService formaliseResponseAcceptanceService;
     private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
     private final CCDEventProducer ccdEventProducer;
-    @Value("${feature_toggles.directions_questionnaire_enabled:false}") boolean directionsQuestionnaireEnabled;
+    @Value("${feature_toggles.directions_questionnaire_enabled:false}")
+    boolean directionsQuestionnaireEnabled;
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     public ClaimantResponseService(
@@ -65,7 +65,6 @@ public class ClaimantResponseService {
         this.ccdEventProducer = ccdEventProducer;
     }
 
-    @Transactional(transactionManager = "transactionManager")
     public void save(
         String externalId,
         String claimantId,
@@ -108,7 +107,8 @@ public class ClaimantResponseService {
 
         if (shouldFormaliseResponseAcceptance(response, claimantResponse)) {
             return ((ResponseAcceptation) claimantResponse).getFormaliseOption()
-                .filter(Predicate.isEqual(FormaliseOption.SETTLEMENT)).isPresent();
+                .filter(Predicate.isEqual(FormaliseOption.SETTLEMENT))
+                .isPresent();
         }
         return false;
     }
