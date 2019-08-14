@@ -16,7 +16,6 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
-import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
@@ -76,7 +75,8 @@ public class ClaimantResponseService {
         Claim updatedClaim = caseRepository.saveClaimantResponse(claim, claimantResponse, authorization);
         claimantResponseRule.isValid(updatedClaim);
         formaliseResponseAcceptance(claimantResponse, updatedClaim, authorization);
-        if (isRejectPartAdmitNoMediation(claimantResponse, updatedClaim)) {
+        if (!DirectionsQuestionnaireUtils.isOnlineDQ(updatedClaim)
+            && isRejectResponseNoMediation(claimantResponse)) {
             updateDirectionsQuestionnaireDeadline(updatedClaim, authorization);
         }
 
@@ -109,11 +109,8 @@ public class ClaimantResponseService {
         return false;
     }
 
-    private boolean isRejectPartAdmitNoMediation(ClaimantResponse claimantResponse, Claim claim) {
-        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
-
-        return ResponseType.PART_ADMISSION.equals(response.getResponseType())
-            && ClaimantResponseType.REJECTION.equals(claimantResponse.getType())
+    private boolean isRejectResponseNoMediation(ClaimantResponse claimantResponse) {
+        return ClaimantResponseType.REJECTION.equals(claimantResponse.getType())
             && ((ResponseRejection) claimantResponse).getFreeMediation()
             .filter(Predicate.isEqual(YesNoOption.NO))
             .isPresent();
