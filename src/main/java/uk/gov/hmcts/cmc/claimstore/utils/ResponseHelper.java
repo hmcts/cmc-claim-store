@@ -4,6 +4,10 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 
+import java.util.function.Predicate;
+
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
+
 public class ResponseHelper {
 
     private ResponseHelper() {
@@ -21,5 +25,11 @@ public class ResponseHelper {
     public static String getResponseType(Claim claim) {
         Response response = claim.getResponse().orElse(null);
         return response != null ? response.getResponseType().name() : null;
+    }
+
+    public static boolean isOptedForMediation(Response response) {
+        return response.getFreeMediation()
+            .filter(Predicate.isEqual(YES))
+            .isPresent();
     }
 }

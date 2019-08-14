@@ -139,6 +139,7 @@ notifications:
       claimantRejectedPartAdmitOrStatesPaidEmailToDefendant: "e6966b30-8c2f-4107-b3fa-1ae00594a672"
       claimantLegalOrderDrawn: "4fbb9120-65ae-417e-97c4-158189be910a"
       defendantLegalOrderDrawn: "4bc101c9-1cbd-45f6-849f-b8bafc2ca535"
+      defendantFreeMediationConfirmation: "7dd5cf7c-c548-4a75-9e0a-aa3ec04d3151"
       reviewOrderEmailToClaimant: "3bea01fb-bfc5-4354-841c-432d80489362"
       reviewOrderEmailToDefendant: "d568fc1e-f1fc-441a-94da-6506df12cae6"
 
