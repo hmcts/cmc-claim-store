@@ -1,13 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.services.document;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
-import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
-import uk.gov.hmcts.cmc.claimstore.documents.DefendantPinLetterPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.PdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
@@ -27,17 +23,12 @@ import java.util.Optional;
 @ConditionalOnProperty(prefix = "document_management", name = "url")
 public class DocumentManagementBackedDocumentsService implements DocumentsService {
 
-    private static final Logger logger = LoggerFactory.getLogger(DocumentManagementBackedDocumentsService.class);
-
-    private static final String OCMC = "OCMC";
     private final ClaimService claimService;
     private final DocumentManagementService documentManagementService;
     private final SealedClaimPdfService sealedClaimPdfService;
     private final ClaimIssueReceiptService claimIssueReceiptService;
     private final DefendantResponseReceiptService defendantResponseReceiptService;
-    private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
     private final SettlementAgreementCopyService settlementAgreementCopyService;
-    private final DefendantPinLetterPdfService defendantPinLetterPdfService;
     private final ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService;
     private final CCDEventProducer ccdEventProducer;
 
@@ -50,9 +41,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         SealedClaimPdfService sealedClaimPdfService,
         ClaimIssueReceiptService claimIssueReceiptService,
         DefendantResponseReceiptService defendantResponseReceiptService,
-        CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
         SettlementAgreementCopyService settlementAgreementCopyService,
-        DefendantPinLetterPdfService defendantPinLetterPdfService,
         ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService,
         CCDEventProducer ccdEventProducer
     ) {
@@ -61,9 +50,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         this.sealedClaimPdfService = sealedClaimPdfService;
         this.claimIssueReceiptService = claimIssueReceiptService;
         this.defendantResponseReceiptService = defendantResponseReceiptService;
-        this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
         this.settlementAgreementCopyService = settlementAgreementCopyService;
-        this.defendantPinLetterPdfService = defendantPinLetterPdfService;
         this.claimantDirectionsQuestionnairePdfService = claimantDirectionsQuestionnairePdfService;
         this.ccdEventProducer = ccdEventProducer;
     }
@@ -104,14 +91,10 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         Optional<ClaimDocument> claimDocument = claim.getClaimDocument(claimDocumentType);
         try {
             if (claimDocument.isPresent()) {
-                return documentManagementService.downloadDocument(
-                    authorisation,
-                    claimDocument.get());
+                return documentManagementService.downloadDocument(authorisation, claimDocument.get());
             } else {
                 PDF document = pdfService.createPdf(claim);
-                uploadToDocumentManagement(document,
-                    authorisation,
-                    claim);
+                uploadToDocumentManagement(document, authorisation, claim);
                 return document.getBytes();
             }
         } catch (Exception ex) {
