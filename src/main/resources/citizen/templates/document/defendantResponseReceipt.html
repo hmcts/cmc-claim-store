@@ -340,7 +340,7 @@
             </td>
           </tr>
       {% else %}
-        {% if hasDefendantAlreadyPaid and paidAmount is defined and paidAmount is not empty %}
+        {% if hasDefendantAlreadyPaid is defined and hasDefendantAlreadyPaid and paidAmount is defined and paidAmount is not empty %}
           <tr>
             <td>Amount they have paid</td>
             <td>
