@@ -58,7 +58,7 @@ public class ClaimantResponseActionHandlerTest {
             .build();
         ClaimantResponseEvent event = new ClaimantResponseEvent(claim, authorisation);
         handler.notifyDefendantOfIntentToProceed(event);
-
+      
         verify(notificationService, never())
             .notifyDefendantOfClaimantResponse(event.getClaim());
     }
