@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -353,7 +354,7 @@ public class ClaimantResponseServiceTest {
     }
 
     @Test
-    public void saveResponseRejectionOfPartAdmitWithNoMediationShouldUpdateDirectionsQuestionnaireDeadline() {
+    public void rejectionPartAdmitWithNoMediationShouldUpdateDirectionsQuestionnaireDeadlineIfNoOnlineDQ() {
         final LocalDateTime respondedAt = LocalDateTime.now().minusDays(10);
         final LocalDate dqDeadline = respondedAt.plusDays(19).toLocalDate();
 
@@ -379,6 +380,102 @@ public class ClaimantResponseServiceTest {
         verify(directionsQuestionnaireDeadlineCalculator)
             .calculateDirectionsQuestionnaireDeadlineCalculator(any(LocalDateTime.class));
         verify(caseRepository).updateDirectionsQuestionnaireDeadline(any(Claim.class), eq(dqDeadline), anyString());
+        verify(eventProducer).createClaimantResponseEvent(any(Claim.class));
+        verify(appInsights).trackEvent(eq(CLAIMANT_RESPONSE_REJECTED),
+            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+    }
+
+    @Test
+    public void rejectionPartAdmitNoMediationShouldNotUpdateDirectionsQuestionnaireDeadlineIfOnlineDQ() {
+        final LocalDateTime respondedAt = LocalDateTime.now().minusDays(10);
+
+        final ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultRejection();
+
+        final Claim claim = SampleClaim.builder()
+            .withFeatures(ImmutableList.of("directionsQuestionnaire"))
+            .withResponseDeadline(LocalDate.now().minusMonths(2))
+            .withResponse(SampleResponse.PartAdmission.builder().build())
+            .withRespondedAt(respondedAt)
+            .withClaimantResponse(claimantResponse)
+            .build();
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+        when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseRejection.class), eq(AUTHORISATION)))
+            .thenReturn(claim);
+
+        claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
+
+        verify(caseRepository).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
+        verify(directionsQuestionnaireDeadlineCalculator, never())
+            .calculateDirectionsQuestionnaireDeadlineCalculator(any());
+        verify(caseRepository, never()).updateDirectionsQuestionnaireDeadline(
+            any(Claim.class),
+            any(LocalDate.class),
+            anyString());
+        verify(eventProducer).createClaimantResponseEvent(any(Claim.class));
+        verify(appInsights).trackEvent(eq(CLAIMANT_RESPONSE_REJECTED),
+            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+    }
+
+    @Test
+    public void rejectionFullDefenceWithNoMediationShouldUpdateDirectionsQuestionnaireDeadlineIfNoOnlineDQ() {
+        final LocalDateTime respondedAt = LocalDateTime.now().minusDays(10);
+        final LocalDate dqDeadline = respondedAt.plusDays(19).toLocalDate();
+
+        final ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultRejection();
+
+        final Claim claim = SampleClaim.builder()
+            .withResponseDeadline(LocalDate.now().minusMonths(2))
+            .withResponse(SampleResponse.FullDefence.builder().build())
+            .withRespondedAt(respondedAt)
+            .withClaimantResponse(claimantResponse)
+            .build();
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+        when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseRejection.class), eq(AUTHORISATION)))
+            .thenReturn(claim);
+        when(directionsQuestionnaireDeadlineCalculator
+            .calculateDirectionsQuestionnaireDeadlineCalculator(any()))
+            .thenReturn(dqDeadline);
+
+        claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
+
+        verify(caseRepository).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
+        verify(directionsQuestionnaireDeadlineCalculator)
+            .calculateDirectionsQuestionnaireDeadlineCalculator(any(LocalDateTime.class));
+        verify(caseRepository).updateDirectionsQuestionnaireDeadline(any(Claim.class), eq(dqDeadline), anyString());
+        verify(eventProducer).createClaimantResponseEvent(any(Claim.class));
+        verify(appInsights).trackEvent(eq(CLAIMANT_RESPONSE_REJECTED),
+            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+    }
+
+    @Test
+    public void rejectionFullDefenceNoMediationShouldNotUpdateDirectionsQuestionnaireDeadlineIfOnlineDQ() {
+        final LocalDateTime respondedAt = LocalDateTime.now().minusDays(10);
+
+        final ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultRejection();
+
+        final Claim claim = SampleClaim.builder()
+            .withFeatures(ImmutableList.of("directionsQuestionnaire"))
+            .withResponseDeadline(LocalDate.now().minusMonths(2))
+            .withResponse(SampleResponse.FullDefence.builder().build())
+            .withRespondedAt(respondedAt)
+            .withClaimantResponse(claimantResponse)
+            .build();
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+        when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseRejection.class), eq(AUTHORISATION)))
+            .thenReturn(claim);
+
+        claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
+
+        verify(caseRepository).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
+        verify(directionsQuestionnaireDeadlineCalculator, never())
+            .calculateDirectionsQuestionnaireDeadlineCalculator(any());
+        verify(caseRepository, never()).updateDirectionsQuestionnaireDeadline(
+            any(Claim.class),
+            any(LocalDate.class),
+            anyString());
         verify(eventProducer).createClaimantResponseEvent(any(Claim.class));
         verify(appInsights).trackEvent(eq(CLAIMANT_RESPONSE_REJECTED),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
