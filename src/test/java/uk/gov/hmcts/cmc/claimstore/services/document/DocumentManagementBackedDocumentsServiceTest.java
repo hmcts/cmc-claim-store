@@ -6,8 +6,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
-import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
-import uk.gov.hmcts.cmc.claimstore.documents.DefendantPinLetterPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
@@ -22,7 +20,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertArrayEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -57,11 +55,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
     @Mock
     private DefendantResponseReceiptService defendantResponseReceiptService;
     @Mock
-    private CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
-    @Mock
     private SettlementAgreementCopyService settlementAgreementCopyService;
-    @Mock
-    private DefendantPinLetterPdfService defendantPinLetterPdfService;
     @Mock
     private CCDEventProducer ccdEventProducer;
     @Mock
@@ -75,9 +69,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
             sealedClaimPdfService,
             claimIssueReceiptService,
             defendantResponseReceiptService,
-            countyCourtJudgmentPdfService,
             settlementAgreementCopyService,
-            defendantPinLetterPdfService,
             claimantDirectionsQuestionnairePdfService,
             ccdEventProducer);
     }
@@ -196,7 +188,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
     }
 
     private void verifyCommon(byte[] pdf) {
-        assertEquals(PDF_BYTES, pdf);
+        assertArrayEquals(PDF_BYTES, pdf);
         verify(documentManagementService).uploadDocument(anyString(), any(PDF.class));
     }
 }
