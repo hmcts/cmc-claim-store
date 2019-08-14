@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
@@ -17,7 +16,6 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
-import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
@@ -67,7 +65,6 @@ public class ClaimantResponseService {
         this.ccdEventProducer = ccdEventProducer;
     }
 
-    @Transactional(transactionManager = "transactionManager")
     public void save(
         String externalId,
         String claimantId,
@@ -80,7 +77,8 @@ public class ClaimantResponseService {
         Claim updatedClaim = caseRepository.saveClaimantResponse(claim, claimantResponse, authorization);
         claimantResponseRule.isValid(updatedClaim);
         formaliseResponseAcceptance(claimantResponse, updatedClaim, authorization);
-        if (isRejectPartAdmitNoMediation(claimantResponse, updatedClaim)) {
+        if (!DirectionsQuestionnaireUtils.isOnlineDQ(updatedClaim)
+            && isRejectResponseNoMediation(claimantResponse)) {
             updateDirectionsQuestionnaireDeadline(updatedClaim, authorization);
         }
         Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
@@ -109,16 +107,14 @@ public class ClaimantResponseService {
 
         if (shouldFormaliseResponseAcceptance(response, claimantResponse)) {
             return ((ResponseAcceptation) claimantResponse).getFormaliseOption()
-                .filter(Predicate.isEqual(FormaliseOption.SETTLEMENT)).isPresent();
+                .filter(Predicate.isEqual(FormaliseOption.SETTLEMENT))
+                .isPresent();
         }
         return false;
     }
 
-    private boolean isRejectPartAdmitNoMediation(ClaimantResponse claimantResponse, Claim claim) {
-        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
-
-        return ResponseType.PART_ADMISSION.equals(response.getResponseType())
-            && ClaimantResponseType.REJECTION.equals(claimantResponse.getType())
+    private boolean isRejectResponseNoMediation(ClaimantResponse claimantResponse) {
+        return ClaimantResponseType.REJECTION.equals(claimantResponse.getType())
             && ((ResponseRejection) claimantResponse).getFreeMediation()
             .filter(Predicate.isEqual(YesNoOption.NO))
             .isPresent();
