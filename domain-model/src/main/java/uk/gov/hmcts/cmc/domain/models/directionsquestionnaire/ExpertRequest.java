@@ -5,7 +5,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
@@ -13,10 +15,14 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @EqualsAndHashCode
 public class ExpertRequest {
 
+    @Valid
     @NotNull
+    @Size(max = 1000)
     private final String expertEvidenceToExamine;
 
+    @Valid
     @NotNull
+    @Size(max = 99000)
     private final String reasonForExpertAdvice;
 
     @Builder

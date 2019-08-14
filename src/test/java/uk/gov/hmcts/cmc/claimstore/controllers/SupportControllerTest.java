@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimCreatedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
 import uk.gov.hmcts.cmc.claimstore.events.claim.PostClaimOrchestrationHandler;
+import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseStaffNotificationHandler;
@@ -29,13 +30,17 @@ import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse.ClaimantResponseAcceptation;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse.ClaimantResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse.PartAdmission;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 
@@ -105,7 +110,8 @@ public class SupportControllerTest {
         controller = new SupportController(claimService, userService, documentGenerator,
             moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
             ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
-            claimantResponseStaffNotificationHandler, documentsService, postClaimOrchestrationHandler
+            claimantResponseStaffNotificationHandler, documentsService, postClaimOrchestrationHandler,
+            false
         );
         sampleClaim = SampleClaim.getDefault();
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
@@ -172,6 +178,81 @@ public class SupportControllerTest {
     }
 
     @Test
+    public void shouldResendStaffNotificationsForIntentToProceed() {
+        // given
+        ClaimantResponse claimantResponse = ClaimantResponseRejection.builder()
+            .buildRejectionWithDirectionsQuestionnaire();
+
+        sampleClaim = SampleClaim.builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withResponse(PartAdmission.builder().buildWithFreeMediation())
+            .withClaimantResponse(claimantResponse)
+            .build();
+
+        controller = new SupportController(claimService, userService, documentGenerator,
+            moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
+            ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
+            claimantResponseStaffNotificationHandler, documentsService, postClaimOrchestrationHandler,
+            true
+        );
+
+        // when
+        when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE))).thenReturn(Optional.of(sampleClaim));
+        controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "intent-to-proceed");
+
+        // then
+        verify(claimantResponseStaffNotificationHandler)
+            .notifyStaffWithClaimantsIntentionToProceed(new ClaimantResponseEvent(sampleClaim));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowForIntentToProceedIfDQFeatureToggledIsOff() {
+        // given
+        ClaimantResponse claimantResponse = ClaimantResponseRejection.builder()
+            .buildRejectionWithDirectionsQuestionnaire();
+
+        sampleClaim = SampleClaim.builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withResponse(PartAdmission.builder().buildWithFreeMediation())
+            .withClaimantResponse(claimantResponse)
+            .build();
+
+        controller = new SupportController(claimService, userService, documentGenerator,
+            moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
+            ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
+            claimantResponseStaffNotificationHandler, documentsService, postClaimOrchestrationHandler,
+            false
+        );
+
+        // when
+        when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE))).thenReturn(Optional.of(sampleClaim));
+
+        controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "intent-to-proceed");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowForIntentToProceedIfClaimantResponseIsNotRejection() {
+        // given
+        sampleClaim = SampleClaim.builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withResponse(PartAdmission.builder().buildWithFreeMediation())
+            .withClaimantResponse(ClaimantResponseAcceptation.builder().build())
+            .build();
+
+        controller = new SupportController(claimService, userService, documentGenerator,
+            moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
+            ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
+            claimantResponseStaffNotificationHandler, documentsService, postClaimOrchestrationHandler,
+            true
+        );
+
+        // when
+        when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE))).thenReturn(Optional.of(sampleClaim));
+
+        controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "intent-to-proceed");
+    }
+
+    @Test
     public void shouldThrowExceptionIfDefendantResponseSubmittedWhenNoDefendantResponse() {
         exceptionRule.expect(ConflictException.class);
         exceptionRule.expectMessage("Claim " + CLAIM_REFERENCE + " does not have associated response");
@@ -184,7 +265,7 @@ public class SupportControllerTest {
     @Test
     public void shouldResendClaimantResponseNotifications() {
         sampleClaim = SampleClaim.builder()
-            .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionImmediately())
+            .withResponse(PartAdmission.builder().buildWithPaymentOptionImmediately())
             .withClaimantResponse(SampleClaimantResponse.validDefaultRejection())
             .build();
 
@@ -201,10 +282,10 @@ public class SupportControllerTest {
         Party company = SampleParty.builder().withCorrespondenceAddress(null).company();
         sampleClaim = SampleClaim.builder()
             .withResponse(
-                SampleResponse.PartAdmission.builder().buildWithPaymentIntentionAndParty(paymentIntention, company)
+                PartAdmission.builder().buildWithPaymentIntentionAndParty(paymentIntention, company)
             )
             .withClaimantResponse(
-                SampleClaimantResponse.ClaimantResponseAcceptation.builder()
+                ClaimantResponseAcceptation.builder()
                     .buildAcceptationReferToJudgeWithCourtDetermination()
             )
             .build();
@@ -219,9 +300,9 @@ public class SupportControllerTest {
     @Test
     public void shouldNotResendClaimantResponseNotificationsIfReferToJudge() {
         sampleClaim = SampleClaim.builder()
-            .withResponse(SampleResponse.PartAdmission.builder().buildWithPaymentOptionImmediately())
+            .withResponse(PartAdmission.builder().buildWithPaymentOptionImmediately())
             .withClaimantResponse(
-                SampleClaimantResponse.ClaimantResponseAcceptation.builder()
+                ClaimantResponseAcceptation.builder()
                     .buildAcceptationReferToJudgeWithCourtDetermination()
             )
             .build();
@@ -240,7 +321,7 @@ public class SupportControllerTest {
                 SampleResponse.FullDefence.builder().build()
             )
             .withClaimantResponse(
-                SampleClaimantResponse.ClaimantResponseAcceptation.builder()
+                ClaimantResponseAcceptation.builder()
                     .buildAcceptationIssueSettlementWithClaimantPaymentIntention()
             )
             .build();
