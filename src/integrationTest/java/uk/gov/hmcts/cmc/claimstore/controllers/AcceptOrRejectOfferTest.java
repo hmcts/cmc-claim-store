@@ -42,8 +42,6 @@ public class AcceptOrRejectOfferTest extends BaseOfferTest {
             .andExpect(status().isCreated());
 
         verify(offersService).accept(any(Claim.class), eq(MadeBy.CLAIMANT), eq(CLAIMANT_AUTH_TOKEN));
-
-        Claim claimWithAcceptedOffer = claimStore.getClaim(claim.getId());
     }
 
     @Test
