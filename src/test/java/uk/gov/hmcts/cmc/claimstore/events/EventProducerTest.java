@@ -168,9 +168,9 @@ public class EventProducerTest {
 
     @Test
     public void shouldCreateReviewOrderEvent() {
-        ReviewOrderEvent event = new ReviewOrderEvent(CLAIM);
+        ReviewOrderEvent event = new ReviewOrderEvent(AUTHORISATION, CLAIM);
 
-        eventProducer.createReviewOrderEvent(CLAIM);
+        eventProducer.createReviewOrderEvent(AUTHORISATION, CLAIM);
 
         verify(publisher).publishEvent(eq(event));
     }
