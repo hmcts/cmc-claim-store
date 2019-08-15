@@ -67,7 +67,7 @@ public class DirectionOrderMapper {
                 .directionType(DirectionType.valueOf(ccdOrderDirection.getExtraOrderDirection().name()))
                 .directionComment(ccdOrderDirection.getDirectionComment())
                 .directionParty(DirectionParty.valueOf(ccdOrderDirection.getForParty().name()))
-                .directionActionDeadline(ccdOrderDirection.getSendBy())
+                .directionActionedDate(ccdOrderDirection.getSendBy())
                 .directionHeaderType(getDirectionHeaderType(ccdOrderDirection))
                 .expertReports(asStream(ccdOrderDirection.getExpertReports())
                     .filter(Objects::nonNull)
@@ -115,13 +115,13 @@ public class DirectionOrderMapper {
                 addDirectionParty(builder, directionOrderData.getDocUploadForParty());
 
                 builder.directionType(DirectionType.valueOf(directionType.name()))
-                    .directionActionDeadline(directionOrderData.getDocUploadDeadline());
+                    .directionActionedDate(directionOrderData.getDocUploadDeadline());
                 break;
             case EYEWITNESS:
                 addDirectionParty(builder, directionOrderData.getEyewitnessUploadForParty());
 
                 builder.directionType(DirectionType.valueOf(directionType.name()))
-                    .directionActionDeadline(directionOrderData.getEyewitnessUploadDeadline());
+                    .directionActionedDate(directionOrderData.getEyewitnessUploadDeadline());
                 break;
             default:
                 throw new IllegalArgumentException("Invalid direction type");

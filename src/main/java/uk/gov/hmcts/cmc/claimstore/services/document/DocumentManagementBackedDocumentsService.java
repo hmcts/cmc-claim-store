@@ -83,33 +83,25 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     @Override
     public byte[] generateDocument(String externalId, ClaimDocumentType claimDocumentType, String authorisation) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        return processRequest(claim,
-            authorisation,
-            claimDocumentType,
-            getService(claimDocumentType));
+        return processRequest(claim, authorisation, claimDocumentType);
     }
 
     private byte[] processRequest(
         Claim claim,
         String authorisation,
-        ClaimDocumentType claimDocumentType,
-        PdfService pdfService
+        ClaimDocumentType claimDocumentType
     ) {
         Optional<ClaimDocument> claimDocument = claim.getClaimDocument(claimDocumentType);
         try {
             if (claimDocument.isPresent()) {
-                return documentManagementService.downloadDocument(
-                    authorisation,
-                    claimDocument.get());
+                return documentManagementService.downloadDocument(authorisation, claimDocument.get());
             } else {
-                PDF document = pdfService.createPdf(claim);
-                uploadToDocumentManagement(document,
-                    authorisation,
-                    claim);
+                PDF document = getService(claimDocumentType).createPdf(claim);
+                uploadToDocumentManagement(document, authorisation, claim);
                 return document.getBytes();
             }
         } catch (Exception ex) {
-            return pdfService.createPdf(claim).getBytes();
+            return getService(claimDocumentType).createPdf(claim).getBytes();
         }
     }
 
