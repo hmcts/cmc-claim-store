@@ -1,5 +1,7 @@
 java:
-  ingressHost: cmc-claim-store.service.core-compute-aat.internal
+  aadIdentityName: money-claims
+  image: ${IMAGE_NAME}
+  ingressHost: ${SERVICE_FQDN}
   keyVaults:
     cmc:
       resourceGroup: cmc
