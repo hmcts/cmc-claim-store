@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.tests.helpers;
 
+import com.google.common.collect.ImmutableList;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +67,7 @@ public class CommonOperations {
             .given()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .header(HttpHeaders.AUTHORIZATION, userAuthentication)
+            .header("Features", ImmutableList.of("admissions", "issuedOn"))
             .body(jsonMapper.toJson(claimData))
             .when()
             .post("/claims/" + userId);
