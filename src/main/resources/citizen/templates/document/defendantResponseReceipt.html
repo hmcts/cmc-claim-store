@@ -340,6 +340,14 @@
             </td>
           </tr>
       {% else %}
+        {% if hasDefendantAlreadyPaid is defined and hasDefendantAlreadyPaid and paidAmount is defined and paidAmount is not empty %}
+          <tr>
+            <td>Amount they have paid</td>
+            <td>
+              {{ paidAmount }}
+            </td>
+          </tr>
+        {%endif %}
         {% if responseDefence is defined and responseDefence is not empty %}
         <tr>
           <td class="no-border" colspan="2"><strong>Why they dispute the claim</strong></td>
