@@ -33,6 +33,7 @@ public enum CaseEvent {
     AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT("AgreementCounterSignedByDefendant"),
     AGREEMENT_REJECTED_BY_DEFENDANT("AgreementRejectedByDefendant"),
     SETTLEMENT_AGREEMENT_UPLOAD("SettlementAgreementUpload"),
+    REVIEW_ORDER_UPLOAD("ReviewOrderUpload"),
     CCJ_REQUESTED("CCJRequested"),
     INTERLOCUTORY_JUDGMENT("InterlocutoryJudgment"),
     REJECT_ORGANISATION_PAYMENT_PLAN("RejectOrganisationPaymentPlan"),
