@@ -26,6 +26,7 @@ public class ReviewOrderCitizenNotificationHandlerTest extends BaseNotificationS
 
     public static final String NOTIFY_TO_DEFENDANT = "Notify to defendant when claimant requests for review order";
     public static final String NOTIFY_TO_CLAIMANT = "Notify to claimant when defendant requests for review order";
+    public static final String AUTHORISATION = "Bearer let me in";
 
     private ReviewOrderCitizenNotificationHandler handler;
 
@@ -47,12 +48,14 @@ public class ReviewOrderCitizenNotificationHandlerTest extends BaseNotificationS
 
     @Test
     public void sendNotificationToDefendantWhenReviewOrderIsRequestedByClaimant() {
-        ReviewOrderEvent event = new ReviewOrderEvent(SampleClaim.builder()
-            .withReviewOrder(ReviewOrder.builder()
-                .requestedBy(CLAIMANT)
-                .requestedAt(now())
-                .build()
-            ).build());
+        ReviewOrderEvent event = new ReviewOrderEvent(
+            AUTHORISATION,
+            SampleClaim.builder()
+                .withReviewOrder(ReviewOrder.builder()
+                    .requestedBy(CLAIMANT)
+                    .requestedAt(now())
+                    .build()
+                ).build());
 
         handler.onReviewOrderEvent(event);
 
@@ -66,12 +69,14 @@ public class ReviewOrderCitizenNotificationHandlerTest extends BaseNotificationS
 
     @Test
     public void sendNotificationToClaimantWhenReviewOrderIsRequestedByDefendant() {
-        ReviewOrderEvent event = new ReviewOrderEvent(SampleClaim.builder()
-            .withReviewOrder(ReviewOrder.builder()
-                .requestedBy(DEFENDANT)
-                .requestedAt(now())
-                .build()
-            ).build());
+        ReviewOrderEvent event = new ReviewOrderEvent(
+            AUTHORISATION,
+            SampleClaim.builder()
+                .withReviewOrder(ReviewOrder.builder()
+                    .requestedBy(DEFENDANT)
+                    .requestedAt(now())
+                    .build()
+                ).build());
 
         handler.onReviewOrderEvent(event);
 
@@ -85,19 +90,23 @@ public class ReviewOrderCitizenNotificationHandlerTest extends BaseNotificationS
 
     @Test(expected = IllegalArgumentException.class)
     public void sendThrowIllegalArgumentExceptionWhenClaimHasNoReviewOrder() {
-        ReviewOrderEvent event = new ReviewOrderEvent(SampleClaim.builder().withReviewOrder(null).build());
+        ReviewOrderEvent event = new ReviewOrderEvent(
+            AUTHORISATION,
+            SampleClaim.builder().withReviewOrder(null).build());
 
         handler.onReviewOrderEvent(event);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void sendThrowIllegalArgumentExceptionWhenRequestedByIsNullInReviewOrder() {
-        ReviewOrderEvent event = new ReviewOrderEvent(SampleClaim.builder()
-            .withReviewOrder(ReviewOrder.builder()
-                .requestedBy(null)
-                .requestedAt(now())
-                .build()
-            ).build());
+        ReviewOrderEvent event = new ReviewOrderEvent(
+            AUTHORISATION,
+            SampleClaim.builder()
+                .withReviewOrder(ReviewOrder.builder()
+                    .requestedBy(null)
+                    .requestedAt(now())
+                    .build()
+                ).build());
 
         handler.onReviewOrderEvent(event);
     }
