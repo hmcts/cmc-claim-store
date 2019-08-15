@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildReviewOrderFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.isSealedClaim;
 
@@ -61,6 +62,22 @@ public class DocumentNameUtilsTest {
     public void shouldReturnFalseIfFilenameDoesNotIndicateSealedClaim() {
         assertThat(isSealedClaim(buildDefendantLetterFileBaseName("000MC001")))
             .isFalse();
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowErrorWhenReferenceIsNullWhileBuildingReviewOrderFileBaseName() {
+        buildReviewOrderFileBaseName(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowErrorWhenReferenceIsEmptyWhileBuildingReviewOrderileBaseName() {
+        buildReviewOrderFileBaseName("");
+    }
+
+    @Test
+    public void shouldBuildReviewOrderFileBaseName() {
+        assertThat(buildReviewOrderFileBaseName("000MC001"))
+            .isEqualTo("000MC001-review-order");
     }
 
 }
