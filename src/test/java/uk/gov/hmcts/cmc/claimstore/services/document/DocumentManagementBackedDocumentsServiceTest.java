@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
+import uk.gov.hmcts.cmc.claimstore.documents.ReviewOrderService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -31,6 +33,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.REVIEW_ORDER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
 
@@ -55,6 +58,8 @@ public class DocumentManagementBackedDocumentsServiceTest {
     @Mock
     private SettlementAgreementCopyService settlementAgreementCopyService;
     @Mock
+    private ReviewOrderService reviewOrderService;
+    @Mock
     private CCDEventProducer ccdEventProducer;
 
     @Before
@@ -66,6 +71,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
             claimIssueReceiptService,
             defendantResponseReceiptService,
             settlementAgreementCopyService,
+            reviewOrderService,
             ccdEventProducer);
     }
 
@@ -133,6 +139,25 @@ public class DocumentManagementBackedDocumentsServiceTest {
         byte[] pdf = documentManagementBackedDocumentsService.generateDocument(
             claim.getExternalId(),
             SETTLEMENT_AGREEMENT,
+            AUTHORISATION);
+        verifyCommon(pdf);
+    }
+
+    @Test
+    public void shouldGenerateReviewOrderRequest() {
+        Claim claim = SampleClaim.builder()
+            .withReviewOrder(SampleReviewOrder.getDefault()
+            ).build();
+        when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(AUTHORISATION)))
+            .thenReturn(claim);
+        when(reviewOrderService.createPdf(any(Claim.class))).thenReturn(new PDF(
+            "reviewOrder",
+            PDF_BYTES,
+            REVIEW_ORDER
+        ));
+        byte[] pdf = documentManagementBackedDocumentsService.generateDocument(
+            claim.getExternalId(),
+            REVIEW_ORDER,
             AUTHORISATION);
         verifyCommon(pdf);
     }
