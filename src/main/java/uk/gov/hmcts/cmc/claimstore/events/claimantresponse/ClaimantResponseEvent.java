@@ -11,9 +11,11 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @EqualsAndHashCode
 public class ClaimantResponseEvent {
     private final Claim claim;
+    private final String authorisation;
 
-    public ClaimantResponseEvent(Claim claim) {
+    public ClaimantResponseEvent(Claim claim, String authorisation) {
         this.claim = claim;
+        this.authorisation = authorisation;
     }
 
     @Override
