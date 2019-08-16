@@ -48,7 +48,9 @@ public enum CaseEvent {
     DRAW_ORDER("DrawOrder"),
     CLAIMANT_DIRECTIONS_QUESTIONNAIRE_UPLOAD("ClaimantDirectionsQuestionnaireUpload"),
     ORDER_REVIEW_REQUESTED("OrderReviewRequested"),
-    WAITING_TRANSFER("WaitingTransfer");
+    WAITING_TRANSFER("WaitingTransfer"),
+    //inversion of control
+    INITIATE_CLAIM_PAYMENT_CITIZEN("InitiateClaimPaymentCitizen");
 
     private String value;
 
