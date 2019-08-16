@@ -47,4 +47,8 @@ public class DocumentTemplates {
         return readBytes("/staff/templates/document/legalOrderCoverSheet.html");
     }
 
+    public byte[] getClaimantDirectionsQuestionnaire() {
+        return readBytes("/citizen/templates/document/claimantDirectionsQuestionnaire.html");
+    }
+
 }
