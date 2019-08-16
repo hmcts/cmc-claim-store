@@ -130,10 +130,10 @@ public class SupportController {
                 resendStaffNotificationOnAgreementCountersigned(claim, authorisation);
                 break;
             case "claimant-response":
-                resendStaffNotificationClaimantResponse(claim);
+                resendStaffNotificationClaimantResponse(claim, authorisation);
                 break;
             case "intent-to-proceed":
-                resendStaffNotificationForIntentToProceed(claim);
+                resendStaffNotificationForIntentToProceed(claim, authorisation);
                 break;
             default:
                 throw new NotFoundException("Event " + event + " is not supported");
@@ -231,7 +231,7 @@ public class SupportController {
 
     }
 
-    private void resendStaffNotificationForIntentToProceed(Claim claim) {
+    private void resendStaffNotificationForIntentToProceed(Claim claim, String authorization) {
         ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalArgumentException::new);
 
         if (!directionsQuestionnaireEnabled) {
@@ -243,7 +243,7 @@ public class SupportController {
         }
 
         claimantResponseStaffNotificationHandler
-            .notifyStaffWithClaimantsIntentionToProceed(new ClaimantResponseEvent(claim));
+            .notifyStaffWithClaimantsIntentionToProceed(new ClaimantResponseEvent(claim, authorization));
     }
 
     private void resendStaffNotificationOnMoreTimeRequested(Claim claim) {
@@ -252,7 +252,8 @@ public class SupportController {
         }
 
         // Defendant email is not available at this point however it is not used in staff notifications
-        MoreTimeRequestedEvent event = new MoreTimeRequestedEvent(claim, claim.getResponseDeadline(), null);
+        MoreTimeRequestedEvent event =
+            new MoreTimeRequestedEvent(claim, claim.getResponseDeadline(), null);
         moreTimeRequestedStaffNotificationHandler.sendNotifications(event);
     }
 
@@ -291,14 +292,15 @@ public class SupportController {
         }
     }
 
-    private void resendStaffNotificationClaimantResponse(Claim claim) {
+    private void resendStaffNotificationClaimantResponse(Claim claim, String authorization) {
         ClaimantResponse claimantResponse = claim.getClaimantResponse()
             .orElseThrow(IllegalArgumentException::new);
         Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
         if (!isSettlementAgreement(claim, claimantResponse) && (!isReferredToJudge(claimantResponse)
             || (isReferredToJudge(claimantResponse) && PartyUtils.isCompanyOrOrganisation(response.getDefendant())))
         ) {
-            claimantResponseStaffNotificationHandler.onClaimantResponse(new ClaimantResponseEvent(claim));
+            claimantResponseStaffNotificationHandler
+                .onClaimantResponse(new ClaimantResponseEvent(claim, authorization));
         }
     }
 
