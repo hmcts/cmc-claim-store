@@ -46,7 +46,9 @@ public enum CaseEvent {
     REFERRED_TO_MEDIATION("ReferredToMediation"),
     DRAW_ORDER("DrawOrder"),
     ORDER_REVIEW_REQUESTED("OrderReviewRequested"),
-    WAITING_TRANSFER("WaitingTransfer");
+    WAITING_TRANSFER("WaitingTransfer"),
+    //inversion of control
+    INITIATE_CLAIM_PAYMENT_CITIZEN("InitiateClaimPaymentCitizen");
 
     private String value;
 
