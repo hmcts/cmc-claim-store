@@ -113,6 +113,7 @@ public class SampleData {
         .interestEndDateType(CCDInterestEndDateType.SUBMISSION)
         .paymentStatus("success")
         .paymentDateCreated(LocalDate.of(2019, 01, 01))
+        .paymentNextUrl("http://nexturl.test")
         .paymentId("PaymentId")
         .paymentAmount("400000")
         .paymentReference("RC-1524-6488-1670-7520")
