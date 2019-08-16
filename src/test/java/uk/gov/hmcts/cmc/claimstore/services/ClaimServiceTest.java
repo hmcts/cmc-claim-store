@@ -31,6 +31,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -505,6 +506,20 @@ public class ClaimServiceTest {
             eq(claim.getId()),
             eq(ClaimState.OPEN)
         );
+    }
+
+    @Test
+    public void initiatePaymentShouldFinishSuccessfully() {
+        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
+        when(userService.getUserDetails(AUTHORISATION)).thenReturn(VALID_CLAIMANT);
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
+            .thenReturn(Optional.of(claim));
+
+        InitiatePaymentRequest initiatePaymentRequest = InitiatePaymentRequest.builder().build();
+
+        claimService.initiatePayment(AUTHORISATION, "submitterId", initiatePaymentRequest);
+
+        verify(caseRepository, once()).initiatePayment(USER, "submitterId", initiatePaymentRequest);
     }
 
     @Test

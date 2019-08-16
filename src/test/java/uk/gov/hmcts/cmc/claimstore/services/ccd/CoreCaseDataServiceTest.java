@@ -1,11 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -27,6 +26,8 @@ import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
+import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -46,7 +47,7 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.UUID;
 
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -100,9 +101,6 @@ public class CoreCaseDataServiceTest {
     private JobSchedulerService jobSchedulerService;
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
-
-    @Captor
-    private ArgumentCaptor<Map<String, Object>> caseDataCaptor;
 
     private CoreCaseDataService service;
 
@@ -221,6 +219,48 @@ public class CoreCaseDataServiceTest {
         service.createNewCase(USER, providedClaim);
 
         verify(ccdCreateCaseService, never()).grantAccessToCase(any(), any());
+    }
+
+    @Test
+    public void initiatePaymentShouldReturnPaymentNextUrl() {
+        InitiatePaymentRequest initiatePaymentRequest = InitiatePaymentRequest.builder()
+            .externalId(UUID.randomUUID())
+            .build();
+
+        String nextUrl = "http://url.test";
+
+        when(ccdCreateCaseService.startCreate(
+            eq(AUTHORISATION),
+            any(EventRequestData.class),
+            eq(false)
+        ))
+            .thenReturn(StartEventResponse.builder()
+                .caseDetails(CaseDetails.builder().build())
+                .eventId("eventId")
+                .token("token")
+                .build());
+
+        when(ccdCreateCaseService.submitCreate(
+            eq(AUTHORISATION),
+            any(EventRequestData.class),
+            any(CaseDataContent.class),
+            eq(false)
+        ))
+            .thenReturn(CaseDetails.builder()
+                .id(SampleClaim.CLAIM_ID)
+                .data(ImmutableMap.of(
+                    "paymentNextUrl", nextUrl))
+                .build());
+
+        InitiatePaymentResponse response = service.savePayment(
+            USER,
+            "submitterId",
+            initiatePaymentRequest
+        );
+        InitiatePaymentResponse expectedResponse = InitiatePaymentResponse.builder()
+            .nextUrl(nextUrl)
+            .build();
+        assertEquals(expectedResponse, response);
     }
 
     @Test
