@@ -23,17 +23,17 @@ public class PersonContentProvider {
         requireNonNull(name);
         requireNonNull(address);
 
-        return new PersonContent(
-            partyType,
-            name,
-            address,
-            correspondenceAddress,
-            email,
-            contactPerson,
-            businessName,
-            mobileNumber,
-            dateOfBirth
-        );
+        return PersonContent.builder()
+            .partyType(partyType)
+            .fullName(name)
+            .address(address)
+            .correspondenceAddress(correspondenceAddress)
+            .email(email)
+            .contactPerson(contactPerson)
+            .businessName(businessName)
+            .mobileNumber(mobileNumber)
+            .dateOfBirth(dateOfBirth)
+            .build();
     }
 
 }

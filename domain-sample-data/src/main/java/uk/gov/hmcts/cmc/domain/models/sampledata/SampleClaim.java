@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
+import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
@@ -93,6 +94,7 @@ public final class SampleClaim {
     private static Supplier<ClaimSubmissionOperationIndicators> getDefaultClaimSubmissionOperationIndicators =
         () -> ClaimSubmissionOperationIndicators.builder().build();
     private Long ccdCaseId = 1023467890123456L;
+    private ReviewOrder reviewOrder;
 
     private SampleClaim() {
     }
@@ -158,7 +160,7 @@ public final class SampleClaim {
                 .builder()
                 .withDefenceType(DefenceType.ALREADY_PAID)
                 .build()
-            )
+            ).withRespondedAt(LocalDateTime.now())
             .build();
     }
 
@@ -459,7 +461,8 @@ public final class SampleClaim {
             claimantResponseDeadline,
             state,
             getDefaultClaimSubmissionOperationIndicators.get(),
-            ccdCaseId
+            ccdCaseId,
+            reviewOrder
         );
     }
 
@@ -660,6 +663,11 @@ public final class SampleClaim {
 
     public SampleClaim withFeatures(List<String> features) {
         this.features = features;
+        return this;
+    }
+
+    public SampleClaim withReviewOrder(ReviewOrder reviewOrder) {
+        this.reviewOrder = reviewOrder;
         return this;
     }
 }
