@@ -15,7 +15,9 @@ import uk.gov.hmcts.cmc.claimstore.documents.ReviewOrderService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
+import uk.gov.hmcts.cmc.claimstore.documents.questionnaire.ClaimantDirectionsQuestionnairePdfService;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
+import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.revieworder.ReviewOrderEvent;
@@ -28,6 +30,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 
@@ -41,12 +44,14 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimIssueReceiptFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSettlementReachedFileBaseName;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIMANT_DIRECTIONS_QUESTIONNAIRE;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
@@ -77,6 +82,8 @@ public class DocumentUploadHandlerTest {
     private ReviewOrderService reviewOrderService;
     @Mock
     private DocumentsService documentService;
+    @Mock
+    private ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService;
 
     private DocumentUploadHandler documentUploadHandler;
 
@@ -113,7 +120,8 @@ public class DocumentUploadHandlerTest {
             settlementAgreementCopyService,
             claimIssueReceiptService,
             documentService,
-            reviewOrderService);
+            reviewOrderService,
+            claimantDirectionsQuestionnairePdfService);
     }
 
     @Test
@@ -250,6 +258,43 @@ public class DocumentUploadHandlerTest {
         documentUploadHandler.uploadSettlementAgreementDocument(
             new CountersignSettlementAgreementEvent(null, AUTHORISATION)
         );
+    }
+
+    @Test
+    public void claimantAcceptationResponseDoesNothing() {
+        documentUploadHandler.uploadClaimantDirectionsQuestionnaireToDM(
+            new ClaimantResponseEvent(
+                SampleClaim.getWithClaimantResponse(
+                    SampleClaimantResponse.validDefaultAcceptation()), AUTHORISATION));
+
+        verifyZeroInteractions(claimantDirectionsQuestionnairePdfService);
+    }
+
+    @Test
+    public void claimantResponseWithoutQuestionnaireDoesNothing() {
+        documentUploadHandler.uploadClaimantDirectionsQuestionnaireToDM(
+            new ClaimantResponseEvent(
+                SampleClaim.getWithClaimantResponse(
+                    SampleClaimantResponse.validDefaultRejection()), AUTHORISATION));
+
+        verifyZeroInteractions(claimantDirectionsQuestionnairePdfService);
+    }
+
+    @Test
+    public void claimantResponseWithQuestionnaireUploadsToDM() {
+        Claim claim = SampleClaim.getWithClaimantResponse(
+            SampleClaimantResponse.ClaimantResponseRejection.builder()
+                .buildRejectionWithDirectionsQuestionnaire());
+
+        when(claimantDirectionsQuestionnairePdfService.createPdf(any())).thenReturn(new PDF(
+            buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber()),
+            PDF_CONTENT,
+            CLAIMANT_DIRECTIONS_QUESTIONNAIRE
+        ));
+        documentUploadHandler.uploadClaimantDirectionsQuestionnaireToDM(
+            new ClaimantResponseEvent(claim, AUTHORISATION));
+        assertCommon(CLAIMANT_DIRECTIONS_QUESTIONNAIRE);
+
     }
 
     private void assertCommon(ClaimDocumentType claimDocumentType) {
