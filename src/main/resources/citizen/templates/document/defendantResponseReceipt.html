@@ -1153,7 +1153,20 @@
   <tr>
     <td>Signed</td>
     <td>
-      <div>{{ defendant.fullName }}<br/>{{ defenceSubmittedOn }}</div>
+      <div>
+        {% if signerName is not defined or signerName is empty %}
+        {{ defendant.fullName }}
+        {% endif %}
+
+        {% if signerName is defined and signerName is not empty %}
+
+        <strong>Company:</strong> {{ defendant.businessName }} <br/>
+        <strong>Name:</strong> {{ signerName }}<br/>
+        <strong>Role:</strong> {{ signerRole }}
+        {% endif %}
+
+        <br/>{{ defenceSubmittedOn }}
+      </div>
     </td>
   </tr>
   </tbody>
