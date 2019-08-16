@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.utils;
 
+import com.google.common.collect.ImmutableList;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.WAITING_TRANSFER;
 import static uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt.BIRMINGHAM;
 import static uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt.MANCHESTER;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
@@ -102,6 +104,7 @@ public class DirectionsQuestionnaireUtilsTest {
     @Test
     public void shouldAssignForDirectionsIfNoFreeMediationAndDefendantIsBusinessAndClaimantCourtIsPilot() {
         Claim claim = SampleClaim.builder()
+            .withFeatures(ImmutableList.of("directionsQuestionnaire"))
             .withClaimantResponse(CLAIMANT_REJECTION_PILOT)
             .withResponse(DEFENDANT_FULL_DEFENCE_NON_PILOT)
             .withClaimData(SampleClaimData
@@ -142,7 +145,23 @@ public class DirectionsQuestionnaireUtilsTest {
     }
 
     @Test
-    public void shouldReturnEmptyIfNoFreeMediationAndDefendantIsBusinessAndClaimantCourtIsNotPilot() {
+    public void shouldWaitForTransferIfOnlineDqNoFreeMediationAndDefendantIsBusinessAndClaimantCourtIsNotPilot() {
+        Claim claim = SampleClaim.builder()
+            .withFeatures(ImmutableList.of("directionsQuestionnaire"))
+            .withClaimantResponse(CLAIMANT_REJECTION_NON_PILOT)
+            .withResponse(DEFENDANT_FULL_DEFENCE_PILOT)
+            .withClaimData(SampleClaimData
+                .builder()
+                .withDefendant(CompanyDetails.builder().build())
+                .build())
+            .build();
+        CaseEvent caseEvent = DirectionsQuestionnaireUtils
+            .prepareCaseEvent(CLAIMANT_REJECTION_NON_PILOT, claim).get();
+        Assertions.assertThat(caseEvent).isEqualTo(WAITING_TRANSFER);
+    }
+
+    @Test
+    public void shouldReturnEmptyIfNoOnlineDqNoFreeMediationAndDefendantIsBusinessAndClaimantCourtIsNotPilot() {
         Claim claim = SampleClaim.builder()
             .withClaimantResponse(CLAIMANT_REJECTION_NON_PILOT)
             .withResponse(DEFENDANT_FULL_DEFENCE_PILOT)
@@ -158,6 +177,7 @@ public class DirectionsQuestionnaireUtilsTest {
     @Test
     public void shouldAssignForDirectionsIfNoFreeMediationAndDefendantIsNotBusinessAndDefendantCourtIsPilot() {
         Claim claim = SampleClaim.builder()
+            .withFeatures(ImmutableList.of("directionsQuestionnaire"))
             .withClaimantResponse(CLAIMANT_REJECTION_NON_PILOT)
             .withResponse(DEFENDANT_PART_ADMISSION_PILOT)
             .withClaimData(SampleClaimData
@@ -171,7 +191,23 @@ public class DirectionsQuestionnaireUtilsTest {
     }
 
     @Test
-    public void shouldReturnEmptyIfNoFreeMediationAndDefendantIsNotBusinessAndDefendantCourtIsNotPilot() {
+    public void shouldWaitForTransferIfOnlineDqNoFreeMediationAndDefendantIsNotBusinessAndDefendantCourtIsNotPilot() {
+        Claim claim = SampleClaim.builder()
+            .withFeatures(ImmutableList.of("directionsQuestionnaire"))
+            .withClaimantResponse(CLAIMANT_REJECTION_PILOT)
+            .withResponse(DEFENDANT_PART_ADMISSION_NON_PILOT)
+            .withClaimData(SampleClaimData
+                .builder()
+                .withDefendant(IndividualDetails.builder().build())
+                .build())
+            .build();
+        CaseEvent caseEvent = DirectionsQuestionnaireUtils
+            .prepareCaseEvent(CLAIMANT_REJECTION_NON_PILOT, claim).get();
+        Assertions.assertThat(caseEvent).isEqualTo(WAITING_TRANSFER);
+    }
+
+    @Test
+    public void shouldReturnEmptyIfNoOnlineDqNoFreeMediationAndDefendantIsNotBusinessAndDefendantCourtIsNotPilot() {
         Claim claim = SampleClaim.builder()
             .withClaimantResponse(CLAIMANT_REJECTION_PILOT)
             .withResponse(DEFENDANT_PART_ADMISSION_NON_PILOT)
