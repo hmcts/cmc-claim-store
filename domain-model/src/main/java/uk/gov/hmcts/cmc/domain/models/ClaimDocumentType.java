@@ -13,6 +13,7 @@ public enum ClaimDocumentType {
     CCJ_REQUEST,
     SETTLEMENT_AGREEMENT("settlementAgreement"),
     DEFENDANT_PIN_LETTER,
+    CLAIMANT_DIRECTIONS_QUESTIONNAIRE("claimantHearingRequirement"),
     REVIEW_ORDER,
     COVER_SHEET;
 
