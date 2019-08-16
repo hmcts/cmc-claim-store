@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -40,6 +41,7 @@ public class CommonOperations {
         this.claimOperation = claimOperation;
     }
 
+    @LogExecutionTime
     public Claim submitClaimWithDefendantCollectionId(String userAuthentication, String userId, String collectionId) {
         UUID externalId = UUID.randomUUID();
         return submitClaim(userAuthentication, userId, testData.submittedByClaimantBuilder()
@@ -56,11 +58,13 @@ public class CommonOperations {
         );
     }
 
+    @LogExecutionTime
     public Claim submitClaim(String userAuthentication, String userId, ClaimData claimData) {
         Claim claim = saveClaim(claimData, userAuthentication, userId).then().extract().body().as(Claim.class);
         return claimOperation.getClaimWithLetterHolder(claim.getExternalId(), userAuthentication);
     }
 
+    @LogExecutionTime
     public Response saveClaim(ClaimData claimData, String userAuthentication, String userId) {
 
         return RestAssured
@@ -73,6 +77,7 @@ public class CommonOperations {
             .post("/claims/" + userId);
     }
 
+    @LogExecutionTime
     public Response saveUserRoles(UserRoleRequest userRoleRequest, String userAuthentication) {
         return RestAssured
             .given()
@@ -83,6 +88,7 @@ public class CommonOperations {
             .post("/user/roles");
     }
 
+    @LogExecutionTime
     public Response getUserRole(String userAuthentication) {
         return RestAssured
             .given()
@@ -92,6 +98,7 @@ public class CommonOperations {
             .get("/user/roles");
     }
 
+    @LogExecutionTime
     public void linkDefendant(String userAuthentication) {
         RestAssured
             .given()
@@ -101,6 +108,7 @@ public class CommonOperations {
             .put("/claims/defendant/link");
     }
 
+    @LogExecutionTime
     public Claim retrieveClaim(String externalId, String userAuthentication) {
         return RestAssured
             .given()
