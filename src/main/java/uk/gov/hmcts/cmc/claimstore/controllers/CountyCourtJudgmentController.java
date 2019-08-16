@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.services.CountyCourtJudgmentService;
-import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
@@ -30,13 +29,10 @@ import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
 public class CountyCourtJudgmentController {
 
     private CountyCourtJudgmentService countyCourtJudgmentService;
-    private UserService userService;
 
     @Autowired
-    public CountyCourtJudgmentController(
-        CountyCourtJudgmentService countyCourtJudgmentService, UserService userService) {
+    public CountyCourtJudgmentController(CountyCourtJudgmentService countyCourtJudgmentService) {
         this.countyCourtJudgmentService = countyCourtJudgmentService;
-        this.userService = userService;
     }
 
     @PostMapping("/{externalId:" + UUID_PATTERN + "}/county-court-judgment")

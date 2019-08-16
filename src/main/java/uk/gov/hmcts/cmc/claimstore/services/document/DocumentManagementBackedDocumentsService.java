@@ -1,13 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.services.document;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.PdfService;
+import uk.gov.hmcts.cmc.claimstore.documents.ReviewOrderService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
@@ -27,15 +26,13 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_SANCTIONS;
 @ConditionalOnProperty(prefix = "document_management", name = "url")
 public class DocumentManagementBackedDocumentsService implements DocumentsService {
 
-    private static final Logger logger = LoggerFactory.getLogger(DocumentManagementBackedDocumentsService.class);
-
-    private static final String OCMC = "OCMC";
     private final ClaimService claimService;
     private final DocumentManagementService documentManagementService;
     private final SealedClaimPdfService sealedClaimPdfService;
     private final ClaimIssueReceiptService claimIssueReceiptService;
     private final DefendantResponseReceiptService defendantResponseReceiptService;
     private final SettlementAgreementCopyService settlementAgreementCopyService;
+    private final ReviewOrderService reviewOrderService;
     private final CCDEventProducer ccdEventProducer;
 
     @Autowired
@@ -48,6 +45,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         ClaimIssueReceiptService claimIssueReceiptService,
         DefendantResponseReceiptService defendantResponseReceiptService,
         SettlementAgreementCopyService settlementAgreementCopyService,
+        ReviewOrderService reviewOrderService,
         CCDEventProducer ccdEventProducer
     ) {
         this.claimService = claimService;
@@ -56,6 +54,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         this.claimIssueReceiptService = claimIssueReceiptService;
         this.defendantResponseReceiptService = defendantResponseReceiptService;
         this.settlementAgreementCopyService = settlementAgreementCopyService;
+        this.reviewOrderService = reviewOrderService;
         this.ccdEventProducer = ccdEventProducer;
     }
 
@@ -69,6 +68,8 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
                 return defendantResponseReceiptService;
             case SETTLEMENT_AGREEMENT:
                 return settlementAgreementCopyService;
+            case REVIEW_ORDER:
+                return reviewOrderService;
             default:
                 throw new IllegalArgumentException(
                     "Unknown document service for document of type " + claimDocumentType.name());

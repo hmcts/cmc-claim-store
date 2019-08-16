@@ -33,6 +33,7 @@ public enum CaseEvent {
     AGREEMENT_COUNTER_SIGNED_BY_DEFENDANT("AgreementCounterSignedByDefendant"),
     AGREEMENT_REJECTED_BY_DEFENDANT("AgreementRejectedByDefendant"),
     SETTLEMENT_AGREEMENT_UPLOAD("SettlementAgreementUpload"),
+    REVIEW_ORDER_UPLOAD("ReviewOrderUpload"),
     CCJ_REQUESTED("CCJRequested"),
     INTERLOCUTORY_JUDGMENT("InterlocutoryJudgment"),
     REJECT_ORGANISATION_PAYMENT_PLAN("RejectOrganisationPaymentPlan"),
@@ -45,7 +46,8 @@ public enum CaseEvent {
     ASSIGNING_FOR_DIRECTIONS("AssigningForDirections"),
     REFERRED_TO_MEDIATION("ReferredToMediation"),
     DRAW_ORDER("DrawOrder"),
-    ORDER_REVIEW_REQUESTED("OrderReviewRequested");
+    ORDER_REVIEW_REQUESTED("OrderReviewRequested"),
+    WAITING_TRANSFER("WaitingTransfer");
 
     private String value;
 

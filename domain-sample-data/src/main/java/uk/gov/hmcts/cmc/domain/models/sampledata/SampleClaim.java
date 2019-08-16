@@ -162,7 +162,7 @@ public final class SampleClaim {
                 .builder()
                 .withDefenceType(DefenceType.ALREADY_PAID)
                 .build()
-            )
+            ).withRespondedAt(LocalDateTime.now())
             .build();
     }
 

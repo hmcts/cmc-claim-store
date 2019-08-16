@@ -9,6 +9,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LET
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_DIRECTIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_SANCTIONS;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.REVIEW_ORDER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.fromValue;
@@ -51,6 +52,8 @@ public class ClaimDocumentTypeTest {
             .isEqualTo(CCJ_REQUEST);
         assertThat(fromValue("DEFENDANT_PIN_LETTER"))
             .isEqualTo(DEFENDANT_PIN_LETTER);
+        assertThat(fromValue("REVIEW_ORDER"))
+            .isEqualTo(REVIEW_ORDER);
     }
 
     @Test(expected = IllegalArgumentException.class)
