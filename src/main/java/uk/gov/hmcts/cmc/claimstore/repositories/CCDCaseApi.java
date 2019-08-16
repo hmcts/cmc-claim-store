@@ -33,6 +33,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.AWAITING_CITIZEN_PAYMENT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
 
 @Service
@@ -57,6 +58,8 @@ public class CCDCaseApi {
     private static final int MAX_NUM_OF_PAGES_TO_CHECK = 10;
 
     private Predicate<CaseDetails> isCreatedState = caseDetails -> CREATE.getValue().equals(caseDetails.getState());
+    private Predicate<CaseDetails> isAwaitingCitizenState = caseDetails ->
+        AWAITING_CITIZEN_PAYMENT.getValue().equals(caseDetails.getState());
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     public CCDCaseApi(
@@ -175,12 +178,15 @@ public class CCDCaseApi {
     }
 
     private List<Claim> getAllCasesBy(User user, ImmutableMap<String, String> searchString) {
-        return extractClaims(searchAll(user, searchString));
+        return extractClaims(asStream(searchAll(user, searchString))
+            .filter(isAwaitingCitizenState.negate())
+            .collect(Collectors.toList()));
     }
 
     private List<Claim> getAllIssuedCasesBy(User user, ImmutableMap<String, String> searchString) {
         return extractClaims(asStream(searchAll(user, searchString))
             .filter(isCreatedState.negate())
+            .filter(isAwaitingCitizenState.negate())
             .collect(Collectors.toList()));
     }
 
@@ -285,7 +291,8 @@ public class CCDCaseApi {
 
         User letterHolder = userService.getUser(authorisation);
         CaseDetails caseDetails = readCase(letterHolder, letterHolderCases.get(0));
-        if (CREATE == ClaimState.fromValue(caseDetails.getState())) {
+        ClaimState claimState = ClaimState.fromValue(caseDetails.getState());
+        if (CREATE == claimState || AWAITING_CITIZEN_PAYMENT == claimState) {
             throw new DefendantLinkingException("Claim is not in issued yet, can not link defendant");
         }
         return Optional.of(ccdCaseDataToClaim.extractClaim(caseDetails));
