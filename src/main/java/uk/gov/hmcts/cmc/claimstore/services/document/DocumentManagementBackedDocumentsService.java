@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
-import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
-import uk.gov.hmcts.cmc.claimstore.documents.DefendantPinLetterPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.PdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
@@ -22,6 +20,9 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 
 import java.util.Optional;
 
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_DIRECTIONS;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_SANCTIONS;
+
 @Service("documentsService")
 @ConditionalOnProperty(prefix = "document_management", name = "url")
 public class DocumentManagementBackedDocumentsService implements DocumentsService {
@@ -34,9 +35,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     private final SealedClaimPdfService sealedClaimPdfService;
     private final ClaimIssueReceiptService claimIssueReceiptService;
     private final DefendantResponseReceiptService defendantResponseReceiptService;
-    private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
     private final SettlementAgreementCopyService settlementAgreementCopyService;
-    private final DefendantPinLetterPdfService defendantPinLetterPdfService;
     private final CCDEventProducer ccdEventProducer;
 
     @Autowired
@@ -48,9 +47,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         SealedClaimPdfService sealedClaimPdfService,
         ClaimIssueReceiptService claimIssueReceiptService,
         DefendantResponseReceiptService defendantResponseReceiptService,
-        CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
         SettlementAgreementCopyService settlementAgreementCopyService,
-        DefendantPinLetterPdfService defendantPinLetterPdfService,
         CCDEventProducer ccdEventProducer
     ) {
         this.claimService = claimService;
@@ -58,9 +55,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         this.sealedClaimPdfService = sealedClaimPdfService;
         this.claimIssueReceiptService = claimIssueReceiptService;
         this.defendantResponseReceiptService = defendantResponseReceiptService;
-        this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
         this.settlementAgreementCopyService = settlementAgreementCopyService;
-        this.defendantPinLetterPdfService = defendantPinLetterPdfService;
         this.ccdEventProducer = ccdEventProducer;
     }
 
@@ -86,23 +81,38 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         return processRequest(claim, authorisation, claimDocumentType);
     }
 
-    private byte[] processRequest(
-        Claim claim,
-        String authorisation,
-        ClaimDocumentType claimDocumentType
-    ) {
+    private byte[] processRequest(Claim claim, String authorisation, ClaimDocumentType claimDocumentType) {
+
+        if (claimDocumentType == ORDER_DIRECTIONS || claimDocumentType == ORDER_SANCTIONS) {
+            return getOrderDocuments(claim, authorisation, claimDocumentType);
+        } else {
+            return getClaimJourneyDocuments(claim, authorisation, claimDocumentType);
+        }
+    }
+
+    private byte[] getOrderDocuments(Claim claim, String authorisation, ClaimDocumentType claimDocumentType) {
         Optional<ClaimDocument> claimDocument = claim.getClaimDocument(claimDocumentType);
+        return claimDocument
+            .map(document -> documentManagementService.downloadDocument(authorisation, document))
+            .orElseThrow(() -> new IllegalArgumentException("Document is not available for download."));
+    }
+
+    private byte[] getClaimJourneyDocuments(Claim claim, String authorisation, ClaimDocumentType claimDocumentType) {
         try {
-            if (claimDocument.isPresent()) {
-                return documentManagementService.downloadDocument(authorisation, claimDocument.get());
-            } else {
-                PDF document = getService(claimDocumentType).createPdf(claim);
-                uploadToDocumentManagement(document, authorisation, claim);
-                return document.getBytes();
-            }
+            Optional<ClaimDocument> claimDocument = claim.getClaimDocument(claimDocumentType);
+            return claimDocument
+                .map(document -> documentManagementService.downloadDocument(authorisation, document))
+                .orElseGet(() -> generateNewDocument(claim, authorisation, claimDocumentType));
+
         } catch (Exception ex) {
             return getService(claimDocumentType).createPdf(claim).getBytes();
         }
+    }
+
+    private byte[] generateNewDocument(Claim claim, String authorisation, ClaimDocumentType claimDocumentType) {
+        PDF document = getService(claimDocumentType).createPdf(claim);
+        uploadToDocumentManagement(document, authorisation, claim);
+        return document.getBytes();
     }
 
     public Claim uploadToDocumentManagement(PDF document, String authorisation, Claim claim) {
