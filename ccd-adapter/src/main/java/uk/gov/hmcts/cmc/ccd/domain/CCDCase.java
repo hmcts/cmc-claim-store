@@ -50,6 +50,7 @@ public class CCDCase {
     private String paymentReference;
     private String paymentStatus;
     private LocalDate paymentDateCreated;
+    private String paymentNextUrl;
     private String preferredCourt;
     private String personalInjuryGeneralDamages;
     private String housingDisrepairCostOfRepairDamages;
