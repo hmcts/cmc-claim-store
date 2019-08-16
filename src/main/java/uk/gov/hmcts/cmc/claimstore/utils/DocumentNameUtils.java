@@ -71,6 +71,12 @@ public class DocumentNameUtils {
         return format("%s-claimant-response", caseRef);
     }
 
+    public static String buildClaimantHearingFileBaseName(String caseRef) {
+        requireNonBlank(caseRef);
+
+        return format("%s-claimant-hearing-questions", caseRef);
+    }
+
     public static String buildJsonResponseFileBaseName(String number) {
         requireNonBlank(number);
 

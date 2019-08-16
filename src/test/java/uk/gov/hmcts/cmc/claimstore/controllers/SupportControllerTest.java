@@ -202,7 +202,7 @@ public class SupportControllerTest {
 
         // then
         verify(claimantResponseStaffNotificationHandler)
-            .notifyStaffWithClaimantsIntentionToProceed(new ClaimantResponseEvent(sampleClaim));
+            .notifyStaffWithClaimantsIntentionToProceed(new ClaimantResponseEvent(sampleClaim, AUTHORISATION));
     }
 
     @Test(expected = IllegalArgumentException.class)
