@@ -24,8 +24,9 @@ import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClaimantResponseActionsHandlerTest {
-    private ClaimantResponseActionsHandler handler;
+    private final String authorisation = "Bearer authorisation";
 
+    private ClaimantResponseActionsHandler handler;
     @Mock
     private NotificationToDefendantService notificationService;
     @Mock
@@ -45,7 +46,7 @@ public class ClaimantResponseActionsHandlerTest {
         ClaimantResponse claimantResponse = ClaimantResponseRejection.validRejectionWithFreeMediation();
         Response response = SampleResponse.FullDefence.builder().withMediation(YES).build();
         Claim claim = SampleClaim.builder().withResponse(response).withClaimantResponse(claimantResponse).build();
-        ClaimantResponseEvent event = new ClaimantResponseEvent(claim);
+        ClaimantResponseEvent event = new ClaimantResponseEvent(claim, authorisation);
         //when
         handler.sendNotificationToDefendant(event);
         //then
@@ -58,7 +59,7 @@ public class ClaimantResponseActionsHandlerTest {
         ClaimantResponse claimantResponse = ClaimantResponseRejection.validRejectionWithFreeMediation();
         Response response = SampleResponse.FullDefence.builder().withMediation(NO).build();
         Claim claim = SampleClaim.builder().withResponse(response).withClaimantResponse(claimantResponse).build();
-        ClaimantResponseEvent event = new ClaimantResponseEvent(claim);
+        ClaimantResponseEvent event = new ClaimantResponseEvent(claim, authorisation);
         //when
         handler.sendNotificationToDefendant(event);
         //then
@@ -71,7 +72,7 @@ public class ClaimantResponseActionsHandlerTest {
         ClaimantResponse claimantResponse = ClaimantResponseRejection.validDefaultRejection();
         Response response = PartAdmission.builder().buildWithStatesPaid(SampleParty.builder().individual());
         Claim claim = SampleClaim.builder().withResponse(response).withClaimantResponse(claimantResponse).build();
-        ClaimantResponseEvent event = new ClaimantResponseEvent(claim);
+        ClaimantResponseEvent event = new ClaimantResponseEvent(claim, authorisation);
         //when
         handler.sendNotificationToDefendant(event);
         //then

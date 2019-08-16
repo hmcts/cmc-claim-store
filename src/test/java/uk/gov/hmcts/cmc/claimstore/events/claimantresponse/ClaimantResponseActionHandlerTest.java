@@ -20,6 +20,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClaimantResponseActionHandlerTest {
+    private final String authorisation = "Bearer authorisation";
 
     private ClaimantResponseActionsHandler handler;
 
@@ -42,7 +43,7 @@ public class ClaimantResponseActionHandlerTest {
             .withClaimantRespondedAt(LocalDateTime.now())
             .withClaimantResponse(SampleClaimantResponse.validRejectionWithDirectionsQuestionnaire())
             .build();
-        ClaimantResponseEvent event = new ClaimantResponseEvent(claim);
+        ClaimantResponseEvent event = new ClaimantResponseEvent(claim, authorisation);
         handler.notifyDefendantOfIntentToProceed(event);
 
         verify(notificationService, once())
@@ -55,7 +56,7 @@ public class ClaimantResponseActionHandlerTest {
             .withClaimantRespondedAt(LocalDateTime.now())
             .withClaimantResponse(SampleClaimantResponse.validDefaultRejection())
             .build();
-        ClaimantResponseEvent event = new ClaimantResponseEvent(claim);
+        ClaimantResponseEvent event = new ClaimantResponseEvent(claim, authorisation);
         handler.notifyDefendantOfIntentToProceed(event);
       
         verify(notificationService, never())
