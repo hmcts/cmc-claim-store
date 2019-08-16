@@ -99,8 +99,8 @@ public class DefendantResponseContentProviderTest {
     @Test
     public void shouldProvideCorrectFormNumber() {
         Map<String, Object> content = provider.createContent(claim);
-        assertThat(content).containsKey("formNumber");
-        assertThat(content).containsValue("OCON9B");
+        assertThat(content)
+            .containsEntry("formNumber", "OCON9B");
     }
 
     @Test
@@ -109,9 +109,11 @@ public class DefendantResponseContentProviderTest {
         Map<String, Object> content = provider.createContent(claim);
 
         assertThat(content).containsKey("paymentDeclaration");
+        assertThat(content.get("paymentDeclaration")).isInstanceOf(Map.class);
         assertThat((Map<String, String>) content.get("paymentDeclaration"))
             .containsOnlyKeys("paidDate", "explanation")
-            .containsValues("2 January 2016", "Paid cash");
+            .containsEntry("paidDate", "2 January 2016")
+            .containsEntry("explanation", "Paid cash");
     }
 
     @Test
@@ -120,6 +122,16 @@ public class DefendantResponseContentProviderTest {
 
         assertThat(content)
             .containsKeys("timelineComment", "events");
+    }
+
+    @Test
+    public void shouldProvideAmountPaid() {
+        Claim statesPaidClaim = SampleClaim.getClaimWithFullDefenceAlreadyPaid();
+        Map<String, Object> content = provider.createContent(statesPaidClaim);
+
+        assertThat(content)
+            .containsEntry("paidAmount", "£100.99")
+            .containsEntry("hasDefendantAlreadyPaid", true);
     }
 
     @Test

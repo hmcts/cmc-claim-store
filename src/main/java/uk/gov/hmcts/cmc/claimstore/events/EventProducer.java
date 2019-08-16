@@ -118,7 +118,7 @@ public class EventProducer {
         publisher.publishEvent(new RejectOrganisationPaymentPlanEvent(claim));
     }
 
-    public void createReviewOrderEvent(Claim claim) {
-        publisher.publishEvent(new ReviewOrderEvent(claim));
+    public void createReviewOrderEvent(String authorisation, Claim claim) {
+        publisher.publishEvent(new ReviewOrderEvent(authorisation, claim));
     }
 }

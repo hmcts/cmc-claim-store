@@ -7,14 +7,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
-import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
+import uk.gov.hmcts.cmc.claimstore.documents.ReviewOrderService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.documents.questionnaire.ClaimantDirectionsQuestionnairePdfService;
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
+import uk.gov.hmcts.cmc.claimstore.events.revieworder.ReviewOrderEvent;
 import uk.gov.hmcts.cmc.claimstore.events.settlement.CountersignSettlementAgreementEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
@@ -38,22 +39,22 @@ public class DocumentUploadHandler {
 
     private final DocumentsService documentService;
     private final DefendantResponseReceiptService defendantResponseReceiptService;
-    private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
     private final SettlementAgreementCopyService settlementAgreementCopyService;
     private final ClaimIssueReceiptService claimIssueReceiptService;
+    private final ReviewOrderService reviewOrderService;
     private final ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService;
 
     @Autowired
     public DocumentUploadHandler(
         DefendantResponseReceiptService defendantResponseReceiptService,
-        CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
         SettlementAgreementCopyService settlementAgreementCopyService,
         ClaimIssueReceiptService claimIssueReceiptService,
         DocumentsService documentService,
+        ReviewOrderService reviewOrderService,
         ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService
     ) {
         this.defendantResponseReceiptService = defendantResponseReceiptService;
-        this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
+        this.reviewOrderService = reviewOrderService;
         this.settlementAgreementCopyService = settlementAgreementCopyService;
         this.claimIssueReceiptService = claimIssueReceiptService;
         this.documentService = documentService;
@@ -123,6 +124,19 @@ public class DocumentUploadHandler {
         }
         PDF document = settlementAgreementCopyService.createPdf(claim);
         uploadToDocumentManagement(claim, authorisation, singletonList(document));
+    }
+
+    @EventListener
+    public void uploadReviewOrderRequestDocument(ReviewOrderEvent event) {
+        Claim claim = event.getClaim();
+        requireNonNull(claim, CLAIM_MUST_NOT_BE_NULL);
+
+        if (!claim.getReviewOrder().isPresent()) {
+            throw new NotFoundException("Review Order does not exist for this claim");
+        }
+
+        PDF reviewOrderDocument = reviewOrderService.createPdf(claim);
+        uploadToDocumentManagement(claim, event.getAuthorisation(), singletonList(reviewOrderDocument));
     }
 
     public Claim uploadToDocumentManagement(Claim claim, String authorisation, List<PDF> documents) {
