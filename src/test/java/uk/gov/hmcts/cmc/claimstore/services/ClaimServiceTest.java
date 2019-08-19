@@ -495,15 +495,12 @@ public class ClaimServiceTest {
     @Test
     public void initiatePaymentShouldFinishSuccessfully() {
         when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
-        when(userService.getUserDetails(AUTHORISATION)).thenReturn(VALID_CLAIMANT);
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
-            .thenReturn(Optional.of(claim));
 
         InitiatePaymentRequest initiatePaymentRequest = InitiatePaymentRequest.builder().build();
 
         claimService.initiatePayment(AUTHORISATION, "submitterId", initiatePaymentRequest);
 
-        verify(caseRepository, once()).initiatePayment(USER, "submitterId", initiatePaymentRequest);
+        verify(caseRepository).initiatePayment(USER, "submitterId", initiatePaymentRequest);
     }
 
     @Test
@@ -517,7 +514,7 @@ public class ClaimServiceTest {
 
         claimService.saveReviewOrder(EXTERNAL_ID, reviewOrder, AUTHORISATION);
 
-        verify(caseRepository, once()).saveReviewOrder(eq(claim.getId()), eq(reviewOrder), eq(AUTHORISATION));
+        verify(caseRepository).saveReviewOrder(eq(claim.getId()), eq(reviewOrder), eq(AUTHORISATION));
     }
 
     @Test(expected = ConflictException.class)

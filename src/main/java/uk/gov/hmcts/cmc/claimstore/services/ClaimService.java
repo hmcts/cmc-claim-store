@@ -187,7 +187,10 @@ public class ClaimService {
         return caseRepository.getClaimsByState(claimState, user);
     }
 
-    public InitiatePaymentResponse initiatePayment(String authorisation, String submitterId, InitiatePaymentRequest request) {
+    public InitiatePaymentResponse initiatePayment(
+        String authorisation,
+        String submitterId,
+        InitiatePaymentRequest request) {
         User user = userService.getUser(authorisation);
         return caseRepository.initiatePayment(user, submitterId, request);
     }
@@ -367,7 +370,7 @@ public class ClaimService {
         claimAuthorisationRule.assertClaimCanBeAccessed(claim, authorisation);
         reviewOrderRule.assertReviewOrder(claim);
         Claim updatedClaim = caseRepository.saveReviewOrder(claim.getId(), reviewOrder, authorisation);
-        eventProducer.createReviewOrderEvent(updatedClaim);
+        eventProducer.createReviewOrderEvent(authorisation, updatedClaim);
         return updatedClaim;
     }
 }

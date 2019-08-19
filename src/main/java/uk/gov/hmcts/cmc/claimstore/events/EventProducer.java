@@ -98,8 +98,8 @@ public class EventProducer {
         publisher.publishEvent(new SignSettlementAgreementEvent(claim));
     }
 
-    public void createClaimantResponseEvent(Claim claim) {
-        publisher.publishEvent(new ClaimantResponseEvent(claim));
+    public void createClaimantResponseEvent(Claim claim, String authorisation) {
+        publisher.publishEvent(new ClaimantResponseEvent(claim, authorisation));
     }
 
     public void createPaidInFullEvent(Claim claim) {
@@ -118,7 +118,7 @@ public class EventProducer {
         publisher.publishEvent(new RejectOrganisationPaymentPlanEvent(claim));
     }
 
-    public void createReviewOrderEvent(Claim claim) {
-        publisher.publishEvent(new ReviewOrderEvent(claim));
+    public void createReviewOrderEvent(String authorisation, Claim claim) {
+        publisher.publishEvent(new ReviewOrderEvent(authorisation, claim));
     }
 }
