@@ -48,7 +48,7 @@ public class DefendantPinLetterContentProvider {
             .getAmount())
             .getTotalAmount());
         totalAmountComponents.add(claim.getClaimData()
-            .getFeesPaidInPound());
+            .getFeesPaidInPounds());
 
         if (!claim.getClaimData()
             .getInterest()
