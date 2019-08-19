@@ -213,7 +213,7 @@ public class DBCaseRepository implements CaseRepository {
 
     @Override
     @LogExecutionTime
-    public Claim saveClaim(User user, Claim claim) {
+    public Claim saveClaim(User user, Claim claim, CaseEvent caseEvent) {
         String claimDataString = jsonMapper.toJson(claim.getClaimData());
         String features = jsonMapper.toJson(claim.getFeatures());
         String claimSubmissionOperationIndicator = jsonMapper.toJson(claim.getClaimSubmissionOperationIndicators());
