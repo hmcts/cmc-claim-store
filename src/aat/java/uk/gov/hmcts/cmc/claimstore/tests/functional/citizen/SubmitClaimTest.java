@@ -28,7 +28,7 @@ public class SubmitClaimTest extends BaseSubmitClaimTest {
 
     @Before
     public void before() {
-        user = idamTestService.createCitizen();
+        user = bootstrap.getClaimant();
     }
 
     @Override
