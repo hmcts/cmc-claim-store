@@ -151,7 +151,7 @@ public class TotalAmountCalculator {
             BigDecimal interest = calculateInterest(claim, toDate).orElse(ZERO);
 
             if (withFees) {
-                BigDecimal feesPaid = data.getFeesPaidInPound();
+                BigDecimal feesPaid = data.getFeesPaidInPounds();
                 return claimAmount.add(interest.add(feesPaid));
             } else {
                 return claimAmount.add(interest);
