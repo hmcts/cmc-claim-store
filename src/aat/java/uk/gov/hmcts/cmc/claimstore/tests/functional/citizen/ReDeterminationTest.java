@@ -29,7 +29,7 @@ public class ReDeterminationTest extends BaseTest {
             claimant.getUserDetails().getId()
         );
 
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
         claim = createClaimWithResponse(createdCase, defendant);
     }
 

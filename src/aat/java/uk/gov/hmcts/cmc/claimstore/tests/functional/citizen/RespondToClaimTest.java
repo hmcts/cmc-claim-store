@@ -108,7 +108,7 @@ public class RespondToClaimTest extends BaseTest {
         Claim createdCase = commonOperations
             .submitClaimWithDefendantCollectionId(claimant.getAuthorisation(), claimantId, defendantCollectionId);
 
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
 
         commonOperations.linkDefendant(defendant.getAuthorisation());
 
@@ -131,7 +131,7 @@ public class RespondToClaimTest extends BaseTest {
             claimantId
         );
 
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
         commonOperations.linkDefendant(
             defendant.getAuthorisation()
         );
