@@ -21,7 +21,7 @@ public class SettlementOfferTest extends BaseTest {
 
     @Before
     public void before() {
-        claimant = idamTestService.createCitizen();
+        claimant = bootstrap.getClaimant();
     }
 
     @Test
@@ -32,7 +32,7 @@ public class SettlementOfferTest extends BaseTest {
             claimantId
         );
 
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
         Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
 
         Offer offer = SampleOffer.builder().build();
@@ -57,7 +57,7 @@ public class SettlementOfferTest extends BaseTest {
             claimantId
         );
 
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
         Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
 
         Offer offer = SampleOffer.builder().build();
@@ -82,7 +82,7 @@ public class SettlementOfferTest extends BaseTest {
             claimant.getAuthorisation(),
             claimantId
         );
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
         Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
 
         Offer offer = SampleOffer.builder().build();
@@ -114,7 +114,7 @@ public class SettlementOfferTest extends BaseTest {
             claimantId
         );
 
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
         Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
 
         commonOperations
@@ -131,7 +131,7 @@ public class SettlementOfferTest extends BaseTest {
             claimantId
         );
 
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
         Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
 
         Offer offer = SampleOffer.builder().build();
@@ -163,7 +163,7 @@ public class SettlementOfferTest extends BaseTest {
             claimantId
         );
 
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
         Claim updatedCase = createClaimWithDisputeResponse(createdCase, defendant);
 
         commonOperations
@@ -180,7 +180,7 @@ public class SettlementOfferTest extends BaseTest {
             claimantId
         );
 
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
 
         Claim caseWithCounterSign = countersignAnOffer(createdCase, defendant);
 
@@ -225,7 +225,7 @@ public class SettlementOfferTest extends BaseTest {
             claimantId
         );
 
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
 
         Claim updatedCase = countersignAnOffer(createdCase, defendant);
 
@@ -243,7 +243,7 @@ public class SettlementOfferTest extends BaseTest {
             claimantId
         );
 
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
         commonOperations.linkDefendant(
             defendant.getAuthorisation()
         );
@@ -280,7 +280,7 @@ public class SettlementOfferTest extends BaseTest {
             claimantId
         );
 
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
         commonOperations.linkDefendant(
             defendant.getAuthorisation()
         );
