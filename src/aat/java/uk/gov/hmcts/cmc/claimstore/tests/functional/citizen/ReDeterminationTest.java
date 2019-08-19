@@ -22,7 +22,7 @@ public class ReDeterminationTest extends BaseTest {
 
     @Before
     public void before() {
-        claimant = idamTestService.createCitizen();
+        claimant = bootstrap.getClaimant();
 
         Claim createdCase = commonOperations.submitClaim(
             claimant.getAuthorisation(),
