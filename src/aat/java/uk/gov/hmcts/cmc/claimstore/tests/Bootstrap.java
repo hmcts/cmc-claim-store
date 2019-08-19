@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.tests.idam.IdamTestService;
 
 import javax.annotation.PostConstruct;
 
@@ -19,18 +20,22 @@ public class Bootstrap {
     private final ObjectMapper objectMapper;
     private final UserService userService;
     private final AATConfiguration aatConfiguration;
+    private final IdamTestService idamTestService;
 
     private User smokeTestCitizen;
+    private User claimant;
 
     @Autowired
     public Bootstrap(
         ObjectMapper objectMapper,
         UserService userService,
-        AATConfiguration aatConfiguration
+        AATConfiguration aatConfiguration,
+        IdamTestService idamTestService
     ) {
         this.objectMapper = objectMapper;
         this.userService = userService;
         this.aatConfiguration = aatConfiguration;
+        this.idamTestService = idamTestService;
     }
 
     @PostConstruct
@@ -46,10 +51,15 @@ public class Bootstrap {
             aatConfiguration.getSmokeTestCitizen().getUsername(),
             aatConfiguration.getSmokeTestCitizen().getPassword()
         );
+        claimant = idamTestService.createCitizen();
     }
 
     public User getSmokeTestCitizen() {
         return smokeTestCitizen;
+    }
+
+    public User getClaimant() {
+        return claimant;
     }
 
 }

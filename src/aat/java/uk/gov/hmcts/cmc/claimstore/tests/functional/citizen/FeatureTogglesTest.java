@@ -18,7 +18,7 @@ public class FeatureTogglesTest extends BaseTest {
 
     @Before
     public void before() {
-        user = idamTestService.createCitizen();
+        user = bootstrap.getClaimant();
     }
 
     @Test
