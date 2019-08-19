@@ -7,6 +7,7 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.metadata.CaseMetadata;
@@ -16,6 +17,7 @@ import java.util.Optional;
 @Service
 public class ClaimOperation {
 
+    @LogExecutionTime
     @Retryable(value = RuntimeException.class, maxAttempts = 25, backoff = @Backoff(delay = 500))
     public Claim getClaimWithLetterHolder(String externalId, String userAuthentication) {
 
