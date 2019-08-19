@@ -786,7 +786,6 @@ public class CoreCaseDataService {
                 eventRequestData,
                 user.isRepresented());
 
-
             CCDCase.CCDCaseBuilder ccdCaseBuilder = CCDCase.builder()
                 .externalId(initiatePaymentRequestData.getExternalId().toString())
                 .submitterId(submitterId)
@@ -813,7 +812,6 @@ public class CoreCaseDataService {
                 .build();
 
         } catch (Exception exception) {
-            System.out.println("ERROR" + exception.getMessage());
             throw new CoreCaseDataStoreException(
                 String.format(
                     "Failed storing claim in CCD store for external id %s on event %s",
