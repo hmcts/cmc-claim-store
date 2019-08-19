@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -40,6 +41,7 @@ public class ClaimantResponseTest extends BaseTest {
     }
 
     @Test
+    @LogExecutionTime
     public void shouldSaveClaimantResponseAcceptationReferToJudge() {
         commonOperations.submitClaimantResponse(
             SampleClaimantResponse.validDefaultAcceptation(),

@@ -81,7 +81,7 @@ public class ClaimantResponseService {
         }
 
         if (!isSettlementAgreement(claim, claimantResponse)) {
-            eventProducer.createClaimantResponseEvent(updatedClaim);
+            eventProducer.createClaimantResponseEvent(updatedClaim, authorization);
         }
 
         if (isSettlePreJudgment(claimantResponse)) {

@@ -4,11 +4,13 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIMANT_DIRECTIONS_QUESTIONNAIRE;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_DIRECTIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_SANCTIONS;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.REVIEW_ORDER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.fromValue;
@@ -31,6 +33,8 @@ public class ClaimDocumentTypeTest {
             .isEqualTo(DEFENDANT_RESPONSE_RECEIPT);
         assertThat(fromValue("settlementAgreement"))
             .isEqualTo(SETTLEMENT_AGREEMENT);
+        assertThat(fromValue("claimantHearingRequirement"))
+            .isEqualTo(CLAIMANT_DIRECTIONS_QUESTIONNAIRE);
     }
 
     @Test
@@ -51,6 +55,10 @@ public class ClaimDocumentTypeTest {
             .isEqualTo(CCJ_REQUEST);
         assertThat(fromValue("DEFENDANT_PIN_LETTER"))
             .isEqualTo(DEFENDANT_PIN_LETTER);
+        assertThat(fromValue("CLAIMANT_DIRECTIONS_QUESTIONNAIRE"))
+            .isEqualTo(CLAIMANT_DIRECTIONS_QUESTIONNAIRE);
+        assertThat(fromValue("REVIEW_ORDER"))
+            .isEqualTo(REVIEW_ORDER);
     }
 
     @Test(expected = IllegalArgumentException.class)
