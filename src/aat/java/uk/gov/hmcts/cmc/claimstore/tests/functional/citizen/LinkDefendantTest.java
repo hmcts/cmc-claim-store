@@ -17,7 +17,7 @@ public class LinkDefendantTest extends BaseTest {
 
     @Before
     public void before() {
-        claimant = idamTestService.createCitizen();
+        claimant = bootstrap.getClaimant();
     }
 
     @Test
