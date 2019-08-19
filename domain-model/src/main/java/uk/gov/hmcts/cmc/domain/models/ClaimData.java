@@ -171,7 +171,7 @@ public class ClaimData {
     }
 
     @JsonIgnore
-    public BigDecimal getFeesPaidInPound() {
+    public BigDecimal getFeesPaidInPounds() {
         return MonetaryConversions.penniesToPounds(new BigDecimal(feeAmountInPennies));
     }
 

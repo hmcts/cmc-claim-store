@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -40,6 +41,7 @@ public class CommonOperations {
         this.claimOperation = claimOperation;
     }
 
+    @LogExecutionTime
     public Claim submitClaimWithDefendantCollectionId(String userAuthentication, String userId, String collectionId) {
         UUID externalId = UUID.randomUUID();
         return submitClaim(userAuthentication, userId, testData.submittedByClaimantBuilder()
@@ -48,6 +50,7 @@ public class CommonOperations {
             .build());
     }
 
+    @LogExecutionTime
     public Claim submitClaim(String userAuthentication, String userId) {
         return submitClaim(
             userAuthentication,
@@ -56,11 +59,13 @@ public class CommonOperations {
         );
     }
 
+    @LogExecutionTime
     public Claim submitClaim(String userAuthentication, String userId, ClaimData claimData) {
         Claim claim = saveClaim(claimData, userAuthentication, userId).then().extract().body().as(Claim.class);
         return claimOperation.getClaimWithLetterHolder(claim.getExternalId(), userAuthentication);
     }
 
+    @LogExecutionTime
     public Response saveClaim(ClaimData claimData, String userAuthentication, String userId) {
 
         return RestAssured
@@ -73,6 +78,7 @@ public class CommonOperations {
             .post("/claims/" + userId);
     }
 
+    @LogExecutionTime
     public Response saveUserRoles(UserRoleRequest userRoleRequest, String userAuthentication) {
         return RestAssured
             .given()
@@ -83,6 +89,7 @@ public class CommonOperations {
             .post("/user/roles");
     }
 
+    @LogExecutionTime
     public Response getUserRole(String userAuthentication) {
         return RestAssured
             .given()
@@ -92,6 +99,7 @@ public class CommonOperations {
             .get("/user/roles");
     }
 
+    @LogExecutionTime
     public void linkDefendant(String userAuthentication) {
         RestAssured
             .given()
@@ -101,6 +109,7 @@ public class CommonOperations {
             .put("/claims/defendant/link");
     }
 
+    @LogExecutionTime
     public Claim retrieveClaim(String externalId, String userAuthentication) {
         return RestAssured
             .given()
@@ -114,6 +123,7 @@ public class CommonOperations {
             .as(Claim.class);
     }
 
+    @LogExecutionTime
     public Response submitResponse(
         uk.gov.hmcts.cmc.domain.models.response.Response response,
         String claimExternalId,
@@ -128,6 +138,7 @@ public class CommonOperations {
             .post("/responses/claim/" + claimExternalId + "/defendant/" + defendant.getUserDetails().getId());
     }
 
+    @LogExecutionTime
     public Response submitOffer(
         Offer offer,
         String claimExternalId,
@@ -143,6 +154,7 @@ public class CommonOperations {
             .post("/claims/" + claimExternalId + "/offers/" + madeBy.name());
     }
 
+    @LogExecutionTime
     public Response acceptOffer(
         String claimExternalId,
         String userAuthentication,
@@ -156,6 +168,7 @@ public class CommonOperations {
             .post("/claims/" + claimExternalId + "/offers/" + madeBy.name() + "/accept");
     }
 
+    @LogExecutionTime
     public Response rejectOffer(
         String claimExternalId,
         String userAuthentication,
@@ -169,6 +182,7 @@ public class CommonOperations {
             .post("/claims/" + claimExternalId + "/offers/" + madeBy.name() + "/reject");
     }
 
+    @LogExecutionTime
     public Response countersignOffer(
         String claimExternalId,
         String userAuthentication,
@@ -182,6 +196,7 @@ public class CommonOperations {
             .post("/claims/" + claimExternalId + "/offers/" + madeBy.name() + "/countersign");
     }
 
+    @LogExecutionTime
     public Response submitClaimantResponse(
         ClaimantResponse response,
         String claimExternalId,
@@ -196,6 +211,7 @@ public class CommonOperations {
             .post("/responses/" + claimExternalId + "/claimant/" + claimant.getUserDetails().getId());
     }
 
+    @LogExecutionTime
     public Response requestCCJ(String externalId, CountyCourtJudgment ccj, User user) {
         return RestAssured
             .given()
@@ -206,6 +222,7 @@ public class CommonOperations {
             .post("/claims/" + externalId + "/county-court-judgment");
     }
 
+    @LogExecutionTime
     public Response submitReDetermination(
         ReDetermination reDetermination,
         String claimExternalId,
@@ -220,6 +237,7 @@ public class CommonOperations {
             .post("/claims/" + claimExternalId + "/re-determination");
     }
 
+    @LogExecutionTime
     public Response paidInFull(String externalId, PaidInFull paidInFull, User user) {
         String path = "/claims/" + externalId + "/paid-in-full";
 
