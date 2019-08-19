@@ -17,7 +17,6 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
-import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
 import java.time.LocalDate;
@@ -25,7 +24,6 @@ import java.time.LocalDateTime;
 import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
-import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isReferredToJudge;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isSettlePreJudgment;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
@@ -81,10 +79,8 @@ public class ClaimantResponseService {
             && isRejectResponseNoMediation(claimantResponse)) {
             updateDirectionsQuestionnaireDeadline(updatedClaim, authorization);
         }
-        Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
-        if (!isSettlementAgreement(claim, claimantResponse)
-            && (!isReferredToJudge(claimantResponse)
-            || (isReferredToJudge(claimantResponse) && PartyUtils.isCompanyOrOrganisation(response.getDefendant())))) {
+
+        if (!isSettlementAgreement(claim, claimantResponse)) {
             eventProducer.createClaimantResponseEvent(updatedClaim, authorization);
         }
 
