@@ -186,7 +186,10 @@ public class ClaimService {
         return caseRepository.getClaimsByState(claimState, user);
     }
 
-    public InitiatePaymentResponse initiatePayment(String authorisation, String submitterId, InitiatePaymentRequest request) {
+    public InitiatePaymentResponse initiatePayment(
+        String authorisation,
+        String submitterId,
+        InitiatePaymentRequest request) {
         User user = userService.getUser(authorisation);
         return caseRepository.initiatePayment(user, submitterId, request);
     }
