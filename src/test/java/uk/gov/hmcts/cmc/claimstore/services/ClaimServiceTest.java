@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
@@ -193,13 +194,13 @@ public class ClaimServiceTest {
         when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
         when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(ISSUE_DATE);
         when(responseDeadlineCalculator.calculateResponseDeadline(eq(ISSUE_DATE))).thenReturn(RESPONSE_DEADLINE);
-        when(caseRepository.saveClaim(eq(USER), any())).thenReturn(claim);
+        when(caseRepository.saveClaim(eq(USER), any(), eq(CaseEvent.CREATE_CASE))).thenReturn(claim);
 
         Claim createdClaim = claimService.saveClaim(USER_ID, claimData, AUTHORISATION, singletonList("admissions"));
 
         assertThat(createdClaim.getClaimData()).isEqualTo(claim.getClaimData());
 
-        verify(caseRepository, once()).saveClaim(any(User.class), any(Claim.class));
+        verify(caseRepository, once()).saveClaim(any(User.class), any(Claim.class), eq(CaseEvent.CREATE_CASE));
         verify(eventProducer, once()).createClaimIssuedEvent(eq(createdClaim), eq(null),
             anyString(), eq(AUTHORISATION));
 
@@ -213,7 +214,7 @@ public class ClaimServiceTest {
         when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
         when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(ISSUE_DATE);
         when(responseDeadlineCalculator.calculateResponseDeadline(eq(ISSUE_DATE))).thenReturn(RESPONSE_DEADLINE);
-        when(caseRepository.saveClaim(eq(USER), any())).thenReturn(claim);
+        when(caseRepository.saveClaim(eq(USER), any(), eq(CaseEvent.CREATE_CASE))).thenReturn(claim);
 
         claimService = new ClaimService(
             claimRepository,
@@ -242,7 +243,7 @@ public class ClaimServiceTest {
         assertThat(createdClaim.getClaimData()).isEqualTo(outputClaimData);
 
         verify(userService, never()).generatePin(eq(outputClaimData.getDefendant().getName()), eq(AUTHORISATION));
-        verify(caseRepository, once()).saveClaim(any(User.class), any(Claim.class));
+        verify(caseRepository, once()).saveClaim(any(User.class), any(Claim.class), eq(CaseEvent.CREATE_CASE));
         verify(eventProducer, once()).createClaimCreatedEvent(eq(createdClaim), eq(null),
             anyString(), eq(AUTHORISATION));
 

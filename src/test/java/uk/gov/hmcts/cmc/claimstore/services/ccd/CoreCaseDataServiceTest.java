@@ -185,9 +185,44 @@ public class CoreCaseDataServiceTest {
         when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(expectedClaim);
 
-        Claim returnedClaim = service.createNewCase(USER, providedClaim);
+        Claim returnedClaim = service.createNewCase(USER, providedClaim, CaseEvent.CREATE_CASE);
 
         assertEquals(expectedClaim, returnedClaim);
+    }
+
+    @Test
+    public void submitLegalRepClaimShouldReturnLegalRepClaim() {
+        Claim providedLegalRepClaim = SampleClaim.getDefaultForLegal();
+        Claim expectedLegalRepClaim = SampleClaim.claim(providedLegalRepClaim.getClaimData(), "012LR345");
+
+        when(ccdCreateCaseService.startCreate(
+            eq(AUTHORISATION),
+            any(EventRequestData.class),
+            eq(false)
+        ))
+            .thenReturn(StartEventResponse.builder()
+                .caseDetails(CaseDetails.builder().build())
+                .eventId("eventId")
+                .token("token")
+                .build());
+
+        when(ccdCreateCaseService.submitCreate(
+            eq(AUTHORISATION),
+            any(EventRequestData.class),
+            any(CaseDataContent.class),
+            eq(false)
+        ))
+            .thenReturn(CaseDetails.builder()
+                .id(SampleClaim.CLAIM_ID)
+                .data(new HashMap<>())
+                .build());
+
+        when(caseMapper.to(providedLegalRepClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(expectedLegalRepClaim);
+
+        Claim returnedLegalRepClaim = service.createNewCase(USER, providedLegalRepClaim, CaseEvent.CREATE_CLAIM_LEGAL_REP);
+
+        assertEquals(expectedLegalRepClaim, returnedLegalRepClaim);
     }
 
     @Test
@@ -218,7 +253,8 @@ public class CoreCaseDataServiceTest {
 
         when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
 
-        service.createNewCase(USER, providedClaim);
+        service.createNewCase(USER, providedClaim, CaseEvent.CREATE_CASE);
+        service.createNewCase(USER, providedClaim, CaseEvent.CREATE_CLAIM_LEGAL_REP);
 
         verify(ccdCreateCaseService, never()).grantAccessToCase(any(), any());
     }

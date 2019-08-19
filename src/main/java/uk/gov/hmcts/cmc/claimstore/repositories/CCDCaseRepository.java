@@ -165,8 +165,8 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Claim saveClaim(User user, Claim claim) {
-        return coreCaseDataService.createNewCase(user, claim);
+    public Claim saveClaim(User user, Claim claim, CaseEvent caseEvent) {
+        return coreCaseDataService.createNewCase(user, claim, caseEvent);
     }
 
     @Override

@@ -105,7 +105,7 @@ public class CoreCaseDataService {
     }
 
     @LogExecutionTime
-    public Claim createNewCase(User user, Claim claim) {
+    public Claim createNewCase(User user, Claim claim, CaseEvent caseEvent) {
         requireNonNull(user, "user must not be null");
 
         CCDCase ccdCase = caseMapper.to(claim);
@@ -119,7 +119,7 @@ public class CoreCaseDataService {
                 .userId(user.getUserDetails().getId())
                 .jurisdictionId(JURISDICTION_ID)
                 .caseTypeId(CASE_TYPE_ID)
-                .eventId(CREATE_CASE.getValue())
+                .eventId(caseEvent.getValue())
                 .ignoreWarning(true)
                 .build();
 

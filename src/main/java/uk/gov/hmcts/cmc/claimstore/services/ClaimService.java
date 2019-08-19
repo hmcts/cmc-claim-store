@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
@@ -220,7 +221,7 @@ public class ClaimService {
             .claimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators.builder().build())
             .build();
 
-        Claim savedClaim = caseRepository.saveClaim(user, claim);
+        Claim savedClaim = caseRepository.saveClaim(user, claim, CREATE_CASE);
         ccdEventProducer.createCCDClaimIssuedEvent(savedClaim, user);
 
         if (asyncEventOperationEnabled) {
