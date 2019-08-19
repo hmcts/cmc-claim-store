@@ -24,6 +24,8 @@ public class Bootstrap {
 
     private User smokeTestCitizen;
     private User claimant;
+    private User defendant;
+    private User solicitor;
 
     @Autowired
     public Bootstrap(
@@ -52,6 +54,8 @@ public class Bootstrap {
             aatConfiguration.getSmokeTestCitizen().getPassword()
         );
         claimant = idamTestService.createCitizen();
+        defendant = idamTestService.createCitizen();
+        solicitor = idamTestService.createSolicitor();
     }
 
     public User getSmokeTestCitizen() {
@@ -62,4 +66,11 @@ public class Bootstrap {
         return claimant;
     }
 
+    public User getSolicitor() {
+        return solicitor;
+    }
+
+    public User getDefendant() {
+        return defendant;
+    }
 }

@@ -16,7 +16,7 @@ public class SolicitorSubmitClaimTest extends BaseSubmitClaimTest {
 
     @Before
     public void before() {
-        user = bootstrap.getClaimant();
+        user = bootstrap.getSolicitor();
     }
 
     @Override

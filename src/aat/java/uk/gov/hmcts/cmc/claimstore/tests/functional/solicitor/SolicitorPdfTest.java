@@ -20,7 +20,7 @@ public class SolicitorPdfTest extends BasePdfTest {
 
     @Before
     public void before() {
-        user = bootstrap.getClaimant();
+        user = bootstrap.getSolicitor();
     }
 
     @Test
