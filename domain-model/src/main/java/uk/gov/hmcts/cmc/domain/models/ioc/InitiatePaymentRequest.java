@@ -6,6 +6,7 @@ import lombok.Data;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.amount.Amount;
 
+import java.time.LocalDate;
 import java.util.UUID;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -15,7 +16,12 @@ import javax.validation.constraints.NotNull;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class InitiatePaymentRequest {
     @Valid
+    @NotNull
     private final UUID externalId;
+
+    @Valid
+    @NotNull
+    private final LocalDate issuedOn;
 
     @Valid
     @NotNull

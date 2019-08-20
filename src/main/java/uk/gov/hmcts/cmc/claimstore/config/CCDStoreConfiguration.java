@@ -4,6 +4,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.InitiatePaymentCaseMapper;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDCaseHandler;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDTestingSupportHandler;
@@ -49,6 +50,7 @@ public class CCDStoreConfiguration {
     @Bean
     public CoreCaseDataService coreCaseDataService(
         CaseMapper caseMapper,
+        InitiatePaymentCaseMapper initiatePaymentCaseMapper,
         UserService userService,
         ReferenceNumberService referenceNumberService,
         CoreCaseDataApi coreCaseDataApi,
@@ -57,8 +59,17 @@ public class CCDStoreConfiguration {
         CCDCreateCaseService ccdCreateCaseService,
         CaseDetailsConverter caseDetailsConverter
     ) {
-        return new CoreCaseDataService(caseMapper, userService, referenceNumberService, coreCaseDataApi,
-            authTokenGenerator, jobSchedulerService, ccdCreateCaseService, caseDetailsConverter);
+        return new CoreCaseDataService(
+            caseMapper,
+            initiatePaymentCaseMapper,
+            userService,
+            referenceNumberService,
+            coreCaseDataApi,
+            authTokenGenerator,
+            jobSchedulerService,
+            ccdCreateCaseService,
+            caseDetailsConverter
+        );
     }
 
     @Bean
