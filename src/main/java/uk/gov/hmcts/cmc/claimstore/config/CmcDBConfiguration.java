@@ -73,7 +73,7 @@ public class CmcDBConfiguration {
     }
 
     @Bean
-    public ReferenceNumberRepository referenceNumberRepository(DBI dbi) {
+    public ReferenceNumberRepository referenceNumberRepository(@Qualifier("cmcDbi") DBI dbi) {
         return dbi.onDemand(ReferenceNumberRepository.class);
     }
 }

@@ -60,22 +60,28 @@ public class Bootstrap {
     }
 
     public User getClaimant() {
-        if (claimant == null) {
-            claimant = idamTestService.createCitizen();
+        synchronized (Bootstrap.class) {
+            if (claimant == null) {
+                claimant = idamTestService.createCitizen();
+            }
         }
         return claimant;
     }
 
     public User getSolicitor() {
-        if (solicitor == null) {
-            solicitor = idamTestService.createSolicitor();
+        synchronized (Bootstrap.class) {
+            if (solicitor == null) {
+                solicitor = idamTestService.createSolicitor();
+            }
         }
         return solicitor;
     }
 
     public User getDefendant() {
-        if (defendant == null) {
-            defendant = idamTestService.createCitizen();
+        synchronized (Bootstrap.class) {
+            if (defendant == null) {
+                defendant = idamTestService.createCitizen();
+            }
         }
         return defendant;
     }
