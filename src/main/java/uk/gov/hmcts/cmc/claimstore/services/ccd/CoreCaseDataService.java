@@ -786,7 +786,6 @@ public class CoreCaseDataService {
                 eventRequestData,
                 user.isRepresented());
 
-
             CCDCase.CCDCaseBuilder ccdCaseBuilder = CCDCase.builder()
                 .externalId(initiatePaymentRequestData.getExternalId().toString())
                 .submitterId(submitterId)
