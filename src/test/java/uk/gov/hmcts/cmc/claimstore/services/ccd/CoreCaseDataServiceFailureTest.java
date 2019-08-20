@@ -11,6 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.InitiatePaymentCaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -44,6 +46,7 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.UUID;
 
 import static java.time.LocalDate.now;
 import static org.junit.Assert.assertNotNull;
@@ -85,6 +88,8 @@ public class CoreCaseDataServiceFailureTest {
     private JobSchedulerService jobSchedulerService;
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
+    @Mock
+    private InitiatePaymentCaseMapper initiatePaymentCaseMapper;
 
     @Captor
     private ArgumentCaptor<Map<String, Object>> caseDataCaptor;
@@ -125,6 +130,7 @@ public class CoreCaseDataServiceFailureTest {
 
         this.service = new CoreCaseDataService(
             caseMapper,
+            initiatePaymentCaseMapper,
             userService,
             referenceNumberService,
             coreCaseDataApi,
@@ -560,5 +566,14 @@ public class CoreCaseDataServiceFailureTest {
 
         String newLetterHolderId = "letter_holder_id";
         service.linkLetterHolder(claim.getId(), newLetterHolderId);
+    }
+
+    @Test(expected = CoreCaseDataStoreException.class)
+    public void savePaymentFailure() {
+        InitiatePaymentRequest initiatePaymentRequest = InitiatePaymentRequest.builder()
+            .externalId(UUID.randomUUID())
+            .build();
+
+        service.savePayment(USER, "submitterId", initiatePaymentRequest);
     }
 }
