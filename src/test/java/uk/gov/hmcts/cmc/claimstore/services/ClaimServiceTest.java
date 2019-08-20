@@ -197,7 +197,7 @@ public class ClaimServiceTest {
         when(responseDeadlineCalculator.calculateResponseDeadline(eq(ISSUE_DATE))).thenReturn(RESPONSE_DEADLINE);
         when(caseRepository.saveClaim(eq(USER), any(), eq(CaseEvent.CREATE_CASE))).thenReturn(claim);
 
-        Claim createdClaim = claimService.saveClaim(USER_ID, claimData, AUTHORISATION, singletonList("admissions"));
+        Claim createdClaim = claimService.saveClaim(USER_ID, claimData, AUTHORISATION, singletonList("admissions"), CaseEvent.CREATE_CASE);
 
         assertThat(createdClaim.getClaimData()).isEqualTo(claim.getClaimData());
 
@@ -206,6 +206,27 @@ public class ClaimServiceTest {
             anyString(), eq(AUTHORISATION));
 
         verify(ccdEventProducer, once()).createCCDClaimIssuedEvent(eq(createdClaim), eq(USER));
+    }
+
+    @Test
+    public void saveLegalRepClaimShouldFinishSuccessfully() {
+
+        ClaimData claimData = SampleClaimData.validDefaults();
+
+        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
+        when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(ISSUE_DATE);
+        when(responseDeadlineCalculator.calculateResponseDeadline(eq(ISSUE_DATE))).thenReturn(RESPONSE_DEADLINE);
+        when(caseRepository.saveClaim(eq(USER), any(), eq(CaseEvent.CREATE_CLAIM_LEGAL_REP))).thenReturn(claim);
+
+        Claim createdLegalRepClaim = claimService.saveClaim(USER_ID, claimData, AUTHORISATION, singletonList("admissions"), CaseEvent.CREATE_CLAIM_LEGAL_REP);
+
+        assertThat(createdLegalRepClaim.getClaimData()).isEqualTo(claim.getClaimData());
+
+        verify(caseRepository, once()).saveClaim(any(User.class), any(Claim.class), eq(CaseEvent.CREATE_CLAIM_LEGAL_REP));
+        verify(eventProducer, once()).createClaimIssuedEvent(eq(createdLegalRepClaim), eq(null),
+            anyString(), eq(AUTHORISATION));
+
+        verify(ccdEventProducer, once()).createCCDClaimIssuedEvent(eq(createdLegalRepClaim), eq(USER));
     }
 
     @Test
@@ -237,7 +258,7 @@ public class ClaimServiceTest {
         ClaimData claimData = SampleClaimData.validDefaults();
 
         //when
-        Claim createdClaim = claimService.saveClaim(USER_ID, claimData, AUTHORISATION, singletonList("admissions"));
+        Claim createdClaim = claimService.saveClaim(USER_ID, claimData, AUTHORISATION, singletonList("admissions"), CaseEvent.CREATE_CASE);
 
         //verify
         ClaimData outputClaimData = claim.getClaimData();
