@@ -254,7 +254,6 @@ public class CoreCaseDataServiceTest {
         when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
 
         service.createNewCase(USER, providedClaim, CaseEvent.CREATE_CASE);
-        service.createNewCase(USER, providedClaim, CaseEvent.CREATE_CLAIM_LEGAL_REP);
 
         verify(ccdCreateCaseService, never()).grantAccessToCase(any(), any());
     }
