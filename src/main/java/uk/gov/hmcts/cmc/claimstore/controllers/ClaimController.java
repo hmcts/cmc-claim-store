@@ -25,6 +25,8 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CLAIM_LEGAL_REP;
 import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.CLAIM_REFERENCE_PATTERN;
 import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
 
@@ -100,7 +102,7 @@ public class ClaimController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
         @RequestHeader(value = "Features", required = false) List<String> features
     ) {
-        return claimService.saveClaim(submitterId, claimData, authorisation, features);
+        return claimService.saveClaim(submitterId, claimData, authorisation, features, CREATE_CASE);
     }
 
     @PostMapping(value = "/{submitterId}/create-legal-rep-claim", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -111,7 +113,7 @@ public class ClaimController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
         @RequestHeader(value = "Features", required = false) List<String> features
     ) {
-        return claimService.saveClaim(submitterId, claimData, authorisation, features);
+        return claimService.saveClaim(submitterId, claimData, authorisation, features, CREATE_CLAIM_LEGAL_REP);
     }
 
     @PutMapping("/defendant/link")

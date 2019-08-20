@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -44,11 +45,25 @@ public class ClaimControllerTest {
     public void shouldSaveClaimInRepository() {
         //given
         ClaimData input = SampleClaimData.validDefaults();
-        when(claimService.saveClaim(eq(USER_ID), eq(input), eq(AUTHORISATION), eq(singletonList("admissions"))))
+        when(claimService.saveClaim(eq(USER_ID), eq(input), eq(AUTHORISATION), eq(singletonList("admissions")), eq(CaseEvent.CREATE_CASE)))
             .thenReturn(CLAIM);
 
         //when
         Claim output = claimController.save(input, USER_ID, AUTHORISATION, singletonList("admissions"));
+
+        //then
+        assertThat(output).isEqualTo(CLAIM);
+    }
+
+    @Test
+    public void shouldSaveLegalRepClaimInRepository() {
+        //given
+        ClaimData input = SampleClaimData.validDefaults();
+        when(claimService.saveClaim(eq(USER_ID), eq(input), eq(AUTHORISATION), eq(singletonList("admissions")), eq(CaseEvent.CREATE_CLAIM_LEGAL_REP)))
+            .thenReturn(CLAIM);
+
+        //when
+        Claim output = claimController.saveLegalRepClaim(input, USER_ID, AUTHORISATION, singletonList("admissions"));
 
         //then
         assertThat(output).isEqualTo(CLAIM);
