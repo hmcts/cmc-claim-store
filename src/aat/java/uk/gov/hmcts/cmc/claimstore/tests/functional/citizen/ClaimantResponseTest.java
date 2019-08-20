@@ -28,7 +28,7 @@ public class ClaimantResponseTest extends BaseTest {
 
     @Before
     public void before() {
-        claimant = idamTestService.createCitizen();
+        claimant = bootstrap.getClaimant();
 
         String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
@@ -36,7 +36,7 @@ public class ClaimantResponseTest extends BaseTest {
             claimantId
         );
 
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
         claim = createClaimWithResponse(createdCase, defendant);
     }
 
