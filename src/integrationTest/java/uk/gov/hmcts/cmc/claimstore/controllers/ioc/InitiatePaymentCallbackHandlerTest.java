@@ -32,7 +32,7 @@ public class InitiatePaymentCallbackHandlerTest extends MockSpringTest {
     private static final long CASE_ID = 42L;
 
     @Test
-    public void shouldStoreIdAndPaymentNextUrlBeforeSubmittingEvent() throws Exception {
+    public void shouldStorePaymentDetailsBeforeSubmittingEvent() throws Exception {
         MvcResult mvcResult = makeRequest(CallbackType.ABOUT_TO_SUBMIT.getValue())
             .andExpect(status().isOk())
             .andReturn();

@@ -10,6 +10,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.InitiatePaymentCaseMapper;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
@@ -101,6 +102,8 @@ public class CoreCaseDataServiceTest {
     private JobSchedulerService jobSchedulerService;
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
+    @Mock
+    private InitiatePaymentCaseMapper initiatePaymentCaseMapper;
 
     private CoreCaseDataService service;
 
@@ -143,6 +146,7 @@ public class CoreCaseDataServiceTest {
 
         this.service = new CoreCaseDataService(
             caseMapper,
+            initiatePaymentCaseMapper,
             userService,
             referenceNumberService,
             coreCaseDataApi,

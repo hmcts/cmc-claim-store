@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseEventMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.InitiatePaymentCaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -79,6 +80,7 @@ public class CoreCaseDataService {
         = "Failed storing claim in CCD store for case id %s on event %s";
 
     private final CaseMapper caseMapper;
+    private final InitiatePaymentCaseMapper initiatePaymentCaseMapper;
     private final UserService userService;
     private final ReferenceNumberService referenceNumberService;
     private final CoreCaseDataApi coreCaseDataApi;
@@ -91,7 +93,7 @@ public class CoreCaseDataService {
     @Autowired
     public CoreCaseDataService(
         CaseMapper caseMapper,
-        UserService userService,
+        InitiatePaymentCaseMapper initiatePaymentCaseMapper, UserService userService,
         ReferenceNumberService referenceNumberService,
         CoreCaseDataApi coreCaseDataApi,
         AuthTokenGenerator authTokenGenerator,
@@ -100,6 +102,7 @@ public class CoreCaseDataService {
         CaseDetailsConverter caseDetailsConverter
     ) {
         this.caseMapper = caseMapper;
+        this.initiatePaymentCaseMapper = initiatePaymentCaseMapper;
         this.userService = userService;
         this.referenceNumberService = referenceNumberService;
         this.coreCaseDataApi = coreCaseDataApi;
@@ -789,7 +792,7 @@ public class CoreCaseDataService {
     public CreatePaymentResponse savePayment(
         User user,
         String submitterId,
-        InitiatePaymentRequest initiatePaymentRequestData) {
+        InitiatePaymentRequest request) {
         try {
             EventRequestData eventRequestData =
                 eventRequest(INITIATE_CLAIM_PAYMENT_CITIZEN, user.getUserDetails().getId());
@@ -800,9 +803,10 @@ public class CoreCaseDataService {
                 user.isRepresented());
 
             CCDCase.CCDCaseBuilder ccdCaseBuilder = CCDCase.builder()
-                .externalId(initiatePaymentRequestData.getExternalId().toString())
                 .submitterId(submitterId)
                 .submitterEmail(user.getUserDetails().getEmail());
+
+            initiatePaymentCaseMapper.to(request, ccdCaseBuilder);
 
             CaseDataContent caseDataContent = CaseDataContent.builder()
                 .eventToken(startEventResponse.getToken())
@@ -828,7 +832,7 @@ public class CoreCaseDataService {
             throw new CoreCaseDataStoreException(
                 String.format(
                     "Failed storing claim in CCD store for external id %s on event %s",
-                    initiatePaymentRequestData.getExternalId().toString(),
+                    request.getExternalId().toString(),
                     INITIATE_CLAIM_PAYMENT_CITIZEN
                 ), exception
             );
