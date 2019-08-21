@@ -7,14 +7,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.mapper.InitiatePaymentCaseMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.MoneyMapper;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
-import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInitiatePaymentRequest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -38,8 +35,6 @@ public class InitiatePaymentCallbackHandlerTest {
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
     @Mock
-    private InitiatePaymentCaseMapper initiatePaymentCaseMapper;
-    @Mock
     private MoneyMapper moneyMapper;
     @Mock
     private PaymentsService paymentsService;
@@ -52,7 +47,6 @@ public class InitiatePaymentCallbackHandlerTest {
     public void setUp() {
         handler = new InitiatePaymentCallbackHandler(
             paymentsService,
-            initiatePaymentCaseMapper,
             caseDetailsConverter,
             moneyMapper);
         callbackRequest = CallbackRequest
@@ -75,9 +69,6 @@ public class InitiatePaymentCallbackHandlerTest {
         CCDCase ccdCase = SampleData.getCCDCitizenCase(SampleData.getAmountBreakDown());
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
             .thenReturn(ccdCase);
-        InitiatePaymentRequest initiatePaymentRequest =
-            SampleInitiatePaymentRequest.builder().build();
-        when(initiatePaymentCaseMapper.from(ccdCase)).thenReturn(initiatePaymentRequest);
 
         Payment payment = Payment.builder()
             .amount(BigDecimal.TEN)
@@ -92,10 +83,9 @@ public class InitiatePaymentCallbackHandlerTest {
                 ).build())
             .build();
 
-        when(paymentsService.makePayment(
+        when(paymentsService.createPayment(
             eq(BEARER_TOKEN),
-            eq(ccdCase),
-            any(BigDecimal.class))).thenReturn(payment);
+            eq(ccdCase))).thenReturn(payment);
 
         when(moneyMapper.to(payment.getAmount())).thenReturn("amount");
 
@@ -112,23 +102,5 @@ public class InitiatePaymentCallbackHandlerTest {
             entry("paymentDateCreated", payment.getDateCreated()),
             entry("paymentNextUrl", NEXT_URL)
         );
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void shouldThrowIfAmountIsNotCalculated() {
-        CallbackParams callbackParams = CallbackParams.builder()
-            .type(CallbackType.ABOUT_TO_SUBMIT)
-            .request(callbackRequest)
-            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
-            .build();
-
-        CCDCase ccdCase = SampleData.getCCDCitizenCase(SampleData.getAmountBreakDown());
-        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
-            .thenReturn(ccdCase);
-        InitiatePaymentRequest initiatePaymentRequest =
-            InitiatePaymentRequest.builder().build();
-        when(initiatePaymentCaseMapper.from(ccdCase)).thenReturn(initiatePaymentRequest);
-        handler
-                .handle(callbackParams);
     }
 }

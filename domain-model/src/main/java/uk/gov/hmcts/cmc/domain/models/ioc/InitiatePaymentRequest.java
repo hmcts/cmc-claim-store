@@ -21,10 +21,6 @@ public class InitiatePaymentRequest {
 
     @Valid
     @NotNull
-    private final LocalDate issuedOn;
-
-    @Valid
-    @NotNull
     private final Amount amount;
 
     @Valid

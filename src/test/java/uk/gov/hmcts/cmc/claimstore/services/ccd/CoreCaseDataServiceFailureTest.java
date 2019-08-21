@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.ccd.mapper.InitiatePaymentCaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -90,6 +91,8 @@ public class CoreCaseDataServiceFailureTest {
     private CaseDetailsConverter caseDetailsConverter;
     @Mock
     private InitiatePaymentCaseMapper initiatePaymentCaseMapper;
+    @Mock
+    private IssueDateCalculator issueDateCalculator;
 
     @Captor
     private ArgumentCaptor<Map<String, Object>> caseDataCaptor;
@@ -137,7 +140,8 @@ public class CoreCaseDataServiceFailureTest {
             authTokenGenerator,
             jobSchedulerService,
             ccdCreateCaseService,
-            caseDetailsConverter
+            caseDetailsConverter,
+            issueDateCalculator
         );
     }
 

@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.support.CCDTestingSupportRepository;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -57,7 +58,8 @@ public class CCDStoreConfiguration {
         AuthTokenGenerator authTokenGenerator,
         JobSchedulerService jobSchedulerService,
         CCDCreateCaseService ccdCreateCaseService,
-        CaseDetailsConverter caseDetailsConverter
+        CaseDetailsConverter caseDetailsConverter,
+        IssueDateCalculator issueDateCalculator
     ) {
         return new CoreCaseDataService(
             caseMapper,
@@ -68,7 +70,8 @@ public class CCDStoreConfiguration {
             authTokenGenerator,
             jobSchedulerService,
             ccdCreateCaseService,
-            caseDetailsConverter
+            caseDetailsConverter,
+            issueDateCalculator
         );
     }
 

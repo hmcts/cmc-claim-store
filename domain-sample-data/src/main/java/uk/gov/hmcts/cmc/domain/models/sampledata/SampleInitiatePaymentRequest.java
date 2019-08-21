@@ -13,7 +13,6 @@ public class SampleInitiatePaymentRequest {
 
     public static InitiatePaymentRequest.InitiatePaymentRequestBuilder builder() {
         return InitiatePaymentRequest.builder()
-            .issuedOn(LocalDate.parse("2020-02-06"))
             .interest(SampleInterest.standard())
             .amount(SampleAmountBreakdown.builder().build())
             .externalId(UUID.fromString("acd82549-d279-4adc-b38c-d195dd0db0d6"));

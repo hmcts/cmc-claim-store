@@ -5,7 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.mapper.InitiatePaymentCaseMapper;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
+import uk.gov.hmcts.cmc.domain.amount.TotalAmountCalculator;
+import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
 import uk.gov.hmcts.reform.fees.client.FeesClient;
 import uk.gov.hmcts.reform.fees.client.model.FeeOutcome;
 import uk.gov.hmcts.reform.payments.client.PaymentRequest;
@@ -23,6 +26,7 @@ public class PaymentsService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final PaymentsClient paymentsClient;
+    private final InitiatePaymentCaseMapper initiatePaymentCaseMapper;
     private final FeesClient feesClient;
     private final NotificationsProperties notificationsProperties;
     private final String service;
@@ -31,13 +35,16 @@ public class PaymentsService {
     private final String description;
 
     public PaymentsService(
+        InitiatePaymentCaseMapper initiatePaymentCaseMapper,
         PaymentsClient paymentsClient,
-        FeesClient feesClient, NotificationsProperties notificationsProperties,
+        FeesClient feesClient,
+        NotificationsProperties notificationsProperties,
         @Value("${payments.api.service}") String service,
         @Value("${payments.api.siteId}") String siteId,
         @Value("${payments.api.currency}") String currency,
         @Value("${payments.api.description}") String description
     ) {
+        this.initiatePaymentCaseMapper = initiatePaymentCaseMapper;
         this.paymentsClient = paymentsClient;
         this.feesClient = feesClient;
         this.notificationsProperties = notificationsProperties;
@@ -47,11 +54,22 @@ public class PaymentsService {
         this.description = description;
     }
 
-    public Payment makePayment(
+    public Payment createPayment(
         String authorisation,
-        CCDCase ccdCase,
-        BigDecimal totalAmount
+        CCDCase ccdCase
     ) {
+
+        InitiatePaymentRequest request = initiatePaymentCaseMapper.from(ccdCase);
+
+        logger.info("Calculating interest amount for case {}",
+            ccdCase.getExternalId());
+
+        BigDecimal totalAmount =
+            TotalAmountCalculator.amountWithInterestUntilIssueDate(
+                request.getAmount(),
+                request.getInterest(),
+                ccdCase.getIssuedOn()
+            ).orElseThrow(IllegalStateException::new);
 
         logger.info("Retrieving fee for case {}",
             ccdCase.getExternalId());

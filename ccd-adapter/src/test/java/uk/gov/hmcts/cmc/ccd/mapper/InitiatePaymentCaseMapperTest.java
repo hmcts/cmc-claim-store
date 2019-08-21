@@ -21,12 +21,10 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterestBreakdown;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterestDate;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.UUID;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.domain.amount.TotalAmountCalculator.TO_FULL_PENNIES;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -40,7 +38,6 @@ public class InitiatePaymentCaseMapperTest {
         InitiatePaymentRequest initiatePaymentRequest = InitiatePaymentRequest
             .builder()
             .amount(SampleAmountBreakdown.builder().build())
-            .issuedOn(LocalDate.of(2050, 1, 1))
             .interest(SampleInterest.standard())
             .externalId(UUID.randomUUID())
             .build();
@@ -76,18 +73,17 @@ public class InitiatePaymentCaseMapperTest {
             .amount(SampleAmountBreakdown.builder()
                 .rows(ImmutableList.of(
                     AmountRow.builder()
-                        .amount(BigDecimal.valueOf(50).setScale(TO_FULL_PENNIES, RoundingMode.HALF_UP))
+                        .amount(new BigDecimal("50.00"))
                         .reason("payment")
                         .id("aaa")
                         .build()
                 ))
                 .build())
-            .issuedOn(LocalDate.of(2017, 11, 15))
             .interest(SampleInterest.builder()
                 .withReason("reason")
                 .withRate(BigDecimal.valueOf(2))
                 .withInterestBreakdown(SampleInterestBreakdown.builder()
-                    .withTotalAmount(BigDecimal.valueOf(210).setScale(TO_FULL_PENNIES, RoundingMode.HALF_UP))
+                    .withTotalAmount(new BigDecimal("210.00"))
                     .withExplanation("Explanation")
                     .build())
                 .withInterestDate(SampleInterestDate.builder()
@@ -96,7 +92,7 @@ public class InitiatePaymentCaseMapperTest {
                     .withEndDateType(InterestDate.InterestEndDateType.SUBMISSION)
                     .withReason("start date reason")
                     .build())
-                .withSpecificDailyAmount(BigDecimal.TEN.setScale(TO_FULL_PENNIES, RoundingMode.HALF_UP))
+                .withSpecificDailyAmount(new BigDecimal("10.00"))
                 .build())
             .externalId(UUID.fromString("ebc2dd5b-4f9b-4088-a40c-29f1e78c9d72"))
             .build();

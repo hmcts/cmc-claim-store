@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.InitiatePaymentCaseMapper;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -28,7 +29,6 @@ import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
-import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -42,11 +42,13 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 
 import java.net.URI;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -104,6 +106,8 @@ public class CoreCaseDataServiceTest {
     private CaseDetailsConverter caseDetailsConverter;
     @Mock
     private InitiatePaymentCaseMapper initiatePaymentCaseMapper;
+    @Mock
+    private IssueDateCalculator issueDateCalculator;
 
     private CoreCaseDataService service;
 
@@ -153,7 +157,8 @@ public class CoreCaseDataServiceTest {
             authTokenGenerator,
             jobSchedulerService,
             ccdCreateCaseService,
-            caseDetailsConverter
+            caseDetailsConverter,
+            issueDateCalculator
         );
     }
 
@@ -233,6 +238,22 @@ public class CoreCaseDataServiceTest {
 
         String nextUrl = "http://url.test";
 
+        CaseDataContent expectedCaseDataContent =
+            CaseDataContent.builder()
+                .eventToken("token")
+                .event(Event.builder()
+                    .id("eventId")
+                    .description("Submitting CMC initiate payment")
+                    .build())
+                .data(CCDCase.builder()
+                    .issuedOn(LocalDate.parse("2019-10-02"))
+                    .submitterId("submitterId")
+                    .submitterEmail("user@example.com").build())
+                .build();
+
+        when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class)))
+            .thenReturn(LocalDate.parse("2019-10-02"));
+
         when(ccdCreateCaseService.startCreate(
             eq(AUTHORISATION),
             any(EventRequestData.class),
@@ -247,7 +268,7 @@ public class CoreCaseDataServiceTest {
         when(ccdCreateCaseService.submitCreate(
             eq(AUTHORISATION),
             any(EventRequestData.class),
-            any(CaseDataContent.class),
+            eq(expectedCaseDataContent),
             eq(false)
         ))
             .thenReturn(CaseDetails.builder()
