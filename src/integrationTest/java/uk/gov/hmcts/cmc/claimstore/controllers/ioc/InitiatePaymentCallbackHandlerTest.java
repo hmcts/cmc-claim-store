@@ -72,10 +72,9 @@ public class InitiatePaymentCallbackHandlerTest extends MockSpringTest {
                 ).build())
             .build();
         given(paymentsService
-            .makePayment(
+            .createPayment(
                 eq(AUTHORISATION_TOKEN),
-                any(CCDCase.class),
-                any(BigDecimal.class))).willReturn(payment);
+                any(CCDCase.class))).willReturn(payment);
         given(moneyMapper.to(any(BigDecimal.class))).willReturn("amount");
         given(initiatePaymentCaseMapper.from(any(CCDCase.class)))
             .willReturn(SampleInitiatePaymentRequest.builder().build());

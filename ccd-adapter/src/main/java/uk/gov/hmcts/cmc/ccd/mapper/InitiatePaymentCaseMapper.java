@@ -26,8 +26,7 @@ public class InitiatePaymentCaseMapper implements
         amountMapper.to(request.getAmount(), builder);
 
         builder
-            .externalId(request.getExternalId().toString())
-            .issuedOn(request.getIssuedOn());
+            .externalId(request.getExternalId().toString());
     }
 
     @Override
@@ -35,7 +34,6 @@ public class InitiatePaymentCaseMapper implements
         return InitiatePaymentRequest.builder()
             .externalId(UUID.fromString(ccdCase.getExternalId()))
             .amount(amountMapper.from(ccdCase))
-            .issuedOn(ccdCase.getIssuedOn())
             .interest(interestMapper.from(ccdCase))
             .build();
     }

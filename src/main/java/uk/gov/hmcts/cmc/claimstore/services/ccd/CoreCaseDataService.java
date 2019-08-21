@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.ccd.mapper.InitiatePaymentCaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -62,6 +63,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.InitiatePay
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service
@@ -88,6 +90,7 @@ public class CoreCaseDataService {
     private final JobSchedulerService jobSchedulerService;
     private final CCDCreateCaseService ccdCreateCaseService;
     private final CaseDetailsConverter caseDetailsConverter;
+    private final IssueDateCalculator issueDateCalculator;
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     @Autowired
@@ -99,7 +102,8 @@ public class CoreCaseDataService {
         AuthTokenGenerator authTokenGenerator,
         JobSchedulerService jobSchedulerService,
         CCDCreateCaseService ccdCreateCaseService,
-        CaseDetailsConverter caseDetailsConverter
+        CaseDetailsConverter caseDetailsConverter,
+        IssueDateCalculator issueDateCalculator
     ) {
         this.caseMapper = caseMapper;
         this.initiatePaymentCaseMapper = initiatePaymentCaseMapper;
@@ -110,6 +114,7 @@ public class CoreCaseDataService {
         this.jobSchedulerService = jobSchedulerService;
         this.ccdCreateCaseService = ccdCreateCaseService;
         this.caseDetailsConverter = caseDetailsConverter;
+        this.issueDateCalculator = issueDateCalculator;
     }
 
     @LogExecutionTime
@@ -803,6 +808,7 @@ public class CoreCaseDataService {
                 user.isRepresented());
 
             CCDCase.CCDCaseBuilder ccdCaseBuilder = CCDCase.builder()
+                .issuedOn(issueDateCalculator.calculateIssueDay(nowInLocalZone()))
                 .submitterId(submitterId)
                 .submitterEmail(user.getUserDetails().getEmail());
 
