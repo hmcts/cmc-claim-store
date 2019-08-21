@@ -46,7 +46,7 @@ env.PDF_SERVICE_URL = 'http://cmc-pdf-service-aat.service.core-compute-aat.inter
 String notificationsChannel = '#cmc-tech-notification'
 
 withPipeline("java", product, component) {
-  after('checkout') {
+/*  after('checkout') {
     onMaster {
       withCredentials([usernamePassword(credentialsId: 'jenkins-github-hmcts-api-token', passwordVariable: 'BEARER_TOKEN', usernameVariable: 'USERNAME')]) {
         try {
@@ -60,6 +60,7 @@ withPipeline("java", product, component) {
       }
     }
   }
+*/
 
   loadVaultSecrets(secrets)
   enableSlackNotifications(notificationsChannel)
