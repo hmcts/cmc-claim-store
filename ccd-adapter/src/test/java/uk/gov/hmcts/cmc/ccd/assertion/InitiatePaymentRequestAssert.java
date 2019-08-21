@@ -18,11 +18,6 @@ public class InitiatePaymentRequestAssert extends AbstractAssert<InitiatePayment
     public InitiatePaymentRequestAssert isEqualTo(CCDCase ccdCase) {
         isNotNull();
 
-        if (!Objects.equals(actual.getIssuedOn(), ccdCase.getIssuedOn())) {
-            failWithMessage("Expected CCDCase.issuedOn to be <%s> but was <%s>",
-                ccdCase.getIssuedOn(), actual.getIssuedOn());
-        }
-
         if (!Objects.equals(actual.getExternalId().toString(), ccdCase.getExternalId())) {
             failWithMessage("Expected CCDCase.externalId to be <%s> but was <%s>",
                 ccdCase.getExternalId(), actual.getExternalId().toString());

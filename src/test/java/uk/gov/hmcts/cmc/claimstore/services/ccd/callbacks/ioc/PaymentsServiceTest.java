@@ -6,8 +6,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.mapper.InitiatePaymentCaseMapper;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
+import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInitiatePaymentRequest;
 import uk.gov.hmcts.reform.fees.client.FeesClient;
 import uk.gov.hmcts.reform.fees.client.model.FeeOutcome;
 import uk.gov.hmcts.reform.payments.client.PaymentRequest;
@@ -40,13 +43,18 @@ public class PaymentsServiceTest {
     private FeesClient feesClient;
     @Mock
     private NotificationsProperties notificationsProperties;
+    @Mock
+    private InitiatePaymentCaseMapper initiatePaymentCaseMapper;
 
     private CCDCase ccdCase;
-    private BigDecimal totalAmount = BigDecimal.valueOf(12L);
+    private FeeOutcome feeOutcome = FeeOutcome.builder()
+        .feeAmount(BigDecimal.TEN)
+        .build();
 
     @Before
     public void setUp() {
         paymentsService = new PaymentsService(
+            initiatePaymentCaseMapper,
             paymentsClient,
             feesClient,
             notificationsProperties,
@@ -59,21 +67,19 @@ public class PaymentsServiceTest {
         ccdCase = SampleData.getCCDCitizenCase(
             SampleData.getAmountBreakDown()
         );
+        InitiatePaymentRequest initiatePaymentRequest =
+            SampleInitiatePaymentRequest.builder()
+                .build();
+        when(initiatePaymentCaseMapper.from(ccdCase)).thenReturn(initiatePaymentRequest);
+        when(feesClient.lookupFee(eq("online"), eq("issue"), any(BigDecimal.class)))
+            .thenReturn(feeOutcome);
     }
 
     @Test
     public void shouldMakePayment() {
-        FeeOutcome feeOutcome = FeeOutcome.builder()
-            .feeAmount(BigDecimal.TEN)
-            .build();
-
-        when(feesClient.lookupFee("online", "issue", totalAmount))
-            .thenReturn(feeOutcome);
-
-        paymentsService.makePayment(
+        paymentsService.createPayment(
             BEARER_TOKEN,
-            ccdCase,
-            totalAmount
+            ccdCase
         );
 
         Fee[] fees = new Fee[] {
@@ -92,7 +98,7 @@ public class PaymentsServiceTest {
                 .currency(CURRENCY)
                 .service(SERVICE)
                 .fees(fees)
-                .amount(BigDecimal.valueOf(22L))
+                .amount(new BigDecimal("51.90"))
                 .ccdCaseNumber(ccdCase.getId().toString())
                 .caseReference(ccdCase.getExternalId())
                 .build();
@@ -105,34 +111,38 @@ public class PaymentsServiceTest {
 
     @Test(expected = IllegalStateException.class)
     public void shouldBubbleUpExceptionIfFeeLookupFails() {
-        when(feesClient.lookupFee("online", "issue", totalAmount))
+        when(feesClient.lookupFee(eq("online"), eq("issue"), any(BigDecimal.class)))
             .thenThrow(IllegalStateException.class);
 
-        paymentsService.makePayment(
+        paymentsService.createPayment(
             BEARER_TOKEN,
-            ccdCase,
-            totalAmount
+            ccdCase
         );
     }
 
     @Test(expected = IllegalStateException.class)
     public void shouldBubbleUpExceptionIfPaymentCreationFails() {
-        FeeOutcome feeOutcome = FeeOutcome.builder()
-            .feeAmount(BigDecimal.TEN)
-            .build();
-
-        when(feesClient.lookupFee("online", "issue", totalAmount))
-            .thenReturn(feeOutcome);
         when(paymentsClient.createPayment(
             eq(BEARER_TOKEN),
             any(PaymentRequest.class),
             anyString()))
             .thenThrow(IllegalStateException.class);
 
-        paymentsService.makePayment(
+        paymentsService.createPayment(
             BEARER_TOKEN,
-            ccdCase,
-            totalAmount
+            ccdCase
+        );
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowIfAmountIsNotCalculated() {
+        InitiatePaymentRequest initiatePaymentRequest =
+            InitiatePaymentRequest.builder().build();
+        when(initiatePaymentCaseMapper.from(ccdCase)).thenReturn(initiatePaymentRequest);
+
+        paymentsService.createPayment(
+            BEARER_TOKEN,
+            ccdCase
         );
     }
 }
