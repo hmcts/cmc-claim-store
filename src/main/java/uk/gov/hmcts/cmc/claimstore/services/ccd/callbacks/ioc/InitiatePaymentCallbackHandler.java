@@ -32,7 +32,6 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INITIATE_CLAIM_PAYMENT_CITIZ
 
 @Service
 public class InitiatePaymentCallbackHandler extends CallbackHandler {
-    private static final String PAYMENT_ID = "paymentId";
     private static final String PAYMENT_AMOUNT = "paymentAmount";
     private static final String PAYMENT_REFERENCE = "paymentReference";
     private static final String PAYMENT_STATUS = "paymentStatus";
@@ -104,12 +103,11 @@ public class InitiatePaymentCallbackHandler extends CallbackHandler {
             .data(ImmutableMap.<String, Object>builder()
                 .putAll(caseDetails.getData())
                 .put(CASE_ID, caseDetails.getId())
-//                .put(PAYMENT_ID, payment.getId())
                 .put(PAYMENT_AMOUNT, moneyMapper.to(payment.getAmount()))
                 .put(PAYMENT_REFERENCE, payment.getReference())
                 .put(PAYMENT_STATUS, payment.getStatus())
                 .put(PAYMENT_DATE_CREATED, payment.getDateCreated())
-//                .put(PAYMENT_NEXT_URL, payment.getNextUrl())
+                .put(PAYMENT_NEXT_URL, payment.getLinks().getNextUrl().getHref().toString())
                 .build())
             .build();
     }

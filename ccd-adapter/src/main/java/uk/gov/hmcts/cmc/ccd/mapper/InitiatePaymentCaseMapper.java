@@ -6,9 +6,9 @@ import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
 
 import java.util.UUID;
 
-
 @Component
-public class InitiatePaymentCaseMapper implements BuilderMapper<CCDCase, InitiatePaymentRequest, CCDCase.CCDCaseBuilder> {
+public class InitiatePaymentCaseMapper implements
+    BuilderMapper<CCDCase, InitiatePaymentRequest, CCDCase.CCDCaseBuilder> {
     private AmountMapper amountMapper;
     private InterestMapper interestMapper;
 
@@ -26,7 +26,8 @@ public class InitiatePaymentCaseMapper implements BuilderMapper<CCDCase, Initiat
         amountMapper.to(request.getAmount(), builder);
 
         builder
-            .externalId(request.getExternalId().toString());
+            .externalId(request.getExternalId().toString())
+            .issuedOn(request.getIssuedOn());
     }
 
     @Override

@@ -1,15 +1,9 @@
 package uk.gov.hmcts.cmc.ccd.assertion;
 
 import org.assertj.core.api.AbstractAssert;
-import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRow;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.domain.models.AmountRow;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.amount.Amount;
-import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
-import uk.gov.hmcts.cmc.domain.models.amount.AmountRange;
-import uk.gov.hmcts.cmc.domain.models.amount.NotKnown;
 
 import java.time.LocalDate;
 import java.util.Objects;
@@ -19,6 +13,8 @@ import static java.time.format.DateTimeFormatter.ISO_DATE;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.math.NumberUtils.createBigInteger;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertAmount;
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertInterest;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;
 
 public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
@@ -116,82 +112,8 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
                 ccdCase.getPreferredCourt(), claimData.getPreferredCourt().orElse(null));
         }
 
-        Amount amount = claimData.getAmount();
-        if (amount instanceof AmountBreakDown) {
-            AmountBreakDown amountBreakDown = (AmountBreakDown) amount;
-
-            AmountRow amountRow = amountBreakDown.getRows().get(0);
-            CCDAmountRow ccdAmountRow = ccdCase.getAmountBreakDown().get(0).getValue();
-
-            if (!Objects.equals(amountRow.getReason(), ccdAmountRow.getReason())) {
-                failWithMessage("Expected CCDCase.amountRowReason to be <%s> but was <%s>",
-                    ccdAmountRow.getReason(), amountRow.getReason());
-            }
-
-            String message = format("Expected CCDCase.amount to be <%s> but was <%s>",
-                ccdAmountRow.getAmount(), amountRow.getAmount());
-            assertMoney(amountRow.getAmount()).isEqualTo(ccdAmountRow.getAmount(), message);
-
-        } else if (amount instanceof AmountRange) {
-
-            AmountRange amountRange = (AmountRange) amount;
-            String message = format("Expected CCDCase.amountHigherValue to be <%s> but was <%s>",
-                ccdCase.getAmountHigherValue(), amountRange.getHigherValue());
-            assertMoney(amountRange.getHigherValue()).isEqualTo(ccdCase.getAmountHigherValue(), message);
-
-            amountRange.getLowerValue().ifPresent(lowerAmount -> {
-                String errorMessage = format("Expected CCDCase.amountLowerValue to be <%s> but was <%s>",
-                    ccdCase.getAmountHigherValue(), amountRange.getHigherValue());
-                assertMoney(lowerAmount).isEqualTo(ccdCase.getAmountLowerValue(), errorMessage);
-            });
-        } else {
-            assertThat(amount).isInstanceOf(NotKnown.class);
-        }
-
-        ofNullable(claimData.getInterest()).ifPresent(interest -> {
-                if (!Objects.equals(interest.getRate(), ccdCase.getInterestRate())) {
-                    failWithMessage("Expected CCDCase.interestRate to be <%s> but was <%s>",
-                        ccdCase.getInterestRate(), interest.getRate());
-                }
-                if (!Objects.equals(interest.getType().name(), ccdCase.getInterestType().name())) {
-                    failWithMessage("Expected CCDCase.interestType to be <%s> but was <%s>",
-                        ccdCase.getInterestType(), interest.getType());
-                }
-                if (!Objects.equals(interest.getReason(), ccdCase.getInterestReason())) {
-                    failWithMessage("Expected CCDCase.interestReason to be <%s> but was <%s>",
-                        ccdCase.getInterestReason(), interest.getRate());
-                }
-                interest.getSpecificDailyAmount().ifPresent(dailyAmount -> {
-                    assertMoney(dailyAmount)
-                        .isEqualTo(ccdCase.getInterestSpecificDailyAmount(),
-                            format("Expected CCDCase.interestSpecificDailyAmount to be <%s> but was <%s>",
-                                ccdCase.getInterestSpecificDailyAmount(), dailyAmount)
-                        );
-                });
-                ofNullable(interest.getInterestDate()).ifPresent(interestDate -> {
-                    if (!Objects.equals(interestDate.getDate(), ccdCase.getInterestClaimStartDate())) {
-                        failWithMessage("Expected CCDCase.interestClaimStartDate to be <%s> but was <%s>",
-                            ccdCase.getInterestClaimStartDate(), interestDate.getDate());
-                    }
-                    if (!Objects.equals(interestDate.getType().name(), ccdCase.getInterestDateType().name())) {
-                        failWithMessage("Expected CCDCase.interestDateType to be <%s> but was <%s>",
-                            ccdCase.getInterestDateType(), interestDate.getType());
-                    }
-
-                    if (!Objects.equals(interestDate.getReason(), ccdCase.getInterestStartDateReason())) {
-                        failWithMessage("Expected CCDCase.interestStartDateReason to be <%s> but was <%s>",
-                            ccdCase.getInterestStartDateReason(), interestDate.getReason());
-                    }
-
-                    if (!Objects.equals(interestDate.getEndDateType().name(),
-                        ccdCase.getInterestEndDateType().name())
-                    ) {
-                        failWithMessage("Expected CCDCase.interestEndDateType to be <%s> but was <%s>",
-                            ccdCase.getInterestEndDateType(), interestDate.getEndDateType());
-                    }
-                });
-            }
-        );
+        assertAmount(claimData.getAmount()).isMappedTo(ccdCase);
+        assertInterest(claimData.getInterest()).isMappedTo(ccdCase);
 
         ofNullable(claimData.getPayment()).ifPresent(payment -> {
                 if (!Objects.equals(payment.getId(), ccdCase.getPaymentId())) {
