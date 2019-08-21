@@ -218,7 +218,8 @@ public class CoreCaseDataServiceTest {
         when(caseMapper.to(providedLegalRepClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(expectedLegalRepClaim);
 
-        Claim returnedLegalRepClaim = service.createNewCase(USER, providedLegalRepClaim, CaseEvent.CREATE_CLAIM_LEGAL_REP);
+        Claim returnedLegalRepClaim = service
+            .createNewCase(USER, providedLegalRepClaim, CaseEvent.CREATE_CLAIM_LEGAL_REP);
 
         assertEquals(expectedLegalRepClaim, returnedLegalRepClaim);
     }
