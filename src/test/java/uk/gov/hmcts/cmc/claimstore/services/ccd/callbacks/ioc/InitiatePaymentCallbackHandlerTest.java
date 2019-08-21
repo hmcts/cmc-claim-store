@@ -18,9 +18,13 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInitiatePaymentRequest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.payments.client.models.NavigationLink;
+import uk.gov.hmcts.reform.payments.client.models.NavigationLinks;
 import uk.gov.hmcts.reform.payments.client.models.Payment;
 
 import java.math.BigDecimal;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.MapEntry.entry;
@@ -32,6 +36,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INITIATE_CLAIM_PAYMENT_CITIZ
 @RunWith(MockitoJUnitRunner.class)
 public class InitiatePaymentCallbackHandlerTest {
     private static final String BEARER_TOKEN = "Bearer let me in";
+    private static final String NEXT_URL = "http://nexturl.test";
 
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
@@ -64,7 +69,7 @@ public class InitiatePaymentCallbackHandlerTest {
     }
 
     @Test
-    public void shouldCreatePaymentOnAboutToSubmitEvent() {
+    public void shouldCreatePaymentOnAboutToSubmitEvent() throws URISyntaxException {
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_SUBMIT)
             .request(callbackRequest)
@@ -82,6 +87,12 @@ public class InitiatePaymentCallbackHandlerTest {
             .reference("reference")
             .status("status")
             .dateCreated("2019-10-10")
+            .links(NavigationLinks.builder()
+                .nextUrl(
+                    NavigationLink.builder()
+                        .href(new URI(NEXT_URL))
+                        .build()
+                ).build())
             .build();
 
         when(paymentsService.makePayment(
@@ -98,12 +109,11 @@ public class InitiatePaymentCallbackHandlerTest {
         assertThat(response.getData()).contains(
             entry("data", "existingData"),
             entry("id", 3L),
-//            entry("paymentId", payment.getId()),
             entry("paymentAmount", "amount"),
             entry("paymentReference", payment.getReference()),
             entry("paymentStatus", payment.getStatus()),
-            entry("paymentDateCreated", payment.getDateCreated())
-//            entry("paymentNextUrl", payment.getNextUrl())
+            entry("paymentDateCreated", payment.getDateCreated()),
+            entry("paymentNextUrl", NEXT_URL)
         );
     }
 
