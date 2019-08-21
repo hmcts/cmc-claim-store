@@ -45,7 +45,9 @@ public class ClaimControllerTest {
     public void shouldSaveClaimInRepository() {
         //given
         ClaimData input = SampleClaimData.validDefaults();
-        when(claimService.saveClaim(eq(USER_ID), eq(input), eq(AUTHORISATION), eq(singletonList("admissions")), eq(CaseEvent.CREATE_CASE)))
+        when(claimService
+            .saveClaim(
+                eq(USER_ID), eq(input), eq(AUTHORISATION), eq(singletonList("admissions")), eq(CaseEvent.CREATE_CASE)))
             .thenReturn(CLAIM);
 
         //when
@@ -59,7 +61,11 @@ public class ClaimControllerTest {
     public void shouldSaveLegalRepClaimInRepository() {
         //given
         ClaimData input = SampleClaimData.validDefaults();
-        when(claimService.saveClaim(eq(USER_ID), eq(input), eq(AUTHORISATION), eq(singletonList("admissions")), eq(CaseEvent.CREATE_CLAIM_LEGAL_REP)))
+        when(claimService.saveClaim(eq(USER_ID),
+            eq(input), eq(AUTHORISATION),
+            eq(singletonList("admissions")),
+            eq(CaseEvent.CREATE_CLAIM_LEGAL_REP))
+        )
             .thenReturn(CLAIM);
 
         //when
