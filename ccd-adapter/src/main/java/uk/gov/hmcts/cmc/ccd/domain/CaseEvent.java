@@ -49,7 +49,7 @@ public enum CaseEvent {
     CLAIMANT_DIRECTIONS_QUESTIONNAIRE_UPLOAD("ClaimantDirectionsQuestionnaireUpload"),
     ORDER_REVIEW_REQUESTED("OrderReviewRequested"),
     WAITING_TRANSFER("WaitingTransfer"),
-    CREATE_LEGAL_REP_CLAIM("CreateClaimLegalRep");
+    CREATE_LEGAL_REP_CLAIM("CreateLegalRepClaim");
 
     private String value;
 
