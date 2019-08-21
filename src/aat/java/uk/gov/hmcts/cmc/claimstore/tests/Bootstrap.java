@@ -53,9 +53,6 @@ public class Bootstrap {
             aatConfiguration.getSmokeTestCitizen().getUsername(),
             aatConfiguration.getSmokeTestCitizen().getPassword()
         );
-        claimant = idamTestService.createCitizen();
-        defendant = idamTestService.createCitizen();
-        solicitor = idamTestService.createSolicitor();
     }
 
     public User getSmokeTestCitizen() {
@@ -63,14 +60,29 @@ public class Bootstrap {
     }
 
     public User getClaimant() {
+        synchronized (Bootstrap.class) {
+            if (claimant == null) {
+                claimant = idamTestService.createCitizen();
+            }
+        }
         return claimant;
     }
 
     public User getSolicitor() {
+        synchronized (Bootstrap.class) {
+            if (solicitor == null) {
+                solicitor = idamTestService.createSolicitor();
+            }
+        }
         return solicitor;
     }
 
     public User getDefendant() {
+        synchronized (Bootstrap.class) {
+            if (defendant == null) {
+                defendant = idamTestService.createCitizen();
+            }
+        }
         return defendant;
     }
 }
