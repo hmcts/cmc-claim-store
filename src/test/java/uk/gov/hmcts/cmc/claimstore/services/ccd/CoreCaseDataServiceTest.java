@@ -219,7 +219,7 @@ public class CoreCaseDataServiceTest {
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(expectedLegalRepClaim);
 
         Claim returnedLegalRepClaim = service
-            .createNewCase(USER, providedLegalRepClaim, CaseEvent.CREATE_CLAIM_LEGAL_REP);
+            .createNewCase(USER, providedLegalRepClaim, CaseEvent.CREATE_LEGAL_REP_CLAIM);
 
         assertEquals(expectedLegalRepClaim, returnedLegalRepClaim);
     }

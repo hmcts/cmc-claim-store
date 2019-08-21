@@ -28,7 +28,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CLAIM_LEGAL_REP;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_LEGAL_REP_CLAIM;
 import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.CLAIM_REFERENCE_PATTERN;
 import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
 
@@ -115,7 +115,7 @@ public class ClaimController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
         @RequestHeader(value = "Features", required = false) List<String> features
     ) {
-        return claimService.saveClaim(submitterId, claimData, authorisation, features, CREATE_CLAIM_LEGAL_REP);
+        return claimService.saveClaim(submitterId, claimData, authorisation, features, CREATE_LEGAL_REP_CLAIM);
     }
 
     @PostMapping(value = "/{submitterId}/initiate-citizen-payment", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)

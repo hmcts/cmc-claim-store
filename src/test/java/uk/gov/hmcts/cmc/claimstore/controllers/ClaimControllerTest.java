@@ -66,7 +66,7 @@ public class ClaimControllerTest {
         when(claimService.saveClaim(eq(USER_ID),
             eq(input), eq(AUTHORISATION),
             eq(singletonList("admissions")),
-            eq(CaseEvent.CREATE_CLAIM_LEGAL_REP))
+            eq(CaseEvent.CREATE_LEGAL_REP_CLAIM))
         )
             .thenReturn(CLAIM);
 
