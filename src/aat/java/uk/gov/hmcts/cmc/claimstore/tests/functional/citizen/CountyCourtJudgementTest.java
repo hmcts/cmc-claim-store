@@ -54,23 +54,6 @@ public class CountyCourtJudgementTest extends BaseTest {
     }
 
     @Test
-    public void shouldReturnUnprocessableEntityWhenInvalidJudgementIsSubmitted() {
-        String claimantId = claimant.getUserDetails().getId();
-        Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimantId
-        );
-
-        CountyCourtJudgment invalidCCJ = SampleCountyCourtJudgment.builder()
-            .paymentOption(null)
-            .build();
-
-        commonOperations.requestCCJ(createdCase.getExternalId(), invalidCCJ, claimant)
-            .then()
-            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
-    }
-
-    @Test
     public void shouldNotBeAllowedToDefaultCCJWhenResponseDeadlineHasNotPassed() {
         String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
