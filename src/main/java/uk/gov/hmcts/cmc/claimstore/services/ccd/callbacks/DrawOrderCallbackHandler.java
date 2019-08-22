@@ -40,8 +40,6 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 @Service
 @ConditionalOnProperty(prefix = "document_management", name = "url")
 public class DrawOrderCallbackHandler extends CallbackHandler {
-    private static final String CASE_DOCUMENTS = "caseDocuments";
-
     private final Clock clock;
     private final OrderDrawnNotificationService orderDrawnNotificationService;
     private final CaseDetailsConverter caseDetailsConverter;

@@ -80,6 +80,15 @@ public class DocAssemblyTemplateBodyMapper {
                     .stream()
                     .filter(direction -> direction != null && direction.getValue() != null)
                     .map(CCDCollectionElement::getValue)
+                    .map(ccdOrderDirection -> OtherDirection.builder()
+                        .directionComment(ccdOrderDirection.getDirectionComment())
+                        .sendBy(ccdOrderDirection.getSendBy())
+                        .expertReports(ccdOrderDirection.getExpertReports())
+                        .extraDocUploadList(ccdOrderDirection.getExtraDocUploadList())
+                        .extraOrderDirection(ccdOrderDirection.getExtraOrderDirection())
+                        .forParty(ccdOrderDirection.getForParty())
+                        .otherDirectionHeaders(ccdOrderDirection.getOtherDirectionHeaders())
+                        .build())
                     .collect(Collectors.toList()))
             .build();
     }

@@ -116,14 +116,14 @@ public class DocAssemblyTemplateBodyMapperTest {
             .eyewitnessUploadForParty(DEFENDANT)
             .estimatedHearingDuration(FOUR_HOURS)
             .otherDirections(ImmutableList.of(
-                CCDOrderDirection.builder()
+                OtherDirection.builder()
                     .sendBy(LocalDate.parse("2020-10-11"))
                     .directionComment("a direction")
                     .extraOrderDirection(OTHER)
                     .otherDirectionHeaders(UPLOAD)
                     .forParty(BOTH)
                     .build(),
-                CCDOrderDirection.builder()
+                OtherDirection.builder()
                     .sendBy(LocalDate.parse("2020-10-11"))
                     .extraOrderDirection(EXPERT_REPORT_PERMISSION)
                     .forParty(BOTH)
@@ -199,14 +199,14 @@ public class DocAssemblyTemplateBodyMapperTest {
             .eyewitnessUploadForParty(DEFENDANT)
             .estimatedHearingDuration(FOUR_HOURS)
             .otherDirections(ImmutableList.of(
-                CCDOrderDirection.builder()
+                OtherDirection.builder()
                     .sendBy(LocalDate.parse("2020-10-11"))
                     .directionComment("a direction")
                     .otherDirectionHeaders(UPLOAD)
                     .extraOrderDirection(OTHER)
                     .forParty(BOTH)
                     .build(),
-                CCDOrderDirection.builder()
+                OtherDirection.builder()
                     .sendBy(LocalDate.parse("2020-10-11"))
                     .extraOrderDirection(EXPERT_REPORT_PERMISSION)
                     .forParty(BOTH)

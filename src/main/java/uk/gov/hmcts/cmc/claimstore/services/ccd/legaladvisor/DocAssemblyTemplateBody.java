@@ -73,7 +73,7 @@ public class DocAssemblyTemplateBody implements FormPayload {
     private CCDHearingDurationType estimatedHearingDuration;
 
     @JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
-    private List<CCDOrderDirection> otherDirections;
+    private List<OtherDirection> otherDirections;
 
     private List<CCDCollectionElement<String>> extraDocUploadList;
 }
