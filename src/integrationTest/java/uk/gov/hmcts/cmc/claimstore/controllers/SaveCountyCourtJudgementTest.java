@@ -168,6 +168,16 @@ public class SaveCountyCourtJudgementTest extends BaseIntegrationTest {
         );
     }
 
+    @Test
+    public void shouldReturnUnprocessableEntityWhenInvalidJudgementIsSubmitted() throws Exception {
+        CountyCourtJudgment invalidCCJ = SampleCountyCourtJudgment.builder()
+            .paymentOption(null)
+            .build();
+
+        makeRequest(claim.getExternalId(), invalidCCJ)
+            .andExpect(status().isUnprocessableEntity());
+    }
+
     private ResultActions makeRequest(String externalId, CountyCourtJudgment countyCourtJudgment) throws Exception {
         String path = "/claims/" + externalId + "/county-court-judgment";
 
