@@ -9,7 +9,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
-import uk.gov.hmcts.cmc.domain.orders.DirectionOrder;
+import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
 
 import java.time.LocalDateTime;
 

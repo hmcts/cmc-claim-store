@@ -14,11 +14,11 @@ import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
-import uk.gov.hmcts.cmc.domain.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;

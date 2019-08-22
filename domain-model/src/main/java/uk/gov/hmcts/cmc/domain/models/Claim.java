@@ -11,8 +11,8 @@ import uk.gov.hmcts.cmc.domain.amount.TotalAmountCalculator;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInTheFuture;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
-import uk.gov.hmcts.cmc.domain.orders.DirectionOrder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

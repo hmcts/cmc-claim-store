@@ -29,6 +29,7 @@ import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestion
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
+import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
@@ -43,7 +44,6 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.LivingPartner;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
-import uk.gov.hmcts.cmc.domain.orders.DirectionOrder;
 
 import java.math.BigDecimal;
 

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.domain.orders;
+package uk.gov.hmcts.cmc.domain.models.orders;
 
 public enum HearingDurationType {
     ONE_DAY("One day"),
