@@ -95,11 +95,11 @@ allprojects {
       dependencySet(group: 'com.google.guava', version: '20.0') {
         entry 'guava'
       }
-      // solves CVE-2019-12384
+      // solves CVE-2019-12086
       // remove once spring manager incorporates this changes
       dependencySet(
         group: 'com.fasterxml.jackson.core',
-        version: '2.9.9.2'
+        version: dependencyManagement.importedProperties['jackson.version']
       ) {
         entry 'jackson-core'
         entry 'jackson-databind'
