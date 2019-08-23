@@ -25,13 +25,8 @@ services:
       - REFORM_SERVICE_NAME
       - REFORM_TEAM
       - REFORM_ENVIRONMENT
-    volumes:
-      - ./build/install/claim-store:/opt/app/
     ports:
       - 4400:4400
-    depends_on:
-      claim-store-database:
-        condition: service_healthy
     links:
       - claim-store-database
 
