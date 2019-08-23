@@ -95,7 +95,7 @@ allprojects {
       dependencySet(group: 'com.google.guava', version: '20.0') {
         entry 'guava'
       }
-      // solves CVE-2019-12086
+      // solves CVE-2019-12384
       // remove once spring manager incorporates this changes
       dependencySet(
         group: 'com.fasterxml.jackson.core',
