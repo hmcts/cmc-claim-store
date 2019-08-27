@@ -47,7 +47,7 @@ public abstract class BaseIntegrationTest extends MockSpringTest {
         @Override
         public void beforeTestClass(TestContext testContext) {
             ApplicationContext applicationContext = testContext.getApplicationContext();
-            DataSource dataSource = applicationContext.getBean("claimStoreDataSource", DataSource.class);
+            DataSource dataSource = applicationContext.getBean("cmcDataSource", DataSource.class);
             JdbcTestUtils.deleteFromTables(new JdbcTemplate(dataSource), "claim");
         }
     }
