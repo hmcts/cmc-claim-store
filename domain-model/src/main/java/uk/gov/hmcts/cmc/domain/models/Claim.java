@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.domain.amount.TotalAmountCalculator;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInTheFuture;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.math.BigDecimal;
@@ -67,6 +68,7 @@ public class Claim {
     private final ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
     private final Long ccdCaseId;
     private final ReviewOrder reviewOrder;
+    private final DirectionOrder directionOrder;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -103,7 +105,8 @@ public class Claim {
         ClaimState state,
         ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators,
         Long ccdCaseId,
-        ReviewOrder reviewOrder
+        ReviewOrder reviewOrder,
+        DirectionOrder directionOrder
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -138,6 +141,7 @@ public class Claim {
         this.ccdCaseId = ccdCaseId;
         this.claimSubmissionOperationIndicators = claimSubmissionOperationIndicators;
         this.reviewOrder = reviewOrder;
+        this.directionOrder = directionOrder;
     }
 
     public Optional<Response> getResponse() {
@@ -217,6 +221,10 @@ public class Claim {
 
     public Optional<ReviewOrder> getReviewOrder() {
         return Optional.ofNullable(reviewOrder);
+    }
+
+    public Optional<DirectionOrder> getDirectionOrder() {
+        return Optional.ofNullable(directionOrder);
     }
 
     @Override

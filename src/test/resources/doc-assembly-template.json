@@ -32,7 +32,7 @@
   "hearingCourtAddress":{
     "AddressLine1": "line1",
     "AddressLine2": "line2",
-    "AddressLine3": null,
+    "AddressLine3": "line3",
     "Country": null,
     "PostCode": "SW1P4BB",
     "PostTown": "Birmingham"
