@@ -72,7 +72,7 @@ public class CCDStoreConfiguration {
         JobSchedulerService jobSchedulerService
     ) {
         return new CCDCaseApi(coreCaseDataApi, authTokenGenerator, userService, caseAccessApi,
-            coreCaseDataService, caseDetailsConverter, jobSchedulerService, true);
+            coreCaseDataService, caseDetailsConverter, jobSchedulerService);
     }
 
     @Bean

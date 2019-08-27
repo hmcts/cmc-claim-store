@@ -14,7 +14,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(
     properties = {
         "claim-store.test-support.enabled=true",
-        "feature_toggles.ccd_async_enabled=false",
         "feature_toggles.ccd_enabled=false"
     }
 )
