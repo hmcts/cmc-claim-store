@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -185,6 +186,7 @@ public class ClaimService {
     }
 
     @LogExecutionTime
+    @Qualifier("cmcTransactionManager")
     @Transactional(transactionManager = "transactionManager")
     public Claim saveClaim(
         String submitterId,

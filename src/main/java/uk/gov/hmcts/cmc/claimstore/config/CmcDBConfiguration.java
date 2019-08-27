@@ -7,25 +7,26 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.transaction.PlatformTransactionManager;
 import uk.gov.hmcts.cmc.claimstore.config.db.OptionalContainerFactory;
-import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
-import uk.gov.hmcts.cmc.claimstore.repositories.UserRolesRepository;
+import uk.gov.hmcts.cmc.claimstore.repositories.*;
 
 import javax.sql.DataSource;
 
 @Configuration
-@ConfigurationProperties
 public class CmcDBConfiguration {
     @Bean
+    @Primary
     @ConfigurationProperties("spring.datasource.cmc")
     public DataSourceProperties cmcDataSourceProperties() {
         return new DataSourceProperties();
     }
 
     @Bean("cmcDataSource")
+    @Primary
     @ConfigurationProperties("spring.datasource.cmc")
     public DataSource cmcDataSource() {
         return cmcDataSourceProperties().initializeDataSourceBuilder().build();
@@ -76,4 +77,20 @@ public class CmcDBConfiguration {
     public ReferenceNumberRepository referenceNumberRepository(@Qualifier("cmcDbi") DBI dbi) {
         return dbi.onDemand(ReferenceNumberRepository.class);
     }
+
+    @Bean
+    public ClaimRepository claimRepository(@Qualifier("cmcDbi") DBI dbi) {
+        return dbi.onDemand(ClaimRepository.class);
+    }
+
+    @Bean
+    public TestingSupportRepository testingSupportRepository(@Qualifier("cmcDbi") DBI dbi) {
+        return dbi.onDemand(TestingSupportRepository.class);
+    }
+
+    @Bean
+    public OffersRepository offersRepository(@Qualifier("cmcDbi") DBI dbi) {
+        return dbi.onDemand(OffersRepository.class);
+    }
+
 }
