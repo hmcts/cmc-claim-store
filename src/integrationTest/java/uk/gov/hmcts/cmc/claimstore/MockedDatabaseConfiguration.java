@@ -50,9 +50,6 @@ class MockedDatabaseConfiguration {
     @MockBean
     private TestingSupportRepository testingSupportRepository;
 
-    @MockBean(name = "claimStoreDataSource", answer = Answers.RETURNS_MOCKS)
-    private DataSource dataSource;
-
     @MockBean(name = "cmcDataSource", answer = Answers.RETURNS_MOCKS)
     private DataSource cmcDataSource;
 
