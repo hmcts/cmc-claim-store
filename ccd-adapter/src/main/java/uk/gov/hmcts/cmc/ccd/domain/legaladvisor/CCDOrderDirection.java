@@ -1,10 +1,5 @@
 package uk.gov.hmcts.cmc.ccd.domain.legaladvisor;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import lombok.Builder;
 import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
@@ -14,8 +9,6 @@ import java.util.List;
 
 @Value
 @Builder
-@JsonTypeName(value = "OtherDirection")
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CCDOrderDirection {
 
     private CCDOrderDirectionType extraOrderDirection;
@@ -24,8 +17,6 @@ public class CCDOrderDirection {
 
     private String directionComment;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate sendBy;
 
     private CCDDirectionPartyType forParty;

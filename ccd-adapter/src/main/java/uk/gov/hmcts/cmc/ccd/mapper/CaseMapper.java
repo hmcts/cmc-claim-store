@@ -23,17 +23,20 @@ public class CaseMapper {
     private final boolean isMigrated;
     private final ClaimDocumentCollectionMapper claimDocumentCollectionMapper;
     private final ReviewOrderMapper reviewOrderMapper;
+    private final DirectionOrderMapper directionOrderMapper;
 
     public CaseMapper(
         ClaimMapper claimMapper,
         @Value("${migration.cases.flag:false}") boolean isMigrated,
         ClaimDocumentCollectionMapper claimDocumentCollectionMapper,
-        ReviewOrderMapper reviewOrderMapper
+        ReviewOrderMapper reviewOrderMapper,
+        DirectionOrderMapper directionOrderMapper
     ) {
         this.claimMapper = claimMapper;
         this.isMigrated = isMigrated;
         this.claimDocumentCollectionMapper = claimDocumentCollectionMapper;
         this.reviewOrderMapper = reviewOrderMapper;
+        this.directionOrderMapper = directionOrderMapper;
     }
 
     public CCDCase to(Claim claim) {
@@ -86,6 +89,7 @@ public class CaseMapper {
             .submitterEmail(ccdCase.getSubmitterEmail())
             .claimSubmissionOperationIndicators(
                 mapFromCCDClaimSubmissionOperationIndicators.apply(ccdCase.getClaimSubmissionOperationIndicators()))
+            .directionOrder(directionOrderMapper.from(ccdCase.getDirectionOrder(), ccdCase.getDirectionOrderData()))
             .reviewOrder(reviewOrderMapper.from(ccdCase.getReviewOrder()));
 
         if (ccdCase.getFeatures() != null) {

@@ -81,7 +81,9 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
         DocAssemblyClient docAssemblyClient,
         AuthTokenGenerator authTokenGenerator,
         JsonMapper jsonMapper,
-        DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper, CaseDetailsConverter caseDetailsConverter) {
+        DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper,
+        CaseDetailsConverter caseDetailsConverter
+    ) {
         this.docAssemblyClient = docAssemblyClient;
         this.authTokenGenerator = authTokenGenerator;
         this.jsonMapper = jsonMapper;
@@ -142,13 +144,10 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
             .get(CallbackParams.Params.BEARER_TOKEN).toString();
 
         logger.info("Generate order callback: creating request for doc assembly");
-
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
             .templateId(templateId)
             .outputType(OutputType.PDF)
-            .formPayload(docAssemblyTemplateBodyMapper.from(
-                ccdCase,
-                userService.getUserDetails(authorisation)))
+            .formPayload(docAssemblyTemplateBodyMapper.from(ccdCase, userService.getUserDetails(authorisation)))
             .build();
 
         logger.info("Generate order callback: sending request to doc assembly");
@@ -165,9 +164,7 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
             .builder()
             .data(ImmutableMap.of(
                 DRAFT_ORDER_DOC,
-                CCDDocument.builder()
-                    .documentUrl(docAssemblyResponse.getRenditionOutputLocation())
-                    .build()
+                CCDDocument.builder().documentUrl(docAssemblyResponse.getRenditionOutputLocation()).build()
             ))
             .build();
     }
