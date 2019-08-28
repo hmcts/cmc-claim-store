@@ -29,7 +29,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.OFFER_REJ
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.SETTLEMENT_REACHED;
 
 @Service
-@Transactional(transactionManager = "transactionManager")
+@Transactional(transactionManager = "cmcTransactionManager")
 public class OffersService {
 
     private final ClaimService claimService;

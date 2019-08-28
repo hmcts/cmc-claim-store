@@ -27,7 +27,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.SETTLEMEN
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.SETTLEMENT_AGREEMENT_REJECTED;
 
 @Service
-@Transactional(transactionManager = "transactionManager")
+@Transactional(transactionManager = "cmcTransactionManager")
 public class SettlementAgreementService {
 
     private static final String REJECTION_EXPECTED_STATE_ERROR =

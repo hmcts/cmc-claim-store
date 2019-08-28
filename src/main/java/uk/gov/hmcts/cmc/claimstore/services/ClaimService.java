@@ -186,8 +186,7 @@ public class ClaimService {
     }
 
     @LogExecutionTime
-    @Qualifier("cmcTransactionManager")
-    @Transactional(transactionManager = "transactionManager")
+    @Transactional(transactionManager = "cmcTransactionManager")
     public Claim saveClaim(
         String submitterId,
         ClaimData claimData,

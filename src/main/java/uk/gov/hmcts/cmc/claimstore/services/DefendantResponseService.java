@@ -53,7 +53,7 @@ public class DefendantResponseService {
         this.ccdEventProducer = ccdEventProducer;
     }
 
-    @Transactional(transactionManager = "transactionManager")
+    @Transactional(transactionManager = "cmcTransactionManager")
     public Claim save(
         String externalId,
         String defendantId,
