@@ -5,8 +5,11 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAmountRow;
 import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestDateType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestEndDateType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
@@ -45,7 +48,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Supplier;
 
 import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.BREAK_DOWN;
@@ -80,52 +82,69 @@ public class SampleData {
 
     public static final String AMOUNT = "12398";
 
-    private static Supplier<CCDCase.CCDCaseBuilder> ccdBuilderWithDefault = () -> CCDCase.builder()
-        .id(1L)
-        .submittedOn(LocalDateTime.of(2017, 11, 01, 10, 15, 30))
-        .issuedOn(LocalDate.of(2017, 11, 15))
-        .submitterEmail("my@email.com")
-        .submitterId("123")
-        .previousServiceCaseReference("ref no")
-        .externalId(UUID.randomUUID().toString())
-        .features("admissions")
-        .amountType(BREAK_DOWN)
-        .housingDisrepairCostOfRepairDamages(MORE_THAN_THOUSAND_POUNDS.name())
-        .housingDisrepairOtherDamages(THOUSAND_POUNDS_OR_LESS.name())
-        .personalInjuryGeneralDamages(MORE_THAN_THOUSAND_POUNDS.name())
-        .sotSignerName("name")
-        .sotSignerRole("role")
-        .externalReferenceNumber("external ref")
-        .externalId(UUID.randomUUID().toString())
-        .feeCode("X1202")
-        .feeAmountInPennies("100")
-        .reason("Reason for the case")
-        .preferredCourt("London Court")
-        .interestType(CCDInterestType.DIFFERENT)
-        .interestReason("reason")
-        .interestRate(BigDecimal.valueOf(2))
-        .interestBreakDownAmount("21000")
-        .interestBreakDownExplanation("Explanation")
-        .interestStartDateReason("start date reason")
-        .interestDateType(CCDInterestDateType.CUSTOM)
-        .interestClaimStartDate(LocalDate.now())
-        .interestSpecificDailyAmount("1000")
-        .interestEndDateType(CCDInterestEndDateType.SUBMISSION)
-        .paymentStatus("success")
-        .paymentDateCreated(LocalDate.of(2019, 01, 01))
-        .paymentId("PaymentId")
-        .paymentAmount("400000")
-        .paymentReference("RC-1524-6488-1670-7520")
-        .claimSubmissionOperationIndicators(defaultCCDClaimSubmissionOperationIndicators)
-        .timeline(singletonList(CCDCollectionElement.<CCDTimelineEvent>builder()
-            .value(CCDTimelineEvent.builder().date("some Date").description("description of event").build())
-            .build()))
-        .evidence(singletonList(CCDCollectionElement.<CCDEvidenceRow>builder()
-            .value(CCDEvidenceRow.builder().type(EXPERT_WITNESS).description("description of evidence").build())
-            .build()));
-
     //Utility class
     private SampleData() {
+    }
+
+    private static CCDCase.CCDCaseBuilder ccdBuilderWithDefault() {
+
+        return CCDCase.builder()
+            .id(1L)
+            .submittedOn(LocalDateTime.of(2017, 11, 01, 10, 15, 30))
+            .issuedOn(LocalDate.of(2017, 11, 15))
+            .submitterEmail("my@email.com")
+            .submitterId("123")
+            .previousServiceCaseReference("ref no")
+            .externalId(UUID.randomUUID().toString())
+            .features("admissions")
+            .amountType(BREAK_DOWN)
+            .housingDisrepairCostOfRepairDamages(MORE_THAN_THOUSAND_POUNDS.name())
+            .housingDisrepairOtherDamages(THOUSAND_POUNDS_OR_LESS.name())
+            .personalInjuryGeneralDamages(MORE_THAN_THOUSAND_POUNDS.name())
+            .sotSignerName("name")
+            .sotSignerRole("role")
+            .externalReferenceNumber("external ref")
+            .externalId(UUID.randomUUID().toString())
+            .feeCode("X1202")
+            .feeAmountInPennies("100")
+            .reason("Reason for the case")
+            .preferredCourt("London Court")
+            .interestType(CCDInterestType.DIFFERENT)
+            .interestReason("reason")
+            .interestRate(BigDecimal.valueOf(2))
+            .interestBreakDownAmount("21000")
+            .interestBreakDownExplanation("Explanation")
+            .interestStartDateReason("start date reason")
+            .interestDateType(CCDInterestDateType.CUSTOM)
+            .interestClaimStartDate(LocalDate.now())
+            .interestSpecificDailyAmount("1000")
+            .interestEndDateType(CCDInterestEndDateType.SUBMISSION)
+            .paymentStatus("success")
+            .paymentDateCreated(LocalDate.of(2019, 01, 01))
+            .paymentId("PaymentId")
+            .paymentAmount("400000")
+            .paymentReference("RC-1524-6488-1670-7520")
+            .claimSubmissionOperationIndicators(defaultCCDClaimSubmissionOperationIndicators)
+            .timeline(singletonList(CCDCollectionElement.<CCDTimelineEvent>builder()
+                .value(CCDTimelineEvent.builder().date("some Date").description("description of event").build())
+                .build()))
+            .evidence(singletonList(CCDCollectionElement.<CCDEvidenceRow>builder()
+                .value(CCDEvidenceRow.builder().type(EXPERT_WITNESS).description("description of evidence").build())
+                .build()))
+            .caseDocuments(ImmutableList.of(CCDCollectionElement.<CCDClaimDocument>builder()
+                .value(CCDClaimDocument.builder()
+                    .documentLink(CCDDocument.builder()
+                        .documentUrl("http://some-url")
+                        .documentBinaryUrl("http://some-url")
+                        .documentFileName("document file name")
+                        .build()
+                    )
+                    .documentType(CCDClaimDocumentType.SEALED_CLAIM)
+                    .size(3457L)
+                    .createdDatetime(LocalDateTimeFactory.nowInUTC())
+                    .build())
+                .build())
+            );
     }
 
     public static CCDResponseAcceptation getResponseAcceptation(CCDFormaliseOption formaliseOption) {
@@ -340,7 +359,7 @@ public class SampleData {
             .representativeOrganisationDxAddress("dx123")
             .build();
     }
-    
+
     public static CCDRespondent getIndividualRespondentWithDQ() {
         CCDAddress ccdAddress = getCCDAddress();
         return CCDRespondent.builder()
@@ -503,7 +522,7 @@ public class SampleData {
         List<CCDCollectionElement<CCDRespondent>> respondents
             = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(getCCDRespondentIndividual()).build());
 
-        return ccdBuilderWithDefault.get()
+        return ccdBuilderWithDefault()
             .amountBreakDown(amountBreakDown)
             .applicants(applicants)
             .respondents(respondents)
@@ -512,44 +531,47 @@ public class SampleData {
 
     public static CCDOrderGenerationData getCCDOrderGenerationData() {
         return CCDOrderGenerationData.builder()
-            .otherDirectionHeader(UPLOAD)
             .directionList(ImmutableList.of(
                 DOCUMENTS, EYEWITNESS))
             .otherDirections(ImmutableList.of(
-                CCDCollectionElement.<CCDOrderDirection>builder().value(
-                    CCDOrderDirection.builder()
-                        .extraOrderDirection(OTHER)
-                        .directionComment("a direction")
-                        .otherDirectionHeaders(UPLOAD)
-                        .forParty(CCDDirectionPartyType.BOTH)
-                        .sendBy(LocalDate.parse("2020-10-11"))
-                        .build()
-                ).build(),
-                CCDCollectionElement.<CCDOrderDirection>builder().value(
-                    CCDOrderDirection.builder()
-                        .sendBy(LocalDate.parse("2020-10-11"))
-                        .extraOrderDirection(EXPERT_REPORT_PERMISSION)
-                        .forParty(CCDDirectionPartyType.BOTH)
-                        .expertReports(
-                            ImmutableList.of(
-                                CCDCollectionElement.<String>builder()
-                                    .value("first")
-                                    .build(),
-                                CCDCollectionElement.<String>builder()
-                                    .value("second")
-                                    .build(),
-                                CCDCollectionElement.<String>builder()
-                                    .value("third")
-                                    .build()))
-                        .extraDocUploadList(
-                            ImmutableList.of(
-                                CCDCollectionElement.<String>builder()
-                                    .value("first document")
-                                    .build(),
-                                CCDCollectionElement.<String>builder()
-                                    .value("second document")
-                                    .build()))
-                        .build())
+                CCDCollectionElement.<CCDOrderDirection>builder()
+                    .value(
+                        CCDOrderDirection.builder()
+                            .extraOrderDirection(OTHER)
+                            .directionComment("a direction")
+                            .otherDirectionHeaders(UPLOAD)
+                            .forParty(CCDDirectionPartyType.BOTH)
+                            .sendBy(LocalDate.parse("2020-10-11"))
+                            .build()
+                    )
+                    .build(),
+                CCDCollectionElement.<CCDOrderDirection>builder()
+                    .value(
+                        CCDOrderDirection.builder()
+                            .sendBy(LocalDate.parse("2020-10-11"))
+                            .extraOrderDirection(EXPERT_REPORT_PERMISSION)
+                            .forParty(CCDDirectionPartyType.BOTH)
+                            .expertReports(
+                                ImmutableList.of(
+                                    CCDCollectionElement.<String>builder()
+                                        .value("first")
+                                        .build(),
+                                    CCDCollectionElement.<String>builder()
+                                        .value("second")
+                                        .build(),
+                                    CCDCollectionElement.<String>builder()
+                                        .value("third")
+                                        .build()))
+                            .extraDocUploadList(
+                                ImmutableList.of(
+                                    CCDCollectionElement.<String>builder()
+                                        .value("first document")
+                                        .build(),
+                                    CCDCollectionElement.<String>builder()
+                                        .value("second document")
+                                        .build()))
+                            .build()
+                    )
                     .build()))
             .paperDetermination(NO)
             .docUploadDeadline(LocalDate.parse("2020-10-11"))
@@ -662,11 +684,21 @@ public class SampleData {
         List<CCDCollectionElement<CCDRespondent>> respondents
             = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(getCCDRespondentIndividual()).build());
 
-        return ccdBuilderWithDefault.get()
+        return ccdBuilderWithDefault()
             .amountBreakDown(getAmountBreakDown())
             .applicants(applicants)
             .respondents(respondents)
             .claimSubmissionOperationIndicators(claimIndicatorSupplier)
+            .build();
+    }
+
+    public static CCDAddress getAddress() {
+        return CCDAddress.builder()
+            .addressLine1("52")
+            .addressLine2("Down Street")
+            .addressLine3("Salford")
+            .postTown("Manchester")
+            .postCode("DF1 3LJ")
             .build();
     }
 }

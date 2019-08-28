@@ -69,6 +69,7 @@ public class CCDCase {
     private String state;
 
     @JsonUnwrapped
-    private CCDOrderGenerationData orderGenerationData;
+    private CCDOrderGenerationData directionOrderData;
+    private CCDDirectionOrder directionOrder;
     private CCDReviewOrder reviewOrder;
 }
