@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
@@ -95,6 +96,7 @@ public final class SampleClaim {
         () -> ClaimSubmissionOperationIndicators.builder().build();
     private Long ccdCaseId = 1023467890123456L;
     private ReviewOrder reviewOrder;
+    private DirectionOrder directionOrder;
 
     private SampleClaim() {
     }
@@ -143,6 +145,17 @@ public final class SampleClaim {
                 .withMediation(NO)
                 .withMoreTimeNeededOption(NO)
                 .build()
+            )
+            .withRespondedAt(LocalDateTime.now())
+            .withDirectionsQuestionnaireDeadline(LocalDate.now())
+            .build();
+    }
+
+    public static Claim getClaimWithFullDefenceWithMediation() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withResponse(SampleResponse.FullAdmission.builder()
+                .buildWithFreeMediation()
             )
             .withRespondedAt(LocalDateTime.now())
             .withDirectionsQuestionnaireDeadline(LocalDate.now())
@@ -462,7 +475,8 @@ public final class SampleClaim {
             state,
             getDefaultClaimSubmissionOperationIndicators.get(),
             ccdCaseId,
-            reviewOrder
+            reviewOrder,
+            directionOrder
         );
     }
 
@@ -668,6 +682,11 @@ public final class SampleClaim {
 
     public SampleClaim withReviewOrder(ReviewOrder reviewOrder) {
         this.reviewOrder = reviewOrder;
+        return this;
+    }
+
+    public SampleClaim withDirectionOrder(DirectionOrder directionOrder) {
+        this.directionOrder = directionOrder;
         return this;
     }
 }
