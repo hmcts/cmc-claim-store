@@ -30,8 +30,6 @@ public class CmcDBConfiguration {
     }
 
     @Bean("cmcDataSource")
-    @Primary
-    @ConfigurationProperties("spring.datasource.cmc")
     public DataSource cmcDataSource() {
         return cmcDataSourceProperties().initializeDataSourceBuilder().build();
     }
@@ -96,5 +94,4 @@ public class CmcDBConfiguration {
     public OffersRepository offersRepository(@Qualifier("cmcDbi") DBI dbi) {
         return dbi.onDemand(OffersRepository.class);
     }
-
 }
