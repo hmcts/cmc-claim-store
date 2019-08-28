@@ -217,6 +217,17 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
             .andExpect(status().isInternalServerError());
     }
 
+    @Test
+    public void shouldReturnUnprocessableEntityWhenInvalidResponseIsSubmitted() throws Exception {
+
+        Response invalidResponse = SampleResponse.FullDefence.builder()
+            .withDefenceType(null)
+            .build();
+
+        makeRequest(claim.getExternalId(), DEFENDANT_ID, invalidResponse)
+            .andExpect(status().isUnprocessableEntity());
+    }
+
     private ResultActions makeRequest(String externalId, String defendantId, Response response) throws Exception {
         return webClient
             .perform(post("/responses/claim/" + externalId + "/defendant/" + defendantId)

@@ -13,12 +13,17 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
+import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleEvidence;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTimeline;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.service.notify.NotificationClientException;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -180,6 +185,34 @@ public class SaveClaimTest extends BaseSaveTest {
 
         verify(coreCaseDataApi, never())
             .startForCaseworker(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
+    }
+
+    @Test
+    public void shouldReturnUnprocessableEntityWhenClaimWithInvalidTimelineIsSubmitted() throws Exception {
+        ClaimData invalidClaimData = SampleClaimData.submittedByClaimantBuilder()
+            .withTimeline(SampleTimeline.builder().withEvents(asList(new TimelineEvent[1001])).build())
+            .build();
+
+        makeIssueClaimRequest(invalidClaimData, AUTHORISATION_TOKEN)
+            .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    public void shouldReturnUnprocessableEntityWhenClaimWithInvalidEvidenceIsSubmitted() throws Exception {
+        ClaimData invalidClaimData = SampleClaimData.submittedByClaimantBuilder()
+            .withEvidence(SampleEvidence.builder().withRows(asList(new EvidenceRow[1001])).build())
+            .build();
+
+        makeIssueClaimRequest(invalidClaimData, AUTHORISATION_TOKEN)
+            .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    public void shouldReturnUnprocessableEntityWhenClaimAmountIsMissing() throws Exception {
+        ClaimData invalidClaimData = SampleClaimData.submittedByClaimantBuilder().withAmount(null).build();
+
+        makeIssueClaimRequest(invalidClaimData, AUTHORISATION_TOKEN)
+            .andExpect(status().isUnprocessableEntity());
     }
 
     @Test

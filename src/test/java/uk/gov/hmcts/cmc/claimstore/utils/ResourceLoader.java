@@ -43,6 +43,11 @@ public class ResourceLoader {
         return jsonMapper.fromJson(response, CaseDetails.class);
     }
 
+    public static CaseDetails successfulCoreCaseDataStoreSubmitResponseWithDQ() {
+        String response = getResource("/core-case-data/submit-response.success-with-dq.json");
+        return jsonMapper.fromJson(response, CaseDetails.class);
+    }
+
     public static CaseDetails successfulCoreCaseDataStoreSubmitRepresentativeResponse() {
         String response = getResource("/core-case-data/submit-representative-response.success.json");
         return jsonMapper.fromJson(response, CaseDetails.class);

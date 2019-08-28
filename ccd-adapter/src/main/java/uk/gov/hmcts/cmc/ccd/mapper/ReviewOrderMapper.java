@@ -16,7 +16,7 @@ public class ReviewOrderMapper implements Mapper<CCDReviewOrder, ReviewOrder> {
         return CCDReviewOrder.builder()
             .requestedAt(reviewOrder.getRequestedAt())
             .reason(reviewOrder.getReason().orElse(null))
-            .requestedBy(CCDReviewOrder.PartyType.valueOf(reviewOrder.getRequestedBy().name()))
+            .requestedBy(CCDReviewOrder.RequestedBy.valueOf(reviewOrder.getRequestedBy().name()))
             .build();
     }
 
@@ -29,7 +29,7 @@ public class ReviewOrderMapper implements Mapper<CCDReviewOrder, ReviewOrder> {
         return ReviewOrder.builder()
             .reason(ccdReviewOrder.getReason())
             .requestedAt(ccdReviewOrder.getRequestedAt())
-            .requestedBy(ReviewOrder.PartyType.valueOf(ccdReviewOrder.getRequestedBy().name()))
+            .requestedBy(ReviewOrder.RequestedBy.valueOf(ccdReviewOrder.getRequestedBy().name()))
             .build();
     }
 }
