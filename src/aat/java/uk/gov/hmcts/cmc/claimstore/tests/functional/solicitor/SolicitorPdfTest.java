@@ -21,12 +21,7 @@ public class SolicitorPdfTest extends BasePdfTest {
 
     @Before
     public void before() {
-        user = idamTestService.createSolicitor();
-    }
-
-    @After
-    public void after() {
-        idamTestService.deleteUser(user.getUserDetails().getEmail());
+        user = bootstrap.getSolicitor();
     }
 
     @Test

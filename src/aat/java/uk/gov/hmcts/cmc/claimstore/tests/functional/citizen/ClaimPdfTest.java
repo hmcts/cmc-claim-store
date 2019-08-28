@@ -18,12 +18,7 @@ public class ClaimPdfTest extends BasePdfTest {
 
     @Before
     public void before() {
-        user = idamTestService.createCitizen();
-    }
-
-    @After
-    public void after() {
-        idamTestService.deleteUser(user.getUserDetails().getEmail());
+        user = bootstrap.getClaimant();
     }
 
     @Test

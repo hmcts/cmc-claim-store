@@ -22,11 +22,6 @@ public class FeatureTogglesTest extends BaseTest {
         user = idamTestService.createCitizen();
     }
 
-    @After
-    public void after() {
-        idamTestService.deleteUser(user.getUserDetails().getEmail());
-    }
-
     @Test
     public void shouldSuccessfullySubmitUserRole() {
         commonOperations.saveUserRoles(new UserRoleRequest(CONSENT_GIVEN_ROLE), user.getAuthorisation())

@@ -47,7 +47,7 @@ public class LegalSealedClaimContentProvider {
             .getRepresentative().orElseThrow(IllegalArgumentException::new);
 
         content.put("preferredCourt", claim.getClaimData().getPreferredCourt());
-        content.put("feePaid", formatMoney(claim.getClaimData().getFeesPaidInPound()));
+        content.put("feePaid", formatMoney(claim.getClaimData().getFeesPaidInPounds()));
         StatementOfTruth statementOfTruth = claim.getClaimData()
             .getStatementOfTruth()
             .orElseThrow(IllegalArgumentException::new);

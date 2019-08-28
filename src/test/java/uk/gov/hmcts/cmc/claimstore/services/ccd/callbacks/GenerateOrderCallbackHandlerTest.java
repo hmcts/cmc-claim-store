@@ -77,9 +77,7 @@ public class GenerateOrderCallbackHandlerTest {
     private CaseDetailsConverter caseDetailsConverter;
 
     private CallbackRequest callbackRequest;
-
     private GenerateOrderCallbackHandler generateOrderCallbackHandler;
-
     private CCDCase ccdCase;
 
     @Before
@@ -91,7 +89,9 @@ public class GenerateOrderCallbackHandlerTest {
             authTokenGenerator,
             jsonMapper,
             docAssemblyTemplateBodyMapper,
-            caseDetailsConverter);
+            caseDetailsConverter
+        );
+
         ReflectionTestUtils.setField(generateOrderCallbackHandler, "templateId", "testTemplateId");
         ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         Claim claim =
@@ -132,7 +132,7 @@ public class GenerateOrderCallbackHandlerTest {
                         .build())
                     .build()
             ));
-        ccdCase.setOrderGenerationData(SampleData.getCCDOrderGenerationData());
+        ccdCase.setDirectionOrderData(SampleData.getCCDOrderGenerationData());
 
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_START)
@@ -160,8 +160,10 @@ public class GenerateOrderCallbackHandlerTest {
     @Test
     public void shouldPrepopulateFieldsOnAboutToStartEventIfOtherDirectionHeaderIsNull() {
         when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
-        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData();
-        ccdOrderGenerationData.setOtherDirectionHeader(null);
+        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData().toBuilder()
+            .hearingCourt(null)
+            .build();
+
         ccdCase.setRespondents(
             ImmutableList.of(
                 CCDCollectionElement.<CCDRespondent>builder()
@@ -173,7 +175,7 @@ public class GenerateOrderCallbackHandlerTest {
                         .build())
                     .build()
             ));
-        ccdCase.setOrderGenerationData(ccdOrderGenerationData);
+        ccdCase.setDirectionOrderData(ccdOrderGenerationData);
 
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_START)
@@ -196,7 +198,7 @@ public class GenerateOrderCallbackHandlerTest {
             entry("preferredCourtObjectingParty", null),
             entry("preferredCourtObjectingReason", null)
         ).doesNotContain(
-            entry("otherDirectionHeaders", null)
+            entry("hearingCourt", null)
         );
     }
 
@@ -270,8 +272,9 @@ public class GenerateOrderCallbackHandlerTest {
     @Test
     public void shouldGenerateDocumentOnMidEvent() {
         CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
-        ccdCase.setOrderGenerationData(SampleData.getCCDOrderGenerationData());
+        ccdCase.setDirectionOrderData(SampleData.getCCDOrderGenerationData());
         when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
+
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
             .templateId("testTemplateId")
             .outputType(OutputType.PDF)
@@ -303,23 +306,24 @@ public class GenerateOrderCallbackHandlerTest {
                 .handle(callbackParams);
 
         CCDDocument document = CCDDocument.builder().documentUrl(DOC_URL).build();
-        assertThat(response.getData()).containsExactly(
-            entry("draftOrderDoc", document)
-        );
+        assertThat(response.getData()).contains(entry("draftOrderDoc", document));
     }
 
     @Test(expected = IllegalStateException.class)
     public void shouldThrowIfClaimantResponseIsNotPresent() {
         when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
-        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData();
-        ccdOrderGenerationData.setOtherDirectionHeader(null);
-        ccdCase.setOrderGenerationData(ccdOrderGenerationData);
+        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData().toBuilder()
+            .otherDirections(null)
+            .build();
+
+        ccdCase.setDirectionOrderData(ccdOrderGenerationData);
 
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_START)
             .request(callbackRequest)
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
+
         generateOrderCallbackHandler
             .handle(callbackParams);
     }
@@ -331,6 +335,7 @@ public class GenerateOrderCallbackHandlerTest {
             .request(callbackRequest)
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
+
         generateOrderCallbackHandler
             .handle(callbackParams);
     }

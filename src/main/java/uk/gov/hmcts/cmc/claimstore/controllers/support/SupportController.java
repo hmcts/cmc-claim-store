@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -34,11 +36,13 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
+import uk.gov.hmcts.cmc.claimstore.services.MediationReportService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
+import uk.gov.hmcts.cmc.domain.models.MediationRequest;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
@@ -72,6 +76,7 @@ public class SupportController {
     private final ClaimantResponseStaffNotificationHandler claimantResponseStaffNotificationHandler;
     private final DocumentsService documentsService;
     private final PostClaimOrchestrationHandler postClaimOrchestrationHandler;
+    private final MediationReportService mediationReportService;
     private final boolean directionsQuestionnaireEnabled;
 
     @SuppressWarnings("squid:S00107")
@@ -86,7 +91,8 @@ public class SupportController {
         ClaimantResponseStaffNotificationHandler claimantResponseStaffNotificationHandler,
         DocumentsService documentsService,
         @Autowired(required = false) PostClaimOrchestrationHandler postClaimOrchestrationHandler,
-        @Value("${feature_toggles.directions_questionnaire_enabled:false}") boolean directionsQuestionnaireEnabled
+        @Value("${feature_toggles.directions_questionnaire_enabled:false}") boolean directionsQuestionnaireEnabled,
+        MediationReportService mediationReportService
     ) {
         this.claimService = claimService;
         this.userService = userService;
@@ -98,6 +104,7 @@ public class SupportController {
         this.claimantResponseStaffNotificationHandler = claimantResponseStaffNotificationHandler;
         this.documentsService = documentsService;
         this.postClaimOrchestrationHandler = postClaimOrchestrationHandler;
+        this.mediationReportService = mediationReportService;
         this.directionsQuestionnaireEnabled = directionsQuestionnaireEnabled;
     }
 
@@ -130,10 +137,10 @@ public class SupportController {
                 resendStaffNotificationOnAgreementCountersigned(claim, authorisation);
                 break;
             case "claimant-response":
-                resendStaffNotificationClaimantResponse(claim);
+                resendStaffNotificationClaimantResponse(claim, authorisation);
                 break;
             case "intent-to-proceed":
-                resendStaffNotificationForIntentToProceed(claim);
+                resendStaffNotificationForIntentToProceed(claim, authorisation);
                 break;
             default:
                 throw new NotFoundException("Event " + event + " is not supported");
@@ -195,6 +202,17 @@ public class SupportController {
         resendClaimsToRPA(existingClaims, authorisation);
     }
 
+    @PostMapping(value = "/sendMediation", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation("Generate and Send Mediation Report for Telephone Mediation Service")
+    public void sendMediation(
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation,
+        @RequestBody MediationRequest mediationRequest
+    ) {
+        mediationReportService
+            .sendMediationReport(authorisation, mediationRequest.getReportDate());
+
+    }
+
     private void resendStaffNotificationCCJRequestSubmitted(Claim claim, String authorisation) {
         this.ccjStaffNotificationHandler.onDefaultJudgmentRequestSubmitted(
             new CountyCourtJudgmentEvent(claim, authorisation)
@@ -231,7 +249,7 @@ public class SupportController {
 
     }
 
-    private void resendStaffNotificationForIntentToProceed(Claim claim) {
+    private void resendStaffNotificationForIntentToProceed(Claim claim, String authorization) {
         ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalArgumentException::new);
 
         if (!directionsQuestionnaireEnabled) {
@@ -243,7 +261,7 @@ public class SupportController {
         }
 
         claimantResponseStaffNotificationHandler
-            .notifyStaffWithClaimantsIntentionToProceed(new ClaimantResponseEvent(claim));
+            .notifyStaffWithClaimantsIntentionToProceed(new ClaimantResponseEvent(claim, authorization));
     }
 
     private void resendStaffNotificationOnMoreTimeRequested(Claim claim) {
@@ -252,7 +270,8 @@ public class SupportController {
         }
 
         // Defendant email is not available at this point however it is not used in staff notifications
-        MoreTimeRequestedEvent event = new MoreTimeRequestedEvent(claim, claim.getResponseDeadline(), null);
+        MoreTimeRequestedEvent event =
+            new MoreTimeRequestedEvent(claim, claim.getResponseDeadline(), null);
         moreTimeRequestedStaffNotificationHandler.sendNotifications(event);
     }
 
@@ -291,14 +310,15 @@ public class SupportController {
         }
     }
 
-    private void resendStaffNotificationClaimantResponse(Claim claim) {
+    private void resendStaffNotificationClaimantResponse(Claim claim, String authorization) {
         ClaimantResponse claimantResponse = claim.getClaimantResponse()
             .orElseThrow(IllegalArgumentException::new);
         Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
         if (!isSettlementAgreement(claim, claimantResponse) && (!isReferredToJudge(claimantResponse)
             || (isReferredToJudge(claimantResponse) && PartyUtils.isCompanyOrOrganisation(response.getDefendant())))
         ) {
-            claimantResponseStaffNotificationHandler.onClaimantResponse(new ClaimantResponseEvent(claim));
+            claimantResponseStaffNotificationHandler
+                .onClaimantResponse(new ClaimantResponseEvent(claim, authorization));
         }
     }
 

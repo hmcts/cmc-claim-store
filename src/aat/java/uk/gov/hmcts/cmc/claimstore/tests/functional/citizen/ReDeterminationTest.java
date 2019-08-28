@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
@@ -19,26 +18,19 @@ import static org.hamcrest.Matchers.containsString;
 public class ReDeterminationTest extends BaseTest {
 
     private User claimant;
-    private User defendant;
     private Claim claim;
 
     @Before
     public void before() {
-        claimant = idamTestService.createCitizen();
+        claimant = bootstrap.getClaimant();
 
         Claim createdCase = commonOperations.submitClaim(
             claimant.getAuthorisation(),
             claimant.getUserDetails().getId()
         );
 
-        defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
         claim = createClaimWithResponse(createdCase, defendant);
-    }
-
-    @After
-    public void after() {
-        idamTestService.deleteUser(claimant.getUserDetails().getEmail());
-        idamTestService.deleteUser(defendant.getUserDetails().getEmail());
     }
 
     @Test

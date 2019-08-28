@@ -84,13 +84,11 @@ public class IdamTestService {
             });
     }
 
-    public User createDefendant(final String letterHolderId) {
-        String email = testData.nextUserEmail();
+    public User upliftDefendant(final String letterHolderId, User defendant) {
+        String email = defendant.getUserDetails().getEmail();
         String password = aatConfiguration.getSmokeTestCitizen().getPassword();
         return Failsafe.with(retryPolicy)
             .get(() -> {
-                createUser(createCitizenRequest(email, password));
-
                 ResponseEntity<String> pin = idamTestApi.getPinByLetterHolderId(letterHolderId);
 
                 AuthenticateUserResponse pinUserCode = authenticatePinUser(pin.getBody());

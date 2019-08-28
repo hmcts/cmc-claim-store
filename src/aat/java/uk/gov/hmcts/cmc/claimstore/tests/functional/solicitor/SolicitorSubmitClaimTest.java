@@ -17,12 +17,7 @@ public class SolicitorSubmitClaimTest extends BaseSubmitClaimTest {
 
     @Before
     public void before() {
-        user = idamTestService.createSolicitor();
-    }
-
-    @After
-    public void after() {
-        idamTestService.deleteUser(user.getUserDetails().getEmail());
+        user = bootstrap.getSolicitor();
     }
 
     @Override

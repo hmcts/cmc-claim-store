@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.ReviewOrderService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
+import uk.gov.hmcts.cmc.claimstore.documents.questionnaire.ClaimantDirectionsQuestionnairePdfService;
 import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -31,6 +32,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIMANT_DIRECTIONS_QUESTIONNAIRE;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.REVIEW_ORDER;
@@ -41,7 +43,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEM
 public class DocumentManagementBackedDocumentsServiceTest {
 
     private static final String AUTHORISATION = "Bearer: aaa";
-    private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
+    private static final byte[] PDF_BYTES = new byte[] {1, 2, 3, 4};
 
     private DocumentManagementBackedDocumentsService documentManagementBackedDocumentsService;
 
@@ -61,6 +63,8 @@ public class DocumentManagementBackedDocumentsServiceTest {
     private ReviewOrderService reviewOrderService;
     @Mock
     private CCDEventProducer ccdEventProducer;
+    @Mock
+    private ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService;
 
     @Before
     public void setUp() {
@@ -72,6 +76,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
             defendantResponseReceiptService,
             settlementAgreementCopyService,
             reviewOrderService,
+            claimantDirectionsQuestionnairePdfService,
             ccdEventProducer);
     }
 
@@ -167,6 +172,10 @@ public class DocumentManagementBackedDocumentsServiceTest {
         Claim claim = SampleClaim.getWithSealedClaimDocument();
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(AUTHORISATION)))
             .thenReturn(claim);
+
+        when(documentManagementService.downloadDocument(eq(AUTHORISATION), any(ClaimDocument.class)))
+            .thenReturn(PDF_BYTES);
+
         documentManagementBackedDocumentsService.generateDocument(
             claim.getExternalId(),
             SEALED_CLAIM,
@@ -188,6 +197,23 @@ public class DocumentManagementBackedDocumentsServiceTest {
             "1234",
             CCJ_REQUEST,
             AUTHORISATION);
+    }
+
+    @Test
+    public void shouldGenerateClaimantHearingRequirement() {
+        Claim claim = SampleClaim.builder().withSettlement(mock(Settlement.class)).build();
+        when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(AUTHORISATION)))
+            .thenReturn(claim);
+        when(claimantDirectionsQuestionnairePdfService.createPdf(any(Claim.class))).thenReturn(new PDF(
+            "claimantDirectionsQuestionnaire",
+            PDF_BYTES,
+            CLAIMANT_DIRECTIONS_QUESTIONNAIRE
+        ));
+        byte[] pdf = documentManagementBackedDocumentsService.generateDocument(
+            claim.getExternalId(),
+            CLAIMANT_DIRECTIONS_QUESTIONNAIRE,
+            AUTHORISATION);
+        verifyCommon(pdf);
     }
 
     private void verifyCommon(byte[] pdf) {

@@ -18,12 +18,7 @@ public class LinkDefendantTest extends BaseTest {
 
     @Before
     public void before() {
-        claimant = idamTestService.createCitizen();
-    }
-
-    @After
-    public void after() {
-        idamTestService.deleteUser(claimant.getUserDetails().getEmail());
+        claimant = bootstrap.getClaimant();
     }
 
     @Test
@@ -33,7 +28,7 @@ public class LinkDefendantTest extends BaseTest {
             claimant.getUserDetails().getId()
         );
 
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
 
         RestAssured
             .given()

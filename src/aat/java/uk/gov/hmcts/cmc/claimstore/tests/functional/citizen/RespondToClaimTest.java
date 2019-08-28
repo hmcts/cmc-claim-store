@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
@@ -26,12 +25,7 @@ public class RespondToClaimTest extends BaseTest {
 
     @Before
     public void before() {
-        claimant = idamTestService.createCitizen();
-    }
-
-    @After
-    public void after() {
-        idamTestService.deleteUser(claimant.getUserDetails().getEmail());
+        claimant = bootstrap.getClaimant();
     }
 
     @Test
@@ -114,7 +108,7 @@ public class RespondToClaimTest extends BaseTest {
         Claim createdCase = commonOperations
             .submitClaimWithDefendantCollectionId(claimant.getAuthorisation(), claimantId, defendantCollectionId);
 
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
 
         commonOperations.linkDefendant(defendant.getAuthorisation());
 
@@ -124,34 +118,8 @@ public class RespondToClaimTest extends BaseTest {
             .and()
             .extract().body().as(Claim.class);
 
-        idamTestService.deleteUser(defendant.getUserDetails().getEmail());
-
         assertThat(updatedCase.getResponse().isPresent()).isTrue();
         assertThat(updatedCase.getResponse().get()).isEqualTo(response);
         assertThat(updatedCase.getRespondedAt()).isNotNull();
-    }
-
-    @Test
-    public void shouldReturnUnprocessableEntityWhenInvalidResponseIsSubmitted() {
-        String claimantId = claimant.getUserDetails().getId();
-        Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimantId
-        );
-
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
-        commonOperations.linkDefendant(
-            defendant.getAuthorisation()
-        );
-
-        Response invalidResponse = SampleResponse.FullDefence.builder()
-            .withDefenceType(null)
-            .build();
-
-        commonOperations.submitResponse(invalidResponse, createdCase.getExternalId(), defendant)
-            .then()
-            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
-
-        idamTestService.deleteUser(defendant.getUserDetails().getEmail());
     }
 }

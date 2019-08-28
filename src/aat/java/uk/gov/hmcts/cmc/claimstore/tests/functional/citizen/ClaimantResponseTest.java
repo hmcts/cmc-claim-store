@@ -1,10 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -24,12 +24,11 @@ import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.SE
 public class ClaimantResponseTest extends BaseTest {
 
     private User claimant;
-    private User defendant;
     private Claim claim;
 
     @Before
     public void before() {
-        claimant = idamTestService.createCitizen();
+        claimant = bootstrap.getClaimant();
 
         String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
@@ -37,17 +36,12 @@ public class ClaimantResponseTest extends BaseTest {
             claimantId
         );
 
-        defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
         claim = createClaimWithResponse(createdCase, defendant);
     }
 
-    @After
-    public void after() {
-        idamTestService.deleteUser(claimant.getUserDetails().getEmail());
-        idamTestService.deleteUser(defendant.getUserDetails().getEmail());
-    }
-
     @Test
+    @LogExecutionTime
     public void shouldSaveClaimantResponseAcceptationReferToJudge() {
         commonOperations.submitClaimantResponse(
             SampleClaimantResponse.validDefaultAcceptation(),

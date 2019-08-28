@@ -20,12 +20,7 @@ public class PaidInFullTest extends BaseTest {
 
     @Before
     public void before() {
-        claimant = idamTestService.createCitizen();
-    }
-
-    @After
-    public void after() {
-        idamTestService.deleteUser(claimant.getUserDetails().getEmail());
+        claimant = bootstrap.getClaimant();
     }
 
     @Test
