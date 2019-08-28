@@ -151,6 +151,17 @@ public final class SampleClaim {
             .build();
     }
 
+    public static Claim getClaimWithFullDefenceWithMediation() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withResponse(SampleResponse.FullAdmission.builder()
+                .buildWithFreeMediation()
+            )
+            .withRespondedAt(LocalDateTime.now())
+            .withDirectionsQuestionnaireDeadline(LocalDate.now())
+            .build();
+    }
+
     public static Claim getClaimWithFullDefenceAlreadyPaid() {
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
