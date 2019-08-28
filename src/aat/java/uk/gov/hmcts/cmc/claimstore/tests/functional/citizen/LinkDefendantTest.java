@@ -41,8 +41,6 @@ public class LinkDefendantTest extends BaseTest {
 
         Claim claim = commonOperations.retrieveClaim(createdCase.getExternalId(), claimant.getAuthorisation());
 
-        idamTestService.deleteUser(defendant.getUserDetails().getEmail());
-
         assertThat(claim.getDefendantId()).isEqualTo(defendant.getUserDetails().getId());
     }
 

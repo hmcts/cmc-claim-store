@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.solicitor;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;

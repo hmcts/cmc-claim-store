@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.tests.functional.BasePdfTest;
