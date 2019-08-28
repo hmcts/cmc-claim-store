@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.PrintService;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
@@ -42,6 +43,7 @@ public class PinOrchestrationService {
         this.documentOrchestrationService = documentOrchestrationService;
     }
 
+    @LogExecutionTime
     public Claim process(Claim claim, String authorisation, String submitterName) {
         GeneratedDocuments documents = documentOrchestrationService.generateForCitizen(claim, authorisation);
         Claim updatedClaim = documents.getClaim();

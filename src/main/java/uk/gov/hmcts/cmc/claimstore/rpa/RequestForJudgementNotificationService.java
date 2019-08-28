@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
+import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.rpa.config.EmailProperties;
 import uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils;
@@ -16,9 +17,7 @@ import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.cmc.rpa.mapper.RequestForJudgementJsonMapper;
 
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.JSON_EXTENSION;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForJudgementFileBaseName;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service("rpa/request-judgement-notification-service")
@@ -78,13 +77,11 @@ public class RequestForJudgementNotificationService {
     }
 
     private EmailAttachment generateCountyCourtJudgmentPdf(Claim claim) {
-        byte[] generatedPdf = countyCourtJudgmentPdfService.createPdf(claim);
+        PDF generatedPdf = countyCourtJudgmentPdfService.createPdf(claim);
 
         return pdf(
-            generatedPdf,
-            buildRequestForJudgementFileBaseName(claim.getReferenceNumber(),
-                claim.getClaimData().getDefendant().getName()) + EXTENSION
-        );
+            generatedPdf.getBytes(),
+            generatedPdf.getFilename());
     }
 
 }

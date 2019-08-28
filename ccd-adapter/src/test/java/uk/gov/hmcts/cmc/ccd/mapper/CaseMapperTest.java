@@ -8,14 +8,18 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.util.MapperUtil;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
+import java.time.LocalDateTime;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
@@ -170,5 +174,24 @@ public class CaseMapperTest {
         assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getClaimantNotification());
         assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getRpa());
         assertEquals(YesNoOption.NO, claim.getClaimSubmissionOperationIndicators().getSealedClaimUpload());
+    }
+
+    @Test
+    public void shouldMapDirectionOrderCreatedOnFromCCDCase() {
+        //given
+        CCDCase ccdCase = SampleData.getCCDCitizenCase(getAmountBreakDown()).toBuilder()
+            .directionOrder(CCDDirectionOrder.builder()
+                .createdOn(LocalDateTime.now())
+                .hearingCourtAddress(SampleData.getCCDAddress())
+                .build())
+            .directionOrderData(SampleData.getCCDOrderGenerationData())
+            .build();
+
+        //when
+        Claim claim = ccdCaseMapper.from(ccdCase);
+
+        //then
+        assertTrue(claim.getDirectionOrder().isPresent());
+        assertThat(claim.getDirectionOrder().get()).isEqualTo(ccdCase.getDirectionOrder());
     }
 }

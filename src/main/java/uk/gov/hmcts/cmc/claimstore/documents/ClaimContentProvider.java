@@ -9,7 +9,6 @@ import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 
 import java.util.HashMap;
-
 import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
