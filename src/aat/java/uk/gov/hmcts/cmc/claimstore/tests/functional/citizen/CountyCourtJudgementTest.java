@@ -25,7 +25,7 @@ public class CountyCourtJudgementTest extends BaseTest {
 
     @Before
     public void before() {
-        claimant = idamTestService.createCitizen();
+        claimant = bootstrap.getClaimant();
     }
 
     @Test
@@ -51,23 +51,6 @@ public class CountyCourtJudgementTest extends BaseTest {
 
         assertThat(updatedCase.getCountyCourtJudgment()).isEqualTo(ccj);
         assertThat(updatedCase.getCountyCourtJudgmentRequestedAt()).isNotNull();
-    }
-
-    @Test
-    public void shouldReturnUnprocessableEntityWhenInvalidJudgementIsSubmitted() {
-        String claimantId = claimant.getUserDetails().getId();
-        Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimantId
-        );
-
-        CountyCourtJudgment invalidCCJ = SampleCountyCourtJudgment.builder()
-            .paymentOption(null)
-            .build();
-
-        commonOperations.requestCCJ(createdCase.getExternalId(), invalidCCJ, claimant)
-            .then()
-            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
 
     @Test

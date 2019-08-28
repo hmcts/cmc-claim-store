@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.claimstore.events.offer.OfferRejectedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.revieworder.ReviewOrderEvent;
 import uk.gov.hmcts.cmc.claimstore.events.settlement.CountersignSettlementAgreementEvent;
 import uk.gov.hmcts.cmc.claimstore.events.settlement.RejectSettlementAgreementEvent;
 import uk.gov.hmcts.cmc.claimstore.events.settlement.SignSettlementAgreementEvent;
@@ -97,8 +98,8 @@ public class EventProducer {
         publisher.publishEvent(new SignSettlementAgreementEvent(claim));
     }
 
-    public void createClaimantResponseEvent(Claim claim) {
-        publisher.publishEvent(new ClaimantResponseEvent(claim));
+    public void createClaimantResponseEvent(Claim claim, String authorisation) {
+        publisher.publishEvent(new ClaimantResponseEvent(claim, authorisation));
     }
 
     public void createPaidInFullEvent(Claim claim) {
@@ -115,5 +116,9 @@ public class EventProducer {
 
     public void createRejectOrganisationPaymentPlanEvent(Claim claim) {
         publisher.publishEvent(new RejectOrganisationPaymentPlanEvent(claim));
+    }
+
+    public void createReviewOrderEvent(String authorisation, Claim claim) {
+        publisher.publishEvent(new ReviewOrderEvent(authorisation, claim));
     }
 }

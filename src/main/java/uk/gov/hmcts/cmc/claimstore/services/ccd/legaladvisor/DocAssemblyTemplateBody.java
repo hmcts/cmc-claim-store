@@ -9,9 +9,9 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import lombok.Builder;
 import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.reform.docassembly.domain.FormPayload;
 
 import java.time.LocalDate;
@@ -59,7 +59,7 @@ public class DocAssemblyTemplateBody implements FormPayload {
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate eyewitnessUploadDeadline;
 
-    private boolean hearingRequired;
+    private boolean paperDetermination;
 
     private CCDDirectionPartyType docUploadForParty;
 
@@ -71,10 +71,8 @@ public class DocAssemblyTemplateBody implements FormPayload {
 
     private CCDHearingDurationType estimatedHearingDuration;
 
-    private String hearingStatement;
-
     @JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
-    private List<CCDOrderDirection> otherDirections;
+    private List<OtherDirection> otherDirections;
 
-    private List<String> extraDocUploadList;
+    private List<CCDCollectionElement<String>> extraDocUploadList;
 }

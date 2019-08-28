@@ -50,10 +50,11 @@ java:
     FEATURE_TOGGLES_SAVE_CLAIM_STATE_ENABLED: true
     FEATURE_TOGGLES_ASYNC_EVENT_OPERATIONS_ENABLED: true
     FEATURE_TOGGLES_EMAILTOSTAFF: true
+    FEATURE_TOGGLES_DIRECTIONS_QUESTIONNAIRE_ENABLED: false
 
 cmc-citizen-frontend:
   nodejs:
-    image: hmcts.azurecr.io/hmcts/cmc-citizen-frontend:latest  # master
+    image: hmctspublic.azurecr.io/cmc/citizen-frontend:latest  # master
     ingressIP: ${INGRESS_IP}
     consulIP: ${CONSUL_LB_IP}
     releaseNameOverride: ${SERVICE_NAME}-nodejs
@@ -92,7 +93,7 @@ cmc-citizen-frontend:
       oneoff:
         command: /scripts/add-weighted-toggle.sh cmc_admissions 'CMC admissions' '1.0' &&
           /scripts/add-weighted-toggle.sh cmc_directions_questionnaire 'CMC Directions Questionnaire' '1.0' &&
-          /scripts/add-weighted-toggle.sh cmc_mediation_pilot 'CMC Mediation Pilot' '0.1' &&
+          /scripts/add-weighted-toggle.sh cmc_mediation_pilot 'CMC Mediation Pilot' '1.0' &&
           /scripts/add-toggle.sh cmc_defence_reminders 'CMC defence reminders' false
         enabled: true
         permissions: cmc-new-features-consent-given
@@ -151,7 +152,7 @@ ccd:
       userProfileDatabaseName: user-profile
     definition:
       enabled: true
-      image: hmcts.azurecr.io/hmcts/cmc-ccd-definition-importer:1.2.12
+      image: hmctspublic.azurecr.io/cmc/ccd-definition-importer:1.2.24
       kvSecretRef: kvcreds
       gitSecretRef: kvcreds
       redirectUri: https://case-management-web-${SERVICE_FQDN}/oauth2redirect
@@ -164,3 +165,5 @@ ccd:
         - letter-holder
         - caseworker-autotest1
         - caseworker-cmc-anonymouscitizen
+        - caseworker-cmc-judge
+        - caseworker-cmc-legaladvisor

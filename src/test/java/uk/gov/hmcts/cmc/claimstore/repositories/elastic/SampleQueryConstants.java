@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.repositories.elastic;
 
 public interface SampleQueryConstants {
-    String mediationQuery = "{\"query\": {\n" 
+    String mediationQuery = "{\"query\": {\n"
         + "  \"bool\" : {\n"
         + "    \"must\" : [\n"
         + "      {\n"

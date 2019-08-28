@@ -1,6 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.tests.idam;
 
 import feign.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.UserService.AUTHORIZATION_COD
 @Service
 public class IdamTestService {
 
+    private static final Logger logger = LoggerFactory.getLogger(IdamTestService.class);
     private static final String PIN_PREFIX = "Pin ";
 
     private final IdamApi idamApi;
@@ -55,20 +58,19 @@ public class IdamTestService {
 
     public User createSolicitor() {
         String email = testData.nextUserEmail();
-        idamTestApi.createUser(createSolicitorRequest(email, aatConfiguration.getSmokeTestSolicitor().getPassword()));
+        createUser(createSolicitorRequest(email, aatConfiguration.getSmokeTestSolicitor().getPassword()));
         return userService.authenticateUser(email, aatConfiguration.getSmokeTestSolicitor().getPassword());
     }
 
     public User createCitizen() {
         String email = testData.nextUserEmail();
-        idamTestApi.createUser(createCitizenRequest(email, aatConfiguration.getSmokeTestCitizen().getPassword()));
+        createUser(createCitizenRequest(email, aatConfiguration.getSmokeTestCitizen().getPassword()));
         return userService.authenticateUser(email, aatConfiguration.getSmokeTestCitizen().getPassword());
     }
 
-    public User createDefendant(final String letterHolderId) {
-        String email = testData.nextUserEmail();
+    public User upliftDefendant(final String letterHolderId, User defendant) {
+        String email = defendant.getUserDetails().getEmail();
         String password = aatConfiguration.getSmokeTestCitizen().getPassword();
-        idamTestApi.createUser(createCitizenRequest(email, password));
 
         String pin = idamTestApi.getPinByLetterHolderId(letterHolderId);
 
@@ -145,5 +147,15 @@ public class IdamTestService {
             new UserGroup("cmc-solicitor"),
             password
         );
+    }
+
+    private void createUser(CreateUserRequest createUserRequest) {
+        //recommended delay from IDAM team to stop intermittent auth failures
+        idamTestApi.createUser(createUserRequest);
+        try {
+            Thread.sleep(15000);
+        } catch (InterruptedException ex) {
+            logger.error("Error trying to sleep after creating a user", ex);
+        }
     }
 }

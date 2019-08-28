@@ -3,7 +3,8 @@ package uk.gov.hmcts.cmc.ccd.domain.legaladvisor;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
@@ -13,11 +14,12 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
-@Data
+@Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor //see https://github.com/rzwitserloot/lombok/issues/1347
 @NoArgsConstructor
+@EqualsAndHashCode
 public class CCDOrderGenerationData {
     private LocalDate docUploadDeadline;
 
@@ -36,9 +38,11 @@ public class CCDOrderGenerationData {
     @Builder.Default
     private List<CCDCollectionElement<String>> extraDocUploadList = Collections.emptyList();
 
-    private CCDYesNoOption hearingRequired;
+    private CCDYesNoOption paperDetermination;
 
     private String newRequestedCourt;
+
+    private String preferredDQCourt;
 
     private String preferredCourtObjectingReason;
 
@@ -46,8 +50,5 @@ public class CCDOrderGenerationData {
 
     private CCDHearingDurationType estimatedHearingDuration;
 
-    private String hearingStatement;
-
     private CCDDocument draftOrderDoc;
-
 }

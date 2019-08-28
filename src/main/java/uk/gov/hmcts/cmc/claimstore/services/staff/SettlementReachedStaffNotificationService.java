@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.content.settlementagreement.SettlementAgreementEmailContentProvider;
+import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.email.EmailData;
@@ -14,8 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Collections.singletonList;
-import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSettlementReachedFileBaseName;
 import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 
 @Service
@@ -43,7 +42,7 @@ public class SettlementReachedStaffNotificationService {
 
     public void notifySettlementReached(Claim claim) {
         EmailContent emailContent = emailContentProvider.createContent(wrapInMap(claim));
-        byte[] pdf = copyService.createPdf(claim);
+        PDF pdf = copyService.createPdf(claim);
         emailService.sendEmail(
             emailProperties.getSender(),
             new EmailData(
@@ -51,8 +50,8 @@ public class SettlementReachedStaffNotificationService {
                 emailContent.getSubject(),
                 emailContent.getBody(),
                 singletonList(pdf(
-                    pdf,
-                    buildSettlementReachedFileBaseName(claim.getReferenceNumber()) + EXTENSION)
+                    pdf.getBytes(),
+                    pdf.getFilename())
                 )
             )
         );
