@@ -111,8 +111,8 @@ public class TotalAmountCalculatorTest {
                         standardInterestBuilder()
                             .withInterestDate(SampleInterestDate.submission())
                             .build())
-                        .build())
-                .build();
+                    .build())
+            .build();
 
         assertThat(TotalAmountCalculator.totalTillDateOfIssue(claimStandardInterest))
             .isEqualTo(Optional.of(format(new BigDecimal("60.99"))));
@@ -145,10 +145,10 @@ public class TotalAmountCalculatorTest {
                 SampleClaimData.builder()
                     .withAmount(SampleAmountBreakdown.builder().build())
                     .withFeeAmount(TWENTY_POUNDS_IN_PENNIES)
-                        .withInterest(
-                            standardInterestBuilder()
-                                .withInterestDate(SampleInterestDate.submission())
-                                .build())
+                    .withInterest(
+                        standardInterestBuilder()
+                            .withInterestDate(SampleInterestDate.submission())
+                            .build())
                     .build()
             )
             .withIssuedOn(LocalDate.now().plusDays(1))
@@ -165,10 +165,10 @@ public class TotalAmountCalculatorTest {
                 SampleClaimData.builder()
                     .withAmount(SampleAmountBreakdown.builder().build())
                     .withFeeAmount(TWENTY_POUNDS_IN_PENNIES)
-                        .withInterest(
-                            standardInterestBuilder()
-                                .withInterestDate(SampleInterestDate.submission())
-                                .build())
+                    .withInterest(
+                        standardInterestBuilder()
+                            .withInterestDate(SampleInterestDate.submission())
+                            .build())
                     .build()
             )
             .withIssuedOn(LocalDate.now().minusDays(1))
@@ -263,8 +263,8 @@ public class TotalAmountCalculatorTest {
                     .withFeeAmount(TWENTY_POUNDS_IN_PENNIES)
                     .withInterest(
                         breakdownInterestBuilder()
-                           .withInterestDate(SampleInterestDate.submissionToSubmission())
-                           .build())
+                            .withInterestDate(SampleInterestDate.submissionToSubmission())
+                            .build())
                     .build()
             )
             .withIssuedOn(LocalDate.now().minusDays(1))
@@ -281,15 +281,15 @@ public class TotalAmountCalculatorTest {
         Claim claim = SampleClaim.builder()
             .withClaimData(
                 SampleClaimData.builder()
-                        .withAmount(SampleAmountBreakdown.builder().build())
-                        .withFeeAmount(TWENTY_POUNDS_IN_PENNIES)
-                        .withInterest(
-                            breakdownInterestBuilder()
-                                .withSpecificDailyAmount(new BigDecimal("10"))
-                                .withInterestDate(SampleInterestDate.submissionToSettledOrJudgement())
-                                .build()
-                        )
-                        .build()
+                    .withAmount(SampleAmountBreakdown.builder().build())
+                    .withFeeAmount(TWENTY_POUNDS_IN_PENNIES)
+                    .withInterest(
+                        breakdownInterestBuilder()
+                            .withSpecificDailyAmount(new BigDecimal("10"))
+                            .withInterestDate(SampleInterestDate.submissionToSettledOrJudgement())
+                            .build()
+                    )
+                    .build()
             )
             .withIssuedOn(LocalDate.now().minusDays(3))
             .build();
@@ -332,8 +332,8 @@ public class TotalAmountCalculatorTest {
                     .withAmount(SampleAmountBreakdown.builder().build())
                     .withFeeAmount(TWENTY_POUNDS_IN_PENNIES)
                     .withInterest(standardInterestBuilder()
-                            .withInterestDate(SampleInterestDate.submission())
-                            .build())
+                        .withInterestDate(SampleInterestDate.submission())
+                        .build())
                     .build()
             )
             .withIssuedOn(LocalDate.now())
@@ -351,8 +351,8 @@ public class TotalAmountCalculatorTest {
                     .withAmount(SampleAmountBreakdown.builder().build())
                     .withFeeAmount(TWENTY_POUNDS_IN_PENNIES)
                     .withInterest(standardInterestBuilder()
-                            .withInterestDate(SampleInterestDate.submission())
-                            .build())
+                        .withInterestDate(SampleInterestDate.submission())
+                        .build())
                     .build()
             )
             .withIssuedOn(LocalDate.now().plusDays(1))
@@ -417,13 +417,13 @@ public class TotalAmountCalculatorTest {
                             .withInterestDate(SampleInterestDate.submissionToSettledOrJudgement())
                             .build()
                     )
-                        .build()
+                    .build()
             )
             .withIssuedOn(LocalDate.now().minusDays(2))
-                .build();
+            .build();
 
         assertThat(TotalAmountCalculator.calculateInterestForClaim(claim))
-                .isEqualTo(Optional.of(format(new BigDecimal("40.02"))));
+            .isEqualTo(Optional.of(format(new BigDecimal("40.02"))));
     }
 
     @Test
@@ -510,6 +510,38 @@ public class TotalAmountCalculatorTest {
         Claim claim = claimWithCCJ();
         assertThat(TotalAmountCalculator.calculateInterestForClaim(claim, claim.getIssuedOn()))
             .isEqualTo(Optional.of(format(new BigDecimal("0.02"))));
+    }
+
+    @Test
+    public void calculateTotalClaimAmount() {
+        Claim claim = claimWithCCJ();
+        assertThat(
+            TotalAmountCalculator.totalClaimAmount(
+                claim
+            )
+        ).isEqualTo(Optional.of(BigDecimal.valueOf(40.99)));
+    }
+
+    @Test
+    public void calculateTotalClaimAmountForRange() {
+        Claim claimWithAmountRange = SampleClaim.builder()
+            .withClaimData(
+                SampleClaimData.builder()
+                    .withAmount(SampleAmountRange.builder().build())
+                    .withFeeAmount(TWENTY_POUNDS_IN_PENNIES)
+                    .withInterest(standardInterestBuilder()
+                        .withInterestDate(SampleInterestDate.submission())
+                        .build())
+                    .build()
+            )
+            .withIssuedOn(LocalDate.now().plusDays(1))
+            .build();
+
+        assertThat(
+            TotalAmountCalculator.totalClaimAmount(
+                claimWithAmountRange
+            )
+        ).isEqualTo(Optional.empty());
     }
 
     private static Claim claimWithAmountRange() {

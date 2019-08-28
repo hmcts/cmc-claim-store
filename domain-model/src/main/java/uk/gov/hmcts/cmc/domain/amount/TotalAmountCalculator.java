@@ -28,6 +28,13 @@ public class TotalAmountCalculator {
         // do not instantiate
     }
 
+    public static Optional<BigDecimal> totalClaimAmount(Claim claim) {
+        return Optional.ofNullable(claim.getClaimData().getAmount())
+            .filter(AmountBreakDown.class::isInstance)
+            .map(AmountBreakDown.class::cast)
+            .map(AmountBreakDown::getTotalAmount);
+    }
+
     public static Optional<BigDecimal> amountWithInterest(Claim claim) {
         LocalDate date = getDateApplicable(claim);
 
