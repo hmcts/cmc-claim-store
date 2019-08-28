@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 @Component
@@ -18,6 +19,7 @@ public class UploadOperationService {
         this.documentService = documentService;
     }
 
+    @LogExecutionTime
     public Claim uploadDocument(Claim claim, String authorisation, PDF document) {
         if (claim.getClaimDocument(document.getClaimDocumentType()).isPresent()) {
             return claim;

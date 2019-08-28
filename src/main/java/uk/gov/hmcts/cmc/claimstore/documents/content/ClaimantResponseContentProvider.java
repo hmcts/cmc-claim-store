@@ -19,7 +19,6 @@ import java.util.Map;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDateTime;
-import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
 
 @Component
 public class ClaimantResponseContentProvider {

@@ -2,16 +2,10 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
-import uk.gov.hmcts.cmc.ccd.domain.CCDApplicant;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Address;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 
 import java.time.Clock;
@@ -19,25 +13,26 @@ import java.time.LocalDate;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
+
 @Component
 public class DocAssemblyTemplateBodyMapper {
 
     private Clock clock;
-    private final CourtFinderApi courtFinderApi;
+    private final HearingCourtDetailsFinder hearingCourtDetailsFinder;
 
     @Autowired
-    public DocAssemblyTemplateBodyMapper(Clock clock, CourtFinderApi courtFinderApi) {
+    public DocAssemblyTemplateBodyMapper(Clock clock, HearingCourtDetailsFinder hearingCourtDetailsFinder) {
         this.clock = clock;
-        this.courtFinderApi = courtFinderApi;
+        this.hearingCourtDetailsFinder = hearingCourtDetailsFinder;
     }
 
-    public DocAssemblyTemplateBody from(CCDCase ccdCase,
-                                        UserDetails userDetails) {
-        CCDOrderGenerationData ccdOrderGenerationData = ccdCase.getOrderGenerationData();
+    public DocAssemblyTemplateBody from(CCDCase ccdCase, UserDetails userDetails) {
+        CCDOrderGenerationData ccdOrderGenerationData = ccdCase.getDirectionOrderData();
 
         HearingCourt hearingCourt = Optional.ofNullable(ccdOrderGenerationData.getHearingCourt())
-                .map(court -> mapHearingCourt(ccdCase, court))
-                .orElseGet(() -> HearingCourt.builder().build());
+            .map(hearingCourtDetailsFinder::findHearingCourtAddress)
+            .orElseGet(() -> HearingCourt.builder().build());
 
         return DocAssemblyTemplateBody.builder()
             .claimant(Party.builder()
@@ -56,7 +51,7 @@ public class DocAssemblyTemplateBodyMapper {
                 .firstName(userDetails.getForename())
                 .lastName(userDetails.getSurname().orElse(""))
                 .build())
-            .currentDate(LocalDate.now(clock))
+            .currentDate(LocalDate.now(clock.withZone(UTC_ZONE)))
             .referenceNumber(ccdCase.getPreviousServiceCaseReference())
             .hasFirstOrderDirections(
                 ccdOrderGenerationData.getDirectionList().contains(CCDOrderDirectionType.DOCUMENTS))
@@ -85,47 +80,16 @@ public class DocAssemblyTemplateBodyMapper {
                     .stream()
                     .filter(direction -> direction != null && direction.getValue() != null)
                     .map(CCDCollectionElement::getValue)
-                .collect(Collectors.toList()))
-            .build();
-    }
-
-    private CCDAddress mapHearingAddress(Address address) {
-        CCDAddress.CCDAddressBuilder ccdAddressBuilder = CCDAddress.builder()
-            .postTown(address.getTown())
-            .postCode(address.getPostcode());
-
-        try {
-            ccdAddressBuilder.addressLine1(address.getAddressLines().get(0));
-            ccdAddressBuilder.addressLine2(address.getAddressLines().get(1));
-            ccdAddressBuilder.addressLine3(address.getAddressLines().get(2));
-        } catch (IndexOutOfBoundsException exc) {
-            //the address line out of bounds is going to be set as null, which is ok
-        }
-        return ccdAddressBuilder.build();
-    }
-
-    private HearingCourt mapHearingCourt(CCDCase ccdCase, CCDHearingCourtType courtType) {
-        HearingCourt.HearingCourtBuilder courtBuilder = HearingCourt.builder();
-        switch (courtType) {
-            case CLAIMANT_COURT:
-                CCDApplicant applicant = ccdCase.getApplicants().get(0).getValue();
-                return courtBuilder.name(applicant.getPreferredCourtName())
-                    .address(applicant.getPreferredCourtAddress())
-                    .build();
-            case DEFENDANT_COURT:
-                CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
-                return courtBuilder.name(respondent.getPreferredCourtName())
-                    .address(respondent.getPreferredCourtAddress())
-                    .build();
-            default:
-                return courtFinderApi.findMoneyClaimCourtByPostcode(courtType.getPostcode())
-                    .stream()
-                    .findFirst()
-                    .map(court -> HearingCourt.builder()
-                        .name(court.getName())
-                        .address(mapHearingAddress(court.getAddress()))
+                    .map(ccdOrderDirection -> OtherDirection.builder()
+                        .directionComment(ccdOrderDirection.getDirectionComment())
+                        .sendBy(ccdOrderDirection.getSendBy())
+                        .expertReports(ccdOrderDirection.getExpertReports())
+                        .extraDocUploadList(ccdOrderDirection.getExtraDocUploadList())
+                        .extraOrderDirection(ccdOrderDirection.getExtraOrderDirection())
+                        .forParty(ccdOrderDirection.getForParty())
+                        .otherDirectionHeaders(ccdOrderDirection.getOtherDirectionHeaders())
                         .build())
-                    .orElseThrow(IllegalArgumentException::new);
-        }
+                    .collect(Collectors.toList()))
+            .build();
     }
 }

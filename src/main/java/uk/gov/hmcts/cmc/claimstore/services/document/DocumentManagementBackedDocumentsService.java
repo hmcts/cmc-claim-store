@@ -1,52 +1,39 @@
 package uk.gov.hmcts.cmc.claimstore.services.document;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
-import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
-import uk.gov.hmcts.cmc.claimstore.documents.DefendantPinLetterPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.PdfService;
+import uk.gov.hmcts.cmc.claimstore.documents.ReviewOrderService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
-import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
+import uk.gov.hmcts.cmc.claimstore.documents.questionnaire.ClaimantDirectionsQuestionnairePdfService;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 
-import java.net.URI;
 import java.util.Optional;
 
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimIssueReceiptFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSettlementReachedFileBaseName;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_DIRECTIONS;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_SANCTIONS;
 
 @Service("documentsService")
 @ConditionalOnProperty(prefix = "document_management", name = "url")
 public class DocumentManagementBackedDocumentsService implements DocumentsService {
 
-    private static final Logger logger = LoggerFactory.getLogger(DocumentManagementBackedDocumentsService.class);
-
-    private static final String OCMC = "OCMC";
     private final ClaimService claimService;
     private final DocumentManagementService documentManagementService;
     private final SealedClaimPdfService sealedClaimPdfService;
     private final ClaimIssueReceiptService claimIssueReceiptService;
     private final DefendantResponseReceiptService defendantResponseReceiptService;
-    private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
     private final SettlementAgreementCopyService settlementAgreementCopyService;
-    private final DefendantPinLetterPdfService defendantPinLetterPdfService;
+    private final ReviewOrderService reviewOrderService;
+    private final ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService;
 
     @Autowired
     @SuppressWarnings("squid:S00107")
@@ -57,88 +44,78 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         SealedClaimPdfService sealedClaimPdfService,
         ClaimIssueReceiptService claimIssueReceiptService,
         DefendantResponseReceiptService defendantResponseReceiptService,
-        CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
         SettlementAgreementCopyService settlementAgreementCopyService,
-        DefendantPinLetterPdfService defendantPinLetterPdfService
+        ReviewOrderService reviewOrderService,
+        ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService
     ) {
         this.claimService = claimService;
         this.documentManagementService = documentManagementService;
         this.sealedClaimPdfService = sealedClaimPdfService;
         this.claimIssueReceiptService = claimIssueReceiptService;
         this.defendantResponseReceiptService = defendantResponseReceiptService;
-        this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
         this.settlementAgreementCopyService = settlementAgreementCopyService;
-        this.defendantPinLetterPdfService = defendantPinLetterPdfService;
+        this.reviewOrderService = reviewOrderService;
+        this.claimantDirectionsQuestionnairePdfService = claimantDirectionsQuestionnairePdfService;
     }
 
-    @Override
-    public byte[] generateClaimIssueReceipt(String externalId, String authorisation) {
-        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        return processRequest(claim,
-            authorisation,
-            CLAIM_ISSUE_RECEIPT,
-            claimIssueReceiptService,
-            buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber()));
-    }
-
-    @Override
-    public byte[] generateSealedClaim(String externalId, String authorisation) {
-        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        return processRequest(claim,
-            authorisation,
-            SEALED_CLAIM,
-            sealedClaimPdfService,
-            buildSealedClaimFileBaseName(claim.getReferenceNumber()));
-    }
-
-    @Override
-    public byte[] generateDefendantResponseReceipt(String externalId, String authorisation) {
-        Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        if (!claim.getResponse().isPresent() && null == claim.getRespondedAt()) {
-            throw new NotFoundException("Defendant response does not exist for this claim");
+    private PdfService getService(ClaimDocumentType claimDocumentType) {
+        switch (claimDocumentType) {
+            case CLAIM_ISSUE_RECEIPT:
+                return claimIssueReceiptService;
+            case SEALED_CLAIM:
+                return sealedClaimPdfService;
+            case DEFENDANT_RESPONSE_RECEIPT:
+                return defendantResponseReceiptService;
+            case SETTLEMENT_AGREEMENT:
+                return settlementAgreementCopyService;
+            case CLAIMANT_DIRECTIONS_QUESTIONNAIRE:
+                return claimantDirectionsQuestionnairePdfService;
+            case REVIEW_ORDER:
+                return reviewOrderService;
+            default:
+                throw new IllegalArgumentException(
+                    "Unknown document service for document of type " + claimDocumentType.name());
         }
-        return processRequest(claim,
-            authorisation,
-            DEFENDANT_RESPONSE_RECEIPT,
-            defendantResponseReceiptService,
-            buildResponseFileBaseName(claim.getReferenceNumber()));
     }
 
     @Override
-    public byte[] generateSettlementAgreement(String externalId, String authorisation) {
+    public byte[] generateDocument(String externalId, ClaimDocumentType claimDocumentType, String authorisation) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        if (!claim.getSettlement().isPresent() && null == claim.getSettlementReachedAt()) {
-            throw new NotFoundException("Settlement Agreement does not exist for this claim");
-        }
-        return processRequest(claim,
-            authorisation,
-            SETTLEMENT_AGREEMENT,
-            settlementAgreementCopyService,
-            buildSettlementReachedFileBaseName(claim.getReferenceNumber()));
+        return processRequest(claim, authorisation, claimDocumentType);
     }
 
-    private byte[] processRequest(
-        Claim claim,
-        String authorisation,
-        ClaimDocumentType claimDocumentType,
-        PdfService pdfService,
-        String baseFileName
-    ) {
-        Optional<URI> claimDocument = claim.getClaimDocument(claimDocumentType);
+    private byte[] processRequest(Claim claim, String authorisation, ClaimDocumentType claimDocumentType) {
+
+        if (claimDocumentType == ORDER_DIRECTIONS || claimDocumentType == ORDER_SANCTIONS) {
+            return getOrderDocuments(claim, authorisation, claimDocumentType);
+        } else {
+            return getClaimJourneyDocuments(claim, authorisation, claimDocumentType);
+        }
+    }
+
+    private byte[] getOrderDocuments(Claim claim, String authorisation, ClaimDocumentType claimDocumentType) {
+        Optional<ClaimDocument> claimDocument = claim.getClaimDocument(claimDocumentType);
+        return claimDocument
+            .map(document -> documentManagementService.downloadDocument(authorisation, document))
+            .orElseThrow(() -> new IllegalArgumentException("Document is not available for download."));
+    }
+
+    private byte[] getClaimJourneyDocuments(Claim claim, String authorisation, ClaimDocumentType claimDocumentType) {
         try {
-            if (claimDocument.isPresent()) {
-                URI documentSelfPath = claimDocument.get();
-                return documentManagementService.downloadDocument(authorisation, documentSelfPath, baseFileName);
-            } else {
-                PDF document = new PDF(baseFileName, pdfService.createPdf(claim), claimDocumentType);
-                uploadToDocumentManagement(document,
-                    authorisation,
-                    claim);
-                return document.getBytes();
-            }
+            Optional<ClaimDocument> claimDocument = claim.getClaimDocument(claimDocumentType);
+            return claimDocument
+                .map(document -> documentManagementService.downloadDocument(authorisation, document))
+                .orElseGet(() -> generateNewDocument(claim, authorisation, claimDocumentType));
+
         } catch (Exception ex) {
-            return pdfService.createPdf(claim);
+            return getService(claimDocumentType).createPdf(claim).getBytes();
         }
+    }
+
+    private byte[] generateNewDocument(Claim claim, String authorisation, ClaimDocumentType claimDocumentType) {
+        PDF document = getService(claimDocumentType).createPdf(claim);
+        uploadToDocumentManagement(document, authorisation, claim);
+        return document.getBytes();
     }
 
     public Claim uploadToDocumentManagement(PDF document, String authorisation, Claim claim) {

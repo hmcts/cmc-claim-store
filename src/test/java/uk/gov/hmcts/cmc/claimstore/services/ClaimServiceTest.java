@@ -21,17 +21,20 @@ import uk.gov.hmcts.cmc.claimstore.rules.ClaimAuthorisationRule;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimDeadlineService;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.rules.PaidInFullRule;
+import uk.gov.hmcts.cmc.claimstore.rules.ReviewOrderRule;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
+import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -118,6 +121,7 @@ public class ClaimServiceTest {
             appInsights,
             new PaidInFullRule(),
             new ClaimAuthorisationRule(userService),
+            new ReviewOrderRule(),
             false
         );
     }
@@ -217,6 +221,7 @@ public class ClaimServiceTest {
             appInsights,
             new PaidInFullRule(),
             new ClaimAuthorisationRule(userService),
+            new ReviewOrderRule(),
             true
         );
 
@@ -474,6 +479,40 @@ public class ClaimServiceTest {
             eq(claim.getId()),
             eq(ClaimState.OPEN)
         );
+    }
+
+    @Test
+    public void saveReviewOrderShouldFinishSuccessfully() {
+        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
+        when(userService.getUserDetails(AUTHORISATION)).thenReturn(VALID_CLAIMANT);
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
+            .thenReturn(Optional.of(claim));
+
+        ReviewOrder reviewOrder = SampleReviewOrder.getDefault();
+
+        claimService.saveReviewOrder(EXTERNAL_ID, reviewOrder, AUTHORISATION);
+
+        verify(caseRepository, once()).saveReviewOrder(eq(claim.getId()), eq(reviewOrder), eq(AUTHORISATION));
+    }
+
+    @Test(expected = ConflictException.class)
+    public void saveReviewOrderShouldThrowConflictExceptionIfAlreadyExists() {
+        ReviewOrder reviewOrder = SampleReviewOrder.getDefault();
+
+        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
+        when(userService.getUserDetails(AUTHORISATION)).thenReturn(VALID_CLAIMANT);
+
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
+            .thenReturn(Optional.of(createSampleClaim().withReviewOrder(reviewOrder).build()));
+
+        claimService.saveReviewOrder(EXTERNAL_ID, reviewOrder, AUTHORISATION);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void saveReviewOrderShouldThrowNotFoundExceptionWhenClaimNotFound() {
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any())).thenReturn(empty());
+
+        claimService.saveReviewOrder(EXTERNAL_ID, SampleReviewOrder.getDefault(), AUTHORISATION);
     }
 
     private static Claim createClaimModel(ClaimData claimData, String letterHolderId) {
