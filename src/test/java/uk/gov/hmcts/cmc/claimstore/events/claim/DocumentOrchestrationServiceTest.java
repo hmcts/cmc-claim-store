@@ -8,10 +8,12 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.documents.CitizenServiceDocumentsService;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
+import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.reform.sendletter.api.Document;
@@ -25,6 +27,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DocumentOrchestrationServiceTest {
@@ -69,9 +72,17 @@ public class DocumentOrchestrationServiceTest {
 
         given(citizenServiceDocumentsService.sealedClaimDocument(eq(CLAIM))).willReturn(sealedClaimLetterDocument);
         given(citizenServiceDocumentsService.pinLetterDocument(eq(CLAIM), eq(PIN))).willReturn(defendantLetterDocument);
-        given(sealedClaimPdfService.createPdf(eq(CLAIM))).willReturn(PDF_BYTES);
+        given(sealedClaimPdfService.createPdf(eq(CLAIM))).willReturn(new PDF(
+            "sealedClaim",
+            PDF_BYTES,
+            ClaimDocumentType.SEALED_CLAIM
+        ));
+        given(claimIssueReceiptService.createPdf(eq(CLAIM))).willReturn(new PDF(
+            "claimIssueReceipt",
+            PDF_BYTES,
+            CLAIM_ISSUE_RECEIPT
+        ));
         given(pdfServiceClient.generateFromHtml(any(), anyMap())).willReturn(PDF_BYTES);
-        given(claimIssueReceiptService.createPdf(eq(CLAIM))).willReturn(PDF_BYTES);
 
         given(userService.generatePin(eq(CLAIM.getClaimData().getDefendant().getName()), eq(AUTHORISATION)))
             .willReturn(GeneratePinResponse.builder()

@@ -1,6 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content;
 
 import org.junit.Test;
+import org.springframework.util.Assert;
+import uk.gov.hmcts.cmc.claimstore.documents.content.directionsquestionnaire.HearingContentProvider;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
@@ -17,7 +19,8 @@ public class PartAdmissionResponseContentProviderTest {
     private PartAdmissionResponseContentProvider provider =
         new PartAdmissionResponseContentProvider(
             new PaymentIntentionContentProvider(),
-            new StatementOfMeansContentProvider()
+            new StatementOfMeansContentProvider(),
+            new HearingContentProvider()
         );
 
     @Test(expected = NullPointerException.class)
@@ -105,5 +108,13 @@ public class PartAdmissionResponseContentProviderTest {
         Map<String, Object> content = provider.createContent(partAdmissionResponse);
         assertThat(content).containsKey("formNumber");
         assertThat(content).containsValue("OCON9A");
+    }
+
+    @Test
+    public void shouldProvideHearingContent() {
+        PartAdmissionResponse partAdmissionResponse = builder().buildWithDirectionsQuestionnaire();
+        Map<String, Object> content = provider.createContent(partAdmissionResponse);
+        assertThat(content).containsKey("hearingContent");
+        Assert.notNull(content.get("hearingContent"), "Hearing Content cannot be null");
     }
 }
