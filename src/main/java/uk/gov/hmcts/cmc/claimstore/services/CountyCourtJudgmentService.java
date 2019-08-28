@@ -45,7 +45,7 @@ public class CountyCourtJudgmentService {
         this.appInsights = appInsights;
     }
 
-    @Transactional(transactionManager = "transactionManager")
+    @Transactional(transactionManager = "cmcTransactionManager")
     public Claim save(
         CountyCourtJudgment countyCourtJudgment,
         String externalId,
@@ -80,7 +80,7 @@ public class CountyCourtJudgmentService {
         return claimWithCCJ;
     }
 
-    @Transactional(transactionManager = "transactionManager")
+    @Transactional(transactionManager = "cmcTransactionManager")
     public Claim reDetermination(
         ReDetermination redetermination,
         String externalId,

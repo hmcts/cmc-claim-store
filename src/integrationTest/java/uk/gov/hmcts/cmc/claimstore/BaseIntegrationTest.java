@@ -3,19 +3,14 @@ package uk.gov.hmcts.cmc.claimstore;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
-import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
-
-import javax.sql.DataSource;
 
 import static org.springframework.test.context.TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -46,9 +41,6 @@ public abstract class BaseIntegrationTest extends MockSpringTest {
     public static class CleanDatabaseListener extends AbstractTestExecutionListener {
         @Override
         public void beforeTestClass(TestContext testContext) {
-            ApplicationContext applicationContext = testContext.getApplicationContext();
-            DataSource dataSource = applicationContext.getBean("claimStoreDataSource", DataSource.class);
-            JdbcTestUtils.deleteFromTables(new JdbcTemplate(dataSource), "claim");
         }
     }
 
