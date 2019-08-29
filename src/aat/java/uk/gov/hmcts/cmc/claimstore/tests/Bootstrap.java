@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.tests.idam.IdamTestService;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 @Component
 public class Bootstrap {
@@ -53,6 +54,19 @@ public class Bootstrap {
             aatConfiguration.getSmokeTestCitizen().getUsername(),
             aatConfiguration.getSmokeTestCitizen().getPassword()
         );
+    }
+
+    @PreDestroy
+    public void after() {
+        if (claimant != null) {
+            idamTestService.deleteUser(claimant.getUserDetails().getEmail());
+        }
+        if (defendant != null) {
+            idamTestService.deleteUser(defendant.getUserDetails().getEmail());
+        }
+        if (solicitor != null) {
+            idamTestService.deleteUser(solicitor.getUserDetails().getEmail());
+        }
     }
 
     public User getSmokeTestCitizen() {
