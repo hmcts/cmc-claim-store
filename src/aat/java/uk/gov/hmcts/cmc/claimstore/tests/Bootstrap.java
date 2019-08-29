@@ -61,6 +61,9 @@ public class Bootstrap {
         if (claimant != null) {
             idamTestService.deleteUser(claimant.getUserDetails().getEmail());
         }
+        if (defendant != null) {
+            idamTestService.deleteUser(defendant.getUserDetails().getEmail());
+        }
         if (solicitor != null) {
             idamTestService.deleteUser(solicitor.getUserDetails().getEmail());
         }
