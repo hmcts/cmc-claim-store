@@ -127,6 +127,7 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
         CCDCollectionElement<CCDClaimDocument> claimDocument = CCDCollectionElement.<CCDClaimDocument>builder()
             .value(CCDClaimDocument.builder()
                 .documentLink(draftOrderDoc)
+                .documentName(draftOrderDoc.getDocumentFileName())
                 .createdDatetime(LocalDateTime.now(clock.withZone(UTC_ZONE)))
                 .documentType(ORDER_DIRECTIONS)
                 .build())

@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt;
@@ -66,9 +65,13 @@ public class DirectionOrderMapper {
             .forEach(ccdOrderDirection -> directionOrder.addDirection(Direction.builder()
                 .directionType(DirectionType.valueOf(ccdOrderDirection.getExtraOrderDirection().name()))
                 .directionComment(ccdOrderDirection.getDirectionComment())
-                .directionParty(DirectionParty.valueOf(ccdOrderDirection.getForParty().name()))
+                .directionParty(Optional.ofNullable(ccdOrderDirection.getForParty())
+                    .map(partyType -> DirectionParty.valueOf(partyType.name()))
+                    .orElse(null))
                 .directionActionedDate(ccdOrderDirection.getSendBy())
-                .directionHeaderType(getDirectionHeaderType(ccdOrderDirection))
+                .directionHeaderType(Optional.ofNullable(ccdOrderDirection.getOtherDirectionHeaders())
+                    .map(headerType -> DirectionHeaderType.valueOf(headerType.name()))
+                    .orElse(null))
                 .expertReports(asStream(ccdOrderDirection.getExpertReports())
                     .filter(Objects::nonNull)
                     .map(CCDCollectionElement::getValue)
@@ -79,12 +82,6 @@ public class DirectionOrderMapper {
                 .build()));
 
         return directionOrder;
-    }
-
-    private DirectionHeaderType getDirectionHeaderType(CCDOrderDirection ccdOrderDirection) {
-        return Optional.ofNullable(ccdOrderDirection.getOtherDirectionHeaders())
-            .map(headerType -> DirectionHeaderType.valueOf(headerType.name()))
-            .orElse(null);
     }
 
     private void addEyeWitnessDirection(CCDOrderGenerationData directionOrderData, DirectionOrder directionOrder) {
