@@ -9,7 +9,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-
 import java.util.Set;
 
 import static java.util.Arrays.asList;

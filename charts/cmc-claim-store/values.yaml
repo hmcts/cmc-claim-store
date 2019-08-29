@@ -14,6 +14,7 @@ java:
         - system-update-username
         - system-update-password
         - notify-api-key
+        - milo-recipient
   environment:
     REFORM_TEAM: cmc
     REFORM_SERVICE_NAME: claim-store
@@ -38,3 +39,5 @@ java:
     RPA_NOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT: civilmoneyclaims+rpa-county-court-judgement@gmail.com
     RPA_NOTIFICATIONS_PAIDINFULLRECIPIENT: civilmoneyclaims+rpa-paid-in-full@gmail.com
     DOCUMENT_MANAGEMENT_USERROLES: caseworker-cmc,citizen
+    MILO_CSV_SCHEDULE: '-'
+    MILO_CSV_SENDER: noreply@reform.hmcts.net
