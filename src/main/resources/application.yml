@@ -158,9 +158,17 @@ feature_toggles:
   async_event_operations_enabled: false
   directions_questionnaire_enabled: false
 
+logging.level.uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi: DEBUG
+
 feign:
   httpclient:
     enabled: true
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: full
 
 claim-store:
   test-support:

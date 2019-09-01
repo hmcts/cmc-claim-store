@@ -57,6 +57,9 @@ public abstract class MockSpringTest {
     @Autowired
     protected TestingSupportRepository testingSupportRepository;
 
+    @Autowired
+    protected CoreCaseDataApi coreCaseDataApi;
+
     @MockBean
     protected UserService userService;
 
@@ -83,9 +86,6 @@ public abstract class MockSpringTest {
 
     @MockBean
     protected DocumentUploadClientApi documentUploadClient;
-
-    @MockBean
-    protected CoreCaseDataApi coreCaseDataApi;
 
     @MockBean
     protected DocAssemblyApi docAssemblyApi;

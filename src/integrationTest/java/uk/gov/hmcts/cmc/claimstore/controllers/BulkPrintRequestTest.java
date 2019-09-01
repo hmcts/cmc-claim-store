@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
-import uk.gov.hmcts.cmc.claimstore.MockedCoreCaseDataApi;
+import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
 import uk.gov.hmcts.cmc.claimstore.services.staff.BulkPrintStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     }
 )
 @AutoConfigureWireMock(port = 0)
-public class BulkPrintRequestTest extends MockedCoreCaseDataApi {
+public class BulkPrintRequestTest extends BaseSaveTest {
 
     @Autowired
     private WireMockServer wireMockServer;
@@ -54,11 +54,6 @@ public class BulkPrintRequestTest extends MockedCoreCaseDataApi {
             )
         );
 
-/*        stubForStartForCaseworker();
-        stubForSubmitForCaseworker();
-        stubForStartEventForCaseWorker();
-        stubForSubmitEventForCaseWorker();
-*/
         MvcResult result = makeIssueClaimRequest(SampleClaimData.submittedByClaimant(), AUTHORISATION_TOKEN)
             .andExpect(status().isOk())
             .andReturn();
