@@ -5,9 +5,13 @@ import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
+import java.util.Collections;
+
 import static com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder.okForJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -31,16 +35,29 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
     @Test
     public void shouldPerformSimpleTesting() throws Exception {
 
+        final ClaimData submittedByLegalRepresentative = SampleClaimData.submittedByLegalRepresentative();
+        final String externalID = submittedByLegalRepresentative.getExternalId().toString();
+
+        stubForSearchForCaseWorkers(externalID);
         stubForStartForCaseworker();
-        stubForSubmitForCaseworker();
-        stubForStartEventForCaseWorker();
-        stubForSubmitEventForCaseWorker();
+        stubForSubmitForCaseworker(externalID);
 
         given(authTokenGenerator.generate()).willReturn(SOLICITOR_AUTHORISATION_TOKEN);
 
-        makeIssueClaimRequest(SampleClaimData.submittedByLegalRepresentative(), SOLICITOR_AUTHORISATION_TOKEN)
+        makeIssueClaimRequest(submittedByLegalRepresentative, SOLICITOR_AUTHORISATION_TOKEN)
             .andExpect(status().isOk())
             .andReturn();
+    }
+
+    public void stubForSearchForCaseWorkers(String externalID) {
+        final String URI = "/caseworkers/" + USER_ID +"/jurisdictions/"+ JURISDICTION_ID +"/case-types/"+ CASE_TYPE_ID + "/cases"
+            + "?" + "case.externalId=" + externalID + "&" + "sortDirection=desc" + "&" + "page=1";
+
+        stubFor(get(urlEqualTo(URI))
+            .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
+            .withHeader(HttpHeaders.AUTHORIZATION, equalTo(SOLICITOR_AUTHORISATION_TOKEN))
+            .willReturn(okForJson(Collections.emptyList()))
+        );
     }
 
     public void stubForStartForCaseworker() {
@@ -54,15 +71,14 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
         );
     }
 
-    public void stubForSubmitForCaseworker() {
+    public void stubForSubmitForCaseworker(String externalID) {
         final String URI = "/caseworkers/" + USER_ID +"/jurisdictions/"+ JURISDICTION_ID
-                           +"/case-types/"+ CASE_TYPE_ID +"/cases";
+                           +"/case-types/"+ CASE_TYPE_ID +"/cases" + "?" + "ignore-warning=" + IGNORE_WARNING;
 
         stubFor(post(urlEqualTo(URI))
-            .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
+            .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .withHeader(HttpHeaders.AUTHORIZATION, equalTo(SOLICITOR_AUTHORISATION_TOKEN))
-            .withQueryParam("ignore-warning", equalTo(String.valueOf(IGNORE_WARNING)))
-            .withRequestBody(equalTo(""))
+            .withRequestBody(containing(externalID))
             .willReturn(okForJson(successfulCoreCaseDataStoreSubmitRepresentativeResponse()))
         );
     }
@@ -81,12 +97,11 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
 
    public void stubForSubmitEventForCaseWorker() {
         final String URI = "/caseworkers/"+ USER_ID +"/jurisdictions/"+ JURISDICTION_ID +"/case-types/"
-                           + CASE_TYPE_ID +"/cases/"+ " " +"/events";
+                           + CASE_TYPE_ID +"/cases/"+ " " +"/events" + "?" + "ignore-warning" + IGNORE_WARNING;
 
         stubFor(post(urlEqualTo(URI))
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
             .withHeader(HttpHeaders.AUTHORIZATION, equalTo(SOLICITOR_AUTHORISATION_TOKEN))
-            .withQueryParam("ignore-warning", equalTo(String.valueOf(IGNORE_WARNING)))
             .withRequestBody(equalTo(""))
             .willReturn(okForJson(successfulCoreCaseDataStoreSubmitRepresentativeResponse()))
         );
