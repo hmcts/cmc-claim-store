@@ -29,8 +29,19 @@ public class ResourceLoader {
     }
 
     public static StartEventResponse successfulCoreCaseDataStoreStartResponse() {
-        String response = new ResourceReader().read("/core-case-data/start-response.success.json");
-        return jsonMapper.fromJson(response, StartEventResponse.class);
+        return jsonMapper.fromJson(startEventResponseSuccessAsFile(), StartEventResponse.class);
+    }
+
+    public static String startEventResponseSuccessAsFile() {
+        return new ResourceReader().read("/core-case-data/start-response.success.json");
+    }
+
+    public static String submitEventResponseSuccessAsFile() {
+        return new ResourceReader().read("/core-case-data/submit-representative-response.success.json");
+    }
+
+    public static CaseDetails successfulCoreCaseDataStoreSubmitRepresentativeResponse() {
+        return jsonMapper.fromJson(submitEventResponseSuccessAsFile(), CaseDetails.class);
     }
 
     public static StartEventResponse successfulCoreCaseDataStoreStartResponseWithLinkedDefendant() {
@@ -45,11 +56,6 @@ public class ResourceLoader {
 
     public static CaseDetails successfulCoreCaseDataStoreSubmitResponseWithDQ() {
         String response = getResource("/core-case-data/submit-response.success-with-dq.json");
-        return jsonMapper.fromJson(response, CaseDetails.class);
-    }
-
-    public static CaseDetails successfulCoreCaseDataStoreSubmitRepresentativeResponse() {
-        String response = getResource("/core-case-data/submit-representative-response.success.json");
         return jsonMapper.fromJson(response, CaseDetails.class);
     }
 

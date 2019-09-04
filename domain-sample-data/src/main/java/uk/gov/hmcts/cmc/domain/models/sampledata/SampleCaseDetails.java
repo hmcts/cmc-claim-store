@@ -25,7 +25,6 @@ public class SampleCaseDetails {
     private static final String CALLBACK_RESPONSE_STATUS = "";
 
     private SampleCaseDetails() {
-
     }
 
     public static SampleCaseDetails builder() {
