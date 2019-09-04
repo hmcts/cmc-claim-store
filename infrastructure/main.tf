@@ -43,6 +43,11 @@ data "azurerm_key_vault_secret" "staff_email" {
   vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
 }
 
+data "azurerm_key_vault_secret" "milo_recipient" {
+  name = "milo-recipient"
+  vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
+}
+
 data "azurerm_key_vault_secret" "rpa_email_sealed_claim" {
   name = "rpa-email-sealed-claim"
   vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
@@ -184,6 +189,11 @@ module "claim-store-api" {
     STAFF_NOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"
     STAFF_NOTIFICATIONS_RECIPIENT = "${data.azurerm_key_vault_secret.staff_email.value}"
 
+    // MILO
+    MILO_CSV_SENDER = "noreply@reform.hmcts.net"
+    MILO_CSV_RECIPIENT = "${data.azurerm_key_vault_secret.milo_recipient.value}"
+    MILO_CSV_SCHEDULE = "-"
+
     // robot notifications
     RPA_NOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"
     RPA_NOTIFICATIONS_SEALEDCLAIMRECIPIENT = "${data.azurerm_key_vault_secret.rpa_email_sealed_claim.value}"
@@ -199,7 +209,7 @@ module "claim-store-api" {
     FEATURE_TOGGLES_CCD_ASYNC_ENABLED = "${var.ccd_async_enabled}"
     FEATURE_TOGGLES_SAVE_CLAIM_STATE_ENABLED = "${var.save_claim_state_enabled}"
     FEATURE_TOGGLES_ASYNC_EVENT_OPERATIONS_ENABLED = "${var.async_event_operations_enabled}"
-
+    FEATURE_TOGGLES_DIRECTIONS_QUESTIONNAIRE_ENABLED = "${var.directions_questionnaire_enabled}"
     //thread pool configs
     ASYNC_MAX_THREADPOOL_SIZE = 50
 

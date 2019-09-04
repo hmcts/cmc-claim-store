@@ -1,0 +1,167 @@
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    @page {
+      size: 8.5in 11in;
+      margin: 5%;
+
+      @bottom-center {
+        content: "For further details of the courts www.gov.uk/find-court-tribunal";
+        white-space: nowrap;
+        /*noinspection CssNoGenericFontName*/
+        font-family: "Open Sans";
+        font-size: 10px;
+      }
+
+      @bottom-right {
+        content: "© Crown copyright Page " counter(page) " of " counter(pages);
+        white-space: nowrap;
+        /*noinspection CssNoGenericFontName*/
+        font-family: "Open Sans";
+        font-size: 10px;
+      }
+    }
+
+    @page :first {
+      @top-right {
+        content: "";
+      }
+    }
+    html {
+      /*noinspection CssNoGenericFontName*/
+      font-family: "Open Sans";
+      max-width: 960px;
+      margin: 0 auto;
+      background:#fff
+    }
+    body {
+      counter-reset: section;
+      font-family: "nta", Arial, sans-serif;
+      font-weight: 400;
+      text-transform: none;
+      font-size: 19px;
+      line-height: 1.25;
+      -webkit-font-smoothing: antialiased;
+    }
+    .section {
+      margin-bottom: 25px;
+    }
+    .section {
+      margin-bottom: 10px;
+    }
+    .section .section-heading strong:before {
+      counter-increment: section;
+      content: counter(section) ". ";
+    }
+    table {
+      width: 100%;
+      border-spacing: 0;
+    }
+    table td {
+      text-align:left;
+      line-height: 1.25;
+      padding: 0.63158em 1.05263em 0.67368em 0;
+      font-size: 18px;
+      vertical-align:top;
+      border-bottom: 1px solid #999;
+    }
+    
+    p {
+      font-size: 18px;
+    }
+    table td:first-child {
+      width: 280px;
+      vertical-align: top;
+    }
+    table td:last-child {
+      width: auto;
+    }
+    header table td, header table tr:last-child td {
+      border: none;
+    }
+    header td {
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      font-weight:100;
+      font-size:24px;
+    }
+    .page-title span{
+      float:right
+    }
+    .crestLogo{
+      margin-top:40px
+    }
+    .claim-details{
+      text-align:right
+    }
+    .footer td{
+      font-size:10px;
+      padding-top:40px;
+      border-bottom: none;
+    }
+    .footer td:nth-child(3){
+      text-align:right
+    }
+  </style>
+</head>
+<body>
+<header>
+
+  <table class="crestLogo">
+    <tbody>
+    <tr>
+      <td class="claim-details">
+        <h1>Request for review of order</h1>
+        <p>In the County Court Business Centre Online Civil Money Claims</p>
+        <p><strong>Claim number:</strong> {{ claimReferenceNumber }}<br />
+          <strong>Date:</strong> {{ reviewDate }}</p></td>
+    </tr>
+    </tbody>
+  </table>
+</header>
+
+<div class="section">
+  <table>
+    <tbody>
+    <tr>
+      <td>
+        <strong>Party's name:</strong>
+      </td>
+      <td>
+        {{ partyFullName }}
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <strong>Address:</strong>
+      </td>
+      <td>
+        {{ partyAddress.line1 }}
+        <br />
+        {% if partyAddress.line2 is defined and partyAddress.line2 is not empty %}
+        {{ partyAddress.line2 }}
+        <br />
+        {% endif %}
+        {% if partyAddress.line3 is defined and partyAddress.line3 is not empty %}
+        {{ partyAddress.line3 }}
+        <br />
+        {% endif %}
+        {{ partyAddress.city }}
+        <br />
+        {{ partyAddress.postcode }}
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <strong>Reason for request:</strong>
+      </td>
+      <td>{{ reviewReason }}</td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+</body>
+</html>

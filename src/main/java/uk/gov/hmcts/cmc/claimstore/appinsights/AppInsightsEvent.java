@@ -36,7 +36,8 @@ public enum AppInsightsEvent {
     PAID_IN_FULL("Paid in full"),
     NOTIFICATION_FAILURE("Notification - failure"),
     DOCUMENT_MANAGEMENT_UPLOAD_FAILURE("Document management upload - failure"),
-    DOCUMENT_MANAGEMENT_DOWNLOAD_FAILURE("Document management download - failure");
+    DOCUMENT_MANAGEMENT_DOWNLOAD_FAILURE("Document management download - failure"),
+    MEDIATION_REPORT_FAILURE("Mediation Report - failure");
 
     private String displayName;
 

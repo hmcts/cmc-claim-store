@@ -92,6 +92,10 @@ variable "async_event_operations_enabled" {
   default = "false"
 }
 
+variable "directions_questionnaire_enabled" {
+  default = "false"
+}
+
 variable "common_tags" {
   type = "map"
 }
