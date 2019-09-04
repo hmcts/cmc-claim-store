@@ -6,5 +6,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public enum CCDOrderDirectionType {
     DOCUMENTS,
     EYEWITNESS,
-    OTHER
+    OTHER,
+    EXPERT_REPORT_PERMISSION
 }

@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -34,7 +36,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponse;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponseWithDQ;
 
 @TestPropertySource(
     properties = {
@@ -51,6 +53,9 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
 
     private static final String AUTHORISATION_TOKEN = "Bearer let me in";
     private static final String DOCUMENT_URL = "http://bla.test";
+
+    @Autowired
+    protected CaseDetailsConverter caseDetailsConverter;
 
     @Before
     public void setUp() {
@@ -87,17 +92,21 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
 
-        assertThat(responseData).hasSize(4);
+        assertThat(responseData).hasSize(7);
         assertThat(LocalDate.parse(responseData.get("docUploadDeadline").toString()))
-            .isAfterOrEqualTo(LocalDate.now().plusDays(33));
+            .isAfterOrEqualTo(LocalDate.now().plusDays(42));
         assertThat(LocalDate.parse(responseData.get("eyewitnessUploadDeadline").toString()))
-            .isAfterOrEqualTo(LocalDate.now().plusDays(33));
+            .isAfterOrEqualTo(LocalDate.now().plusDays(42));
         assertThat(responseData).flatExtracting("directionList")
             .containsExactlyInAnyOrder("DOCUMENTS", "EYEWITNESS");
-        assertThat(responseData.get("preferredCourt")).isEqualTo("Preferred court");
+        assertThat(responseData.get("docUploadForParty")).isEqualTo("BOTH");
+        assertThat(responseData.get("eyewitnessUploadForParty")).isEqualTo("BOTH");
+        assertThat(responseData.get("preferredDQCourt")).isEqualTo("Preferred court");
+        assertThat(responseData.get("paperDetermination")).isEqualTo("NO");
         assertThat(responseData.get("newRequestedCourt")).isNull();
         assertThat(responseData.get("preferredCourtObjectingParty")).isNull();
         assertThat(responseData.get("preferredCourtObjectingReason")).isNull();
+        assertThat(responseData.get("otherDirectionHeaders")).isNull();
     }
 
     @Test
@@ -125,19 +134,22 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
     }
 
     private ResultActions makeRequest(String callbackType) throws Exception {
-        CaseDetails caseDetailsTemp =  successfulCoreCaseDataStoreSubmitResponse();
+        CaseDetails caseDetailsTemp =  successfulCoreCaseDataStoreSubmitResponseWithDQ();
         CaseDetails caseDetailsBefore = CaseDetails.builder()
             .id(caseDetailsTemp.getId())
             .data(caseDetailsTemp.getData())
             .build();
         Map<String, Object> data = new HashMap<>(caseDetailsTemp.getData());
-        data.put("hearingIsRequired", "Yes");
+        data.put("paperDetermination", "No");
         data.put("docUploadDeadline", "2019-06-03");
         data.put("docUploadForParty", "BOTH");
         data.put("eyewitnessUploadDeadline", "2019-06-03");
         data.put("eyewitnessUploadForParty", "CLAIMANT");
         data.put("directionList", ImmutableList.of("EYEWITNESS", "DOCUMENTS"));
-        data.put("otherDirectionList", ImmutableList.of(
+        data.put("extraDocUploadList", ImmutableList.of(ImmutableMap.of(
+            "id", "",
+            "value", "text")));
+        data.put("otherDirections", ImmutableList.of(
             ImmutableMap.of(
                 "id", "",
                 "value", ImmutableMap.of(
@@ -148,15 +160,14 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
                 "id", "",
                 "value", ImmutableMap.of(
                     "extraOrderDirection", "OTHER",
-                    "otherDirection", "second",
+                    "directionComment", "second",
                     "sendBy", "2019-06-04",
                     "forParty", "BOTH"))));
-        data.put("preferredCourt", "Preferred court");
+        data.put("preferredDQCourt", "Preferred court");
         data.put("newRequestedCourt", "Another court");
         data.put("preferredCourtObjectingReason", "Because");
         data.put("hearingCourt", "CLERKENWELL");
         data.put("estimatedHearingDuration", "HALF_HOUR");
-        data.put("hearingStatement", "some");
 
         CaseDetails caseDetails = CaseDetails.builder()
             .id(caseDetailsTemp.getId())
@@ -177,9 +188,9 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
     }
 
     private ResultActions makeRequestGenerateOrder(String callbackType) throws Exception {
-        CaseDetails caseDetailsTemp =  successfulCoreCaseDataStoreSubmitResponse();
+        CaseDetails caseDetailsTemp =  successfulCoreCaseDataStoreSubmitResponseWithDQ();
         Map<String, Object> data = new HashMap<>(caseDetailsTemp.getData());
-        data.put("preferredCourt", "Preferred court");
+        data.put("preferredDQCourt", "Preferred court");
 
         CaseDetails caseDetails = CaseDetails.builder()
             .id(caseDetailsTemp.getId())

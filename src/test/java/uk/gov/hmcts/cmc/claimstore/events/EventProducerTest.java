@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.events.offer.OfferAcceptedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.OfferMadeEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.revieworder.ReviewOrderEvent;
 import uk.gov.hmcts.cmc.claimstore.events.settlement.RejectSettlementAgreementEvent;
 import uk.gov.hmcts.cmc.claimstore.events.settlement.SignSettlementAgreementEvent;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
@@ -54,7 +55,7 @@ public class EventProducerTest {
     }
 
     @Test
-    public void shouldCreateClaimIssueEvent() throws Exception {
+    public void shouldCreateClaimIssueEvent() {
         //given
         when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(userDetails);
 
@@ -66,7 +67,7 @@ public class EventProducerTest {
     }
 
     @Test
-    public void shouldCreateClaimIssueEventWithRepresentedClaimant() throws Exception {
+    public void shouldCreateClaimIssueEventWithRepresentedClaimant() {
 
         ClaimData data = mock(ClaimData.class);
         Claim claim = mock(Claim.class);
@@ -81,7 +82,7 @@ public class EventProducerTest {
     }
 
     @Test
-    public void shouldCreateDefendantResponseEvent() throws Exception {
+    public void shouldCreateDefendantResponseEvent() {
         //given
         DefendantResponseEvent expectedEvent
             = new DefendantResponseEvent(CLAIM, AUTHORISATION);
@@ -94,7 +95,7 @@ public class EventProducerTest {
     }
 
     @Test
-    public void shouldCreateMoreTimeForResponseRequestEvent() throws Exception {
+    public void shouldCreateMoreTimeForResponseRequestEvent() {
 
         //given
         MoreTimeRequestedEvent expectedEvent
@@ -108,7 +109,7 @@ public class EventProducerTest {
     }
 
     @Test
-    public void shouldCreateDefaultCountyCourtJudgmentSubmittedEvent() throws Exception {
+    public void shouldCreateDefaultCountyCourtJudgmentSubmittedEvent() {
         //given
         CountyCourtJudgmentEvent expectedEvent = new CountyCourtJudgmentEvent(CLAIM, AUTHORISATION);
         // when
@@ -119,7 +120,7 @@ public class EventProducerTest {
     }
 
     @Test
-    public void shouldCreateOfferMadeEventEvent() throws Exception {
+    public void shouldCreateOfferMadeEventEvent() {
 
         // given
         OfferMadeEvent expectedEvent = new OfferMadeEvent(CLAIM);
@@ -132,7 +133,7 @@ public class EventProducerTest {
     }
 
     @Test
-    public void shouldCreateOfferAcceptedEventEvent() throws Exception {
+    public void shouldCreateOfferAcceptedEventEvent() {
 
         // given
         OfferAcceptedEvent expectedEvent = new OfferAcceptedEvent(CLAIM, MadeBy.CLAIMANT);
@@ -145,7 +146,7 @@ public class EventProducerTest {
     }
 
     @Test
-    public void shouldCreateSignSettlementAgreementEvent() throws Exception {
+    public void shouldCreateSignSettlementAgreementEvent() {
         // given
         SignSettlementAgreementEvent event = new SignSettlementAgreementEvent(CLAIM);
 
@@ -161,6 +162,15 @@ public class EventProducerTest {
         RejectSettlementAgreementEvent event = new RejectSettlementAgreementEvent(CLAIM);
 
         eventProducer.createRejectSettlementAgreementEvent(CLAIM);
+
+        verify(publisher).publishEvent(eq(event));
+    }
+
+    @Test
+    public void shouldCreateReviewOrderEvent() {
+        ReviewOrderEvent event = new ReviewOrderEvent(AUTHORISATION, CLAIM);
+
+        eventProducer.createReviewOrderEvent(AUTHORISATION, CLAIM);
 
         verify(publisher).publishEvent(eq(event));
     }

@@ -19,7 +19,7 @@ public class PaidInFullTest extends BaseTest {
 
     @Before
     public void before() {
-        claimant = idamTestService.createCitizen();
+        claimant = bootstrap.getClaimant();
     }
 
     @Test
