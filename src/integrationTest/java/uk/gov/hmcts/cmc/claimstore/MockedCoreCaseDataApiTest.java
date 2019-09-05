@@ -6,7 +6,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCaseDetails;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleStartEventResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.document.domain.Classification;
@@ -30,9 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ISSUE_CASE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SEALED_CLAIM_UPLOAD;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.submitEventResponseSuccessAsFile;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreStartResponse;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.startEventResponseSuccessAsFile;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitRepresentativeResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementUploadResponse;
 
@@ -44,23 +44,26 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumen
 @AutoConfigureWireMock(port = 0)
 public class MockedCoreCaseDataApiTest extends BaseSaveTest {
 
-    final CaseDetails submittedCaseDetailsForRepresentative = successfulCoreCaseDataStoreSubmitRepresentativeResponse();
-    final StartEventResponse submittedStartEventResponseForRepresentative = successfulCoreCaseDataStoreStartResponse();
+    private final CaseDetails submittedCaseDetailsForRepresentative = successfulCoreCaseDataStoreSubmitRepresentativeResponse();
+    private final StartEventResponse submittedStartEventResponseForRepresentative = successfulCoreCaseDataStoreStartResponse();
+
+    private final CaseDetails sampleCaseDetails = SampleCaseDetails.builder().build();
+    private final StartEventResponse startEventResponse = SampleStartEventResponse.builder().build();
 
     @Test
-    public void shouldSubmitClaimForCaseWorkerForRepresentative() throws Exception {
+    public void shouldSubmitClaimForRepresentative() throws Exception {
 
         final ClaimData submittedByLegalRepresentative = SampleClaimData.submittedByLegalRepresentative();
-        final String externalID = submittedByLegalRepresentative.getExternalId().toString();
+        final String externalId = submittedByLegalRepresentative.getExternalId().toString();
 
-        stubForSearchForCaseWorkers(externalID);
+        stubForSearchForCaseWorkers(externalId);
         stubForStartForCaseworker();
-        stubForSubmitForCaseworker(externalID);
-        stubForStartEventForCaseWorker(submittedCaseDetailsForRepresentative.getId().toString(),
+        stubForSubmitForCaseworker(externalId);
+        stubForStartEventForCaseWorker(sampleCaseDetails.getId().toString(),
                                        SEALED_CLAIM_UPLOAD.getValue());
-        stubForSubmitEventForCaseWorker(submittedCaseDetailsForRepresentative.getId().toString(),
-                                        submittedStartEventResponseForRepresentative.getCaseDetails().getId().toString());
-        stubForStartEventForCaseWorker(submittedCaseDetailsForRepresentative.getId().toString(), ISSUE_CASE.getValue());
+       stubForSubmitEventForCaseWorker(sampleCaseDetails.getId().toString(),
+                                       startEventResponse.getCaseDetails().getId().toString());
+       stubForStartEventForCaseWorker(sampleCaseDetails.getId().toString(), ISSUE_CASE.getValue());
 
 
         given(authTokenGenerator.generate()).willReturn(SOLICITOR_AUTHORISATION_TOKEN);
@@ -73,9 +76,45 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
             .andReturn();
     }
 
-    public void stubForSearchForCaseWorkers(String externalID) {
+    @Test
+    public void shouldSubmitClaimForCitizen() throws Exception {
+        final ClaimData submittedByClaimant = SampleClaimData.submittedByClaimant();
+        final String externalId = submittedByClaimant.getExternalId().toString();
+
+        stubForSearchForCitizen(externalId);
+        stubForStartForCitizen();
+        stubForSubmitForCitizen(externalId);
+        stubForStartEventForCitizen(sampleCaseDetails.getId().toString(),
+                                    SEALED_CLAIM_UPLOAD.getValue());
+        stubForSubmitEventForCitizen(sampleCaseDetails.getId().toString(),
+                                     startEventResponse.getCaseDetails().getId().toString());
+        stubForStartEventForCitizen(sampleCaseDetails.getId().toString(),
+                                    ISSUE_CASE.getValue());
+
+        given(authTokenGenerator.generate()).willReturn(AUTHORISATION_TOKEN);
+        given(documentUploadClient
+            .upload(anyString(), anyString(), anyString(), anyList(), any(Classification.class), anyList()))
+            .willReturn(successfulDocumentManagementUploadResponse());
+
+        makeIssueClaimRequest(submittedByClaimant, AUTHORISATION_TOKEN)
+            .andExpect(status().isOk())
+            .andReturn();
+    }
+
+    public void stubForSearchForCitizen(String externalId) {
+        final String URI = "/citizens/" + USER_ID +"/jurisdictions/"+ JURISDICTION_ID +"/case-types/"+ CASE_TYPE_ID + "/cases"
+            + "?" + "case.externalId=" + externalId + "&" + "sortDirection=desc" + "&" + "page=1";
+
+        stubFor(get(urlEqualTo(URI))
+            .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
+            .withHeader(HttpHeaders.AUTHORIZATION, equalTo(AUTHORISATION_TOKEN))
+            .willReturn(okForJson(Collections.emptyList()))
+        );
+    }
+
+    public void stubForSearchForCaseWorkers(String externalId) {
         final String URI = "/caseworkers/" + USER_ID +"/jurisdictions/"+ JURISDICTION_ID +"/case-types/"+ CASE_TYPE_ID + "/cases"
-            + "?" + "case.externalId=" + externalID + "&" + "sortDirection=desc" + "&" + "page=1";
+            + "?" + "case.externalId=" + externalId + "&" + "sortDirection=desc" + "&" + "page=1";
 
         stubFor(get(urlEqualTo(URI))
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
@@ -91,34 +130,80 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
         stubFor(get(urlEqualTo(URI))
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
             .withHeader(HttpHeaders.AUTHORIZATION, equalTo(SOLICITOR_AUTHORISATION_TOKEN))
-            .willReturn(okForJson(successfulCoreCaseDataStoreStartResponse()))
+            .willReturn(aResponse()
+                        .withStatus(HTTP_OK)
+                         .withBody(jsonMapper.toJson(startEventResponse)))
         );
     }
 
-    public void stubForSubmitForCaseworker(String externalID) {
+    public void stubForStartForCitizen() {
+        final String URI = "/citizens/" + USER_ID +"/jurisdictions/"+ JURISDICTION_ID +"/case-types/"+ CASE_TYPE_ID
+            +"/event-triggers/" + CREATE_CASE.getValue() + "/token";
+
+        stubFor(get(urlEqualTo(URI))
+            .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
+            .withHeader(HttpHeaders.AUTHORIZATION, equalTo(AUTHORISATION_TOKEN))
+            .willReturn(aResponse()
+                        .withStatus(HTTP_OK)
+                        .withBody(jsonMapper.toJson(startEventResponse)))
+        );
+    }
+
+    public void stubForSubmitForCaseworker(String externalId) {
         final String URI = "/caseworkers/" + USER_ID +"/jurisdictions/"+ JURISDICTION_ID
                            +"/case-types/"+ CASE_TYPE_ID +"/cases" + "?" + "ignore-warning=" + IGNORE_WARNING;
 
         stubFor(post(urlEqualTo(URI))
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .withHeader(HttpHeaders.AUTHORIZATION, equalTo(SOLICITOR_AUTHORISATION_TOKEN))
-            .withRequestBody(containing(externalID))
+            .withRequestBody(containing(externalId))
+/*            .willReturn(aResponse()
+                    .withStatus(HTTP_OK)
+                    .withBody(jsonMapper.toJson(sampleCaseDetails)))*/
+            .willReturn(okForJson(submittedCaseDetailsForRepresentative))
+        );
+    }
+
+    public void stubForSubmitForCitizen(String externalId) {
+        final String URI = "/citizens/" + USER_ID +"/jurisdictions/"+ JURISDICTION_ID
+            +"/case-types/"+ CASE_TYPE_ID +"/cases" + "?" + "ignore-warning=" + IGNORE_WARNING;
+
+        stubFor(post(urlEqualTo(URI))
+            .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .withHeader(HttpHeaders.AUTHORIZATION, equalTo(AUTHORISATION_TOKEN))
+            .withRequestBody(containing(externalId))
+/*                .willReturn(aResponse()
+                    .withStatus(HTTP_OK)
+                    .withBody(jsonMapper.toJson(sampleCaseDetails)))*/
             .willReturn(okForJson(submittedCaseDetailsForRepresentative))
         );
     }
 
     public void stubForStartEventForCaseWorker(String caseId, String eventTriggerType) {
 
-        //Logger.getGlobal().info(startEventResponseSuccessAsFile());
         final String URI = "/caseworkers/" + USER_ID +"/jurisdictions/"+ JURISDICTION_ID +"/case-types/"+ CASE_TYPE_ID
                            +"/cases/"+ caseId +"/event-triggers/"+ eventTriggerType + "/token";
 
             stubFor(get(urlEqualTo(URI))
+                .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
+                .withHeader(HttpHeaders.AUTHORIZATION, equalTo(SOLICITOR_AUTHORISATION_TOKEN))
+                .willReturn(aResponse()
+                            .withStatus(HTTP_OK)
+                            .withBody(jsonMapper.toJson(startEventResponse)))
+            );
+    }
+
+    public void stubForStartEventForCitizen(String caseId, String eventTriggerType) {
+
+        final String URI = "/citizens/" + USER_ID +"/jurisdictions/"+ JURISDICTION_ID +"/case-types/"+ CASE_TYPE_ID
+            +"/cases/"+ caseId +"/event-triggers/"+ eventTriggerType + "/token";
+
+        stubFor(get(urlEqualTo(URI))
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
-            .withHeader(HttpHeaders.AUTHORIZATION, equalTo(SOLICITOR_AUTHORISATION_TOKEN))
+            .withHeader(HttpHeaders.AUTHORIZATION, equalTo(AUTHORISATION_TOKEN))
             .willReturn(aResponse()
-                .withStatus(HTTP_OK)
-                .withBody(startEventResponseSuccessAsFile()))
+                    .withStatus(HTTP_OK)
+                    .withBody(jsonMapper.toJson(startEventResponse)))
         );
     }
 
@@ -132,7 +217,21 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
             .withRequestBody(containing(eventId))
             .willReturn(aResponse()
                         .withStatus(HTTP_OK)
-                        .withBody(submitEventResponseSuccessAsFile()))
+                        .withBody(jsonMapper.toJson(sampleCaseDetails)))
+        );
+    }
+
+    public void stubForSubmitEventForCitizen(String caseId, String eventId) {
+        final String URI = "/citizens/"+ USER_ID +"/jurisdictions/"+ JURISDICTION_ID +"/case-types/"
+            + CASE_TYPE_ID +"/cases/"+ caseId +"/events" + "?" + "ignore-warning=" + IGNORE_WARNING;
+
+        stubFor(post(urlEqualTo(URI))
+            .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .withHeader(HttpHeaders.AUTHORIZATION, equalTo(AUTHORISATION_TOKEN))
+            .withRequestBody(containing(eventId))
+            .willReturn(aResponse()
+                    .withStatus(HTTP_OK)
+                    .withBody(jsonMapper.toJson(sampleCaseDetails)))
         );
     }
 }
