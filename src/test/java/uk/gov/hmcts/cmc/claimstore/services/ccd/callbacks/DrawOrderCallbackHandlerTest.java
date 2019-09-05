@@ -14,7 +14,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
-import uk.gov.hmcts.cmc.ccd.util.SampleData;
+import uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDCaseData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtDetailsFinder;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
@@ -127,9 +127,9 @@ public class DrawOrderCallbackHandlerTest {
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
 
-        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList()).toBuilder()
+        CCDCase ccdCase = SampleCCDCaseData.getCCDCitizenCase(Collections.emptyList()).toBuilder()
             .directionOrderData(CCDOrderGenerationData.builder().draftOrderDoc(DOCUMENT).build())
-            .directionOrder(CCDDirectionOrder.builder().hearingCourtAddress(SampleData.getCCDAddress()).build())
+            .directionOrder(CCDDirectionOrder.builder().hearingCourtAddress(SampleCCDCaseData.getCCDAddress()).build())
             .build();
 
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
@@ -158,7 +158,7 @@ public class DrawOrderCallbackHandlerTest {
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
 
-        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
+        CCDCase ccdCase = SampleCCDCaseData.getCCDCitizenCase(Collections.emptyList());
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
         drawOrderCallbackHandler.handle(callbackParams);
     }
@@ -181,9 +181,9 @@ public class DrawOrderCallbackHandlerTest {
                     .build())
                 .build();
 
-        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList()).toBuilder()
+        CCDCase ccdCase = SampleCCDCaseData.getCCDCitizenCase(Collections.emptyList()).toBuilder()
             .directionOrderData(CCDOrderGenerationData.builder().draftOrderDoc(DOCUMENT).build())
-            .directionOrder(CCDDirectionOrder.builder().hearingCourtAddress(SampleData.getCCDAddress()).build())
+            .directionOrder(CCDDirectionOrder.builder().hearingCourtAddress(SampleCCDCaseData.getCCDAddress()).build())
             .caseDocuments(ImmutableList.of(existingDocument))
             .build();
 

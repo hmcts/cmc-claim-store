@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.util;
+package uk.gov.hmcts.cmc.ccd.sampledata;
 
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
@@ -24,9 +24,9 @@ import static uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType.FULL_ADMISSI
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType.FULL_DEFENCE;
 import static uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType.PART_ADMISSION;
 import static uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceType.OTHER;
-import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDAddress;
-import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDPaymentIntention;
-import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDStatementOfMeans;
+import static uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDCaseData.getCCDAddress;
+import static uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDCaseData.getCCDPaymentIntention;
+import static uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDCaseData.getCCDStatementOfMeans;
 
 public class SampleCCDDefendant {
 

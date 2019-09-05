@@ -15,7 +15,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.ccd.util.SampleData;
+import uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDCaseData;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
@@ -139,7 +139,7 @@ public class DrawOrderCallbackHandlerTest extends MockSpringTest {
         Map<String, Object> data = new HashMap<>(caseDetailsTemp.getData());
         data.put("draftOrderDoc", ImmutableMap.of("document_url", DOCUMENT_URL));
         data.put("caseDocuments", ImmutableList.of(CLAIM_DOCUMENT));
-        data.put("directionOrder", CCDDirectionOrder.builder().hearingCourtAddress(SampleData.getCCDAddress()).build());
+        data.put("directionOrder", CCDDirectionOrder.builder().hearingCourtAddress(SampleCCDCaseData.getCCDAddress()).build());
 
         CaseDetails caseDetails = CaseDetails.builder()
             .id(caseDetailsTemp.getId())

@@ -9,7 +9,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDCourtDetermination;
 import uk.gov.hmcts.cmc.ccd.mapper.claimantresponse.CourtDeterminationMapper;
-import uk.gov.hmcts.cmc.ccd.util.SampleData;
+import uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDCaseData;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SampleCourtDetermination;
@@ -65,21 +65,21 @@ public class CourtDeterminationMapperTest {
 
     @Test
     public void shouldMapToCCDCourtDeterminationWithPayByInstalmentsToCourtDetermination() {
-        CCDCourtDetermination ccdCourtDetermination = SampleData.getCCDCourtDetermination();
+        CCDCourtDetermination ccdCourtDetermination = SampleCCDCaseData.getCCDCourtDetermination();
         CourtDetermination courtDetermination = mapper.from(ccdCourtDetermination);
         assertThat(courtDetermination).isEqualTo(ccdCourtDetermination);
     }
 
     @Test
     public void shouldMapToCCDCourtDeterminationWithPayImmediatelyToCourtDetermination() {
-        CCDCourtDetermination ccdCourtDetermination = SampleData.getCCDCourtDeterminationImmediately();
+        CCDCourtDetermination ccdCourtDetermination = SampleCCDCaseData.getCCDCourtDeterminationImmediately();
         CourtDetermination courtDetermination = mapper.from(ccdCourtDetermination);
         assertThat(courtDetermination).isEqualTo(ccdCourtDetermination);
     }
 
     @Test
     public void shouldMapToCCDCourtDeterminationWithPayBySetDateToCourtDetermination() {
-        CCDCourtDetermination ccdCourtDetermination = SampleData.getCCDCourtDeterminationPayBySetDate();
+        CCDCourtDetermination ccdCourtDetermination = SampleCCDCaseData.getCCDCourtDeterminationPayBySetDate();
         CourtDetermination courtDetermination = mapper.from(ccdCourtDetermination);
         assertThat(courtDetermination).isEqualTo(ccdCourtDetermination);
     }

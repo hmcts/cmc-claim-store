@@ -8,7 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
-import uk.gov.hmcts.cmc.ccd.util.SampleData;
+import uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDCaseData;
 import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
 
 import java.time.LocalDateTime;
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNull;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.util.SampleData.getCCDOrderGenerationData;
+import static uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDCaseData.getCCDOrderGenerationData;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -29,7 +29,7 @@ public class DirectionOrderMapperTest {
     @Test
     public void shouldMapDirectionOrderFromCCD() {
         CCDDirectionOrder ccdDirectionOrder = CCDDirectionOrder.builder()
-            .hearingCourtAddress(SampleData.getCCDAddress())
+            .hearingCourtAddress(SampleCCDCaseData.getCCDAddress())
             .createdOn(LocalDateTime.now())
             .build();
 
@@ -48,7 +48,7 @@ public class DirectionOrderMapperTest {
     @Test
     public void shouldMapNullCCDOrderGenerationDataFromCCD() {
         CCDDirectionOrder ccdDirectionOrder = CCDDirectionOrder.builder()
-            .hearingCourtAddress(SampleData.getCCDAddress())
+            .hearingCourtAddress(SampleCCDCaseData.getCCDAddress())
             .createdOn(LocalDateTime.now())
             .build();
 

@@ -62,7 +62,7 @@ public class SampleCaseDetails {
         return new SampleCaseDetails();
     }
 
-   public uk.gov.hmcts.reform.ccd.client.model.CaseDetails build() {
+   public CaseDetails build() {
        return CaseDetails.builder()
            .id(CASE_ID)
            .jurisdiction(JURISDICTION_ID)

@@ -9,8 +9,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
+import uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDCaseData;
 import uk.gov.hmcts.cmc.ccd.util.MapperUtil;
-import uk.gov.hmcts.cmc.ccd.util.SampleData;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -23,9 +23,9 @@ import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
-import static uk.gov.hmcts.cmc.ccd.util.SampleCCDClaimSubmissionOperationIndicators.CCDClaimSubmissionOperationIndicatorsWithPinSuccess;
-import static uk.gov.hmcts.cmc.ccd.util.SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicators;
-import static uk.gov.hmcts.cmc.ccd.util.SampleData.getAmountBreakDown;
+import static uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDCaseData.getAmountBreakDown;
+import static uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDClaimSubmissionOperationIndicators.CCDClaimSubmissionOperationIndicatorsWithPinSuccess;
+import static uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicators;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)
@@ -77,7 +77,7 @@ public class CaseMapperTest {
     @Test
     public void shouldMapLegalClaimFromCCD() {
         //given
-        CCDCase ccdCase = SampleData.getCCDLegalCase();
+        CCDCase ccdCase = SampleCCDCaseData.getCCDLegalCase();
 
         //when
         Claim claim = ccdCaseMapper.from(ccdCase);
@@ -89,7 +89,7 @@ public class CaseMapperTest {
     @Test
     public void shouldMapCitizenClaimFromCCD() {
         //given
-        CCDCase ccdCase = SampleData.getCCDCitizenCase(getAmountBreakDown());
+        CCDCase ccdCase = SampleCCDCaseData.getCCDCitizenCase(getAmountBreakDown());
 
         //when
         Claim claim = ccdCaseMapper.from(ccdCase);
@@ -101,7 +101,7 @@ public class CaseMapperTest {
     @Test(expected = NullPointerException.class)
     public void shouldThrowExceptionWhenMissingClaimDataFromCCDCase() {
         //given
-        CCDCase ccdCase = SampleData.getCCDCitizenCase(null);
+        CCDCase ccdCase = SampleCCDCaseData.getCCDCitizenCase(null);
 
         //when
         ccdCaseMapper.from(ccdCase);
@@ -110,7 +110,7 @@ public class CaseMapperTest {
     @Test
     public void shouldMapClaimSubmissionIndicatorsFromCCDCase() {
         //given
-        CCDCase ccdCase = SampleData.getCCDCitizenCase(getAmountBreakDown());
+        CCDCase ccdCase = SampleCCDCaseData.getCCDCitizenCase(getAmountBreakDown());
 
         //when
         Claim claim = ccdCaseMapper.from(ccdCase);
@@ -130,7 +130,7 @@ public class CaseMapperTest {
     public void shouldMapSubmissionIndicatorsFromCCDCaseWithDefaultIndicators() {
         //given
         CCDCase ccdCase =
-            SampleData.getCCDCitizenCaseWithOperationIndicators(defaultCCDClaimSubmissionOperationIndicators);
+            SampleCCDCaseData.getCCDCitizenCaseWithOperationIndicators(defaultCCDClaimSubmissionOperationIndicators);
 
         //when
         Claim claim = ccdCaseMapper.from(ccdCase);
@@ -150,7 +150,7 @@ public class CaseMapperTest {
     public void shouldMapSubmissionIndicatorsFromCCDCaseWithNullIndicators() {
         //given
         CCDCase ccdCase =
-            SampleData.getCCDCitizenCaseWithOperationIndicators(null);
+            SampleCCDCaseData.getCCDCitizenCaseWithOperationIndicators(null);
 
         //when
         ccdCaseMapper.from(ccdCase);
@@ -159,8 +159,8 @@ public class CaseMapperTest {
     @Test
     public void shouldMapSubmissionIndicatorsFromCCDCaseWithPinSuccessIndicators() {
         //given
-        CCDCase ccdCase =
-            SampleData.getCCDCitizenCaseWithOperationIndicators(CCDClaimSubmissionOperationIndicatorsWithPinSuccess);
+        CCDCase ccdCase = SampleCCDCaseData.getCCDCitizenCaseWithOperationIndicators(
+            CCDClaimSubmissionOperationIndicatorsWithPinSuccess);
 
         //when
         Claim claim = ccdCaseMapper.from(ccdCase);
@@ -179,12 +179,12 @@ public class CaseMapperTest {
     @Test
     public void shouldMapDirectionOrderCreatedOnFromCCDCase() {
         //given
-        CCDCase ccdCase = SampleData.getCCDCitizenCase(getAmountBreakDown()).toBuilder()
+        CCDCase ccdCase = SampleCCDCaseData.getCCDCitizenCase(getAmountBreakDown()).toBuilder()
             .directionOrder(CCDDirectionOrder.builder()
                 .createdOn(LocalDateTime.now())
-                .hearingCourtAddress(SampleData.getCCDAddress())
+                .hearingCourtAddress(SampleCCDCaseData.getCCDAddress())
                 .build())
-            .directionOrderData(SampleData.getCCDOrderGenerationData())
+            .directionOrderData(SampleCCDCaseData.getCCDOrderGenerationData())
             .build();
 
         //when

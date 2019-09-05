@@ -16,7 +16,7 @@ import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
-import uk.gov.hmcts.cmc.ccd.util.SampleData;
+import uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDCaseData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
@@ -93,7 +93,7 @@ public class GenerateOrderCallbackHandlerTest {
         );
 
         ReflectionTestUtils.setField(generateOrderCallbackHandler, "templateId", "testTemplateId");
-        ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
+        ccdCase = SampleCCDCaseData.getCCDCitizenCase(Collections.emptyList());
         Claim claim =
             SampleClaim.builder()
                 .withResponse(
@@ -132,7 +132,7 @@ public class GenerateOrderCallbackHandlerTest {
                         .build())
                     .build()
             ));
-        ccdCase.setDirectionOrderData(SampleData.getCCDOrderGenerationData());
+        ccdCase.setDirectionOrderData(SampleCCDCaseData.getCCDOrderGenerationData());
 
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_START)
@@ -160,7 +160,7 @@ public class GenerateOrderCallbackHandlerTest {
     @Test
     public void shouldPrepopulateFieldsOnAboutToStartEventIfOtherDirectionHeaderIsNull() {
         when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
-        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData().toBuilder()
+        CCDOrderGenerationData ccdOrderGenerationData = SampleCCDCaseData.getCCDOrderGenerationData().toBuilder()
             .hearingCourt(null)
             .build();
 
@@ -208,7 +208,7 @@ public class GenerateOrderCallbackHandlerTest {
         ccdCase.setRespondents(
             ImmutableList.of(
                 CCDCollectionElement.<CCDRespondent>builder()
-                    .value(SampleData.getIndividualRespondentWithDQInClaimantResponse())
+                    .value(SampleCCDCaseData.getIndividualRespondentWithDQInClaimantResponse())
                     .build()
             ));
         CallbackParams callbackParams = CallbackParams.builder()
@@ -241,7 +241,7 @@ public class GenerateOrderCallbackHandlerTest {
         ccdCase.setRespondents(
             ImmutableList.of(
                 CCDCollectionElement.<CCDRespondent>builder()
-                    .value(SampleData.getIndividualRespondentWithDQ())
+                    .value(SampleCCDCaseData.getIndividualRespondentWithDQ())
                     .build()
             ));
         when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
@@ -271,8 +271,8 @@ public class GenerateOrderCallbackHandlerTest {
 
     @Test
     public void shouldGenerateDocumentOnMidEvent() {
-        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
-        ccdCase.setDirectionOrderData(SampleData.getCCDOrderGenerationData());
+        CCDCase ccdCase = SampleCCDCaseData.getCCDCitizenCase(Collections.emptyList());
+        ccdCase.setDirectionOrderData(SampleCCDCaseData.getCCDOrderGenerationData());
         when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
 
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
@@ -312,7 +312,7 @@ public class GenerateOrderCallbackHandlerTest {
     @Test(expected = IllegalStateException.class)
     public void shouldThrowIfClaimantResponseIsNotPresent() {
         when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
-        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData().toBuilder()
+        CCDOrderGenerationData ccdOrderGenerationData = SampleCCDCaseData.getCCDOrderGenerationData().toBuilder()
             .otherDirections(null)
             .build();
 

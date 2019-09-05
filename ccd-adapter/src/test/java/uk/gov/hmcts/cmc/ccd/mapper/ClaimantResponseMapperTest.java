@@ -11,7 +11,7 @@ import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDClaimantResponse;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseAcceptation;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.mapper.claimantresponse.ClaimantResponseMapper;
-import uk.gov.hmcts.cmc.ccd.util.SampleData;
+import uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDCaseData;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
@@ -123,7 +123,7 @@ public class ClaimantResponseMapperTest {
 
     @Test
     public void shouldMapCCDResponseAcceptationWithCCJFormalisationToResponseAcceptation() {
-        CCDResponseAcceptation ccdResponse = SampleData.getResponseAcceptation(CCJ);
+        CCDResponseAcceptation ccdResponse = SampleCCDCaseData.getResponseAcceptation(CCJ);
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         mapper.from(ccdResponse, claimBuilder);
@@ -137,7 +137,7 @@ public class ClaimantResponseMapperTest {
 
     @Test
     public void shouldMapCCDResponseAcceptationWithClaimantPaymentIntentionImmediatelyToResponseAcceptation() {
-        CCDResponseAcceptation ccdResponse = SampleData
+        CCDResponseAcceptation ccdResponse = SampleCCDCaseData
             .getResponseAcceptationWithClaimantPaymentIntentionImmediately();
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
@@ -152,7 +152,7 @@ public class ClaimantResponseMapperTest {
 
     @Test
     public void shouldMapCCDResponseAcceptationWithClaimantPaymentIntentionPayBySetDateToResponseAcceptation() {
-        CCDResponseAcceptation ccdResponse = SampleData
+        CCDResponseAcceptation ccdResponse = SampleCCDCaseData
             .getResponseAcceptationWithClaimantPaymentIntentionPayBySetDate();
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
@@ -172,7 +172,7 @@ public class ClaimantResponseMapperTest {
 
     @Test
     public void shouldMapCCDResponseRejectionToResponseRejection() {
-        CCDResponseRejection ccdResponse = SampleData.getResponseRejection();
+        CCDResponseRejection ccdResponse = SampleCCDCaseData.getResponseRejection();
         Claim.ClaimBuilder claimBuilder = Claim.builder();
 
         mapper.from(ccdResponse, claimBuilder);

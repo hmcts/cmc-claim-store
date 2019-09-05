@@ -16,10 +16,10 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 
 import java.util.UUID;
 
-import static uk.gov.hmcts.cmc.ccd.util.SampleCCDDefendant.withPartyCompany;
-import static uk.gov.hmcts.cmc.ccd.util.SampleCCDDefendant.withPartyIndividual;
-import static uk.gov.hmcts.cmc.ccd.util.SampleCCDDefendant.withPartyOrganisation;
-import static uk.gov.hmcts.cmc.ccd.util.SampleCCDDefendant.withPartySoleTrader;
+import static uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDDefendant.withPartyCompany;
+import static uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDDefendant.withPartyIndividual;
+import static uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDDefendant.withPartyOrganisation;
+import static uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDDefendant.withPartySoleTrader;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)

@@ -15,7 +15,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
-import uk.gov.hmcts.cmc.ccd.util.SampleData;
+import uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDCaseData;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Address;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
@@ -73,12 +73,12 @@ public class DocAssemblyTemplateBodyMapperTest {
                 .postcode("SW1P4BB")
                 .town("Birmingham").build()).build()));
 
-        ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
-        ccdCase.setDirectionOrderData(SampleData.getCCDOrderGenerationData());
+        ccdCase = SampleCCDCaseData.getCCDCitizenCase(Collections.emptyList());
+        ccdCase.setDirectionOrderData(SampleCCDCaseData.getCCDOrderGenerationData());
         ccdCase.setRespondents(
             ImmutableList.of(
                 CCDCollectionElement.<CCDRespondent>builder()
-                    .value(SampleData.getIndividualRespondentWithDQ())
+                    .value(SampleCCDCaseData.getIndividualRespondentWithDQ())
                     .build()
             ));
         userDetails = SampleUserDetails.builder()
@@ -158,7 +158,7 @@ public class DocAssemblyTemplateBodyMapperTest {
 
     @Test
     public void shouldMapAddressFromCourtFinder() {
-        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData().toBuilder()
+        CCDOrderGenerationData ccdOrderGenerationData = SampleCCDCaseData.getCCDOrderGenerationData().toBuilder()
             .hearingCourt(BIRMINGHAM)
             .build();
 
@@ -265,7 +265,7 @@ public class DocAssemblyTemplateBodyMapperTest {
 
     @Test
     public void shouldMapTemplateBodyWhenOtherDirectionIsNull() {
-        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData().toBuilder()
+        CCDOrderGenerationData ccdOrderGenerationData = SampleCCDCaseData.getCCDOrderGenerationData().toBuilder()
             .otherDirections(ImmutableList.of(CCDCollectionElement.<CCDOrderDirection>builder().value(null).build()))
             .build();
 
