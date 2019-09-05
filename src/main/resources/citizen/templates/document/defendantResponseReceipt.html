@@ -12,6 +12,12 @@
       }
     }
 
+
+    .dqSection {
+      page: dqSection;
+      page-break-after: avoid;
+    }
+
     @page {
       size: 8.5in 11in;
       margin: 10%;
@@ -22,7 +28,6 @@
         /*noinspection CssNoGenericFontName*/
         font-family: "Open Sans";
       }
-
       @bottom-left {
         content: "{{ formNumber }}";
         /*noinspection CssNoGenericFontName*/
@@ -30,7 +35,6 @@
         font-size: 10px;
         font-weight: bold;
       }
-
       @bottom-center {
         content: "For further details of the courts www.gov.uk/find-court-tribunal";
         font-size: 10px;
@@ -40,6 +44,19 @@
         content: "&#169; Crown copyright Page " counter(page) " of " counter(pages);
         font-size: 10px;
         padding-left: 50px;
+      }
+
+    }
+
+
+    @page dqSection {
+
+      @bottom-left {
+        content: "OCON180";
+        /*noinspection CssNoGenericFontName*/
+        font-family: "Open Sans";
+        font-size: 10px;
+        font-weight: bold;
       }
 
     }
@@ -864,8 +881,9 @@
   </table>
 </div>
 {% endif %}
+
 {% if hearingContent is defined %}
-<p style="page-break-before: always"></p>
+<div class="dqSection">
 <header>
   <table>
     <tr>
@@ -1191,6 +1209,7 @@
   </tr>
   </tbody>
 </table>
+</div>
 {% endif %}
 </body>
 </html>
