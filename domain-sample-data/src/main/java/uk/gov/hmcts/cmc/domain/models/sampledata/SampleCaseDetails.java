@@ -1,10 +1,5 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
-
-import uk.gov.hmcts.cmc.ccd.domain.CCDClaimSubmissionOperationIndicators;
-import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
-import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Classification;
 
@@ -12,8 +7,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+
 import static java.time.LocalDateTime.now;
-import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.RAND_UUID;
 
 public class SampleCaseDetails {
 
@@ -31,7 +26,7 @@ public class SampleCaseDetails {
     private static final String CALLBACK_RESPONSE_STATUS = "";
 
     private SampleCaseDetails() {
-        CASE_DATA.put("id", "1546455160649708");
+/*        CASE_DATA.put("id", "1546455160649708");
         CASE_DATA.put("amountType", "RANGE");
         CASE_DATA.put("externalId", "918dea15-cf9d-43a4-b5b8-c40751e5de23");
         CASE_DATA.put("previousServiceCaseReference", "000LR003");
@@ -58,7 +53,7 @@ public class SampleCaseDetails {
                                                             .defendantNotification(CCDYesNoOption.YES)
                                                             .claimIssueReceiptUpload(CCDYesNoOption.YES)
                                                             .build()
-        );
+        );*/
        //CASE_DATA.put("applicants", caseData.getClaimants());
       // CASE_DATA.put("respondents", caseData.getDefendants());
     }
@@ -67,7 +62,7 @@ public class SampleCaseDetails {
         return new SampleCaseDetails();
     }
 
-   public CaseDetails build() {
+   public uk.gov.hmcts.reform.ccd.client.model.CaseDetails build() {
        return CaseDetails.builder()
            .id(CASE_ID)
            .jurisdiction(JURISDICTION_ID)
@@ -77,7 +72,7 @@ public class SampleCaseDetails {
            .state(CASE_STATE)
            .lockedBy(LOCKED_BY_USER_ID)
            .securityLevel(SECURITY_LEVEL)
-           .data(CASE_DATA)
+           //.data()
            .securityClassification(SECURITY_CLASSIFICATION)
            .callbackResponseStatus(CALLBACK_RESPONSE_STATUS)
            .build();

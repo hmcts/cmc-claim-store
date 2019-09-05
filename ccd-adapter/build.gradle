@@ -6,6 +6,7 @@ apply plugin: 'net.ltgt.apt'
 
 dependencies {
   compile project(':domain-model')
+  compile project(':domain-sample-data')
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter'
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.8'
