@@ -299,6 +299,7 @@
   <tr>
     <td><b>Expert evidence</b></td>
   </tr>
+  {% if hearingContent.hasExpertReport equals "Yes" %}
   <tr>
     <td>
       Have you already got a report written by an expert?
@@ -372,6 +373,19 @@
       </div>
     </td>
   </tr>
+  {% else %}
+  <tr>
+    <td>
+      <div>
+        Do you want the court's permission to hire an expert?
+      </div>
+    </td>
+    <td>
+      <div>{{ hearingContent.hasExpertReport | capitalize }}</div>
+    </td>
+  </tr>
+  {% endif %}
+
   <tr>
     <td><b>Witnesses</b></td>
   </tr>
