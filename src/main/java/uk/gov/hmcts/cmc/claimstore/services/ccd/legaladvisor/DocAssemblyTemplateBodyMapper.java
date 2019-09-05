@@ -67,8 +67,8 @@ public class DocAssemblyTemplateBodyMapper {
                 ccdOrderGenerationData.getExtraDocUploadList())
             .eyewitnessUploadForParty(
                 ccdOrderGenerationData.getEyewitnessUploadForParty())
-            .paperDetermination(
-                ccdOrderGenerationData.getPaperDetermination().toBoolean())
+            .paperDetermination(ccdOrderGenerationData.getPaperDetermination() != null ?
+                ccdOrderGenerationData.getPaperDetermination().toBoolean() : null)
             .hearingCourtName(
                 hearingCourt.getName())
             .hearingCourtAddress(
