@@ -38,8 +38,9 @@ public class DirectionsQuestionnaireUtils {
         if (isOptedForMediation(responseRejection)) {
             return Optional.of(REFERRED_TO_MEDIATION);
         }
-        String preferredCourt = getPreferredCourt(claim);
+
         if (isOnlineDQ(claim)) {
+            String preferredCourt = getPreferredCourt(claim);
             if (isPilotCourt(preferredCourt)) {
                 return Optional.of(ASSIGNING_FOR_DIRECTIONS);
             } else {
