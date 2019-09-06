@@ -1020,17 +1020,19 @@
     </tr>
   {% endif %}
 
-  <tr>
-    <td><b>Hearing location</b></td>
-  </tr>
-  <tr>
-    <td>
-      Preferred hearing centre
-    </td>
-    <td>
-      <div>{{ hearingContent.hearingLocation }}</div>
-    </td>
-  </tr>
+  {% if hearingContent.hearingLocation is not empty %}
+    <tr>
+      <td><b>Hearing location</b></td>
+    </tr>
+    <tr>
+      <td>
+        Preferred hearing centre
+      </td>
+      <td>
+        <div>{{ hearingContent.hearingLocation }}</div>
+      </td>
+    </tr>
+  {% endif %}
 
   {% if hearingContent.locationReason is not empty %}
     <tr>
