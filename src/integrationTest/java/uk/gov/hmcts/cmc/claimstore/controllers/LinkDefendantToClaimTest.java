@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
@@ -32,6 +33,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "feature_toggles.reminderEmails=true"
     }
 )
+
+@Ignore // to be fixed as part of task ROC-6278
 public class LinkDefendantToClaimTest extends BaseIntegrationTest {
 
     @Before

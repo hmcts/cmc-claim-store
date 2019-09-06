@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.services.citizen;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -26,6 +27,7 @@ import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.DEFENDANT;
         "core_case_data.api.url=false"
     }
 )
+@Ignore // to be fixed as part of task ROC-6278
 public class SettlementReachedCitizenNotificationTest extends BaseOfferTest {
 
     private static final String OFFER_COUNTER_SIGNED_EMAIL_TO_ORIGINATOR = "9d1ddac9-d6a7-41f3-bfd4-dcfbcb61dcf1";

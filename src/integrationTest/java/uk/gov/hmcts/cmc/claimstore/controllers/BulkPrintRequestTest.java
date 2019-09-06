@@ -29,6 +29,7 @@ import static org.mockito.Mockito.verify;
         "feature_toggles.async_event_operations_enabled=false"
     }
 )
+// to be fixed as part of task ROC-6278
 @AutoConfigureWireMock(port = 0)
 public class BulkPrintRequestTest extends MockedCoreCaseDataApiTest {
 

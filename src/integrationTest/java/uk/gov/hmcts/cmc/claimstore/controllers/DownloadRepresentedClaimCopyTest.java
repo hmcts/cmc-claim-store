@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.cmc.claimstore.controllers.base.BaseDownloadDocumentTest;
@@ -20,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "feature_toggles.async_event_operations_enabled=false"
     }
 )
+@Ignore // to be fixed as part of task ROC-6278
 public class DownloadRepresentedClaimCopyTest extends BaseDownloadDocumentTest {
 
     public DownloadRepresentedClaimCopyTest() {
