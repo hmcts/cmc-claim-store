@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -15,22 +14,14 @@ import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalcu
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
-import java.time.LocalDate;
-import java.util.Optional;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCD_ASYNC_FAILURE;
-import static uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils.DQ_FLAG;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CCDCaseHandlerTest {
@@ -66,29 +57,6 @@ public class CCDCaseHandlerTest {
 
         verify(ccdCaseRepository, times(1))
             .saveClaim(claimIssuedEvent.getUser(), claimIssuedEvent.getClaim());
-    }
-
-    @Test
-    public void shouldNotCalculateDirectionQuestionnaireDeadlineWhenDQIsOnline() {
-        Claim sampleClaim = SampleClaim.getClaimWithFullDefenceNoMediation()
-            .toBuilder()
-            .features(ImmutableList.of("admissions", DQ_FLAG))
-            .build();
-        Response response = sampleClaim.getResponse().orElseThrow(IllegalArgumentException::new);
-        String authorisation = user.getAuthorisation();
-        String defendantEmail = sampleClaim.getDefendantEmail();
-
-        when(ccdCaseRepository.getClaimByExternalId(sampleClaim.getExternalId(), authorisation))
-            .thenReturn(Optional.of(sampleClaim));
-
-        CCDDefendantResponseEvent responseEvent = new CCDDefendantResponseEvent(sampleClaim, authorisation);
-        caseHandler.saveDefendantResponse(responseEvent);
-
-        verify(ccdCaseRepository, times(1))
-            .saveDefendantResponse(sampleClaim, defendantEmail, response, null, authorisation);
-
-        verify(ccdCaseRepository, never())
-            .updateDirectionsQuestionnaireDeadline(eq(sampleClaim), any(LocalDate.class), eq(authorisation));
     }
 
     @Test(expected = FeignException.class)

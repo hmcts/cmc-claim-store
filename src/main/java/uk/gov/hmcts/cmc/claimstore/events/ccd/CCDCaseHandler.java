@@ -10,7 +10,6 @@ import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseRepository;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
-import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -76,7 +75,7 @@ public class CCDCaseHandler {
 
             ccdCaseRepository.saveDefendantResponse(ccdClaim, claim.getDefendantEmail(), response, null, authorization);
 
-            if (isFullDefenceWithNoMediation(response) && !DirectionsQuestionnaireUtils.isOnlineDQ(claim)) {
+            if (isFullDefenceWithNoMediation(response)) {
                 LocalDate deadline = directionsQuestionnaireDeadlineCalculator
                     .calculateDirectionsQuestionnaireDeadlineCalculator(LocalDateTime.now());
                 ccdCaseRepository.updateDirectionsQuestionnaireDeadline(ccdClaim, deadline, authorization);
