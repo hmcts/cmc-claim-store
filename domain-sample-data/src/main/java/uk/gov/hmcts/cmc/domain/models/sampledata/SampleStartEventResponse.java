@@ -22,8 +22,8 @@ public class SampleStartEventResponse {
         return new SampleStartEventResponse();
     }
 
-    public StartEventResponse buildLegalCaseStartEventResponse() {
-        return startEventResponseBuilder.caseDetails(SampleCaseDetails.builder().buildLegalCaseDetails()).build();
+    public StartEventResponse buildRepresentativeStartEventResponse() {
+        return startEventResponseBuilder.caseDetails(SampleCaseDetails.builder().buildRepresentativeCaseDetails()).build();
     }
 
     public StartEventResponse buildCitizenStartEventResponse() {

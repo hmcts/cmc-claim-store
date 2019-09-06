@@ -63,7 +63,7 @@ public class SampleCaseDetails {
             .build();
     }
 
-    public CaseDetails buildLegalCaseDetails() {
+    public CaseDetails buildRepresentativeCaseDetails() {
         return caseDetailsBuilder.data(convertCCDCaseToMap(SampleCCDCaseData.getCCDLegalCase())).build();
     }
 
