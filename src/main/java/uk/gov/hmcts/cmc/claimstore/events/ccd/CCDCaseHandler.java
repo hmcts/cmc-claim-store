@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.events.ccd;
 
 import feign.FeignException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -37,6 +38,8 @@ public class CCDCaseHandler {
     private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
     private AppInsights appInsights;
     private UserService userService;
+    @Value("${feature_toggles.directions_questionnaire_enabled:false}")
+    boolean directionsQuestionnaireEnabled;
 
     public CCDCaseHandler(
         CCDCaseRepository ccdCaseRepository,
@@ -75,7 +78,7 @@ public class CCDCaseHandler {
 
             ccdCaseRepository.saveDefendantResponse(ccdClaim, claim.getDefendantEmail(), response, null, authorization);
 
-            if (isFullDefenceWithNoMediation(response)) {
+            if (isFullDefenceWithNoMediation(response) && !directionsQuestionnaireEnabled) {
                 LocalDate deadline = directionsQuestionnaireDeadlineCalculator
                     .calculateDirectionsQuestionnaireDeadlineCalculator(LocalDateTime.now());
                 ccdCaseRepository.updateDirectionsQuestionnaireDeadline(ccdClaim, deadline, authorization);

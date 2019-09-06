@@ -14,8 +14,15 @@ import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalcu
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
+import java.time.LocalDate;
+import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -57,6 +64,27 @@ public class CCDCaseHandlerTest {
 
         verify(ccdCaseRepository, times(1))
             .saveClaim(claimIssuedEvent.getUser(), claimIssuedEvent.getClaim());
+    }
+
+    @Test
+    public void shouldNotCalculateDirectionQuestionnaireDeadlineWhenItIsOnline() {
+        Claim sampleClaim = SampleClaim.getClaimWithFullDefenceNoMediation();
+        Response response = sampleClaim.getResponse().orElseThrow(IllegalArgumentException::new);
+        String authorisation = user.getAuthorisation();
+        String defendantEmail = sampleClaim.getDefendantEmail();
+
+        when(ccdCaseRepository.getClaimByExternalId(sampleClaim.getExternalId(), authorisation))
+            .thenReturn(Optional.of(sampleClaim));
+
+        CCDDefendantResponseEvent responseEvent = new CCDDefendantResponseEvent(sampleClaim, authorisation);
+        caseHandler.directionsQuestionnaireEnabled = true;
+        caseHandler.saveDefendantResponse(responseEvent);
+
+        verify(ccdCaseRepository, times(1))
+            .saveDefendantResponse(sampleClaim, defendantEmail, response, null, authorisation);
+
+        verify(ccdCaseRepository, never())
+            .updateDirectionsQuestionnaireDeadline(eq(sampleClaim), any(LocalDate.class), eq(authorisation));
     }
 
     @Test(expected = FeignException.class)
