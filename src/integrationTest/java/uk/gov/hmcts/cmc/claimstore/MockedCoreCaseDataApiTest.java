@@ -77,7 +77,6 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
             representativeStartEventResponse.getCaseDetails().getId().toString());
         stubForStartEventForRepresentative(representativeSampleCaseDetails.getId().toString(), ISSUE_CASE.getValue());
 
-
         given(authTokenGenerator.generate()).willReturn(SOLICITOR_AUTHORISATION_TOKEN);
         given(documentUploadClient
             .upload(anyString(), anyString(), anyString(), anyList(), any(Classification.class), anyList()))
@@ -114,8 +113,9 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
     }
 
     protected void stubForSearchForCitizen(String externalId) {
-        final String URI = "/citizens/" + USER_ID +"/jurisdictions/"+ JURISDICTION_ID +"/case-types/"+ CASE_TYPE_ID + "/cases"
-            + "?" + "case.externalId=" + externalId + "&" + "sortDirection=desc" + "&" + "page=1";
+        final String URI = "/citizens/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
+                         + "/case-types/" + CASE_TYPE_ID + "/cases" + "?" + "case.externalId="
+                         + externalId + "&" + "sortDirection=desc" + "&" + "page=1";
 
         stubFor(get(urlEqualTo(URI))
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
@@ -125,8 +125,9 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
     }
 
     protected void stubForSearchForRepresentative(String externalId) {
-        final String URI = "/caseworkers/" + USER_ID +"/jurisdictions/"+ JURISDICTION_ID +"/case-types/"+ CASE_TYPE_ID + "/cases"
-            + "?" + "case.externalId=" + externalId + "&" + "sortDirection=desc" + "&" + "page=1";
+        final String URI = "/caseworkers/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
+                         + "/case-types/" + CASE_TYPE_ID + "/cases" + "?" + "case.externalId="
+                         + externalId + "&" + "sortDirection=desc" + "&" + "page=1";
 
         stubFor(get(urlEqualTo(URI))
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
@@ -136,8 +137,9 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
     }
 
     protected void stubForStartForRepresentative() {
-        final String URI = "/caseworkers/" + USER_ID +"/jurisdictions/"+ JURISDICTION_ID +"/case-types/"+ CASE_TYPE_ID
-            +"/event-triggers/" + CREATE_CASE.getValue() + "/token";
+        final String URI = "/caseworkers/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
+                         + "/case-types/" + CASE_TYPE_ID + "/event-triggers/"
+                         + CREATE_CASE.getValue() + "/token";
 
         stubFor(get(urlEqualTo(URI))
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
@@ -149,8 +151,9 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
     }
 
     protected void stubForStartForCitizen() {
-        final String URI = "/citizens/" + USER_ID +"/jurisdictions/"+ JURISDICTION_ID +"/case-types/"+ CASE_TYPE_ID
-            +"/event-triggers/" + CREATE_CASE.getValue() + "/token";
+        final String URI = "/citizens/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
+                         + "/case-types/" + CASE_TYPE_ID + "/event-triggers/"
+                         + CREATE_CASE.getValue() + "/token";
 
         stubFor(get(urlEqualTo(URI))
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
@@ -162,8 +165,9 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
     }
 
     protected void stubForSubmitForRepresentative(String externalId) {
-        final String URI = "/caseworkers/" + USER_ID +"/jurisdictions/"+ JURISDICTION_ID
-            +"/case-types/"+ CASE_TYPE_ID +"/cases" + "?" + "ignore-warning=" + IGNORE_WARNING;
+        final String URI = "/caseworkers/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
+                         + "/case-types/" + CASE_TYPE_ID + "/cases"
+                         + "?" + "ignore-warning=" + IGNORE_WARNING;
 
         stubFor(post(urlEqualTo(URI))
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_UTF8_VALUE))
@@ -176,8 +180,9 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
     }
 
     protected void stubForSubmitForCitizen(String externalId) {
-        final String URI = "/citizens/" + USER_ID +"/jurisdictions/"+ JURISDICTION_ID
-            +"/case-types/"+ CASE_TYPE_ID +"/cases" + "?" + "ignore-warning=" + IGNORE_WARNING;
+        final String URI = "/citizens/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
+                         + "/case-types/" + CASE_TYPE_ID + "/cases" + "?"
+                         + "ignore-warning=" + IGNORE_WARNING;
 
         stubFor(post(urlEqualTo(URI))
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_UTF8_VALUE))
@@ -191,8 +196,9 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
 
     protected void stubForStartEventForRepresentative(String caseId, String eventTriggerType) {
 
-        final String URI = "/caseworkers/" + USER_ID +"/jurisdictions/"+ JURISDICTION_ID +"/case-types/"+ CASE_TYPE_ID
-            +"/cases/"+ caseId +"/event-triggers/"+ eventTriggerType + "/token";
+        final String URI = "/caseworkers/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
+                         + "/case-types/" + CASE_TYPE_ID + "/cases/" + caseId
+                         + "/event-triggers/" + eventTriggerType + "/token";
 
         stubFor(get(urlEqualTo(URI))
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
@@ -205,8 +211,9 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
 
     protected void stubForStartEventForCitizen(String caseId, String eventTriggerType) {
 
-        final String URI = "/citizens/" + USER_ID +"/jurisdictions/"+ JURISDICTION_ID +"/case-types/"+ CASE_TYPE_ID
-            +"/cases/"+ caseId +"/event-triggers/"+ eventTriggerType + "/token";
+        final String URI = "/citizens/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
+                         + "/case-types/" + CASE_TYPE_ID + "/cases/" + caseId
+                         + "/event-triggers/" + eventTriggerType + "/token";
 
         stubFor(get(urlEqualTo(URI))
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
@@ -217,9 +224,10 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
         );
     }
 
-   protected void stubForSubmitEventForRepresentative(String caseId, String eventId) {
-        final String URI = "/caseworkers/"+ USER_ID +"/jurisdictions/"+ JURISDICTION_ID +"/case-types/"
-            + CASE_TYPE_ID +"/cases/"+ caseId +"/events" + "?" + "ignore-warning=" + IGNORE_WARNING;
+    protected void stubForSubmitEventForRepresentative(String caseId, String eventId) {
+        final String URI = "/caseworkers/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
+                         + "/case-types/" + CASE_TYPE_ID + "/cases/" + caseId
+                         + "/events" + "?" + "ignore-warning=" + IGNORE_WARNING;
 
         stubFor(post(urlEqualTo(URI))
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_UTF8_VALUE))
@@ -232,8 +240,9 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
     }
 
     protected void stubForSubmitEventForCitizen(String caseId, String eventId) {
-        final String URI = "/citizens/"+ USER_ID +"/jurisdictions/"+ JURISDICTION_ID +"/case-types/"
-            + CASE_TYPE_ID +"/cases/"+ caseId +"/events" + "?" + "ignore-warning=" + IGNORE_WARNING;
+        final String URI = "/citizens/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
+                         + "/case-types/" + CASE_TYPE_ID + "/cases/" + caseId
+                         + "/events" + "?" + "ignore-warning=" + IGNORE_WARNING;
 
         stubFor(post(urlEqualTo(URI))
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_UTF8_VALUE))

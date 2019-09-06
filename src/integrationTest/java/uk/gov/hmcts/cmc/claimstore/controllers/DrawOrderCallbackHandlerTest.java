@@ -139,7 +139,8 @@ public class DrawOrderCallbackHandlerTest extends MockSpringTest {
         Map<String, Object> data = new HashMap<>(caseDetailsTemp.getData());
         data.put("draftOrderDoc", ImmutableMap.of("document_url", DOCUMENT_URL));
         data.put("caseDocuments", ImmutableList.of(CLAIM_DOCUMENT));
-        data.put("directionOrder", CCDDirectionOrder.builder().hearingCourtAddress(SampleCCDCaseData.getCCDAddress()).build());
+        data.put("directionOrder", CCDDirectionOrder.builder()
+            .hearingCourtAddress(SampleCCDCaseData.getCCDAddress()).build());
 
         CaseDetails caseDetails = CaseDetails.builder()
             .id(caseDetailsTemp.getId())

@@ -29,7 +29,6 @@ import static org.mockito.Mockito.verify;
         "feature_toggles.async_event_operations_enabled=false"
     }
 )
-// to be fixed as part of task ROC-6278
 @AutoConfigureWireMock(port = 0)
 public class BulkPrintRequestTest extends MockedCoreCaseDataApiTest {
 
@@ -53,8 +52,8 @@ public class BulkPrintRequestTest extends MockedCoreCaseDataApiTest {
                 anyList(),
                 eq(deserializeObjectFrom(result, Claim.class)));
     }
-
-/*    @Test
+    /*
+    @Test
     public void shouldSendNotificationWhenBulkPrintFailsWithHttpClientError() throws Exception {
         when(authTokenGenerator.generate()).thenReturn(AUTHORISATION_TOKEN);
 
@@ -65,10 +64,6 @@ public class BulkPrintRequestTest extends MockedCoreCaseDataApiTest {
             )
         );
 
-      *//*makeIssueClaimRequest(SampleClaimData.submittedByClaimant(), AUTHORISATION_TOKEN)
-            .andExpect(status().isOk())
-            .andReturn();*//*
-
         makeSuccessfulIssueClaimRequestForCitizen();
 
         verify(bulkPrintNotificationService)
@@ -76,9 +71,7 @@ public class BulkPrintRequestTest extends MockedCoreCaseDataApiTest {
                 anyList(),
                 any(Claim.class));
     }
-*/
 
-/*
     @Test
     public void shouldSendNotificationWhenBulkPrintFailsWithHttpServerError() throws Exception {
 
@@ -99,5 +92,5 @@ public class BulkPrintRequestTest extends MockedCoreCaseDataApiTest {
                 anyList(),
                 any(Claim.class));
     }
-*/
+    */
 }
