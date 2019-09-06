@@ -1089,7 +1089,7 @@
         </td>
         <td>
           <div>
-            {{ hearingContent.courtPermissionForExpertReport }}
+            {{ hearingContent.courtPermissionForExpertReport | capitalize }}
           </div>
         </td>
       </tr>
@@ -1141,20 +1141,16 @@
     {% endif %}
 
   {% else %}
-
-    {% if hearingContent.hasExpertReport is not empty %}
-      <tr>
-        <td>
-          <div>
-            Do you want the court's permission to hire an expert?
-          </div>
-        </td>
-        <td>
-          <div>{{ hearingContent.hasExpertReport | capitalize }}</div>
-        </td>
-      </tr>
-    {% endif %}
-
+    <tr>
+      <td>
+        <div>
+          Do you want the court's permission to hire an expert?
+        </div>
+      </td>
+      <td>
+        <div>{{ hearingContent.hasExpertReport | capitalize }}</div>
+      </td>
+    </tr>
   {% endif %}
 
   <tr>
@@ -1174,7 +1170,7 @@
 
   </tr>
 
-  {% if hearingContent.witness.noOfOtherWitness is not empty %}
+
     <tr>
       <td>
         <div>
@@ -1182,27 +1178,30 @@
         </div>
       </td>
       <td>
-        <div>
-          {{ hearingContent.witness.noOfOtherWitness }}
-        </div>
+        {% if hearingContent.witness.noOfOtherWitness is not empty %}
+          <div>{{ hearingContent.witness.noOfOtherWitness }}</div>
+        {% else %}
+          <div>None</div>
+        {% endif %}
       </td>
     </tr>
-  {% endif %}
 
-  {% if hearingContent.unavailableDates is not empty  %}
-    <tr>
-      <td>
-        <div>Dates unavailable</div>
-      </td>
-      <td>
+  <tr>
+    <td>
+      <div>Dates unavailable</div>
+    </td>
+    <td>
+      {% if hearingContent.unavailableDates is not empty  %}
         <div>
           {% for unavailableDate in hearingContent.unavailableDates %}
           {{ unavailableDate }} <br/>
           {% endfor %}
         </div>
-      </td>
-    </tr>
-  {% endif %}
+      {% else %}
+        <div>None</div>
+      {% endif %}
+    </td>
+  </tr>
 
   </tbody>
 </table>

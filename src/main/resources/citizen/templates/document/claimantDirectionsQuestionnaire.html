@@ -347,7 +347,7 @@
         </td>
         <td>
           <div>
-            {{ hearingContent.courtPermissionForExpertReport }}
+            {{ hearingContent.courtPermissionForExpertReport | capitalize }}
           </div>
         </td>
       </tr>
@@ -399,20 +399,16 @@
     {% endif %}
 
   {% else %}
-
-    {% if hearingContent.hasExpertReport is not empty %}
-      <tr>
-        <td>
-          <div>
-            Do you want the court's permission to hire an expert?
-          </div>
-        </td>
-        <td>
-          <div>{{ hearingContent.hasExpertReport | capitalize }}</div>
-        </td>
-      </tr>
-    {% endif %}
-
+    <tr>
+      <td>
+        <div>
+          Do you want the court's permission to hire an expert?
+        </div>
+      </td>
+      <td>
+        <div>{{ hearingContent.hasExpertReport | capitalize }}</div>
+      </td>
+    </tr>
   {% endif %}
 
   <tr>
@@ -432,37 +428,37 @@
 
   </tr>
 
-  {% if hearingContent.witness.noOfOtherWitness is not empty %}
-    <tr>
-      <td>
-        <div>
-          Other witnesses
-        </div>
-      </td>
-      <td>
-        <div>
-          {{ hearingContent.witness.noOfOtherWitness }}
-        </div>
-      </td>
+  <tr>
+    <td>
+      <div>
+        Other witnesses
+      </div>
+    </td>
+    <td>
+      {% if hearingContent.witness.noOfOtherWitness is not empty %}
+      <div>{{ hearingContent.witness.noOfOtherWitness }}</div>
+      {% else %}
+      <div>None</div>
+      {% endif %}
+    </td>
+  </tr>
 
-    </tr>
-  {% endif %}
-
-  {% if hearingContent.unavailableDates is not empty %}
-    <tr>
-      <td>
-        <div>
-          Dates unavailable
-        </div>
-      </td>
-      <td>
-        <div>
-          {% for unavailableDate in hearingContent.unavailableDates %}
-          {{ unavailableDate }} <br/>
-          {% endfor %}
-        </div>
-      </td>
-  {% endif %}
+  <tr>
+    <td>
+      <div>Dates unavailable</div>
+    </td>
+    <td>
+      {% if hearingContent.unavailableDates is not empty  %}
+      <div>
+        {% for unavailableDate in hearingContent.unavailableDates %}
+        {{ unavailableDate }} <br/>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div>None</div>
+      {% endif %}
+    </td>
+  </tr>
 
   </tr>
   </tbody>
