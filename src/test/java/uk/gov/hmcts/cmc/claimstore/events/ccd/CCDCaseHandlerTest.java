@@ -69,7 +69,7 @@ public class CCDCaseHandlerTest {
     }
 
     @Test
-    public void shouldNotCalculateDirectionQuestionnaireDeadlineWhenItIsOnline() {
+    public void shouldNotCalculateDirectionQuestionnaireDeadlineWhenDQIsOnline() {
         Claim sampleClaim = SampleClaim.getClaimWithFullDefenceNoMediation()
             .toBuilder()
             .features(ImmutableList.of("admissions", DQ_FLAG))
