@@ -284,6 +284,27 @@ public class SampleCCDCaseData {
             .build();
     }
 
+    public static CCDRespondent getCCDRespondentIndividualWithDefault() {
+        CCDAddress ccdAddress = getCCDAddress();
+        return CCDRespondent.builder()
+            .partyName("Mary Richards")
+            .claimantProvidedDetail(
+                CCDParty.builder()
+                    .type(INDIVIDUAL)
+                    .primaryAddress(ccdAddress)
+                    .dateOfBirth(LocalDate.of(1950, 01, 01))
+                    .correspondenceAddress(ccdAddress)
+                    .build())
+            .partyDetail(
+                CCDParty.builder()
+                    .emailAddress("defendant@email.test")
+                    .build()
+            )
+            .claimantProvidedPartyName("Individual")
+            .responseDeadline(LocalDate.of(2019, 01, 21))
+            .build();
+    }
+
     public static CCDRespondent getCCDRespondentOrganisation() {
         CCDAddress ccdAddress = getCCDAddress();
         return CCDRespondent.builder()
@@ -359,6 +380,21 @@ public class SampleCCDCaseData {
             .representativeOrganisationPhone("07987654321")
             .representativeOrganisationEmail("my@email.com")
             .representativeOrganisationDxAddress("dx123")
+            .build();
+    }
+
+    public static CCDApplicant getCCDApplicantIndividualWithDefault() {
+        CCDAddress ccdAddress = getCCDAddress();
+        return CCDApplicant.builder()
+            .partyDetail(CCDParty.builder()
+                .type(INDIVIDUAL)
+                .primaryAddress(ccdAddress)
+                .emailAddress("claimant@email.test")
+                .telephoneNumber(CCDTelephone.builder().telephoneNumber("07987654321").build())
+                .dateOfBirth(LocalDate.of(1950, 01, 01))
+                .correspondenceAddress(ccdAddress)
+                .build())
+            .partyName("Individual")
             .build();
     }
 
@@ -537,6 +573,15 @@ public class SampleCCDCaseData {
     }
 
     public static CCDCase getCCDCitizenCaseWithDefault() {
+/*        List<CCDCollectionElement<CCDApplicant>> applicants =
+            singletonList(CCDCollectionElement.<CCDApplicant>builder()
+            .id(UUID.randomUUID().toString())
+            .value(getCCDApplicantIndividualWithDefault()).build());
+
+        List<CCDCollectionElement<CCDRespondent>> respondents =
+            singletonList(CCDCollectionElement.<CCDRespondent>builder()
+            .id(UUID.randomUUID().toString())
+            .value(getCCDRespondentIndividual()).build());*/
 
         return ccdBuilderWithDefault()
             .amountType(RANGE)

@@ -53,21 +53,22 @@ public class BulkPrintRequestTest extends MockedCoreCaseDataApiTest {
                 eq(deserializeObjectFrom(result, Claim.class)));
     }
 
-/*
-    @Test
+/*    @Test
     public void shouldSendNotificationWhenBulkPrintFailsWithHttpClientError() throws Exception {
         when(authTokenGenerator.generate()).thenReturn(AUTHORISATION_TOKEN);
 
-        wireMockServer.stubFor(post(urlEqualTo("/letters"))
+        stubFor(post(urlEqualTo("/letters"))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.BAD_REQUEST.value())
                 .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             )
         );
 
-       makeIssueClaimRequest(SampleClaimData.submittedByClaimant(), AUTHORISATION_TOKEN)
+      *//*makeIssueClaimRequest(SampleClaimData.submittedByClaimant(), AUTHORISATION_TOKEN)
             .andExpect(status().isOk())
-            .andReturn();
+            .andReturn();*//*
+
+        makeSuccessfulIssueClaimRequestForCitizen();
 
         verify(bulkPrintNotificationService)
             .notifyFailedBulkPrint(
