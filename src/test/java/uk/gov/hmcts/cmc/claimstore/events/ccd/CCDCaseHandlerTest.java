@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -29,6 +30,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCD_ASYNC_FAILURE;
+import static uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils.DQ_FLAG;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CCDCaseHandlerTest {
@@ -68,7 +70,10 @@ public class CCDCaseHandlerTest {
 
     @Test
     public void shouldNotCalculateDirectionQuestionnaireDeadlineWhenItIsOnline() {
-        Claim sampleClaim = SampleClaim.getClaimWithFullDefenceNoMediation();
+        Claim sampleClaim = SampleClaim.getClaimWithFullDefenceNoMediation()
+            .toBuilder()
+            .features(ImmutableList.of("admissions", DQ_FLAG))
+            .build();
         Response response = sampleClaim.getResponse().orElseThrow(IllegalArgumentException::new);
         String authorisation = user.getAuthorisation();
         String defendantEmail = sampleClaim.getDefendantEmail();
@@ -77,7 +82,6 @@ public class CCDCaseHandlerTest {
             .thenReturn(Optional.of(sampleClaim));
 
         CCDDefendantResponseEvent responseEvent = new CCDDefendantResponseEvent(sampleClaim, authorisation);
-        caseHandler.directionsQuestionnaireEnabled = true;
         caseHandler.saveDefendantResponse(responseEvent);
 
         verify(ccdCaseRepository, times(1))

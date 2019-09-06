@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.events.ccd;
 
 import feign.FeignException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -11,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseRepository;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
+import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -38,8 +38,6 @@ public class CCDCaseHandler {
     private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
     private AppInsights appInsights;
     private UserService userService;
-    @Value("${feature_toggles.directions_questionnaire_enabled:false}")
-    boolean directionsQuestionnaireEnabled;
 
     public CCDCaseHandler(
         CCDCaseRepository ccdCaseRepository,
@@ -78,7 +76,7 @@ public class CCDCaseHandler {
 
             ccdCaseRepository.saveDefendantResponse(ccdClaim, claim.getDefendantEmail(), response, null, authorization);
 
-            if (isFullDefenceWithNoMediation(response) && !directionsQuestionnaireEnabled) {
+            if (isFullDefenceWithNoMediation(response) && !DirectionsQuestionnaireUtils.isOnlineDQ(claim)) {
                 LocalDate deadline = directionsQuestionnaireDeadlineCalculator
                     .calculateDirectionsQuestionnaireDeadlineCalculator(LocalDateTime.now());
                 ccdCaseRepository.updateDirectionsQuestionnaireDeadline(ccdClaim, deadline, authorization);
