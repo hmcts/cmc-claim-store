@@ -42,10 +42,14 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumen
 @AutoConfigureWireMock(port = 0)
 public class MockedCoreCaseDataApiTest extends BaseSaveTest {
 
-    private final CaseDetails legalRepresentativeSampleCaseDetails = SampleCaseDetails.builder().buildLegalCaseDetails();
-    private final CaseDetails citizenSampleCaseDetails = SampleCaseDetails.builder().buildCitizenCaseDetails();
-    private final StartEventResponse legalCaseStartEventResponse = SampleStartEventResponse.builder().buildLegalCaseStartEventResponse();
-    private final StartEventResponse citizenStartEventResponse = SampleStartEventResponse.builder().buildCitizenStartEventResponse();
+    private final CaseDetails legalRepresentativeSampleCaseDetails =
+        SampleCaseDetails.builder().buildLegalCaseDetails();
+    private final CaseDetails citizenSampleCaseDetails =
+        SampleCaseDetails.builder().buildCitizenCaseDetails();
+    private final StartEventResponse legalCaseStartEventResponse =
+        SampleStartEventResponse.builder().buildLegalCaseStartEventResponse();
+    private final StartEventResponse citizenStartEventResponse =
+        SampleStartEventResponse.builder().buildCitizenStartEventResponse();
 
     @Test
     public void shouldSuccessfullySubmitClaimForRepresentative() throws Exception {
@@ -58,9 +62,9 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
         stubForSubmitForCaseworker(externalId);
         stubForStartEventForCaseWorker(legalRepresentativeSampleCaseDetails.getId().toString(),
                                        SEALED_CLAIM_UPLOAD.getValue());
-       stubForSubmitEventForCaseWorker(legalRepresentativeSampleCaseDetails.getId().toString(),
+        stubForSubmitEventForCaseWorker(legalRepresentativeSampleCaseDetails.getId().toString(),
                                        legalCaseStartEventResponse.getCaseDetails().getId().toString());
-       stubForStartEventForCaseWorker(legalRepresentativeSampleCaseDetails.getId().toString(), ISSUE_CASE.getValue());
+        stubForStartEventForCaseWorker(legalRepresentativeSampleCaseDetails.getId().toString(), ISSUE_CASE.getValue());
 
 
         given(authTokenGenerator.generate()).willReturn(SOLICITOR_AUTHORISATION_TOKEN);
@@ -122,14 +126,14 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
 
     public void stubForStartForCaseworker() {
         final String URI = "/caseworkers/" + USER_ID +"/jurisdictions/"+ JURISDICTION_ID +"/case-types/"+ CASE_TYPE_ID
-                           +"/event-triggers/" + CREATE_CASE.getValue() + "/token";
+            +"/event-triggers/" + CREATE_CASE.getValue() + "/token";
 
         stubFor(get(urlEqualTo(URI))
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
             .withHeader(HttpHeaders.AUTHORIZATION, equalTo(SOLICITOR_AUTHORISATION_TOKEN))
             .willReturn(aResponse()
-                        .withStatus(HTTP_OK)
-                         .withBody(jsonMapper.toJson(legalCaseStartEventResponse)))
+                .withStatus(HTTP_OK)
+                .withBody(jsonMapper.toJson(legalCaseStartEventResponse)))
         );
     }
 
@@ -141,22 +145,22 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
             .withHeader(HttpHeaders.AUTHORIZATION, equalTo(AUTHORISATION_TOKEN))
             .willReturn(aResponse()
-                        .withStatus(HTTP_OK)
-                        .withBody(jsonMapper.toJson(citizenStartEventResponse)))
+                .withStatus(HTTP_OK)
+                .withBody(jsonMapper.toJson(citizenStartEventResponse)))
         );
     }
 
     public void stubForSubmitForCaseworker(String externalId) {
         final String URI = "/caseworkers/" + USER_ID +"/jurisdictions/"+ JURISDICTION_ID
-                           +"/case-types/"+ CASE_TYPE_ID +"/cases" + "?" + "ignore-warning=" + IGNORE_WARNING;
+            +"/case-types/"+ CASE_TYPE_ID +"/cases" + "?" + "ignore-warning=" + IGNORE_WARNING;
 
         stubFor(post(urlEqualTo(URI))
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .withHeader(HttpHeaders.AUTHORIZATION, equalTo(SOLICITOR_AUTHORISATION_TOKEN))
             .withRequestBody(containing(externalId))
             .willReturn(aResponse()
-                    .withStatus(HTTP_OK)
-                    .withBody(jsonMapper.toJson(legalRepresentativeSampleCaseDetails)))
+                .withStatus(HTTP_OK)
+                .withBody(jsonMapper.toJson(legalRepresentativeSampleCaseDetails)))
         );
     }
 
@@ -177,15 +181,15 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
     public void stubForStartEventForCaseWorker(String caseId, String eventTriggerType) {
 
         final String URI = "/caseworkers/" + USER_ID +"/jurisdictions/"+ JURISDICTION_ID +"/case-types/"+ CASE_TYPE_ID
-                           +"/cases/"+ caseId +"/event-triggers/"+ eventTriggerType + "/token";
+            +"/cases/"+ caseId +"/event-triggers/"+ eventTriggerType + "/token";
 
-            stubFor(get(urlEqualTo(URI))
-                .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
-                .withHeader(HttpHeaders.AUTHORIZATION, equalTo(SOLICITOR_AUTHORISATION_TOKEN))
-                .willReturn(aResponse()
-                            .withStatus(HTTP_OK)
-                            .withBody(jsonMapper.toJson(legalCaseStartEventResponse)))
-            );
+        stubFor(get(urlEqualTo(URI))
+            .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
+            .withHeader(HttpHeaders.AUTHORIZATION, equalTo(SOLICITOR_AUTHORISATION_TOKEN))
+            .willReturn(aResponse()
+                .withStatus(HTTP_OK)
+                .withBody(jsonMapper.toJson(legalCaseStartEventResponse)))
+        );
     }
 
     public void stubForStartEventForCitizen(String caseId, String eventTriggerType) {
@@ -197,22 +201,22 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
             .withHeader(HttpHeaders.AUTHORIZATION, equalTo(AUTHORISATION_TOKEN))
             .willReturn(aResponse()
-                    .withStatus(HTTP_OK)
-                    .withBody(jsonMapper.toJson(citizenStartEventResponse)))
+                .withStatus(HTTP_OK)
+                .withBody(jsonMapper.toJson(citizenStartEventResponse)))
         );
     }
 
    public void stubForSubmitEventForCaseWorker(String caseId, String eventId) {
         final String URI = "/caseworkers/"+ USER_ID +"/jurisdictions/"+ JURISDICTION_ID +"/case-types/"
-                           + CASE_TYPE_ID +"/cases/"+ caseId +"/events" + "?" + "ignore-warning=" + IGNORE_WARNING;
+            + CASE_TYPE_ID +"/cases/"+ caseId +"/events" + "?" + "ignore-warning=" + IGNORE_WARNING;
 
         stubFor(post(urlEqualTo(URI))
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .withHeader(HttpHeaders.AUTHORIZATION, equalTo(SOLICITOR_AUTHORISATION_TOKEN))
             .withRequestBody(containing(eventId))
             .willReturn(aResponse()
-                        .withStatus(HTTP_OK)
-                        .withBody(jsonMapper.toJson(legalRepresentativeSampleCaseDetails)))
+                .withStatus(HTTP_OK)
+                .withBody(jsonMapper.toJson(legalRepresentativeSampleCaseDetails)))
         );
     }
 
@@ -225,9 +229,8 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
             .withHeader(HttpHeaders.AUTHORIZATION, equalTo(AUTHORISATION_TOKEN))
             .withRequestBody(containing(eventId))
             .willReturn(aResponse()
-                    .withStatus(HTTP_OK)
-                    .withBody(jsonMapper.toJson(citizenSampleCaseDetails)))
+                .withStatus(HTTP_OK)
+                .withBody(jsonMapper.toJson(citizenSampleCaseDetails)))
         );
     }
-
 }

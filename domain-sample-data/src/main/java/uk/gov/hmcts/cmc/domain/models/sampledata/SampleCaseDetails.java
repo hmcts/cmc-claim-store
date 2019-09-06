@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.ccd.client.model.Classification;
 import java.time.LocalDateTime;
 import java.util.Map;
 
-
 import static java.time.LocalDateTime.now;
 
 public class SampleCaseDetails {
@@ -48,20 +47,20 @@ public class SampleCaseDetails {
         return new SampleCaseDetails();
     }
 
-   public CaseDetails build() {
-       return CaseDetails.builder()
-           .id(CASE_ID)
-           .jurisdiction(JURISDICTION_ID)
-           .caseTypeId(CASE_TYPE_ID)
-           .createdDate(CREATED_DATE)
-           .lastModified(LAST_MODIFIED)
-           .state(CASE_STATE)
-           .lockedBy(LOCKED_BY_USER_ID)
-           .securityLevel(SECURITY_LEVEL)
-           .data(convertCCDCaseToMap(SampleCCDCaseData.getCCDLegalCase()))
-           .securityClassification(SECURITY_CLASSIFICATION)
-           .callbackResponseStatus(CALLBACK_RESPONSE_STATUS)
-           .build();
+    public CaseDetails build() {
+        return CaseDetails.builder()
+            .id(CASE_ID)
+            .jurisdiction(JURISDICTION_ID)
+            .caseTypeId(CASE_TYPE_ID)
+            .createdDate(CREATED_DATE)
+            .lastModified(LAST_MODIFIED)
+            .state(CASE_STATE)
+            .lockedBy(LOCKED_BY_USER_ID)
+            .securityLevel(SECURITY_LEVEL)
+            .data(convertCCDCaseToMap(SampleCCDCaseData.getCCDLegalCase()))
+            .securityClassification(SECURITY_CLASSIFICATION)
+            .callbackResponseStatus(CALLBACK_RESPONSE_STATUS)
+            .build();
     }
 
     public CaseDetails buildLegalCaseDetails() {

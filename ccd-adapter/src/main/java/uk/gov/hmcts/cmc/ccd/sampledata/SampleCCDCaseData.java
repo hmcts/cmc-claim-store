@@ -484,12 +484,16 @@ public class SampleCCDCaseData {
             .build();
     }
 
-    public static List<CCDCollectionElement<CCDApplicant>> getApplicants(){
-        return singletonList(CCDCollectionElement.<CCDApplicant>builder().id(UUID.randomUUID().toString()).value(getCCDApplicantIndividual()).build());
+    public static List<CCDCollectionElement<CCDApplicant>> getApplicants() {
+        return singletonList(CCDCollectionElement.<CCDApplicant>builder()
+            .id(UUID.randomUUID().toString())
+            .value(getCCDApplicantIndividual()).build());
     }
 
-    public static List<CCDCollectionElement<CCDRespondent>> getRespondents(){
-        return singletonList(CCDCollectionElement.<CCDRespondent>builder().id(UUID.randomUUID().toString()).value(getCCDRespondentIndividual()).build());
+    public static List<CCDCollectionElement<CCDRespondent>> getRespondents() {
+        return singletonList(CCDCollectionElement.<CCDRespondent>builder()
+            .id(UUID.randomUUID().toString())
+            .value(getCCDRespondentIndividual()).build());
     }
 
     public static CCDCase getCCDLegalCase() {
@@ -542,7 +546,6 @@ public class SampleCCDCaseData {
             .respondents(getRespondents())
             .build();
     }
-
 
     public static CCDOrderGenerationData getCCDOrderGenerationData() {
         return CCDOrderGenerationData.builder()
