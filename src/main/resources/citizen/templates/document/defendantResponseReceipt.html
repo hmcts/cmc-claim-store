@@ -1003,6 +1003,7 @@
   </thead>
   <tbody>
 
+  {% if hearingContent.supportRequired %}
   <tr>
     <td>
       <div>
@@ -1017,6 +1018,7 @@
       </div>
     </td>
   </tr>
+  {% endif %}
 
   <tr>
     <td><b>Hearing location</b></td>
@@ -1029,6 +1031,8 @@
       <div>{{ hearingContent.hearingLocation }}</div>
     </td>
   </tr>
+
+  {% if hearingContent.locationReason %}
   <tr>
     <td>
       <div>
@@ -1041,6 +1045,7 @@
       </div>
     </td>
   </tr>
+  {% endif %}
 
   <tr>
     <td><b>Expert evidence</b></td>
@@ -1073,6 +1078,7 @@
   </tr>
   {% endfor %}
 
+  {% if hearingContent.courtPermissionForExpertReport %}
   <tr>
     <td>
       <div>
@@ -1085,6 +1091,9 @@
       </div>
     </td>
   </tr>
+  {% endif %}
+
+  {% if hearingContent.expertExamineNeeded %}
   <tr>
     <td>
       <div>
@@ -1097,6 +1106,9 @@
       </div>
     </td>
   </tr>
+  {% endif %}
+
+  {% if hearingContent.whatToExamine %}
   <tr>
     <td>
       <div>
@@ -1109,6 +1121,9 @@
       </div>
     </td>
   </tr>
+  {% endif %}
+
+  {% if hearingContent.reasonWhyExpertAdvice %}
   <tr>
     <td>
       <div>
@@ -1121,7 +1136,11 @@
       </div>
     </td>
   </tr>
+  {% endif %}
+
   {% else %}
+
+    {% if hearingContent.hasExpertReport %}
     <tr>
       <td>
         <div>
@@ -1129,9 +1148,11 @@
         </div>
       </td>
       <td>
-        <div>{{ hearingContent.hasExpertReport }}</div>
+        <div>{{ hearingContent.hasExpertReport | capitalize }}</div>
       </td>
     </tr>
+    {% endif %}
+
   {% endif %}
 
   <tr>
@@ -1150,6 +1171,8 @@
     </td>
 
   </tr>
+
+  {% if hearingContent.witness.noOfOtherWitness %}
   <tr>
     <td>
       <div>
@@ -1162,6 +1185,9 @@
       </div>
     </td>
   </tr>
+  {% endif %}
+
+  {% if hearingContent.unavailableDates %}
   <tr>
     <td>
       <div>Dates unavailable</div>
@@ -1174,6 +1200,8 @@
       </div>
     </td>
   </tr>
+  {% endif %}
+
   </tbody>
 </table>
 
