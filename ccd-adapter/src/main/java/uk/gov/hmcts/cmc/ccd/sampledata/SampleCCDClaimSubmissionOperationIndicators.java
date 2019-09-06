@@ -24,6 +24,11 @@ public interface SampleCCDClaimSubmissionOperationIndicators<S, T, U, V, W, X, Y
             CCDYesNoOption.NO, CCDYesNoOption.NO, CCDYesNoOption.NO, CCDYesNoOption.NO,
             CCDYesNoOption.NO);
 
+    CCDClaimSubmissionOperationIndicators defaultCCDClaimSubmissionOperationIndicatorsAllYes =
+        getClaimSubmissionIndicatorWithVaue.get(CCDYesNoOption.YES, CCDYesNoOption.YES,
+            CCDYesNoOption.YES, CCDYesNoOption.YES, CCDYesNoOption.YES, CCDYesNoOption.YES,
+            CCDYesNoOption.YES);
+
     CCDClaimSubmissionOperationIndicators CCDClaimSubmissionOperationIndicatorsWithPinSuccess =
         getClaimSubmissionIndicatorWithVaue.get(CCDYesNoOption.NO, CCDYesNoOption.YES,
             CCDYesNoOption.YES, CCDYesNoOption.NO, CCDYesNoOption.YES, CCDYesNoOption.NO, CCDYesNoOption.NO);

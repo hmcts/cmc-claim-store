@@ -75,6 +75,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYE
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.OTHER;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOtherDirectionHeaderType.UPLOAD;
 import static uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicators;
+import static uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicatorsAllYes;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
 
@@ -279,6 +280,7 @@ public class SampleCCDCaseData {
             .claimantProvidedRepresentativeOrganisationPhone("07987654321")
             .claimantProvidedRepresentativeOrganisationPhone("my@email.com")
             .claimantProvidedRepresentativeOrganisationDxAddress("dx123")
+            .responseDeadline(LocalDate.of(2019, 01, 21))
             .build();
     }
 
@@ -482,11 +484,15 @@ public class SampleCCDCaseData {
             .build();
     }
 
+    public static List<CCDCollectionElement<CCDApplicant>> getApplicants(){
+        return singletonList(CCDCollectionElement.<CCDApplicant>builder().id(UUID.randomUUID().toString()).value(getCCDApplicantIndividual()).build());
+    }
+
+    public static List<CCDCollectionElement<CCDRespondent>> getRespondents(){
+        return singletonList(CCDCollectionElement.<CCDRespondent>builder().id(UUID.randomUUID().toString()).value(getCCDRespondentIndividual()).build());
+    }
+
     public static CCDCase getCCDLegalCase() {
-        List<CCDCollectionElement<CCDApplicant>> applicants
-            = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
-        List<CCDCollectionElement<CCDRespondent>> respondents
-            = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(getCCDRespondentIndividual()).build());
         return CCDCase.builder()
             .id(1L)
             .submittedOn(LocalDateTime.of(2017, 11, 01, 10, 15, 30))
@@ -507,27 +513,36 @@ public class SampleCCDCaseData {
             .externalReferenceNumber("external ref")
             .externalId(UUID.randomUUID().toString())
             .feeAccountNumber("PBA1234567")
+            .feeAmountInPennies("75000")
             .feeCode("X1202")
             .reason("Reason for the case")
             .preferredCourt("London Court")
-            .applicants(applicants)
-            .respondents(respondents)
-            .claimSubmissionOperationIndicators(defaultCCDClaimSubmissionOperationIndicators)
+            .applicants(getApplicants())
+            .respondents(getRespondents())
+            .claimSubmissionOperationIndicators(defaultCCDClaimSubmissionOperationIndicatorsAllYes)
             .build();
     }
 
     public static CCDCase getCCDCitizenCase(List<CCDCollectionElement<CCDAmountRow>> amountBreakDown) {
-        List<CCDCollectionElement<CCDApplicant>> applicants
-            = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
-        List<CCDCollectionElement<CCDRespondent>> respondents
-            = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(getCCDRespondentIndividual()).build());
 
         return ccdBuilderWithDefault()
             .amountBreakDown(amountBreakDown)
-            .applicants(applicants)
-            .respondents(respondents)
+            .applicants(getApplicants())
+            .respondents(getRespondents())
             .build();
     }
+
+    public static CCDCase getCCDCitizenCaseWithDefault() {
+
+        return ccdBuilderWithDefault()
+            .amountType(RANGE)
+            .amountLowerValue("5000")
+            .amountHigherValue("50000")
+            .applicants(getApplicants())
+            .respondents(getRespondents())
+            .build();
+    }
+
 
     public static CCDOrderGenerationData getCCDOrderGenerationData() {
         return CCDOrderGenerationData.builder()

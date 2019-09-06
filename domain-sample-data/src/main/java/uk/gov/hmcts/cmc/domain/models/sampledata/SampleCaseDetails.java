@@ -1,10 +1,14 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDCaseData;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Classification;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 
 
@@ -20,43 +24,25 @@ public class SampleCaseDetails {
     private static final String CASE_STATE = "open";
     private static final Integer LOCKED_BY_USER_ID = 1;
     private static final Integer SECURITY_LEVEL = 1;
-    private static final Map<String, Object> CASE_DATA = new HashMap<>();
-    //private static final ClaimData caseData = SampleClaimData.builder().withExternalId(RAND_UUID).build();
     private static final Classification SECURITY_CLASSIFICATION = Classification.PUBLIC;
     private static final String CALLBACK_RESPONSE_STATUS = "";
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     private SampleCaseDetails() {
-/*        CASE_DATA.put("id", "1546455160649708");
-        CASE_DATA.put("amountType", "RANGE");
-        CASE_DATA.put("externalId", "918dea15-cf9d-43a4-b5b8-c40751e5de23");
-        CASE_DATA.put("previousServiceCaseReference", "000LR003");
-        CASE_DATA.put("externalReferenceNumber", "PBA1234567");
-        CASE_DATA.put("submittedOn", "2019-01-02T18:52:39.913603");
-        CASE_DATA.put("submitterId", "61");
-        CASE_DATA.put("sotSignerName", "sdf sdf sfsf");
-        CASE_DATA.put("sotSignerRole", "sdfsdf sd ");
-        CASE_DATA.put("preferredCourt", "Bromley County Court and Family Court");
-        CASE_DATA.put("submitterEmail", "dharmendrak02@gmail.com");
-        CASE_DATA.put("amountLowerValue", 6800);
-        CASE_DATA.put("feeAccountNumber", "PBA1234567");
-        CASE_DATA.put("amountHigherValue", "1500000");
-        CASE_DATA.put("feeAmountInPennies", "75000");
-        CASE_DATA.put("housingDisrepairOtherDamages", "MORE_THAN_THOUSAND_POUNDS");
-        CASE_DATA.put("personalInjuryGeneralDamages", "MORE_THAN_THOUSAND_POUNDS");
-        CASE_DATA.put("housingDisrepairCostOfRepairDamages", "MORE_THAN_THOUSAND_POUNDS");
-        CASE_DATA.put("claimSubmissionOperationIndicators", CCDClaimSubmissionOperationIndicators.builder()
-                                                            .rpa(CCDYesNoOption.YES)
-                                                            .bulkPrint(CCDYesNoOption.YES)
-                                                            .sealedClaimUpload(CCDYesNoOption.YES)
-                                                            .staffNotification(CCDYesNoOption.YES)
-                                                            .claimantNotification(CCDYesNoOption.YES)
-                                                            .defendantNotification(CCDYesNoOption.YES)
-                                                            .claimIssueReceiptUpload(CCDYesNoOption.YES)
-                                                            .build()
-        );*/
-       //CASE_DATA.put("applicants", caseData.getClaimants());
-      // CASE_DATA.put("respondents", caseData.getDefendants());
     }
+
+    private CaseDetails.CaseDetailsBuilder caseDetailsBuilder = CaseDetails.builder()
+        .id(CASE_ID)
+        .jurisdiction(JURISDICTION_ID)
+        .caseTypeId(CASE_TYPE_ID)
+        .createdDate(CREATED_DATE)
+        .lastModified(LAST_MODIFIED)
+        .state(CASE_STATE)
+        .lockedBy(LOCKED_BY_USER_ID)
+        .securityLevel(SECURITY_LEVEL)
+        .securityClassification(SECURITY_CLASSIFICATION)
+        .callbackResponseStatus(CALLBACK_RESPONSE_STATUS);
 
     public static SampleCaseDetails builder() {
         return new SampleCaseDetails();
@@ -72,9 +58,26 @@ public class SampleCaseDetails {
            .state(CASE_STATE)
            .lockedBy(LOCKED_BY_USER_ID)
            .securityLevel(SECURITY_LEVEL)
-           //.data()
+           .data(convertCCDCaseToMap(SampleCCDCaseData.getCCDLegalCase()))
            .securityClassification(SECURITY_CLASSIFICATION)
            .callbackResponseStatus(CALLBACK_RESPONSE_STATUS)
            .build();
     }
+
+    public CaseDetails buildLegalCaseDetails() {
+        return caseDetailsBuilder.data(convertCCDCaseToMap(SampleCCDCaseData.getCCDLegalCase())).build();
+    }
+
+    public CaseDetails buildCitizenCaseDetails() {
+        return caseDetailsBuilder.data(convertCCDCaseToMap(
+               SampleCCDCaseData.getCCDCitizenCaseWithDefault())).build();
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> convertCCDCaseToMap(CCDCase ccdCase) {
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        return (Map<String, Object>) objectMapper.convertValue(ccdCase, Map.class);
+    }
+
 }

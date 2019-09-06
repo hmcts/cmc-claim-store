@@ -32,8 +32,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ISSUE_CASE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SEALED_CLAIM_UPLOAD;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreStartResponse;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitRepresentativeResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementUploadResponse;
 
 @TestPropertySource(
@@ -44,26 +42,25 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumen
 @AutoConfigureWireMock(port = 0)
 public class MockedCoreCaseDataApiTest extends BaseSaveTest {
 
-    private final CaseDetails submittedCaseDetailsForRepresentative = successfulCoreCaseDataStoreSubmitRepresentativeResponse();
-    private final StartEventResponse submittedStartEventResponseForRepresentative = successfulCoreCaseDataStoreStartResponse();
-
-    private final CaseDetails sampleCaseDetails = SampleCaseDetails.builder().build();
-    private final StartEventResponse startEventResponse = SampleStartEventResponse.builder().build();
+    private final CaseDetails legalRepresentativeSampleCaseDetails = SampleCaseDetails.builder().buildLegalCaseDetails();
+    private final CaseDetails citizenSampleCaseDetails = SampleCaseDetails.builder().buildCitizenCaseDetails();
+    private final StartEventResponse legalCaseStartEventResponse = SampleStartEventResponse.builder().buildLegalCaseStartEventResponse();
+    private final StartEventResponse citizenStartEventResponse = SampleStartEventResponse.builder().buildCitizenStartEventResponse();
 
     @Test
-    public void shouldSubmitClaimForRepresentative() throws Exception {
+    public void shouldSuccessfullySubmitClaimForRepresentative() throws Exception {
 
-        final ClaimData submittedByLegalRepresentative = SampleClaimData.submittedByLegalRepresentative();
-        final String externalId = submittedByLegalRepresentative.getExternalId().toString();
+        final ClaimData legalRepresentativeClaimData = SampleClaimData.submittedByLegalRepresentative();
+        final String externalId = legalRepresentativeClaimData.getExternalId().toString();
 
         stubForSearchForCaseWorkers(externalId);
         stubForStartForCaseworker();
         stubForSubmitForCaseworker(externalId);
-        stubForStartEventForCaseWorker(sampleCaseDetails.getId().toString(),
+        stubForStartEventForCaseWorker(legalRepresentativeSampleCaseDetails.getId().toString(),
                                        SEALED_CLAIM_UPLOAD.getValue());
-       stubForSubmitEventForCaseWorker(sampleCaseDetails.getId().toString(),
-                                       startEventResponse.getCaseDetails().getId().toString());
-       stubForStartEventForCaseWorker(sampleCaseDetails.getId().toString(), ISSUE_CASE.getValue());
+       stubForSubmitEventForCaseWorker(legalRepresentativeSampleCaseDetails.getId().toString(),
+                                       legalCaseStartEventResponse.getCaseDetails().getId().toString());
+       stubForStartEventForCaseWorker(legalRepresentativeSampleCaseDetails.getId().toString(), ISSUE_CASE.getValue());
 
 
         given(authTokenGenerator.generate()).willReturn(SOLICITOR_AUTHORISATION_TOKEN);
@@ -71,24 +68,24 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
             .upload(anyString(), anyString(), anyString(), anyList(), any(Classification.class), anyList()))
             .willReturn(successfulDocumentManagementUploadResponse());
 
-        makeIssueClaimRequest(submittedByLegalRepresentative, SOLICITOR_AUTHORISATION_TOKEN)
+        makeIssueClaimRequest(legalRepresentativeClaimData, SOLICITOR_AUTHORISATION_TOKEN)
             .andExpect(status().isOk())
             .andReturn();
     }
 
     @Test
-    public void shouldSubmitClaimForCitizen() throws Exception {
+    public void shouldSuccessfullySubmitClaimForCitizen() throws Exception {
         final ClaimData submittedByClaimant = SampleClaimData.submittedByClaimant();
         final String externalId = submittedByClaimant.getExternalId().toString();
 
         stubForSearchForCitizen(externalId);
         stubForStartForCitizen();
         stubForSubmitForCitizen(externalId);
-        stubForStartEventForCitizen(sampleCaseDetails.getId().toString(),
+        stubForStartEventForCitizen(citizenSampleCaseDetails.getId().toString(),
                                     SEALED_CLAIM_UPLOAD.getValue());
-        stubForSubmitEventForCitizen(sampleCaseDetails.getId().toString(),
-                                     startEventResponse.getCaseDetails().getId().toString());
-        stubForStartEventForCitizen(sampleCaseDetails.getId().toString(),
+        stubForSubmitEventForCitizen(citizenSampleCaseDetails.getId().toString(),
+                                     citizenStartEventResponse.getCaseDetails().getId().toString());
+        stubForStartEventForCitizen(citizenSampleCaseDetails.getId().toString(),
                                     ISSUE_CASE.getValue());
 
         given(authTokenGenerator.generate()).willReturn(AUTHORISATION_TOKEN);
@@ -132,7 +129,7 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
             .withHeader(HttpHeaders.AUTHORIZATION, equalTo(SOLICITOR_AUTHORISATION_TOKEN))
             .willReturn(aResponse()
                         .withStatus(HTTP_OK)
-                         .withBody(jsonMapper.toJson(startEventResponse)))
+                         .withBody(jsonMapper.toJson(legalCaseStartEventResponse)))
         );
     }
 
@@ -145,7 +142,7 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
             .withHeader(HttpHeaders.AUTHORIZATION, equalTo(AUTHORISATION_TOKEN))
             .willReturn(aResponse()
                         .withStatus(HTTP_OK)
-                        .withBody(jsonMapper.toJson(startEventResponse)))
+                        .withBody(jsonMapper.toJson(citizenStartEventResponse)))
         );
     }
 
@@ -157,10 +154,9 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .withHeader(HttpHeaders.AUTHORIZATION, equalTo(SOLICITOR_AUTHORISATION_TOKEN))
             .withRequestBody(containing(externalId))
-/*            .willReturn(aResponse()
+            .willReturn(aResponse()
                     .withStatus(HTTP_OK)
-                    .withBody(jsonMapper.toJson(sampleCaseDetails)))*/
-            .willReturn(okForJson(submittedCaseDetailsForRepresentative))
+                    .withBody(jsonMapper.toJson(legalRepresentativeSampleCaseDetails)))
         );
     }
 
@@ -172,10 +168,9 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .withHeader(HttpHeaders.AUTHORIZATION, equalTo(AUTHORISATION_TOKEN))
             .withRequestBody(containing(externalId))
-/*                .willReturn(aResponse()
+                .willReturn(aResponse()
                     .withStatus(HTTP_OK)
-                    .withBody(jsonMapper.toJson(sampleCaseDetails)))*/
-            .willReturn(okForJson(submittedCaseDetailsForRepresentative))
+                    .withBody(jsonMapper.toJson(citizenSampleCaseDetails)))
         );
     }
 
@@ -189,7 +184,7 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
                 .withHeader(HttpHeaders.AUTHORIZATION, equalTo(SOLICITOR_AUTHORISATION_TOKEN))
                 .willReturn(aResponse()
                             .withStatus(HTTP_OK)
-                            .withBody(jsonMapper.toJson(startEventResponse)))
+                            .withBody(jsonMapper.toJson(legalCaseStartEventResponse)))
             );
     }
 
@@ -203,7 +198,7 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
             .withHeader(HttpHeaders.AUTHORIZATION, equalTo(AUTHORISATION_TOKEN))
             .willReturn(aResponse()
                     .withStatus(HTTP_OK)
-                    .withBody(jsonMapper.toJson(startEventResponse)))
+                    .withBody(jsonMapper.toJson(citizenStartEventResponse)))
         );
     }
 
@@ -217,7 +212,7 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
             .withRequestBody(containing(eventId))
             .willReturn(aResponse()
                         .withStatus(HTTP_OK)
-                        .withBody(jsonMapper.toJson(sampleCaseDetails)))
+                        .withBody(jsonMapper.toJson(legalRepresentativeSampleCaseDetails)))
         );
     }
 
@@ -231,7 +226,8 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
             .withRequestBody(containing(eventId))
             .willReturn(aResponse()
                     .withStatus(HTTP_OK)
-                    .withBody(jsonMapper.toJson(sampleCaseDetails)))
+                    .withBody(jsonMapper.toJson(citizenSampleCaseDetails)))
         );
     }
+
 }
