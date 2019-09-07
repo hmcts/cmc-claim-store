@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplate
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.services.FreeMediationDecisionDateCalculator;
+import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
@@ -108,7 +109,7 @@ public class DefendantResponseNotificationService {
         Response response = claim.getResponse().orElse(null);
         Objects.requireNonNull(response);
 
-        if (isFullDefenceAndNoMediation(response)) {
+        if (isFullDefenceAndNoMediation(response) && !DirectionsQuestionnaireUtils.isOnlineDQ(claim)) {
             parameters.put(DQS_DEADLINE, formatDate(claim.getDirectionsQuestionnaireDeadline()));
         }
 
