@@ -147,6 +147,7 @@ notifications:
       defendantFreeMediationConfirmation: "7dd5cf7c-c548-4a75-9e0a-aa3ec04d3151"
       reviewOrderEmailToClaimant: "3bea01fb-bfc5-4354-841c-432d80489362"
       reviewOrderEmailToDefendant: "d568fc1e-f1fc-441a-94da-6506df12cae6"
+      claimantIntentionToProceedForPaperDq: "ecd5ccc3-9630-4c70-b225-c6132f02efe1"
 
 staff-notifications:
   sender:

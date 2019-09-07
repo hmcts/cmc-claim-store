@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.InterlocutoryJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationToDefendantService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimantRejectOrgPaymentPlanStaffNotificationService;
+import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isIntentToProceed;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isOptedForMediation;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper.isOptedForMediation;
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseStatesPaid;
 
 @Component
@@ -38,9 +40,18 @@ public class ClaimantResponseActionsHandler {
             this.notificationService.notifyDefendantOfFreeMediationConfirmationByClaimant(event.getClaim());
         } else if (isRejectedStatesPaidOrPartAdmission(event.getClaim())) {
             this.notificationService.notifyDefendantOfClaimantResponse(event.getClaim());
+        } else if (hasIntentionToProceedAndIsPaperDq(event.getClaim())) {
+            this.notificationService.notifyDefendantOfClaimantIntentionToProceedForPaperDq(event.getClaim());
         } else {
             this.notificationService.notifyDefendant(event.getClaim());
         }
+    }
+
+    private boolean hasIntentionToProceedAndIsPaperDq(Claim claim) {
+        ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
+
+        return claimantResponse.getType() == REJECTION
+            && !DirectionsQuestionnaireUtils.isOnlineDQ(claim);
     }
 
     private boolean isFreeMediationConfirmed(Claim claim) {

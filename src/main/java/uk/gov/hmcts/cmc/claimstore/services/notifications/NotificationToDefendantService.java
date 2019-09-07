@@ -8,11 +8,13 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import java.util.HashMap;
 import java.util.Map;
 
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.DefendantResponseNotificationService.DQS_DEADLINE;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.ClaimantResponseSubmitted.referenceForDefendant;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
+import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
 @Service
 public class NotificationToDefendantService {
@@ -82,5 +84,17 @@ public class NotificationToDefendantService {
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
 
         return parameters;
+    }
+
+    public void notifyDefendantOfClaimantIntentionToProceedForPaperDq(Claim claim) {
+        Map<String, String> parameters = aggregateParams(claim);
+        parameters.put(DQS_DEADLINE, formatDate(claim.getDirectionsQuestionnaireDeadline()));
+
+        notificationService.sendMail(
+            claim.getDefendantEmail(),
+            notificationsProperties.getTemplates().getEmail().getClaimantIntentionToProceedForPaperDq(),
+            parameters,
+            referenceForDefendant(claim.getReferenceNumber())
+        );
     }
 }
