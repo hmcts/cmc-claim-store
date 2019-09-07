@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content.directionsquestionnaire;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.ExpertReportContent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.HearingContent;
@@ -67,9 +68,15 @@ public class HearingContentProvider {
     }
 
     private void mapExpertRequest(ExpertRequest expertRequest, HearingContent.HearingContentBuilder builder) {
-        builder.expertExamineNeeded(YES);
+
         builder.courtPermissionForExpertReport(YES);
-        builder.reasonWhyExpertAdvice(expertRequest.getReasonForExpertAdvice());
+        if (!StringUtils.isBlank(expertRequest.getReasonForExpertAdvice())) {
+            builder.reasonWhyExpertAdvice(expertRequest.getReasonForExpertAdvice());
+            builder.expertExamineNeeded(YES);
+        } else {
+            builder.expertExamineNeeded(NO);
+        }
+
         builder.whatToExamine(expertRequest.getExpertEvidenceToExamine());
     }
 
@@ -88,7 +95,10 @@ public class HearingContentProvider {
         contentBuilder.hasExpertReport(questionnaire.getExpertReports().isEmpty() ? NO : YES);
 
         questionnaire.getWitness().ifPresent(contentBuilder::witness);
-        questionnaire.getExpertRequest().ifPresent(req -> mapExpertRequest(req, contentBuilder));
+        contentBuilder.courtPermissionForExpertReport(NO);
+
+        questionnaire.getExpertRequest().ifPresent(expertRequest -> mapExpertRequest(expertRequest, contentBuilder));
+
         contentBuilder.unavailableDates(
             questionnaire.getUnavailableDates().stream().map(mapToISOFullStyle).collect(toList())
         );

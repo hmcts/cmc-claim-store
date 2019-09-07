@@ -308,107 +308,111 @@
     </tr>
   {% endif %}
 
-  <tr>
-    <td><b>Expert evidence</b></td>
-  </tr>
-  {% if hearingContent.hasExpertReport equals "Yes" %}
-    <tr>
-      <td>
-        Have you already got a report written by an expert?
-      </td>
-      <td>
-        <div>
-          {{ hearingContent.hasExpertReport }}
-        </div>
-      </td>
-    </tr>
-    {% for report in hearingContent.expertReports %}
-    <tr>
-      <td>
-        <div>
-          Report {{ loop.index + 1 }}
-        </div>
-      </td>
-      <td>
-        <div>
-          {{ report.expertName }} <br/>
-          {{ report.expertReportDate }}
-        </div>
-      </td>
-    </tr>
-    {% endfor %}
-
-    {% if hearingContent.courtPermissionForExpertReport is not empty %}
+    {% if hearingContent.hasExpertReport equals "Yes" %}
+      <tr>
+        <td><b>Expert evidence</b></td>
+      </tr>
       <tr>
         <td>
-          <div>
-            Do you want the court's permission to hire an expert?
-          </div>
+          Have you already got a report written by an expert?
         </td>
         <td>
           <div>
-            {{ hearingContent.courtPermissionForExpertReport | capitalize }}
+            {{ hearingContent.hasExpertReport }}
           </div>
         </td>
       </tr>
-    {% endif %}
-
-    {% if hearingContent.expertExamineNeeded is not empty %}
+      {% for report in hearingContent.expertReports %}
       <tr>
         <td>
           <div>
-            Does the claim involve something an expert can still examine?
+            Report {{ loop.index + 1 }}
           </div>
         </td>
         <td>
           <div>
-            {{ hearingContent.expertExamineNeeded }}
+            {{ report.expertName }} <br/>
+            {{ report.expertReportDate }}
           </div>
         </td>
       </tr>
-    {% endif %}
-
-    {% if hearingContent.whatToExamine is not empty %}
+      {% endfor %}
+    {% else %}
+      {% if hearingContent.expertExamineNeeded is defined %}
       <tr>
-        <td>
-          <div>
-            What is there to examine?
-          </div>
-        </td>
-        <td>
-          <div>
-            {{ hearingContent.whatToExamine }}
-          </div>
-        </td>
+        <td><b>Expert evidence</b></td>
       </tr>
-    {% endif %}
+      {% if hearingContent.courtPermissionForExpertReport is not empty %}
+        <tr>
+          <td>
+            Have you already got a report written by an expert?
+          </td>
+          <td>
+            <div>
+              {{ hearingContent.hasExpertReport }}
+            </div>
+          </td>
+        </tr>
 
-    {% if hearingContent.reasonWhyExpertAdvice is not empty %}
-      <tr>
-        <td>
-          <div>
-            Briefly explain why you believe an expert is needed
-          </div>
-        </td>
-        <td>
-          <div>
-            {{ hearingContent.reasonWhyExpertAdvice }}
-          </div>
-        </td>
-      </tr>
-    {% endif %}
+        <tr>
+          <td>
+            <div>
+              Do you want the court's permission to hire an expert?
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ hearingContent.courtPermissionForExpertReport | capitalize }}
+            </div>
+          </td>
+        </tr>
+      {% endif %}
 
-  {% else %}
-    <tr>
-      <td>
-        <div>
-          Do you want the court's permission to hire an expert?
-        </div>
-      </td>
-      <td>
-        <div>{{ hearingContent.hasExpertReport | capitalize }}</div>
-      </td>
-    </tr>
+      {% if hearingContent.expertExamineNeeded is not empty %}
+        <tr>
+          <td>
+            <div>
+              Does the claim involve something an expert can still examine?
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ hearingContent.expertExamineNeeded }}
+            </div>
+          </td>
+        </tr>
+      {% endif %}
+
+      {% if hearingContent.whatToExamine is not empty %}
+        <tr>
+          <td>
+            <div>
+              What is there to examine?
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ hearingContent.whatToExamine }}
+            </div>
+          </td>
+        </tr>
+      {% endif %}
+
+      {% if hearingContent.reasonWhyExpertAdvice is not empty %}
+        <tr>
+          <td>
+            <div>
+              Briefly explain why you believe an expert is needed
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ hearingContent.reasonWhyExpertAdvice }}
+            </div>
+          </td>
+        </tr>
+      {% endif %}
+    {% endif %}
   {% endif %}
 
   <tr>
@@ -460,7 +464,6 @@
     </td>
   </tr>
 
-  </tr>
   </tbody>
 </table>
 
