@@ -16,6 +16,8 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse.PartAdmission;
 
+import java.time.LocalDate;
+
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -51,6 +53,24 @@ public class ClaimantResponseActionsHandlerTest {
         handler.sendNotificationToDefendant(event);
         //then
         verify(notificationService).notifyDefendantOfFreeMediationConfirmationByClaimant(eq(claim));
+    }
+
+    @Test
+    public void sendNotificationToDefendantWhenClaimantHasIntentionToProceedForPaperDq() {
+        //given
+        ClaimantResponse claimantResponse = ClaimantResponseRejection.builder().build();
+        Response response = SampleResponse.FullDefence.builder().withMediation(NO).build();
+        Claim claim = SampleClaim.builder()
+            .withResponse(response)
+            .withClaimantResponse(claimantResponse)
+            .withDirectionsQuestionnaireDeadline(LocalDate.now())
+            .build();
+
+        ClaimantResponseEvent event = new ClaimantResponseEvent(claim, authorisation);
+        //when
+        handler.sendNotificationToDefendant(event);
+        //then
+        verify(notificationService).notifyDefendantOfClaimantIntentionToProceedForPaperDq(eq(claim));
     }
 
     @Test
