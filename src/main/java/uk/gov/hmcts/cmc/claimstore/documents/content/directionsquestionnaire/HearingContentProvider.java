@@ -99,7 +99,6 @@ public class HearingContentProvider {
 
         questionnaire.getExpertRequest().ifPresent(expertRequest -> mapExpertRequest(expertRequest, contentBuilder));
 
-
         contentBuilder.unavailableDates(
             questionnaire.getUnavailableDates().stream().map(mapToISOFullStyle).collect(toList())
         );
