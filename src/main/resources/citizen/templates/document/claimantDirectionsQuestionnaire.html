@@ -308,12 +308,10 @@
     </tr>
   {% endif %}
 
-  {% if hearingContent.hasExpertReport is defined and hearingContent.expertExamineNeeded is defined %}
-    <tr>
-      <td><b>Expert evidence</b></td>
-    </tr>
-
     {% if hearingContent.hasExpertReport equals "Yes" %}
+      <tr>
+        <td><b>Expert evidence</b></td>
+      </tr>
       <tr>
         <td>
           Have you already got a report written by an expert?
@@ -340,6 +338,10 @@
       </tr>
       {% endfor %}
     {% else %}
+      {% if hearingContent.expertExamineNeeded is defined %}
+      <tr>
+        <td><b>Expert evidence</b></td>
+      </tr>
       {% if hearingContent.courtPermissionForExpertReport is not empty %}
         <tr>
           <td>
