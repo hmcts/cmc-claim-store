@@ -95,11 +95,9 @@ public class HearingContentProvider {
         contentBuilder.hasExpertReport(questionnaire.getExpertReports().isEmpty() ? NO : YES);
 
         questionnaire.getWitness().ifPresent(contentBuilder::witness);
-        if (questionnaire.getExpertRequest().isPresent()) {
-            mapExpertRequest(questionnaire.getExpertRequest().get(), contentBuilder);
-        } else {
-            contentBuilder.courtPermissionForExpertReport(NO);
-        }
+        contentBuilder.courtPermissionForExpertReport(NO);
+
+        questionnaire.getExpertRequest().ifPresent(expertRequest -> mapExpertRequest(expertRequest, contentBuilder));
 
         contentBuilder.unavailableDates(
             questionnaire.getUnavailableDates().stream().map(mapToISOFullStyle).collect(toList())
