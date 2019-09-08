@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
@@ -30,6 +31,7 @@ import static org.mockito.Mockito.verify;
     }
 )
 @AutoConfigureWireMock(port = 0)
+@Ignore // to be fixed as part of task ROC-6278
 public class BulkPrintRequestTest extends MockedCoreCaseDataApiTest {
 
     @MockBean
