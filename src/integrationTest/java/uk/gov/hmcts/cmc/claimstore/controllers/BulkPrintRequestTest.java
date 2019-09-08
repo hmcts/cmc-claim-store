@@ -18,10 +18,12 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @TestPropertySource(
     properties = {
@@ -52,7 +54,7 @@ public class BulkPrintRequestTest extends MockedCoreCaseDataApiTest {
                 anyList(),
                 eq(deserializeObjectFrom(result, Claim.class)));
     }
-    /*
+
     @Test
     public void shouldSendNotificationWhenBulkPrintFailsWithHttpClientError() throws Exception {
         when(authTokenGenerator.generate()).thenReturn(AUTHORISATION_TOKEN);
@@ -77,20 +79,17 @@ public class BulkPrintRequestTest extends MockedCoreCaseDataApiTest {
 
         when(authTokenGenerator.generate()).thenReturn(AUTHORISATION_TOKEN);
 
-        wireMockServer.stubFor(post(urlEqualTo("/letters"))
+        stubFor(post(urlEqualTo("/letters"))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .withBody("Internal server error occurred")));
 
-        makeIssueClaimRequest(SampleClaimData.submittedByClaimant(), AUTHORISATION_TOKEN)
-            .andExpect(status().isOk())
-            .andReturn();
+        makeSuccessfulIssueClaimRequestForCitizen();
 
         verify(bulkPrintNotificationService)
             .notifyFailedBulkPrint(
                 anyList(),
                 any(Claim.class));
     }
-    */
 }
