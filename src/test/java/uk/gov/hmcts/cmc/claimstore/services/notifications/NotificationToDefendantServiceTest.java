@@ -30,6 +30,7 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
     private static final String INTERLOCUTORY_JUDGEMENT_TEMPLATE = "interlocutoryJudgementTemplateId";
     private static final String FREE_MEDIATION_CONFIRMATION_TEMPLATE = "freeMediationConfirmationTemplateId";
     private static final String CLAIMANT_INTENTION_TO_PROCEED_FOR_PAPER_DQ = "claimantIntentionToProceedForPaperDq";
+    private static final String CLAIMANT_INTENTION_TO_PROCEED_FOR_ONLINE_DQ = "claimantIntentionToProceedForOnlineDq";
 
     private NotificationToDefendantService service;
     private Claim claim;
@@ -144,6 +145,21 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
 
         verify(notificationClient).sendEmail(
             eq(CLAIMANT_INTENTION_TO_PROCEED_FOR_PAPER_DQ),
+            eq(DEFENDANT_EMAIL),
+            anyMap(),
+            eq(REFERENCE)
+        );
+    }
+
+    @Test
+    public void shouldSendEmailToDefendantUsingIntentionToProceedForOnlineDqTemplate() throws Exception {
+        when(emailTemplates.getClaimantIntentionToProceedForOnlineDq())
+            .thenReturn(CLAIMANT_INTENTION_TO_PROCEED_FOR_ONLINE_DQ);
+
+        service.notifyDefendantOfClaimantIntentionToProceedForOnlineDq(claim);
+
+        verify(notificationClient).sendEmail(
+            eq(CLAIMANT_INTENTION_TO_PROCEED_FOR_ONLINE_DQ),
             eq(DEFENDANT_EMAIL),
             anyMap(),
             eq(REFERENCE)

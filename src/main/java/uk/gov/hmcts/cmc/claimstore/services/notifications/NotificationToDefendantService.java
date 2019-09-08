@@ -97,4 +97,15 @@ public class NotificationToDefendantService {
             referenceForDefendant(claim.getReferenceNumber())
         );
     }
+
+    public void notifyDefendantOfClaimantIntentionToProceedForOnlineDq(Claim claim) {
+        Map<String, String> parameters = aggregateParams(claim);
+
+        notificationService.sendMail(
+            claim.getDefendantEmail(),
+            notificationsProperties.getTemplates().getEmail().getClaimantIntentionToProceedForOnlineDq(),
+            parameters,
+            referenceForDefendant(claim.getReferenceNumber())
+        );
+    }
 }

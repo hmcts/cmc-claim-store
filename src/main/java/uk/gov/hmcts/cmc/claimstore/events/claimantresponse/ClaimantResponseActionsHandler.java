@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.InterlocutoryJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationToDefendantService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimantRejectOrgPaymentPlanStaffNotificationService;
+import uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper;
 import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
@@ -42,9 +43,18 @@ public class ClaimantResponseActionsHandler {
             this.notificationService.notifyDefendantOfClaimantResponse(event.getClaim());
         } else if (hasIntentionToProceedAndIsPaperDq(event.getClaim())) {
             this.notificationService.notifyDefendantOfClaimantIntentionToProceedForPaperDq(event.getClaim());
+        } else if (hasIntentionToProceedAndIsOnlineDq(event.getClaim())) {
+            this.notificationService.notifyDefendantOfClaimantIntentionToProceedForOnlineDq(event.getClaim());
         } else {
             this.notificationService.notifyDefendant(event.getClaim());
         }
+    }
+
+    private boolean hasIntentionToProceedAndIsOnlineDq(Claim claim) {
+        ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
+
+        return ClaimantResponseHelper.isIntentToProceed(claimantResponse)
+            && DirectionsQuestionnaireUtils.isOnlineDQ(claim);
     }
 
     private boolean hasIntentionToProceedAndIsPaperDq(Claim claim) {
