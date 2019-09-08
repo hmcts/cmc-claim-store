@@ -5,13 +5,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationToDefendantService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimantRejectOrgPaymentPlanStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse.ClaimantResponseRejection;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse.PartAdmission;
@@ -21,6 +24,7 @@ import java.time.LocalDate;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils.DQ_FLAG;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
@@ -71,6 +75,32 @@ public class ClaimantResponseActionsHandlerTest {
         handler.sendNotificationToDefendant(event);
         //then
         verify(notificationService).notifyDefendantOfClaimantIntentionToProceedForPaperDq(eq(claim));
+    }
+
+    @Test
+    public void sendNotificationToDefendantWhenClaimantHasIntentionToProceedForOnlineDq() {
+        //given
+        ClaimantResponse claimantResponse = ResponseRejection.builder()
+            .freeMediation(NO)
+            .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder().build())
+            .build();
+
+        Response response = SampleResponse.FullDefence.builder()
+            .withDirectionsQuestionnaire(SampleDirectionsQuestionnaire.builder().build())
+            .withMediation(NO)
+            .build();
+
+        Claim claim = SampleClaim.builder()
+            .withResponse(response)
+            .withClaimantResponse(claimantResponse)
+            .withFeatures(ImmutableList.of(DQ_FLAG, "admissions"))
+            .build();
+
+        ClaimantResponseEvent event = new ClaimantResponseEvent(claim, authorisation);
+        //when
+        handler.sendNotificationToDefendant(event);
+        //then
+        verify(notificationService).notifyDefendantOfClaimantIntentionToProceedForOnlineDq(eq(claim));
     }
 
     @Test

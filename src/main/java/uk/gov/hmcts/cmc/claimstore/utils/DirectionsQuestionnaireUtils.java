@@ -24,7 +24,7 @@ import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.PART_ADMISSIO
 
 public class DirectionsQuestionnaireUtils {
 
-    private static final String DQ_FLAG = "directionsQuestionnaire";
+    public static final String DQ_FLAG = "directionsQuestionnaire";
 
     private DirectionsQuestionnaireUtils() {
         // utility class, no instances

@@ -129,4 +129,7 @@ public class EmailTemplates {
 
     @NotEmpty
     private String claimantIntentionToProceedForPaperDq;
+
+    @NotEmpty
+    private String claimantIntentionToProceedForOnlineDq;
 }
