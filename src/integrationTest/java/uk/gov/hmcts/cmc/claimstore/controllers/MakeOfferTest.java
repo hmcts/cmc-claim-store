@@ -38,7 +38,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NOTIFICAT
         "core_case_data.api.url=false"
     }
 )
-@Ignore // to be fixed as part of task ROC-6278
+@Ignore("to be fixed as part of task ROC-6278")
 public class MakeOfferTest extends BaseIntegrationTest {
 
     private static final String DEFENDANT_AUTH_TOKEN = "authDataString";

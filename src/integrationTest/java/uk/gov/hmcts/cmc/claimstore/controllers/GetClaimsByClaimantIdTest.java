@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "core_case_data.api.url=false"
     }
 )
-@Ignore // to be fixed as part of task ROC-6278
+@Ignore("to be fixed as part of task ROC-6278")
 public class GetClaimsByClaimantIdTest extends BaseGetTest {
     @Test
     public void shouldReturn200HttpStatusAndClaimListWhenClaimsExist() throws Exception {

@@ -50,6 +50,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
         "feature_toggles.async_event_operations_enabled=false"
     }
 )
+@Ignore("to be fixed as part of task ROC-6278")
 public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTest {
 
     private static final String CASE_REFERENCE = "000MC023";

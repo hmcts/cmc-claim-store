@@ -23,10 +23,16 @@ public class SampleStartEventResponse {
     }
 
     public StartEventResponse buildRepresentativeStartEventResponse() {
-        return startEventResponseBuilder.caseDetails(SampleCaseDetails.builder().buildRepresentativeCaseDetails()).build();
+        return startEventResponseBuilder.caseDetails(SampleCaseDetails
+            .builder()
+            .buildRepresentativeCaseDetails())
+            .build();
     }
 
     public StartEventResponse buildCitizenStartEventResponse() {
-        return startEventResponseBuilder.caseDetails(SampleCaseDetails.builder().buildCitizenCaseDetails()).build();
+        return startEventResponseBuilder.caseDetails(SampleCaseDetails
+            .builder()
+            .buildCitizenCaseDetails())
+            .build();
     }
 }

@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "feature_toggles.async_event_operations_enabled=false"
     }
 )
-@Ignore // to be fixed as part of task ROC-6278
+@Ignore("to be fixed as part of task ROC-6278")
 public class DownloadRepresentedClaimCopyTest extends BaseDownloadDocumentTest {
 
     public DownloadRepresentedClaimCopyTest() {

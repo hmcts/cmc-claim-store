@@ -39,7 +39,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
         "core_case_data.api.url=false"
     }
 )
-@Ignore // to be fixed as part of task ROC-6278
+@Ignore("to be fixed as part of task ROC-6278")
 public class DownloadRepresentedClaimCopyWithDocumentManagementTest extends BaseDownloadDocumentTest {
 
     public DownloadRepresentedClaimCopyWithDocumentManagementTest() {

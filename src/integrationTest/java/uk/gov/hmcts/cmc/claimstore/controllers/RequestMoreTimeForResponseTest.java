@@ -44,7 +44,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NOTIFICAT
         "feature_toggles.reminderEmails=true"
     }
 )
-@Ignore // to be fixed as part of task ROC-6278
+@Ignore("to be fixed as part of task ROC-6278")
 public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
 
     private static final String DEFENDANT_ID = "100";

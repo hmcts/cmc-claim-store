@@ -46,7 +46,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
         "feature_toggles.async_event_operations_enabled=false"
     }
 )
-@Ignore // to be fixed as part of task ROC-6278
+@Ignore("to be fixed as part of task ROC-6278")
 public class SaveClaimTest extends BaseSaveTest {
 
     private static final String REPRESENTATIVE_EMAIL_TEMPLATE = "f2b21b9c-fc4a-4589-807b-3156dbf5bf01";

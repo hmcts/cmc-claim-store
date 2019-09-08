@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "core_case_data.api.url=false"
     }
 )
-@Ignore // to be fixed as part of task ROC-6278
+@Ignore("to be fixed as part of task ROC-6278")
 public class GenerateDefendantResponseReceiptTest extends BaseGetTest {
     private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
 

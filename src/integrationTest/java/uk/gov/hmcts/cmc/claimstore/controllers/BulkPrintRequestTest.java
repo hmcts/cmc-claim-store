@@ -31,7 +31,7 @@ import static org.mockito.Mockito.verify;
     }
 )
 @AutoConfigureWireMock(port = 0)
-@Ignore // to be fixed as part of task ROC-6278
+@Ignore("to be fixed as part of task ROC-6278")
 public class BulkPrintRequestTest extends MockedCoreCaseDataApiTest {
 
     @MockBean

@@ -573,15 +573,6 @@ public class SampleCCDCaseData {
     }
 
     public static CCDCase getCCDCitizenCaseWithDefault() {
-/*        List<CCDCollectionElement<CCDApplicant>> applicants =
-            singletonList(CCDCollectionElement.<CCDApplicant>builder()
-            .id(UUID.randomUUID().toString())
-            .value(getCCDApplicantIndividualWithDefault()).build());
-
-        List<CCDCollectionElement<CCDRespondent>> respondents =
-            singletonList(CCDCollectionElement.<CCDRespondent>builder()
-            .id(UUID.randomUUID().toString())
-            .value(getCCDRespondentIndividual()).build());*/
 
         return ccdBuilderWithDefault()
             .amountType(RANGE)
