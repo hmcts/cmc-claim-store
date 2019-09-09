@@ -43,13 +43,13 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumen
 @AutoConfigureWireMock(port = 0)
 public class MockedCoreCaseDataApiTest extends BaseSaveTest {
 
-    private final CaseDetails representativeSampleCaseDetails =
+    protected final CaseDetails representativeSampleCaseDetails =
         SampleCaseDetails.builder().buildRepresentativeCaseDetails();
-    private final CaseDetails citizenSampleCaseDetails =
+    protected final CaseDetails citizenSampleCaseDetails =
         SampleCaseDetails.builder().buildCitizenCaseDetails();
-    private final StartEventResponse representativeStartEventResponse =
+    protected final StartEventResponse representativeStartEventResponse =
         SampleStartEventResponse.builder().buildRepresentativeStartEventResponse();
-    private final StartEventResponse citizenStartEventResponse =
+    protected final StartEventResponse citizenStartEventResponse =
         SampleStartEventResponse.builder().buildCitizenStartEventResponse();
 
     @Test
