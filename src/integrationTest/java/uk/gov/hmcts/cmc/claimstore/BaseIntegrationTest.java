@@ -76,13 +76,13 @@ public abstract class BaseIntegrationTest extends MockSpringTest {
             + CREATE_CASE.getValue() + "/token";
     }
 
-    protected String getStartForCitizenURI(){
+    protected String getStartForCitizenURI() {
         return  "/citizens/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
             + "/case-types/" + CASE_TYPE_ID + "/event-triggers/"
             + CREATE_CASE.getValue() + "/token";
     }
 
-    protected String getSubmitForRepresentativeURI(){
+    protected String getSubmitForRepresentativeURI() {
         return  "/caseworkers/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
             + "/case-types/" + CASE_TYPE_ID + "/cases"
             + "?" + "ignore-warning=" + IGNORE_WARNING;
