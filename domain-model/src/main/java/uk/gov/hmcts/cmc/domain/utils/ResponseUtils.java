@@ -72,8 +72,15 @@ public class ResponseUtils {
     }
 
     public static boolean isFullDefenceAndNoMediation(Response response) {
-        return response.getResponseType().equals(ResponseType.FULL_DEFENCE)
-            && response.getFreeMediation().filter(Predicate.isEqual(YesNoOption.NO)).isPresent();
+        return isFullDefence(response) && isNoMediation(response);
+    }
+
+    public static boolean isFullDefence(Response response) {
+        return response.getResponseType().equals(ResponseType.FULL_DEFENCE);
+    }
+
+    public static boolean isNoMediation(Response response) {
+        return response.getFreeMediation().filter(Predicate.isEqual(YesNoOption.NO)).isPresent();
     }
 }
 
