@@ -30,5 +30,6 @@
       "frequency":"EACH_WEEK"
     }
   },
-  "mediation": false
+  "mediation": false,
+  "hearingRequirements": false
 }

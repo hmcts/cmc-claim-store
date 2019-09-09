@@ -24,7 +24,7 @@ import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.PART_ADMISSIO
 
 public class DirectionsQuestionnaireUtils {
 
-    private static final String DQ_FLAG = "directionsQuestionnaire";
+    public static final String DQ_FLAG = "directionsQuestionnaire";
 
     private DirectionsQuestionnaireUtils() {
         // utility class, no instances
@@ -38,8 +38,9 @@ public class DirectionsQuestionnaireUtils {
         if (isOptedForMediation(responseRejection)) {
             return Optional.of(REFERRED_TO_MEDIATION);
         }
-        String preferredCourt = getPreferredCourt(claim);
+
         if (isOnlineDQ(claim)) {
+            String preferredCourt = getPreferredCourt(claim);
             if (isPilotCourt(preferredCourt)) {
                 return Optional.of(ASSIGNING_FOR_DIRECTIONS);
             } else {

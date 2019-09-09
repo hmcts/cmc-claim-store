@@ -26,5 +26,6 @@
     "fullPaymentDeadline": "01-Jan-2018",
     "instalments": null
   },
-  "mediation": false
+  "mediation": false,
+  "hearingRequirements": false
 }
