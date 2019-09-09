@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import static org.springframework.test.context.TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
 
 @DirtiesContext
 @TestExecutionListeners(listeners = {BaseIntegrationTest.CleanDatabaseListener.class}, mergeMode = MERGE_WITH_DEFAULTS)
@@ -67,5 +68,23 @@ public abstract class BaseIntegrationTest extends MockSpringTest {
             get(urlTemplate)
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
         );
+    }
+
+    protected String getStartForRepresentativeURI() {
+        return  "/caseworkers/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
+            + "/case-types/" + CASE_TYPE_ID + "/event-triggers/"
+            + CREATE_CASE.getValue() + "/token";
+    }
+
+    protected String getStartForCitizenURI(){
+        return  "/citizens/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
+            + "/case-types/" + CASE_TYPE_ID + "/event-triggers/"
+            + CREATE_CASE.getValue() + "/token";
+    }
+
+    protected String getSubmitForRepresentativeURI(){
+        return  "/caseworkers/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
+            + "/case-types/" + CASE_TYPE_ID + "/cases"
+            + "?" + "ignore-warning=" + IGNORE_WARNING;
     }
 }

@@ -137,11 +137,8 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
     }
 
     protected void stubForStartForRepresentative() {
-        final String URI = "/caseworkers/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
-                         + "/case-types/" + CASE_TYPE_ID + "/event-triggers/"
-                         + CREATE_CASE.getValue() + "/token";
 
-        stubFor(get(urlEqualTo(URI))
+        stubFor(get(urlEqualTo(getStartForRepresentativeURI()))
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
             .withHeader(HttpHeaders.AUTHORIZATION, equalTo(SOLICITOR_AUTHORISATION_TOKEN))
             .willReturn(aResponse()
@@ -151,11 +148,8 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
     }
 
     protected void stubForStartForRepresentativeWithServerError() {
-        final String URI = "/caseworkers/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
-            + "/case-types/" + CASE_TYPE_ID + "/event-triggers/"
-            + CREATE_CASE.getValue() + "/token";
 
-        stubFor(get(urlEqualTo(URI))
+        stubFor(get(urlEqualTo(getStartForRepresentativeURI()))
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
             .withHeader(HttpHeaders.AUTHORIZATION, equalTo(SOLICITOR_AUTHORISATION_TOKEN))
             .willReturn(aResponse()
@@ -164,11 +158,8 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
     }
 
     protected void stubForStartForCitizen() {
-        final String URI = "/citizens/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
-                         + "/case-types/" + CASE_TYPE_ID + "/event-triggers/"
-                         + CREATE_CASE.getValue() + "/token";
 
-        stubFor(get(urlEqualTo(URI))
+        stubFor(get(urlEqualTo(getStartForCitizenURI()))
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
             .withHeader(HttpHeaders.AUTHORIZATION, equalTo(AUTHORISATION_TOKEN))
             .willReturn(aResponse()
@@ -178,11 +169,8 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
     }
 
     protected void stubForSubmitForRepresentative(String externalId) {
-        final String URI = "/caseworkers/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
-                         + "/case-types/" + CASE_TYPE_ID + "/cases"
-                         + "?" + "ignore-warning=" + IGNORE_WARNING;
 
-        stubFor(post(urlEqualTo(URI))
+        stubFor(post(urlEqualTo(getSubmitForRepresentativeURI()))
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .withHeader(HttpHeaders.AUTHORIZATION, equalTo(SOLICITOR_AUTHORISATION_TOKEN))
             .withRequestBody(containing(externalId))
@@ -193,11 +181,8 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
     }
 
     protected void stubForSubmitForRepresentativeWithServerError(String externalId) {
-        final String URI = "/caseworkers/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
-            + "/case-types/" + CASE_TYPE_ID + "/cases"
-            + "?" + "ignore-warning=" + IGNORE_WARNING;
 
-        stubFor(post(urlEqualTo(URI))
+        stubFor(post(urlEqualTo(getSubmitForRepresentativeURI()))
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .withHeader(HttpHeaders.AUTHORIZATION, equalTo(SOLICITOR_AUTHORISATION_TOKEN))
             .withRequestBody(containing(externalId))
