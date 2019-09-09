@@ -88,6 +88,10 @@ variable "directions_questionnaire_enabled" {
   default = "false"
 }
 
+variable milo_csv_schedule  {
+  default = "-"
+}
+
 variable "common_tags" {
   type = "map"
 }
