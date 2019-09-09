@@ -35,17 +35,4 @@ public class InitiatePaymentRequestTest {
             .hasSize(1)
             .contains("amount : may not be null");
     }
-
-    @Test
-    public void shouldBeInvalidWhenGivenNullIssuedOnDate() {
-        InitiatePaymentRequest theirDetails = SampleInitiatePaymentRequest.builder()
-            .issuedOn(null)
-            .build();
-
-        Set<String> validationErrors = validate(theirDetails);
-
-        assertThat(validationErrors)
-            .hasSize(1)
-            .contains("issuedOn : may not be null");
-    }
 }
