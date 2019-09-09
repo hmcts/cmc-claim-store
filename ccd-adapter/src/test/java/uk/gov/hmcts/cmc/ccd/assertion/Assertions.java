@@ -29,6 +29,7 @@ import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestion
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
+import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
@@ -161,6 +162,10 @@ public class Assertions {
 
     public static ReviewOrderAssert assertThat(ReviewOrder reviewOrder) {
         return new ReviewOrderAssert(reviewOrder);
+    }
+
+    public static DirectionOrderAssert assertThat(DirectionOrder directionOrder) {
+        return new DirectionOrderAssert(directionOrder);
     }
 
     public static MoneyAssert assertMoney(BigDecimal amount) {

@@ -37,7 +37,7 @@ public class SealedClaimJsonMapper {
             .add("caseNumber", claim.getReferenceNumber())
             .add("issueDate", DateFormatter.format(claim.getIssuedOn()))
             .add("serviceDate", DateFormatter.format(claim.getServiceDate()))
-            .add("courtFee", claim.getClaimData().getFeesPaidInPound())
+            .add("courtFee", claim.getClaimData().getFeesPaidInPounds())
             .add("amountWithInterest", claim.getAmountWithInterestUntilIssueDate().orElse(null))
             .add("submitterEmail", claim.getSubmitterEmail())
             .add("claimants", mapClaimants(claim.getClaimData().getClaimants()))

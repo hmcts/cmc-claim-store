@@ -17,7 +17,6 @@ public class CaseDetailsConverter {
     private final JsonMapper jsonMapper;
 
     public CaseDetailsConverter(CaseMapper caseMapper, JsonMapper jsonMapper) {
-
         this.caseMapper = caseMapper;
         this.jsonMapper = jsonMapper;
     }
@@ -36,5 +35,10 @@ public class CaseDetailsConverter {
 
     private CCDCase extractCCDCase(Map<String, Object> mapData) {
         return jsonMapper.fromMap(mapData, CCDCase.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> convertToMap(CCDCase ccdCase) {
+        return (Map<String, Object>) jsonMapper.convertValue(ccdCase, Map.class);
     }
 }

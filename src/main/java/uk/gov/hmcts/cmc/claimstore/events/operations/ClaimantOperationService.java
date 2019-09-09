@@ -29,6 +29,7 @@ public class ClaimantOperationService {
         this.eventsStatusService = eventsStatusService;
     }
 
+    @LogExecutionTime
     public Claim notifyCitizen(Claim claim, String submitterName, String authorisation) {
 
         claimIssuedNotificationService.sendMail(

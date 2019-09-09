@@ -58,7 +58,7 @@
     "requireSupport": {
       "languageInterpreter": "English",
       "signLanguageInterpreter": "Need Sign Language",
-      "hearingLoop": "no",
+      "hearingLoop": "yes",
       "disabledAccess": "yes"
     },
     "hearingLocation": {
