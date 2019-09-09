@@ -73,6 +73,7 @@ cmc-citizen-frontend:
       PAY_URL: http://payment-api-aat.service.core-compute-aat.internal
       FEES_URL: http://fees-register-api-aat.service.core-compute-aat.internal
       DRAFT_STORE_URL: http://draft-store-service-aat.service.core-compute-aat.internal
+      DOC_ASSEMBLY_URL: http://http://dg-docassembly-aat.service.core-compute-aat.interna
   rpe-feature-toggle-api:
     java:
       releaseNameOverride: ${SERVICE_NAME}-ftr-tgl-api
