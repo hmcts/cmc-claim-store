@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 public class SampleInitiatePaymentRequest {

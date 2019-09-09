@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
+package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -19,6 +19,10 @@ import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDResponseSubjectType;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
@@ -69,7 +73,6 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
     private final LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator;
     private final DocAssemblyClient docAssemblyClient;
     private final AuthTokenGenerator authTokenGenerator;
-    private final JsonMapper jsonMapper;
     private final UserService userService;
     private final DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
     private final CaseDetailsConverter caseDetailsConverter;
@@ -80,13 +83,11 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
         LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator,
         DocAssemblyClient docAssemblyClient,
         AuthTokenGenerator authTokenGenerator,
-        JsonMapper jsonMapper,
         DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper,
         CaseDetailsConverter caseDetailsConverter
     ) {
         this.docAssemblyClient = docAssemblyClient;
         this.authTokenGenerator = authTokenGenerator;
-        this.jsonMapper = jsonMapper;
         this.userService = userService;
         this.legalOrderGenerationDeadlinesCalculator = legalOrderGenerationDeadlinesCalculator;
         this.docAssemblyTemplateBodyMapper = docAssemblyTemplateBodyMapper;
@@ -116,13 +117,10 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
             DOCUMENTS.name(),
             EYEWITNESS.name()
         ));
-        Map<String, Object> caseData = callbackRequest.getCaseDetails().getData();
-        Claim claim = caseDetailsConverter.extractClaim(
-            CaseDetails.builder()
-                .data(caseData)
-                .build()
-        );
-        addCourtData(claim, caseData, data);
+        Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
+
+        addCourtData(claim, ccdCase, data);
         data.put(DOC_UPLOAD_DEADLINE, deadline);
         data.put(EYEWITNESS_UPLOAD_DEADLINE, deadline);
         data.put(DOC_UPLOAD_FOR_PARTY, BOTH.name());
@@ -137,8 +135,7 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
     private CallbackResponse generateOrder(CallbackParams callbackParams) {
         logger.info("Generate order callback: creating order document");
         CallbackRequest callbackRequest = callbackParams.getRequest();
-        CCDCase ccdCase = jsonMapper.fromMap(
-            callbackRequest.getCaseDetails().getData(), CCDCase.class);
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
 
         String authorisation = callbackParams.getParams()
             .get(CallbackParams.Params.BEARER_TOKEN).toString();
@@ -169,8 +166,7 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
             .build();
     }
 
-    private void addCourtData(Claim claim, Map<String, Object> caseData, Map<String, Object> data) {
-        CCDCase ccdCase = jsonMapper.fromMap(caseData, CCDCase.class);
+    private void addCourtData(Claim claim, CCDCase ccdCase, Map<String, Object> data) {
         CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
 
         CCDResponseRejection claimantResponse = Optional.ofNullable(respondent.getClaimantResponse())
