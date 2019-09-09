@@ -1,201 +1,55 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
-import feign.FeignException;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
-import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
+import uk.gov.hmcts.cmc.claimstore.MockedCoreCaseDataApiTest;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
+import static java.net.HttpURLConnection.HTTP_OK;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ISSUE_CASE;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreStartResponse;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitRepresentativeResponse;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponse;
 
 @TestPropertySource(
     properties = {
         "feature_toggles.async_event_operations_enabled=false"
     }
 )
-@Ignore("to be fixed as part of task ROC-6278")
-public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
+public class SaveClaimWithCoreCaseDataStoreTest extends MockedCoreCaseDataApiTest {
 
     @Test
     public void shouldStoreRepresentedClaimIntoCCD() throws Exception {
-        ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
 
-        given(coreCaseDataApi.startForCaseworker(
-            eq(SOLICITOR_AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(CREATE_CASE.getValue())
-            )
-        ).willReturn(successfulCoreCaseDataStoreStartResponse());
+        final Long expectedCaseId = representativeSampleCaseDetails.getId();
 
-        given(coreCaseDataApi.submitForCaseworker(
-            eq(SOLICITOR_AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(IGNORE_WARNING),
-            any()
-            )
-        ).willReturn(successfulCoreCaseDataStoreSubmitRepresentativeResponse());
+        MvcResult result = makeSuccessfulIssueClaimRequestForRepresentative();
+        assertThat(result.getResponse().getStatus()).isEqualTo(HTTP_OK);
 
-        given(coreCaseDataApi.startEventForCaseWorker(
-            eq(SOLICITOR_AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            any(),
-            eq(ISSUE_CASE.getValue())
-            )
-        ).willReturn(successfulCoreCaseDataStoreStartResponse());
-
-        given(coreCaseDataApi.submitEventForCaseWorker(
-            eq(SOLICITOR_AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            any(),
-            eq(IGNORE_WARNING),
-            any()
-            )
-        ).willReturn(successfulCoreCaseDataStoreSubmitRepresentativeResponse());
-
-        given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
-
-        makeIssueClaimRequest(claimData, SOLICITOR_AUTHORISATION_TOKEN)
-            .andExpect(status().isOk())
-            .andReturn();
-
-        verify(coreCaseDataApi)
-            .startForCaseworker(
-                eq(SOLICITOR_AUTHORISATION_TOKEN),
-                eq(SERVICE_TOKEN),
-                eq(USER_ID),
-                eq(JURISDICTION_ID),
-                eq(CASE_TYPE_ID),
-                eq(CREATE_CASE.getValue())
-            );
-
-        verify(coreCaseDataApi)
-            .submitForCaseworker(
-                eq(SOLICITOR_AUTHORISATION_TOKEN),
-                eq(SERVICE_TOKEN),
-                eq(USER_ID),
-                eq(JURISDICTION_ID),
-                eq(CASE_TYPE_ID),
-                eq(IGNORE_WARNING),
-                any()
-            );
+        final Claim savedClaim = jsonMapper.fromJson(result.getResponse().getContentAsString(), Claim.class);
+        assertThat(savedClaim.getId()).isEqualTo(expectedCaseId);
     }
 
     @Test
     public void shouldStoreCitizenClaimIntoCCD() throws Exception {
-        ClaimData claimData = SampleClaimData.submittedByClaimantBuilder().build();
 
-        given(coreCaseDataApi.startForCitizen(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(CREATE_CASE.getValue())
-            )
-        ).willReturn(successfulCoreCaseDataStoreStartResponse());
+        final Long expectedCaseId = citizenSampleCaseDetails.getId();
 
-        given(coreCaseDataApi.submitForCitizen(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(IGNORE_WARNING),
-            any()
-            )
-        ).willReturn(successfulCoreCaseDataStoreSubmitResponse());
+        MvcResult result = makeSuccessfulIssueClaimRequestForCitizen();
+        assertThat(result.getResponse().getStatus()).isEqualTo(HTTP_OK);
 
-        given(coreCaseDataApi.startEventForCitizen(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            any(),
-            eq(ISSUE_CASE.getValue())
-            )
-        ).willReturn(successfulCoreCaseDataStoreStartResponse());
-
-        given(coreCaseDataApi.submitEventForCitizen(
-            eq(AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            any(),
-            eq(IGNORE_WARNING),
-            any()
-            )
-        ).willReturn(successfulCoreCaseDataStoreSubmitRepresentativeResponse());
-
-        given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
-
-        makeIssueClaimRequest(claimData, AUTHORISATION_TOKEN)
-            .andExpect(status().isOk())
-            .andReturn();
-
-        verify(coreCaseDataApi)
-            .startForCitizen(
-                eq(AUTHORISATION_TOKEN),
-                eq(SERVICE_TOKEN),
-                eq(USER_ID),
-                eq(JURISDICTION_ID),
-                eq(CASE_TYPE_ID),
-                eq(CREATE_CASE.getValue())
-            );
-
-        verify(coreCaseDataApi)
-            .submitForCitizen(
-                eq(AUTHORISATION_TOKEN),
-                eq(SERVICE_TOKEN),
-                eq(USER_ID),
-                eq(JURISDICTION_ID),
-                eq(CASE_TYPE_ID),
-                eq(IGNORE_WARNING),
-                any()
-            );
+        final Claim savedClaim = jsonMapper.fromJson(result.getResponse().getContentAsString(), Claim.class);
+        assertThat(savedClaim.getId()).isEqualTo(expectedCaseId);
     }
 
     @Test
     public void shouldFailIssuingClaimEvenWhenCCDStoreFailsToStartEvent() throws Exception {
-        ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
+        final ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
+        final String externalId = claimData.getExternalId().toString();
 
-        given(coreCaseDataApi.startForCaseworker(
-            eq(SOLICITOR_AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(CREATE_CASE.getValue())
-            )
-        ).willThrow(FeignException.class);
-
-        given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
+        stubForSearchForRepresentative(externalId);
+        stubForStartForRepresentativeWithServerError();
 
         MvcResult result = makeIssueClaimRequest(claimData, SOLICITOR_AUTHORISATION_TOKEN)
             .andExpect(status().isInternalServerError())
@@ -207,30 +61,12 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
 
     @Test
     public void shouldIssueClaimEvenWhenCCDStoreFailsToSubmitEvent() throws Exception {
-        ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
+        final ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
+        final String externalId = claimData.getExternalId().toString();
 
-        given(coreCaseDataApi.startForCaseworker(
-            eq(SOLICITOR_AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(CREATE_CASE.getValue())
-            )
-        ).willReturn(successfulCoreCaseDataStoreStartResponse());
-
-        given(coreCaseDataApi.submitForCaseworker(
-            eq(SOLICITOR_AUTHORISATION_TOKEN),
-            eq(SERVICE_TOKEN),
-            eq(USER_ID),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(IGNORE_WARNING),
-            any()
-            )
-        ).willThrow(FeignException.class);
-
-        given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
+        stubForSearchForRepresentative(externalId);
+        stubForStartForRepresentative();
+        stubForSubmitForRepresentativeWithServerError(externalId);
 
         MvcResult result = makeIssueClaimRequest(claimData, SOLICITOR_AUTHORISATION_TOKEN)
             .andExpect(status().isInternalServerError())

@@ -24,6 +24,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -149,6 +150,19 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
         );
     }
 
+    protected void stubForStartForRepresentativeWithServerError() {
+        final String URI = "/caseworkers/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
+            + "/case-types/" + CASE_TYPE_ID + "/event-triggers/"
+            + CREATE_CASE.getValue() + "/token";
+
+        stubFor(get(urlEqualTo(URI))
+            .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
+            .withHeader(HttpHeaders.AUTHORIZATION, equalTo(SOLICITOR_AUTHORISATION_TOKEN))
+            .willReturn(aResponse()
+                .withStatus(HTTP_INTERNAL_ERROR))
+        );
+    }
+
     protected void stubForStartForCitizen() {
         final String URI = "/citizens/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
                          + "/case-types/" + CASE_TYPE_ID + "/event-triggers/"
@@ -176,6 +190,19 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
                 .withStatus(HTTP_OK)
                 .withBody(jsonMapper.toJson(representativeSampleCaseDetails)))
         );
+    }
+
+    protected void stubForSubmitForRepresentativeWithServerError(String externalId) {
+        final String URI = "/caseworkers/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
+            + "/case-types/" + CASE_TYPE_ID + "/cases"
+            + "?" + "ignore-warning=" + IGNORE_WARNING;
+
+        stubFor(post(urlEqualTo(URI))
+            .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .withHeader(HttpHeaders.AUTHORIZATION, equalTo(SOLICITOR_AUTHORISATION_TOKEN))
+            .withRequestBody(containing(externalId))
+            .willReturn(aResponse()
+                .withStatus(HTTP_INTERNAL_ERROR)));
     }
 
     protected void stubForSubmitForCitizen(String externalId) {
