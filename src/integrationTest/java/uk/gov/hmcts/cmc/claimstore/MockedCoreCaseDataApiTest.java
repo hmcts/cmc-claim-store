@@ -66,16 +66,16 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
     protected MvcResult makeSuccessfulIssueClaimRequestForRepresentative() throws Exception {
         final ClaimData legalRepresentativeClaimData = SampleClaimData.submittedByLegalRepresentative();
         final String externalId = legalRepresentativeClaimData.getExternalId().toString();
+        final String caseId = representativeSampleCaseDetails.getId().toString();
 
         stubForSearchForRepresentative(externalId);
         stubForStartForRepresentative();
         stubForSubmitForRepresentative(externalId);
 
-        stubForStartEventForRepresentative(representativeSampleCaseDetails.getId().toString(),
-            SEALED_CLAIM_UPLOAD.getValue());
-        stubForSubmitEventForRepresentative(representativeSampleCaseDetails.getId().toString(),
+        stubForStartEventForRepresentative(caseId, SEALED_CLAIM_UPLOAD.getValue());
+        stubForSubmitEventForRepresentative(caseId,
             representativeStartEventResponse.getCaseDetails().getId().toString());
-        stubForStartEventForRepresentative(representativeSampleCaseDetails.getId().toString(), ISSUE_CASE.getValue());
+        stubForStartEventForRepresentative(caseId, ISSUE_CASE.getValue());
 
         given(authTokenGenerator.generate()).willReturn(SOLICITOR_AUTHORISATION_TOKEN);
         given(documentUploadClient
@@ -90,17 +90,16 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
     protected MvcResult makeSuccessfulIssueClaimRequestForCitizen() throws Exception {
         final ClaimData submittedByClaimant = SampleClaimData.submittedByClaimant();
         final String externalId = submittedByClaimant.getExternalId().toString();
+        final String caseId = citizenSampleCaseDetails.getId().toString();
 
         stubForSearchForCitizen(externalId);
         stubForStartForCitizen();
         stubForSubmitForCitizen(externalId);
 
-        stubForStartEventForCitizen(citizenSampleCaseDetails.getId().toString(),
-            SEALED_CLAIM_UPLOAD.getValue());
-        stubForSubmitEventForCitizen(citizenSampleCaseDetails.getId().toString(),
+        stubForStartEventForCitizen(caseId, SEALED_CLAIM_UPLOAD.getValue());
+        stubForSubmitEventForCitizen(caseId,
             citizenStartEventResponse.getCaseDetails().getId().toString());
-        stubForStartEventForCitizen(citizenSampleCaseDetails.getId().toString(),
-            ISSUE_CASE.getValue());
+        stubForStartEventForCitizen(caseId, ISSUE_CASE.getValue());
 
         given(authTokenGenerator.generate()).willReturn(AUTHORISATION_TOKEN);
         given(documentUploadClient
