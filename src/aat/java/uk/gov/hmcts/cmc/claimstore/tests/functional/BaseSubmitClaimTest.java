@@ -67,14 +67,6 @@ public abstract class BaseSubmitClaimTest extends BaseTest {
         assertThat(createdCase.getCreatedAt()).isNotNull();
     }
 
-    @Test
-    public void shouldReturnUnprocessableEntityWhenInvalidClaimIsSubmitted() {
-        ClaimData claimData = getSampleClaimDataBuilder().get().withAmount(null).build();
-        submitClaim(claimData)
-            .then()
-            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
-    }
-
     protected abstract Supplier<SampleClaimData> getSampleClaimDataBuilder();
 
     protected abstract void assertDocumentsCreated(Claim claim);

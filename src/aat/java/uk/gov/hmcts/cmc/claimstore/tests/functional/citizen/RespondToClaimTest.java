@@ -122,26 +122,4 @@ public class RespondToClaimTest extends BaseTest {
         assertThat(updatedCase.getResponse().get()).isEqualTo(response);
         assertThat(updatedCase.getRespondedAt()).isNotNull();
     }
-
-    @Test
-    public void shouldReturnUnprocessableEntityWhenInvalidResponseIsSubmitted() {
-        String claimantId = claimant.getUserDetails().getId();
-        Claim createdCase = commonOperations.submitClaim(
-            claimant.getAuthorisation(),
-            claimantId
-        );
-
-        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
-        commonOperations.linkDefendant(
-            defendant.getAuthorisation()
-        );
-
-        Response invalidResponse = SampleResponse.FullDefence.builder()
-            .withDefenceType(null)
-            .build();
-
-        commonOperations.submitResponse(invalidResponse, createdCase.getExternalId(), defendant)
-            .then()
-            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
-    }
 }

@@ -43,7 +43,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEM
 public class DocumentManagementBackedDocumentsServiceTest {
 
     private static final String AUTHORISATION = "Bearer: aaa";
-    private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
+    private static final byte[] PDF_BYTES = new byte[] {1, 2, 3, 4};
 
     private DocumentManagementBackedDocumentsService documentManagementBackedDocumentsService;
 
@@ -172,6 +172,10 @@ public class DocumentManagementBackedDocumentsServiceTest {
         Claim claim = SampleClaim.getWithSealedClaimDocument();
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(AUTHORISATION)))
             .thenReturn(claim);
+
+        when(documentManagementService.downloadDocument(eq(AUTHORISATION), any(ClaimDocument.class)))
+            .thenReturn(PDF_BYTES);
+
         documentManagementBackedDocumentsService.generateDocument(
             claim.getExternalId(),
             SEALED_CLAIM,
