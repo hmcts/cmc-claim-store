@@ -49,18 +49,12 @@ public class BulkPrintHandler {
     public void print(DirectionsOrderReadyToPrintEvent event) {
         requireNonNull(event);
         Claim claim = event.getClaim();
-        bulkPrintService.print(
+        bulkPrintService.printPdf(
             claim,
             ImmutableList.of(
                 new PrintablePdf(
                     event.getDirectionsOrder(),
-                    buildDirectionsOrderFileBaseName(claim.getReferenceNumber()))
-            )
-        );
-
-        bulkPrintService.print(
-            claim,
-            ImmutableList.of(
+                    buildDirectionsOrderFileBaseName(claim.getReferenceNumber())),
                 new PrintableTemplate(
                     event.getCoverSheet(),
                     buildCoverSheetFileBaseName(claim.getReferenceNumber()))
