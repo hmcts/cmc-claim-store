@@ -160,8 +160,10 @@ feature_toggles:
   async_event_operations_enabled: false
   directions_questionnaire_enabled: false
 
+#To be removed before merging to master
 logging.level.uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi: DEBUG
 
+#This changes are used for local debugging; should be reverted to original master setup
 feign:
   httpclient:
     enabled: true

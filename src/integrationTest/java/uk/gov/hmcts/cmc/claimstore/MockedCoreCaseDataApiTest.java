@@ -194,7 +194,6 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
     }
 
     protected void stubForStartEventForRepresentative(String caseId, String eventTriggerType) {
-
         final String URI = "/caseworkers/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
                          + "/case-types/" + CASE_TYPE_ID + "/cases/" + caseId
                          + "/event-triggers/" + eventTriggerType + "/token";
@@ -209,7 +208,6 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
     }
 
     protected void stubForStartEventForCitizen(String caseId, String eventTriggerType) {
-
         final String URI = "/citizens/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
                          + "/case-types/" + CASE_TYPE_ID + "/cases/" + caseId
                          + "/event-triggers/" + eventTriggerType + "/token";

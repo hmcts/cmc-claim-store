@@ -29,19 +29,13 @@ public class ResourceLoader {
     }
 
     public static StartEventResponse successfulCoreCaseDataStoreStartResponse() {
-        return jsonMapper.fromJson(startEventResponseSuccessAsFile(), StartEventResponse.class);
-    }
-
-    public static String startEventResponseSuccessAsFile() {
-        return new ResourceReader().read("/core-case-data/start-response.success.json");
-    }
-
-    public static String submitEventResponseSuccessAsFile() {
-        return new ResourceReader().read("/core-case-data/submit-representative-response.success.json");
+        String response = new ResourceReader().read("/core-case-data/start-response.success.json");
+        return jsonMapper.fromJson(response, StartEventResponse.class);
     }
 
     public static CaseDetails successfulCoreCaseDataStoreSubmitRepresentativeResponse() {
-        return jsonMapper.fromJson(submitEventResponseSuccessAsFile(), CaseDetails.class);
+        String response = new ResourceReader().read("/core-case-data/submit-representative-response.success.json");
+        return jsonMapper.fromJson(response, CaseDetails.class);
     }
 
     public static StartEventResponse successfulCoreCaseDataStoreStartResponseWithLinkedDefendant() {
