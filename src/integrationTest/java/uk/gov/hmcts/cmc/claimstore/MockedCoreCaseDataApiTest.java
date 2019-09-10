@@ -31,6 +31,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CLAIM_ISSUE_RECEIPT_UPLOAD;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ISSUE_CASE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SEALED_CLAIM_UPLOAD;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementUploadResponse;
@@ -54,20 +55,33 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
 
     @Test
     public void shouldSuccessfullySubmitClaimForCitizen() throws Exception {
-        makeSuccessfulIssueClaimRequestForCitizen();
+        final ClaimData submittedByClaimant = SampleClaimData.submittedByClaimant();
+
+        final String caseId = citizenSampleCaseDetails.getId().toString();
+
+        makeSuccessfulIssueClaimRequestForCitizen(submittedByClaimant, caseId);
     }
 
     @Test
     public void shouldSuccessfullySubmitClaimForRepresentative() throws Exception {
-
-        makeSuccessfulIssueClaimRequestForRepresentative();
-    }
-
-    protected MvcResult makeSuccessfulIssueClaimRequestForRepresentative() throws Exception {
         final ClaimData legalRepresentativeClaimData = SampleClaimData.submittedByLegalRepresentative();
-        final String externalId = legalRepresentativeClaimData.getExternalId().toString();
         final String caseId = representativeSampleCaseDetails.getId().toString();
 
+        makeSuccessfulIssueClaimRequestForRepresentative(legalRepresentativeClaimData, caseId);
+    }
+
+    protected MvcResult makeSuccessfulIssueClaimRequestForRepresentative(ClaimData claimData, String caseId)
+        throws Exception {
+        final String externalId = claimData.getExternalId().toString();
+
+        commonStubStepsClaimRequestForRepresentative(caseId, externalId);
+
+        return makeIssueClaimRequest(claimData, SOLICITOR_AUTHORISATION_TOKEN)
+            .andExpect(status().isOk())
+            .andReturn();
+    }
+
+    protected void commonStubStepsClaimRequestForRepresentative(String caseId, String externalId) {
         stubForSearchForRepresentative(externalId);
         stubForStartForRepresentative();
         stubForSubmitForRepresentative(externalId);
@@ -82,23 +96,27 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
             .upload(anyString(), anyString(), anyString(), anyList(), any(Classification.class), anyList()))
             .willReturn(successfulDocumentManagementUploadResponse());
 
-        return makeIssueClaimRequest(legalRepresentativeClaimData, SOLICITOR_AUTHORISATION_TOKEN)
+    }
+
+    protected MvcResult makeSuccessfulIssueClaimRequestForCitizen(ClaimData claimData, String caseId) throws Exception {
+        final String externalId = claimData.getExternalId().toString();
+
+        commonStubStepsClaimRequestForCitizen(caseId, externalId);
+
+        return makeIssueClaimRequest(claimData, AUTHORISATION_TOKEN)
             .andExpect(status().isOk())
             .andReturn();
     }
 
-    protected MvcResult makeSuccessfulIssueClaimRequestForCitizen() throws Exception {
-        final ClaimData submittedByClaimant = SampleClaimData.submittedByClaimant();
-        final String externalId = submittedByClaimant.getExternalId().toString();
-        final String caseId = citizenSampleCaseDetails.getId().toString();
-
+    protected void commonStubStepsClaimRequestForCitizen(String caseId, String externalId) {
         stubForSearchForCitizen(externalId);
         stubForStartForCitizen();
         stubForSubmitForCitizen(externalId);
 
-        stubForStartEventForCitizen(caseId, SEALED_CLAIM_UPLOAD.getValue());
+        stubForStartEventForCitizen(caseId, CLAIM_ISSUE_RECEIPT_UPLOAD.getValue());
         stubForSubmitEventForCitizen(caseId,
             citizenStartEventResponse.getCaseDetails().getId().toString());
+        stubForStartEventForCitizen(caseId, SEALED_CLAIM_UPLOAD.getValue());
         stubForStartEventForCitizen(caseId, ISSUE_CASE.getValue());
 
         given(authTokenGenerator.generate()).willReturn(AUTHORISATION_TOKEN);
@@ -106,9 +124,6 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
             .upload(anyString(), anyString(), anyString(), anyList(), any(Classification.class), anyList()))
             .willReturn(successfulDocumentManagementUploadResponse());
 
-        return makeIssueClaimRequest(submittedByClaimant, AUTHORISATION_TOKEN)
-            .andExpect(status().isOk())
-            .andReturn();
     }
 
     protected void stubForSearchForCitizen(String externalId) {
@@ -167,6 +182,16 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
         );
     }
 
+    protected void stubForStartForCitizenWithServerError() {
+
+        stubFor(get(urlEqualTo(getStartForCitizenURI()))
+            .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
+            .withHeader(HttpHeaders.AUTHORIZATION, equalTo(AUTHORISATION_TOKEN))
+            .willReturn(aResponse()
+                .withStatus(HTTP_INTERNAL_ERROR))
+        );
+    }
+
     protected void stubForSubmitForRepresentative(String externalId) {
 
         stubFor(post(urlEqualTo(getSubmitForRepresentativeURI()))
@@ -205,7 +230,6 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
     }
 
     protected void stubForStartEventForRepresentative(String caseId, String eventTriggerType) {
-
         final String URI = "/caseworkers/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
                          + "/case-types/" + CASE_TYPE_ID + "/cases/" + caseId
                          + "/event-triggers/" + eventTriggerType + "/token";
@@ -220,7 +244,6 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
     }
 
     protected void stubForStartEventForCitizen(String caseId, String eventTriggerType) {
-
         final String URI = "/citizens/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
                          + "/case-types/" + CASE_TYPE_ID + "/cases/" + caseId
                          + "/event-triggers/" + eventTriggerType + "/token";

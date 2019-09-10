@@ -574,17 +574,18 @@ public class SampleCCDCaseData {
 
     public static CCDCase getCCDCitizenCaseWithDefault() {
 
-        List<CCDCollectionElement<CCDApplicant>> applicants =
+        final List<CCDCollectionElement<CCDApplicant>> applicants =
             singletonList(CCDCollectionElement.<CCDApplicant>builder()
                 .id(UUID.randomUUID().toString())
                 .value(getCCDApplicantIndividualWithDefault()).build());
 
-        List<CCDCollectionElement<CCDRespondent>> respondents =
+        final List<CCDCollectionElement<CCDRespondent>> respondents =
             singletonList(CCDCollectionElement.<CCDRespondent>builder()
                 .id(UUID.randomUUID().toString())
                 .value(getCCDRespondentIndividualWithDefault()).build());
 
         return ccdBuilderWithDefault()
+            .features("admissions,offers")
             .amountBreakDown(getAmountBreakDown())
             .applicants(applicants)
             .respondents(respondents)

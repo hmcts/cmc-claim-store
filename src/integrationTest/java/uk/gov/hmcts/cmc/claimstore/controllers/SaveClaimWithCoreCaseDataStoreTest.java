@@ -21,26 +21,25 @@ public class SaveClaimWithCoreCaseDataStoreTest extends MockedCoreCaseDataApiTes
 
     @Test
     public void shouldStoreRepresentedClaimIntoCCD() throws Exception {
+        final ClaimData legalRepresentativeClaimData = SampleClaimData.submittedByLegalRepresentative();
+        final Long caseId = representativeSampleCaseDetails.getId();
 
-        final Long expectedCaseId = representativeSampleCaseDetails.getId();
+        MvcResult result = makeSuccessfulIssueClaimRequestForRepresentative(legalRepresentativeClaimData,
+            String.valueOf(caseId));
 
-        MvcResult result = makeSuccessfulIssueClaimRequestForRepresentative();
         assertThat(result.getResponse().getStatus()).isEqualTo(HTTP_OK);
-
-        final Claim savedClaim = jsonMapper.fromJson(result.getResponse().getContentAsString(), Claim.class);
-        assertThat(savedClaim.getId()).isEqualTo(expectedCaseId);
+        assertThat(deserializeObjectFrom(result, Claim.class).getId()).isEqualTo(caseId);
     }
 
     @Test
     public void shouldStoreCitizenClaimIntoCCD() throws Exception {
+        final ClaimData submittedByClaimant = SampleClaimData.submittedByClaimant();
+        final Long caseId = citizenSampleCaseDetails.getId();
 
-        final Long expectedCaseId = citizenSampleCaseDetails.getId();
+        MvcResult result = makeSuccessfulIssueClaimRequestForCitizen(submittedByClaimant, String.valueOf(caseId));
 
-        MvcResult result = makeSuccessfulIssueClaimRequestForCitizen();
         assertThat(result.getResponse().getStatus()).isEqualTo(HTTP_OK);
-
-        final Claim savedClaim = jsonMapper.fromJson(result.getResponse().getContentAsString(), Claim.class);
-        assertThat(savedClaim.getId()).isEqualTo(expectedCaseId);
+        assertThat(deserializeObjectFrom(result, Claim.class).getId()).isEqualTo(caseId);
     }
 
     @Test

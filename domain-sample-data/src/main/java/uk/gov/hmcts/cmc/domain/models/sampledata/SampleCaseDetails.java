@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDCaseData;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Classification;
 
@@ -69,13 +70,28 @@ public class SampleCaseDetails {
 
     public CaseDetails buildCitizenCaseDetails() {
         return caseDetailsBuilder.data(convertCCDCaseToMap(
-               SampleCCDCaseData.getCCDCitizenCaseWithDefault())).build();
+            SampleCCDCaseData.getCCDCitizenCaseWithDefault())).build();
+    }
+
+    public CaseDetails buildCitizenCaseDetailsWithSampleClaimData() {
+        return caseDetailsBuilder.data(convertClaimDataToMap(
+            SampleClaimData.submittedByClaimant())).build();
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> convertClaimDataToMap(ClaimData claimData) {
+        configureObjectMapper();
+        return (Map<String, Object>) objectMapper.convertValue(claimData, Map.class);
+    }
+
+    private void configureObjectMapper() {
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     }
 
     @SuppressWarnings("unchecked")
     private Map<String, Object> convertCCDCaseToMap(CCDCase ccdCase) {
-        objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        configureObjectMapper();
         return (Map<String, Object>) objectMapper.convertValue(ccdCase, Map.class);
     }
 

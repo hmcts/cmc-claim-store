@@ -11,7 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
+import uk.gov.hmcts.cmc.claimstore.MockedCoreCaseDataApiTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
@@ -33,7 +33,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
@@ -42,12 +41,10 @@ import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @TestPropertySource(
     properties = {
-        "core_case_data.api.url=false",
         "feature_toggles.async_event_operations_enabled=false"
     }
 )
-@Ignore("to be fixed as part of task ROC-6278")
-public class SaveClaimTest extends BaseSaveTest {
+public class SaveClaimTest extends MockedCoreCaseDataApiTest {
 
     private static final String REPRESENTATIVE_EMAIL_TEMPLATE = "f2b21b9c-fc4a-4589-807b-3156dbf5bf01";
 
@@ -57,31 +54,36 @@ public class SaveClaimTest extends BaseSaveTest {
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
 
+    @Ignore
     @Test
     public void shouldReturnNewlyCreatedClaim() throws Exception {
-        ClaimData claimData = SampleClaimData.submittedByClaimant();
+        ClaimData citizenClaimData = SampleClaimData.submittedByClaimant();
+        Long citizenCaseId = citizenSampleCaseDetails.getId();
 
-        MvcResult result = makeIssueClaimRequest(claimData, AUTHORISATION_TOKEN)
-            .andExpect(status().isOk())
-            .andReturn();
+        MvcResult result = makeSuccessfulIssueClaimRequestForCitizen(citizenClaimData, String.valueOf(citizenCaseId));
 
+        //assertThat(deserializeObjectFrom(result, Claim.class).getId()).isEqualTo(citizenCaseId);
         assertThat(deserializeObjectFrom(result, Claim.class))
             .extracting(Claim::getClaimData)
-            .isEqualTo(claimData);
+            .isEqualTo(citizenClaimData);
     }
 
     @Test
     public void shouldReturnFeaturesStored() throws Exception {
-        ClaimData claimData = SampleClaimData.submittedByClaimant();
+        ClaimData citizenClaimData = SampleClaimData.submittedByClaimant();
+        Long citizenCaseId = citizenSampleCaseDetails.getId();
+        String externalId = citizenClaimData.getExternalId().toString();
 
         ImmutableList<String> features = ImmutableList.of("admissions", "offers");
+
+        commonStubStepsClaimRequestForCitizen(String.valueOf(citizenCaseId), externalId);
 
         MvcResult result = webClient
             .perform(MockMvcRequestBuilders.post("/claims/" + USER_ID)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
                 .header("Features", features)
-                .content(jsonMapper.toJson(claimData))
+                .content(jsonMapper.toJson(citizenClaimData))
             )
             .andExpect(status().isOk())
             .andReturn();
@@ -93,23 +95,32 @@ public class SaveClaimTest extends BaseSaveTest {
 
     @Test
     public void shouldFailWhenStaffNotificationFails() throws Exception {
+        ClaimData citizenClaimData = SampleClaimData.submittedByClaimant();
+        String externalId = citizenClaimData.getExternalId().toString();
+
         doThrow(new RuntimeException("Sending failed"))
             .when(emailService).sendEmail(anyString(), any(EmailData.class));
 
-        makeIssueClaimRequest(SampleClaimData.submittedByClaimant(), AUTHORISATION_TOKEN)
+        stubForSearchForCitizen(externalId);
+        stubForStartForCitizenWithServerError();
+
+        makeIssueClaimRequest(citizenClaimData, AUTHORISATION_TOKEN)
             .andExpect(status().isInternalServerError());
     }
 
     @Test
     public void shouldRetrySendNotifications() throws Exception {
+        ClaimData citizenClaimData = SampleClaimData.submittedByClaimant();
+        Long citizenCaseId = citizenSampleCaseDetails.getId();
+        String externalId = citizenClaimData.getExternalId().toString();
+
         given(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
             .willThrow(new NotificationClientException(new RuntimeException("invalid email1")))
             .willThrow(new NotificationClientException(new RuntimeException("invalid email2")))
             .willThrow(new NotificationClientException(new RuntimeException("invalid email3")));
 
-        ClaimData claimData = SampleClaimData.submittedByClaimant();
-
-        MvcResult result = makeIssueClaimRequest(claimData, AUTHORISATION_TOKEN)
+        commonStubStepsClaimRequestForCitizen(String.valueOf(citizenCaseId), externalId);
+        MvcResult result = makeIssueClaimRequest(citizenClaimData, AUTHORISATION_TOKEN)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -127,9 +138,15 @@ public class SaveClaimTest extends BaseSaveTest {
 
     @Test
     public void shouldSendNotificationsWhenEverythingIsOk() throws Exception {
+        ClaimData legalRepresentativeClaimData = SampleClaimData.submittedByLegalRepresentative();
+        String legalRepresentativeCaseId = representativeSampleCaseDetails.getId().toString();
+        String externalId = legalRepresentativeClaimData.getExternalId().toString();
+
         given(notificationClient.sendEmail(any(), any(), any(), any())).willReturn(null);
 
-        MvcResult result = makeIssueClaimRequest(SampleClaimData.submittedByLegalRepresentative(), AUTHORISATION_TOKEN)
+        commonStubStepsClaimRequestForRepresentative(legalRepresentativeCaseId, externalId);
+
+        MvcResult result = makeIssueClaimRequest(legalRepresentativeClaimData, SOLICITOR_AUTHORISATION_TOKEN)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -141,7 +158,13 @@ public class SaveClaimTest extends BaseSaveTest {
 
     @Test
     public void shouldSendStaffNotificationsForCitizenClaimIssuedEvent() throws Exception {
-        MvcResult result = makeIssueClaimRequest(SampleClaimData.submittedByClaimant(), AUTHORISATION_TOKEN)
+        ClaimData citizenClaimData = SampleClaimData.submittedByClaimant();
+        Long citizenCaseId = citizenSampleCaseDetails.getId();
+        String externalId = citizenClaimData.getExternalId().toString();
+
+        commonStubStepsClaimRequestForCitizen(String.valueOf(citizenCaseId), externalId);
+
+        MvcResult result = makeIssueClaimRequest(citizenClaimData, AUTHORISATION_TOKEN)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -162,7 +185,13 @@ public class SaveClaimTest extends BaseSaveTest {
 
     @Test
     public void shouldSendStaffNotificationsForLegalClaimIssuedEvent() throws Exception {
-        MvcResult result = makeIssueClaimRequest(SampleClaimData.submittedByLegalRepresentative(), AUTHORISATION_TOKEN)
+        ClaimData legalRepresentativeClaimData = SampleClaimData.submittedByLegalRepresentative();
+        String legalRepresentativeCaseId = representativeSampleCaseDetails.getId().toString();
+        String externalId = legalRepresentativeClaimData.getExternalId().toString();
+
+        commonStubStepsClaimRequestForRepresentative(legalRepresentativeCaseId, externalId);
+
+        MvcResult result = makeIssueClaimRequest(legalRepresentativeClaimData, SOLICITOR_AUTHORISATION_TOKEN)
             .andExpect(status().isOk())
             .andReturn();
 
@@ -178,15 +207,6 @@ public class SaveClaimTest extends BaseSaveTest {
         assertThat(emailData.getAttachments()).hasSize(1)
             .first().extracting(EmailAttachment::getFilename)
             .isEqualTo(savedClaim.getReferenceNumber() + "-claim-form.pdf");
-    }
-
-    @Test
-    public void shouldNotMakeCallToStoreInCoreCaseDataStoreWhenToggledOff() throws Exception {
-        makeIssueClaimRequest(SampleClaimData.submittedByLegalRepresentative(), AUTHORISATION_TOKEN)
-            .andExpect(status().isOk());
-
-        verify(coreCaseDataApi, never())
-            .startForCaseworker(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     @Test
@@ -217,20 +237,4 @@ public class SaveClaimTest extends BaseSaveTest {
             .andExpect(status().isUnprocessableEntity());
     }
 
-    @Test
-    public void shouldNotUploadSealedCopyOfNonRepresentedClaimIntoDocumentManagementStore() throws Exception {
-        assertSealedClaimIsNotUploadedToDocumentManagementStore(SampleClaimData.submittedByClaimant());
-    }
-
-    @Test
-    public void shouldNotUploadSealedCopyOfRepresentedClaimIntoDocumentManagementStore() throws Exception {
-        assertSealedClaimIsNotUploadedToDocumentManagementStore(SampleClaimData.submittedByLegalRepresentative());
-    }
-
-    private void assertSealedClaimIsNotUploadedToDocumentManagementStore(ClaimData claimData) throws Exception {
-        makeIssueClaimRequest(claimData, AUTHORISATION_TOKEN)
-            .andExpect(status().isOk());
-
-        verify(documentUploadClient, never()).upload(any(), any(), any(), any());
-    }
 }
