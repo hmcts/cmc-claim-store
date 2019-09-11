@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.documents;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -18,6 +20,7 @@ import uk.gov.hmcts.reform.sendletter.api.Document;
 import uk.gov.hmcts.reform.sendletter.api.Letter;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
+import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
 import java.util.Base64;
 import java.util.HashMap;
@@ -33,6 +36,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BULK_PRIN
 @Service
 @ConditionalOnProperty(prefix = "send-letter", name = "url")
 public class BulkPrintService implements PrintService {
+    private final Logger logger = LoggerFactory.getLogger(BulkPrintService.class);
 
     /* This is configured on Xerox end so they know its us printing and controls things
      like paper quality and resolution */
@@ -80,7 +84,7 @@ public class BulkPrintService implements PrintService {
             .map(Printable::getDocument)
             .collect(Collectors.toList());
 
-        sendLetterApi.sendLetter(
+        SendLetterResponse sendLetterResponse = sendLetterApi.sendLetter(
             authTokenGenerator.generate(),
             new Letter(
                 docs,
@@ -88,6 +92,8 @@ public class BulkPrintService implements PrintService {
                 wrapInFirstContactDetailsInMap(claim)
             )
         );
+
+        logger.info("Letter created for defendant first contact pack is {}", sendLetterResponse.letterId);
     }
 
     @Recover
@@ -121,7 +127,7 @@ public class BulkPrintService implements PrintService {
             .map(this::readDocuments)
             .collect(Collectors.toList());
 
-        sendLetterApi.sendLetter(
+        SendLetterResponse sendLetterResponse = sendLetterApi.sendLetter(
             authTokenGenerator.generate(),
             new LetterWithPdfsRequest(
                 docs,
@@ -129,6 +135,8 @@ public class BulkPrintService implements PrintService {
                 wrapInOrderDetailsInMap(claim)
             )
         );
+
+        logger.info("Letter created for direction order pack is {}", sendLetterResponse.letterId);
     }
 
     private String readDocuments(Document document) {

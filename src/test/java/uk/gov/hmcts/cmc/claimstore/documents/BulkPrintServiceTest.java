@@ -18,12 +18,14 @@ import uk.gov.hmcts.reform.sendletter.api.Document;
 import uk.gov.hmcts.reform.sendletter.api.Letter;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
+import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -79,6 +81,10 @@ public class BulkPrintServiceTest {
     @Test
     public void shouldSendLetterWithDocumentsAsInGivenOrder() {
         //given
+        List<Document> documents = Arrays.asList(defendantLetterDocument, sealedClaimDocument);
+        when(sendLetterApi.sendLetter(eq(AUTH_VALUE), eq(new Letter(documents, XEROX_TYPE_PARAMETER, additionalData))))
+            .thenReturn(new SendLetterResponse(UUID.randomUUID()));
+
         bulkPrintService = new BulkPrintService(
             sendLetterApi,
             authTokenGenerator,
@@ -94,7 +100,6 @@ public class BulkPrintServiceTest {
                 new PrintableTemplate(sealedClaimDocument, "filename")
             ));
         //then
-        List<Document> documents = Arrays.asList(defendantLetterDocument, sealedClaimDocument);
 
         verify(sendLetterApi).sendLetter(eq(AUTH_VALUE),
             eq(new Letter(documents, XEROX_TYPE_PARAMETER, additionalData)));
@@ -103,6 +108,15 @@ public class BulkPrintServiceTest {
     @Test
     public void shouldSendLetterWithPDFs() {
         //given
+        when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn(PDF_BYTES);
+        when(sendLetterApi.sendLetter(eq(AUTH_VALUE), any(LetterWithPdfsRequest.class)))
+            .thenReturn(new SendLetterResponse(UUID.randomUUID()));
+
+        Document legalOrderDocument = new Document("legalOrder", Collections.emptyMap());
+        Map<String, Object> coverContents = new HashMap<>();
+        coverContents.put("item", "value");
+        Document coversheetForClaimant = new Document("coversheetForClaimant", coverContents);
+
         bulkPrintService = new BulkPrintService(
             sendLetterApi,
             authTokenGenerator,
@@ -110,13 +124,6 @@ public class BulkPrintServiceTest {
             appInsights,
             pdfServiceClient
         );
-        Document legalOrderDocument = new Document("legalOrder", Collections.emptyMap());
-        Map<String, Object> coverContents = new HashMap<>();
-        coverContents.put("item", "value");
-        Document coversheetForClaimant = new Document("coversheetForClaimant", coverContents);
-
-        when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).thenReturn(PDF_BYTES);
-
         //when
         bulkPrintService.printPdf(CLAIM, ImmutableList.of(
             new PrintableTemplate(coversheetForClaimant, "filename"),
