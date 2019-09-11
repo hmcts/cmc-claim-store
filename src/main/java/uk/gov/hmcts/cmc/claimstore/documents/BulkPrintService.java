@@ -40,7 +40,7 @@ public class BulkPrintService implements PrintService {
 
     /* This is configured on Xerox end so they know its us printing and controls things
      like paper quality and resolution */
-    protected static final String XEROX_TYPE_PARAMETER = "CMC001";
+    public static final String XEROX_TYPE_PARAMETER = "CMC001";
 
     protected static final String ADDITIONAL_DATA_LETTER_TYPE_KEY = "letterType";
     protected static final String FIRST_CONTACT_LETTER_TYPE = "first-contact-pack";
