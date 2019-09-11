@@ -15,10 +15,14 @@ import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.payments.client.models.LinkDto;
+import uk.gov.hmcts.reform.payments.client.models.LinksDto;
+import uk.gov.hmcts.reform.payments.client.models.PaymentDto;
 
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.OffsetDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.MapEntry.entry;
@@ -70,14 +74,14 @@ public class InitiatePaymentCallbackHandlerTest {
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
             .thenReturn(ccdCase);
 
-        Payment payment = Payment.builder()
+        PaymentDto payment = PaymentDto.builder()
             .amount(BigDecimal.TEN)
             .reference("reference")
             .status("status")
-            .dateCreated("2019-10-10")
-            .links(NavigationLinks.builder()
+            .dateCreated(OffsetDateTime.parse("2017-02-03T10:15:30+01:00"))
+            .links(LinksDto.builder()
                 .nextUrl(
-                    NavigationLink.builder()
+                    LinkDto.builder()
                         .href(new URI(NEXT_URL))
                         .build()
                 ).build())

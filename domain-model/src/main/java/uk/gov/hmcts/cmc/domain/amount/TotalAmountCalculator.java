@@ -35,8 +35,11 @@ public class TotalAmountCalculator {
             .map(AmountBreakDown::getTotalAmount);
     }
 
-
-    public static Optional<BigDecimal> amountWithInterestUntilIssueDate(Amount amount, Interest interest, LocalDate issuedOn) {
+    public static Optional<BigDecimal> amountWithInterestUntilIssueDate(
+        Amount amount,
+        Interest interest,
+        LocalDate issuedOn
+    ) {
         return Optional.ofNullable(calculateTotalAmount(amount, interest, LocalDate.now(), issuedOn));
     }
 
@@ -49,7 +52,8 @@ public class TotalAmountCalculator {
         Amount amount,
         Interest interest,
         LocalDate toDate,
-        LocalDate issuedOn) {
+        LocalDate issuedOn
+    ) {
         if (amount instanceof AmountBreakDown) {
             BigDecimal claimAmount = ((AmountBreakDown) amount).getTotalAmount();
             BigDecimal rate = interest.getRate();
