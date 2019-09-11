@@ -56,7 +56,6 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
     @Test
     public void shouldSuccessfullySubmitClaimForCitizen() throws Exception {
         final ClaimData submittedByClaimant = SampleClaimData.submittedByClaimant();
-
         final String caseId = citizenSampleCaseDetails.getId().toString();
 
         makeSuccessfulIssueClaimRequestForCitizen(submittedByClaimant, caseId);
