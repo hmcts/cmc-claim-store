@@ -211,6 +211,21 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder().build())
                 .build();
         }
+
+        public PartAdmissionResponse buildWithDirectionsQuestionnaireWitNoMediation() {
+            return PartAdmissionResponse.builder()
+                .defendant(SampleParty.builder().individual())
+                .defence(USER_DEFENCE)
+                .freeMediation(YesNoOption.NO)
+                .mediationPhoneNumber(MEDIATION_PHONE_NUMBER)
+                .mediationContactPerson(MEDIATION_CONTACT_PERSON)
+                .moreTimeNeeded(YesNoOption.NO)
+                .amount(BigDecimal.valueOf(120))
+                .paymentIntention(SamplePaymentIntention.instalments())
+                .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder().build())
+                .build();
+        }
     }
 
     public static class FullDefence extends SampleResponse<FullDefence> {
