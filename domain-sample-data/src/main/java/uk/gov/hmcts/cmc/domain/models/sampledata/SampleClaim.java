@@ -151,6 +151,21 @@ public final class SampleClaim {
             .build();
     }
 
+    public static Claim getClaimWithPartAdmissionAndNoMediation() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .paymentOption(IMMEDIATELY)
+                    .build()
+            ).withResponse(SampleResponse.PartAdmission.builder()
+                .buildWithDirectionsQuestionnaireWitNoMediation()
+            )
+            .withRespondedAt(LocalDateTime.now())
+            .withDirectionsQuestionnaireDeadline(LocalDate.now())
+            .build();
+    }
+
     public static Claim getClaimWithFullDefenceWithMediation() {
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
