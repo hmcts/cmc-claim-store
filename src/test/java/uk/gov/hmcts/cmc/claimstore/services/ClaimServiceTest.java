@@ -216,16 +216,16 @@ public class ClaimServiceTest {
         when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
         when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(ISSUE_DATE);
         when(responseDeadlineCalculator.calculateResponseDeadline(eq(ISSUE_DATE))).thenReturn(RESPONSE_DEADLINE);
-        when(caseRepository.saveClaim(eq(USER), any(), eq(CaseEvent.CREATE_CLAIM_LEGAL_REP))).thenReturn(claim);
+        when(caseRepository.saveClaim(eq(USER), any(), eq(CaseEvent.CREATE_LEGAL_REP_CLAIM))).thenReturn(claim);
 
         Claim createdLegalRepClaim = claimService
             .saveClaim(
-                USER_ID, claimData, AUTHORISATION, singletonList("admissions"), CaseEvent.CREATE_CLAIM_LEGAL_REP);
+                USER_ID, claimData, AUTHORISATION, singletonList("admissions"), CaseEvent.CREATE_LEGAL_REP_CLAIM);
 
         assertThat(createdLegalRepClaim.getClaimData()).isEqualTo(claim.getClaimData());
 
         verify(caseRepository, once()).saveClaim(
-            any(User.class), any(Claim.class), eq(CaseEvent.CREATE_CLAIM_LEGAL_REP));
+            any(User.class), any(Claim.class), eq(CaseEvent.CREATE_LEGAL_REP_CLAIM));
         verify(eventProducer, once()).createClaimIssuedEvent(eq(createdLegalRepClaim), eq(null),
             anyString(), eq(AUTHORISATION));
 

@@ -65,10 +65,10 @@ public class CCDCaseHandlerTest {
         Claim sampleClaim = SampleClaim.getDefaultForLegal();
 
         CCDClaimIssuedEvent claimIssuedEvent = new CCDClaimIssuedEvent(sampleClaim, user);
-        caseHandler.saveClaim(claimIssuedEvent, CaseEvent.CREATE_CLAIM_LEGAL_REP);
+        caseHandler.saveClaim(claimIssuedEvent, CaseEvent.CREATE_LEGAL_REP_CLAIM);
 
         verify(ccdCaseRepository, times(1))
-            .saveClaim(claimIssuedEvent.getUser(), claimIssuedEvent.getClaim(), CaseEvent.CREATE_CLAIM_LEGAL_REP);
+            .saveClaim(claimIssuedEvent.getUser(), claimIssuedEvent.getClaim(), CaseEvent.CREATE_LEGAL_REP_CLAIM);
     }
 
     @Test(expected = FeignException.class)
@@ -91,11 +91,11 @@ public class CCDCaseHandlerTest {
     public void saveLegalRepClaimFailsWithFeignExceptionShouldTriggerAppInsight() {
         Claim sampleClaim = SampleClaim.getDefaultForLegal();
 
-        when(ccdCaseRepository.saveClaim(user, sampleClaim, CaseEvent.CREATE_CLAIM_LEGAL_REP))
+        when(ccdCaseRepository.saveClaim(user, sampleClaim, CaseEvent.CREATE_LEGAL_REP_CLAIM))
             .thenThrow(FeignException.class);
 
         CCDClaimIssuedEvent claimIssuedEvent = new CCDClaimIssuedEvent(sampleClaim, user);
-        caseHandler.saveClaim(claimIssuedEvent, CaseEvent.CREATE_CLAIM_LEGAL_REP);
+        caseHandler.saveClaim(claimIssuedEvent, CaseEvent.CREATE_LEGAL_REP_CLAIM);
 
         verifyZeroInteractions(ccdCaseRepository);
         verify(appInsights, times(1))
