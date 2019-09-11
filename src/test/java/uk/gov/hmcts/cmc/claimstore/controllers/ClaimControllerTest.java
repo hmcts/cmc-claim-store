@@ -68,7 +68,6 @@ public class ClaimControllerTest {
         )
             .thenReturn(CLAIM);
 
-        System.out.println("input--->" + input);
         //when
         Claim output = claimController.saveLegalRepClaim(input, USER_ID, AUTHORISATION, singletonList("admissions"));
 
