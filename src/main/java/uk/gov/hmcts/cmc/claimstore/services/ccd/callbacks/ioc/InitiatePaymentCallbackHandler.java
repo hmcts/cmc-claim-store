@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.payments.client.models.PaymentDto;
 
 import java.util.Collections;
 import java.util.List;
@@ -61,7 +62,7 @@ public class InitiatePaymentCallbackHandler extends CallbackHandler {
         return Collections.singletonList(INITIATE_CLAIM_PAYMENT_CITIZEN);
     }
 
-    private CallbackResponse createPayment(CallbackParams callbackParams) {
+    private CallbackResponse createPayment(CallbackParams callbackParams)  {
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         String authorisation = callbackParams.getParams()
             .get(CallbackParams.Params.BEARER_TOKEN).toString();
@@ -71,7 +72,7 @@ public class InitiatePaymentCallbackHandler extends CallbackHandler {
         logger.info("Creating payment in pay hub for case {}",
             ccdCase.getExternalId());
 
-        Payment payment = paymentsService.createPayment(
+        PaymentDto payment = paymentsService.createPayment(
             authorisation,
             ccdCase
         );

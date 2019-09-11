@@ -275,7 +275,6 @@ public class GenerateOrderCallbackHandlerTest {
         ccdCase.setDirectionOrderData(SampleData.getCCDOrderGenerationData());
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
 
-
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
             .templateId("testTemplateId")
             .outputType(OutputType.PDF)

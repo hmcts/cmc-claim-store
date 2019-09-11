@@ -11,10 +11,10 @@ import uk.gov.hmcts.cmc.domain.amount.TotalAmountCalculator;
 import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
 import uk.gov.hmcts.reform.fees.client.FeesClient;
 import uk.gov.hmcts.reform.fees.client.model.FeeOutcome;
-import uk.gov.hmcts.reform.payments.client.PaymentRequest;
+import uk.gov.hmcts.reform.payments.client.CardPaymentRequest;
 import uk.gov.hmcts.reform.payments.client.PaymentsClient;
-import uk.gov.hmcts.reform.payments.client.models.Fee;
-import uk.gov.hmcts.reform.payments.client.models.Payment;
+import uk.gov.hmcts.reform.payments.client.models.FeeDto;
+import uk.gov.hmcts.reform.payments.client.models.PaymentDto;
 
 import java.math.BigDecimal;
 
@@ -54,7 +54,7 @@ public class PaymentsService {
         this.description = description;
     }
 
-    public Payment createPayment(
+    public PaymentDto createPayment(
         String authorisation,
         CCDCase ccdCase
     ) {
@@ -79,7 +79,7 @@ public class PaymentsService {
 
         BigDecimal amountPlusFees = totalAmount.add(feeOutcome.getFeeAmount());
 
-        PaymentRequest paymentRequest = buildPaymentRequest(
+        CardPaymentRequest paymentRequest = buildPaymentRequest(
             ccdCase,
             buildFees(String.valueOf(ccdCase.getId()), feeOutcome),
             amountPlusFees
@@ -94,9 +94,9 @@ public class PaymentsService {
         );
     }
 
-    private Fee[] buildFees(String caseId, FeeOutcome feeOutcome) {
-        return new Fee[] {
-            Fee.builder()
+    private FeeDto[] buildFees(String caseId, FeeOutcome feeOutcome) {
+        return new FeeDto[] {
+            FeeDto.builder()
                 .ccdCaseNumber(caseId)
                 .calculatedAmount(feeOutcome.getFeeAmount())
                 .code(feeOutcome.getCode())
@@ -105,8 +105,8 @@ public class PaymentsService {
         };
     }
 
-    private PaymentRequest buildPaymentRequest(CCDCase ccdCase, Fee[] fees, BigDecimal amountPlusFees) {
-        return PaymentRequest.builder()
+    private CardPaymentRequest buildPaymentRequest(CCDCase ccdCase, FeeDto[] fees, BigDecimal amountPlusFees) {
+        return CardPaymentRequest.builder()
             .caseReference(ccdCase.getExternalId())
             .ccdCaseNumber(String.valueOf(ccdCase.getId()))
             .amount(amountPlusFees)
