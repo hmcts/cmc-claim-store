@@ -1,5 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.documents;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -13,10 +15,14 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.BulkPrintStaffNotificationServ
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 import uk.gov.hmcts.reform.sendletter.api.Letter;
+import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
+import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,13 +36,15 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BULK_PRIN
 @Service
 @ConditionalOnProperty(prefix = "send-letter", name = "url")
 public class BulkPrintService implements PrintService {
+    private final Logger logger = LoggerFactory.getLogger(BulkPrintService.class);
 
     /* This is configured on Xerox end so they know its us printing and controls things
      like paper quality and resolution */
-    protected static final String XEROX_TYPE_PARAMETER = "CMC001";
+    public static final String XEROX_TYPE_PARAMETER = "CMC001";
 
     protected static final String ADDITIONAL_DATA_LETTER_TYPE_KEY = "letterType";
-    protected static final String ADDITIONAL_DATA_LETTER_TYPE_VALUE = "first-contact-pack";
+    protected static final String FIRST_CONTACT_LETTER_TYPE = "first-contact-pack";
+    protected static final String DIRECTION_ORDER_LETTER_TYPE = "direction-order-pack";
     protected static final String ADDITIONAL_DATA_CASE_IDENTIFIER_KEY = "caseIdentifier";
     protected static final String ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY = "caseReferenceNumber";
 
@@ -44,6 +52,7 @@ public class BulkPrintService implements PrintService {
     private final AuthTokenGenerator authTokenGenerator;
     private final AppInsights appInsights;
     private final BulkPrintStaffNotificationService bulkPrintStaffNotificationService;
+    private final PDFServiceClient pdfServiceClient;
     @Value("${feature_toggles.async_event_operations_enabled:false}")
     private boolean asyncEventProcessingEnabled;
 
@@ -52,11 +61,14 @@ public class BulkPrintService implements PrintService {
         SendLetterApi sendLetterApi,
         AuthTokenGenerator authTokenGenerator,
         BulkPrintStaffNotificationService bulkPrintStaffNotificationService,
-        AppInsights appInsights) {
+        AppInsights appInsights,
+        PDFServiceClient pdfServiceClient
+    ) {
         this.sendLetterApi = sendLetterApi;
         this.authTokenGenerator = authTokenGenerator;
         this.appInsights = appInsights;
         this.bulkPrintStaffNotificationService = bulkPrintStaffNotificationService;
+        this.pdfServiceClient = pdfServiceClient;
     }
 
     @LogExecutionTime
@@ -72,14 +84,16 @@ public class BulkPrintService implements PrintService {
             .map(Printable::getDocument)
             .collect(Collectors.toList());
 
-        sendLetterApi.sendLetter(
+        SendLetterResponse sendLetterResponse = sendLetterApi.sendLetter(
             authTokenGenerator.generate(),
             new Letter(
                 docs,
                 XEROX_TYPE_PARAMETER,
-                wrapInMap(claim)
+                wrapInFirstContactDetailsInMap(claim)
             )
         );
+
+        logger.info("Letter created for defendant first contact pack is {}", sendLetterResponse.letterId);
     }
 
     @Recover
@@ -98,9 +112,55 @@ public class BulkPrintService implements PrintService {
         }
     }
 
-    private static Map<String, Object> wrapInMap(Claim claim) {
+    @LogExecutionTime
+    @Retryable(
+        value = RuntimeException.class,
+        backoff = @Backoff(delay = 200)
+    )
+    @Override
+    public void printPdf(Claim claim, List<Printable> documents) {
+        requireNonNull(claim);
+
+        List<String> docs = documents.stream()
+            .filter(Objects::nonNull)
+            .map(Printable::getDocument)
+            .map(this::readDocuments)
+            .collect(Collectors.toList());
+
+        SendLetterResponse sendLetterResponse = sendLetterApi.sendLetter(
+            authTokenGenerator.generate(),
+            new LetterWithPdfsRequest(
+                docs,
+                XEROX_TYPE_PARAMETER,
+                wrapInOrderDetailsInMap(claim)
+            )
+        );
+
+        logger.info("Letter created for direction order pack is {}", sendLetterResponse.letterId);
+    }
+
+    private String readDocuments(Document document) {
+        if (document.values.isEmpty()) {
+            // This scenario is only valid for direction order (generated by DOCMOSIS)
+            // as in all other cases we generates pdf
+            return document.template;
+        }
+
+        byte[] html = pdfServiceClient.generateFromHtml(document.template.getBytes(), document.values);
+        return Base64.getEncoder().encodeToString(html);
+    }
+
+    private static Map<String, Object> wrapInFirstContactDetailsInMap(Claim claim) {
         Map<String, Object> additionalData = new HashMap<>();
-        additionalData.put(ADDITIONAL_DATA_LETTER_TYPE_KEY, ADDITIONAL_DATA_LETTER_TYPE_VALUE);
+        additionalData.put(ADDITIONAL_DATA_LETTER_TYPE_KEY, FIRST_CONTACT_LETTER_TYPE);
+        additionalData.put(ADDITIONAL_DATA_CASE_IDENTIFIER_KEY, claim.getId());
+        additionalData.put(ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY, claim.getReferenceNumber());
+        return additionalData;
+    }
+
+    private Map<String, Object> wrapInOrderDetailsInMap(Claim claim) {
+        Map<String, Object> additionalData = new HashMap<>();
+        additionalData.put(ADDITIONAL_DATA_LETTER_TYPE_KEY, DIRECTION_ORDER_LETTER_TYPE);
         additionalData.put(ADDITIONAL_DATA_CASE_IDENTIFIER_KEY, claim.getId());
         additionalData.put(ADDITIONAL_DATA_CASE_REFERENCE_NUMBER_KEY, claim.getReferenceNumber());
         return additionalData;

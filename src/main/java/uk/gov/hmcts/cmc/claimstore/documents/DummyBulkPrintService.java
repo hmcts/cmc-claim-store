@@ -18,4 +18,9 @@ public class DummyBulkPrintService implements PrintService {
     public void print(Claim claim, List<Printable> documents) {
         logger.info("No bulk print operation need to be performed as 'Bulk print url' is switched off.");
     }
+
+    @Override
+    public void printPdf(Claim claim, List<Printable> documents) {
+        logger.info("No bulk print operation need to be performed as 'Bulk print url' is switched off.");
+    }
 }
