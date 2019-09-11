@@ -20,13 +20,14 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInitiatePaymentRequest;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.payments.client.models.NavigationLink;
-import uk.gov.hmcts.reform.payments.client.models.NavigationLinks;
-import uk.gov.hmcts.reform.payments.client.models.Payment;
+import uk.gov.hmcts.reform.payments.client.models.LinkDto;
+import uk.gov.hmcts.reform.payments.client.models.LinksDto;
+import uk.gov.hmcts.reform.payments.client.models.PaymentDto;
 
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.OffsetDateTime;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,18 +56,18 @@ public class InitiatePaymentCallbackHandlerTest extends MockSpringTest {
     @MockBean
     private MoneyMapper moneyMapper;
 
-    private Payment payment;
+    private PaymentDto payment;
 
     @Before
     public void setUp() throws URISyntaxException {
-        payment = Payment.builder()
+        payment = PaymentDto.builder()
             .amount(BigDecimal.TEN)
             .reference("reference")
             .status("status")
-            .dateCreated("2019-10-10")
-            .links(NavigationLinks.builder()
+            .dateCreated(OffsetDateTime.parse("2017-02-03T10:15:30+01:00"))
+            .links(LinksDto.builder()
                 .nextUrl(
-                    NavigationLink.builder()
+                    LinkDto.builder()
                         .href(new URI(NEXT_URL))
                         .build()
                 ).build())
@@ -97,7 +98,7 @@ public class InitiatePaymentCallbackHandlerTest extends MockSpringTest {
             entry("paymentAmount", "amount"),
             entry("paymentReference", payment.getReference()),
             entry("paymentStatus", payment.getStatus()),
-            entry("paymentDateCreated", payment.getDateCreated()),
+            entry("paymentDateCreated", payment.getDateCreated().toString()),
             entry("paymentNextUrl", NEXT_URL)
         );
     }

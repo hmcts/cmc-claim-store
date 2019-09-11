@@ -13,9 +13,9 @@ import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInitiatePaymentRequest;
 import uk.gov.hmcts.reform.fees.client.FeesClient;
 import uk.gov.hmcts.reform.fees.client.model.FeeOutcome;
-import uk.gov.hmcts.reform.payments.client.PaymentRequest;
+import uk.gov.hmcts.reform.payments.client.CardPaymentRequest;
 import uk.gov.hmcts.reform.payments.client.PaymentsClient;
-import uk.gov.hmcts.reform.payments.client.models.Fee;
+import uk.gov.hmcts.reform.payments.client.models.FeeDto;
 
 import java.math.BigDecimal;
 
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 public class PaymentsServiceTest {
     private static final String BEARER_TOKEN = "Bearer let me in";
     private static final String FRONTEND_URL = "http://frontend.test";
-    private static final String SERVICE = "service";
+    private static final String SERVICE = "CMC";
     private static final String SITE_ID = "siteId";
     private static final String CURRENCY = "currency";
     private static final String DESCRIPTION = "description";
@@ -82,8 +82,8 @@ public class PaymentsServiceTest {
             ccdCase
         );
 
-        Fee[] fees = new Fee[] {
-            Fee.builder()
+        FeeDto[] fees = new FeeDto[] {
+            FeeDto.builder()
                 .ccdCaseNumber(ccdCase.getId().toString())
                 .calculatedAmount(feeOutcome.getFeeAmount())
                 .code(feeOutcome.getCode())
@@ -91,8 +91,8 @@ public class PaymentsServiceTest {
                 .build()
         };
 
-        PaymentRequest expectedPaymentRequest =
-            PaymentRequest.builder()
+        CardPaymentRequest expectedPaymentRequest =
+            CardPaymentRequest.builder()
                 .siteId(SITE_ID)
                 .description(DESCRIPTION)
                 .currency(CURRENCY)
@@ -124,7 +124,7 @@ public class PaymentsServiceTest {
     public void shouldBubbleUpExceptionIfPaymentCreationFails() {
         when(paymentsClient.createPayment(
             eq(BEARER_TOKEN),
-            any(PaymentRequest.class),
+            any(CardPaymentRequest.class),
             anyString()))
             .thenThrow(IllegalStateException.class);
 

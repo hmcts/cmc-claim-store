@@ -28,7 +28,7 @@ public class Payment {
     private final String reference;
     private final String dateCreated;
     private final String status;
-    @NotBlank
+    // Add not blank after we switch to
     private final String nextUrl;
 
     public Payment(
