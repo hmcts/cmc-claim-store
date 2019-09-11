@@ -35,7 +35,13 @@ public class EmailTemplates {
     private String claimantResponseWithNoMediationIssued;
 
     @NotEmpty
+    private String claimantResponseForDqPilotWithNoMediationIssued;
+
+    @NotEmpty
     private String defendantResponseWithNoMediationIssued;
+
+    @NotEmpty
+    private String defendantResponseForDqPilotWithNoMediationIssued;
 
     @NotEmpty
     private String staffMoreTimeRequested;
