@@ -191,8 +191,7 @@ public class ClaimService {
         String submitterId,
         ClaimData claimData,
         String authorisation,
-        List<String> features,
-        CaseEvent caseEvent
+        List<String> features
     ) {
         String externalId = claimData.getExternalId().toString();
         User user = userService.getUser(authorisation);
@@ -222,7 +221,50 @@ public class ClaimService {
             .claimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators.builder().build())
             .build();
 
-        Claim savedClaim = caseRepository.saveClaim(user, claim, caseEvent);
+        Claim savedClaim = caseRepository.saveClaim(user, claim, CaseEvent.CREATE_CASE);
+        createClaimEvent(authorisation, user, pinResponse, savedClaim);
+        trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
+
+        return savedClaim;
+    }
+
+    @LogExecutionTime
+    @Transactional(transactionManager = "transactionManager")
+    public Claim saveLegalRepClaim(
+        String submitterId,
+        ClaimData claimData,
+        String authorisation
+    ) {
+        String externalId = claimData.getExternalId().toString();
+        User user = userService.getUser(authorisation);
+
+        caseRepository.getClaimByExternalId(externalId, user).ifPresent(claim -> {
+            throw new ConflictException(
+                String.format("Claim already exist with same external reference as %s", externalId));
+        });
+
+        Optional<GeneratePinResponse> pinResponse = getPinResponse(claimData, authorisation);
+        Optional<String> letterHolderId = pinResponse.map(GeneratePinResponse::getUserId);
+        String submitterEmail = user.getUserDetails().getEmail();
+
+        Claim claim = Claim.builder()
+            .claimData(claimData)
+            .submitterId(submitterId)
+            .externalId(externalId)
+            .submitterEmail(submitterEmail)
+            .createdAt(nowInLocalZone())
+            .letterHolderId(letterHolderId.orElse(null))
+            .claimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators.builder().build())
+            .build();
+
+        Claim savedClaim = caseRepository.saveClaim(user, claim, CaseEvent.CREATE_LEGAL_REP_CLAIM);
+        createClaimEvent(authorisation, user, pinResponse, savedClaim);
+        trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
+
+        return savedClaim;
+    }
+
+    private void createClaimEvent(String authorisation, User user, Optional<GeneratePinResponse> pinResponse, Claim savedClaim) {
         ccdEventProducer.createCCDClaimIssuedEvent(savedClaim, user);
 
         if (asyncEventOperationEnabled) {
@@ -241,9 +283,6 @@ public class ClaimService {
             );
             caseRepository.updateClaimState(user.getAuthorisation(), savedClaim.getId(), OPEN);
         }
-        trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
-
-        return savedClaim;
     }
 
     private Optional<GeneratePinResponse> getPinResponse(ClaimData claimData, String authorisation) {
