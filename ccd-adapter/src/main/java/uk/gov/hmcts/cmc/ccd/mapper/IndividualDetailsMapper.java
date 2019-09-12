@@ -13,14 +13,17 @@ public class IndividualDetailsMapper {
 
     private final AddressMapper addressMapper;
     private DefendantRepresentativeMapper representativeMapper;
+    private final TelephoneMapper telephoneMapper;
 
     @Autowired
     public IndividualDetailsMapper(
         AddressMapper addressMapper,
-        DefendantRepresentativeMapper defendantRepresentativeMapper
+        DefendantRepresentativeMapper defendantRepresentativeMapper,
+        TelephoneMapper telephoneMapper
     ) {
         this.addressMapper = addressMapper;
         this.representativeMapper = defendantRepresentativeMapper;
+        this.telephoneMapper = telephoneMapper;
     }
 
     public void to(IndividualDetails individual,
@@ -37,6 +40,8 @@ public class IndividualDetailsMapper {
             .ifPresent(representative -> representativeMapper.to(representative, builder));
 
         individual.getDateOfBirth().ifPresent(claimantProvidedDetails::dateOfBirth);
+        individual.getPhoneNumber()
+            .ifPresent(phoneNo -> claimantProvidedDetails.telephoneNumber(telephoneMapper.to(phoneNo)));
 
         individual.getEmail().ifPresent(claimantProvidedDetails::emailAddress);
         claimantProvidedDetails.primaryAddress(addressMapper.to(individual.getAddress()));
@@ -58,6 +63,7 @@ public class IndividualDetailsMapper {
             .title(respondent.getClaimantProvidedDetail().getTitle())
             .address(addressMapper.from(claimantProvidedPartyDetail.getPrimaryAddress()))
             .email(claimantProvidedPartyDetail.getEmailAddress())
+            .phoneNumber(telephoneMapper.from(claimantProvidedPartyDetail.getTelephoneNumber()))
             .representative(representativeMapper.from(respondent))
             .serviceAddress(addressMapper.from(claimantProvidedPartyDetail.getCorrespondenceAddress()))
             .dateOfBirth(claimantProvidedPartyDetail.getDateOfBirth())
