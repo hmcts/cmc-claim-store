@@ -4,6 +4,8 @@ import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDChannelType;
+import uk.gov.hmcts.cmc.domain.models.ChannelType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
@@ -51,6 +53,11 @@ public class CaseMapper {
             .map(reviewOrderMapper::to)
             .ifPresent(builder::reviewOrder);
 
+        claim.getChannelType()
+            .map(ChannelType::name)
+            .map(CCDChannelType::valueOf)
+            .ifPresent(builder::ccdChannelType);
+
         return builder
             .id(claim.getId())
             .externalId(claim.getExternalId())
@@ -94,6 +101,10 @@ public class CaseMapper {
 
         if (ccdCase.getFeatures() != null) {
             builder.features(Arrays.asList(ccdCase.getFeatures().split(",")));
+        }
+
+        if (ccdCase.getCcdChannelType() != null) {
+            builder.channelType(ChannelType.valueOf(ccdCase.getCcdChannelType().name()));
         }
 
         return builder.build();

@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.math.BigDecimal;
+import java.nio.channels.Channel;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -69,6 +70,7 @@ public class Claim {
     private final Long ccdCaseId;
     private final ReviewOrder reviewOrder;
     private final DirectionOrder directionOrder;
+    private final ChannelType channelType;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -106,7 +108,8 @@ public class Claim {
         ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators,
         Long ccdCaseId,
         ReviewOrder reviewOrder,
-        DirectionOrder directionOrder
+        DirectionOrder directionOrder,
+        ChannelType channelType
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -142,6 +145,7 @@ public class Claim {
         this.claimSubmissionOperationIndicators = claimSubmissionOperationIndicators;
         this.reviewOrder = reviewOrder;
         this.directionOrder = directionOrder;
+        this.channelType = channelType;
     }
 
     public Optional<Response> getResponse() {
@@ -229,6 +233,10 @@ public class Claim {
 
     public Optional<DirectionOrder> getDirectionOrder() {
         return Optional.ofNullable(directionOrder);
+    }
+
+    public Optional<ChannelType> getChannelType() {
+        return Optional.ofNullable(channelType);
     }
 
     @Override
