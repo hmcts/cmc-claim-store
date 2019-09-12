@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fees.client.model.FeeOutcome;
 import uk.gov.hmcts.reform.payments.client.CardPaymentRequest;
 import uk.gov.hmcts.reform.payments.client.PaymentsClient;
 import uk.gov.hmcts.reform.payments.client.models.FeeDto;
+import uk.gov.hmcts.reform.payments.client.models.PaymentDto;
 
 import java.math.BigDecimal;
 
@@ -45,6 +46,8 @@ public class PaymentsServiceTest {
     private NotificationsProperties notificationsProperties;
     @Mock
     private InitiatePaymentCaseMapper initiatePaymentCaseMapper;
+    @Mock
+    private PaymentDto paymentDto;
 
     private CCDCase ccdCase;
     private FeeOutcome feeOutcome = FeeOutcome.builder()
@@ -76,12 +79,7 @@ public class PaymentsServiceTest {
     }
 
     @Test
-    public void shouldMakePayment() {
-        paymentsService.createPayment(
-            BEARER_TOKEN,
-            ccdCase
-        );
-
+    public void shouldMakePaymentAndSetThePaymentAmount() {
         FeeDto[] fees = new FeeDto[] {
             FeeDto.builder()
                 .ccdCaseNumber(ccdCase.getId().toString())
@@ -103,10 +101,18 @@ public class PaymentsServiceTest {
                 .caseReference(ccdCase.getExternalId())
                 .build();
 
-        verify(paymentsClient).createPayment(
+        when(paymentsClient.createPayment(
             BEARER_TOKEN,
             expectedPaymentRequest,
-            format("%s/claim/pay/%s/receiver", FRONTEND_URL, ccdCase.getExternalId()));
+            format("%s/claim/pay/%s/receiver", FRONTEND_URL, ccdCase.getExternalId())
+        )).thenReturn(paymentDto);
+
+        paymentsService.createPayment(
+            BEARER_TOKEN,
+            ccdCase
+        );
+
+        verify(paymentDto).setAmount(new BigDecimal("51.90"));
     }
 
     @Test(expected = IllegalStateException.class)

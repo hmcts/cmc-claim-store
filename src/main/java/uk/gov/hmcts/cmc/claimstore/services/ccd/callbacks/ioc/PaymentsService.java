@@ -85,13 +85,16 @@ public class PaymentsService {
             amountPlusFees
         );
 
-        return paymentsClient.createPayment(
+        PaymentDto payment = paymentsClient.createPayment(
             authorisation,
             paymentRequest,
             format(PAYMENT_RETURN_URL,
                 notificationsProperties.getFrontendBaseUrl(),
                 ccdCase.getExternalId())
         );
+
+        payment.setAmount(amountPlusFees);
+        return payment;
     }
 
     private FeeDto[] buildFees(String caseId, FeeOutcome feeOutcome) {
