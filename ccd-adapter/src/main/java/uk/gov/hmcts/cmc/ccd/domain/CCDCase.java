@@ -7,7 +7,6 @@ import lombok.Data;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
-import uk.gov.hmcts.cmc.domain.models.ChannelType;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -73,5 +72,5 @@ public class CCDCase {
     private CCDOrderGenerationData directionOrderData;
     private CCDDirectionOrder directionOrder;
     private CCDReviewOrder reviewOrder;
-    private CCDChannelType ccdChannelType;
+    private CCDChannelType channelType;
 }

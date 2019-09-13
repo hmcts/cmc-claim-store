@@ -56,7 +56,7 @@ public class CaseMapper {
         claim.getChannelType()
             .map(ChannelType::name)
             .map(CCDChannelType::valueOf)
-            .ifPresent(builder::ccdChannelType);
+            .ifPresent(builder::channelType);
 
         return builder
             .id(claim.getId())
@@ -103,8 +103,8 @@ public class CaseMapper {
             builder.features(Arrays.asList(ccdCase.getFeatures().split(",")));
         }
 
-        if (ccdCase.getCcdChannelType() != null) {
-            builder.channelType(ChannelType.valueOf(ccdCase.getCcdChannelType().name()));
+        if (ccdCase.getChannelType() != null) {
+            builder.channelType(ChannelType.valueOf(ccdCase.getChannelType().name()));
         }
 
         return builder.build();
