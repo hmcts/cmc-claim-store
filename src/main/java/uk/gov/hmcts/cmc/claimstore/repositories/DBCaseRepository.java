@@ -211,7 +211,7 @@ public class DBCaseRepository implements CaseRepository {
 
     @Override
     @LogExecutionTime
-    public Claim saveClaim(User user, Claim claim, CaseEvent caseEvent) {
+    public Claim saveClaim(User user, Claim claim) {
         String claimDataString = jsonMapper.toJson(claim.getClaimData());
         String features = jsonMapper.toJson(claim.getFeatures());
         String claimSubmissionOperationIndicator = jsonMapper.toJson(claim.getClaimSubmissionOperationIndicators());
@@ -230,6 +230,11 @@ public class DBCaseRepository implements CaseRepository {
         return claimRepository
             .getClaimByExternalId(claim.getExternalId())
             .orElseThrow(() -> new NotFoundException("Claim not found by id " + claim.getExternalId()));
+    }
+
+    @Override
+    public Claim saveLegalRepClaim(User user, Claim claim) {
+        return null;
     }
 
     @Override

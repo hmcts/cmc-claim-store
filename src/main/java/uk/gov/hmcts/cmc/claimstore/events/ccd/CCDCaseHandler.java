@@ -52,10 +52,22 @@ public class CCDCaseHandler {
 
     @EventListener
     @LogExecutionTime
-    public void saveClaim(CCDClaimIssuedEvent event, CaseEvent caseEvent) {
+    public void saveClaim(CCDClaimIssuedEvent event) {
         Claim claim = event.getClaim();
         try {
-            ccdCaseRepository.saveClaim(event.getUser(), claim, caseEvent);
+            ccdCaseRepository.saveClaim(event.getUser(), claim);
+        } catch (FeignException e) {
+            appInsights.trackEvent(CCD_ASYNC_FAILURE, REFERENCE_NUMBER, claim.getReferenceNumber());
+            throw e;
+        }
+    }
+
+    @EventListener
+    @LogExecutionTime
+    public void saveLegalRepClaim(CCDClaimIssuedEvent event) {
+        Claim claim = event.getClaim();
+        try {
+            ccdCaseRepository.saveLegalRepClaim(event.getUser(), claim);
         } catch (FeignException e) {
             appInsights.trackEvent(CCD_ASYNC_FAILURE, REFERENCE_NUMBER, claim.getReferenceNumber());
             throw e;

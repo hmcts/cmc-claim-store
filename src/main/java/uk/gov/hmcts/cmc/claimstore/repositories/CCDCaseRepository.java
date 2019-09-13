@@ -26,6 +26,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_LEGAL_REP_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_DEFENDANT;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
@@ -165,8 +167,13 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Claim saveClaim(User user, Claim claim, CaseEvent caseEvent) {
-        return coreCaseDataService.createNewCase(user, claim, caseEvent);
+    public Claim saveClaim(User user, Claim claim) {
+        return coreCaseDataService.createNewCase(user, claim, CREATE_CASE);
+    }
+
+    @Override
+    public Claim saveLegalRepClaim(User user, Claim claim) {
+        return coreCaseDataService.createNewCase(user, claim, CREATE_LEGAL_REP_CLAIM);
     }
 
     @Override

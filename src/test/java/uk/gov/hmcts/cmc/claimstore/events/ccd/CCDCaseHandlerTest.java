@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -54,10 +53,10 @@ public class CCDCaseHandlerTest {
         Claim sampleClaim = SampleClaim.getDefault();
 
         CCDClaimIssuedEvent claimIssuedEvent = new CCDClaimIssuedEvent(sampleClaim, user);
-        caseHandler.saveClaim(claimIssuedEvent, CaseEvent.CREATE_CASE);
+        caseHandler.saveClaim(claimIssuedEvent);
 
         verify(ccdCaseRepository, times(1))
-            .saveClaim(claimIssuedEvent.getUser(), claimIssuedEvent.getClaim(), CaseEvent.CREATE_CASE);
+            .saveClaim(claimIssuedEvent.getUser(), claimIssuedEvent.getClaim());
     }
 
     @Test
@@ -65,21 +64,21 @@ public class CCDCaseHandlerTest {
         Claim sampleClaim = SampleClaim.getDefaultForLegal();
 
         CCDClaimIssuedEvent claimIssuedEvent = new CCDClaimIssuedEvent(sampleClaim, user);
-        caseHandler.saveClaim(claimIssuedEvent, CaseEvent.CREATE_LEGAL_REP_CLAIM);
+        caseHandler.saveLegalRepClaim(claimIssuedEvent);
 
         verify(ccdCaseRepository, times(1))
-            .saveClaim(claimIssuedEvent.getUser(), claimIssuedEvent.getClaim(), CaseEvent.CREATE_LEGAL_REP_CLAIM);
+            .saveLegalRepClaim(claimIssuedEvent.getUser(), claimIssuedEvent.getClaim());
     }
 
     @Test(expected = FeignException.class)
     public void saveClaimFailsWithFeignExceptionShouldTriggerAppInsight() {
         Claim sampleClaim = SampleClaim.getDefault();
 
-        when(ccdCaseRepository.saveClaim(user, sampleClaim, CaseEvent.CREATE_CASE))
+        when(ccdCaseRepository.saveClaim(user, sampleClaim))
             .thenThrow(FeignException.class);
 
         CCDClaimIssuedEvent claimIssuedEvent = new CCDClaimIssuedEvent(sampleClaim, user);
-        caseHandler.saveClaim(claimIssuedEvent, CaseEvent.CREATE_CASE);
+        caseHandler.saveClaim(claimIssuedEvent);
 
         verifyZeroInteractions(ccdCaseRepository);
         verify(appInsights, times(1))
@@ -91,11 +90,11 @@ public class CCDCaseHandlerTest {
     public void saveLegalRepClaimFailsWithFeignExceptionShouldTriggerAppInsight() {
         Claim sampleClaim = SampleClaim.getDefaultForLegal();
 
-        when(ccdCaseRepository.saveClaim(user, sampleClaim, CaseEvent.CREATE_LEGAL_REP_CLAIM))
+        when(ccdCaseRepository.saveLegalRepClaim(user, sampleClaim))
             .thenThrow(FeignException.class);
 
         CCDClaimIssuedEvent claimIssuedEvent = new CCDClaimIssuedEvent(sampleClaim, user);
-        caseHandler.saveClaim(claimIssuedEvent, CaseEvent.CREATE_LEGAL_REP_CLAIM);
+        caseHandler.saveLegalRepClaim(claimIssuedEvent);
 
         verifyZeroInteractions(ccdCaseRepository);
         verify(appInsights, times(1))

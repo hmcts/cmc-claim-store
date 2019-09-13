@@ -216,7 +216,7 @@ public class ClaimService {
             .claimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators.builder().build())
             .build();
 
-        Claim savedClaim = caseRepository.saveClaim(user, claim, CaseEvent.CREATE_CASE);
+        Claim savedClaim = caseRepository.saveClaim(user, claim);
         String pin = pinResponse.map(GeneratePinResponse::getPin).orElse(null);
         createClaimEvent(authorisation, user, pin, savedClaim);
         trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
@@ -248,7 +248,7 @@ public class ClaimService {
             .claimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators.builder().build())
             .build();
 
-        Claim savedClaim = caseRepository.saveClaim(user, claim, CaseEvent.CREATE_LEGAL_REP_CLAIM);
+        Claim savedClaim = caseRepository.saveClaim(user, claim);
         String pin = pinResponse.map(GeneratePinResponse::getPin).orElse(null);
         createClaimEvent(authorisation, user, pin, savedClaim);
         trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
