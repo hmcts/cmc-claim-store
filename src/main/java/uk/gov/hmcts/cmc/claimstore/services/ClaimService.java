@@ -194,12 +194,7 @@ public class ClaimService {
         List<String> features
     ) {
         String externalId = claimData.getExternalId().toString();
-        User user = userService.getUser(authorisation);
-
-        caseRepository.getClaimByExternalId(externalId, user).ifPresent(claim -> {
-            throw new ConflictException(
-                String.format("Claim already exist with same external reference as %s", externalId));
-        });
+        User user = isExistingClaim(authorisation, externalId);
 
         Optional<GeneratePinResponse> pinResponse = getPinResponse(claimData, authorisation);
         Optional<String> letterHolderId = pinResponse.map(GeneratePinResponse::getUserId);
@@ -222,7 +217,7 @@ public class ClaimService {
             .build();
 
         Claim savedClaim = caseRepository.saveClaim(user, claim, CaseEvent.CREATE_CASE);
-        createClaimEvent(authorisation, user, pinResponse, savedClaim);
+        createClaimEvent(authorisation, user, pinResponse.orElse(null), savedClaim);
         trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
 
         return savedClaim;
@@ -236,12 +231,7 @@ public class ClaimService {
         String authorisation
     ) {
         String externalId = claimData.getExternalId().toString();
-        User user = userService.getUser(authorisation);
-
-        caseRepository.getClaimByExternalId(externalId, user).ifPresent(claim -> {
-            throw new ConflictException(
-                String.format("Claim already exist with same external reference as %s", externalId));
-        });
+        User user = isExistingClaim(authorisation, externalId);
 
         Optional<GeneratePinResponse> pinResponse = getPinResponse(claimData, authorisation);
         Optional<String> letterHolderId = pinResponse.map(GeneratePinResponse::getUserId);
@@ -258,26 +248,37 @@ public class ClaimService {
             .build();
 
         Claim savedClaim = caseRepository.saveClaim(user, claim, CaseEvent.CREATE_LEGAL_REP_CLAIM);
-        createClaimEvent(authorisation, user, pinResponse, savedClaim);
+        createClaimEvent(authorisation, user, pinResponse.orElse(null), savedClaim);
         trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
 
         return savedClaim;
     }
 
-    private void createClaimEvent(String authorisation, User user, Optional<GeneratePinResponse> pinResponse, Claim savedClaim) {
+    private User isExistingClaim(String authorisation, String externalId) {
+        User user = userService.getUser(authorisation);
+
+        caseRepository.getClaimByExternalId(externalId, user).ifPresent(claim -> {
+            throw new ConflictException(
+                String.format("Claim already exist with same external reference as %s", externalId));
+        });
+        return user;
+    }
+
+    private void createClaimEvent(String authorisation, User user, GeneratePinResponse pinResponse, Claim savedClaim) {
         ccdEventProducer.createCCDClaimIssuedEvent(savedClaim, user);
 
         if (asyncEventOperationEnabled) {
             eventProducer.createClaimCreatedEvent(
                 savedClaim,
-                pinResponse.map(GeneratePinResponse::getPin).orElse(null),
+//                Optional.ofNullable(pinResponse).map(GeneratePinResponse::getPin).orElse(null),
+                Optional.ofNullable(pinResponse).isPresent() ? pinResponse.getPin() : null,
                 user.getUserDetails().getFullName(),
                 authorisation
             );
         } else {
             eventProducer.createClaimIssuedEvent(
                 savedClaim,
-                pinResponse.map(GeneratePinResponse::getPin).orElse(null),
+                Optional.ofNullable(pinResponse).map(GeneratePinResponse::getPin).orElse(null),
                 user.getUserDetails().getFullName(),
                 authorisation
             );
