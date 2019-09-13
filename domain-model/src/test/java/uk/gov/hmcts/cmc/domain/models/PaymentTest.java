@@ -24,13 +24,14 @@ public class PaymentTest {
     public void shouldBeValidationMessageForInvalidPayment() {
         //given
         Payment payment = new Payment(null, null, null,
-            null, null);
+            null, null, null);
         //when
         Set<String> errors = validate(payment);
         //then
-        assertThat(errors).hasSize(2).contains(
+        assertThat(errors).hasSize(3).contains(
             "reference : may not be empty",
-            "amount : may not be null"
+            "amount : may not be null",
+            "nextUrl : may not be empty"
         );
     }
 
