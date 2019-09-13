@@ -33,6 +33,7 @@ public class PaymentMapper implements BuilderMapper<CCDCase, Payment, CCDCase.CC
             .paymentAmount(moneyMapper.to(payment.getAmount()))
             .paymentId(payment.getId())
             .paymentReference(payment.getReference())
+            .paymentNextUrl(payment.getNextUrl())
             .paymentStatus(payment.getStatus());
 
         if (StringUtils.isNotBlank(payment.getDateCreated())) {
@@ -56,8 +57,8 @@ public class PaymentMapper implements BuilderMapper<CCDCase, Payment, CCDCase.CC
             moneyMapper.from(ccdCase.getPaymentAmount()),
             ccdCase.getPaymentReference(),
             ccdCase.getPaymentDateCreated() != null ? ccdCase.getPaymentDateCreated().format(ISO_DATE) : null,
-            ccdCase.getPaymentStatus()
-        );
+            ccdCase.getPaymentStatus(),
+            ccdCase.getPaymentNextUrl());
     }
 
     private LocalDate parseDate(String input) {

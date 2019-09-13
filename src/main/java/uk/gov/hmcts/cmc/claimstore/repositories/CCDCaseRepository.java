@@ -18,6 +18,8 @@ import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
+import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -141,6 +143,11 @@ public class CCDCaseRepository implements CaseRepository {
     @Override
     public void requestMoreTimeForResponse(String authorisation, Claim claim, LocalDate newResponseDeadline) {
         coreCaseDataService.requestMoreTimeForResponse(authorisation, claim, newResponseDeadline);
+    }
+
+    @Override
+    public InitiatePaymentResponse initiatePayment(User user, String submitterId, InitiatePaymentRequest data) {
+        return coreCaseDataService.savePayment(user, submitterId, data);
     }
 
     @Override
