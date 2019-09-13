@@ -8,7 +8,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -75,7 +74,7 @@ public class StaffEmailServiceWithNotificationDisabledTest extends BaseSaveTest 
             .withDefendantId(DEFENDANT_ID)
             .build();
 
-        claim = caseRepository.saveClaim(USER, claim, CaseEvent.CREATE_CASE);
+        claim = caseRepository.saveClaim(USER, claim);
     }
 
     @Test
