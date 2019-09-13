@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface PrintService {
     void print(Claim claim, List<Printable> documents);
+
+    void printPdf(Claim claim, List<Printable> documents);
 }
