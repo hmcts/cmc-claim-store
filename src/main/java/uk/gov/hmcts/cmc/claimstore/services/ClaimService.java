@@ -217,7 +217,8 @@ public class ClaimService {
             .build();
 
         Claim savedClaim = caseRepository.saveClaim(user, claim, CaseEvent.CREATE_CASE);
-        createClaimEvent(authorisation, user, pinResponse.orElse(null), savedClaim);
+        String pin = pinResponse.map(GeneratePinResponse::getPin).orElse(null);
+        createClaimEvent(authorisation, user, pin, savedClaim);
         trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
 
         return savedClaim;
@@ -248,7 +249,8 @@ public class ClaimService {
             .build();
 
         Claim savedClaim = caseRepository.saveClaim(user, claim, CaseEvent.CREATE_LEGAL_REP_CLAIM);
-        createClaimEvent(authorisation, user, pinResponse.orElse(null), savedClaim);
+        String pin = pinResponse.map(GeneratePinResponse::getPin).orElse(null);
+        createClaimEvent(authorisation, user, pin, savedClaim);
         trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
 
         return savedClaim;
@@ -264,21 +266,20 @@ public class ClaimService {
         return user;
     }
 
-    private void createClaimEvent(String authorisation, User user, GeneratePinResponse pinResponse, Claim savedClaim) {
+    private void createClaimEvent(String authorisation, User user, String pin, Claim savedClaim) {
         ccdEventProducer.createCCDClaimIssuedEvent(savedClaim, user);
 
         if (asyncEventOperationEnabled) {
             eventProducer.createClaimCreatedEvent(
                 savedClaim,
-//                Optional.ofNullable(pinResponse).map(GeneratePinResponse::getPin).orElse(null),
-                Optional.ofNullable(pinResponse).isPresent() ? pinResponse.getPin() : null,
+                pin,
                 user.getUserDetails().getFullName(),
                 authorisation
             );
         } else {
             eventProducer.createClaimIssuedEvent(
                 savedClaim,
-                Optional.ofNullable(pinResponse).map(GeneratePinResponse::getPin).orElse(null),
+                pin,
                 user.getUserDetails().getFullName(),
                 authorisation
             );
