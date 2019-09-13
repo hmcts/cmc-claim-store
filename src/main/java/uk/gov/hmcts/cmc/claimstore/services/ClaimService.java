@@ -22,6 +22,7 @@ import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.rules.PaidInFullRule;
 import uk.gov.hmcts.cmc.claimstore.rules.ReviewOrderRule;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
+import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
@@ -358,7 +359,7 @@ public class ClaimService {
         LocalDate claimantResponseDeadline =
             responseDeadlineCalculator.calculateClaimantResponseDeadline(LocalDate.now());
         caseRepository.saveDefendantResponse(claim, defendantEmail, response, claimantResponseDeadline, authorization);
-        if (isFullDefenceWithNoMediation(response)) {
+        if (isFullDefenceWithNoMediation(response) && !DirectionsQuestionnaireUtils.isOnlineDQ(claim)) {
             LocalDate deadline = directionsQuestionnaireDeadlineCalculator
                 .calculateDirectionsQuestionnaireDeadlineCalculator(LocalDateTime.now());
             caseRepository.updateDirectionsQuestionnaireDeadline(claim, deadline, authorization);

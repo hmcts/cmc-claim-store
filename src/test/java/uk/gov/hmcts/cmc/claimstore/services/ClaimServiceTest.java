@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
@@ -52,6 +53,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils.DQ_FLAG;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
@@ -363,6 +365,21 @@ public class ClaimServiceTest {
             .calculateDirectionsQuestionnaireDeadlineCalculator(any());
         verify(caseRepository)
             .updateDirectionsQuestionnaireDeadline(eq(claim), any(), eq(AUTHORISATION));
+    }
+
+    @Test
+    public void saveDefendantResponseShouldNotUpdateDQDeadlineWhenFullDefenceAndNoMediationAndNoDQOnline() {
+        Claim input = claim.toBuilder().features(ImmutableList.of("admissions", DQ_FLAG)).build();
+
+        claimService.saveDefendantResponse(
+            input, DEFENDANT_EMAIL, SampleResponse.FullDefence.builder().withMediation(NO).build(), AUTHORISATION
+        );
+
+        verify(directionsQuestionnaireDeadlineCalculator, never())
+            .calculateDirectionsQuestionnaireDeadlineCalculator(any(LocalDateTime.class));
+
+        verify(caseRepository, never())
+            .updateDirectionsQuestionnaireDeadline(eq(input), any(LocalDate.class), eq(AUTHORISATION));
     }
 
     @Test
