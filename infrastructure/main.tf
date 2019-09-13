@@ -105,7 +105,7 @@ resource "azurerm_key_vault_secret" "cmc-db-password" {
 }
 
 module "database" {
-  source = "git@github.com:hmcts/moj-module-postgres?ref=master"
+  source = "git@github.com:hmcts/cnp-module-postgres?ref=master"
   product = "${var.product}"
   location = "${var.location}"
   env = "${var.env}"
@@ -120,7 +120,7 @@ module "database" {
 }
 
 module "claim-store-api" {
-  source = "git@github.com:hmcts/moj-module-webapp.git?ref=master"
+  source = "git@github.com:hmcts/cnp-module-webapp?ref=master"
   product = "${var.product}-${var.microservice}"
   location = "${var.location}"
   env = "${var.env}"
