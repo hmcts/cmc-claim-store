@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_LEGAL_REP_CLAIM;
+import static uk.gov.hmcts.cmc.domain.models.ChannelType.LEGAL_REP;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @Service
@@ -77,6 +78,7 @@ public class CreateLegalRepClaimCallbackHandler extends CallbackHandler {
             .issuedOn(issuedOn)
             .serviceDate(issuedOn.plusDays(5))
             .responseDeadline(responseDeadline)
+            .channelType(LEGAL_REP)
             .build();
 
         return AboutToStartOrSubmitCallbackResponse

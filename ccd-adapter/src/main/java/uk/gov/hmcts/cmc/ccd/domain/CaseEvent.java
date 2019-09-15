@@ -51,7 +51,7 @@ public enum CaseEvent {
     WAITING_TRANSFER("WaitingTransfer"),
     //inversion of control
     INITIATE_CLAIM_PAYMENT_CITIZEN("InitiateClaimPaymentCitizen"),
-    REATE_LEGAL_REP_CLAIM("CreateLegalRepClaim");
+    CREATE_LEGAL_REP_CLAIM("CreateLegalRepClaim");
     private String value;
 
     CaseEvent(String value) {
