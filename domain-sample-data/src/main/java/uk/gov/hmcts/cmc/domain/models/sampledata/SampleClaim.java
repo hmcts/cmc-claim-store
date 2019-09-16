@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
+import uk.gov.hmcts.cmc.domain.models.ChannelType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
@@ -97,6 +98,7 @@ public final class SampleClaim {
     private Long ccdCaseId = 1023467890123456L;
     private ReviewOrder reviewOrder;
     private DirectionOrder directionOrder;
+    private ChannelType channel;
 
     private SampleClaim() {
     }
@@ -519,7 +521,8 @@ public final class SampleClaim {
             claimSubmissionOperationIndicators,
             ccdCaseId,
             reviewOrder,
-            directionOrder
+            directionOrder,
+            channel
         );
     }
 
