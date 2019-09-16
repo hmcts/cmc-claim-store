@@ -329,7 +329,7 @@ sonarqube {
     property "sonar.jacoco.itReportPath", "${listFiles('**/apiTest.exec')}"
     property "sonar.exclusions", "**/ccd/domain/**," +
       "**/cmc/domain/models/**," +
-      "**/cmc/ccd/deprecated/**," +
+      "**/cmc/ccd/sample/data/**," +
       "**/cmc/ccd/mapper/**," +
       "**/cmc/claimstore/idam/models/**," +
       "**/ExceptionForClient.java," +
