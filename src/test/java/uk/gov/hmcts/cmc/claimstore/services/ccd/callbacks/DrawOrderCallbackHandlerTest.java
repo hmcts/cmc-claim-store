@@ -11,11 +11,12 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.util.SampleData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
-import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtDetailsFinder;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -29,6 +30,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Collections;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.MapEntry.entry;
@@ -36,33 +38,24 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DRAW_ORDER;
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DrawOrderCallbackHandlerTest {
 
     private static final String BEARER_TOKEN = "Bearer let me in";
     private static final LocalDateTime DATE = LocalDateTime.parse("2020-11-16T13:15:30");
+    private static final String DOCUMENT_URL = "http://bla.test";
+    private static final String DOCUMENT_BINARY_URL = "http://bla.binary.test";
+    private static final String DOCUMENT_FILE_NAME = "sealed_claim.pdf";
 
-    @Mock
-    private JsonMapper jsonMapper;
-    @Mock
-    private CaseDetailsConverter caseDetailsConverter;
-    @Mock
-    private Clock clock;
-    @Mock
-    private OrderDrawnNotificationService orderDrawnNotificationService;
-    @Mock
-    private LegalOrderService legalOrderService;
-
-    private CallbackParams callbackParams;
-
-    private CallbackRequest callbackRequest;
-
-    private DrawOrderCallbackHandler drawOrderCallbackHandler;
+    private CaseDetails caseDetails = CaseDetails.builder().id(3L).data(Collections.emptyMap()).build();
 
     private static final CCDDocument DOCUMENT = CCDDocument
         .builder()
-        .documentUrl("http://bla.test")
+        .documentUrl(DOCUMENT_URL)
+        .documentBinaryUrl(DOCUMENT_BINARY_URL)
+        .documentFileName(DOCUMENT_FILE_NAME)
         .build();
 
     private static final CCDCollectionElement<CCDClaimDocument> CLAIM_DOCUMENT =
@@ -74,83 +67,86 @@ public class DrawOrderCallbackHandlerTest {
                 .build())
             .build();
 
+    @Mock
+    private CaseDetailsConverter caseDetailsConverter;
+    @Mock
+    private Clock clock;
+    @Mock
+    private OrderDrawnNotificationService orderDrawnNotificationService;
+    @Mock
+    private LegalOrderService legalOrderService;
+    @Mock
+    private HearingCourtDetailsFinder hearingCourtDetailsFinder;
+
+    private CallbackParams callbackParams;
+
+    private CallbackRequest callbackRequest;
+
+    private DrawOrderCallbackHandler drawOrderCallbackHandler;
+
     @Before
     public void setUp() {
         drawOrderCallbackHandler = new DrawOrderCallbackHandler(
             clock,
-            jsonMapper,
             orderDrawnNotificationService,
             caseDetailsConverter,
-            legalOrderService);
+            legalOrderService,
+            hearingCourtDetailsFinder
+        );
+
         when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+        when(clock.withZone(UTC_ZONE)).thenReturn(clock);
+
         callbackRequest = CallbackRequest
             .builder()
             .eventId(DRAW_ORDER.getValue())
-            .caseDetails(CaseDetails.builder()
-                .id(3L)
-                .data(Collections.emptyMap())
-                .build())
+            .caseDetails(caseDetails)
             .build();
     }
 
     @Test
-    public void shouldAddDraftDocumentToEmptyCaseDocumentsOnEventStart() {
+    public void shouldAddDraftDocumentToCaseDocumentsOnEventStart() {
+        ImmutableMap<String, Object> data = ImmutableMap.of("data", "existingData",
+            "caseDocuments", ImmutableList.of(CLAIM_DOCUMENT));
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(3L)
+            .data(data)
+            .build();
+
+        callbackRequest = CallbackRequest
+            .builder()
+            .eventId(DRAW_ORDER.getValue())
+            .caseDetails(caseDetails)
+            .build();
+
         callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_SUBMIT)
             .request(callbackRequest)
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
-        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
-        ccdCase.setOrderGenerationData(
-            CCDOrderGenerationData.builder()
-                .draftOrderDoc(DOCUMENT)
-                .build()
-        );
-        when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class))
-            .thenReturn(ccdCase);
 
-        AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
-            drawOrderCallbackHandler
-                .handle(callbackParams);
-
-        assertThat(response.getData()).contains(
-            entry("caseDocuments", ImmutableList.of(CLAIM_DOCUMENT))
-        );
-    }
-
-    @Test
-    public void shouldAddDraftDocumentToExistingCaseDocumentsOnEventStart() {
-        callbackParams = CallbackParams.builder()
-            .type(CallbackType.ABOUT_TO_SUBMIT)
-            .request(callbackRequest)
-            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList()).toBuilder()
+            .directionOrderData(CCDOrderGenerationData.builder().draftOrderDoc(DOCUMENT).build())
+            .directionOrder(CCDDirectionOrder.builder().hearingCourtAddress(SampleData.getCCDAddress()).build())
             .build();
-        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
-        ccdCase.setOrderGenerationData(
-            CCDOrderGenerationData.builder()
-                .draftOrderDoc(DOCUMENT)
-                .build()
-        );
-        CCDCollectionElement<CCDClaimDocument> existingDocument =
-            CCDCollectionElement.<CCDClaimDocument>builder()
-                .value(CCDClaimDocument.builder()
-                    .documentLink(CCDDocument
-                        .builder()
-                        .documentUrl("http://anotherbla.test")
-                        .build())
-                    .build())
-                .build();
-        ccdCase.setCaseDocuments(ImmutableList.of(existingDocument));
-        when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class))
-            .thenReturn(ccdCase);
+
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+
+        when(caseDetailsConverter.convertToMap(any(CCDCase.class)))
+            .thenReturn(ImmutableMap.<String, Object>builder()
+                .put("data", "existingData")
+                .put("caseDocuments", ImmutableList.of(CLAIM_DOCUMENT, DOCUMENT))
+                .build());
 
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
-            drawOrderCallbackHandler
-                .handle(callbackParams);
+            drawOrderCallbackHandler.handle(callbackParams);
 
-        assertThat(response.getData()).contains(
-            entry("caseDocuments", ImmutableList.of(existingDocument, CLAIM_DOCUMENT))
+        Map<String, Object> responseData = response.getData();
+        assertThat(responseData).contains(
+            entry("caseDocuments", ImmutableList.of(CLAIM_DOCUMENT, DOCUMENT)),
+            entry("data", "existingData")
         );
     }
 
@@ -161,12 +157,10 @@ public class DrawOrderCallbackHandlerTest {
             .request(callbackRequest)
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
-        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
-        when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class))
-            .thenReturn(ccdCase);
 
-        drawOrderCallbackHandler
-            .handle(callbackParams);
+        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+        drawOrderCallbackHandler.handle(callbackParams);
     }
 
     @Test
@@ -176,12 +170,7 @@ public class DrawOrderCallbackHandlerTest {
             .request(callbackRequest)
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
-        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
-        ccdCase.setOrderGenerationData(
-            CCDOrderGenerationData.builder()
-                .draftOrderDoc(DOCUMENT)
-                .build()
-        );
+
         CCDCollectionElement<CCDClaimDocument> existingDocument =
             CCDCollectionElement.<CCDClaimDocument>builder()
                 .value(CCDClaimDocument.builder()
@@ -191,13 +180,19 @@ public class DrawOrderCallbackHandlerTest {
                         .build())
                     .build())
                 .build();
-        ccdCase.setCaseDocuments(ImmutableList.of(existingDocument));
-        when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class))
-            .thenReturn(ccdCase);
+
+        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList()).toBuilder()
+            .directionOrderData(CCDOrderGenerationData.builder().draftOrderDoc(DOCUMENT).build())
+            .directionOrder(CCDDirectionOrder.builder().hearingCourtAddress(SampleData.getCCDAddress()).build())
+            .caseDocuments(ImmutableList.of(existingDocument))
+            .build();
+
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+
         Claim claim = SampleClaim.builder().build();
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
-        drawOrderCallbackHandler
-            .handle(callbackParams);
+
+        drawOrderCallbackHandler.handle(callbackParams);
 
         verify(orderDrawnNotificationService).notifyDefendant(claim);
         verify(orderDrawnNotificationService).notifyClaimant(claim);

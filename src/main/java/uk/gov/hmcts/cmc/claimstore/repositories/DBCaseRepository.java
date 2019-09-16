@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -19,7 +20,10 @@ import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
+import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
+import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
@@ -245,6 +249,14 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
+    public InitiatePaymentResponse initiatePayment(User user,
+                                                   String submitterId,
+                                                   InitiatePaymentRequest data) {
+        // No implementation required for claim-store repository
+        return null;
+    }
+
+    @Override
     public Claim saveClaimDocuments(
         String authorisation,
         Long claimId,
@@ -259,6 +271,11 @@ public class DBCaseRepository implements CaseRepository {
     public Claim linkLetterHolder(Long claimId, String letterHolderId) {
         claimRepository.linkLetterHolder(claimId, letterHolderId);
         return getClaimById(claimId);
+    }
+
+    @Override
+    public Claim saveReviewOrder(Long caseId, ReviewOrder reviewOrder, String authorisation) {
+        throw new NotImplementedException("Save review order is not implemented for claim store database");
     }
 
     private Claim getClaimById(Long claimId) {

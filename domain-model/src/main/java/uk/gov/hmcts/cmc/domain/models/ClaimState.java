@@ -6,7 +6,9 @@ public enum ClaimState {
     CREATE("create"),
     OPEN("open"),
     CLOSED("closed"),
-    SETTLED("settled");
+    SETTLED("settled"),
+    ORDER_DRAWN("orderDrawn"),
+    AWAITING_CITIZEN_PAYMENT("awaitingCitizenPayment");
 
     private final String state;
 

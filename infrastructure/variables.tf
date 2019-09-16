@@ -92,6 +92,14 @@ variable "async_event_operations_enabled" {
   default = "false"
 }
 
+variable "directions_questionnaire_enabled" {
+  default = "false"
+}
+
+variable milo_csv_schedule  {
+  default = "-"
+}
+
 variable "common_tags" {
   type = "map"
 }

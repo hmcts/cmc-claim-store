@@ -11,6 +11,7 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.transaction.PlatformTransactionManager;
 import uk.gov.hmcts.cmc.claimstore.config.db.OptionalContainerFactory;
+import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.UserRolesRepository;
 
 import javax.sql.DataSource;
@@ -69,5 +70,10 @@ public class CmcDBConfiguration {
     @Bean
     public UserRolesRepository userRolesRepository(@Qualifier("cmcDbi") DBI dbi) {
         return dbi.onDemand(UserRolesRepository.class);
+    }
+
+    @Bean
+    public ReferenceNumberRepository referenceNumberRepository(@Qualifier("cmcDbi") DBI dbi) {
+        return dbi.onDemand(ReferenceNumberRepository.class);
     }
 }

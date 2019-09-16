@@ -16,7 +16,10 @@ import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
+import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
+import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -143,6 +146,11 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
+    public InitiatePaymentResponse initiatePayment(User user, String submitterId, InitiatePaymentRequest data) {
+        return coreCaseDataService.savePayment(user, submitterId, data);
+    }
+
+    @Override
     public void updateSettlement(
         Claim claim,
         Settlement settlement,
@@ -182,6 +190,11 @@ public class CCDCaseRepository implements CaseRepository {
     @Override
     public Claim linkLetterHolder(Long claimId, String letterHolderId) {
         return coreCaseDataService.linkLetterHolder(claimId, letterHolderId);
+    }
+
+    @Override
+    public Claim saveReviewOrder(Long caseId, ReviewOrder reviewOrder, String authorisation) {
+        return coreCaseDataService.saveReviewOrder(caseId, reviewOrder, authorisation);
     }
 
     @Override

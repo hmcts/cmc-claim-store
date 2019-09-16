@@ -1,11 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -25,7 +24,10 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
+import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
+import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -33,6 +35,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
@@ -44,7 +47,7 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.UUID;
 
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,6 +67,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CLAIMANT_RESPONSE_REJECTION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCUTORY_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_LETTER_HOLDER;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ORDER_REVIEW_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.PIN_GENERATION_OPERATIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_CLAIMANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
@@ -97,9 +101,6 @@ public class CoreCaseDataServiceTest {
     private JobSchedulerService jobSchedulerService;
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
-
-    @Captor
-    private ArgumentCaptor<Map<String, Object>> caseDataCaptor;
 
     private CoreCaseDataService service;
 
@@ -218,6 +219,48 @@ public class CoreCaseDataServiceTest {
         service.createNewCase(USER, providedClaim);
 
         verify(ccdCreateCaseService, never()).grantAccessToCase(any(), any());
+    }
+
+    @Test
+    public void initiatePaymentShouldReturnPaymentNextUrl() {
+        InitiatePaymentRequest initiatePaymentRequest = InitiatePaymentRequest.builder()
+            .externalId(UUID.randomUUID())
+            .build();
+
+        String nextUrl = "http://url.test";
+
+        when(ccdCreateCaseService.startCreate(
+            eq(AUTHORISATION),
+            any(EventRequestData.class),
+            eq(false)
+        ))
+            .thenReturn(StartEventResponse.builder()
+                .caseDetails(CaseDetails.builder().build())
+                .eventId("eventId")
+                .token("token")
+                .build());
+
+        when(ccdCreateCaseService.submitCreate(
+            eq(AUTHORISATION),
+            any(EventRequestData.class),
+            any(CaseDataContent.class),
+            eq(false)
+        ))
+            .thenReturn(CaseDetails.builder()
+                .id(SampleClaim.CLAIM_ID)
+                .data(ImmutableMap.of(
+                    "paymentNextUrl", nextUrl))
+                .build());
+
+        InitiatePaymentResponse response = service.savePayment(
+            USER,
+            "submitterId",
+            initiatePaymentRequest
+        );
+        InitiatePaymentResponse expectedResponse = InitiatePaymentResponse.builder()
+            .nextUrl(nextUrl)
+            .build();
+        assertEquals(expectedResponse, response);
     }
 
     @Test
@@ -554,6 +597,20 @@ public class CoreCaseDataServiceTest {
 
         verify(coreCaseDataApi).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
             anyString(), anyString(), eq(PIN_GENERATION_OPERATIONS.getValue()));
+    }
 
+    @Test
+    public void saveReviewOrderShouldBeSuccessful() {
+        Claim claim = SampleClaim.getDefault();
+        ReviewOrder reviewOrder = SampleReviewOrder.getDefault();
+
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
+
+        service.saveReviewOrder(claim.getId(), reviewOrder, AUTHORISATION);
+
+        verify(coreCaseDataApi).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
+            anyString(), anyString(), eq(ORDER_REVIEW_REQUESTED.getValue()));
+        verify(coreCaseDataApi).submitEventForCitizen(anyString(), anyString(), anyString(), anyString(),
+            anyString(), anyString(), eq(true), any(CaseDataContent.class));
     }
 }

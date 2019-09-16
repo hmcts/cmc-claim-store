@@ -10,9 +10,11 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
+import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
@@ -93,6 +95,8 @@ public final class SampleClaim {
     private ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators =
         getDefaultClaimSubmissionOperationIndicators.get();
     private Long ccdCaseId = 1023467890123456L;
+    private ReviewOrder reviewOrder;
+    private DirectionOrder directionOrder;
 
     private SampleClaim() {
     }
@@ -175,6 +179,32 @@ public final class SampleClaim {
             .build();
     }
 
+    public static Claim getClaimWithPartAdmissionAndNoMediation() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .paymentOption(IMMEDIATELY)
+                    .build()
+            ).withResponse(SampleResponse.PartAdmission.builder()
+                .buildWithDirectionsQuestionnaireWitNoMediation()
+            )
+            .withRespondedAt(LocalDateTime.now())
+            .withDirectionsQuestionnaireDeadline(LocalDate.now())
+            .build();
+    }
+
+    public static Claim getClaimWithFullDefenceWithMediation() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withResponse(SampleResponse.FullAdmission.builder()
+                .buildWithFreeMediation()
+            )
+            .withRespondedAt(LocalDateTime.now())
+            .withDirectionsQuestionnaireDeadline(LocalDate.now())
+            .build();
+    }
+
     public static Claim getClaimWithFullDefenceAlreadyPaid() {
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
@@ -186,7 +216,7 @@ public final class SampleClaim {
                 .builder()
                 .withDefenceType(DefenceType.ALREADY_PAID)
                 .build()
-            )
+            ).withRespondedAt(LocalDateTime.now())
             .build();
     }
 
@@ -487,7 +517,9 @@ public final class SampleClaim {
             claimantResponseDeadline,
             state,
             claimSubmissionOperationIndicators,
-            ccdCaseId
+            ccdCaseId,
+            reviewOrder,
+            directionOrder
         );
     }
 
@@ -691,12 +723,21 @@ public final class SampleClaim {
         return this;
     }
 
+    public SampleClaim withReviewOrder(ReviewOrder reviewOrder) {
+        this.reviewOrder = reviewOrder;
+        return this;
+    }
+
+    public SampleClaim withDirectionOrder(DirectionOrder directionOrder) {
+        this.directionOrder = directionOrder;
+        return this;
+    }
+
     public SampleClaim withClaimSubmissionOperationIndicators(
         ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
     ) {
         this.claimSubmissionOperationIndicators = claimSubmissionOperationIndicators;
         return this;
     }
-
 }
 

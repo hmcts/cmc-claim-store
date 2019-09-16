@@ -11,10 +11,10 @@ import uk.gov.hmcts.cmc.domain.amount.TotalAmountCalculator;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInTheFuture;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.math.BigDecimal;
-import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,7 +24,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 // Create these fields in JSON when serialize Java object, ignore them when deserialize.
 @JsonIgnoreProperties(
-    value = {"totalAmountTillToday", "totalAmountTillDateOfIssue",
+    value = {"totalClaimAmount", "totalAmountTillToday", "totalAmountTillDateOfIssue",
         "amountWithInterestUntilIssueDate", "totalInterestTillDateOfIssue", "totalInterest",
         "serviceDate", "amountWithInterest", "directionsQuestionnaireDeadline", "claimSubmissionOperationIndicators"},
     allowGetters = true
@@ -67,6 +67,8 @@ public class Claim {
     private final ClaimState state;
     private final ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
     private final Long ccdCaseId;
+    private final ReviewOrder reviewOrder;
+    private final DirectionOrder directionOrder;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -102,7 +104,9 @@ public class Claim {
         LocalDate claimantResponseDeadline,
         ClaimState state,
         ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators,
-        Long ccdCaseId
+        Long ccdCaseId,
+        ReviewOrder reviewOrder,
+        DirectionOrder directionOrder
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -136,6 +140,8 @@ public class Claim {
         this.state = state;
         this.ccdCaseId = ccdCaseId;
         this.claimSubmissionOperationIndicators = claimSubmissionOperationIndicators;
+        this.reviewOrder = reviewOrder;
+        this.directionOrder = directionOrder;
     }
 
     public Optional<Response> getResponse() {
@@ -147,16 +153,9 @@ public class Claim {
     }
 
     @JsonIgnore
-    public Optional<URI> getClaimDocument(ClaimDocumentType claimDocumentType) {
-        if (claimDocumentCollection == null) {
-            return Optional.empty();
-        } else {
-            Optional<ClaimDocument> claimDocument = claimDocumentCollection.getDocument(claimDocumentType);
-            if (claimDocument.isPresent()) {
-                return Optional.ofNullable(claimDocument.get().getDocumentManagementUrl());
-            }
-        }
-        return Optional.empty();
+    public Optional<ClaimDocument> getClaimDocument(ClaimDocumentType claimDocumentType) {
+        return Optional.ofNullable(claimDocumentCollection)
+            .flatMap(c -> c.getDocument(claimDocumentType));
     }
 
     public LocalDate getServiceDate() {
@@ -173,6 +172,10 @@ public class Claim {
 
     public Optional<BigDecimal> getTotalAmountTillToday() {
         return TotalAmountCalculator.totalTillToday(this);
+    }
+
+    public Optional<BigDecimal> getTotalClaimAmount() {
+        return TotalAmountCalculator.totalClaimAmount(this);
     }
 
     public Optional<BigDecimal> getTotalAmountTillDateOfIssue() {
@@ -218,6 +221,14 @@ public class Claim {
     @JsonIgnore
     public Optional<ClaimState> getState() {
         return Optional.ofNullable(state);
+    }
+
+    public Optional<ReviewOrder> getReviewOrder() {
+        return Optional.ofNullable(reviewOrder);
+    }
+
+    public Optional<DirectionOrder> getDirectionOrder() {
+        return Optional.ofNullable(directionOrder);
     }
 
     @Override
