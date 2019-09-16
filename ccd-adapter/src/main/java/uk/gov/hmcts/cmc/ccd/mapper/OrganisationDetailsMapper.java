@@ -36,7 +36,7 @@ public class OrganisationDetailsMapper {
         organisation.getContactPerson().ifPresent(claimantProvidedPartyDetail::contactPerson);
         organisation.getCompaniesHouseNumber().ifPresent(claimantProvidedPartyDetail::companiesHouseNumber);
         organisation.getEmail().ifPresent(claimantProvidedPartyDetail::emailAddress);
-        organisation.getPhoneNumber()
+        organisation.getPhone()
             .ifPresent(phoneNo -> claimantProvidedPartyDetail.telephoneNumber(telephoneMapper.to(phoneNo)));
         claimantProvidedPartyDetail.primaryAddress(addressMapper.to(organisation.getAddress()));
         builder

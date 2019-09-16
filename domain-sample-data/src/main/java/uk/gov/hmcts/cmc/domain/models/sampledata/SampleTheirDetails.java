@@ -29,9 +29,15 @@ public class SampleTheirDetails {
     private Address serviceAddress;
     private LocalDate dateOfBirth;
     private String collectionId = "3d0bc933-0d46-4564-94bd-79e6e69b838b";
+    private String phoneNumber;
 
     public static SampleTheirDetails builder() {
         return new SampleTheirDetails();
+    }
+
+    public SampleTheirDetails withPhone(String phone) {
+        this.phoneNumber = phone;
+        return this;
     }
 
     public SampleTheirDetails withName(String name) {
@@ -101,12 +107,12 @@ public class SampleTheirDetails {
 
     public TheirDetails partyDetails() {
         return new IndividualDetails(collectionId, name, title, firstName, lastName,
-            address, email, representative, serviceAddress, dateOfBirth);
+            address, email, representative, serviceAddress, dateOfBirth, phoneNumber);
     }
 
     public IndividualDetails individualDetails() {
         return new IndividualDetails(collectionId, name, title, firstName, lastName,
-            address, email, representative, serviceAddress, dateOfBirth);
+            address, email, representative, serviceAddress, dateOfBirth, phoneNumber);
     }
 
     public List<TheirDetails> individualDetails(int count) {
@@ -114,24 +120,25 @@ public class SampleTheirDetails {
         for (int i = 0; i < count; i++) {
             individualDetailsList.add(
                 new IndividualDetails(collectionId, name, title, firstName, lastName,
-                    address, email, representative, serviceAddress, dateOfBirth)
+                    address, email, representative, serviceAddress, dateOfBirth, phoneNumber)
             );
         }
         return individualDetailsList;
     }
 
     public CompanyDetails companyDetails() {
-        return new CompanyDetails(collectionId, name, address, email, representative, serviceAddress, contactPerson);
+        return new CompanyDetails(collectionId, name, address, email, representative, serviceAddress, contactPerson,
+            phoneNumber);
     }
 
     public OrganisationDetails organisationDetails() {
         return new OrganisationDetails(collectionId, name, address, email, representative, serviceAddress,
-            contactPerson, companiesHouseNumber);
+            contactPerson, companiesHouseNumber, phoneNumber);
     }
 
     public SoleTraderDetails soleTraderDetails() {
         return new SoleTraderDetails(collectionId, name, firstName, lastName, address, email,
-            representative, serviceAddress, title, businessName);
+            representative, serviceAddress, title, businessName, phoneNumber);
     }
 
 }

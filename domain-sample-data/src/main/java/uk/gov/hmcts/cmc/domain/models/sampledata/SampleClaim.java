@@ -364,7 +364,7 @@ public final class SampleClaim {
         return SampleClaim.builder()
             .withClaimData(
                 SampleClaimData.builder()
-                    .withDefendant(SampleTheirDetails.builder().withEmail(null).individualDetails())
+                    .withDefendant(SampleTheirDetails.builder().withPhone(null).withEmail(null).individualDetails())
                     .build()
             ).build();
     }

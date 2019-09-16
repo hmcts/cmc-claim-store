@@ -18,8 +18,7 @@ public class SoleTraderDetailsMapper {
     @Autowired
     public SoleTraderDetailsMapper(AddressMapper addressMapper,
                                    DefendantRepresentativeMapper representativeMapper,
-                                   TelephoneMapper telephoneMapper)
-    {
+                                   TelephoneMapper telephoneMapper) {
         this.addressMapper = addressMapper;
         this.representativeMapper = representativeMapper;
         this.telephoneMapper = telephoneMapper;
@@ -34,7 +33,7 @@ public class SoleTraderDetailsMapper {
         soleTrader.getRepresentative()
             .ifPresent(representative -> representativeMapper.to(representative, builder));
         soleTrader.getEmail().ifPresent(claimantProvidedPartyDetail::emailAddress);
-        soleTrader.getPhoneNumber()
+        soleTrader.getPhone()
             .ifPresent(phoneNo -> claimantProvidedPartyDetail.telephoneNumber(telephoneMapper.to(phoneNo)));
 
         claimantProvidedPartyDetail.primaryAddress(addressMapper.to(soleTrader.getAddress()));

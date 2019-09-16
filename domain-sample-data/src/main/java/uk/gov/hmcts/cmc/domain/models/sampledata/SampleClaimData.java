@@ -58,7 +58,7 @@ public class SampleClaimData {
     public static SampleClaimData builder() {
         return new SampleClaimData(
             singletonList(SampleParty.builder().individual()),
-            singletonList(SampleTheirDetails.builder().individualDetails()));
+            singletonList(SampleTheirDetails.builder().withPhone("0776655443322").individualDetails()));
     }
 
     public SampleClaimData withExternalId(UUID externalId) {
@@ -228,6 +228,7 @@ public class SampleClaimData {
                 .individual())
             .withDefendant(SampleTheirDetails.builder()
                 .withRepresentative(null)
+                .withPhone("0776655443322")
                 .individualDetails())
             .withTimeline(SampleTimeline.validDefaults())
             .withEvidence(SampleEvidence.validDefaults());

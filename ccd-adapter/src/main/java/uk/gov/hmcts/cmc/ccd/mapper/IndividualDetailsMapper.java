@@ -40,7 +40,7 @@ public class IndividualDetailsMapper {
             .ifPresent(representative -> representativeMapper.to(representative, builder));
 
         individual.getDateOfBirth().ifPresent(claimantProvidedDetails::dateOfBirth);
-        individual.getPhoneNumber()
+        individual.getPhone()
             .ifPresent(phoneNo -> claimantProvidedDetails.telephoneNumber(telephoneMapper.to(phoneNo)));
 
         individual.getEmail().ifPresent(claimantProvidedDetails::emailAddress);

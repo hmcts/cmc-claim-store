@@ -48,7 +48,7 @@ public abstract class TheirDetails extends CollectionId implements NamedParty {
     @Valid
     private final Address serviceAddress;
 
-    private final String phoneNumber;
+    private final String phone;
 
     public TheirDetails(
         String id,
@@ -57,7 +57,7 @@ public abstract class TheirDetails extends CollectionId implements NamedParty {
         String email,
         Representative representative,
         Address serviceAddress,
-        String phoneNumber
+        String phone
     ) {
         super(id);
         this.name = name;
@@ -65,7 +65,7 @@ public abstract class TheirDetails extends CollectionId implements NamedParty {
         this.email = email;
         this.representative = representative;
         this.serviceAddress = serviceAddress;
-        this.phoneNumber = phoneNumber;
+        this.phone = phone;
     }
 
     @Override
@@ -89,8 +89,8 @@ public abstract class TheirDetails extends CollectionId implements NamedParty {
         return Optional.ofNullable(serviceAddress);
     }
 
-    public Optional<String> getPhoneNumber(){
-        return Optional.ofNullable(phoneNumber);
+    public Optional<String> getPhone() {
+        return Optional.ofNullable(phone);
     }
 
     @Override

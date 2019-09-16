@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
+import org.junit.Assert;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimContentProvider;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
@@ -47,9 +48,10 @@ public class SealedClaimDataContentProviderTest {
     @Test
     public void shouldProvideDefendantContent() {
         Map<String, Object> content = provider.createContent(claim);
+        PersonContent defendantContent = (PersonContent)content.get("defendant");
 
         assertThat(content).containsKey("defendant");
-        assertThat(content.get("defendant")).isInstanceOf(PersonContent.class);
+        Assert.assertEquals("0776655443322", defendantContent.getMobileNumber());
     }
 
     @Test
