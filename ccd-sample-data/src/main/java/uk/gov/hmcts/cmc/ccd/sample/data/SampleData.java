@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd;
+package uk.gov.hmcts.cmc.ccd.sample.data;
 
 import com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
@@ -50,7 +50,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static java.util.Collections.singletonList;
-import static uk.gov.hmcts.cmc.ccd.SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicators;
+import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicators;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.BREAK_DOWN;
 import static uk.gov.hmcts.cmc.ccd.domain.AmountType.RANGE;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.COMPANY;

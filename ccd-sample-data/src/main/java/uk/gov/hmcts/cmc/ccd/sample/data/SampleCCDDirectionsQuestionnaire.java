@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd;
+package uk.gov.hmcts.cmc.ccd.sample.data;
 
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDCourtLocationOption;

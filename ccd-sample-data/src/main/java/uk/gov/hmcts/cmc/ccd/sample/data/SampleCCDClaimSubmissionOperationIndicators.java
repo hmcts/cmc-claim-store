@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd;
+package uk.gov.hmcts.cmc.ccd.sample.data;
 
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;

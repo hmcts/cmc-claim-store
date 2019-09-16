@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd;
+package uk.gov.hmcts.cmc.ccd.sample.data;
 
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDParty;
@@ -15,9 +15,9 @@ import java.util.List;
 
 import static java.time.LocalDate.now;
 import static java.util.Arrays.asList;
-import static uk.gov.hmcts.cmc.ccd.SampleData.getCCDAddress;
-import static uk.gov.hmcts.cmc.ccd.SampleData.getCCDPaymentIntention;
-import static uk.gov.hmcts.cmc.ccd.SampleData.getCCDStatementOfMeans;
+import static uk.gov.hmcts.cmc.ccd.sample.data.SampleData.getCCDAddress;
+import static uk.gov.hmcts.cmc.ccd.sample.data.SampleData.getCCDPaymentIntention;
+import static uk.gov.hmcts.cmc.ccd.sample.data.SampleData.getCCDStatementOfMeans;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.COMPANY;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDPartyType.INDIVIDUAL;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
