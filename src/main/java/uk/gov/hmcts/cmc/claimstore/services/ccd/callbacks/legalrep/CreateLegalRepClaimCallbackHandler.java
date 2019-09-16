@@ -76,7 +76,6 @@ public class CreateLegalRepClaimCallbackHandler extends CallbackHandler {
         Claim updatedClaim = claim.toBuilder()
             .referenceNumber(referenceNumber)
             .issuedOn(issuedOn)
-            .serviceDate(issuedOn.plusDays(5))
             .responseDeadline(responseDeadline)
             .channelType(LEGAL_REP)
             .build();
