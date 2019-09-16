@@ -108,7 +108,7 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
     }
 
     protected void commonStubStepsClaimRequestForCitizen(String caseId, String externalId) {
-        stubForSearchForCitizen(externalId);
+        stubForSearchNonExistingClaimForCitizen(externalId);
         stubForStartForCitizen();
         stubForSubmitForCitizen(externalId);
 
@@ -125,7 +125,7 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
 
     }
 
-    protected void stubForSearchForCitizen(String externalId) {
+    protected void stubForSearchNonExistingClaimForCitizen(String externalId) {
         final String URI = "/citizens/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
                          + "/case-types/" + CASE_TYPE_ID + "/cases" + "?" + "case.externalId="
                          + externalId + "&" + "sortDirection=desc" + "&" + "page=1";
@@ -134,6 +134,18 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
             .withHeader(HttpHeaders.AUTHORIZATION, equalTo(AUTHORISATION_TOKEN))
             .willReturn(okForJson(Collections.emptyList()))
+        );
+    }
+
+    protected void stubForSearchExistingClaimForCitizen(String externalId) {
+        final String URI = "/citizens/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
+            + "/case-types/" + CASE_TYPE_ID + "/cases" + "?" + "case.externalId="
+            + externalId + "&" + "sortDirection=desc" + "&" + "page=1";
+
+        stubFor(get(urlEqualTo(URI))
+            .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
+            .withHeader(HttpHeaders.AUTHORIZATION, equalTo(AUTHORISATION_TOKEN))
+            .willReturn(okForJson(Collections.singletonList(citizenSampleCaseDetails)))
         );
     }
 

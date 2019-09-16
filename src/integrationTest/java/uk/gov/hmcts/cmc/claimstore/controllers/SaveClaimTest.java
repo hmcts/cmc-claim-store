@@ -101,7 +101,7 @@ public class SaveClaimTest extends MockedCoreCaseDataApiTest {
         doThrow(new RuntimeException("Sending failed"))
             .when(emailService).sendEmail(anyString(), any(EmailData.class));
 
-        stubForSearchForCitizen(externalId);
+        stubForSearchNonExistingClaimForCitizen(externalId);
         stubForStartForCitizenWithServerError();
 
         makeIssueClaimRequest(citizenClaimData, AUTHORISATION_TOKEN)

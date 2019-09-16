@@ -1,10 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.claimstore.controllers.base.BaseDownloadDocumentTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
@@ -34,12 +33,6 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumen
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.unsuccessfulDocumentManagementUploadResponse;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
-@TestPropertySource(
-    properties = {
-        "core_case_data.api.url=false"
-    }
-)
-@Ignore("to be fixed as part of task ROC-6278; is this test still relevant?")
 public class DownloadRepresentedClaimCopyWithDocumentManagementTest extends BaseDownloadDocumentTest {
 
     public DownloadRepresentedClaimCopyWithDocumentManagementTest() {
@@ -59,7 +52,10 @@ public class DownloadRepresentedClaimCopyWithDocumentManagementTest extends Base
             .upload(eq(AUTHORISATION_TOKEN), any(), any(), anyList(), any(Classification.class), any())
         ).willReturn(successfulDocumentManagementUploadResponse());
 
-        Claim claim = claimStore.saveClaim(SampleClaimData.submittedByLegalRepresentative());
+        Claim claim = caseMapper.from(jsonMapper.fromMap(citizenSampleCaseDetails.getData(), CCDCase.class));
+        String externalId = claim.getExternalId();
+
+        stubForSearchExistingClaimForCitizen(externalId);
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isOk())
