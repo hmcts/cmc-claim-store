@@ -53,6 +53,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INITIATE_CLAIM_PAYMENT_CITIZ
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_LETTER_HOLDER;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED_ONLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ORDER_REVIEW_REQUESTED;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
@@ -72,6 +73,7 @@ public class CoreCaseDataService {
     private static final String SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION = "Submitting CMC case update";
     private static final String SUBMITTING_CMC_CASE_CREATE_DESCRIPTION = "Submitting CMC case create";
     private static final String SUBMITTING_CMC_INITIATE_PAYMENT_DESCRIPTION = "Submitting CMC initiate payment";
+    private static final String SUBMITTING_CMC_RESUME_PAYMENT_DESCRIPTION = "Submitting CMC resume payment";
 
     private static final String CCD_UPDATE_FAILURE_MESSAGE
         = "Failed updating claim in CCD store for case id %s on event %s";
@@ -831,6 +833,54 @@ public class CoreCaseDataService {
                     "Failed storing claim in CCD store for external id %s on event %s",
                     initiatePaymentRequestData.getExternalId().toString(),
                     INITIATE_CLAIM_PAYMENT_CITIZEN
+                ), exception
+            );
+        }
+    }
+
+    public Claim resumePayment(
+        String authorisation,
+        Claim claim) {
+
+        User user = userService.getUser(authorisation);
+
+        try {
+            EventRequestData eventRequestData =
+                eventRequest(RESUME_CLAIM_PAYMENT_CITIZEN, user.getUserDetails().getId());
+
+            StartEventResponse startEventResponse = startUpdate(
+                authorisation,
+                eventRequestData,
+                claim.getId(),
+                user.isRepresented());
+
+            Claim updatedClaim = toClaimBuilder(startEventResponse).build();
+
+            CaseDataContent caseDataContent = CaseDataContent.builder()
+                .eventToken(startEventResponse.getToken())
+                .event(Event.builder()
+                    .id(startEventResponse.getEventId())
+                    .description(SUBMITTING_CMC_RESUME_PAYMENT_DESCRIPTION)
+                    .build())
+                .data(updatedClaim)
+                .build();
+
+            CaseDetails caseDetails = submitUpdate(
+                user.getAuthorisation(),
+                eventRequestData,
+                caseDataContent,
+                claim.getId(),
+                user.isRepresented()
+            );
+
+            return caseDetailsConverter.extractClaim(caseDetails);
+
+        } catch (Exception exception) {
+            throw new CoreCaseDataStoreException(
+                String.format(
+                    "Failed storing claim in CCD store for external id %s on event %s",
+                    claim.getExternalId(),
+                    RESUME_CLAIM_PAYMENT_CITIZEN
                 ), exception
             );
         }

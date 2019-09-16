@@ -125,6 +125,16 @@ public class ClaimController {
         return claimService.initiatePayment(authorisation, submitterId, initiatePaymentRequest);
     }
 
+    @PutMapping(value = "/{submitterId}/resume-citizen-payment", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation("Resumes a citizen payment")
+    public Claim resumePayment(
+        @Valid @NotNull @RequestBody ClaimData claimData,
+        @PathVariable("submitterId") String submitterId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        return claimService.resumePayment(authorisation, claimData);
+    }
+
     @PutMapping("/defendant/link")
     @ApiOperation("Links defendant to all unlinked letter-holder cases")
     public void linkDefendantToClaim(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {

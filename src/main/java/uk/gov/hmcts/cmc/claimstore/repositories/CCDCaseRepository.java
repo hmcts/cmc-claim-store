@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
@@ -148,6 +149,11 @@ public class CCDCaseRepository implements CaseRepository {
     @Override
     public InitiatePaymentResponse initiatePayment(User user, String submitterId, InitiatePaymentRequest data) {
         return coreCaseDataService.savePayment(user, submitterId, data);
+    }
+
+    @Override
+    public Claim resumePayment(String authorisation, Claim claim) {
+        return coreCaseDataService.resumePayment(authorisation, claim);
     }
 
     @Override

@@ -46,6 +46,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static java.time.LocalDate.now;
 import static java.util.Collections.singletonList;
@@ -564,6 +565,25 @@ public class ClaimServiceTest {
         claimService.initiatePayment(AUTHORISATION, "submitterId", initiatePaymentRequest);
 
         verify(caseRepository).initiatePayment(USER, "submitterId", initiatePaymentRequest);
+    }
+
+    @Test
+    public void resumePaymentShouldFinishSuccessfully() {
+        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
+        ClaimData claimData = SampleClaimData.builder()
+            .withExternalId(UUID.fromString(EXTERNAL_ID))
+            .build();
+        Claim claim = SampleClaim.builder()
+            .withExternalId(EXTERNAL_ID)
+            .withClaimData(claimData)
+            .build();
+
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
+            .thenReturn(Optional.of(claim));
+
+        claimService.resumePayment(AUTHORISATION, claimData);
+
+        verify(caseRepository).resumePayment(AUTHORISATION, claim);
     }
 
     @Test

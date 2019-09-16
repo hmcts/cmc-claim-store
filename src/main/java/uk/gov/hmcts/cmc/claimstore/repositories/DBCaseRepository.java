@@ -262,6 +262,11 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
+    public Claim resumePayment(String authorisation, Claim claim) {
+        return null;
+    }
+
+    @Override
     public Claim saveClaimDocuments(
         String authorisation,
         Long claimId,

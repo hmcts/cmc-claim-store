@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.repositories;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
@@ -77,6 +78,8 @@ public interface CaseRepository {
     void saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent);
 
     InitiatePaymentResponse initiatePayment(User user, String submitterId, InitiatePaymentRequest data);
+
+    Claim resumePayment(String authorisation, Claim claim);
 
     Claim saveClaimDocuments(
         String authorisation,

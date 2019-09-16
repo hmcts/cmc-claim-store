@@ -131,4 +131,20 @@ public class ClaimControllerTest {
         //then
         assertThat(output).isEqualTo(response);
     }
+
+    @Test
+    public void shouldResumePaymentForCitizen() {
+        //given
+        ClaimData claimData = SampleClaimData.builder().build();
+        Claim claim = SampleClaim.builder().build();
+        when(claimService.resumePayment(AUTHORISATION, claimData))
+            .thenReturn(claim);
+
+        //when
+        Claim output = claimController.resumePayment(
+            claimData, "123", AUTHORISATION);
+
+        //then
+        assertThat(output).isEqualTo(claim);
+    }
 }

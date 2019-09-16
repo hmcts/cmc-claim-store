@@ -198,6 +198,23 @@ public class CoreCaseDataServiceFailureTest {
     }
 
     @Test(expected = CoreCaseDataStoreException.class)
+    public void resumePaymentFailure() {
+        Claim providedClaim = SampleClaim.withNoResponse();
+
+        service.resumePayment(AUTHORISATION, providedClaim);
+
+        verify(coreCaseDataApi).submitForCitizen(
+            eq(AUTHORISATION),
+            eq(AUTH_TOKEN),
+            eq(USER_DETAILS.getId()),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(true),
+            any(CaseDataContent.class)
+        );
+    }
+
+    @Test(expected = CoreCaseDataStoreException.class)
     public void saveCountyCourtJudgmentFailure() {
         Claim providedClaim = SampleClaim.getDefault();
         CountyCourtJudgment providedCCJ = SampleCountyCourtJudgment

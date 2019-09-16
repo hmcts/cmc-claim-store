@@ -197,6 +197,13 @@ public class ClaimService {
         return caseRepository.initiatePayment(user, submitterId, request);
     }
 
+    public Claim resumePayment(
+        String authorisation,
+        ClaimData claimData) {
+        Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), authorisation);
+        return caseRepository.resumePayment(authorisation, claim);
+    }
+
     @LogExecutionTime
     @Transactional(transactionManager = "transactionManager")
     public Claim saveClaim(

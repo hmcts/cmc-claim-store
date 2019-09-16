@@ -299,6 +299,21 @@ public class CoreCaseDataServiceTest {
     }
 
     @Test
+    public void resumePaymentShouldReturnCaseData() {
+        Claim providedClaim = SampleClaim.getDefault();
+        Claim expectedClaim = SampleClaim.claim(providedClaim.getClaimData(), "000MC001");
+
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(expectedClaim);
+        when(caseDetailsConverter.extractClaim(any((CaseDetails.class)))).thenReturn(expectedClaim);
+        when(userService.getUser(AUTHORISATION)).thenReturn(USER);
+
+        Claim returnedClaim = service.resumePayment(AUTHORISATION, providedClaim);
+        assertEquals(expectedClaim, returnedClaim);
+        verify(caseDetailsConverter).extractCCDCase(any(CaseDetails.class));
+
+    }
+
+    @Test
     public void linkDefendantShouldBeSuccessful() {
         Claim providedClaim = SampleClaim.getDefault();
         when(caseMapper.from(any(CCDCase.class))).thenReturn(providedClaim);
