@@ -9,6 +9,8 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
+import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
@@ -92,5 +94,22 @@ public class ClaimControllerTest {
 
         //then
         assertThat(output).isEqualTo(claim);
+    }
+
+    @Test
+    public void shouldInitiatePaymentForCitizen() {
+        //given
+        String submitterId = "234";
+        InitiatePaymentRequest request = InitiatePaymentRequest.builder().build();
+        InitiatePaymentResponse response = InitiatePaymentResponse.builder().build();
+        when(claimService.initiatePayment(AUTHORISATION, submitterId, request))
+            .thenReturn(response);
+
+        //when
+        InitiatePaymentResponse output = claimController.initiatePayment(
+            request, submitterId, AUTHORISATION);
+
+        //then
+        assertThat(output).isEqualTo(response);
     }
 }
