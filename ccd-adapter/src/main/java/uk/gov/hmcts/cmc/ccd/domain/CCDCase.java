@@ -73,4 +73,5 @@ public class CCDCase {
     private CCDOrderGenerationData directionOrderData;
     private CCDDirectionOrder directionOrder;
     private CCDReviewOrder reviewOrder;
+    private CCDChannelType channelType;
 }
