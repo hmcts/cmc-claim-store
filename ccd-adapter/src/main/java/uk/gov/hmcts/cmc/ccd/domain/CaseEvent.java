@@ -52,6 +52,7 @@ public enum CaseEvent {
     //inversion of control
     INITIATE_CLAIM_PAYMENT_CITIZEN("InitiateClaimPaymentCitizen"),
     CREATE_LEGAL_REP_CLAIM("CreateLegalRepClaim");
+
     private String value;
 
     CaseEvent(String value) {
