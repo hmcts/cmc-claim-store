@@ -7,3 +7,5 @@ include 'ccd-adapter'
 include 'ccd-claim-migration'
 include 'rpa-mapper'
 include 'job-scheduler'
+include 'ccd-sample-data'
+
