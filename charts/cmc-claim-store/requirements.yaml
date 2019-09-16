@@ -15,6 +15,6 @@ dependencies:
   - name: ccd
     version: ~4.0.0
     #repository: '@hmctspublic'
-    repository: '/Users/kariml/Development/chart-ccd/ccd'
+    repository: '@local'
     tags:
       - cmc-ccd-stack
