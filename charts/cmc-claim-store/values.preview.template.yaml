@@ -150,6 +150,8 @@ ccd:
     definition:
       enabled: true
       image: hmctspublic.azurecr.io/cmc/ccd-definition-importer:1.3.2
+      environment:
+        CCD_DEF_CLAIM_STORE_BASE_URL: http://${SERVICE_FQDN}
       kvSecretRef: kvcreds
       gitSecretRef: kvcreds
       redirectUri: https://case-management-web-${SERVICE_FQDN}/oauth2redirect
