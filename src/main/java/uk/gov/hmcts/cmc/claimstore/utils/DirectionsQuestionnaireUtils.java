@@ -31,7 +31,7 @@ public class DirectionsQuestionnaireUtils {
     }
 
     public static boolean isOnlineDQ(Claim claim) {
-        return claim.getFeatures().contains(DQ_FLAG);
+        return claim.getFeatures() != null && claim.getFeatures().contains(DQ_FLAG);
     }
 
     public static Optional<CaseEvent> prepareCaseEvent(ResponseRejection responseRejection, Claim claim) {
