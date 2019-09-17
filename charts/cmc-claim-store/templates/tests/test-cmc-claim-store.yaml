@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ .Release.Name }}-test-service"
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: {{ .Release.Name }}-test
+      image: {{ .Values.image }}
+      env:
+        - name: FRONTEND_BASE_URL
+          value: "https://FRONTEND_BASE_URL"
+      command: ["sh", "-c", "httpstatuscode=$(wget -S http://$REFORM_SERVICE_NAME/health 2>&1 | grep HTTP/ | awk 'END{print $2}') && [ \"$httpstatuscode\" = \"200\" ]"]
+  restartPolicy: Never
