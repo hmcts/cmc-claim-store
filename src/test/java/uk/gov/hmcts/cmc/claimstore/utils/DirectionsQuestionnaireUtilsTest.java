@@ -17,6 +17,10 @@ import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
+import java.util.Collections;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.WAITING_TRANSFER;
@@ -274,7 +278,7 @@ public class DirectionsQuestionnaireUtilsTest {
         Assertions.assertThat(caseEvent).isEqualTo(REFERRED_TO_MEDIATION);
     }
 
-    @Test(expected =  IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     public void shouldThrowIfDefendantIsBusinessAndClaimantResponseDoesNotExist() {
         Claim claim = SampleClaim.builder()
             .withClaimantResponse(null)
@@ -288,7 +292,7 @@ public class DirectionsQuestionnaireUtilsTest {
             .getPreferredCourt(claim);
     }
 
-    @Test(expected =  IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     public void shouldThrowIfDefendantIsBusinessAndClaimantRejectionResponseHasNoDQObject() {
         ResponseRejection responseRejection = ResponseRejection.builder()
             .freeMediation(NO)
@@ -306,7 +310,7 @@ public class DirectionsQuestionnaireUtilsTest {
             .getPreferredCourt(claim);
     }
 
-    @Test(expected =  IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     public void shouldThrowIfDefendantIsBusinessAndClaimantResponseIsNotRejection() {
         ResponseAcceptation responseAcceptation = ResponseAcceptation.builder()
             .build();
@@ -322,7 +326,7 @@ public class DirectionsQuestionnaireUtilsTest {
             .getPreferredCourt(claim);
     }
 
-    @Test(expected =  IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     public void shouldThrowIfDefendantIsIndividualAndFullDefenceDefendantResponseHasNoDQObject() {
         FullDefenceResponse defenceResponse = FullDefenceResponse.builder()
             .freeMediation(NO)
@@ -341,7 +345,7 @@ public class DirectionsQuestionnaireUtilsTest {
             .getPreferredCourt(claim);
     }
 
-    @Test(expected =  IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     public void shouldThrowIfDefendantIsIndividualAndPartAdmitDefendantResponseHasNoDQObject() {
         PartAdmissionResponse defenceResponse = PartAdmissionResponse.builder()
             .freeMediation(NO)
@@ -360,7 +364,7 @@ public class DirectionsQuestionnaireUtilsTest {
             .getPreferredCourt(claim);
     }
 
-    @Test(expected =  IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     public void shouldThrowIfDefendantIsIndividualAndDefendantResponseIsFullAdmission() {
         FullAdmissionResponse defenceResponse = FullAdmissionResponse.builder()
             .freeMediation(NO)
@@ -376,5 +380,32 @@ public class DirectionsQuestionnaireUtilsTest {
 
         DirectionsQuestionnaireUtils
             .getPreferredCourt(claim);
+    }
+
+    @Test
+    public void shouldReturnFalseWhereClaimFeaturesAreNull() {
+        assertFalse(DirectionsQuestionnaireUtils.isOnlineDQ(SampleClaim.builder().withFeatures(null).build()));
+    }
+
+    @Test
+    public void shouldReturnFalseWhereClaimFeaturesAreEmpty() {
+        assertFalse(DirectionsQuestionnaireUtils
+            .isOnlineDQ(SampleClaim.builder().withFeatures(Collections.emptyList()).build()));
+    }
+
+    @Test
+    public void shouldReturnFalseWhereClaimFeaturesDoesNotHasDirectionQuestionnaire() {
+        assertFalse(DirectionsQuestionnaireUtils
+            .isOnlineDQ(SampleClaim.builder().withFeatures(ImmutableList.of("admissions")).build())
+        );
+    }
+
+    @Test
+    public void shouldReturnTrueWhereClaimFeaturesHasDirectionQuestionnaire() {
+        assertTrue(DirectionsQuestionnaireUtils
+            .isOnlineDQ(SampleClaim.builder()
+                .withFeatures(ImmutableList.of(DirectionsQuestionnaireUtils.DQ_FLAG))
+                .build())
+        );
     }
 }
