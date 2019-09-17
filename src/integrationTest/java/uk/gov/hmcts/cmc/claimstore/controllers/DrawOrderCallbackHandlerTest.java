@@ -30,7 +30,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -135,16 +134,12 @@ public class DrawOrderCallbackHandlerTest extends MockSpringTest {
     }
 
     private ResultActions makeRequest(String callbackType) throws Exception {
-        CaseDetails caseDetailsTemp = successfulCoreCaseDataStoreSubmitResponse();
-        Map<String, Object> data = new HashMap<>(caseDetailsTemp.getData());
-        data.put("draftOrderDoc", ImmutableMap.of("document_url", DOCUMENT_URL));
-        data.put("caseDocuments", ImmutableList.of(CLAIM_DOCUMENT));
-        data.put("directionOrder", CCDDirectionOrder.builder().hearingCourtAddress(SampleData.getCCDAddress()).build());
-
-        CaseDetails caseDetails = CaseDetails.builder()
-            .id(caseDetailsTemp.getId())
-            .data(data)
-            .build();
+        CaseDetails caseDetails = successfulCoreCaseDataStoreSubmitResponse();
+        caseDetails.getData().put("draftOrderDoc", ImmutableMap.of("document_url", DOCUMENT_URL));
+        caseDetails.getData().put("caseDocuments", ImmutableList.of(CLAIM_DOCUMENT));
+        caseDetails.getData().put("directionOrder", CCDDirectionOrder.builder()
+            .hearingCourtAddress(SampleData.getCCDAddress())
+            .build());
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .eventId(CaseEvent.DRAW_ORDER.getValue())
