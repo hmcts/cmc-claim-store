@@ -30,7 +30,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -138,7 +137,9 @@ public class DrawOrderCallbackHandlerTest extends MockSpringTest {
         CaseDetails caseDetails = successfulCoreCaseDataStoreSubmitResponse();
         caseDetails.getData().put("draftOrderDoc", ImmutableMap.of("document_url", DOCUMENT_URL));
         caseDetails.getData().put("caseDocuments", ImmutableList.of(CLAIM_DOCUMENT));
-        caseDetails.getData().put("directionOrder", CCDDirectionOrder.builder().hearingCourtAddress(SampleData.getCCDAddress()).build());
+        caseDetails.getData().put("directionOrder", CCDDirectionOrder.builder()
+            .hearingCourtAddress(SampleData.getCCDAddress())
+            .build());
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .eventId(CaseEvent.DRAW_ORDER.getValue())
