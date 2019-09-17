@@ -116,12 +116,9 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
             DOCUMENTS.name(),
             EYEWITNESS.name()
         ));
-        Map<String, Object> caseData = callbackRequest.getCaseDetails().getData();
-        Claim claim = caseDetailsConverter.extractClaim(
-            CaseDetails.builder()
-                .data(caseData)
-                .build()
-        );
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        Map<String, Object> caseData = caseDetails.getData();
+        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
         addCourtData(claim, caseData, data);
         data.put(DOC_UPLOAD_DEADLINE, deadline);
         data.put(EYEWITNESS_UPLOAD_DEADLINE, deadline);
