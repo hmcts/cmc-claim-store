@@ -48,7 +48,7 @@ public class ClaimControllerTest {
         ClaimData input = SampleClaimData.validDefaults();
         when(claimService
             .saveClaim(
-                eq(USER_ID), eq(input), eq(AUTHORISATION), eq(singletonList("admissions"))))
+                USER_ID, input, AUTHORISATION, singletonList("admissions")))
             .thenReturn(CLAIM);
 
         //when

@@ -216,7 +216,7 @@ public class ClaimServiceTest {
         ClaimData claimData = SampleClaimData.validDefaults();
 
         when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
-        when(caseRepository.saveClaim(eq(USER), any())).thenReturn(claim);
+        when(caseRepository.saveLegalRepClaim(eq(USER), any())).thenReturn(claim);
 
         Claim createdLegalRepClaim = claimService
             .saveLegalRepClaim(
@@ -224,7 +224,7 @@ public class ClaimServiceTest {
 
         assertThat(createdLegalRepClaim.getClaimData()).isEqualTo(claim.getClaimData());
 
-        verify(caseRepository, once()).saveClaim(
+        verify(caseRepository, once()).saveLegalRepClaim(
             any(User.class), any(Claim.class));
         verify(eventProducer, once()).createClaimIssuedEvent(eq(createdLegalRepClaim), eq(null),
             anyString(), eq(AUTHORISATION));

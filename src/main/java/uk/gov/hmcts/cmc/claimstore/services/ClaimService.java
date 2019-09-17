@@ -204,10 +204,11 @@ public class ClaimService {
         List<String> features
     ) {
         String externalId = claimData.getExternalId().toString();
-        User user = isExistingClaim(authorisation, externalId);
+        User user = userService.getUser(authorisation);
+        this.verifyUniqueExternalId(user, externalId);
 
         Optional<GeneratePinResponse> pinResponse = getPinResponse(claimData, authorisation);
-        Optional<String> letterHolderId = pinResponse.map(GeneratePinResponse::getUserId);
+        String letterHolderId = pinResponse.map(GeneratePinResponse::getUserId).orElse(null);
         LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
         LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
         String submitterEmail = user.getUserDetails().getEmail();
@@ -221,7 +222,7 @@ public class ClaimService {
             .externalId(externalId)
             .submitterEmail(submitterEmail)
             .createdAt(nowInLocalZone())
-            .letterHolderId(letterHolderId.orElse(null))
+            .letterHolderId(letterHolderId)
             .features(features)
             .claimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators.builder().build())
             .build();
@@ -242,10 +243,11 @@ public class ClaimService {
         String authorisation
     ) {
         String externalId = claimData.getExternalId().toString();
-        User user = isExistingClaim(authorisation, externalId);
+        User user = userService.getUser(authorisation);
+        this.verifyUniqueExternalId(user, externalId);
 
         Optional<GeneratePinResponse> pinResponse = getPinResponse(claimData, authorisation);
-        Optional<String> letterHolderId = pinResponse.map(GeneratePinResponse::getUserId);
+        String letterHolderId = pinResponse.map(GeneratePinResponse::getUserId).orElse(null);
         String submitterEmail = user.getUserDetails().getEmail();
 
         Claim claim = Claim.builder()
@@ -254,11 +256,11 @@ public class ClaimService {
             .externalId(externalId)
             .submitterEmail(submitterEmail)
             .createdAt(nowInLocalZone())
-            .letterHolderId(letterHolderId.orElse(null))
+            .letterHolderId(letterHolderId)
             .claimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators.builder().build())
             .build();
 
-        Claim savedClaim = caseRepository.saveClaim(user, claim);
+        Claim savedClaim = caseRepository.saveLegalRepClaim(user, claim);
         String pin = pinResponse.map(GeneratePinResponse::getPin).orElse(null);
         createClaimEvent(authorisation, user, pin, savedClaim);
         trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
@@ -266,14 +268,12 @@ public class ClaimService {
         return savedClaim;
     }
 
-    private User isExistingClaim(String authorisation, String externalId) {
-        User user = userService.getUser(authorisation);
+    private void verifyUniqueExternalId(User user, String externalId) throws ConflictException {
 
         caseRepository.getClaimByExternalId(externalId, user).ifPresent(claim -> {
             throw new ConflictException(
                 String.format("Claim already exist with same external reference as %s", externalId));
         });
-        return user;
     }
 
     private void createClaimEvent(String authorisation, User user, String pin, Claim savedClaim) {

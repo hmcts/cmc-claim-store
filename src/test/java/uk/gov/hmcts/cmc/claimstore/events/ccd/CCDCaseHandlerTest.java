@@ -16,12 +16,14 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDet
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCD_ASYNC_FAILURE;
+import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CCDCaseHandlerTest {
@@ -66,7 +68,7 @@ public class CCDCaseHandlerTest {
         CCDClaimIssuedEvent claimIssuedEvent = new CCDClaimIssuedEvent(sampleClaim, user);
         caseHandler.saveLegalRepClaim(claimIssuedEvent);
 
-        verify(ccdCaseRepository, times(1))
+        verify(ccdCaseRepository, once())
             .saveLegalRepClaim(claimIssuedEvent.getUser(), claimIssuedEvent.getClaim());
     }
 
@@ -96,9 +98,6 @@ public class CCDCaseHandlerTest {
         CCDClaimIssuedEvent claimIssuedEvent = new CCDClaimIssuedEvent(sampleClaim, user);
         caseHandler.saveLegalRepClaim(claimIssuedEvent);
 
-        verifyZeroInteractions(ccdCaseRepository);
-        verify(appInsights, times(1))
-            .trackEvent(CCD_ASYNC_FAILURE, REFERENCE_NUMBER, sampleClaim.getReferenceNumber());
-
+        assertThatThrownBy(() -> caseHandler.saveLegalRepClaim(claimIssuedEvent)).isInstanceOf(FeignException.class);
     }
 }
