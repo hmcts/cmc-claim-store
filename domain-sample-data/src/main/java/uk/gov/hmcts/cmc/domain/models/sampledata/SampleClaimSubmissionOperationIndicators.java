@@ -41,9 +41,6 @@ public class SampleClaimSubmissionOperationIndicators {
             .claimantNotification(YES)
             .build();
 
-    public static Supplier<ClaimSubmissionOperationIndicators> getDefaultClaimSubmissionOperationIndicators =
-        () -> ClaimSubmissionOperationIndicators.builder().build();
-
     private SampleClaimSubmissionOperationIndicators() {
         //Do nothing constructor.
     }
