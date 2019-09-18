@@ -24,7 +24,6 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.rules.ClaimSubmissionOperationIndicatorRule;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.MediationReportService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -32,7 +31,6 @@ import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.MediationRequest;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
@@ -65,7 +63,6 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEI
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
-import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SupportControllerTest {
@@ -130,8 +127,7 @@ public class SupportControllerTest {
             documentsService,
             postClaimOrchestrationHandler,
             false,
-            mediationReportService,
-            new ClaimSubmissionOperationIndicatorRule()
+            mediationReportService
         );
         sampleClaim = SampleClaim.getDefault();
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
@@ -213,7 +209,7 @@ public class SupportControllerTest {
             moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
             ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
             claimantResponseStaffNotificationHandler, documentsService, postClaimOrchestrationHandler,
-            true, mediationReportService, new ClaimSubmissionOperationIndicatorRule()
+            true, mediationReportService
         );
 
         // when
@@ -241,7 +237,7 @@ public class SupportControllerTest {
             moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
             ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
             claimantResponseStaffNotificationHandler, documentsService, postClaimOrchestrationHandler,
-            false, mediationReportService, new ClaimSubmissionOperationIndicatorRule()
+            false, mediationReportService
         );
 
         // when
@@ -263,7 +259,7 @@ public class SupportControllerTest {
             moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
             ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
             claimantResponseStaffNotificationHandler, documentsService, postClaimOrchestrationHandler,
-            true, mediationReportService, new ClaimSubmissionOperationIndicatorRule()
+            true, mediationReportService
         );
 
         // when
@@ -436,84 +432,6 @@ public class SupportControllerTest {
         controller.sendMediation(AUTHORISATION, new MediationRequest(mediationSearchDate, "Holly@cow.com"));
         verify(mediationReportService, times(1))
             .sendMediationReport(eq(AUTHORISATION), eq(mediationSearchDate));
-    }
-
-    @Test
-    public void shouldPerformResetOperationForCitizenClaim() {
-        Claim claim = SampleClaim.getWithClaimSubmissionOperationIndicators();
-        ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators = ClaimSubmissionOperationIndicators
-            .builder().build();
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE)))
-            .thenReturn(Optional.of(claim));
-        when(claimService.updateClaimSubmissionOperationIndicators(
-            eq(AUTHORISATION),
-            eq(claim),
-            eq(claimSubmissionOperationIndicators)
-        )).thenReturn(claim);
-        controller.resetOperation(CLAIM_REFERENCE,
-            claimSubmissionOperationIndicators,
-            AUTHORISATION);
-        verify(claimService).updateClaimSubmissionOperationIndicators(
-            eq(AUTHORISATION),
-            eq(claim),
-            eq(claimSubmissionOperationIndicators));
-        verify(postClaimOrchestrationHandler).citizenIssueHandler(any(CitizenClaimCreatedEvent.class));
-    }
-
-    @Test
-    public void shouldThrowExceptionForResetOperationForCitizenClaim() {
-        Claim claim = SampleClaim.getDefault();
-        final ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators = ClaimSubmissionOperationIndicators
-            .builder()
-            .claimIssueReceiptUpload(YES)
-            .sealedClaimUpload(YES)
-            .bulkPrint(YES)
-            .claimantNotification(YES)
-            .rpa(YES)
-            .defendantNotification(YES)
-            .staffNotification(YES)
-            .build();
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE)))
-            .thenReturn(Optional.of(claim));
-        exceptionRule.expect(BadRequestException.class);
-        exceptionRule.expectMessage("Invalid input. The following indicator(s)[claimantNotification, "
-            + "defendantNotification, bulkPrint, rpa, staffNotification, sealedClaimUpload, claimIssueReceiptUpload] "
-            + "cannot be set to Yes");
-        controller.resetOperation(CLAIM_REFERENCE,
-            claimSubmissionOperationIndicators,
-            AUTHORISATION);
-    }
-
-    @Test
-    public void shouldPerformResetOperationForRepresentedClaim() {
-        Claim claim = SampleClaim.getDefaultForLegal();
-        ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators = ClaimSubmissionOperationIndicators
-            .builder().build();
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE)))
-            .thenReturn(Optional.of(claim));
-        when(claimService.updateClaimSubmissionOperationIndicators(
-            eq(AUTHORISATION),
-            eq(claim),
-            eq(claimSubmissionOperationIndicators)
-        )).thenReturn(claim);
-        controller.resetOperation(CLAIM_REFERENCE,
-            claimSubmissionOperationIndicators,
-            AUTHORISATION);
-        verify(claimService).updateClaimSubmissionOperationIndicators(
-            eq(AUTHORISATION),
-            eq(claim),
-            eq(claimSubmissionOperationIndicators));
-        verify(postClaimOrchestrationHandler).representativeIssueHandler(any(RepresentedClaimCreatedEvent.class));
-    }
-
-    @Test
-    public void shouldThrowBadRequestExceptionWhenResetClaimSubmissionIndicator() {
-        exceptionRule.expect(BadRequestException.class);
-        exceptionRule.expectMessage("Authorisation is required");
-        controller.resetOperation(CLAIM_REFERENCE,
-            ClaimSubmissionOperationIndicators
-                .builder().build(),
-            "");
     }
 
 }
