@@ -35,7 +35,6 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.rules.ClaimSubmissionOperationIndicatorRule;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.MediationReportService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -43,7 +42,6 @@ import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
-import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.MediationRequest;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
@@ -80,7 +78,6 @@ public class SupportController {
     private final PostClaimOrchestrationHandler postClaimOrchestrationHandler;
     private final MediationReportService mediationReportService;
     private final boolean directionsQuestionnaireEnabled;
-    private final ClaimSubmissionOperationIndicatorRule claimSubmissionOperationIndicatorRule;
 
     @SuppressWarnings("squid:S00107")
     public SupportController(
@@ -95,9 +92,7 @@ public class SupportController {
         DocumentsService documentsService,
         @Autowired(required = false) PostClaimOrchestrationHandler postClaimOrchestrationHandler,
         @Value("${feature_toggles.directions_questionnaire_enabled:false}") boolean directionsQuestionnaireEnabled,
-        MediationReportService mediationReportService,
-        ClaimSubmissionOperationIndicatorRule claimSubmissionOperationIndicatorRule
-
+        MediationReportService mediationReportService
     ) {
         this.claimService = claimService;
         this.userService = userService;
@@ -111,7 +106,6 @@ public class SupportController {
         this.postClaimOrchestrationHandler = postClaimOrchestrationHandler;
         this.mediationReportService = mediationReportService;
         this.directionsQuestionnaireEnabled = directionsQuestionnaireEnabled;
-        this.claimSubmissionOperationIndicatorRule = claimSubmissionOperationIndicatorRule;
     }
 
     @PutMapping("/claim/{referenceNumber}/event/{event}/resend-staff-notifications")
@@ -173,30 +167,6 @@ public class SupportController {
                 .orElseThrow(() -> new NotFoundException("Unable to upload the document. Please try again later")));
     }
 
-    @PutMapping("/claim/{referenceNumber}/reset-operation")
-    @ApiOperation("Redo any failed operation. Use the claim submission indicators to indicate the operation to redo.")
-    public void resetOperation(
-        @PathVariable("referenceNumber") String referenceNumber,
-        @RequestBody ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators,
-        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation
-    ) {
-        if (StringUtils.isBlank(authorisation)) {
-            throw new BadRequestException(AUTHORISATION_IS_REQUIRED);
-        }
-        Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
-            .orElseThrow(() -> new NotFoundException(String.format(CLAIM_DOES_NOT_EXIST, referenceNumber)));
-
-        claimSubmissionOperationIndicatorRule.assertOperationIndicatorUpdateIsValid(claim,
-            claimSubmissionOperationIndicators);
-
-        claim = claimService.updateClaimSubmissionOperationIndicators(
-            authorisation,
-            claim,
-            claimSubmissionOperationIndicators
-        );
-        triggerAsyncOperation(authorisation, claim);
-    }
-
     @PutMapping("/claims/{referenceNumber}/recover-operations")
     @ApiOperation("Recovers the failed operations which are mandatory to issue a claim.")
     public void recoverClaimIssueOperations(@PathVariable("referenceNumber") String referenceNumber) {
@@ -205,10 +175,7 @@ public class SupportController {
 
         Claim claim = claimService.getClaimByReference(referenceNumber, authorisation)
             .orElseThrow(() -> new NotFoundException(String.format(CLAIM_DOES_NOT_EXIST, referenceNumber)));
-        triggerAsyncOperation(authorisation, claim);
-    }
 
-    private void triggerAsyncOperation(String authorisation, Claim claim) {
         if (claim.getClaimData().isClaimantRepresented()) {
             String submitterName = claim.getClaimData().getClaimant()
                 .getRepresentative().orElseThrow(IllegalArgumentException::new)
