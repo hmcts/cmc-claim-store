@@ -22,23 +22,23 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @Builder
 public class CaseMetadata {
     private final Long id;
-    private final String submitterId;
-    private final String submitterPartyType;
-    private final String defendantId;
-    private final String defendantPartyType;
     private final String externalId;
     private final String referenceNumber;
     private final LocalDateTime createdAt;
     private final LocalDate issuedOn;
+    private final String paymentReference;
+    private final URI sealedClaimDocument;
+    private final String submitterId;
+    private final String submitterPartyType;
+    private final String defendantId;
+    private final String defendantPartyType;
     private final LocalDate responseDeadline;
     private final Boolean moreTimeRequested;
-    private final CountyCourtJudgmentMetadata countyCourtJudgment;
     private final DefendantResponseMetadata defendantResponse;
     private final ClaimantResponseMetadata claimantResponse;
     private final SettlementMetadata settlement;
+    private final CountyCourtJudgmentMetadata countyCourtJudgment;
     private final RedeterminationMetadata redetermination;
-    private final URI sealedClaimDocument;
-    private final String paymentReference;
     private final LocalDate moneyReceivedOn;
     private final ClaimState state;
     private final ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
@@ -46,27 +46,27 @@ public class CaseMetadata {
     public static CaseMetadata fromClaim(Claim claim) {
         return CaseMetadata.builder()
             .id(claim.getId())
-            .submitterId(claim.getSubmitterId())
-            .submitterPartyType(claim.getClaimData().getClaimant().getClass().getSimpleName())
-            .defendantId(claim.getDefendantId())
-            .defendantPartyType(claim.getClaimData().getDefendant().getClass().getSimpleName())
             .externalId(claim.getExternalId())
             .referenceNumber(claim.getReferenceNumber())
             .createdAt(claim.getCreatedAt())
             .issuedOn(claim.getIssuedOn())
-            .responseDeadline(claim.getResponseDeadline())
-            .moreTimeRequested(claim.isMoreTimeRequested())
-            .countyCourtJudgment(CountyCourtJudgmentMetadata.fromClaim(claim))
-            .defendantResponse(DefendantResponseMetadata.fromClaim(claim))
-            .claimantResponse(ClaimantResponseMetadata.fromClaim(claim))
-            .settlement(SettlementMetadata.fromClaim(claim))
-            .redetermination(RedeterminationMetadata.fromClaim(claim))
-            .sealedClaimDocument(claim.getClaimDocument(SEALED_CLAIM)
-                .map(ClaimDocument::getDocumentManagementUrl)
-                .orElse(null))
             .paymentReference(Optional.ofNullable(claim.getClaimData().getPayment())
                 .map(Payment::getReference)
                 .orElse(null))
+            .sealedClaimDocument(claim.getClaimDocument(SEALED_CLAIM)
+                .map(ClaimDocument::getDocumentManagementUrl)
+                .orElse(null))
+            .submitterId(claim.getSubmitterId())
+            .submitterPartyType(claim.getClaimData().getClaimant().getClass().getSimpleName())
+            .defendantId(claim.getDefendantId())
+            .defendantPartyType(claim.getClaimData().getDefendant().getClass().getSimpleName())
+            .responseDeadline(claim.getResponseDeadline())
+            .moreTimeRequested(claim.isMoreTimeRequested())
+            .defendantResponse(DefendantResponseMetadata.fromClaim(claim))
+            .claimantResponse(ClaimantResponseMetadata.fromClaim(claim))
+            .settlement(SettlementMetadata.fromClaim(claim))
+            .countyCourtJudgment(CountyCourtJudgmentMetadata.fromClaim(claim))
+            .redetermination(RedeterminationMetadata.fromClaim(claim))
             .moneyReceivedOn(claim.getMoneyReceivedOn().orElse(null))
             .state(claim.getState().orElse(null))
             .claimSubmissionOperationIndicators(claim.getClaimSubmissionOperationIndicators())
