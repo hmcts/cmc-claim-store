@@ -1,9 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.metadata;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.*;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
@@ -22,6 +19,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @Getter
 @EqualsAndHashCode
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 public class CaseMetadata {
     private final Long id;
     private final String submitterId;
@@ -46,33 +44,33 @@ public class CaseMetadata {
     private final ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
 
     public static CaseMetadata fromClaim(Claim claim) {
-        return new CaseMetadata(
-            claim.getId(),
-            claim.getSubmitterId(),
-            claim.getClaimData().getClaimant().getClass().getSimpleName(),
-            claim.getDefendantId(),
-            claim.getClaimData().getDefendant().getClass().getSimpleName(),
-            claim.getExternalId(),
-            claim.getReferenceNumber(),
-            claim.getCreatedAt(),
-            claim.getIssuedOn(),
-            claim.getResponseDeadline(),
-            claim.isMoreTimeRequested(),
-            CountyCourtJudgmentMetadata.fromClaim(claim),
-            DefendantResponseMetadata.fromClaim(claim),
-            ClaimantResponseMetadata.fromClaim(claim),
-            SettlementMetadata.fromClaim(claim),
-            RedeterminationMetadata.fromClaim(claim),
-            claim.getClaimDocument(SEALED_CLAIM)
+        return CaseMetadata.builder()
+            .id(claim.getId())
+            .submitterId(claim.getSubmitterId())
+            .submitterPartyType(claim.getClaimData().getClaimant().getClass().getSimpleName())
+            .defendantId(claim.getDefendantId())
+            .defendantPartyType(claim.getClaimData().getDefendant().getClass().getSimpleName())
+            .externalId(claim.getExternalId())
+            .referenceNumber(claim.getReferenceNumber())
+            .createdAt(claim.getCreatedAt())
+            .issuedOn(claim.getIssuedOn())
+            .responseDeadline(claim.getResponseDeadline())
+            .moreTimeRequested(claim.isMoreTimeRequested())
+            .countyCourtJudgment(CountyCourtJudgmentMetadata.fromClaim(claim))
+            .defendantResponse(DefendantResponseMetadata.fromClaim(claim))
+            .claimantResponse(ClaimantResponseMetadata.fromClaim(claim))
+            .settlement(SettlementMetadata.fromClaim(claim))
+            .redetermination(RedeterminationMetadata.fromClaim(claim))
+            .sealedClaimDocument(claim.getClaimDocument(SEALED_CLAIM)
                 .map(ClaimDocument::getDocumentManagementUrl)
-                .orElse(null),
-            Optional.ofNullable(claim.getClaimData().getPayment())
+                .orElse(null))
+            .paymentReference(Optional.ofNullable(claim.getClaimData().getPayment())
                 .map(Payment::getReference)
-                .orElse(null),
-            claim.getMoneyReceivedOn().orElse(null),
-            claim.getState().orElse(null),
-            claim.getClaimSubmissionOperationIndicators()
-        );
+                .orElse(null))
+            .moneyReceivedOn(claim.getMoneyReceivedOn().orElse(null))
+            .state(claim.getState().orElse(null))
+            .claimSubmissionOperationIndicators(claim.getClaimSubmissionOperationIndicators())
+            .build();
     }
 
     @Override
