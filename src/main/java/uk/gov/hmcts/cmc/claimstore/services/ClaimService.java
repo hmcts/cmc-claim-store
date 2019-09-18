@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
@@ -403,8 +404,21 @@ public class ClaimService {
         ccdEventProducer.createCCDReDetermination(claim, authorisation, redetermination);
     }
 
-    public void updateClaimState(String authorisation, Claim claim, ClaimState state) {
-        caseRepository.updateClaimState(authorisation, claim.getId(), state);
+    public void updateClaimState(String authorisation, Claim claim, ClaimState currentState) {
+        caseRepository.updateClaimState(authorisation, claim.getId(), currentState);
+    }
+
+    public Claim updateClaimSubmissionOperationIndicators(
+        String authorisation,
+        Claim claim,
+        ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
+    ) {
+        return caseRepository.updateClaimSubmissionOperationStatus(
+            authorisation,
+            claim.getId(),
+            claimSubmissionOperationIndicators,
+            CaseEvent.RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS
+        );
     }
 
     public Claim saveReviewOrder(String externalId, ReviewOrder reviewOrder, String authorisation) {

@@ -94,6 +94,7 @@ public class CaseMapper {
             .createdAt(ccdCase.getSubmittedOn())
             .issuedOn(ccdCase.getIssuedOn())
             .submitterEmail(ccdCase.getSubmitterEmail())
+            .state(ClaimState.fromValue(ccdCase.getState()))
             .claimSubmissionOperationIndicators(
                 mapFromCCDClaimSubmissionOperationIndicators.apply(ccdCase.getClaimSubmissionOperationIndicators()))
             .directionOrder(directionOrderMapper.from(ccdCase.getDirectionOrder(), ccdCase.getDirectionOrderData()))
