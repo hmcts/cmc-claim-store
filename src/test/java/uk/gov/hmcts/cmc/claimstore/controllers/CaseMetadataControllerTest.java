@@ -10,7 +10,8 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUser;
-import uk.gov.hmcts.cmc.domain.models.*;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.metadata.CaseMetadata;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 

@@ -1,6 +1,10 @@
 package uk.gov.hmcts.cmc.domain.models.metadata;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
@@ -11,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.Payment;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
@@ -27,6 +32,7 @@ public class CaseMetadata {
     private final LocalDateTime createdAt;
     private final LocalDate issuedOn;
     private final String paymentReference;
+    private final List<String> features;
     private final URI sealedClaimDocument;
     private final String submitterId;
     private final String submitterPartyType;
@@ -35,7 +41,9 @@ public class CaseMetadata {
     private final LocalDate responseDeadline;
     private final Boolean moreTimeRequested;
     private final DefendantResponseMetadata defendantResponse;
+    private final LocalDate claimantResponseDeadline;
     private final ClaimantResponseMetadata claimantResponse;
+    private final LocalDate directionsQuestionnaireDeadline;
     private final SettlementMetadata settlement;
     private final CountyCourtJudgmentMetadata countyCourtJudgment;
     private final RedeterminationMetadata redetermination;
@@ -53,6 +61,7 @@ public class CaseMetadata {
             .paymentReference(Optional.ofNullable(claim.getClaimData().getPayment())
                 .map(Payment::getReference)
                 .orElse(null))
+            .features(claim.getFeatures())
             .sealedClaimDocument(claim.getClaimDocument(SEALED_CLAIM)
                 .map(ClaimDocument::getDocumentManagementUrl)
                 .orElse(null))
@@ -63,7 +72,9 @@ public class CaseMetadata {
             .responseDeadline(claim.getResponseDeadline())
             .moreTimeRequested(claim.isMoreTimeRequested())
             .defendantResponse(DefendantResponseMetadata.fromClaim(claim))
+            .claimantResponseDeadline(claim.getClaimantResponseDeadline().orElse(null))
             .claimantResponse(ClaimantResponseMetadata.fromClaim(claim))
+            .directionsQuestionnaireDeadline(claim.getDirectionsQuestionnaireDeadline())
             .settlement(SettlementMetadata.fromClaim(claim))
             .countyCourtJudgment(CountyCourtJudgmentMetadata.fromClaim(claim))
             .redetermination(RedeterminationMetadata.fromClaim(claim))
