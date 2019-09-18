@@ -7,7 +7,15 @@ public enum ClaimState {
     OPEN("open"),
     CLOSED("closed"),
     SETTLED("settled"),
+    READY_FOR_DIRECTIONS("readyForDirections"),
+    STAYED("stayed"),
+    ORDER_FOR_JUDGE_REVIEW("orderForJudgeReview"),
+    ORDER_FOR_LA_REVIEW("orderForLAReview"),
     ORDER_DRAWN("orderDrawn"),
+    TRANSFERRED("transferred"),
+    APPROVED("approved"),
+    READY_FOR_TRANSFER("readyForTransfer"),
+    RECONSIDERATION_REQUESTED("reconsiderationRequested"),
     AWAITING_CITIZEN_PAYMENT("awaitingCitizenPayment");
 
     private final String state;
