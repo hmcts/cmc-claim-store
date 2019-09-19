@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
@@ -23,17 +24,20 @@ import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
+import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
-import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SamplePayment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
@@ -151,6 +155,9 @@ public class CoreCaseDataServiceTest {
             ccdCreateCaseService,
             caseDetailsConverter
         );
+        ReflectionTestUtils.setField(service,
+            "returnUrl",
+            "http://returnUrl.test/%s/bla");
     }
 
     @Test
@@ -287,30 +294,54 @@ public class CoreCaseDataServiceTest {
                     "paymentNextUrl", nextUrl))
                 .build());
 
-        InitiatePaymentResponse response = service.savePayment(
+        CreatePaymentResponse response = service.savePayment(
             USER,
             "submitterId",
             initiatePaymentRequest
         );
-        InitiatePaymentResponse expectedResponse = InitiatePaymentResponse.builder()
+        CreatePaymentResponse expectedResponse = CreatePaymentResponse.builder()
             .nextUrl(nextUrl)
             .build();
         assertEquals(expectedResponse, response);
     }
 
     @Test
-    public void resumePaymentShouldReturnCaseData() {
-        Claim providedClaim = SampleClaim.getDefault();
-        Claim expectedClaim = SampleClaim.claim(providedClaim.getClaimData(), "000MC001");
-
-        when(caseMapper.from(any(CCDCase.class))).thenReturn(expectedClaim);
-        when(caseDetailsConverter.extractClaim(any((CaseDetails.class)))).thenReturn(expectedClaim);
+    public void resumePaymentShouldReturnNextUrlIfPaymentIsNotSuccessful() {
+        Claim claim = SampleClaim.claim(
+            SampleClaimData.builder()
+                .withPayment(
+                    SamplePayment.builder()
+                        .status(PaymentStatus.INITIATED)
+                        .nextUrl("http://payment.nexturl.test").build()
+                ).build(),
+            "000MC001"
+        );
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
+        when(caseDetailsConverter.extractClaim(any((CaseDetails.class)))).thenReturn(claim);
         when(userService.getUser(AUTHORISATION)).thenReturn(USER);
 
-        Claim returnedClaim = service.resumePayment(AUTHORISATION, providedClaim);
-        assertEquals(expectedClaim, returnedClaim);
-        verify(caseDetailsConverter).extractCCDCase(any(CaseDetails.class));
+        CreatePaymentResponse createPaymentResponse = service.resumePayment(AUTHORISATION, claim);
+        assertEquals("http://payment.nexturl.test", createPaymentResponse.getNextUrl());
+    }
 
+    @Test
+    public void resumePaymentShouldReturnReturnUrlIfPaymentIsSuccessful() {
+        Claim claim = SampleClaim.claim(
+            SampleClaimData.builder()
+                .withPayment(
+                    SamplePayment.builder()
+                        .status(PaymentStatus.SUCCESS)
+                        .nextUrl("http://payment.nexturl.test").build()
+                ).build(),
+            "000MC001"
+        );
+
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
+        when(caseDetailsConverter.extractClaim(any((CaseDetails.class)))).thenReturn(claim);
+        when(userService.getUser(AUTHORISATION)).thenReturn(USER);
+
+        CreatePaymentResponse createPaymentResponse = service.resumePayment(AUTHORISATION, claim);
+        assertEquals("http://returnUrl.test/" + claim.getExternalId() + "/bla", createPaymentResponse.getNextUrl());
     }
 
     @Test

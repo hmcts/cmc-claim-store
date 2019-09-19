@@ -2,8 +2,11 @@ package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.Payment.PaymentBuilder;
+import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 
 import java.math.BigDecimal;
+
+import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 
 public class SamplePayment {
 
@@ -17,6 +20,7 @@ public class SamplePayment {
             .amount(new BigDecimal("40.99"))
             .dateCreated("2019-01-01")
             .id("PaymentId")
-            .status("success");
+            .nextUrl("http://nexturl.test")
+            .status(SUCCESS);
     }
 }

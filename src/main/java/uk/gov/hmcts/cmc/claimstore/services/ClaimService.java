@@ -33,8 +33,8 @@ import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
-import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
@@ -189,7 +189,7 @@ public class ClaimService {
         return caseRepository.getClaimsByState(claimState, user);
     }
 
-    public InitiatePaymentResponse initiatePayment(
+    public CreatePaymentResponse initiatePayment(
         String authorisation,
         String submitterId,
         InitiatePaymentRequest request) {
@@ -197,7 +197,7 @@ public class ClaimService {
         return caseRepository.initiatePayment(user, submitterId, request);
     }
 
-    public Claim resumePayment(
+    public CreatePaymentResponse resumePayment(
         String authorisation,
         ClaimData claimData) {
         Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), authorisation);

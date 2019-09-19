@@ -9,7 +9,6 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
@@ -19,8 +18,8 @@ import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
-import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -147,12 +146,12 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public InitiatePaymentResponse initiatePayment(User user, String submitterId, InitiatePaymentRequest data) {
+    public CreatePaymentResponse initiatePayment(User user, String submitterId, InitiatePaymentRequest data) {
         return coreCaseDataService.savePayment(user, submitterId, data);
     }
 
     @Override
-    public Claim resumePayment(String authorisation, Claim claim) {
+    public CreatePaymentResponse resumePayment(String authorisation, Claim claim) {
         return coreCaseDataService.resumePayment(authorisation, claim);
     }
 

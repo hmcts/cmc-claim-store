@@ -45,7 +45,8 @@
     "id": "PaymentId",
     "amount": 40.99,
     "reference": "RC-1524-6488-1670-7520",
-    "status": "success",
+    "status": "SUCCESS",
+    "next_url": "http://nexturl.test",
     "date_created": "2019-01-01"
   },
   "amount": {

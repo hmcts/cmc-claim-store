@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -23,11 +24,13 @@ import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
+import uk.gov.hmcts.cmc.domain.models.Payment;
+import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
-import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -67,7 +70,6 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled", havingValue = "true")
 public class CoreCaseDataService {
-
     private static final String CMC_CASE_UPDATE_SUMMARY = "CMC case update";
     private static final String CMC_CASE_CREATE_SUMMARY = "CMC case create";
     private static final String SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION = "Submitting CMC case update";
@@ -81,6 +83,7 @@ public class CoreCaseDataService {
     private static final String CCD_STORING_FAILURE_MESSAGE
         = "Failed storing claim in CCD store for case id %s on event %s";
 
+    @Value("${payments.returnUrl}") String returnUrl;
     private final CaseMapper caseMapper;
     private final UserService userService;
     private final ReferenceNumberService referenceNumberService;
@@ -789,7 +792,7 @@ public class CoreCaseDataService {
         }
     }
 
-    public InitiatePaymentResponse savePayment(
+    public CreatePaymentResponse savePayment(
         User user,
         String submitterId,
         InitiatePaymentRequest initiatePaymentRequestData) {
@@ -823,7 +826,7 @@ public class CoreCaseDataService {
                 user.isRepresented()
             );
 
-            return InitiatePaymentResponse.builder()
+            return CreatePaymentResponse.builder()
                 .nextUrl(caseDetails.getData().get(PAYMENT_NEXT_URL).toString())
                 .build();
 
@@ -838,7 +841,7 @@ public class CoreCaseDataService {
         }
     }
 
-    public Claim resumePayment(
+    public CreatePaymentResponse resumePayment(
         String authorisation,
         Claim claim) {
 
@@ -873,7 +876,16 @@ public class CoreCaseDataService {
                 user.isRepresented()
             );
 
-            return caseDetailsConverter.extractClaim(caseDetails);
+            Claim afterCallbackClaim = caseDetailsConverter.extractClaim(caseDetails);
+            Payment payment = afterCallbackClaim.getClaimData().getPayment();
+
+            return CreatePaymentResponse.builder()
+                .nextUrl(
+                    payment.getStatus().equals(PaymentStatus.SUCCESS)
+                        ? String.format(returnUrl, claim.getExternalId())
+                        : payment.getNextUrl()
+                )
+                .build();
 
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
