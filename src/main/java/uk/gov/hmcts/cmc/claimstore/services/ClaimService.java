@@ -237,17 +237,15 @@ public class ClaimService {
 
     @LogExecutionTime
     @Transactional(transactionManager = "transactionManager")
-    public Claim saveLegalRepClaim(
+    public Claim saveRepresentedClaim(
         String submitterId,
         ClaimData claimData,
         String authorisation
     ) {
         String externalId = claimData.getExternalId().toString();
         User user = userService.getUser(authorisation);
-        this.verifyUniqueExternalId(user, externalId);
+        verifyUniqueExternalId(user, externalId);
 
-        Optional<GeneratePinResponse> pinResponse = getPinResponse(claimData, authorisation);
-        String letterHolderId = pinResponse.map(GeneratePinResponse::getUserId).orElse(null);
         String submitterEmail = user.getUserDetails().getEmail();
 
         Claim claim = Claim.builder()
@@ -256,13 +254,15 @@ public class ClaimService {
             .externalId(externalId)
             .submitterEmail(submitterEmail)
             .createdAt(nowInLocalZone())
-            .letterHolderId(letterHolderId)
             .claimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators.builder().build())
             .build();
 
-        Claim savedClaim = caseRepository.saveLegalRepClaim(user, claim);
-        String pin = pinResponse.map(GeneratePinResponse::getPin).orElse(null);
-        createClaimEvent(authorisation, user, pin, savedClaim);
+        Claim savedClaim = caseRepository.saveRepresentedClaim(user, claim);
+        eventProducer.createRepresentedClaimCreatedEvent(
+            savedClaim,
+            user.getUserDetails().getFullName(),
+            authorisation
+        );
         trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
 
         return savedClaim;
@@ -282,7 +282,6 @@ public class ClaimService {
         if (asyncEventOperationEnabled) {
             eventProducer.createClaimCreatedEvent(
                 savedClaim,
-                pin,
                 user.getUserDetails().getFullName(),
                 authorisation
             );

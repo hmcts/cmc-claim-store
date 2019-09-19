@@ -31,6 +31,7 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 public class ClaimControllerTest {
 
     private static final String AUTHORISATION = "Bearer: aaa";
+    public static final List<String> FEATURES = singletonList("admissions");
 
     private ClaimController claimController;
 
@@ -48,11 +49,11 @@ public class ClaimControllerTest {
         ClaimData input = SampleClaimData.validDefaults();
         when(claimService
             .saveClaim(
-                USER_ID, input, AUTHORISATION, singletonList("admissions")))
+                USER_ID, input, AUTHORISATION, FEATURES))
             .thenReturn(CLAIM);
 
         //when
-        Claim output = claimController.save(input, USER_ID, AUTHORISATION, singletonList("admissions"));
+        Claim output = claimController.save(input, USER_ID, AUTHORISATION, FEATURES);
 
         //then
         assertThat(output).isEqualTo(CLAIM);
@@ -62,13 +63,13 @@ public class ClaimControllerTest {
     public void shouldSaveLegalRepClaimInRepository() {
         //given
         ClaimData input = SampleClaimData.validDefaults();
-        when(claimService.saveLegalRepClaim(eq(USER_ID),
+        when(claimService.saveRepresentedClaim(eq(USER_ID),
             eq(input), eq(AUTHORISATION))
         )
             .thenReturn(CLAIM);
 
         //when
-        Claim output = claimController.saveLegalRepClaim(input, USER_ID, AUTHORISATION, singletonList("admissions"));
+        Claim output = claimController.saveLegalRepresentedClaim(input, USER_ID, AUTHORISATION, FEATURES);
 
         //then
         assertThat(output).isEqualTo(CLAIM);

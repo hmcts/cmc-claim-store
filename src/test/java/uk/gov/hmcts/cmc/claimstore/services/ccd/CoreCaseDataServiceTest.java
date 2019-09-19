@@ -183,13 +183,13 @@ public class CoreCaseDataServiceTest {
         when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(expectedClaim);
 
-        Claim returnedClaim = service.createNewCase(USER, providedClaim, CaseEvent.CREATE_CASE);
+        Claim returnedClaim = service.createNewCase(USER, providedClaim);
 
         assertEquals(expectedClaim, returnedClaim);
     }
 
     @Test
-    public void submitLegalRepClaimShouldReturnLegalRepClaim() {
+    public void submitRepresentedClaimShouldReturnLegalRepClaim() {
         Claim providedLegalRepClaim = SampleClaim.getDefaultForLegal();
         Claim expectedLegalRepClaim = SampleClaim.claim(providedLegalRepClaim.getClaimData(), "012LR345");
 
@@ -218,8 +218,7 @@ public class CoreCaseDataServiceTest {
         when(caseMapper.to(providedLegalRepClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(expectedLegalRepClaim);
 
-        Claim returnedLegalRepClaim = service
-            .createNewCase(USER, providedLegalRepClaim, CaseEvent.CREATE_LEGAL_REP_CLAIM);
+        Claim returnedLegalRepClaim = service.createNewCase(USER, providedLegalRepClaim);
 
         assertEquals(expectedLegalRepClaim, returnedLegalRepClaim);
     }
@@ -252,7 +251,7 @@ public class CoreCaseDataServiceTest {
 
         when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
 
-        service.createNewCase(USER, providedClaim, CaseEvent.CREATE_CASE);
+        service.createNewCase(USER, providedClaim);
 
         verify(ccdCreateCaseService, never()).grantAccessToCase(any(), any());
     }

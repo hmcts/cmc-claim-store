@@ -46,6 +46,7 @@ import java.util.Optional;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_LEGAL_REP_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INITIATE_CLAIM_PAYMENT_CITIZEN;
@@ -67,9 +68,9 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 public class CoreCaseDataService {
 
     private static final String CMC_CASE_UPDATE_SUMMARY = "CMC case update";
-    private static final String CMC_CASE_CREATE_SUMMARY = "CMC case issue";
+    private static final String CMC_CASE_CREATE_SUMMARY = "CMC case create";
     private static final String SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION = "Submitting CMC case update";
-    private static final String SUBMITTING_CMC_CASE_ISSUE_DESCRIPTION = "Submitting CMC case issue";
+    private static final String SUBMITTING_CMC_CASE_CREATE_DESCRIPTION = "Submitting CMC case create";
     private static final String SUBMITTING_CMC_INITIATE_PAYMENT_DESCRIPTION = "Submitting CMC initiate payment";
 
     private static final String CCD_UPDATE_FAILURE_MESSAGE
@@ -110,7 +111,7 @@ public class CoreCaseDataService {
     }
 
     @LogExecutionTime
-    public Claim createNewCase(User user, Claim claim, CaseEvent caseEvent) {
+    public Claim createNewCase(User user, Claim claim) {
         requireNonNull(user, "user must not be null");
 
         CCDCase ccdCase = caseMapper.to(claim);
@@ -119,12 +120,25 @@ public class CoreCaseDataService {
             ccdCase.setPreviousServiceCaseReference(referenceNumberService.getReferenceNumber(user.isRepresented()));
         }
 
+        return saveClaim(user, claim, ccdCase, CREATE_CASE);
+    }
+
+    @LogExecutionTime
+    public Claim createRepresentedClaim(User user, Claim claim) {
+        requireNonNull(user, "user must not be null");
+
+        CCDCase ccdCase = caseMapper.to(claim);
+
+        return saveClaim(user, claim, ccdCase, CREATE_LEGAL_REP_CLAIM);
+    }
+
+    private Claim saveClaim(User user, Claim claim, CCDCase ccdCase, CaseEvent createClaimEvent) {
         try {
             EventRequestData eventRequestData = EventRequestData.builder()
                 .userId(user.getUserDetails().getId())
                 .jurisdictionId(JURISDICTION_ID)
                 .caseTypeId(CASE_TYPE_ID)
-                .eventId(caseEvent.getValue())
+                .eventId(createClaimEvent.getValue())
                 .ignoreWarning(true)
                 .build();
 
@@ -136,7 +150,7 @@ public class CoreCaseDataService {
                 .event(Event.builder()
                     .id(startEventResponse.getEventId())
                     .summary(CMC_CASE_CREATE_SUMMARY)
-                    .description(SUBMITTING_CMC_CASE_ISSUE_DESCRIPTION)
+                    .description(SUBMITTING_CMC_CASE_CREATE_DESCRIPTION)
                     .build())
                 .data(ccdCase)
                 .build();
@@ -159,7 +173,7 @@ public class CoreCaseDataService {
                 String.format(
                     CCD_STORING_FAILURE_MESSAGE,
                     ccdCase.getPreviousServiceCaseReference(),
-                    CREATE_CASE
+                    createClaimEvent
                 ), exception
             );
         }

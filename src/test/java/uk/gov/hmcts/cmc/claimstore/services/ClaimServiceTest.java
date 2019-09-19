@@ -216,20 +216,18 @@ public class ClaimServiceTest {
         ClaimData claimData = SampleClaimData.validDefaults();
 
         when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
-        when(caseRepository.saveLegalRepClaim(eq(USER), any())).thenReturn(claim);
+        when(caseRepository.saveRepresentedClaim(eq(USER), any())).thenReturn(claim);
 
         Claim createdLegalRepClaim = claimService
-            .saveLegalRepClaim(
+            .saveRepresentedClaim(
                 USER_ID, claimData, AUTHORISATION);
 
         assertThat(createdLegalRepClaim.getClaimData()).isEqualTo(claim.getClaimData());
 
-        verify(caseRepository, once()).saveLegalRepClaim(
+        verify(caseRepository, once()).saveRepresentedClaim(
             any(User.class), any(Claim.class));
-        verify(eventProducer, once()).createClaimIssuedEvent(eq(createdLegalRepClaim), eq(null),
+        verify(eventProducer, once()).createRepresentedClaimCreatedEvent(eq(createdLegalRepClaim),
             anyString(), eq(AUTHORISATION));
-
-        verify(ccdEventProducer, once()).createCCDClaimIssuedEvent(eq(createdLegalRepClaim), eq(USER));
     }
 
     @Test
@@ -270,8 +268,7 @@ public class ClaimServiceTest {
 
         verify(userService, never()).generatePin(eq(outputClaimData.getDefendant().getName()), eq(AUTHORISATION));
         verify(caseRepository, once()).saveClaim(any(User.class), any(Claim.class));
-        verify(eventProducer, once()).createClaimCreatedEvent(eq(createdClaim), eq(null),
-            anyString(), eq(AUTHORISATION));
+        verify(eventProducer, once()).createClaimCreatedEvent(eq(createdClaim), anyString(), eq(AUTHORISATION));
 
         verify(ccdEventProducer, once()).createCCDClaimIssuedEvent(eq(createdClaim), eq(USER));
     }
