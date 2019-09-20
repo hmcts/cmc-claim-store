@@ -23,4 +23,8 @@ public class AppInsights {
         telemetry.trackEvent(appInsightsEvent.toString(), singletonMap(referenceType, value), null);
     }
 
+    public void trackException(Exception exception) {
+        telemetry.trackException(exception);
+    }
+
 }
