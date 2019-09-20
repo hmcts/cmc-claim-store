@@ -262,7 +262,8 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public CreatePaymentResponse resumePayment(String authorisation, Claim claim) {
+    public Claim resumePayment(User user, Claim claim) {
+        // No implementation required for claim-store repository
         return null;
     }
 

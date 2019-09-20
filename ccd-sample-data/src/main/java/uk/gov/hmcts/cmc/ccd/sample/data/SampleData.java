@@ -120,7 +120,7 @@ public class SampleData {
             .interestClaimStartDate(LocalDate.now())
             .interestSpecificDailyAmount("1000")
             .interestEndDateType(CCDInterestEndDateType.SUBMISSION)
-            .paymentStatus("success")
+            .paymentStatus("Success")
             .paymentDateCreated(LocalDate.of(2019, 01, 01))
             .paymentId("PaymentId")
             .paymentAmount("400000")

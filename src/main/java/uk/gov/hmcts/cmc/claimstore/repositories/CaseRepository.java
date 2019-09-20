@@ -78,7 +78,7 @@ public interface CaseRepository {
 
     CreatePaymentResponse initiatePayment(User user, String submitterId, InitiatePaymentRequest data);
 
-    CreatePaymentResponse resumePayment(String authorisation, Claim claim);
+    Claim resumePayment(User authorisation, Claim claim);
 
     Claim saveClaimDocuments(
         String authorisation,

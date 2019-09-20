@@ -4,8 +4,6 @@ import com.google.common.collect.Maps;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -43,7 +41,6 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 
 import java.net.URI;
 import java.time.LocalDate;
-import java.util.Map;
 
 import static java.time.LocalDate.now;
 import static org.junit.Assert.assertNotNull;
@@ -85,9 +82,6 @@ public class CoreCaseDataServiceFailureTest {
     private JobSchedulerService jobSchedulerService;
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
-
-    @Captor
-    private ArgumentCaptor<Map<String, Object>> caseDataCaptor;
 
     private CoreCaseDataService service;
 
@@ -185,23 +179,6 @@ public class CoreCaseDataServiceFailureTest {
         when(caseMapper.from(any(CCDCase.class))).thenReturn(expectedClaim);
 
         service.requestMoreTimeForResponse(AUTHORISATION, providedClaim, FUTURE_DATE);
-
-        verify(coreCaseDataApi).submitForCitizen(
-            eq(AUTHORISATION),
-            eq(AUTH_TOKEN),
-            eq(USER_DETAILS.getId()),
-            eq(JURISDICTION_ID),
-            eq(CASE_TYPE_ID),
-            eq(true),
-            any(CaseDataContent.class)
-        );
-    }
-
-    @Test(expected = CoreCaseDataStoreException.class)
-    public void resumePaymentFailure() {
-        Claim providedClaim = SampleClaim.withNoResponse();
-
-        service.resumePayment(AUTHORISATION, providedClaim);
 
         verify(coreCaseDataApi).submitForCitizen(
             eq(AUTHORISATION),

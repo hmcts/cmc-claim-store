@@ -32,13 +32,16 @@ import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
+import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SamplePayment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 
@@ -48,6 +51,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static java.lang.String.format;
 import static java.time.LocalDate.now;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.empty;
@@ -78,6 +82,7 @@ import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.RESPONSE_DEADLINE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClaimServiceTest {
+    private static final String RETURN_URL = "http://returnUrl.test/%s/bla";
 
     private static final ClaimData VALID_APP = SampleClaimData.submittedByClaimant();
     private static final ClaimData VALID_LEGAL_APP = SampleClaimData.submittedByLegalRepresentative();
@@ -138,8 +143,8 @@ public class ClaimServiceTest {
             ccdEventProducer,
             new ClaimAuthorisationRule(userService),
             new ReviewOrderRule(),
-            false
-        );
+            false,
+            RETURN_URL);
     }
 
     @Test
@@ -267,8 +272,8 @@ public class ClaimServiceTest {
             ccdEventProducer,
             new ClaimAuthorisationRule(userService),
             new ReviewOrderRule(),
-            true
-        );
+            true,
+            RETURN_URL);
 
         ClaimData claimData = SampleClaimData.validDefaults();
 
@@ -568,7 +573,7 @@ public class ClaimServiceTest {
     }
 
     @Test
-    public void resumePaymentShouldFinishSuccessfully() {
+    public void resumePaymentShouldReturnReturnUrlIfPaymentIsSuccessful() {
         when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
         ClaimData claimData = SampleClaimData.builder()
             .withExternalId(UUID.fromString(EXTERNAL_ID))
@@ -580,10 +585,37 @@ public class ClaimServiceTest {
 
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
             .thenReturn(Optional.of(claim));
+        when(caseRepository.resumePayment(USER, claim))
+            .thenReturn(claim);
+        CreatePaymentResponse response = claimService.resumePayment(AUTHORISATION, claimData);
 
-        claimService.resumePayment(AUTHORISATION, claimData);
+        assertThat(response.getNextUrl()).isEqualTo(format(RETURN_URL, claim.getExternalId()));
+    }
 
-        verify(caseRepository).resumePayment(AUTHORISATION, claim);
+    @Test
+    public void resumePaymentShouldReturnNextUrlIfPaymentIsNotSuccessful() {
+        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
+        ClaimData claimData = SampleClaimData.builder()
+            .withExternalId(UUID.fromString(EXTERNAL_ID))
+            .withPayment(
+                SamplePayment.builder()
+                    .status(PaymentStatus.INITIATED)
+                    .nextUrl("http://payment.nexturl.test")
+                    .build()
+            )
+            .build();
+        Claim claim = SampleClaim.builder()
+            .withExternalId(EXTERNAL_ID)
+            .withClaimData(claimData)
+            .build();
+
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
+            .thenReturn(Optional.of(claim));
+        when(caseRepository.resumePayment(USER, claim))
+            .thenReturn(claim);
+        CreatePaymentResponse response = claimService.resumePayment(AUTHORISATION, claimData);
+
+        assertThat(response.getNextUrl()).isEqualTo("http://payment.nexturl.test");
     }
 
     @Test
