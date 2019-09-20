@@ -98,7 +98,7 @@ public class ClaimantResponseService {
         appInsights.trackEvent(getAppInsightsEvent(claimantResponse), "referenceNumber", claim.getReferenceNumber());
 
         if (isRejectResponseWithMediationForMIReporting(claim, claimantResponse)) {
-            if (claim.getFeatures().contains("mediationPilot")) {
+            if (claim.getFeatures() != null && claim.getFeatures().contains("mediationPilot")) {
                 appInsights.trackEvent(AppInsightsEvent.MEDIATION_PILOT_ELIGIBLE,
                     "referenceNumber", claim.getReferenceNumber());
             } else {
