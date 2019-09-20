@@ -162,7 +162,10 @@ public class Claim {
     }
 
     public LocalDate getServiceDate() {
-        return serviceDate == null ? issuedOn.plusDays(5) : serviceDate;
+        if (serviceDate != null) {
+            return serviceDate;
+        }
+        return issuedOn != null ? issuedOn.plusDays(5) : null;
     }
 
     public Optional<BigDecimal> getAmountWithInterest() {
