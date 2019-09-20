@@ -97,7 +97,7 @@ public class ClaimantResponseService {
         ccdEventProducer.createCCDClaimantResponseEvent(claim, claimantResponse, authorization);
         appInsights.trackEvent(getAppInsightsEvent(claimantResponse), "referenceNumber", claim.getReferenceNumber());
 
-        if (isRejectResponseWithMediationForMIReporting(claim, claimantResponse)) {
+        if (isRejectResponseWithMediation(claim, claimantResponse)) {
             if (claim.getFeatures() != null && claim.getFeatures().contains("mediationPilot")) {
                 appInsights.trackEvent(AppInsightsEvent.MEDIATION_PILOT_ELIGIBLE,
                     "referenceNumber", claim.getReferenceNumber());
@@ -159,7 +159,7 @@ public class ClaimantResponseService {
             && !ResponseUtils.isResponsePartAdmitPayImmediately(response);
     }
 
-    private boolean isRejectResponseWithMediationForMIReporting(Claim claim, ClaimantResponse claimantResponse) {
+    private boolean isRejectResponseWithMediation(Claim claim, ClaimantResponse claimantResponse) {
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
 
         return ClaimantResponseType.REJECTION.equals(claimantResponse.getType())
