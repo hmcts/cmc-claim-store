@@ -98,7 +98,7 @@ public class ClaimantResponseService {
         appInsights.trackEvent(getAppInsightsEvent(claimantResponse), "referenceNumber", claim.getReferenceNumber());
 
         if (isRejectResponseWithMediationForMIReporting(claim, claimantResponse)) {
-            if(claim.getFeatures().contains("mediationPilot")) {
+            if (claim.getFeatures().contains("mediationPilot")) {
                 appInsights.trackEvent(AppInsightsEvent.MEDIATION_PILOT_ELIGIBLE,
                     "referenceNumber", claim.getReferenceNumber());
             } else {
@@ -107,7 +107,6 @@ public class ClaimantResponseService {
             }
         }
     }
-
 
     private boolean isSettlementAgreement(Claim claim, ClaimantResponse claimantResponse) {
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
