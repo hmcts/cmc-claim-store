@@ -15,7 +15,10 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
+import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
+import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
@@ -95,7 +98,8 @@ public class ClaimantResponseService {
         }
 
         ccdEventProducer.createCCDClaimantResponseEvent(claim, claimantResponse, authorization);
-        appInsights.trackEvent(getAppInsightsEvent(claimantResponse), "referenceNumber", claim.getReferenceNumber());
+        AppInsightsEvent appInsightsEvent = getAppInsightsEvent(updatedClaim, claimantResponse);
+        appInsights.trackEvent(appInsightsEvent, "referenceNumber", claim.getReferenceNumber());
     }
 
     private boolean isSettlementAgreement(Claim claim, ClaimantResponse claimantResponse) {
@@ -133,14 +137,34 @@ public class ClaimantResponseService {
         }
     }
 
-    private AppInsightsEvent getAppInsightsEvent(ClaimantResponse claimantResponse) {
+    private AppInsightsEvent getAppInsightsEvent(Claim claim, ClaimantResponse claimantResponse) {
         if (claimantResponse instanceof ResponseAcceptation) {
             return AppInsightsEvent.CLAIMANT_RESPONSE_ACCEPTED;
         } else if (claimantResponse instanceof ResponseRejection) {
-            return AppInsightsEvent.CLAIMANT_RESPONSE_REJECTED;
+            return getEventNameForRejection(claim);
         } else {
             throw new IllegalStateException("Unknown response type");
         }
+    }
+
+    private AppInsightsEvent getEventNameForRejection(Claim claim) {
+        return isPartAdmissionOrIsStatePaidOrIsFullDefence(claim) && DirectionsQuestionnaireUtils.isOnlineDQ(claim)
+            ? AppInsightsEvent.LA_PILOT_ELIGIBLE
+            : AppInsightsEvent.NON_LA_CASES;
+    }
+
+    private boolean isPartAdmissionOrIsStatePaidOrIsFullDefence(Claim claim) {
+        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+        ResponseType responseType = response.getResponseType();
+        return responseType == ResponseType.PART_ADMISSION
+            || isStatePaid(response)
+            || responseType == ResponseType.FULL_DEFENCE;
+    }
+
+    private boolean isStatePaid(Response response) {
+        ResponseType responseType = response.getResponseType();
+        return responseType == ResponseType.FULL_DEFENCE
+            && ((FullDefenceResponse) response).getDefenceType() == DefenceType.ALREADY_PAID;
     }
 
     private boolean shouldFormaliseResponseAcceptance(Response response, ClaimantResponse claimantResponse) {
