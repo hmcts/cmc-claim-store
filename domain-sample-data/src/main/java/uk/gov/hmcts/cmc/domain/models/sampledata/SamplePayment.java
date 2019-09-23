@@ -17,7 +17,6 @@ public class SamplePayment {
             .amount(new BigDecimal("40.99"))
             .dateCreated("2019-01-01")
             .id("PaymentId")
-            .nextUrl("http://nexturl.test")
             .status("success");
     }
 }
