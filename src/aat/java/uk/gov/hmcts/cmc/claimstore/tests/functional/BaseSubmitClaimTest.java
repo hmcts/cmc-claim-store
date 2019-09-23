@@ -29,16 +29,6 @@ public abstract class BaseSubmitClaimTest extends BaseTest {
             .post("/claims/" + user.getUserDetails().getId());
     }
 
-    protected Response submitLegalRepClaim(ClaimData claimData) {
-        return RestAssured
-            .given()
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .header(HttpHeaders.AUTHORIZATION, user.getAuthorisation())
-            .body(jsonMapper.toJson(claimData))
-            .when()
-            .post("/claims/" + user.getUserDetails().getId() + "/create-legal-rep-claim");
-    }
-
     @Test
     public void shouldSuccessfullySubmitClaimDataAndReturnCreatedCase() {
         ClaimData claimData = getSampleClaimDataBuilder().get().build();
