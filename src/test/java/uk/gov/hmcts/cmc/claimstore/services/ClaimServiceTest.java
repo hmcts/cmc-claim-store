@@ -3,6 +3,8 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
@@ -75,8 +77,10 @@ import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.RESPONSE_DEADLINE;
 public class ClaimServiceTest {
 
     private static final ClaimData VALID_APP = SampleClaimData.submittedByClaimant();
+    private static final ClaimData VALID_LEGAL_APP = SampleClaimData.submittedByLegalRepresentative();
     private static final String DEFENDANT_EMAIL = "defendant@email.com";
     private static final Claim claim = createClaimModel(VALID_APP, LETTER_HOLDER_ID);
+    private static final Claim representedClaim = createRepresentedClaimModel(VALID_LEGAL_APP);
     private static final String AUTHORISATION = "Bearer: aaa";
 
     private static final UserDetails UNAUTHORISED_USER_DETAILS = SampleUserDetails.builder().withUserId("300").build();
@@ -110,6 +114,8 @@ public class ClaimServiceTest {
     private CCDEventProducer ccdEventProducer;
     @Mock
     private AppInsights appInsights;
+    @Captor
+    private ArgumentCaptor<Claim> claimArgumentCaptor;
 
     @Before
     public void setup() {
@@ -212,22 +218,27 @@ public class ClaimServiceTest {
 
     @Test
     public void saveLegalRepClaimShouldFinishSuccessfully() {
-
-        ClaimData claimData = SampleClaimData.validDefaults();
+        ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
 
         when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
-        when(caseRepository.saveRepresentedClaim(eq(USER), any())).thenReturn(claim);
+        when(caseRepository.saveRepresentedClaim(eq(USER), any(Claim.class))).thenReturn(representedClaim);
 
         Claim createdLegalRepClaim = claimService
             .saveRepresentedClaim(
                 USER_ID, claimData, AUTHORISATION);
 
-        assertThat(createdLegalRepClaim.getClaimData()).isEqualTo(claim.getClaimData());
+        assertThat(createdLegalRepClaim.getClaimData()).isEqualTo(representedClaim.getClaimData());
 
         verify(caseRepository, once()).saveRepresentedClaim(
-            any(User.class), any(Claim.class));
+            eq(USER), claimArgumentCaptor.capture());
         verify(eventProducer, once()).createRepresentedClaimCreatedEvent(eq(createdLegalRepClaim),
             anyString(), eq(AUTHORISATION));
+
+        Claim argumentCaptorValue = claimArgumentCaptor.getValue();
+        assertThat(argumentCaptorValue.getClaimData()).isEqualTo(claimData);
+        assertThat(argumentCaptorValue.getExternalId()).isEqualTo(claimData.getExternalId().toString());
+        assertThat(argumentCaptorValue.getSubmitterId()).isEqualTo(USER_ID);
+        assertThat(argumentCaptorValue.getSubmitterEmail()).isEqualTo(USER.getUserDetails().getEmail());
     }
 
     @Test
@@ -572,6 +583,12 @@ public class ClaimServiceTest {
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any())).thenReturn(empty());
 
         claimService.saveReviewOrder(EXTERNAL_ID, SampleReviewOrder.getDefault(), AUTHORISATION);
+    }
+
+    private static Claim createRepresentedClaimModel(ClaimData claimData) {
+        return createSampleClaim()
+            .withClaimData(claimData)
+            .build();
     }
 
     private static Claim createClaimModel(ClaimData claimData, String letterHolderId) {
