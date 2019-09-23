@@ -110,8 +110,7 @@ public class ClaimController {
     public Claim saveLegalRepresentedClaim(
         @Valid @NotNull @RequestBody ClaimData claimData,
         @PathVariable("submitterId") String submitterId,
-        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
-        @RequestHeader(value = "Features", required = false) List<String> features
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
         return claimService.saveRepresentedClaim(submitterId, claimData, authorisation);
     }
