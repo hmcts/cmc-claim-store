@@ -205,7 +205,10 @@ public class ClaimService {
     ) {
         String externalId = claimData.getExternalId().toString();
         User user = userService.getUser(authorisation);
-        this.verifyUniqueExternalId(user, externalId);
+        caseRepository.getClaimByExternalId(externalId, user).ifPresent(claim -> {
+            throw new ConflictException(
+                String.format("Claim already exist with same external reference as %s", externalId));
+        });
 
         Optional<GeneratePinResponse> pinResponse = getPinResponse(claimData, authorisation);
         String letterHolderId = pinResponse.map(GeneratePinResponse::getUserId).orElse(null);
@@ -244,7 +247,6 @@ public class ClaimService {
     ) {
         String externalId = claimData.getExternalId().toString();
         User user = userService.getUser(authorisation);
-        verifyUniqueExternalId(user, externalId);
 
         String submitterEmail = user.getUserDetails().getEmail();
 
@@ -266,14 +268,6 @@ public class ClaimService {
         trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
 
         return savedClaim;
-    }
-
-    private void verifyUniqueExternalId(User user, String externalId) throws ConflictException {
-
-        caseRepository.getClaimByExternalId(externalId, user).ifPresent(claim -> {
-            throw new ConflictException(
-                String.format("Claim already exist with same external reference as %s", externalId));
-        });
     }
 
     private void createClaimEvent(String authorisation, User user, String pin, Claim savedClaim) {
