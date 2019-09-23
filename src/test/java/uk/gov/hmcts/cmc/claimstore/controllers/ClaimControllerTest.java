@@ -31,7 +31,7 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 public class ClaimControllerTest {
 
     private static final String AUTHORISATION = "Bearer: aaa";
-    public static final List<String> FEATURES = singletonList("admissions");
+    private static final List<String> FEATURES = singletonList("admissions");
 
     private ClaimController claimController;
 
@@ -69,7 +69,7 @@ public class ClaimControllerTest {
             .thenReturn(CLAIM);
 
         //when
-        Claim output = claimController.saveLegalRepresentedClaim(input, USER_ID, AUTHORISATION, FEATURES);
+        Claim output = claimController.saveLegalRepresentedClaim(input, USER_ID, AUTHORISATION);
 
         //then
         assertThat(output).isEqualTo(CLAIM);
