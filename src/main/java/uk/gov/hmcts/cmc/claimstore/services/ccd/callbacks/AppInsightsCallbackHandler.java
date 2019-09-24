@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ACTION_REVIEW_COMMENTS;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LA_COMPLEX_CASE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.COMPLEX_CASE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REVIEW_COMPLEX_CASE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.WAITING_TRANSFER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
@@ -36,7 +36,7 @@ public class AppInsightsCallbackHandler extends CallbackHandler {
 
     @Override
     public List<CaseEvent> handledEvents() {
-        return ImmutableList.of(ACTION_REVIEW_COMMENTS, LA_COMPLEX_CASE, WAITING_TRANSFER, REVIEW_COMPLEX_CASE);
+        return ImmutableList.of(ACTION_REVIEW_COMMENTS, COMPLEX_CASE, WAITING_TRANSFER, REVIEW_COMPLEX_CASE);
     }
 
     @Override
@@ -54,10 +54,10 @@ public class AppInsightsCallbackHandler extends CallbackHandler {
     }
 
     private AppInsightsEvent getEvent(CallbackParams callbackParams) {
-        switch (CaseEvent.valueOf(callbackParams.getRequest().getEventId())) {
+        switch (CaseEvent.fromValue(callbackParams.getRequest().getEventId())) {
             case ACTION_REVIEW_COMMENTS:
                 return AppInsightsEvent.RETURNED_TO_LA_FROM_JUDGE;
-            case LA_COMPLEX_CASE:
+            case COMPLEX_CASE:
                 return AppInsightsEvent.COMPLICATED_FOR_ORDER_PILOT;
             case REVIEW_COMPLEX_CASE:
                 return AppInsightsEvent.NOT_TOO_COMPLICATED_FOR_LA;

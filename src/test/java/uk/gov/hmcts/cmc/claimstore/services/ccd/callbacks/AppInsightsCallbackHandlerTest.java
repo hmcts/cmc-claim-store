@@ -19,7 +19,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ACTION_REVIEW_COMMENTS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ISSUE_CASE;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LA_COMPLEX_CASE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.COMPLEX_CASE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REVIEW_COMPLEX_CASE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.WAITING_TRANSFER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
@@ -52,7 +52,7 @@ public class AppInsightsCallbackHandlerTest {
 
         callbackRequest = CallbackRequest
             .builder()
-            .eventId(ACTION_REVIEW_COMMENTS.name())
+            .eventId(ACTION_REVIEW_COMMENTS.getValue())
             .caseDetails(CaseDetails.builder().build())
             .build();
 
@@ -74,7 +74,7 @@ public class AppInsightsCallbackHandlerTest {
 
         callbackRequest = CallbackRequest
             .builder()
-            .eventId(LA_COMPLEX_CASE.name())
+            .eventId(COMPLEX_CASE.getValue())
             .caseDetails(CaseDetails.builder().build())
             .build();
 
@@ -96,7 +96,7 @@ public class AppInsightsCallbackHandlerTest {
 
         callbackRequest = CallbackRequest
             .builder()
-            .eventId(REVIEW_COMPLEX_CASE.name())
+            .eventId(REVIEW_COMPLEX_CASE.getValue())
             .caseDetails(CaseDetails.builder().build())
             .build();
 
@@ -118,7 +118,7 @@ public class AppInsightsCallbackHandlerTest {
 
         callbackRequest = CallbackRequest
             .builder()
-            .eventId(WAITING_TRANSFER.name())
+            .eventId(WAITING_TRANSFER.getValue())
             .caseDetails(CaseDetails.builder().build())
             .build();
 
@@ -140,7 +140,7 @@ public class AppInsightsCallbackHandlerTest {
 
         callbackRequest = CallbackRequest
             .builder()
-            .eventId(ISSUE_CASE.name())
+            .eventId(ISSUE_CASE.getValue())
             .caseDetails(CaseDetails.builder().build())
             .build();
 
