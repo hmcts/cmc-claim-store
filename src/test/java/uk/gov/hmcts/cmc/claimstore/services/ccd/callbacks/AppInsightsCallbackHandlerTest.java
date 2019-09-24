@@ -17,9 +17,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ACTION_REVIEW_COMMENTS;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ISSUE_CASE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.COMPLEX_CASE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ISSUE_CASE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.JUDGE_REVIEW_ORDER;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REVIEW_COMPLEX_CASE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.WAITING_TRANSFER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
@@ -52,7 +52,7 @@ public class AppInsightsCallbackHandlerTest {
 
         callbackRequest = CallbackRequest
             .builder()
-            .eventId(ACTION_REVIEW_COMMENTS.getValue())
+            .eventId(JUDGE_REVIEW_ORDER.getValue())
             .caseDetails(CaseDetails.builder().build())
             .build();
 
