@@ -8,6 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MediationCSVGenerationException;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseSearchApi;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class MediationCSVGeneratorTest {
     private MediationCSVGenerator mediationCSVGenerator;
 
     private static final String REPORT_HEADER = "SITE_ID,CASE_TYPE,CHECK_LIST,PARTY_STATUS,CASE_NUMBER,AMOUNT,"
-        + "PARTY_TYPE,CONTACT_NAME,CONTACT_NUMBER,CONTACT_EMAIL\r\n";
+        + "PARTY_TYPE,CONTACT_NAME,CONTACT_NUMBER,CONTACT_EMAIL,PILOT\r\n";
 
     @Mock
     private CaseSearchApi caseSearchApi;
@@ -49,8 +50,26 @@ public class MediationCSVGeneratorTest {
         mediationClaims.add(getWithClaimantResponseRejectionForPartAdmissionAndMediation());
 
         String expected = REPORT_HEADER
-            + "5,1,4,5,000CM001,40.99,1,Mediation Contact Person,07999999999,claimant@mail.com\r\n"
-            + "5,1,4,5,000CM001,40.99,2,Mediation Contact Person,07999999999,j.smith@example.com\r\n";
+            + "5,1,4,5,000CM001,40.99,1,Mediation Contact Person,07999999999,claimant@mail.com,Yes\r\n"
+            + "5,1,4,5,000CM001,40.99,2,Mediation Contact Person,07999999999,j.smith@example.com,Yes\r\n";
+        mediationCSVGenerator.createMediationCSV();
+        String mediationCSV = mediationCSVGenerator.getCsvData();
+        assertThat(mediationCSV).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldCreateMediationForClaimWithPilot() {
+        Claim claimWithAmountMoreThan300 = getWithClaimantResponseRejectionForPartAdmissionAndMediation()
+            .toBuilder()
+            .claimData(SampleClaimData.submittedWithAmountMoreThanThousand()).build();
+        mediationClaims.add(getWithClaimantResponseRejectionForPartAdmissionAndMediation());
+        mediationClaims.add(claimWithAmountMoreThan300);
+
+        String expected = REPORT_HEADER
+            + "5,1,4,5,000CM001,40.99,1,Mediation Contact Person,07999999999,claimant@mail.com,Yes\r\n"
+            + "5,1,4,5,000CM001,40.99,2,Mediation Contact Person,07999999999,j.smith@example.com,Yes\r\n"
+            + "5,1,4,5,000CM001,1000.99,1,Mediation Contact Person,07999999999,claimant@mail.com,No\r\n"
+            + "5,1,4,5,000CM001,1000.99,2,Mediation Contact Person,07999999999,j.smith@example.com,No\r\n";
         mediationCSVGenerator.createMediationCSV();
         String mediationCSV = mediationCSVGenerator.getCsvData();
         assertThat(mediationCSV).isEqualTo(expected);
@@ -58,7 +77,7 @@ public class MediationCSVGeneratorTest {
 
     @Test
     public void shouldCreateMediationCSVEvenWhenNoClaimsWithMediation() {
-        String expected = REPORT_HEADER + "null,null,null,null,null,null,null,null,null,null\r\n";
+        String expected = REPORT_HEADER + "null,null,null,null,null,null,null,null,null,null,null\r\n";
         mediationCSVGenerator.createMediationCSV();
         String mediationCSV = mediationCSVGenerator.getCsvData();
         assertThat(mediationCSV).isEqualTo(expected);
