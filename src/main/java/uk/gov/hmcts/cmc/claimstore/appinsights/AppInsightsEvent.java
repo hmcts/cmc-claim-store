@@ -37,7 +37,9 @@ public enum AppInsightsEvent {
     NOTIFICATION_FAILURE("Notification - failure"),
     DOCUMENT_MANAGEMENT_UPLOAD_FAILURE("Document management upload - failure"),
     DOCUMENT_MANAGEMENT_DOWNLOAD_FAILURE("Document management download - failure"),
-    MEDIATION_REPORT_FAILURE("Mediation Report - failure");
+    MEDIATION_REPORT_FAILURE("Mediation Report - failure"),
+    MEDIATION_PILOT_ELIGIBLE("Mediation Pilot Eligible"),
+    MEDIATION_NON_PILOT_ELIGIBLE("Mediation Non Pilot Eligible");
 
     private String displayName;
 
