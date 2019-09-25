@@ -1,25 +1,23 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 
-import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.ccd.mapper.InitiatePaymentCaseMapper;
-import uk.gov.hmcts.cmc.ccd.mapper.MoneyMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.PaymentsService;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInitiatePaymentRequest;
+import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.payments.client.models.LinkDto;
 import uk.gov.hmcts.reform.payments.client.models.LinksDto;
 import uk.gov.hmcts.reform.payments.client.models.PaymentDto;
@@ -37,10 +35,13 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponse;
 
 @TestPropertySource(
     properties = {
-        "core_case_data.api.url=http://core-case-data-api"
+        "core_case_data.api.url=http://core-case-data-api",
+        "fees.api.url=http://fees-api",
+        "payments.api.url=http://payments-api"
     }
 )
 public class InitiatePaymentCallbackHandlerTest extends MockSpringTest {
@@ -51,10 +52,10 @@ public class InitiatePaymentCallbackHandlerTest extends MockSpringTest {
 
     @MockBean
     private PaymentsService paymentsService;
-    @MockBean
-    private InitiatePaymentCaseMapper initiatePaymentCaseMapper;
-    @MockBean
-    private MoneyMapper moneyMapper;
+    @Autowired
+    private CaseDetailsConverter caseDetailsConverter;
+    @Autowired
+    private CaseMapper caseMapper;
 
     private PaymentDto payment;
 
@@ -75,10 +76,8 @@ public class InitiatePaymentCallbackHandlerTest extends MockSpringTest {
         given(paymentsService
             .createPayment(
                 eq(AUTHORISATION_TOKEN),
-                any(CCDCase.class))).willReturn(payment);
-        given(moneyMapper.to(any(BigDecimal.class))).willReturn("amount");
-        given(initiatePaymentCaseMapper.from(any(CCDCase.class)))
-            .willReturn(SampleInitiatePaymentRequest.builder().build());
+                any(Claim.class)))
+            .willReturn(payment);
     }
 
     @Test
@@ -91,27 +90,20 @@ public class InitiatePaymentCallbackHandlerTest extends MockSpringTest {
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
 
-        assertThat(responseData).hasSize(7);
         assertThat(responseData).contains(
-            entry("id", 42),
-            entry("data", "existingData"),
-            entry("paymentAmount", "amount"),
+            entry("channelType", "CITIZEN"),
+            entry("paymentAmount", "1000"),
             entry("paymentReference", payment.getReference()),
             entry("paymentStatus", payment.getStatus()),
-            entry("paymentDateCreated", payment.getDateCreated().toString()),
+            entry("paymentDateCreated", payment.getDateCreated().toLocalDate().toString()),
             entry("paymentNextUrl", NEXT_URL)
         );
     }
 
     private ResultActions makeRequest(String callbackType) throws Exception {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .id(CASE_ID)
-            .data(ImmutableMap.of("data", "existingData"))
-            .build();
-
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .eventId(CaseEvent.INITIATE_CLAIM_PAYMENT_CITIZEN.getValue())
-            .caseDetails(caseDetails)
+            .caseDetails(successfulCoreCaseDataStoreSubmitResponse())
             .build();
 
         return webClient

@@ -5,49 +5,54 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.ccd.mapper.MoneyMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.payments.client.models.PaymentDto;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INITIATE_CLAIM_PAYMENT_CITIZEN;
+import static uk.gov.hmcts.cmc.domain.models.ChannelType.CITIZEN;
+import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @Service
 public class InitiatePaymentCallbackHandler extends CallbackHandler {
-    private static final String PAYMENT_AMOUNT = "paymentAmount";
-    private static final String PAYMENT_REFERENCE = "paymentReference";
-    private static final String PAYMENT_STATUS = "paymentStatus";
-    private static final String PAYMENT_DATE_CREATED = "paymentDateCreated";
-    public static final String PAYMENT_NEXT_URL = "paymentNextUrl";
-
-    private static final String CASE_ID = "id";
+    private static final List<CaseEvent> EVENTS = Collections.singletonList(INITIATE_CLAIM_PAYMENT_CITIZEN);
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final PaymentsService paymentsService;
     private final CaseDetailsConverter caseDetailsConverter;
-    private final MoneyMapper moneyMapper;
+    private final CaseMapper caseMapper;
+    private final IssueDateCalculator issueDateCalculator;
+    private final ResponseDeadlineCalculator responseDeadlineCalculator;
 
     @Autowired
     public InitiatePaymentCallbackHandler(
         PaymentsService paymentsService,
         CaseDetailsConverter caseDetailsConverter,
-        MoneyMapper moneyMapper
-    ) {
+        CaseMapper caseMapper,
+        IssueDateCalculator issueDateCalculator,
+        ResponseDeadlineCalculator responseDeadlineCalculator) {
         this.paymentsService = paymentsService;
         this.caseDetailsConverter = caseDetailsConverter;
-        this.moneyMapper = moneyMapper;
+        this.caseMapper = caseMapper;
+        this.issueDateCalculator = issueDateCalculator;
+        this.responseDeadlineCalculator = responseDeadlineCalculator;
     }
 
     @Override
@@ -59,7 +64,7 @@ public class InitiatePaymentCallbackHandler extends CallbackHandler {
 
     @Override
     public List<CaseEvent> handledEvents() {
-        return Collections.singletonList(INITIATE_CLAIM_PAYMENT_CITIZEN);
+        return EVENTS;
     }
 
     private CallbackResponse createPayment(CallbackParams callbackParams)  {
@@ -67,27 +72,41 @@ public class InitiatePaymentCallbackHandler extends CallbackHandler {
         String authorisation = callbackParams.getParams()
             .get(CallbackParams.Params.BEARER_TOKEN).toString();
 
-        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
+
+        LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
+        LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
+
+        Claim updatedClaim = claim.toBuilder()
+            .ccdCaseId(caseDetails.getId())
+            .issuedOn(issuedOn)
+            .responseDeadline(responseDeadline)
+            .channelType(CITIZEN)
+            .build();
 
         logger.info("Creating payment in pay hub for case {}",
-            ccdCase.getExternalId());
+            updatedClaim.getExternalId());
 
         PaymentDto payment = paymentsService.createPayment(
             authorisation,
-            ccdCase
+            updatedClaim
         );
+
+        Claim claimAfterPayment = updatedClaim.toBuilder()
+            .claimData(updatedClaim.getClaimData().toBuilder()
+                .payment(Payment.builder()
+                    .amount(payment.getAmount())
+                    .reference(payment.getReference())
+                    .status(payment.getStatus())
+                    .dateCreated(payment.getDateCreated().toLocalDate().toString())
+                    .nextUrl(payment.getLinks().getNextUrl().getHref().toString())
+                    .build())
+                .build())
+            .build();
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()
-            .data(ImmutableMap.<String, Object>builder()
-                .putAll(caseDetails.getData())
-                .put(CASE_ID, caseDetails.getId())
-                .put(PAYMENT_AMOUNT, moneyMapper.to(payment.getAmount()))
-                .put(PAYMENT_REFERENCE, payment.getReference())
-                .put(PAYMENT_STATUS, payment.getStatus())
-                .put(PAYMENT_DATE_CREATED, payment.getDateCreated())
-                .put(PAYMENT_NEXT_URL, payment.getLinks().getNextUrl().getHref().toString())
-                .build())
+            .data(caseDetailsConverter.convertToMap(caseMapper.to(claimAfterPayment)))
             .build();
     }
 }

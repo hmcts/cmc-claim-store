@@ -5,14 +5,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.mapper.InitiatePaymentCaseMapper;
-import uk.gov.hmcts.cmc.ccd.util.SampleData;
-import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
-import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleInitiatePaymentRequest;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.reform.fees.client.FeesClient;
-import uk.gov.hmcts.reform.fees.client.model.FeeOutcome;
+import uk.gov.hmcts.reform.fees.client.model.FeeLookupResponseDto;
 import uk.gov.hmcts.reform.payments.client.CardPaymentRequest;
 import uk.gov.hmcts.reform.payments.client.PaymentsClient;
 import uk.gov.hmcts.reform.payments.client.models.FeeDto;
@@ -30,7 +28,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class PaymentsServiceTest {
     private static final String BEARER_TOKEN = "Bearer let me in";
-    private static final String FRONTEND_URL = "http://frontend.test";
+    private static final String RETURN_URL = "http://returnUrl.test/blah/%s/test";
     private static final String SERVICE = "CMC";
     private static final String SITE_ID = "siteId";
     private static final String CURRENCY = "currency";
@@ -43,37 +41,25 @@ public class PaymentsServiceTest {
     @Mock
     private FeesClient feesClient;
     @Mock
-    private NotificationsProperties notificationsProperties;
-    @Mock
-    private InitiatePaymentCaseMapper initiatePaymentCaseMapper;
-    @Mock
     private PaymentDto paymentDto;
 
-    private CCDCase ccdCase;
-    private FeeOutcome feeOutcome = FeeOutcome.builder()
+    private Claim claim;
+    private FeeLookupResponseDto feeOutcome = FeeLookupResponseDto.builder()
         .feeAmount(BigDecimal.TEN)
         .build();
 
     @Before
     public void setUp() {
         paymentsService = new PaymentsService(
-            initiatePaymentCaseMapper,
             paymentsClient,
             feesClient,
-            notificationsProperties,
+            RETURN_URL,
             SERVICE,
             SITE_ID,
             CURRENCY,
             DESCRIPTION
         );
-        when(notificationsProperties.getFrontendBaseUrl()).thenReturn(FRONTEND_URL);
-        ccdCase = SampleData.getCCDCitizenCase(
-            SampleData.getAmountBreakDown()
-        );
-        InitiatePaymentRequest initiatePaymentRequest =
-            SampleInitiatePaymentRequest.builder()
-                .build();
-        when(initiatePaymentCaseMapper.from(ccdCase)).thenReturn(initiatePaymentRequest);
+        claim = SampleClaim.getDefault();
         when(feesClient.lookupFee(eq("online"), eq("issue"), any(BigDecimal.class)))
             .thenReturn(feeOutcome);
     }
@@ -82,10 +68,10 @@ public class PaymentsServiceTest {
     public void shouldMakePaymentAndSetThePaymentAmount() {
         FeeDto[] fees = new FeeDto[] {
             FeeDto.builder()
-                .ccdCaseNumber(ccdCase.getId().toString())
+                .ccdCaseNumber(String.valueOf(claim.getCcdCaseId()))
                 .calculatedAmount(feeOutcome.getFeeAmount())
                 .code(feeOutcome.getCode())
-                .version(feeOutcome.getVersion())
+                .version(String.valueOf(feeOutcome.getVersion()))
                 .build()
         };
 
@@ -96,23 +82,62 @@ public class PaymentsServiceTest {
                 .currency(CURRENCY)
                 .service(SERVICE)
                 .fees(fees)
-                .amount(new BigDecimal("51.90"))
-                .ccdCaseNumber(ccdCase.getId().toString())
-                .caseReference(ccdCase.getExternalId())
+                .amount(new BigDecimal("51.91"))
+                .ccdCaseNumber(String.valueOf(claim.getCcdCaseId()))
+                .caseReference(claim.getExternalId())
                 .build();
 
         when(paymentsClient.createPayment(
             BEARER_TOKEN,
             expectedPaymentRequest,
-            format("%s/claim/pay/%s/receiver", FRONTEND_URL, ccdCase.getExternalId())
+            format(RETURN_URL, claim.getExternalId())
         )).thenReturn(paymentDto);
 
         paymentsService.createPayment(
             BEARER_TOKEN,
-            ccdCase
+            claim
         );
 
-        verify(paymentDto).setAmount(new BigDecimal("51.90"));
+        verify(paymentDto).setAmount(new BigDecimal("51.91"));
+    }
+
+    @Test
+    public void shouldMakePaymentAndSetThePaymentAmountWithNoInterest() {
+        ClaimData claimData = SampleClaimData.noInterest();
+        Claim claimWithNoInterest = SampleClaim.builder().withClaimData(claimData).build();
+        FeeDto[] fees = new FeeDto[] {
+            FeeDto.builder()
+                .ccdCaseNumber(String.valueOf(claimWithNoInterest.getCcdCaseId()))
+                .calculatedAmount(feeOutcome.getFeeAmount())
+                .code(feeOutcome.getCode())
+                .version(String.valueOf(feeOutcome.getVersion()))
+                .build()
+        };
+
+        CardPaymentRequest expectedPaymentRequest =
+            CardPaymentRequest.builder()
+                .siteId(SITE_ID)
+                .description(DESCRIPTION)
+                .currency(CURRENCY)
+                .service(SERVICE)
+                .fees(fees)
+                .amount(new BigDecimal("50.99"))
+                .ccdCaseNumber(String.valueOf(claimWithNoInterest.getCcdCaseId()))
+                .caseReference(claimWithNoInterest.getExternalId())
+                .build();
+
+        when(paymentsClient.createPayment(
+            BEARER_TOKEN,
+            expectedPaymentRequest,
+            format(RETURN_URL, claimWithNoInterest.getExternalId())
+        )).thenReturn(paymentDto);
+
+        paymentsService.createPayment(
+            BEARER_TOKEN,
+            claimWithNoInterest
+        );
+
+        verify(paymentDto).setAmount(new BigDecimal("50.99"));
     }
 
     @Test(expected = IllegalStateException.class)
@@ -122,7 +147,7 @@ public class PaymentsServiceTest {
 
         paymentsService.createPayment(
             BEARER_TOKEN,
-            ccdCase
+            claim
         );
     }
 
@@ -136,19 +161,20 @@ public class PaymentsServiceTest {
 
         paymentsService.createPayment(
             BEARER_TOKEN,
-            ccdCase
+            claim
         );
     }
 
     @Test(expected = IllegalStateException.class)
     public void shouldThrowIfAmountIsNotCalculated() {
-        InitiatePaymentRequest initiatePaymentRequest =
-            InitiatePaymentRequest.builder().build();
-        when(initiatePaymentCaseMapper.from(ccdCase)).thenReturn(initiatePaymentRequest);
-
+        Claim claim = SampleClaim.builder()
+            .withClaimData(SampleClaimData.builder()
+                .withAmount(null)
+                .build())
+            .build();
         paymentsService.createPayment(
             BEARER_TOKEN,
-            ccdCase
+            claim
         );
     }
 }

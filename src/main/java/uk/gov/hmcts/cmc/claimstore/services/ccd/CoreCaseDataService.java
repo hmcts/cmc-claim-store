@@ -59,11 +59,9 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
-import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.InitiatePaymentCallbackHandler.PAYMENT_NEXT_URL;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
-import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service
@@ -71,6 +69,8 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 public class CoreCaseDataService {
     private static final String CMC_CASE_UPDATE_SUMMARY = "CMC case update";
     private static final String CMC_CASE_CREATE_SUMMARY = "CMC case create";
+    private static final String CMC_CASE_CREATE_SUMMARY = "CMC case issue";
+    private static final String CMC_PAYMENT_CREATE_SUMMARY = "CMC payment creatiom";
     private static final String SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION = "Submitting CMC case update";
     private static final String SUBMITTING_CMC_CASE_CREATE_DESCRIPTION = "Submitting CMC case create";
     private static final String SUBMITTING_CMC_INITIATE_PAYMENT_DESCRIPTION = "Submitting CMC initiate payment";
@@ -82,7 +82,6 @@ public class CoreCaseDataService {
         = "Failed storing claim in CCD store for case id %s on event %s";
 
     private final CaseMapper caseMapper;
-    private final InitiatePaymentCaseMapper initiatePaymentCaseMapper;
     private final UserService userService;
     private final ReferenceNumberService referenceNumberService;
     private final CoreCaseDataApi coreCaseDataApi;
@@ -90,23 +89,20 @@ public class CoreCaseDataService {
     private final JobSchedulerService jobSchedulerService;
     private final CCDCreateCaseService ccdCreateCaseService;
     private final CaseDetailsConverter caseDetailsConverter;
-    private final IssueDateCalculator issueDateCalculator;
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     @Autowired
     public CoreCaseDataService(
         CaseMapper caseMapper,
-        InitiatePaymentCaseMapper initiatePaymentCaseMapper, UserService userService,
+        UserService userService,
         ReferenceNumberService referenceNumberService,
         CoreCaseDataApi coreCaseDataApi,
         AuthTokenGenerator authTokenGenerator,
         JobSchedulerService jobSchedulerService,
         CCDCreateCaseService ccdCreateCaseService,
-        CaseDetailsConverter caseDetailsConverter,
-        IssueDateCalculator issueDateCalculator
+        CaseDetailsConverter caseDetailsConverter
     ) {
         this.caseMapper = caseMapper;
-        this.initiatePaymentCaseMapper = initiatePaymentCaseMapper;
         this.userService = userService;
         this.referenceNumberService = referenceNumberService;
         this.coreCaseDataApi = coreCaseDataApi;
@@ -114,7 +110,6 @@ public class CoreCaseDataService {
         this.jobSchedulerService = jobSchedulerService;
         this.ccdCreateCaseService = ccdCreateCaseService;
         this.caseDetailsConverter = caseDetailsConverter;
-        this.issueDateCalculator = issueDateCalculator;
     }
 
     @LogExecutionTime
@@ -181,6 +176,57 @@ public class CoreCaseDataService {
                     CCD_STORING_FAILURE_MESSAGE,
                     ccdCase.getPreviousServiceCaseReference(),
                     createClaimEvent
+                ), exception
+            );
+        }
+    }
+
+    @LogExecutionTime
+    public Claim createNewCitizenCase(
+        User user,
+        Claim claim
+    ) {
+        requireNonNull(user, "user must not be null");
+
+        CCDCase ccdCase = caseMapper.to(claim);
+
+        try {
+            EventRequestData eventRequestData = EventRequestData.builder()
+                .userId(user.getUserDetails().getId())
+                .jurisdictionId(JURISDICTION_ID)
+                .caseTypeId(CASE_TYPE_ID)
+                .eventId(INITIATE_CLAIM_PAYMENT_CITIZEN.getValue())
+                .ignoreWarning(true)
+                .build();
+
+            StartEventResponse startEventResponse = ccdCreateCaseService.startCreate(user.getAuthorisation(),
+                eventRequestData, false);
+
+            CaseDataContent caseDataContent = CaseDataContent.builder()
+                .eventToken(startEventResponse.getToken())
+                .event(Event.builder()
+                    .id(startEventResponse.getEventId())
+                    .summary(CMC_PAYMENT_CREATE_SUMMARY)
+                    .description(SUBMITTING_CMC_INITIATE_PAYMENT_DESCRIPTION)
+                    .build())
+                .data(ccdCase)
+                .build();
+
+            CaseDetails caseDetails = ccdCreateCaseService.submitCreate(
+                user.getAuthorisation(),
+                eventRequestData,
+                caseDataContent,
+                false
+            );
+
+            return caseDetailsConverter.extractClaim(caseDetails);
+
+        } catch (Exception exception) {
+            throw new CoreCaseDataStoreException(
+                String.format(
+                    CCD_STORING_FAILURE_MESSAGE,
+                    ccdCase.getPreviousServiceCaseReference(),
+                    INITIATE_CLAIM_PAYMENT_CITIZEN
                 ), exception
             );
         }

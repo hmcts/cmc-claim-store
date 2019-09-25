@@ -33,10 +33,10 @@ import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
+import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
-import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -563,13 +563,25 @@ public class ClaimServiceTest {
 
     @Test
     public void initiatePaymentShouldFinishSuccessfully() {
+        Claim claim = SampleClaim.builder()
+            .withClaimData(SampleClaimData.builder()
+                .withPayment(
+                    Payment.builder().nextUrl("http://nexturl.test").build())
+                .build())
+            .build();
         when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
+        when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(ISSUE_DATE);
+        when(responseDeadlineCalculator.calculateResponseDeadline(eq(ISSUE_DATE))).thenReturn(RESPONSE_DEADLINE);
+        when(caseRepository.initiatePayment(eq(USER), eq("submitterId"), any(Claim.class)))
+            .thenReturn(claim);
 
-        InitiatePaymentRequest initiatePaymentRequest = InitiatePaymentRequest.builder().build();
+        InitiatePaymentResponse response = claimService.initiatePayment(AUTHORISATION, "submitterId", VALID_APP);
 
-        claimService.initiatePayment(AUTHORISATION, "submitterId", initiatePaymentRequest);
+        InitiatePaymentResponse expectedResponse = InitiatePaymentResponse.builder()
+            .nextUrl("http://nexturl.test")
+            .build();
+        assertThat(response).isEqualTo(expectedResponse);
 
-        verify(caseRepository).initiatePayment(USER, "submitterId", initiatePaymentRequest);
     }
 
     @Test

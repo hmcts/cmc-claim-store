@@ -4,7 +4,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
-import uk.gov.hmcts.cmc.ccd.mapper.InitiatePaymentCaseMapper;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDCaseHandler;
 import uk.gov.hmcts.cmc.claimstore.events.ccd.CCDTestingSupportHandler;
@@ -13,7 +12,6 @@ import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.support.CCDTestingSupportRepository;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
-import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -51,27 +49,23 @@ public class CCDStoreConfiguration {
     @Bean
     public CoreCaseDataService coreCaseDataService(
         CaseMapper caseMapper,
-        InitiatePaymentCaseMapper initiatePaymentCaseMapper,
         UserService userService,
         ReferenceNumberService referenceNumberService,
         CoreCaseDataApi coreCaseDataApi,
         AuthTokenGenerator authTokenGenerator,
         JobSchedulerService jobSchedulerService,
         CCDCreateCaseService ccdCreateCaseService,
-        CaseDetailsConverter caseDetailsConverter,
-        IssueDateCalculator issueDateCalculator
+        CaseDetailsConverter caseDetailsConverter
     ) {
         return new CoreCaseDataService(
             caseMapper,
-            initiatePaymentCaseMapper,
             userService,
             referenceNumberService,
             coreCaseDataApi,
             authTokenGenerator,
             jobSchedulerService,
             ccdCreateCaseService,
-            caseDetailsConverter,
-            issueDateCalculator
+            caseDetailsConverter
         );
     }
 

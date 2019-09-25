@@ -35,39 +35,14 @@ public class TotalAmountCalculator {
             .map(AmountBreakDown::getTotalAmount);
     }
 
-    public static Optional<BigDecimal> amountWithInterestUntilIssueDate(
-        Amount amount,
-        Interest interest,
-        LocalDate issuedOn
-    ) {
-        return Optional.ofNullable(calculateTotalAmount(amount, interest, LocalDate.now(), issuedOn));
-    }
-
-    public static Optional<BigDecimal> amountWithInterestUntilIssueDate(Claim claim) {
-        return Optional.ofNullable(calculateTotalAmount(
-            claim, claim.getIssuedOn(), false));
-    }
-
-    private static BigDecimal calculateFixedRateInterest(
-        Amount amount,
-        Interest interest,
-        LocalDate toDate,
-        LocalDate issuedOn
-    ) {
-        if (amount instanceof AmountBreakDown) {
-            BigDecimal claimAmount = ((AmountBreakDown) amount).getTotalAmount();
-            BigDecimal rate = interest.getRate();
-            LocalDate fromDate = getFromDate(interest, issuedOn);
-            return calculateInterest(claimAmount, rate, fromDate, toDate);
-        }
-
-        return ZERO;
-    }
-
     public static Optional<BigDecimal> amountWithInterest(Claim claim) {
         LocalDate date = getDateApplicable(claim);
 
         return Optional.ofNullable(calculateTotalAmount(claim, date, false));
+    }
+
+    public static Optional<BigDecimal> amountWithInterestUntilIssueDate(Claim claim) {
+        return Optional.ofNullable(calculateTotalAmount(claim, claim.getIssuedOn(), false));
     }
 
     public static Optional<BigDecimal> totalTillToday(Claim claim) {
@@ -106,31 +81,21 @@ public class TotalAmountCalculator {
         );
     }
 
-    private static Optional<BigDecimal> calculateInterest(
-        Amount amount,
-        Interest interest,
-        LocalDate toDate,
-        LocalDate issuedOn) {
+    private static Optional<BigDecimal> calculateInterest(Claim claim, LocalDate toDate) {
+        ClaimData data = claim.getClaimData();
+        Interest interest = data.getInterest();
+
         if (interest == null) {
             return Optional.empty();
         }
 
         if (interest.getType() == Interest.InterestType.BREAKDOWN) {
-            return Optional.ofNullable(calculateBreakdownInterest(amount, interest, toDate, issuedOn));
+            return Optional.ofNullable(calculateBreakdownInterest(claim, toDate));
         } else if (interest.getType() != Interest.InterestType.NO_INTEREST) {
-            return Optional.ofNullable(calculateFixedRateInterest(amount, interest, toDate, issuedOn));
+            return Optional.ofNullable(calculateFixedRateInterest(claim, toDate));
         }
 
         return Optional.of(ZERO);
-    }
-
-    private static Optional<BigDecimal> calculateInterest(Claim claim, LocalDate toDate) {
-        return calculateInterest(
-            claim.getClaimData().getAmount(),
-            claim.getClaimData().getInterest(),
-            toDate,
-            claim.getIssuedOn()
-        );
     }
 
     private static BigDecimal calculateInterest(BigDecimal dailyAmount, BigDecimal numberOfDays) {
@@ -143,6 +108,18 @@ public class TotalAmountCalculator {
         return claimAmount
             .multiply(asFraction(interestRate))
             .divide(NUMBER_OF_DAYS_IN_YEAR, DIVISION_DECIMAL_SCALE, RoundingMode.HALF_UP);
+    }
+
+    private static BigDecimal calculateBreakdownInterest(Claim claim, LocalDate toDate) {
+        Interest interest = claim.getClaimData().getInterest();
+        InterestDate interestDate = interest.getInterestDate();
+        Amount amount = claim.getClaimData().getAmount();
+        if (amount instanceof AmountBreakDown) {
+            BigDecimal claimAmount = ((AmountBreakDown) amount).getTotalAmount();
+            return calculateBreakdownInterest(interest, interestDate, claimAmount, claim.getIssuedOn(), toDate);
+        }
+
+        return ZERO;
     }
 
     public static BigDecimal calculateBreakdownInterest(
@@ -166,40 +143,10 @@ public class TotalAmountCalculator {
         return interestValue.add(accruedInterest);
     }
 
-    private static BigDecimal calculateBreakdownInterest(
-        Amount amount,
-        Interest interest,
-        LocalDate toDate,
-        LocalDate issuedOn) {
-        InterestDate interestDate = interest.getInterestDate();
-        if (amount instanceof AmountBreakDown) {
-            BigDecimal claimAmount = ((AmountBreakDown) amount).getTotalAmount();
-            return calculateBreakdownInterest(interest, interestDate, claimAmount, issuedOn, toDate);
-        }
-
-        return ZERO;
-    }
-
     public static BigDecimal asFraction(BigDecimal interestRate) {
         requireNonNegative(interestRate);
 
         return interestRate.divide(HUNDRED, DIVISION_DECIMAL_SCALE, RoundingMode.HALF_UP);
-    }
-
-    private static BigDecimal calculateTotalAmount(
-        Amount amount,
-        Interest interest,
-        LocalDate toDate,
-        LocalDate issuedOn) {
-        if (amount instanceof AmountBreakDown) {
-            BigDecimal claimAmount = ((AmountBreakDown) amount).getTotalAmount();
-
-            BigDecimal calculatedInterest = calculateInterest(amount, interest, toDate, issuedOn).orElse(ZERO);
-
-            return claimAmount.add(calculatedInterest);
-        }
-
-        return null;
     }
 
     private static BigDecimal calculateTotalAmount(Claim claim, LocalDate toDate, boolean withFees) {
@@ -222,10 +169,24 @@ public class TotalAmountCalculator {
         return null;
     }
 
-    private static LocalDate getFromDate(Interest interest, LocalDate issuedOn) {
-        return interest.getInterestDate().isCustom()
-            ? interest.getInterestDate().getDate()
-            : issuedOn;
+    private static BigDecimal calculateFixedRateInterest(Claim claim, LocalDate toDate) {
+        ClaimData data = claim.getClaimData();
+        Amount amount = data.getAmount();
+
+        if (amount instanceof AmountBreakDown) {
+            BigDecimal claimAmount = ((AmountBreakDown) amount).getTotalAmount();
+            BigDecimal rate = data.getInterest().getRate();
+            LocalDate fromDate = getFromDate(claim);
+            return calculateInterest(claimAmount, rate, fromDate, toDate);
+        }
+
+        return ZERO;
+    }
+
+    private static LocalDate getFromDate(Claim claim) {
+        return claim.getClaimData().getInterest().getInterestDate().isCustom()
+            ? claim.getClaimData().getInterest().getInterestDate().getDate()
+            : claim.getIssuedOn();
     }
 
     private static LocalDate getToDate(Claim claim) {

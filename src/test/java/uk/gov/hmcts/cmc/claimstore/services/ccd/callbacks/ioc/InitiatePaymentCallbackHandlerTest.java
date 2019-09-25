@@ -4,15 +4,19 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.mapper.MoneyMapper;
-import uk.gov.hmcts.cmc.ccd.util.SampleData;
+import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
-import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.Payment;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.payments.client.models.LinkDto;
@@ -22,26 +26,37 @@ import uk.gov.hmcts.reform.payments.client.models.PaymentDto;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.data.MapEntry.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INITIATE_CLAIM_PAYMENT_CITIZEN;
+import static uk.gov.hmcts.cmc.domain.models.ChannelType.CITIZEN;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InitiatePaymentCallbackHandlerTest {
     private static final String BEARER_TOKEN = "Bearer let me in";
     private static final String NEXT_URL = "http://nexturl.test";
+    private static final Long CASE_ID = 3L;
 
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
     @Mock
-    private MoneyMapper moneyMapper;
+    private IssueDateCalculator issueDateCalculator;
+    @Mock
+    private ResponseDeadlineCalculator responseDeadlineCalculator;
+    @Mock
+    private CaseMapper caseMapper;
     @Mock
     private PaymentsService paymentsService;
+    @Captor
+    private ArgumentCaptor<Claim> claimArgumentCaptor;
 
     private CallbackRequest callbackRequest;
 
@@ -52,29 +67,25 @@ public class InitiatePaymentCallbackHandlerTest {
         handler = new InitiatePaymentCallbackHandler(
             paymentsService,
             caseDetailsConverter,
-            moneyMapper);
+            caseMapper,
+            issueDateCalculator,
+            responseDeadlineCalculator);
         callbackRequest = CallbackRequest
             .builder()
             .eventId(INITIATE_CLAIM_PAYMENT_CITIZEN.getValue())
             .caseDetails(CaseDetails.builder()
-                .id(3L)
-                .data(ImmutableMap.of("data", "existingData"))
+                .id(CASE_ID)
                 .build())
             .build();
     }
 
     @Test
     public void shouldCreatePaymentOnAboutToSubmitEvent() throws URISyntaxException {
-        CallbackParams callbackParams = CallbackParams.builder()
-            .type(CallbackType.ABOUT_TO_SUBMIT)
-            .request(callbackRequest)
-            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
-            .build();
-        CCDCase ccdCase = SampleData.getCCDCitizenCase(SampleData.getAmountBreakDown());
-        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class)))
-            .thenReturn(ccdCase);
+        Claim claim = SampleClaim.getDefault();
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
+            .thenReturn(claim);
 
-        PaymentDto payment = PaymentDto.builder()
+        PaymentDto expectedPayment = PaymentDto.builder()
             .amount(BigDecimal.TEN)
             .reference("reference")
             .status("status")
@@ -89,22 +100,37 @@ public class InitiatePaymentCallbackHandlerTest {
 
         when(paymentsService.createPayment(
             eq(BEARER_TOKEN),
-            eq(ccdCase))).thenReturn(payment);
+            any(Claim.class)))
+            .thenReturn(expectedPayment);
 
-        when(moneyMapper.to(payment.getAmount())).thenReturn("amount");
+        LocalDate date = LocalDate.now();
+        when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(date);
+        when(responseDeadlineCalculator.calculateResponseDeadline(any(LocalDate.class))).thenReturn(date);
 
-        AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
-            handler
-                .handle(callbackParams);
+        CallbackParams callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_SUBMIT)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
 
-        assertThat(response.getData()).contains(
-            entry("data", "existingData"),
-            entry("id", 3L),
-            entry("paymentAmount", "amount"),
-            entry("paymentReference", payment.getReference()),
-            entry("paymentStatus", payment.getStatus()),
-            entry("paymentDateCreated", payment.getDateCreated()),
-            entry("paymentNextUrl", NEXT_URL)
-        );
+        handler.handle(callbackParams);
+
+        verify(caseMapper).to(claimArgumentCaptor.capture());
+
+        Claim toBeSaved = claimArgumentCaptor.getValue();
+        assertThat(toBeSaved.getId()).isEqualTo(CASE_ID);
+        assertThat(toBeSaved.getCcdCaseId()).isEqualTo(CASE_ID);
+        assertThat(toBeSaved.getIssuedOn()).isEqualTo(date);
+        assertThat(toBeSaved.getResponseDeadline()).isEqualTo(date);
+        assertThat(toBeSaved.getChannelType()).isEqualTo(Optional.of(CITIZEN));
+
+        Payment payment = toBeSaved.getClaimData().getPayment();
+        assertThat(payment.getAmount()).isEqualTo(expectedPayment.getAmount());
+        assertThat(payment.getDateCreated()).isEqualTo(expectedPayment.getDateCreated().toLocalDate().toString());
+        assertThat(payment.getId()).isEqualTo(expectedPayment.getId());
+        assertThat(payment.getReference()).isEqualTo(expectedPayment.getReference());
+        assertThat(payment.getStatus()).isEqualTo(expectedPayment.getStatus());
+        assertThat(payment.getNextUrl()).isEqualTo(expectedPayment.getLinks().getNextUrl().getHref().toString());
+
     }
 }
