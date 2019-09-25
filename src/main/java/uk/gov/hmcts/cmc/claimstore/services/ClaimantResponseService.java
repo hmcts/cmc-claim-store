@@ -96,6 +96,16 @@ public class ClaimantResponseService {
 
         ccdEventProducer.createCCDClaimantResponseEvent(claim, claimantResponse, authorization);
         appInsights.trackEvent(getAppInsightsEvent(claimantResponse), "referenceNumber", claim.getReferenceNumber());
+
+        if (isRejectResponseWithMediation(claim, claimantResponse)) {
+            if (claim.getFeatures() != null && claim.getFeatures().contains("mediationPilot")) {
+                appInsights.trackEvent(AppInsightsEvent.MEDIATION_PILOT_ELIGIBLE,
+                    "referenceNumber", claim.getReferenceNumber());
+            } else {
+                appInsights.trackEvent(AppInsightsEvent.MEDIATION_NON_PILOT_ELIGIBLE,
+                    "referenceNumber", claim.getReferenceNumber());
+            }
+        }
     }
 
     private boolean isSettlementAgreement(Claim claim, ClaimantResponse claimantResponse) {
@@ -147,5 +157,17 @@ public class ClaimantResponseService {
         return ACCEPTATION == claimantResponse.getType()
             && !ResponseUtils.isResponseStatesPaid(response)
             && !ResponseUtils.isResponsePartAdmitPayImmediately(response);
+    }
+
+    private boolean isRejectResponseWithMediation(Claim claim, ClaimantResponse claimantResponse) {
+        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+
+        return ClaimantResponseType.REJECTION.equals(claimantResponse.getType())
+            && ((ResponseRejection) claimantResponse).getFreeMediation().filter(Predicate.isEqual(YesNoOption.YES))
+            .isPresent()
+            && response.getFreeMediation().filter(Predicate.isEqual(YesNoOption.YES)).isPresent()
+            && (ResponseUtils.isPartAdmission(response)
+            || ResponseUtils.isFullDefence(response)
+            || ResponseUtils.isResponseStatesPaid(response));
     }
 }
