@@ -264,7 +264,7 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
 
         if (ccdCase.getChannel() != null && !actual.getChannel().isPresent()) {
             failWithMessage("Expected CCDCase.channel to be not present but was <%s>",
-                ccdCase.getChannel());
+                actual.getChannel());
         }
         actual.getChannel()
             .ifPresent(channelType -> {
