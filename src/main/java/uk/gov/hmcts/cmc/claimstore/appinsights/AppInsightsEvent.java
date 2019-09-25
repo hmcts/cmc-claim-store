@@ -45,7 +45,9 @@ public enum AppInsightsEvent {
     RETURNED_TO_LA_FROM_JUDGE("Returned to LA from Judge"),
     NOT_TOO_COMPLICATED_FOR_LA("Not too complicated for LA"),
     COMPLICATED_FOR_ORDER_PILOT("Complicated for order pilot"),
-    MEDIATION_REPORT_FAILURE("Mediation Report - failure");
+    MEDIATION_REPORT_FAILURE("Mediation Report - failure"),
+    MEDIATION_PILOT_ELIGIBLE("Mediation Pilot Eligible"),
+    MEDIATION_NON_PILOT_ELIGIBLE("Mediation Non Pilot Eligible");
 
     private String displayName;
 
