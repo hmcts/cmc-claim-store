@@ -32,6 +32,7 @@ public class CCDDirectionsQuestionnaire {
 
     private List<CCDCollectionElement<LocalDate>> unavailableDates;
 
+    private CCDYesNoOption expertRequired;
     private String expertEvidenceToExamine;
     private String reasonForExpertAdvice;
 }

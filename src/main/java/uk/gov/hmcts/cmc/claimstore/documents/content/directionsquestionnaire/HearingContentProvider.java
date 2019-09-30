@@ -69,15 +69,27 @@ public class HearingContentProvider {
 
     private void mapExpertRequest(ExpertRequest expertRequest, HearingContent.HearingContentBuilder builder) {
 
+//        builder.courtPermissionForExpertReport(YES);
+////        if (!StringUtils.isBlank(expertRequest.getReasonForExpertAdvice().orElse(""))) {
+////            builder.reasonWhyExpertAdvice(expertRequest.getReasonForExpertAdvice());
+////            builder.expertExamineNeeded(YES);
+////        } else {
+////            builder.expertExamineNeeded(NO);
+////        }
+////
+////        builder.whatToExamine(expertRequest.getExpertEvidenceToExamine());
+
         builder.courtPermissionForExpertReport(YES);
-        if (!StringUtils.isBlank(expertRequest.getReasonForExpertAdvice())) {
-            builder.reasonWhyExpertAdvice(expertRequest.getReasonForExpertAdvice());
+        builder.expertRequired(expertRequest.getExpertRequired().toString());
+        if (!StringUtils.isBlank(expertRequest.getReasonForExpertAdvice().orElse(""))) {
+            expertRequest.getReasonForExpertAdvice().ifPresent(builder::reasonWhyExpertAdvice);
             builder.expertExamineNeeded(YES);
-        } else {
+        }
+        else
+        {
             builder.expertExamineNeeded(NO);
         }
-
-        builder.whatToExamine(expertRequest.getExpertEvidenceToExamine());
+        expertRequest.getExpertEvidenceToExamine().ifPresent(builder::whatToExamine);
     }
 
     public HearingContent mapDirectionQuestionnaire(DirectionsQuestionnaire questionnaire) {

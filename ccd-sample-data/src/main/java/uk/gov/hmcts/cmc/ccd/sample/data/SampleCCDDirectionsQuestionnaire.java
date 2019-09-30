@@ -50,6 +50,7 @@ public class SampleCCDDirectionsQuestionnaire {
             .disabledAccess(YES)
             .otherSupportRequired("maybe")
             .expertReports(expertReportRow)
+            .expertRequired(NO)
             .expertEvidenceToExamine("nothing")
             .reasonForExpertAdvice("for specified reason")
             .build();
