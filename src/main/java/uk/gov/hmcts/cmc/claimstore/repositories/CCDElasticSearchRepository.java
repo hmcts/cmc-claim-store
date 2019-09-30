@@ -26,6 +26,7 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
     private final AuthTokenGenerator authTokenGenerator;
     private final UserService userService;
     private final CaseDetailsConverter ccdCaseDetailsConverter;
+    private final int MILO_PAGE_SIZE = 1000;
 
     @Autowired
     public CCDElasticSearchRepository(CoreCaseDataApi coreCaseDataApi,
@@ -47,9 +48,9 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
                     "data.respondents.value.responseFreeMediationOption", CCDYesNoOption.YES.name()))
                 .must(QueryBuilders.termQuery(
                     "data.respondents.value.claimantResponse.freeMediationOption", CCDYesNoOption.YES.name()))
-                .must(QueryBuilders.rangeQuery("data.respondents.value.claimantResponse.submittedOn")
+                    .must(QueryBuilders.rangeQuery("data.respondents.value.claimantResponse.submittedOn")
                     .from(DateUtils.startOfDay(mediationAgreedDate), true)
-                    .to(DateUtils.endOfDay(mediationAgreedDate), true))
+                    .to(DateUtils.endOfDay(mediationAgreedDate), true)), MILO_PAGE_SIZE
         );
 
         return searchClaimsWith(user, mediationQuery);
