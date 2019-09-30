@@ -134,7 +134,7 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
     }
 
     private ResultActions makeRequest(String callbackType) throws Exception {
-        CaseDetails caseDetailsTemp =  successfulCoreCaseDataStoreSubmitResponseWithDQ();
+        CaseDetails caseDetailsTemp = successfulCoreCaseDataStoreSubmitResponseWithDQ();
         CaseDetails caseDetailsBefore = CaseDetails.builder()
             .id(caseDetailsTemp.getId())
             .data(caseDetailsTemp.getData())
@@ -188,7 +188,7 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
     }
 
     private ResultActions makeRequestGenerateOrder(String callbackType) throws Exception {
-        CaseDetails caseDetailsTemp =  successfulCoreCaseDataStoreSubmitResponseWithDQ();
+        CaseDetails caseDetailsTemp = successfulCoreCaseDataStoreSubmitResponseWithDQ();
         Map<String, Object> data = new HashMap<>(caseDetailsTemp.getData());
         data.put("preferredDQCourt", "Preferred court");
 

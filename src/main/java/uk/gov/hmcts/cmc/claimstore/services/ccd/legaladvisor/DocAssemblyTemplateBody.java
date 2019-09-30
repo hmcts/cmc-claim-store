@@ -75,4 +75,6 @@ public class DocAssemblyTemplateBody implements FormPayload {
     private List<OtherDirection> otherDirections;
 
     private List<CCDCollectionElement<String>> extraDocUploadList;
+
+    private LocalDate directionDeadline;
 }

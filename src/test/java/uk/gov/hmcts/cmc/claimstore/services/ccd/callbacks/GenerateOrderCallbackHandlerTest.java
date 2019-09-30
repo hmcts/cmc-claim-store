@@ -18,25 +18,19 @@ import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestion
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
-import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalculator;
-import uk.gov.hmcts.cmc.claimstore.services.UserService;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.docassembly.DocAssemblyClient;
-import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyRequest;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
-import uk.gov.hmcts.reform.docassembly.domain.OutputType;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -44,6 +38,7 @@ import java.util.Collections;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.MapEntry.entry;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.GENERATE_ORDER;
 
@@ -51,30 +46,17 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.GENERATE_ORDER;
 public class GenerateOrderCallbackHandlerTest {
 
     private static final String BEARER_TOKEN = "Bearer let me in";
-    private static final String SERVICE_TOKEN = "Bearer service let me in";
     private static final LocalDate DEADLINE = LocalDate.parse("2018-11-16");
     private static final String DOC_URL = "http://success.test";
-    private static final UserDetails JUDGE = new UserDetails(
-        "1",
-        "email",
-        "Judge",
-        "McJudge",
-        Collections.emptyList());
 
     @Mock
     private LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator;
     @Mock
-    private DocAssemblyClient docAssemblyClient;
-    @Mock
-    private UserService userService;
-    @Mock
     private JsonMapper jsonMapper;
     @Mock
-    private AuthTokenGenerator authTokenGenerator;
-    @Mock
-    private DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
-    @Mock
     private CaseDetailsConverter caseDetailsConverter;
+    @Mock
+    private DocAssemblyService docAssemblyService;
 
     private CallbackRequest callbackRequest;
     private GenerateOrderCallbackHandler generateOrderCallbackHandler;
@@ -83,13 +65,10 @@ public class GenerateOrderCallbackHandlerTest {
     @Before
     public void setUp() {
         generateOrderCallbackHandler = new GenerateOrderCallbackHandler(
-            userService,
             legalOrderGenerationDeadlinesCalculator,
-            docAssemblyClient,
-            authTokenGenerator,
             jsonMapper,
-            docAssemblyTemplateBodyMapper,
-            caseDetailsConverter
+            caseDetailsConverter,
+            docAssemblyService
         );
 
         ReflectionTestUtils.setField(generateOrderCallbackHandler, "templateId", "testTemplateId");
@@ -109,8 +88,6 @@ public class GenerateOrderCallbackHandlerTest {
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         when(legalOrderGenerationDeadlinesCalculator.calculateOrderGenerationDeadlines())
             .thenReturn(DEADLINE);
-        when(userService.getUserDetails(BEARER_TOKEN)).thenReturn(JUDGE);
-        when(authTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
         callbackRequest = CallbackRequest
             .builder()
             .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
@@ -275,13 +252,6 @@ public class GenerateOrderCallbackHandlerTest {
         ccdCase.setDirectionOrderData(SampleData.getCCDOrderGenerationData());
         when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
 
-        DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
-            .templateId("testTemplateId")
-            .outputType(OutputType.PDF)
-            .formPayload(docAssemblyTemplateBodyMapper
-                .from(ccdCase, userService.getUserDetails(BEARER_TOKEN)))
-            .build();
-
         CallbackRequest callbackRequest = CallbackRequest
             .builder()
             .eventId(GENERATE_ORDER.getValue())
@@ -291,8 +261,7 @@ public class GenerateOrderCallbackHandlerTest {
 
         DocAssemblyResponse docAssemblyResponse = Mockito.mock(DocAssemblyResponse.class);
         when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOC_URL);
-        when(docAssemblyClient
-            .generateOrder(BEARER_TOKEN, SERVICE_TOKEN, docAssemblyRequest))
+        when(docAssemblyService.createOrder(eq(ccdCase), eq(BEARER_TOKEN)))
             .thenReturn(docAssemblyResponse);
 
         CallbackParams callbackParams = CallbackParams.builder()
