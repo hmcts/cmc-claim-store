@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalculator;
@@ -57,7 +58,8 @@ public class GenerateOrderCallbackHandlerTest {
     private CaseDetailsConverter caseDetailsConverter;
     @Mock
     private DocAssemblyService docAssemblyService;
-
+    @Mock
+    private AppInsights appInsights;
     private CallbackRequest callbackRequest;
     private GenerateOrderCallbackHandler generateOrderCallbackHandler;
     private CCDCase ccdCase;
@@ -68,7 +70,8 @@ public class GenerateOrderCallbackHandlerTest {
             legalOrderGenerationDeadlinesCalculator,
             jsonMapper,
             caseDetailsConverter,
-            docAssemblyService
+            docAssemblyService,
+            appInsights
         );
 
         ReflectionTestUtils.setField(generateOrderCallbackHandler, "templateId", "testTemplateId");
