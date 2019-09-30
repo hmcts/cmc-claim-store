@@ -211,6 +211,12 @@ public class SampleClaimData {
         return builder().build();
     }
 
+    public static ClaimData submittedWithAmountMoreThanThousand() {
+        return submittedByClaimantBuilder()
+            .withAmount(SampleAmountBreakdown.withThousandAsAmount().build())
+            .build();
+    }
+
     public static ClaimData submittedByClaimant() {
         return submittedByClaimantBuilder().build();
     }

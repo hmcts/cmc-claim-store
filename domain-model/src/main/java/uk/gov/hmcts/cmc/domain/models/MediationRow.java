@@ -22,6 +22,7 @@ public class MediationRow implements Iterable<String> {
     private String emailAddress;
     private String checkList;
     private String partyStatus;
+    private String pilot;
 
     public List<String> toList() {
         return Arrays.asList(
@@ -34,7 +35,8 @@ public class MediationRow implements Iterable<String> {
             partyType,
             contactName,
             contactNumber,
-            emailAddress
+            emailAddress,
+            pilot
         );
     }
 

@@ -1,5 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.advices;
 
+import lombok.ToString;
+
+@ToString
 public class ExceptionForClient {
 
     private int status;
