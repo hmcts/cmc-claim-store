@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
@@ -33,6 +34,11 @@ public class InitiatePaymentCallbackHandler extends CallbackHandler {
     @Override
     public List<CaseEvent> handledEvents() {
         return Collections.singletonList(INITIATE_CLAIM_PAYMENT_CITIZEN);
+    }
+
+    @Override
+    public List<String> getSupportedRoles() {
+        return ImmutableList.of("citizen");
     }
 
     private CallbackResponse createPayment(CallbackParams callbackParams) {

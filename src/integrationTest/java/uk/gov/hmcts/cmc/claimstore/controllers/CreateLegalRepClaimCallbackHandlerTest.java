@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
@@ -7,7 +8,11 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.domain.models.UserRole;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -38,6 +43,13 @@ public class CreateLegalRepClaimCallbackHandlerTest extends MockSpringTest {
     public void setUp() {
         given(referenceNumberRepository.getReferenceNumberForLegal())
             .willReturn(REFERENCE_NO);
+
+        UserDetails userDetails = SampleUserDetails.builder().build();
+        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
+        given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(new User(AUTHORISATION_TOKEN, userDetails));
+        String userId = userDetails.getId();
+        given(userRolesRepository.getByUserId(userId))
+            .willReturn(ImmutableList.of(new UserRole(userId, "citizen")));
     }
 
     @Test

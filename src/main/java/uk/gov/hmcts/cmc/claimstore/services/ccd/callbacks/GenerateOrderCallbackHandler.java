@@ -112,6 +112,11 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
         return ImmutableList.of(GENERATE_ORDER, ACTION_REVIEW_COMMENTS);
     }
 
+    @Override
+    public List<String> getSupportedRoles() {
+        return ImmutableList.of("caseworker-cmc-legaladvisor");
+    }
+
     private CallbackResponse prepopulateOrder(CallbackParams callbackParams) {
         logger.info("Generate order callback: prepopulating order fields");
         CallbackRequest callbackRequest = callbackParams.getRequest();
