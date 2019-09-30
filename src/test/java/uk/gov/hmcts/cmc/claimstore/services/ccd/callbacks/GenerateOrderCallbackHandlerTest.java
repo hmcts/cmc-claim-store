@@ -16,7 +16,8 @@ import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
-import uk.gov.hmcts.cmc.ccd.util.SampleData;
+import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
@@ -75,6 +76,8 @@ public class GenerateOrderCallbackHandlerTest {
     private DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
+    @Mock
+    private AppInsights appInsights;
 
     private CallbackRequest callbackRequest;
     private GenerateOrderCallbackHandler generateOrderCallbackHandler;
@@ -89,8 +92,8 @@ public class GenerateOrderCallbackHandlerTest {
             authTokenGenerator,
             jsonMapper,
             docAssemblyTemplateBodyMapper,
-            caseDetailsConverter
-        );
+            caseDetailsConverter,
+            appInsights);
 
         ReflectionTestUtils.setField(generateOrderCallbackHandler, "templateId", "testTemplateId");
         ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());

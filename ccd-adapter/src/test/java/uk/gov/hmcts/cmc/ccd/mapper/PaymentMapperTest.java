@@ -43,6 +43,7 @@ public class PaymentMapperTest {
         assertMoney(payment.getAmount()).isEqualTo(ccdCase.getPaymentAmount());
         assertThat(payment.getReference()).isEqualTo(ccdCase.getPaymentReference());
         assertThat(payment.getStatus()).isEqualTo(ccdCase.getPaymentStatus());
+        assertThat(payment.getNextUrl()).isEqualTo(ccdCase.getPaymentNextUrl());
     }
 
     @Test
@@ -60,6 +61,7 @@ public class PaymentMapperTest {
         assertThat(payment.getId()).isEqualTo(ccdCase.getPaymentId());
         assertMoney(payment.getAmount()).isEqualTo(ccdCase.getPaymentAmount());
         assertThat(payment.getReference()).isEqualTo(ccdCase.getPaymentReference());
+        assertThat(payment.getNextUrl()).isEqualTo(ccdCase.getPaymentNextUrl());
         assertThat(payment.getStatus()).isEqualTo(ccdCase.getPaymentStatus());
     }
 
@@ -80,6 +82,7 @@ public class PaymentMapperTest {
         assertMoney(payment.getAmount()).isEqualTo(ccdCase.getPaymentAmount());
         assertThat(payment.getReference()).isEqualTo(ccdCase.getPaymentReference());
         assertThat(payment.getStatus()).isEqualTo(ccdCase.getPaymentStatus());
+        assertThat(payment.getNextUrl()).isEqualTo(ccdCase.getPaymentNextUrl());
     }
 
     @Test
@@ -89,6 +92,7 @@ public class PaymentMapperTest {
             .paymentAmount("400000")
             .paymentReference("RC-1524-6488-1670-7520")
             .paymentId("PaymentId")
+            .paymentNextUrl("http://nexturl.test")
             .paymentStatus("success")
             .paymentDateCreated(LocalDate.of(2019, 01, 01))
             .build();
@@ -103,6 +107,7 @@ public class PaymentMapperTest {
         assertMoney(payment.getAmount()).isEqualTo(ccdCase.getPaymentAmount());
         assertThat(payment.getReference()).isEqualTo(ccdCase.getPaymentReference());
         assertThat(payment.getStatus()).isEqualTo(ccdCase.getPaymentStatus());
+        assertThat(payment.getNextUrl()).isEqualTo(ccdCase.getPaymentNextUrl());
     }
 
     @Test
@@ -125,5 +130,6 @@ public class PaymentMapperTest {
         assertMoney(payment.getAmount()).isEqualTo(ccdCase.getPaymentAmount());
         assertThat(payment.getReference()).isEqualTo(ccdCase.getPaymentReference());
         assertThat(payment.getStatus()).isEqualTo(ccdCase.getPaymentStatus());
+        assertThat(payment.getNextUrl()).isEqualTo(ccdCase.getPaymentNextUrl());
     }
 }

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
+import uk.gov.hmcts.cmc.domain.models.ChannelType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
@@ -97,6 +98,7 @@ public final class SampleClaim {
     private Long ccdCaseId = 1023467890123456L;
     private ReviewOrder reviewOrder;
     private DirectionOrder directionOrder;
+    private ChannelType channel;
 
     private SampleClaim() {
     }
@@ -145,6 +147,21 @@ public final class SampleClaim {
                 .withMediation(NO)
                 .withMoreTimeNeededOption(NO)
                 .build()
+            )
+            .withRespondedAt(LocalDateTime.now())
+            .withDirectionsQuestionnaireDeadline(LocalDate.now())
+            .build();
+    }
+
+    public static Claim getClaimWithPartAdmissionAndNoMediation() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .paymentOption(IMMEDIATELY)
+                    .build()
+            ).withResponse(SampleResponse.PartAdmission.builder()
+                .buildWithDirectionsQuestionnaireWitNoMediation()
             )
             .withRespondedAt(LocalDateTime.now())
             .withDirectionsQuestionnaireDeadline(LocalDate.now())
@@ -476,7 +493,8 @@ public final class SampleClaim {
             getDefaultClaimSubmissionOperationIndicators.get(),
             ccdCaseId,
             reviewOrder,
-            directionOrder
+            directionOrder,
+            channel
         );
     }
 

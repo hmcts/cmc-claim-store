@@ -144,4 +144,18 @@
         <gav regex="true">.*</gav>
         <cve>CVE-2019-3795</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+			Doesn't look exploitable, will wait for new jackson databind library
+			]]></notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2019-14540</cve>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[
+			Doesn't look exploitable, will wait for new jackson databind library
+			]]></notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2019-16335</cve>
+    </suppress>
 </suppressions>

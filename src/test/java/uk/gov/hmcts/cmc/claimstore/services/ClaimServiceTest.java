@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
@@ -30,6 +31,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -52,6 +54,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NUMBER_OF_RECONSIDERATION;
+import static uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils.DQ_FLAG;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
@@ -61,7 +65,6 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_ID
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.LETTER_HOLDER_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.NOT_REQUESTED_FOR_MORE_TIME;
-import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.SUBMITTER_EMAIL;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
@@ -342,6 +345,21 @@ public class ClaimServiceTest {
     }
 
     @Test
+    public void saveDefendantResponseShouldNotUpdateDQDeadlineWhenFullDefenceAndNoMediationAndNoDQOnline() {
+        Claim input = claim.toBuilder().features(ImmutableList.of("admissions", DQ_FLAG)).build();
+
+        claimService.saveDefendantResponse(
+            input, DEFENDANT_EMAIL, SampleResponse.FullDefence.builder().withMediation(NO).build(), AUTHORISATION
+        );
+
+        verify(directionsQuestionnaireDeadlineCalculator, never())
+            .calculateDirectionsQuestionnaireDeadlineCalculator(any(LocalDateTime.class));
+
+        verify(caseRepository, never())
+            .updateDirectionsQuestionnaireDeadline(eq(input), any(LocalDate.class), eq(AUTHORISATION));
+    }
+
+    @Test
     public void saveDefendantResponseShouldUpdateDQDeadlineWhenFullDefenceAndMediation() {
         claimService.saveDefendantResponse(
             claim, DEFENDANT_EMAIL, SampleResponse.FullDefence.builder().withMediation(YES).build(), AUTHORISATION
@@ -491,6 +509,17 @@ public class ClaimServiceTest {
     }
 
     @Test
+    public void initiatePaymentShouldFinishSuccessfully() {
+        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
+
+        InitiatePaymentRequest initiatePaymentRequest = InitiatePaymentRequest.builder().build();
+
+        claimService.initiatePayment(AUTHORISATION, "submitterId", initiatePaymentRequest);
+
+        verify(caseRepository).initiatePayment(USER, "submitterId", initiatePaymentRequest);
+    }
+
+    @Test
     public void saveReviewOrderShouldFinishSuccessfully() {
         when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(VALID_CLAIMANT);
@@ -501,7 +530,11 @@ public class ClaimServiceTest {
 
         claimService.saveReviewOrder(EXTERNAL_ID, reviewOrder, AUTHORISATION);
 
-        verify(caseRepository, once()).saveReviewOrder(eq(claim.getId()), eq(reviewOrder), eq(AUTHORISATION));
+        verify(caseRepository).saveReviewOrder(eq(claim.getId()), eq(reviewOrder), eq(AUTHORISATION));
+
+        verify(appInsights).trackEvent(eq(NUMBER_OF_RECONSIDERATION),
+            eq(AppInsights.REFERENCE_NUMBER),
+            eq(claim.getReferenceNumber()));
     }
 
     @Test(expected = ConflictException.class)
@@ -538,7 +571,7 @@ public class ClaimServiceTest {
             .withLetterHolderId(LETTER_HOLDER_ID)
             .withDefendantId(DEFENDANT_ID)
             .withExternalId(EXTERNAL_ID)
-            .withReferenceNumber(REFERENCE_NUMBER)
+            .withReferenceNumber(SampleClaim.REFERENCE_NUMBER)
             .withClaimData(VALID_APP)
             .withCreatedAt(NOW_IN_LOCAL_ZONE)
             .withIssuedOn(ISSUE_DATE)
@@ -561,7 +594,7 @@ public class ClaimServiceTest {
             .withSubmitterId(USER_ID)
             .withDefendantId(DEFENDANT_ID)
             .withExternalId(EXTERNAL_ID)
-            .withReferenceNumber(REFERENCE_NUMBER)
+            .withReferenceNumber(SampleClaim.REFERENCE_NUMBER)
             .withCreatedAt(NOW_IN_LOCAL_ZONE)
             .withIssuedOn(ISSUE_DATE)
             .withResponseDeadline(RESPONSE_DEADLINE)
