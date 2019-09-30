@@ -47,6 +47,7 @@ import java.util.function.Predicate;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NUMBER_OF_RECONSIDERATION;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
@@ -371,6 +372,7 @@ public class ClaimService {
         reviewOrderRule.assertReviewOrder(claim);
         Claim updatedClaim = caseRepository.saveReviewOrder(claim.getId(), reviewOrder, authorisation);
         eventProducer.createReviewOrderEvent(authorisation, updatedClaim);
+        appInsights.trackEvent(NUMBER_OF_RECONSIDERATION, REFERENCE_NUMBER, claim.getReferenceNumber());
         return updatedClaim;
     }
 }
