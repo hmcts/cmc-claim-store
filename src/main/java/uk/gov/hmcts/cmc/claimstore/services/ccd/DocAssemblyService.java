@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 import uk.gov.hmcts.reform.docassembly.domain.OutputType;
 
 @Service
+@ConditionalOnProperty(prefix = "doc_assembly", name = "url")
 public class DocAssemblyService {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
