@@ -56,6 +56,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NUMBER_OF_RECONSIDERATION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils.DQ_FLAG;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
@@ -66,7 +67,6 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_ID
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.LETTER_HOLDER_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.NOT_REQUESTED_FOR_MORE_TIME;
-import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.SUBMITTER_EMAIL;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
@@ -563,6 +563,10 @@ public class ClaimServiceTest {
         claimService.saveReviewOrder(EXTERNAL_ID, reviewOrder, AUTHORISATION);
 
         verify(caseRepository).saveReviewOrder(eq(claim.getId()), eq(reviewOrder), eq(AUTHORISATION));
+
+        verify(appInsights).trackEvent(eq(NUMBER_OF_RECONSIDERATION),
+            eq(AppInsights.REFERENCE_NUMBER),
+            eq(claim.getReferenceNumber()));
     }
 
     @Test(expected = ConflictException.class)
@@ -605,7 +609,7 @@ public class ClaimServiceTest {
             .withLetterHolderId(LETTER_HOLDER_ID)
             .withDefendantId(DEFENDANT_ID)
             .withExternalId(EXTERNAL_ID)
-            .withReferenceNumber(REFERENCE_NUMBER)
+            .withReferenceNumber(SampleClaim.REFERENCE_NUMBER)
             .withClaimData(VALID_APP)
             .withCreatedAt(NOW_IN_LOCAL_ZONE)
             .withIssuedOn(ISSUE_DATE)
@@ -628,7 +632,7 @@ public class ClaimServiceTest {
             .withSubmitterId(USER_ID)
             .withDefendantId(DEFENDANT_ID)
             .withExternalId(EXTERNAL_ID)
-            .withReferenceNumber(REFERENCE_NUMBER)
+            .withReferenceNumber(SampleClaim.REFERENCE_NUMBER)
             .withCreatedAt(NOW_IN_LOCAL_ZONE)
             .withIssuedOn(ISSUE_DATE)
             .withResponseDeadline(RESPONSE_DEADLINE)
