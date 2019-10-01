@@ -235,6 +235,11 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
+    public Claim saveRepresentedClaim(User user, Claim claim) {
+        throw new NotImplementedException("Not required to implement for claim store repository");
+    }
+
+    @Override
     public void saveReDetermination(
         String authorisation,
         Claim claim,
