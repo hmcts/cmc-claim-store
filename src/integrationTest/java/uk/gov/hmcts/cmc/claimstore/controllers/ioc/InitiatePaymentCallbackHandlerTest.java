@@ -10,6 +10,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.payments.client.models.LinkDto;
 import uk.gov.hmcts.reform.payments.client.models.LinksDto;
 import uk.gov.hmcts.reform.payments.client.models.PaymentDto;
@@ -26,6 +28,7 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -103,7 +106,11 @@ public class InitiatePaymentCallbackHandlerTest extends MockSpringTest {
     private ResultActions makeRequest(String callbackType) throws Exception {
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .eventId(CaseEvent.INITIATE_CLAIM_PAYMENT_CITIZEN.getValue())
-            .caseDetails(successfulCoreCaseDataStoreSubmitResponse())
+            .caseDetails(CaseDetails.builder()
+                .id(CASE_ID)
+                .data(caseDetailsConverter.convertToMap(
+                    SampleData.getCCDCitizenCaseWithoutPayment()))
+                .build())
             .build();
 
         return webClient
