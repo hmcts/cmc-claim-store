@@ -36,8 +36,6 @@ import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
-import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
-import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
@@ -74,7 +72,7 @@ public class ClaimService {
     private final ReviewOrderRule reviewOrderRule;
     private final boolean asyncEventOperationEnabled;
     private CCDEventProducer ccdEventProducer;
-    private final String returnUrl;
+    private final String returnUrlPattern;
 
     @SuppressWarnings("squid:S00107") //Constructor need all parameters
     @Autowired
@@ -93,7 +91,7 @@ public class ClaimService {
         ClaimAuthorisationRule claimAuthorisationRule,
         ReviewOrderRule reviewOrderRule,
         @Value("${feature_toggles.async_event_operations_enabled:false}") boolean asyncEventOperationEnabled,
-        @Value("${payments.returnUrl}") String returnUrl) {
+        @Value("${payments.returnUrlPattern}") String returnUrlPattern) {
         this.claimRepository = claimRepository;
         this.userService = userService;
         this.issueDateCalculator = issueDateCalculator;
@@ -108,7 +106,7 @@ public class ClaimService {
         this.claimAuthorisationRule = claimAuthorisationRule;
         this.reviewOrderRule = reviewOrderRule;
         this.asyncEventOperationEnabled = asyncEventOperationEnabled;
-        this.returnUrl = returnUrl;
+        this.returnUrlPattern = returnUrlPattern;
     }
 
     public Claim getClaimById(long claimId) {
@@ -207,9 +205,9 @@ public class ClaimService {
             null,
             emptyList());
 
-        Claim createdClaim = caseRepository.initiatePayment(user, submitterId, claim);
+        Claim createdClaim = caseRepository.initiatePayment(user, claim);
 
-        return InitiatePaymentResponse.builder()
+        return CreatePaymentResponse.builder()
             .nextUrl(createdClaim.getClaimData().getPayment().getNextUrl())
             .build();
     }
@@ -226,7 +224,7 @@ public class ClaimService {
         return CreatePaymentResponse.builder()
             .nextUrl(
                 payment.getStatus().equals(PaymentStatus.SUCCESS)
-                    ? String.format(returnUrl, claim.getExternalId())
+                    ? String.format(returnUrlPattern, claim.getExternalId())
                     : payment.getNextUrl()
             )
             .build();

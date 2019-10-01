@@ -32,8 +32,8 @@ import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
-import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.Payment;
+import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
@@ -572,12 +572,12 @@ public class ClaimServiceTest {
         when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
         when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(ISSUE_DATE);
         when(responseDeadlineCalculator.calculateResponseDeadline(eq(ISSUE_DATE))).thenReturn(RESPONSE_DEADLINE);
-        when(caseRepository.initiatePayment(eq(USER), eq("submitterId"), any(Claim.class)))
+        when(caseRepository.initiatePayment(eq(USER), any(Claim.class)))
             .thenReturn(claim);
 
-        InitiatePaymentResponse response = claimService.initiatePayment(AUTHORISATION, "submitterId", VALID_APP);
+        CreatePaymentResponse response = claimService.initiatePayment(AUTHORISATION, "submitterId", VALID_APP);
 
-        InitiatePaymentResponse expectedResponse = InitiatePaymentResponse.builder()
+        CreatePaymentResponse expectedResponse = CreatePaymentResponse.builder()
             .nextUrl("http://nexturl.test")
             .build();
         assertThat(response).isEqualTo(expectedResponse);

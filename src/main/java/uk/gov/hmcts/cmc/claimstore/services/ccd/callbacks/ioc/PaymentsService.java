@@ -18,6 +18,9 @@ import static java.lang.String.format;
 
 @Service
 public class PaymentsService {
+    private static final String FEE_CHANNEL = "online";
+    private static final String FEE_EVENT = "issue";
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final PaymentsClient paymentsClient;
     private final FeesClient feesClient;
@@ -53,16 +56,16 @@ public class PaymentsService {
         logger.info("Calculating interest amount for case {}",
             claim.getExternalId());
 
-        logger.info("Retrieving fee for case {}",
-            claim.getExternalId());
-
         BigDecimal amount = claim.getTotalClaimAmount().orElseThrow(IllegalStateException::new);
         BigDecimal interest = claim.getTotalInterest().orElse(BigDecimal.ZERO);
 
         BigDecimal amountPlusInterest = amount.add(interest);
 
+        logger.info("Retrieving fee for case {}",
+            claim.getExternalId());
+
         FeeLookupResponseDto feeOutcome = feesClient.lookupFee(
-            "online", "issue", amountPlusInterest
+            FEE_CHANNEL, FEE_EVENT, amountPlusInterest
         );
 
         BigDecimal totalAmountPlusFees = amountPlusInterest.add(feeOutcome.getFeeAmount());

@@ -8,11 +8,9 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseEventMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
-import uk.gov.hmcts.cmc.ccd.mapper.InitiatePaymentCaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -28,8 +26,6 @@ import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
-import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
-import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -69,8 +65,7 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 public class CoreCaseDataService {
     private static final String CMC_CASE_UPDATE_SUMMARY = "CMC case update";
     private static final String CMC_CASE_CREATE_SUMMARY = "CMC case create";
-    private static final String CMC_CASE_CREATE_SUMMARY = "CMC case issue";
-    private static final String CMC_PAYMENT_CREATE_SUMMARY = "CMC payment creatiom";
+    private static final String CMC_PAYMENT_CREATE_SUMMARY = "CMC payment creation";
     private static final String SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION = "Submitting CMC case update";
     private static final String SUBMITTING_CMC_CASE_CREATE_DESCRIPTION = "Submitting CMC case create";
     private static final String SUBMITTING_CMC_INITIATE_PAYMENT_DESCRIPTION = "Submitting CMC initiate payment";
@@ -838,57 +833,6 @@ public class CoreCaseDataService {
                     CCD_UPDATE_FAILURE_MESSAGE,
                     caseId,
                     DIRECTIONS_QUESTIONNAIRE_DEADLINE
-                ), exception
-            );
-        }
-    }
-
-    public CreatePaymentResponse savePayment(
-        User user,
-        String submitterId,
-        InitiatePaymentRequest request) {
-        try {
-            EventRequestData eventRequestData =
-                eventRequest(INITIATE_CLAIM_PAYMENT_CITIZEN, user.getUserDetails().getId());
-
-            StartEventResponse startEventResponse = ccdCreateCaseService.startCreate(
-                user.getAuthorisation(),
-                eventRequestData,
-                user.isRepresented());
-
-            CCDCase.CCDCaseBuilder ccdCaseBuilder = CCDCase.builder()
-                .issuedOn(issueDateCalculator.calculateIssueDay(nowInLocalZone()))
-                .submitterId(submitterId)
-                .submitterEmail(user.getUserDetails().getEmail());
-
-            initiatePaymentCaseMapper.to(request, ccdCaseBuilder);
-
-            CaseDataContent caseDataContent = CaseDataContent.builder()
-                .eventToken(startEventResponse.getToken())
-                .event(Event.builder()
-                    .id(startEventResponse.getEventId())
-                    .description(SUBMITTING_CMC_INITIATE_PAYMENT_DESCRIPTION)
-                    .build())
-                .data(ccdCaseBuilder.build())
-                .build();
-
-            CaseDetails caseDetails = ccdCreateCaseService.submitCreate(
-                user.getAuthorisation(),
-                eventRequestData,
-                caseDataContent,
-                user.isRepresented()
-            );
-
-            return CreatePaymentResponse.builder()
-                .nextUrl(caseDetails.getData().get(PAYMENT_NEXT_URL).toString())
-                .build();
-
-        } catch (Exception exception) {
-            throw new CoreCaseDataStoreException(
-                String.format(
-                    "Failed storing claim in CCD store for external id %s on event %s",
-                    request.getExternalId().toString(),
-                    INITIATE_CLAIM_PAYMENT_CITIZEN
                 ), exception
             );
         }

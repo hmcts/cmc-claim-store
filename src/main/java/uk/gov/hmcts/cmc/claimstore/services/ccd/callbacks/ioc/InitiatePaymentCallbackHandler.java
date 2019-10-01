@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Payment;
+import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -81,7 +82,7 @@ public class InitiatePaymentCallbackHandler extends CallbackHandler {
             .ccdCaseId(caseDetails.getId())
             .issuedOn(issuedOn)
             .responseDeadline(responseDeadline)
-            .channelType(CITIZEN)
+            .channel(CITIZEN)
             .build();
 
         logger.info("Creating payment in pay hub for case {}",
@@ -97,7 +98,7 @@ public class InitiatePaymentCallbackHandler extends CallbackHandler {
                 .payment(Payment.builder()
                     .amount(payment.getAmount())
                     .reference(payment.getReference())
-                    .status(payment.getStatus())
+                    .status(PaymentStatus.fromValue(payment.getStatus()))
                     .dateCreated(payment.getDateCreated().toLocalDate().toString())
                     .nextUrl(payment.getLinks().getNextUrl().getHref().toString())
                     .build())

@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Payment;
+import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -88,7 +89,7 @@ public class InitiatePaymentCallbackHandlerTest {
         PaymentDto expectedPayment = PaymentDto.builder()
             .amount(BigDecimal.TEN)
             .reference("reference")
-            .status("status")
+            .status("success")
             .dateCreated(OffsetDateTime.parse("2017-02-03T10:15:30+01:00"))
             .links(LinksDto.builder()
                 .nextUrl(
@@ -122,14 +123,14 @@ public class InitiatePaymentCallbackHandlerTest {
         assertThat(toBeSaved.getCcdCaseId()).isEqualTo(CASE_ID);
         assertThat(toBeSaved.getIssuedOn()).isEqualTo(date);
         assertThat(toBeSaved.getResponseDeadline()).isEqualTo(date);
-        assertThat(toBeSaved.getChannelType()).isEqualTo(Optional.of(CITIZEN));
+        assertThat(toBeSaved.getChannel()).isEqualTo(Optional.of(CITIZEN));
 
         Payment payment = toBeSaved.getClaimData().getPayment();
         assertThat(payment.getAmount()).isEqualTo(expectedPayment.getAmount());
         assertThat(payment.getDateCreated()).isEqualTo(expectedPayment.getDateCreated().toLocalDate().toString());
         assertThat(payment.getId()).isEqualTo(expectedPayment.getId());
         assertThat(payment.getReference()).isEqualTo(expectedPayment.getReference());
-        assertThat(payment.getStatus()).isEqualTo(expectedPayment.getStatus());
+        assertThat(payment.getStatus()).isEqualTo(PaymentStatus.fromValue(expectedPayment.getStatus()));
         assertThat(payment.getNextUrl()).isEqualTo(expectedPayment.getLinks().getNextUrl().getHref().toString());
 
     }

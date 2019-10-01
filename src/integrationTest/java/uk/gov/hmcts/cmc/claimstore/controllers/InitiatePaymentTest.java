@@ -9,7 +9,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentResponse;
+import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -87,8 +87,8 @@ public class InitiatePaymentTest extends BaseSaveTest {
                 any()
             );
 
-        assertThat(deserializeObjectFrom(result, InitiatePaymentResponse.class))
-            .extracting(InitiatePaymentResponse::getNextUrl)
+        assertThat(deserializeObjectFrom(result, CreatePaymentResponse.class))
+            .extracting(CreatePaymentResponse::getNextUrl)
             .isEqualTo("http://nexturl.test");
     }
 

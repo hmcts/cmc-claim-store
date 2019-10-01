@@ -14,6 +14,6 @@ public class CallbackParams {
     private Map<Params, Object> params;
 
     public enum Params {
-        BEARER_TOKEN, SERVICE_AUTH_TOKEN
+        BEARER_TOKEN
     }
 }

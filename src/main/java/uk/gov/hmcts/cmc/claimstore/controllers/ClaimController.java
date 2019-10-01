@@ -117,11 +117,11 @@ public class ClaimController {
     @PostMapping(value = "/{submitterId}/initiate-citizen-payment", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation("Initiates a citizen payment")
     public CreatePaymentResponse initiatePayment(
-        @Valid @NotNull @RequestBody InitiatePaymentRequest initiatePaymentRequest,
+        @Valid @NotNull @RequestBody ClaimData claimData,
         @PathVariable("submitterId") String submitterId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        return claimService.initiatePayment(authorisation, submitterId, initiatePaymentRequest);
+        return claimService.initiatePayment(authorisation, submitterId, claimData);
     }
 
     @PutMapping(value = "/{submitterId}/resume-citizen-payment", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)

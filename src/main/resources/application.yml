@@ -87,9 +87,6 @@ payments:
 pdf-service:
   url: "${PDF_SERVICE_URL:}"
 
-payments:
-  returnUrl: "${FRONTEND_BASE_URL:}/claim/pay/%s/receiver"
-
 document_management:
   url: ${DOCUMENT_MANAGEMENT_URL}
   userRoles: ${DOCUMENT_MANAGEMENT_USERROLES}
