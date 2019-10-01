@@ -53,10 +53,10 @@ public class CaseMapper {
             .map(reviewOrderMapper::to)
             .ifPresent(builder::reviewOrder);
 
-        claim.getChannelType()
+        claim.getChannel()
             .map(ChannelType::name)
             .map(CCDChannelType::valueOf)
-            .ifPresent(builder::channelType);
+            .ifPresent(builder::channel);
 
         return builder
             .id(claim.getId())
@@ -103,8 +103,8 @@ public class CaseMapper {
             builder.features(Arrays.asList(ccdCase.getFeatures().split(",")));
         }
 
-        if (ccdCase.getChannelType() != null) {
-            builder.channelType(ChannelType.valueOf(ccdCase.getChannelType().name()));
+        if (ccdCase.getChannel() != null) {
+            builder.channel(ChannelType.valueOf(ccdCase.getChannel().name()));
         }
 
         return builder.build();
