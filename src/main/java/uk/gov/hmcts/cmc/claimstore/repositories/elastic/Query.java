@@ -7,15 +7,22 @@ import java.util.Objects;
 public class Query {
 
     private final QueryBuilder queryBuilder;
+    private final int pageSize;
 
-    public Query(QueryBuilder queryBuilder) {
+    public Query(QueryBuilder queryBuilder, int pageSize) {
         Objects.requireNonNull(queryBuilder, "QueryBuilder cannot be null in search");
+        if (pageSize <= 0) {
+            throw new IllegalArgumentException("Page size cant be less than 1");
+        }
         this.queryBuilder = queryBuilder;
+        this.pageSize = pageSize;
     }
 
     @Override
     public String toString() {
-        return "{" + "\"query\": "
+        return "{"
+            + "\"size\": " + pageSize + ","
+            + "\"query\": "
             + queryBuilder.toString()
             + '}';
     }
