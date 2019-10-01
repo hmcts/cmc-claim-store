@@ -8,11 +8,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CallbackHandlerFactory;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.DrawOrderCallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.GenerateOrderCallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.MoreTimeRequestedCallbackHandler;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
@@ -39,7 +41,7 @@ public class CallbackHandlerFactoryTest {
     @Mock
     private CallbackResponse callbackResponse;
     @Mock
-    private UserRolesService userRolesService;
+    private UserService userService;
 
     private CallbackHandlerFactory callbackHandlerFactory;
 
@@ -56,13 +58,14 @@ public class CallbackHandlerFactoryTest {
                 moreTimeRequestedCallbackHandler,
                 generateOrderCallbackHandler,
                 drawOrderCallbackHandler),
-            userRolesService);
+            userService);
     }
 
     @Test
     public void shouldDispatchCallbackForMoreTimeRequested() {
-        ImmutableList<String> supportedRoles = ImmutableList.of("caseworker-cmc");
-        when(userRolesService.retrieveUserRoles(eq(BEARER_TOKEN))).thenReturn(supportedRoles);
+        String supportedRole = "caseworker-cmc";
+        UserDetails userDetails = SampleUserDetails.builder().withRoles(supportedRole).build();
+        when(userService.getUserDetails(eq(BEARER_TOKEN))).thenReturn(userDetails);
 
         CallbackRequest callbackRequest = CallbackRequest
             .builder()
@@ -73,18 +76,19 @@ public class CallbackHandlerFactoryTest {
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
         when(moreTimeRequestedCallbackHandler.handle(params)).thenReturn(callbackResponse);
-        when(moreTimeRequestedCallbackHandler.getSupportedRoles()).thenReturn(supportedRoles);
+        when(moreTimeRequestedCallbackHandler.getSupportedRoles()).thenReturn(ImmutableList.of(supportedRole));
 
         callbackHandlerFactory.dispatch(params);
 
         verify(moreTimeRequestedCallbackHandler).handle(params);
-        verify(userRolesService).retrieveUserRoles(eq(BEARER_TOKEN));
+        verify(userService).getUserDetails(eq(BEARER_TOKEN));
     }
 
     @Test
     public void shouldDispatchCallbackForGenerateOrder() {
-        ImmutableList<String> supportedRoles = ImmutableList.of("caseworker-cmc-legaladvisor");
-        when(userRolesService.retrieveUserRoles(eq(BEARER_TOKEN))).thenReturn(supportedRoles);
+        String supportedRole = "caseworker-cmc-legaladvisor";
+        UserDetails userDetails = SampleUserDetails.builder().withRoles(supportedRole).build();
+        when(userService.getUserDetails(eq(BEARER_TOKEN))).thenReturn(userDetails);
 
         CallbackRequest callbackRequest = CallbackRequest
             .builder()
@@ -95,18 +99,19 @@ public class CallbackHandlerFactoryTest {
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
         when(generateOrderCallbackHandler.handle(params)).thenReturn(callbackResponse);
-        when(generateOrderCallbackHandler.getSupportedRoles()).thenReturn(supportedRoles);
+        when(generateOrderCallbackHandler.getSupportedRoles()).thenReturn(ImmutableList.of(supportedRole));
 
         callbackHandlerFactory.dispatch(params);
 
         verify(generateOrderCallbackHandler).handle(params);
-        verify(userRolesService).retrieveUserRoles(eq(BEARER_TOKEN));
+        verify(userService).getUserDetails(eq(BEARER_TOKEN));
     }
 
     @Test
     public void shouldDispatchCallbackForDrawOrder() {
-        ImmutableList<String> supportedRoles = ImmutableList.of("caseworker-cmc-legaladvisor");
-        when(userRolesService.retrieveUserRoles(eq(BEARER_TOKEN))).thenReturn(supportedRoles);
+        String supportedRole = "caseworker-cmc-legaladvisor";
+        UserDetails userDetails = SampleUserDetails.builder().withRoles(supportedRole).build();
+        when(userService.getUserDetails(eq(BEARER_TOKEN))).thenReturn(userDetails);
 
         CallbackRequest callbackRequest = CallbackRequest
             .builder()
@@ -118,12 +123,12 @@ public class CallbackHandlerFactoryTest {
             .build();
 
         when(drawOrderCallbackHandler.handle(params)).thenReturn(callbackResponse);
-        when(drawOrderCallbackHandler.getSupportedRoles()).thenReturn(supportedRoles);
+        when(drawOrderCallbackHandler.getSupportedRoles()).thenReturn(ImmutableList.of(supportedRole));
 
         callbackHandlerFactory.dispatch(params);
 
         verify(drawOrderCallbackHandler).handle(params);
-        verify(userRolesService).retrieveUserRoles(eq(BEARER_TOKEN));
+        verify(userService).getUserDetails(eq(BEARER_TOKEN));
     }
 
     @Test(expected = CallbackException.class)
@@ -156,8 +161,8 @@ public class CallbackHandlerFactoryTest {
 
     @Test(expected = CallbackException.class)
     public void shouldThrowIfUserDoesNotHaveSupportedRoles() {
-        ImmutableList<String> userRoles = ImmutableList.of("citizen");
-        when(userRolesService.retrieveUserRoles(eq(BEARER_TOKEN))).thenReturn(userRoles);
+        UserDetails userDetails = SampleUserDetails.builder().withRoles("citizen").build();
+        when(userService.getUserDetails(eq(BEARER_TOKEN))).thenReturn(userDetails);
 
         CallbackRequest callbackRequest = CallbackRequest
             .builder()
@@ -172,6 +177,6 @@ public class CallbackHandlerFactoryTest {
 
         callbackHandlerFactory.dispatch(params);
 
-        verify(userRolesService).retrieveUserRoles(eq(BEARER_TOKEN));
+        verify(userService).getUserDetails(eq(BEARER_TOKEN));
     }
 }

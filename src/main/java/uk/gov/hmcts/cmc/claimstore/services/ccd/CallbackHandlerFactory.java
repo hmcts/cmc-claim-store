@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
-import uk.gov.hmcts.cmc.claimstore.services.UserRolesService;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
@@ -17,12 +17,12 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.
 @Service
 public class CallbackHandlerFactory {
 
-    private final UserRolesService userRolesService;
+    private final UserService userService;
     private HashMap<String, CallbackHandler> eventHandlers = new HashMap<>();
 
     @Autowired(required = false)
-    public CallbackHandlerFactory(List<CallbackHandler> beans, UserRolesService userRolesService) {
-        this.userRolesService = userRolesService;
+    public CallbackHandlerFactory(List<CallbackHandler> beans, UserService userService) {
+        this.userService = userService;
         beans.forEach(bean -> bean.register(eventHandlers));
     }
 
@@ -35,7 +35,7 @@ public class CallbackHandlerFactory {
     }
 
     private boolean hasSupportedRoles(CallbackHandler callbackHandler, String authorisation) {
-        List<String> userRoles = userRolesService.retrieveUserRoles(authorisation);
+        List<String> userRoles = userService.getUserDetails(authorisation).getRoles();
         return callbackHandler.getSupportedRoles().stream().anyMatch(userRoles::contains);
     }
 }
