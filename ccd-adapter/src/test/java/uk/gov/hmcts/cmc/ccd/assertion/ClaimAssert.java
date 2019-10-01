@@ -213,7 +213,7 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
                     failWithMessage("Expected CCDCase.paymentDateCreated to be <%s> but was <%s>",
                         ccdCase.getPaymentDateCreated(), payment.getDateCreated());
                 }
-                if (!Objects.equals(payment.getStatus(), ccdCase.getPaymentStatus())) {
+                if (!Objects.equals(payment.getStatus().getStatus(), ccdCase.getPaymentStatus())) {
                     failWithMessage("Expected CCDCase.paymentStatus to be <%s> but was <%s>",
                         ccdCase.getPaymentStatus(), payment.getStatus());
                 }

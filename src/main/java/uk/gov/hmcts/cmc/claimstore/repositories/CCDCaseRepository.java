@@ -18,8 +18,8 @@ import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
-import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_DEFENDANT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service("caseRepository")
@@ -146,8 +147,16 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public InitiatePaymentResponse initiatePayment(User user, String submitterId, InitiatePaymentRequest data) {
+    public CreatePaymentResponse initiatePayment(User user, String submitterId, InitiatePaymentRequest data) {
         return coreCaseDataService.savePayment(user, submitterId, data);
+    }
+
+    @Override
+    public Claim resumePayment(User user, Claim claim) {
+        return coreCaseDataService.saveCaseEvent(
+            user.getAuthorisation(),
+            claim.getCcdCaseId(),
+            RESUME_CLAIM_PAYMENT_CITIZEN);
     }
 
     @Override
