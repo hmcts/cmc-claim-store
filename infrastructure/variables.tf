@@ -76,10 +76,6 @@ variable "enable_staff_email" {
   default = "true"
 }
 
-variable "ccd_enabled" {
-  default = "false"
-}
-
 variable "save_claim_state_enabled" {
   default = "false"
 }

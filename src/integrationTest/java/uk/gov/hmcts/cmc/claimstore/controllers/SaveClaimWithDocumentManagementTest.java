@@ -43,8 +43,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @TestPropertySource(
     properties = {
-        "document_management.url=http://localhost:8085",
-        "feature_toggles.ccd_enabled=false"
+        "core_case_data.api.url=false",
     }
 )
 public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {

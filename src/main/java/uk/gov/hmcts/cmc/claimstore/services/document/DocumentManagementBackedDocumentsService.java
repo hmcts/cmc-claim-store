@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.document;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
@@ -23,7 +22,6 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_DIRECTIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_SANCTIONS;
 
 @Service("documentsService")
-@ConditionalOnProperty(prefix = "document_management", name = "url")
 public class DocumentManagementBackedDocumentsService implements DocumentsService {
 
     private final ClaimService claimService;
