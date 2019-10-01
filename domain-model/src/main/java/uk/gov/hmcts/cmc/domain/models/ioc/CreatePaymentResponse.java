@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
-public class InitiatePaymentResponse {
+public class CreatePaymentResponse {
 
     String nextUrl;
 }

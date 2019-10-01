@@ -9,8 +9,8 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
-import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
@@ -120,15 +120,32 @@ public class ClaimControllerTest {
         //given
         String submitterId = "234";
         InitiatePaymentRequest request = InitiatePaymentRequest.builder().build();
-        InitiatePaymentResponse response = InitiatePaymentResponse.builder().build();
+        CreatePaymentResponse response = CreatePaymentResponse.builder().build();
         when(claimService.initiatePayment(AUTHORISATION, submitterId, request))
             .thenReturn(response);
 
         //when
-        InitiatePaymentResponse output = claimController.initiatePayment(
+        CreatePaymentResponse output = claimController.initiatePayment(
             request, submitterId, AUTHORISATION);
 
         //then
         assertThat(output).isEqualTo(response);
+    }
+
+    @Test
+    public void shouldResumePaymentForCitizen() {
+        //given
+        ClaimData claimData = SampleClaimData.builder().build();
+        CreatePaymentResponse expectedResponse =
+            CreatePaymentResponse.builder().nextUrl("http://next.url").build();
+        when(claimService.resumePayment(AUTHORISATION, claimData))
+            .thenReturn(expectedResponse);
+
+        //when
+        CreatePaymentResponse output = claimController.resumePayment(
+            claimData, "123", AUTHORISATION);
+
+        //then
+        assertThat(output).isEqualTo(expectedResponse);
     }
 }
