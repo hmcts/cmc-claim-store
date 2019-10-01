@@ -26,8 +26,8 @@ import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
-import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -66,7 +66,6 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled", havingValue = "true")
 public class CoreCaseDataService {
-
     private static final String CMC_CASE_UPDATE_SUMMARY = "CMC case update";
     private static final String CMC_CASE_CREATE_SUMMARY = "CMC case create";
     private static final String SUBMITTING_CMC_CASE_UPDATE_DESCRIPTION = "Submitting CMC case update";
@@ -787,7 +786,7 @@ public class CoreCaseDataService {
         }
     }
 
-    public InitiatePaymentResponse savePayment(
+    public CreatePaymentResponse savePayment(
         User user,
         String submitterId,
         InitiatePaymentRequest initiatePaymentRequestData) {
@@ -821,7 +820,7 @@ public class CoreCaseDataService {
                 user.isRepresented()
             );
 
-            return InitiatePaymentResponse.builder()
+            return CreatePaymentResponse.builder()
                 .nextUrl(caseDetails.getData().get(PAYMENT_NEXT_URL).toString())
                 .build();
 
@@ -836,7 +835,7 @@ public class CoreCaseDataService {
         }
     }
 
-    public void saveCaseEvent(String authorisation, Long caseId, CaseEvent caseEvent) {
+    public Claim saveCaseEvent(String authorisation, Long caseId, CaseEvent caseEvent) {
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
 
@@ -853,12 +852,13 @@ public class CoreCaseDataService {
 
             CaseDataContent caseDataContent = caseDataContent(startEventResponse, ccdCase);
 
-            submitUpdate(authorisation,
+            CaseDetails caseDetails = submitUpdate(authorisation,
                 eventRequestData,
                 caseDataContent,
                 caseId,
                 userDetails.isSolicitor() || userDetails.isCaseworker()
             );
+            return caseDetailsConverter.extractClaim(caseDetails);
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(

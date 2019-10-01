@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
@@ -30,10 +31,12 @@ import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
+import uk.gov.hmcts.cmc.domain.models.Payment;
+import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
-import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
@@ -69,6 +72,7 @@ public class ClaimService {
     private final ReviewOrderRule reviewOrderRule;
     private final boolean asyncEventOperationEnabled;
     private CCDEventProducer ccdEventProducer;
+    private final String returnUrl;
 
     @SuppressWarnings("squid:S00107") //Constructor need all parameters
     @Autowired
@@ -86,8 +90,8 @@ public class ClaimService {
         CCDEventProducer ccdEventProducer,
         ClaimAuthorisationRule claimAuthorisationRule,
         ReviewOrderRule reviewOrderRule,
-        @Value("${feature_toggles.async_event_operations_enabled:false}") boolean asyncEventOperationEnabled
-    ) {
+        @Value("${feature_toggles.async_event_operations_enabled:false}") boolean asyncEventOperationEnabled,
+        @Value("${payments.returnUrl}") String returnUrl) {
         this.claimRepository = claimRepository;
         this.userService = userService;
         this.issueDateCalculator = issueDateCalculator;
@@ -102,6 +106,7 @@ public class ClaimService {
         this.claimAuthorisationRule = claimAuthorisationRule;
         this.reviewOrderRule = reviewOrderRule;
         this.asyncEventOperationEnabled = asyncEventOperationEnabled;
+        this.returnUrl = returnUrl;
     }
 
     public Claim getClaimById(long claimId) {
@@ -188,12 +193,30 @@ public class ClaimService {
         return caseRepository.getClaimsByState(claimState, user);
     }
 
-    public InitiatePaymentResponse initiatePayment(
+    public CreatePaymentResponse initiatePayment(
         String authorisation,
         String submitterId,
         InitiatePaymentRequest request) {
         User user = userService.getUser(authorisation);
         return caseRepository.initiatePayment(user, submitterId, request);
+    }
+
+    public CreatePaymentResponse resumePayment(
+        String authorisation,
+        ClaimData claimData) {
+        User user = userService.getUser(authorisation);
+        Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), authorisation);
+        Claim resumedClaim = caseRepository.resumePayment(user, claim);
+
+        Payment payment = resumedClaim.getClaimData().getPayment();
+
+        return CreatePaymentResponse.builder()
+            .nextUrl(
+                payment.getStatus().equals(PaymentStatus.SUCCESS)
+                    ? String.format(returnUrl, claim.getExternalId())
+                    : payment.getNextUrl()
+            )
+            .build();
     }
 
     @LogExecutionTime
@@ -397,8 +420,21 @@ public class ClaimService {
         ccdEventProducer.createCCDReDetermination(claim, authorisation, redetermination);
     }
 
-    public void updateClaimState(String authorisation, Claim claim, ClaimState state) {
-        caseRepository.updateClaimState(authorisation, claim.getId(), state);
+    public void updateClaimState(String authorisation, Claim claim, ClaimState currentState) {
+        caseRepository.updateClaimState(authorisation, claim.getId(), currentState);
+    }
+
+    public Claim updateClaimSubmissionOperationIndicators(
+        String authorisation,
+        Claim claim,
+        ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
+    ) {
+        return caseRepository.updateClaimSubmissionOperationStatus(
+            authorisation,
+            claim.getId(),
+            claimSubmissionOperationIndicators,
+            CaseEvent.RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS
+        );
     }
 
     public Claim saveReviewOrder(String externalId, ReviewOrder reviewOrder, String authorisation) {
