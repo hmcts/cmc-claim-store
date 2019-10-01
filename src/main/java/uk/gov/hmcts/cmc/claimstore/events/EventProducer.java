@@ -45,13 +45,17 @@ public class EventProducer {
         }
     }
 
-    public void createClaimCreatedEvent(Claim claim, String pin, String submitterName, String authorisation) {
+    public void createClaimCreatedEvent(Claim claim, String submitterName, String authorisation) {
 
         if (claim.getClaimData().isClaimantRepresented()) {
             publisher.publishEvent(new RepresentedClaimCreatedEvent(claim, submitterName, authorisation));
         } else {
             publisher.publishEvent(new CitizenClaimCreatedEvent(claim, submitterName, authorisation));
         }
+    }
+
+    public void createRepresentedClaimCreatedEvent(Claim claim, String submitterName, String authorisation) {
+        publisher.publishEvent(new RepresentedClaimCreatedEvent(claim, submitterName, authorisation));
     }
 
     public void createDefendantResponseEvent(Claim claim, String authorization) {
