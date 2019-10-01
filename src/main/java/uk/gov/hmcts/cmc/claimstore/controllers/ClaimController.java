@@ -19,8 +19,8 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
-import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
 
 import java.util.List;
@@ -105,14 +105,34 @@ public class ClaimController {
         return claimService.saveClaim(submitterId, claimData, authorisation, features);
     }
 
+    @PostMapping(value = "/{submitterId}/create-legal-rep-claim", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation("Creates a new legal rep claim")
+    public Claim saveLegalRepresentedClaim(
+        @Valid @NotNull @RequestBody ClaimData claimData,
+        @PathVariable("submitterId") String submitterId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        return claimService.saveRepresentedClaim(submitterId, claimData, authorisation);
+    }
+
     @PostMapping(value = "/{submitterId}/initiate-citizen-payment", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ApiOperation("Intiates a citizen payment")
-    public InitiatePaymentResponse initiatePayment(
+    @ApiOperation("Initiates a citizen payment")
+    public CreatePaymentResponse initiatePayment(
         @Valid @NotNull @RequestBody InitiatePaymentRequest initiatePaymentRequest,
         @PathVariable("submitterId") String submitterId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
         return claimService.initiatePayment(authorisation, submitterId, initiatePaymentRequest);
+    }
+
+    @PutMapping(value = "/{submitterId}/resume-citizen-payment", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation("Resumes a citizen payment")
+    public CreatePaymentResponse resumePayment(
+        @Valid @NotNull @RequestBody ClaimData claimData,
+        @PathVariable("submitterId") String submitterId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        return claimService.resumePayment(authorisation, claimData);
     }
 
     @PutMapping("/defendant/link")
