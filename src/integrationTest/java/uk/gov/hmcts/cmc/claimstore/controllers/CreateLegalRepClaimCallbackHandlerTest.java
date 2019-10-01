@@ -56,7 +56,7 @@ public class CreateLegalRepClaimCallbackHandlerTest extends MockSpringTest {
         assertThat(defendant)
             .containsEntry("responseDeadline", defendant.get("responseDeadline"));
         assertThat(responseData)
-            .contains(entry("channelType", LEGAL_REP.name()))
+            .contains(entry("channel", LEGAL_REP.name()))
             .contains(entry("previousServiceCaseReference", REFERENCE_NO))
             .containsKey("issuedOn");
     }

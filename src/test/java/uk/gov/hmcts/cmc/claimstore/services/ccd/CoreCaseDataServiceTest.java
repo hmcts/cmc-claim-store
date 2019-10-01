@@ -26,8 +26,8 @@ import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
-import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -189,6 +189,41 @@ public class CoreCaseDataServiceTest {
     }
 
     @Test
+    public void submitRepresentedClaimShouldReturnLegalRepClaim() {
+        Claim providedLegalRepClaim = SampleClaim.getDefaultForLegal();
+        Claim expectedLegalRepClaim = SampleClaim.claim(providedLegalRepClaim.getClaimData(), "012LR345");
+
+        when(ccdCreateCaseService.startCreate(
+            eq(AUTHORISATION),
+            any(EventRequestData.class),
+            eq(false)
+        ))
+            .thenReturn(StartEventResponse.builder()
+                .caseDetails(CaseDetails.builder().build())
+                .eventId("eventId")
+                .token("token")
+                .build());
+
+        when(ccdCreateCaseService.submitCreate(
+            eq(AUTHORISATION),
+            any(EventRequestData.class),
+            any(CaseDataContent.class),
+            eq(false)
+        ))
+            .thenReturn(CaseDetails.builder()
+                .id(SampleClaim.CLAIM_ID)
+                .data(new HashMap<>())
+                .build());
+
+        when(caseMapper.to(providedLegalRepClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(expectedLegalRepClaim);
+
+        Claim returnedLegalRepClaim = service.createNewCase(USER, providedLegalRepClaim);
+
+        assertEquals(expectedLegalRepClaim, returnedLegalRepClaim);
+    }
+
+    @Test
     public void submitClaimShouldNotCallAuthoriseIfLetterHolderIsNull() {
         Claim providedClaim = SampleClaim.getDefault().toBuilder().letterHolderId(null).build();
 
@@ -252,12 +287,12 @@ public class CoreCaseDataServiceTest {
                     "paymentNextUrl", nextUrl))
                 .build());
 
-        InitiatePaymentResponse response = service.savePayment(
+        CreatePaymentResponse response = service.savePayment(
             USER,
             "submitterId",
             initiatePaymentRequest
         );
-        InitiatePaymentResponse expectedResponse = InitiatePaymentResponse.builder()
+        CreatePaymentResponse expectedResponse = CreatePaymentResponse.builder()
             .nextUrl(nextUrl)
             .build();
         assertEquals(expectedResponse, response);
