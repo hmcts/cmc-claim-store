@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(
     properties = {
         "claim-store.test-support.enabled=true",
-        "feature_toggles.ccd_enabled=false"
+        "core_case_data.api.url=false",
     }
 )
 public class LinkDefendantToClaimTest extends BaseIntegrationTest {

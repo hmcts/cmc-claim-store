@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseGetTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
@@ -29,11 +28,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.caseWithReferenceNumber;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetails;
 
-@TestPropertySource(
-    properties = {
-        "feature_toggles.ccd_enabled=true"
-    }
-)
 @Ignore
 public class GetClaimsByClaimantIdFromCoreCaseDataStoreTest extends BaseGetTest {
     private static final String SERVICE_TOKEN = "S2S token";
