@@ -19,8 +19,8 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 
 import java.util.function.Function;
-import java.util.function.Supplier;
 
+import static java.util.function.Predicate.isEqual;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 
 @Async("threadPoolTaskExecutor")
@@ -106,15 +106,16 @@ public class PostClaimOrchestrationHandler {
             PDF sealedClaimPdf = documentOrchestrationService.getSealedClaimPdf(claim);
             PDF claimIssueReceiptPdf = documentOrchestrationService.getClaimIssueReceiptPdf(claim);
 
-            Supplier<Claim> updatedClaim = () ->
-                doPinOperation
-                    .andThen(c -> uploadSealedClaimOperation.perform(c, authorisation, sealedClaimPdf))
-                    .andThen(c -> uploadClaimIssueReceiptOperation.perform(c, authorisation, claimIssueReceiptPdf))
-                    .andThen(c -> rpaOperation.perform(c, authorisation, sealedClaimPdf))
-                    .andThen(c -> notifyClaimantOperation.perform(c, event))
-                    .apply(claim);
+            Claim updatedClaim = doPinOperation
+                .andThen(c -> uploadSealedClaimOperation.perform(c, authorisation, sealedClaimPdf))
+                .andThen(c -> uploadClaimIssueReceiptOperation.perform(c, authorisation, claimIssueReceiptPdf))
+                .andThen(c -> rpaOperation.perform(c, authorisation, sealedClaimPdf))
+                .andThen(c -> notifyClaimantOperation.perform(c, event))
+                .apply(claim);
 
-            claimService.updateClaimState(authorisation, updatedClaim.get(), ClaimState.OPEN);
+            updatedClaim.getState()
+                .filter(isEqual(ClaimState.CREATE))
+                .ifPresent(state -> claimService.updateClaimState(authorisation, updatedClaim, ClaimState.OPEN));
 
         } catch (Exception e) {
             logger.error("Failed operation processing for event ()", event, e);
@@ -134,14 +135,15 @@ public class PostClaimOrchestrationHandler {
             Function<Claim, Claim> doUploadSealedClaim =
                 c -> uploadSealedClaimOperation.perform(c, authorisation, sealedClaim);
 
-            Supplier<Claim> updatedClaim = () ->
-                doUploadSealedClaim
-                    .andThen(c -> rpaOperation.perform(c, authorisation, sealedClaim))
-                    .andThen(c -> notifyStaffOperation.perform(c, authorisation, sealedClaim))
-                    .andThen(c -> notifyRepresentativeOperation.perform(c, event))
-                    .apply(claim);
+            Claim updatedClaim = doUploadSealedClaim
+                .andThen(c -> rpaOperation.perform(c, authorisation, sealedClaim))
+                .andThen(c -> notifyStaffOperation.perform(c, authorisation, sealedClaim))
+                .andThen(c -> notifyRepresentativeOperation.perform(c, event))
+                .apply(claim);
 
-            claimService.updateClaimState(authorisation, updatedClaim.get(), ClaimState.OPEN);
+            updatedClaim.getState()
+                .filter(isEqual(ClaimState.CREATE))
+                .ifPresent(state -> claimService.updateClaimState(authorisation, updatedClaim, ClaimState.OPEN));
 
         } catch (Exception e) {
             logger.error("Failed operation processing for event ()", event, e);

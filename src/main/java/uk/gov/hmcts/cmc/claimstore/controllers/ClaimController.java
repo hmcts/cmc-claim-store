@@ -105,8 +105,18 @@ public class ClaimController {
         return claimService.saveClaim(submitterId, claimData, authorisation, features);
     }
 
+    @PostMapping(value = "/{submitterId}/create-legal-rep-claim", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation("Creates a new legal rep claim")
+    public Claim saveLegalRepresentedClaim(
+        @Valid @NotNull @RequestBody ClaimData claimData,
+        @PathVariable("submitterId") String submitterId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        return claimService.saveRepresentedClaim(submitterId, claimData, authorisation);
+    }
+
     @PostMapping(value = "/{submitterId}/initiate-citizen-payment", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ApiOperation("Intiates a citizen payment")
+    @ApiOperation("Initiates a citizen payment")
     public InitiatePaymentResponse initiatePayment(
         @Valid @NotNull @RequestBody InitiatePaymentRequest initiatePaymentRequest,
         @PathVariable("submitterId") String submitterId,

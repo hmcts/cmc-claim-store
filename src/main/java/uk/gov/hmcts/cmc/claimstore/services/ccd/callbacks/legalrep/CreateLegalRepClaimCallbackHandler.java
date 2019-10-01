@@ -83,7 +83,7 @@ public class CreateLegalRepClaimCallbackHandler extends CallbackHandler {
             .referenceNumber(referenceNumber)
             .issuedOn(issuedOn)
             .responseDeadline(responseDeadline)
-            .channelType(LEGAL_REP)
+            .channel(LEGAL_REP)
             .build();
 
         return AboutToStartOrSubmitCallbackResponse
