@@ -30,7 +30,7 @@ public enum ClaimState {
 
     public static ClaimState fromValue(String value) {
         return Arrays.stream(ClaimState.values())
-            .filter(val -> val.name().equalsIgnoreCase(value))
+            .filter(state -> state.getValue().equalsIgnoreCase(value))
             .findFirst().orElseThrow(IllegalArgumentException::new);
     }
 }

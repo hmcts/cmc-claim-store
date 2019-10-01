@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDResponseSubjectType;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -45,6 +46,8 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.GENERATE_ORDER;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOTH;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.DOCUMENTS;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYEWITNESS;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DRAFTED_BY_LEGAL_ADVISOR;
 
 @Service
 @ConditionalOnProperty(prefix = "doc_assembly", name = "url")
@@ -73,6 +76,7 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
     private final UserService userService;
     private final DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
     private final CaseDetailsConverter caseDetailsConverter;
+    private final AppInsights appInsights;
 
     @Autowired
     public GenerateOrderCallbackHandler(
@@ -82,7 +86,8 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
         AuthTokenGenerator authTokenGenerator,
         JsonMapper jsonMapper,
         DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper,
-        CaseDetailsConverter caseDetailsConverter
+        CaseDetailsConverter caseDetailsConverter,
+        AppInsights appInsights
     ) {
         this.docAssemblyClient = docAssemblyClient;
         this.authTokenGenerator = authTokenGenerator;
@@ -91,6 +96,7 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
         this.legalOrderGenerationDeadlinesCalculator = legalOrderGenerationDeadlinesCalculator;
         this.docAssemblyTemplateBodyMapper = docAssemblyTemplateBodyMapper;
         this.caseDetailsConverter = caseDetailsConverter;
+        this.appInsights = appInsights;
     }
 
     @Override
@@ -156,6 +162,8 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
         );
 
         logger.info("Generate order callback: received response from doc assembly");
+
+        appInsights.trackEvent(DRAFTED_BY_LEGAL_ADVISOR, REFERENCE_NUMBER, ccdCase.getPreviousServiceCaseReference());
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()
