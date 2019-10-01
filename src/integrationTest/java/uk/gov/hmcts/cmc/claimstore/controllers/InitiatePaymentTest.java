@@ -28,7 +28,9 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
         "document_management.url=false",
         "feature_toggles.ccd_async_enabled=false",
         "feature_toggles.ccd_enabled=true",
-        "feature_toggles.async_event_operations_enabled=false"
+        "feature_toggles.async_event_operations_enabled=true",
+        "payments.api.url=http://payments-api",
+        "fees.api.url=http://fees-api"
     }
 )
 public class InitiatePaymentTest extends BaseSaveTest {
@@ -111,8 +113,8 @@ public class InitiatePaymentTest extends BaseSaveTest {
             .andReturn();
 
         assertThat(result.getResolvedException().getMessage())
-            .isEqualTo("Failed storing claim in CCD store for case id 000MC001 "
-                + "on event INITIATE_CLAIM_PAYMENT_CITIZEN");
+            .isEqualTo("Failed creating a payment in CCD store for claim with "
+                + "external id " + claimData.getExternalId() + " on event INITIATE_CLAIM_PAYMENT_CITIZEN");
     }
 
     @Test
@@ -147,8 +149,8 @@ public class InitiatePaymentTest extends BaseSaveTest {
             .andReturn();
 
         assertThat(result.getResolvedException().getMessage())
-            .isEqualTo("Failed storing claim in CCD store for "
-                + "case id 000MC001 on event INITIATE_CLAIM_PAYMENT_CITIZEN");
+            .isEqualTo("Failed creating a payment in CCD store for claim with "
+                + "external id " + claimData.getExternalId() + " on event INITIATE_CLAIM_PAYMENT_CITIZEN");
     }
 
     private ResultActions makeInitiatePaymentRequest(ClaimData claimData, String authorization) throws Exception {

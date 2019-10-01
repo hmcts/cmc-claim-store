@@ -81,6 +81,9 @@ public class CoreCaseDataService {
     private static final String CCD_STORING_FAILURE_MESSAGE
         = "Failed storing claim in CCD store for case id %s on event %s";
 
+    private static final String CCD_PAYMENT_CREATE_FAILURE_MESSAGE
+        = "Failed creating a payment in CCD store for claim with external id %s on event %s";
+
     private final CaseMapper caseMapper;
     private final UserService userService;
     private final ReferenceNumberService referenceNumberService;
@@ -224,8 +227,8 @@ public class CoreCaseDataService {
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(
-                    CCD_STORING_FAILURE_MESSAGE,
-                    ccdCase.getPreviousServiceCaseReference(),
+                    CCD_PAYMENT_CREATE_FAILURE_MESSAGE,
+                    ccdCase.getExternalId(),
                     INITIATE_CLAIM_PAYMENT_CITIZEN
                 ), exception
             );

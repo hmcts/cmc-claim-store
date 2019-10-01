@@ -25,12 +25,12 @@ public class PaymentsService {
     private final String siteId;
     private final String currency;
     private final String description;
-    private final String returnUrl;
+    private final String returnUrlPattern;
 
     public PaymentsService(
         PaymentsClient paymentsClient,
         FeesClient feesClient,
-        @Value("${payments.returnUrl}") String returnUrl,
+        @Value("${payments.returnUrlPattern}") String returnUrlPattern,
         @Value("${payments.api.service}") String service,
         @Value("${payments.api.siteId}") String siteId,
         @Value("${payments.api.currency}") String currency,
@@ -38,7 +38,7 @@ public class PaymentsService {
     ) {
         this.paymentsClient = paymentsClient;
         this.feesClient = feesClient;
-        this.returnUrl = returnUrl;
+        this.returnUrlPattern = returnUrlPattern;
         this.service = service;
         this.siteId = siteId;
         this.currency = currency;
@@ -76,7 +76,7 @@ public class PaymentsService {
         PaymentDto payment = paymentsClient.createPayment(
             authorisation,
             paymentRequest,
-            format(returnUrl, claim.getExternalId())
+            format(returnUrlPattern, claim.getExternalId())
         );
 
         payment.setAmount(totalAmountPlusFees);
