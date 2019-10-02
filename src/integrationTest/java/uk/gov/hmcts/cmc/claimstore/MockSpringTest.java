@@ -20,7 +20,6 @@ import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.TestingSupportRepository;
-import uk.gov.hmcts.cmc.claimstore.repositories.UserRolesRepository;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.bankholidays.PublicHolidaysCollection;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -60,9 +59,6 @@ public abstract class MockSpringTest {
 
     @MockBean
     protected UserService userService;
-
-    @MockBean
-    protected UserRolesRepository userRolesRepository;
 
     @MockBean
     protected PublicHolidaysCollection holidaysCollection;

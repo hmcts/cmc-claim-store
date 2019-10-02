@@ -20,7 +20,6 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
-import uk.gov.hmcts.cmc.domain.models.UserRole;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -48,8 +47,9 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
 public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
 
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder()
-        .withForename("Judge")
-        .withSurname("McJudge")
+        .withForename("legal")
+        .withSurname("Advisor")
+        .withRoles("caseworker-cmc-legaladvisor")
         .build();
 
     private static final String AUTHORISATION_TOKEN = "Bearer let me in";
@@ -76,9 +76,6 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
         given(authTokenGenerator.generate()).willReturn(serviceToken);
         given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(USER_DETAILS);
         given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(new User(AUTHORISATION_TOKEN, USER_DETAILS));
-        String userId = USER_DETAILS.getId();
-        given(userRolesRepository.getByUserId(userId))
-            .willReturn(ImmutableList.of(new UserRole(userId, "caseworker-cmc-legaladvisor")));
         given(docAssemblyApi.generateOrder(
             anyString(),
             anyString(),
