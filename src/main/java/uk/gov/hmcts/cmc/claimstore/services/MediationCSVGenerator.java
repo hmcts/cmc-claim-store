@@ -12,12 +12,14 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.MediationRow;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -32,6 +34,7 @@ public class MediationCSVGenerator {
 
     private static final int CLAIMANT_PARTY_TYPE = 1;
     private static final int DEFENDANT_PARTY_TYPE = 2;
+    private static final int PILOT_AMOUNT = 300;
 
     private static final MediationRow reportHeader = MediationRow.builder()
         .siteId("SITE_ID")
@@ -43,7 +46,9 @@ public class MediationCSVGenerator {
         .contactNumber("CONTACT_NUMBER")
         .checkList("CHECK_LIST")
         .partyStatus("PARTY_STATUS")
-        .emailAddress("CONTACT_EMAIL").build();
+        .emailAddress("CONTACT_EMAIL")
+        .pilot("PILOT")
+        .build();
 
     private static final Map<Integer, Function<Claim, String>> CONTACT_PERSON_EXTRACTORS =
         ImmutableMap.of(
@@ -84,6 +89,12 @@ public class MediationCSVGenerator {
             DEFENDANT_PARTY_TYPE,
             Claim::getDefendantEmail
         );
+
+    private static final Function<Optional<BigDecimal>, String> isPilotCase =
+        claimAmount -> claimAmount.map(BigDecimal::floatValue)
+            .filter(amount -> amount <= PILOT_AMOUNT)
+            .map(amount -> "Yes")
+            .orElse("No");
 
     private static final String NULL_STRING = "null";
 
@@ -153,7 +164,8 @@ public class MediationCSVGenerator {
             .contactName(CONTACT_PERSON_EXTRACTORS.get(partyType)
                 .apply(claim))
             .contactNumber(CONTACT_NUMBER_EXTRACTORS.get(partyType)
-                .apply(claim));
+                .apply(claim))
+            .pilot(isPilotCase.apply(claim.getTotalClaimAmount()));
 
         return mediationRowBuilder.build();
     }

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.util;
+package uk.gov.hmcts.cmc.ccd.sample.data;
 
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentIntention;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentOption;

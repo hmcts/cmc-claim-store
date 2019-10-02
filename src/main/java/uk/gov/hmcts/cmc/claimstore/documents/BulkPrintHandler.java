@@ -49,7 +49,7 @@ public class BulkPrintHandler {
     public void print(DirectionsOrderReadyToPrintEvent event) {
         requireNonNull(event);
         Claim claim = event.getClaim();
-        bulkPrintService.print(
+        bulkPrintService.printPdf(
             claim,
             ImmutableList.of(
                 new PrintablePdf(

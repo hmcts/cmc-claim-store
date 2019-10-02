@@ -22,6 +22,8 @@ import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
+import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
@@ -233,6 +235,11 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
+    public Claim saveRepresentedClaim(User user, Claim claim) {
+        throw new NotImplementedException("Not required to implement for claim store repository");
+    }
+
+    @Override
     public void saveReDetermination(
         String authorisation,
         Claim claim,
@@ -244,6 +251,20 @@ public class DBCaseRepository implements CaseRepository {
     @Override
     public void saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent) {
         // No implementation required for claim-store repository
+    }
+
+    @Override
+    public CreatePaymentResponse initiatePayment(User user,
+                                                 String submitterId,
+                                                 InitiatePaymentRequest data) {
+        // No implementation required for claim-store repository
+        return null;
+    }
+
+    @Override
+    public Claim resumePayment(User user, Claim claim) {
+        // No implementation required for claim-store repository
+        return null;
     }
 
     @Override

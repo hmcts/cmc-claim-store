@@ -22,7 +22,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
 
 @TestPropertySource(
     properties = {
-        "feature_toggles.async_event_operations_enabled=false"
+        "feature_toggles.async_event_operations_enabled=true"
     }
 )
 public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
