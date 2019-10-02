@@ -98,9 +98,8 @@ public class IntegrationTestSupportController {
 
             User defendant = userService.authenticateUser(defendantUsername, defendantPassword);
             String defendantId = defendant.getUserDetails().getId();
-
             supportRepository.linkDefendantToClaim(claim, defendantId);
-            ccdEventProducer.createCCDLinkDefendantEvent(claimReferenceNumber, defendantId);
+            
         } catch (Exception e) {
             logger.error("Error linking defendant: " + claim.toString(), e );
             throw e;
