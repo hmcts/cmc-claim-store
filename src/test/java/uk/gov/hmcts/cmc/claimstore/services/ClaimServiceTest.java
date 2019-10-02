@@ -10,7 +10,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
-import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
@@ -119,8 +118,6 @@ public class ClaimServiceTest {
     @Mock
     private EventProducer eventProducer;
     @Mock
-    private CCDEventProducer ccdEventProducer;
-    @Mock
     private AppInsights appInsights;
     @Captor
     private ArgumentCaptor<Claim> claimArgumentCaptor;
@@ -140,7 +137,6 @@ public class ClaimServiceTest {
             eventProducer,
             appInsights,
             new PaidInFullRule(),
-            ccdEventProducer,
             new ClaimAuthorisationRule(userService),
             new ReviewOrderRule(),
             false,
@@ -220,8 +216,6 @@ public class ClaimServiceTest {
         verify(caseRepository, once()).saveClaim(any(User.class), any(Claim.class));
         verify(eventProducer, once()).createClaimIssuedEvent(eq(createdClaim), eq(null),
             anyString(), eq(AUTHORISATION));
-
-        verify(ccdEventProducer, once()).createCCDClaimIssuedEvent(eq(createdClaim), eq(USER));
     }
 
     @Test
@@ -269,7 +263,6 @@ public class ClaimServiceTest {
             eventProducer,
             appInsights,
             new PaidInFullRule(),
-            ccdEventProducer,
             new ClaimAuthorisationRule(userService),
             new ReviewOrderRule(),
             true,
@@ -288,8 +281,6 @@ public class ClaimServiceTest {
         verify(userService, never()).generatePin(eq(outputClaimData.getDefendant().getName()), eq(AUTHORISATION));
         verify(caseRepository, once()).saveClaim(any(User.class), any(Claim.class));
         verify(eventProducer, once()).createClaimCreatedEvent(eq(createdClaim), anyString(), eq(AUTHORISATION));
-
-        verify(ccdEventProducer, once()).createCCDClaimIssuedEvent(eq(createdClaim), eq(USER));
     }
 
     @Test

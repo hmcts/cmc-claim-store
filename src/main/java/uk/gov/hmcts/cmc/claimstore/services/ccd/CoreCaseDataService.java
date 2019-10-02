@@ -64,7 +64,7 @@ import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service
-@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class CoreCaseDataService {
     private static final String CMC_CASE_UPDATE_SUMMARY = "CMC case update";
     private static final String CMC_CASE_CREATE_SUMMARY = "CMC case create";
