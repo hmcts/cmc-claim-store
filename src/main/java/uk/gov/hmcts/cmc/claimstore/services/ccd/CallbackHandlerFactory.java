@@ -27,15 +27,20 @@ public class CallbackHandlerFactory {
     }
 
     public CallbackResponse dispatch(CallbackParams callbackParams) {
-        return Optional.ofNullable(eventHandlers.get(callbackParams.getRequest().getEventId()))
-            .filter(h -> hasSupportedRoles(h, callbackParams.getParams().get(BEARER_TOKEN).toString()))
+        String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
+        String eventId = callbackParams.getRequest().getEventId();
+        return Optional.ofNullable(eventHandlers.get(eventId))
+            .filter(h -> hasSupportedRoles(h, authorisation, eventId))
             .map(h -> h.handle(callbackParams))
-            .orElseThrow(() -> new CallbackException(
-                "Could not handle callback for event " + callbackParams.getRequest().getEventId()));
+            .orElseThrow(() -> new CallbackException("Could not handle callback for event " + eventId));
     }
 
-    private boolean hasSupportedRoles(CallbackHandler callbackHandler, String authorisation) {
+    private boolean hasSupportedRoles(CallbackHandler callbackHandler, String authorisation, String eventId) {
         List<String> userRoles = userService.getUserDetails(authorisation).getRoles();
-        return callbackHandler.getSupportedRoles().stream().anyMatch(userRoles::contains);
+        if (callbackHandler.getSupportedRoles().stream().anyMatch(userRoles::contains)) {
+            return true;
+        } else {
+            throw new CallbackException("User does not have supported role for event " + eventId);
+        }
     }
 }

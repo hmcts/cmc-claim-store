@@ -3,7 +3,9 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -42,6 +44,9 @@ public class CallbackHandlerFactoryTest {
     private CallbackResponse callbackResponse;
     @Mock
     private UserService userService;
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     private CallbackHandlerFactory callbackHandlerFactory;
 
@@ -131,8 +136,11 @@ public class CallbackHandlerFactoryTest {
         verify(userService).getUserDetails(eq(BEARER_TOKEN));
     }
 
-    @Test(expected = CallbackException.class)
+    @Test
     public void shouldThrowIfUnsupportedEventForCallback() {
+        expectedException.expect(CallbackException.class);
+        expectedException.expectMessage("Could not handle callback for event SealedClaimUpload");
+
         CallbackRequest callbackRequest = CallbackRequest
             .builder()
             .eventId(SEALED_CLAIM_UPLOAD.getValue())
@@ -145,8 +153,11 @@ public class CallbackHandlerFactoryTest {
             .dispatch(params);
     }
 
-    @Test(expected = CallbackException.class)
+    @Test
     public void shouldThrowIfUnknownEvent() {
+        expectedException.expect(CallbackException.class);
+        expectedException.expectMessage("Could not handle callback for event nope");
+
         CallbackRequest callbackRequest = CallbackRequest
             .builder()
             .eventId("nope")
@@ -155,12 +166,15 @@ public class CallbackHandlerFactoryTest {
             .request(callbackRequest)
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
-        callbackHandlerFactory
-            .dispatch(params);
+
+        callbackHandlerFactory.dispatch(params);
     }
 
-    @Test(expected = CallbackException.class)
+    @Test
     public void shouldThrowIfUserDoesNotHaveSupportedRoles() {
+        expectedException.expect(CallbackException.class);
+        expectedException.expectMessage("User does not have supported role for event DrawOrder");
+
         UserDetails userDetails = SampleUserDetails.builder().withRoles("citizen").build();
         when(userService.getUserDetails(eq(BEARER_TOKEN))).thenReturn(userDetails);
 
