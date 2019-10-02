@@ -4,9 +4,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.Payment;
+import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.reform.fees.client.FeesClient;
@@ -14,11 +17,16 @@ import uk.gov.hmcts.reform.fees.client.model.FeeLookupResponseDto;
 import uk.gov.hmcts.reform.payments.client.CardPaymentRequest;
 import uk.gov.hmcts.reform.payments.client.PaymentsClient;
 import uk.gov.hmcts.reform.payments.client.models.FeeDto;
+import uk.gov.hmcts.reform.payments.client.models.LinkDto;
+import uk.gov.hmcts.reform.payments.client.models.LinksDto;
 import uk.gov.hmcts.reform.payments.client.models.PaymentDto;
 
 import java.math.BigDecimal;
+import java.net.URI;
+import java.time.OffsetDateTime;
 
 import static java.lang.String.format;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -33,6 +41,8 @@ public class PaymentsServiceTest {
     private static final String SITE_ID = "siteId";
     private static final String CURRENCY = "currency";
     private static final String DESCRIPTION = "description";
+    private static final OffsetDateTime PAYMENT_DATE = OffsetDateTime.parse("2017-02-03T10:15:30+01:00");
+    private static final String NEXT_URL = "http://url.test";
 
     private PaymentsService paymentsService;
 
@@ -40,8 +50,14 @@ public class PaymentsServiceTest {
     private PaymentsClient paymentsClient;
     @Mock
     private FeesClient feesClient;
-    @Mock
-    private PaymentDto paymentDto;
+    @Spy
+    private PaymentDto paymentDto = PaymentDto.builder()
+        .status("Success")
+        .dateCreated(PAYMENT_DATE)
+        .links(LinksDto.builder().nextUrl(
+            LinkDto.builder().href(URI.create(NEXT_URL)).build())
+            .build())
+        .build();
 
     private Claim claim;
     private FeeLookupResponseDto feeOutcome = FeeLookupResponseDto.builder()
@@ -62,6 +78,37 @@ public class PaymentsServiceTest {
         claim = SampleClaim.getDefault();
         when(feesClient.lookupFee(eq("online"), eq("issue"), any(BigDecimal.class)))
             .thenReturn(feeOutcome);
+    }
+
+    @Test
+    public void shouldRetrieveAnExistingPayment() {
+        when(paymentsClient.retrievePayment(
+            BEARER_TOKEN,
+            claim.getClaimData().getPayment().getReference()
+        )).thenReturn(paymentDto);
+
+        Payment expectedPayment = Payment.builder()
+            .status(PaymentStatus.SUCCESS)
+            .nextUrl(NEXT_URL)
+            .dateCreated(PAYMENT_DATE.toLocalDate().toString())
+            .build();
+
+        Payment payment = paymentsService.retrievePayment(
+            BEARER_TOKEN,
+            claim
+        );
+
+        assertThat(payment).isEqualTo(expectedPayment);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldThrowWhenPaymentIsNotPresent() {
+        paymentsService.retrievePayment(
+            BEARER_TOKEN,
+            SampleClaim.builder().withClaimData(
+                SampleClaimData.builder().withPayment(null).build()
+            ).build()
+        );
     }
 
     @Test

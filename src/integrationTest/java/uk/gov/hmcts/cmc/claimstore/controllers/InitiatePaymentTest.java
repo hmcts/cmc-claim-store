@@ -2,15 +2,19 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import feign.FeignException;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
+import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -20,8 +24,10 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INITIATE_CLAIM_PAYMENT_CITIZEN;
+import static uk.gov.hmcts.cmc.ccd.sample.data.SampleData.getAmountBreakDown;
+import static uk.gov.hmcts.cmc.ccd.sample.data.SampleData.getCCDCitizenCase;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreStartResponse;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponse;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.AWAITING_CITIZEN_PAYMENT;
 
 @TestPropertySource(
     properties = {
@@ -34,6 +40,9 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
     }
 )
 public class InitiatePaymentTest extends BaseSaveTest {
+
+    @Autowired
+    private CaseDetailsConverter caseDetailsConverter;
 
     @Test
     public void shouldReturnNewlyCreatedClaim() throws Exception {
@@ -49,6 +58,7 @@ public class InitiatePaymentTest extends BaseSaveTest {
             )
         ).willReturn(successfulCoreCaseDataStoreStartResponse());
 
+        CCDCase data = getCCDCitizenCase(getAmountBreakDown());
         given(coreCaseDataApi.submitForCitizen(
             eq(AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
@@ -58,7 +68,11 @@ public class InitiatePaymentTest extends BaseSaveTest {
             eq(IGNORE_WARNING),
             any()
             )
-        ).willReturn(successfulCoreCaseDataStoreSubmitResponse());
+        ).willReturn(CaseDetails.builder()
+            .id(3L)
+            .state(AWAITING_CITIZEN_PAYMENT.getValue())
+            .data(caseDetailsConverter.convertToMap(data))
+            .build());
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
 
@@ -93,7 +107,7 @@ public class InitiatePaymentTest extends BaseSaveTest {
     }
 
     @Test
-    public void shouldFailIssuingClaimEvenWhenCCDStoreFailsToStartEvent() throws Exception {
+    public void shouldFailCreatingPaymentWhenCCDStoreFailsToStartEvent() throws Exception {
         ClaimData claimData = SampleClaimData.submittedByClaimant();
 
         given(coreCaseDataApi.startForCitizen(
@@ -118,7 +132,7 @@ public class InitiatePaymentTest extends BaseSaveTest {
     }
 
     @Test
-    public void shouldIssueClaimEvenWhenCCDStoreFailsToSubmitEvent() throws Exception {
+    public void shouldFailCreatingPaymentWhenCCDStoreFailsToSubmitEvent() throws Exception {
         ClaimData claimData = SampleClaimData.submittedByClaimant();
 
         given(coreCaseDataApi.startForCitizen(

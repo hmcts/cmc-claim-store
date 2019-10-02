@@ -19,18 +19,14 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.PaymentsService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.payments.client.models.LinkDto;
-import uk.gov.hmcts.reform.payments.client.models.LinksDto;
-import uk.gov.hmcts.reform.payments.client.models.PaymentDto;
 
-import java.math.BigDecimal;
-import java.net.URI;
-import java.time.OffsetDateTime;
 import java.util.Map;
 
+import static java.math.BigDecimal.TEN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,6 +35,7 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
+import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 
 @TestPropertySource(
     properties = {
@@ -60,21 +57,16 @@ public class InitiatePaymentCallbackHandlerTest extends MockSpringTest {
     @Autowired
     private CaseMapper caseMapper;
 
-    private PaymentDto payment;
+    private Payment payment;
 
     @Before
     public void setUp() {
-        payment = PaymentDto.builder()
-            .amount(BigDecimal.TEN)
-            .reference("reference")
-            .status("Success")
-            .dateCreated(OffsetDateTime.parse("2017-02-03T10:15:30+01:00"))
-            .links(LinksDto.builder()
-                .nextUrl(
-                    LinkDto.builder()
-                        .href(URI.create(NEXT_URL))
-                        .build()
-                ).build())
+        payment = Payment.builder()
+            .amount(TEN)
+            .reference("reference2")
+            .status(SUCCESS)
+            .dateCreated("2017-12-03")
+            .nextUrl(NEXT_URL)
             .build();
         given(paymentsService
             .createPayment(
@@ -101,8 +93,8 @@ public class InitiatePaymentCallbackHandlerTest extends MockSpringTest {
             entry("channel", "CITIZEN"),
             entry("paymentAmount", "1000"),
             entry("paymentReference", payment.getReference()),
-            entry("paymentStatus", payment.getStatus()),
-            entry("paymentDateCreated", payment.getDateCreated().toLocalDate().toString()),
+            entry("paymentStatus", payment.getStatus().toString()),
+            entry("paymentDateCreated", payment.getDateCreated()),
             entry("paymentNextUrl", NEXT_URL)
         );
     }
