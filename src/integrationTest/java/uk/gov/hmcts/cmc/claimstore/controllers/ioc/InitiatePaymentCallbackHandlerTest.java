@@ -26,7 +26,6 @@ import uk.gov.hmcts.reform.payments.client.models.PaymentDto;
 
 import java.math.BigDecimal;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.OffsetDateTime;
 import java.util.Map;
 
@@ -37,6 +36,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
 
 @TestPropertySource(
     properties = {
@@ -61,16 +61,16 @@ public class InitiatePaymentCallbackHandlerTest extends MockSpringTest {
     private PaymentDto payment;
 
     @Before
-    public void setUp() throws URISyntaxException {
+    public void setUp() {
         payment = PaymentDto.builder()
             .amount(BigDecimal.TEN)
             .reference("reference")
-            .status("status")
+            .status("Success")
             .dateCreated(OffsetDateTime.parse("2017-02-03T10:15:30+01:00"))
             .links(LinksDto.builder()
                 .nextUrl(
                     LinkDto.builder()
-                        .href(new URI(NEXT_URL))
+                        .href(URI.create(NEXT_URL))
                         .build()
                 ).build())
             .build();
@@ -91,8 +91,9 @@ public class InitiatePaymentCallbackHandlerTest extends MockSpringTest {
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
 
+        assertThat(responseData).hasSize(46);
         assertThat(responseData).contains(
-            entry("channelType", "CITIZEN"),
+            entry("channel", "CITIZEN"),
             entry("paymentAmount", "1000"),
             entry("paymentReference", payment.getReference()),
             entry("paymentStatus", payment.getStatus()),
@@ -108,6 +109,7 @@ public class InitiatePaymentCallbackHandlerTest extends MockSpringTest {
                 .id(CASE_ID)
                 .data(caseDetailsConverter.convertToMap(
                     SampleData.getCCDCitizenCaseWithoutPayment()))
+                .state(OPEN.getValue())
                 .build())
             .build();
 
