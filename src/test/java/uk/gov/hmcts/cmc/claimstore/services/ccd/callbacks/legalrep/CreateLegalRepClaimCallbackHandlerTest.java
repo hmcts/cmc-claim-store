@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -25,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_LEGAL_REP_CLAIM;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.*;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getLegalDataWithReps;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -93,6 +95,6 @@ public class CreateLegalRepClaimCallbackHandlerTest {
     @Test
     public void shouldHaveCorrectLegalRepSupportingRole() {
         assertThat(createLegalRepClaimCallbackHandler.getSupportedRoles().size()).isEqualTo(1);
-        assertThat(createLegalRepClaimCallbackHandler.getSupportedRoles()).contains("caseworker-cmc-solicitor");
+        assertThat(createLegalRepClaimCallbackHandler.getSupportedRoles()).contains(SOLICITOR);
     }
 }
