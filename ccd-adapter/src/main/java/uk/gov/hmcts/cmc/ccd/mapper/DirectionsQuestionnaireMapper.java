@@ -61,6 +61,8 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
 
         directionsQuestionnaire.getWitness().ifPresent(toWitness(builder));
 
+        System.out.println( directionsQuestionnaire.getExpertRequest().toString());
+
         directionsQuestionnaire.getExpertRequest().ifPresent(toExpertRequest(builder));
 
         builder.expertReports(directionsQuestionnaire.getExpertReports()
@@ -105,7 +107,6 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
     ) {
         return expertRequest -> {
             builder.expertRequired(yesNoMapper.to(expertRequest.getExpertRequired()));
-
             expertRequest.getExpertEvidenceToExamine().ifPresent(builder::expertEvidenceToExamine);
             expertRequest.getReasonForExpertAdvice().ifPresent(builder::reasonForExpertAdvice);
         };

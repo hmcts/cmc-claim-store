@@ -69,27 +69,19 @@ public class HearingContentProvider {
 
     private void mapExpertRequest(ExpertRequest expertRequest, HearingContent.HearingContentBuilder builder) {
 
-//        builder.courtPermissionForExpertReport(YES);
-////        if (!StringUtils.isBlank(expertRequest.getReasonForExpertAdvice().orElse(""))) {
-////            builder.reasonWhyExpertAdvice(expertRequest.getReasonForExpertAdvice());
-////            builder.expertExamineNeeded(YES);
-////        } else {
-////            builder.expertExamineNeeded(NO);
-////        }
-////
-////        builder.whatToExamine(expertRequest.getExpertEvidenceToExamine());
+        YesNoOption expertRequired = expertRequest.getExpertRequired();
 
-        builder.courtPermissionForExpertReport(YES);
-        builder.expertRequired(expertRequest.getExpertRequired().toString());
-        if (!StringUtils.isBlank(expertRequest.getReasonForExpertAdvice().orElse(""))) {
-            expertRequest.getReasonForExpertAdvice().ifPresent(builder::reasonWhyExpertAdvice);
-            builder.expertExamineNeeded(YES);
+        builder.expertRequired(expertRequired.toString());
+        if (expertRequired.equals(YesNoOption.YES)) {
+            if (!StringUtils.isBlank(expertRequest.getReasonForExpertAdvice().orElse(""))) {
+                expertRequest.getReasonForExpertAdvice().ifPresent(builder::reasonWhyExpertAdvice);
+                builder.courtPermissionForExpertReport(YES);
+                builder.expertExamineNeeded(YES);
+            } else {
+                builder.expertExamineNeeded(NO);
+            }
+            expertRequest.getExpertEvidenceToExamine().ifPresent(builder::whatToExamine);
         }
-        else
-        {
-            builder.expertExamineNeeded(NO);
-        }
-        expertRequest.getExpertEvidenceToExamine().ifPresent(builder::whatToExamine);
     }
 
     public HearingContent mapDirectionQuestionnaire(DirectionsQuestionnaire questionnaire) {
@@ -107,7 +99,6 @@ public class HearingContentProvider {
         contentBuilder.hasExpertReport(questionnaire.getExpertReports().isEmpty() ? NO : YES);
 
         questionnaire.getWitness().ifPresent(contentBuilder::witness);
-        contentBuilder.courtPermissionForExpertReport(NO);
 
         questionnaire.getExpertRequest().ifPresent(expertRequest -> mapExpertRequest(expertRequest, contentBuilder));
 
