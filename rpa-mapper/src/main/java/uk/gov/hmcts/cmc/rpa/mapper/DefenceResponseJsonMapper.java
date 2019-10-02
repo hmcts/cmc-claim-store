@@ -118,7 +118,7 @@ public class DefenceResponseJsonMapper {
     }
 
     private boolean areHearingRequirementsRequested(Claim claim, Response response) {
-        if (!claim.getFeatures().contains("directionsQuestionnaire")) {
+        if (claim.getFeatures() == null || !claim.getFeatures().contains("directionsQuestionnaire")) {
             return false;
         }
 

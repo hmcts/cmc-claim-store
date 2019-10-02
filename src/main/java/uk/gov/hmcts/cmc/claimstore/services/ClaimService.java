@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
@@ -30,10 +31,12 @@ import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
+import uk.gov.hmcts.cmc.domain.models.Payment;
+import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
-import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
@@ -47,6 +50,7 @@ import java.util.function.Predicate;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NUMBER_OF_RECONSIDERATION;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
@@ -68,6 +72,7 @@ public class ClaimService {
     private final ReviewOrderRule reviewOrderRule;
     private final boolean asyncEventOperationEnabled;
     private CCDEventProducer ccdEventProducer;
+    private final String returnUrl;
 
     @SuppressWarnings("squid:S00107") //Constructor need all parameters
     @Autowired
@@ -85,8 +90,8 @@ public class ClaimService {
         CCDEventProducer ccdEventProducer,
         ClaimAuthorisationRule claimAuthorisationRule,
         ReviewOrderRule reviewOrderRule,
-        @Value("${feature_toggles.async_event_operations_enabled:false}") boolean asyncEventOperationEnabled
-    ) {
+        @Value("${feature_toggles.async_event_operations_enabled:false}") boolean asyncEventOperationEnabled,
+        @Value("${payments.returnUrl}") String returnUrl) {
         this.claimRepository = claimRepository;
         this.userService = userService;
         this.issueDateCalculator = issueDateCalculator;
@@ -101,6 +106,7 @@ public class ClaimService {
         this.claimAuthorisationRule = claimAuthorisationRule;
         this.reviewOrderRule = reviewOrderRule;
         this.asyncEventOperationEnabled = asyncEventOperationEnabled;
+        this.returnUrl = returnUrl;
     }
 
     public Claim getClaimById(long claimId) {
@@ -187,12 +193,30 @@ public class ClaimService {
         return caseRepository.getClaimsByState(claimState, user);
     }
 
-    public InitiatePaymentResponse initiatePayment(
+    public CreatePaymentResponse initiatePayment(
         String authorisation,
         String submitterId,
         InitiatePaymentRequest request) {
         User user = userService.getUser(authorisation);
         return caseRepository.initiatePayment(user, submitterId, request);
+    }
+
+    public CreatePaymentResponse resumePayment(
+        String authorisation,
+        ClaimData claimData) {
+        User user = userService.getUser(authorisation);
+        Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), authorisation);
+        Claim resumedClaim = caseRepository.resumePayment(user, claim);
+
+        Payment payment = resumedClaim.getClaimData().getPayment();
+
+        return CreatePaymentResponse.builder()
+            .nextUrl(
+                payment.getStatus().equals(PaymentStatus.SUCCESS)
+                    ? String.format(returnUrl, claim.getExternalId())
+                    : payment.getNextUrl()
+            )
+            .build();
     }
 
     @LogExecutionTime
@@ -205,14 +229,13 @@ public class ClaimService {
     ) {
         String externalId = claimData.getExternalId().toString();
         User user = userService.getUser(authorisation);
-
         caseRepository.getClaimByExternalId(externalId, user).ifPresent(claim -> {
             throw new ConflictException(
                 String.format("Claim already exist with same external reference as %s", externalId));
         });
 
         Optional<GeneratePinResponse> pinResponse = getPinResponse(claimData, authorisation);
-        Optional<String> letterHolderId = pinResponse.map(GeneratePinResponse::getUserId);
+        String letterHolderId = pinResponse.map(GeneratePinResponse::getUserId).orElse(null);
         LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
         LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
         String submitterEmail = user.getUserDetails().getEmail();
@@ -226,33 +249,69 @@ public class ClaimService {
             .externalId(externalId)
             .submitterEmail(submitterEmail)
             .createdAt(nowInLocalZone())
-            .letterHolderId(letterHolderId.orElse(null))
+            .letterHolderId(letterHolderId)
             .features(features)
             .claimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators.builder().build())
             .build();
 
         Claim savedClaim = caseRepository.saveClaim(user, claim);
+        String pin = pinResponse.map(GeneratePinResponse::getPin).orElse(null);
+        createClaimEvent(authorisation, user, pin, savedClaim);
+        trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
+
+        return savedClaim;
+    }
+
+    @LogExecutionTime
+    @Transactional(transactionManager = "transactionManager")
+    public Claim saveRepresentedClaim(
+        String submitterId,
+        ClaimData claimData,
+        String authorisation
+    ) {
+        String externalId = claimData.getExternalId().toString();
+        User user = userService.getUser(authorisation);
+
+        String submitterEmail = user.getUserDetails().getEmail();
+
+        Claim claim = Claim.builder()
+            .claimData(claimData)
+            .submitterId(submitterId)
+            .externalId(externalId)
+            .submitterEmail(submitterEmail)
+            .createdAt(nowInLocalZone())
+            .claimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators.builder().build())
+            .build();
+
+        Claim savedClaim = caseRepository.saveRepresentedClaim(user, claim);
+        eventProducer.createRepresentedClaimCreatedEvent(
+            savedClaim,
+            user.getUserDetails().getFullName(),
+            authorisation
+        );
+        trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
+
+        return savedClaim;
+    }
+
+    private void createClaimEvent(String authorisation, User user, String pin, Claim savedClaim) {
         ccdEventProducer.createCCDClaimIssuedEvent(savedClaim, user);
 
         if (asyncEventOperationEnabled) {
             eventProducer.createClaimCreatedEvent(
                 savedClaim,
-                pinResponse.map(GeneratePinResponse::getPin).orElse(null),
                 user.getUserDetails().getFullName(),
                 authorisation
             );
         } else {
             eventProducer.createClaimIssuedEvent(
                 savedClaim,
-                pinResponse.map(GeneratePinResponse::getPin).orElse(null),
+                pin,
                 user.getUserDetails().getFullName(),
                 authorisation
             );
             caseRepository.updateClaimState(user.getAuthorisation(), savedClaim.getId(), OPEN);
         }
-        trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
-
-        return savedClaim;
     }
 
     private Optional<GeneratePinResponse> getPinResponse(ClaimData claimData, String authorisation) {
@@ -361,8 +420,21 @@ public class ClaimService {
         ccdEventProducer.createCCDReDetermination(claim, authorisation, redetermination);
     }
 
-    public void updateClaimState(String authorisation, Claim claim, ClaimState state) {
-        caseRepository.updateClaimState(authorisation, claim.getId(), state);
+    public void updateClaimState(String authorisation, Claim claim, ClaimState currentState) {
+        caseRepository.updateClaimState(authorisation, claim.getId(), currentState);
+    }
+
+    public Claim updateClaimSubmissionOperationIndicators(
+        String authorisation,
+        Claim claim,
+        ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
+    ) {
+        return caseRepository.updateClaimSubmissionOperationStatus(
+            authorisation,
+            claim.getId(),
+            claimSubmissionOperationIndicators,
+            CaseEvent.RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS
+        );
     }
 
     public Claim saveReviewOrder(String externalId, ReviewOrder reviewOrder, String authorisation) {
@@ -371,6 +443,7 @@ public class ClaimService {
         reviewOrderRule.assertReviewOrder(claim);
         Claim updatedClaim = caseRepository.saveReviewOrder(claim.getId(), reviewOrder, authorisation);
         eventProducer.createReviewOrderEvent(authorisation, updatedClaim);
+        appInsights.trackEvent(NUMBER_OF_RECONSIDERATION, REFERENCE_NUMBER, claim.getReferenceNumber());
         return updatedClaim;
     }
 }
