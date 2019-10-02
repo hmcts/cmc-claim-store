@@ -2,18 +2,19 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
-import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
@@ -40,15 +41,19 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_DIRECTIONS;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NOTIFICATION_FAILURE;
 import static uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent.CLAIMANT_EMAIL;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementUploadResponse;
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.REFER_TO_JUDGE;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse.ClaimantResponseAcceptation.builder;
 
 @TestPropertySource(
@@ -59,6 +64,9 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse.C
 public class SaveClaimantResponseTest extends BaseIntegrationTest {
 
     private Claim claim;
+
+    @MockBean
+    private CoreCaseDataService coreCaseDataService;
 
     @Before
     public void setUp() {
@@ -80,6 +88,7 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
         given(userService.getUser(BEARER_TOKEN)).willReturn(new User(BEARER_TOKEN, userDetails));
         given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(new User(AUTHORISATION_TOKEN, claimantDetails));
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap())).willReturn(PDF_BYTES);
+        given(userService.authenticateAnonymousCaseWorker()).willReturn(new User(BEARER_TOKEN, userDetails));
         caseRepository.linkDefendant(BEARER_TOKEN);
 
         claimStore.saveResponse(
@@ -102,7 +111,7 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
         ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
             .orElseThrow(AssertionError::new);
 
-        assertThat(claimantResponse.getAmountPaid().orElse(null)).isEqualTo(BigDecimal.TEN);
+        assertThat(claimantResponse.getAmountPaid().orElse(null)).isEqualByComparingTo(BigDecimal.TEN);
     }
 
     @Test
@@ -119,7 +128,7 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
         ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
             .orElseThrow(AssertionError::new);
 
-        assertThat(claimantResponse.getFormaliseOption().equals(FormaliseOption.REFER_TO_JUDGE));
+        assertThat(claimantResponse.getFormaliseOption().orElseThrow(AssertionError::new) == REFER_TO_JUDGE);
         assertThat(claimantResponse.getCourtDetermination()).isPresent();
         assertThat(claimantResponse.getClaimantPaymentIntention()).isPresent();
 
@@ -127,7 +136,7 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
 
     @Test
     public void shouldSaveClaimantResponseRejection() throws Exception {
-        ClaimantResponse response = SampleClaimantResponse.validDefaultRejection();
+        ClaimantResponse response = SampleClaimantResponse.validRejectionWithDirectionsQuestionnaire();
 
         makeRequest(claim.getExternalId(), SUBMITTER_ID, response)
             .andExpect(status().isCreated());
@@ -141,6 +150,28 @@ public class SaveClaimantResponseTest extends BaseIntegrationTest {
 
         assertThat(claimantResponse.getFreeMediation()).isNotEmpty();
         assertThat(claimantResponse.getAmountPaid().orElse(null)).isEqualTo(BigDecimal.TEN);
+        verify(coreCaseDataService, never()).saveCaseEvent(BEARER_TOKEN, claim.getId(), ASSIGNING_FOR_DIRECTIONS);
+        verify(coreCaseDataService, never()).saveCaseEvent(BEARER_TOKEN, claim.getId(), REFERRED_TO_MEDIATION);
+
+    }
+
+    @Test
+    public void shouldSaveClaimantResponseRejectionWithDirectionsQuestionnaire() throws Exception {
+        ClaimantResponse response = SampleClaimantResponse
+            .ClaimantResponseRejection.builder()
+            .buildRejectionWithDirectionsQuestionnaire();
+
+        makeRequest(claim.getExternalId(), SUBMITTER_ID, response)
+            .andExpect(status().isCreated());
+
+        Claim claimWithClaimantResponse = claimStore.getClaimByExternalId(claim.getExternalId());
+
+        assertThat(claimWithClaimantResponse.getClaimantRespondedAt().isPresent()).isTrue();
+
+        ResponseRejection claimantResponse = (ResponseRejection) claimWithClaimantResponse.getClaimantResponse()
+            .orElseThrow(AssertionError::new);
+
+        assertThat(claimantResponse.getDirectionsQuestionnaire()).isNotEmpty();
     }
 
     @Test

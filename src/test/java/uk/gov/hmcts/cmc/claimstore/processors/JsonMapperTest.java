@@ -2,9 +2,12 @@ package uk.gov.hmcts.cmc.claimstore.processors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.json.JSONException;
+import org.junit.Assert;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.InvalidApplicationException;
 import uk.gov.hmcts.cmc.claimstore.repositories.mapping.JsonMapperFactory;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -27,6 +30,7 @@ import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +38,11 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOTH;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType.BIRMINGHAM;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType.HALF_HOUR;
+import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYEWITNESS;
 
 public class JsonMapperTest {
 
@@ -176,7 +185,7 @@ public class JsonMapperTest {
 
         //then
         Response expected = SampleResponse.validDefaults();
-        assertThat(output).isEqualTo(expected);
+        Assert.assertEquals(output, expected);
     }
 
     @Test
@@ -208,7 +217,6 @@ public class JsonMapperTest {
 
         LocalDateTime timestamp = LocalDateTime.now();
         String uuid = UUID.randomUUID().toString();
-        LocalDate date = LocalDate.now();
 
         Map<String, Object> data = new HashMap<>();
         data.put("id", "1");
@@ -225,11 +233,39 @@ public class JsonMapperTest {
             .submitterId("2")
             .submittedOn(timestamp)
             .externalId(uuid)
-            //.responseDeadline(date.plusDays(14))
-            //.moreTimeRequested(CCDYesNoOption.NO)
+            .directionOrderData(CCDOrderGenerationData.builder().build())
             .build();
 
         assertThat(ccdCase).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConvertMapToCCDOrderGenerationData() {
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("docUploadForParty", null);
+        data.put("eyewitnessUploadForParty", "BOTH");
+        data.put("eyewitnessUploadDeadline", "2019-06-03");
+        data.put("docUploadDeadline", null);
+        data.put("paperDetermination", "No");
+        data.put("hearingCourt", "BIRMINGHAM");
+        data.put("otherDirections", Collections.emptyList());
+        data.put("directionList", ImmutableList.of("EYEWITNESS"));
+        data.put("estimatedHearingDuration", "HALF_HOUR");
+
+        CCDOrderGenerationData ccdOrderGenerationData = processor.convertValue(data, CCDOrderGenerationData.class);
+
+        CCDOrderGenerationData expected = CCDOrderGenerationData.builder()
+            .directionList(Collections.singletonList(EYEWITNESS))
+            .otherDirections(Collections.emptyList())
+            .paperDetermination(NO)
+            .eyewitnessUploadDeadline(LocalDate.parse("2019-06-03"))
+            .hearingCourt(BIRMINGHAM)
+            .eyewitnessUploadForParty(BOTH)
+            .estimatedHearingDuration(HALF_HOUR)
+            .build();
+
+        assertThat(ccdOrderGenerationData).isEqualTo(expected);
 
     }
 }

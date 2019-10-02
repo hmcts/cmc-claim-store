@@ -10,9 +10,9 @@ import uk.gov.hmcts.cmc.claimstore.BaseGetTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmc.domain.models.CaseMetadata;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.metadata.CaseMetadata;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
@@ -28,7 +28,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATED;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
 
 @TestPropertySource(
     properties = {
@@ -213,7 +213,7 @@ public class GetMetadataTest extends BaseGetTest {
 
         List<CaseMetadata> actual = deserializeMetadataListFrom(result);
         assertThat(actual).isNotEmpty();
-        assertThat(actual).extracting(CaseMetadata::getState).containsOnly(CREATED);
+        assertThat(actual).extracting(CaseMetadata::getState).containsOnly(CREATE);
     }
 
     private List<CaseMetadata> deserializeMetadataListFrom(MvcResult result) throws UnsupportedEncodingException {

@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.service.notify.NotificationClient;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,6 +34,10 @@ public abstract class BaseNotificationServiceTest {
     protected static final String RESPONSE_BY_CLAIMANT_EMAIL_TO_DEFENDANT = "responseByClaimantEmailToDefendant";
     protected static final String DEFENDANT_RESPONSE_TEMPLATE = "fullDefence";
     protected static final String DEFENDANT_RESPONSE_NO_MEDIATION_TEMPLATE = "fullDefence-noMediation";
+    protected static final String ONLINE_DQ_WITH_NO_MEDIATION_DEFENDANT_RESPONSE_TEMPLATE
+        = "online-dq-with-no-Mediation-defendant-response";
+    protected static final String ONLINE_DQ_WITH_NO_MEDIATION_CLAIMANT_RESPONSE_TEMPLATE
+        = "online-dq-with-no-Mediation-claimant-response";
     protected static final String CLAIMANT_CCJ_REQUESTED_TEMPLATE = "claimantCcjRequested";
     protected static final String CLAIMANT_SAYS_DEFENDANT_PAID_IN_FULL_TEMPLATE = "claimant-says-paid-in-full";
     protected static final String DEFENDANT_RESPOND_BY_ADMISSION = "defenceResponseByAdmissions";
@@ -42,7 +47,7 @@ public abstract class BaseNotificationServiceTest {
     protected static final String USER_EMAIL = "user@example.com";
     protected static final String USER_FULLNAME = "Steven Patrick";
 
-    protected final Claim claim = SampleClaim.getDefault();
+    protected final Claim claim = SampleClaim.getDefault().toBuilder().respondedAt(LocalDateTime.now()).build();
 
     protected Logger log = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 

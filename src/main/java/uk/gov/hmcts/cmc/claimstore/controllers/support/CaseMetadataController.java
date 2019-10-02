@@ -13,15 +13,15 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
-import uk.gov.hmcts.cmc.domain.models.CaseMetadata;
+import uk.gov.hmcts.cmc.domain.models.metadata.CaseMetadata;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.CLAIM_REFERENCE_PATTERN;
 import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
-import static uk.gov.hmcts.cmc.domain.models.CaseMetadata.fromClaim;
-import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATED;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
+import static uk.gov.hmcts.cmc.domain.models.metadata.CaseMetadata.fromClaim;
 
 @Api
 @RestController
@@ -124,7 +124,7 @@ public class CaseMetadataController {
 
     @GetMapping("/filters/created")
     public List<CaseMetadata> getCreatedCases() {
-        return claimService.getClaimsByState(CREATED, userService.authenticateAnonymousCaseWorker())
+        return claimService.getClaimsByState(CREATE, userService.authenticateAnonymousCaseWorker())
             .stream()
             .map(CaseMetadata::fromClaim)
             .collect(Collectors.toList());

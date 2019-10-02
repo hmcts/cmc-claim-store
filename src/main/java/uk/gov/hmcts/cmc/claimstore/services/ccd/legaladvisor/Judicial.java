@@ -7,6 +7,5 @@ import lombok.Value;
 @Value
 public class Judicial {
     private String firstName;
-
     private String lastName;
 }

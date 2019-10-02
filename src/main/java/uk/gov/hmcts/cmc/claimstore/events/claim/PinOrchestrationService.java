@@ -6,11 +6,17 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.PrintService;
+import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimIssuedStaffNotificationService;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
+
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 
 @Service
 @ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled", havingValue = "true")
@@ -38,16 +44,28 @@ public class PinOrchestrationService {
         this.documentOrchestrationService = documentOrchestrationService;
     }
 
+    @LogExecutionTime
     public Claim process(Claim claim, String authorisation, String submitterName) {
         GeneratedDocuments documents = documentOrchestrationService.generateForCitizen(claim, authorisation);
         Claim updatedClaim = documents.getClaim();
 
         ClaimSubmissionOperationIndicators.ClaimSubmissionOperationIndicatorsBuilder updatedOperationIndicator =
-            ClaimSubmissionOperationIndicators.builder();
+            claim.getClaimSubmissionOperationIndicators().toBuilder()
+            .bulkPrint(NO)
+            .staffNotification(NO)
+            .defendantNotification(NO);
 
         try {
-            bulkPrintService.print(updatedClaim, documents.getDefendantPinLetterDoc(),
-                documents.getSealedClaimDoc());
+            bulkPrintService.print(
+                updatedClaim,
+                ImmutableList.of(
+                    new PrintableTemplate(
+                        documents.getDefendantPinLetterDoc(),
+                        buildDefendantLetterFileBaseName(claim.getReferenceNumber())),
+                    new PrintableTemplate(
+                        documents.getSealedClaimDoc(),
+                        buildSealedClaimFileBaseName(claim.getReferenceNumber())))
+            );
             updatedOperationIndicator.bulkPrint(YesNoOption.YES);
 
             claimIssuedStaffNotificationService.notifyStaffOfClaimIssue(

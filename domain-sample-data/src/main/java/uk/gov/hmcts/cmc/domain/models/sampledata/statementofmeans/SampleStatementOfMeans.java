@@ -18,10 +18,12 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
 import java.math.BigDecimal;
 
-import static java.math.BigDecimal.TEN;
 import static java.util.Arrays.asList;
 
 public class SampleStatementOfMeans {
+
+    public static final BigDecimal AMOUNT = new BigDecimal("10.99");
+    public static final BigDecimal ONE_99 = new BigDecimal("1.99");
 
     public static SampleStatementOfMeans builder() {
         return new SampleStatementOfMeans();
@@ -59,35 +61,35 @@ public class SampleStatementOfMeans {
                 .id("5adfe417-0611-4e54-8751-4fb8ed600bf1")
                 .type(BankAccount.BankAccountType.SAVINGS_ACCOUNT)
                 .joint(true)
-                .balance(TEN)
+                .balance(AMOUNT)
                 .build()
             ))
             .debts(asList(Debt.builder()
                 .id("d354b56d-8ec1-49ef-9650-57bca975e283")
-                .totalOwed(TEN)
+                .totalOwed(AMOUNT)
                 .description("Reference")
-                .monthlyPayments(BigDecimal.ONE)
+                .monthlyPayments(ONE_99)
                 .build()
             ))
             .courtOrders(asList(CourtOrder.builder()
                 .id("fffb3d88-6b67-4be3-a835-0df2db49f7f7")
-                .amountOwed(TEN)
+                .amountOwed(AMOUNT)
                 .claimNumber("Reference")
-                .monthlyInstalmentAmount(BigDecimal.ONE)
+                .monthlyInstalmentAmount(ONE_99)
                 .build()
             ))
             .expenses(asList(Expense.builder()
                 .id("60a0179b-7f14-4a8c-a7cc-170877eadc76")
                 .type(Expense.ExpenseType.COUNCIL_TAX)
                 .frequency(PaymentFrequency.MONTH)
-                .amount(TEN)
+                .amount(AMOUNT)
                 .build()
             ))
             .incomes(asList(Income.builder()
                 .id("c4fc229d-87db-43ff-8201-acafc136b7e8")
                 .type(Income.IncomeType.JOB)
                 .frequency(PaymentFrequency.MONTH)
-                .amount(TEN)
+                .amount(AMOUNT)
                 .build()
             ))
             .partner(LivingPartner.builder()

@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.claimstore.events.offer.OfferRejectedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.revieworder.ReviewOrderEvent;
 import uk.gov.hmcts.cmc.claimstore.events.settlement.CountersignSettlementAgreementEvent;
 import uk.gov.hmcts.cmc.claimstore.events.settlement.RejectSettlementAgreementEvent;
 import uk.gov.hmcts.cmc.claimstore.events.settlement.SignSettlementAgreementEvent;
@@ -44,13 +45,17 @@ public class EventProducer {
         }
     }
 
-    public void createClaimCreatedEvent(Claim claim, String pin, String submitterName, String authorisation) {
+    public void createClaimCreatedEvent(Claim claim, String submitterName, String authorisation) {
 
         if (claim.getClaimData().isClaimantRepresented()) {
             publisher.publishEvent(new RepresentedClaimCreatedEvent(claim, submitterName, authorisation));
         } else {
             publisher.publishEvent(new CitizenClaimCreatedEvent(claim, submitterName, authorisation));
         }
+    }
+
+    public void createRepresentedClaimCreatedEvent(Claim claim, String submitterName, String authorisation) {
+        publisher.publishEvent(new RepresentedClaimCreatedEvent(claim, submitterName, authorisation));
     }
 
     public void createDefendantResponseEvent(Claim claim, String authorization) {
@@ -97,8 +102,8 @@ public class EventProducer {
         publisher.publishEvent(new SignSettlementAgreementEvent(claim));
     }
 
-    public void createClaimantResponseEvent(Claim claim) {
-        publisher.publishEvent(new ClaimantResponseEvent(claim));
+    public void createClaimantResponseEvent(Claim claim, String authorisation) {
+        publisher.publishEvent(new ClaimantResponseEvent(claim, authorisation));
     }
 
     public void createPaidInFullEvent(Claim claim) {
@@ -115,5 +120,9 @@ public class EventProducer {
 
     public void createRejectOrganisationPaymentPlanEvent(Claim claim) {
         publisher.publishEvent(new RejectOrganisationPaymentPlanEvent(claim));
+    }
+
+    public void createReviewOrderEvent(String authorisation, Claim claim) {
+        publisher.publishEvent(new ReviewOrderEvent(authorisation, claim));
     }
 }

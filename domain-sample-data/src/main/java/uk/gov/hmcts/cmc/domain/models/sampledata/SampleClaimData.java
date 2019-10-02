@@ -30,7 +30,7 @@ public class SampleClaimData {
     private Amount amount = SampleAmountBreakdown.builder().build();
     private Interest interest = SampleInterest.standard();
     private String reason = "reason";
-    private BigInteger feeAmount = new BigInteger("4000");
+    private BigInteger feeAmount = BigInteger.valueOf(4000);
     private String feeAccountNumber = "PBA1234567";
     private StatementOfTruth statementOfTruth;
     private PersonalInjury personalInjury = new PersonalInjury(DamagesExpectation.MORE_THAN_THOUSAND_POUNDS);
@@ -209,6 +209,12 @@ public class SampleClaimData {
 
     public static ClaimData validDefaults() {
         return builder().build();
+    }
+
+    public static ClaimData submittedWithAmountMoreThanThousand() {
+        return submittedByClaimantBuilder()
+            .withAmount(SampleAmountBreakdown.withThousandAsAmount().build())
+            .build();
     }
 
     public static ClaimData submittedByClaimant() {

@@ -72,6 +72,9 @@ courtfinder:
 pdf-service:
   url: "${PDF_SERVICE_URL:}"
 
+payments:
+  returnUrl: "${FRONTEND_BASE_URL:}/claim/pay/%s/receiver"
+
 document_management:
   url: ${DOCUMENT_MANAGEMENT_URL}
   userRoles: ${DOCUMENT_MANAGEMENT_USERROLES}
@@ -86,6 +89,11 @@ doc_assembly:
 
 nonworking-days:
   datafile: ${NONWORKINGDAYS_DATAFILE:/data/non-working_days.dat}
+
+milo:
+  schedule: "${MILO_CSV_SCHEDULE:-}"
+  recipient: ${MILO_CSV_RECIPIENT:}
+  sender: ${MILO_CSV_SENDER:}
 
 dateCalculations:
   endOfBusinessDayHour: 16
@@ -124,7 +132,9 @@ notifications:
       offerCounterSignedEmailToOtherParty: "cfde3889-e202-4d70-bc64-f54048616be3"
       claimantResponseWithMediationIssued: "287bb764-075f-4c7a-8049-ec9f7cd83812"
       claimantResponseWithNoMediationIssued: "9c740162-7516-4954-a023-6c1e48ba02f6"
+      claimantResponseForDqPilotWithNoMediationIssued: "9a2576b1-ce16-4b0c-9763-dd28aaf2e9d2"
       defendantResponseWithNoMediationIssued: "613ca230-ab62-4370-bacd-ecc65b92132a"
+      defendantResponseForDqPilotWithNoMediationIssued: "be214a10-d10b-4d18-9047-d8d064820171"
       responseByClaimantEmailToDefendant: "7997b719-cfc3-44ac-8fb6-b70ec409c68f"
       claimantSaysDefendantHasPaidInFull: "221e3923-1321-413a-a02e-ee8c94816cbf"
       claimantRequestedInterlocutoryJudgement: "dda355a4-204c-4172-826a-86c6f4e91e74"
@@ -137,6 +147,13 @@ notifications:
       defendantSignedSettlementAgreementToClaimant: "59f982a7-264e-4ce1-93bf-25a9fb354dc9"
       defendantAdmissionResponseToClaimant: "fce1eaa7-baa9-4b82-b1bb-119f9a2ffae3"
       claimantRejectedPartAdmitOrStatesPaidEmailToDefendant: "e6966b30-8c2f-4107-b3fa-1ae00594a672"
+      claimantLegalOrderDrawn: "4fbb9120-65ae-417e-97c4-158189be910a"
+      defendantLegalOrderDrawn: "4bc101c9-1cbd-45f6-849f-b8bafc2ca535"
+      defendantFreeMediationConfirmation: "7dd5cf7c-c548-4a75-9e0a-aa3ec04d3151"
+      reviewOrderEmailToClaimant: "3bea01fb-bfc5-4354-841c-432d80489362"
+      reviewOrderEmailToDefendant: "d568fc1e-f1fc-441a-94da-6506df12cae6"
+      claimantIntentionToProceedForPaperDq: "ecd5ccc3-9630-4c70-b225-c6132f02efe1"
+      claimantIntentionToProceedForOnlineDq: "200830e5-3bbf-4a43-864a-58ff4c2e1ff2"
 
 staff-notifications:
   sender:
@@ -150,6 +167,7 @@ feature_toggles:
   ccd_enabled: false
   save_claim_state_enabled: false
   async_event_operations_enabled: false
+  directions_questionnaire_enabled: false
 
 feign:
   httpclient:

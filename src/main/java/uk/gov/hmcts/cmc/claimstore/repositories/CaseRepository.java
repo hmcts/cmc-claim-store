@@ -10,7 +10,10 @@ import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
+import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
+import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
@@ -67,9 +70,15 @@ public interface CaseRepository {
 
     Claim saveClaim(User user, Claim claim);
 
+    Claim saveRepresentedClaim(User user, Claim claim);
+
     void saveReDetermination(String authorisation, Claim claim, ReDetermination reDetermination);
 
     void saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent);
+
+    CreatePaymentResponse initiatePayment(User user, String submitterId, InitiatePaymentRequest data);
+
+    Claim resumePayment(User authorisation, Claim claim);
 
     Claim saveClaimDocuments(
         String authorisation,
@@ -87,5 +96,8 @@ public interface CaseRepository {
     void updateClaimState(String authorisation, Long claimId, ClaimState state);
 
     Claim linkLetterHolder(Long claimId, String letterHolderId);
+
+    Claim saveReviewOrder(Long caseId, ReviewOrder reviewOrder, String authorisation);
+
 }
 

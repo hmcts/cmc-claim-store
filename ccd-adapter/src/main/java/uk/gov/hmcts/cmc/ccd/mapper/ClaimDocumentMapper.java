@@ -14,16 +14,17 @@ import java.net.URI;
 public class ClaimDocumentMapper {
 
     public CCDCollectionElement<CCDClaimDocument> to(ClaimDocument claimDocument) {
-        CCDClaimDocument.CCDClaimDocumentBuilder builder =  CCDClaimDocument.builder();
+        CCDClaimDocument.CCDClaimDocumentBuilder builder = CCDClaimDocument.builder();
+        final String documentUrl = claimDocument.getDocumentManagementUrl().toString();
+        final String documentBinaryUrl = claimDocument.getDocumentManagementBinaryUrl().toString();
 
         builder.documentName(claimDocument.getDocumentName())
-            .documentLink(new CCDDocument(claimDocument.getDocumentManagementUrl().toString()))
+            .documentLink(new CCDDocument(documentUrl, documentBinaryUrl, claimDocument.getDocumentName()))
             .documentType(CCDClaimDocumentType.valueOf(claimDocument.getDocumentType().name()))
             .authoredDatetime(claimDocument.getAuthoredDatetime())
             .createdDatetime(claimDocument.getCreatedDatetime())
             .createdBy(claimDocument.getCreatedBy())
-            .size(claimDocument.getSize())
-            .build();
+            .size(claimDocument.getSize());
 
         return CCDCollectionElement.<CCDClaimDocument>builder()
             .value(builder.build())
@@ -43,6 +44,7 @@ public class ClaimDocumentMapper {
             .id(collectionElement.getId())
             .documentName(ccdClaimDocument.getDocumentName())
             .documentManagementUrl(URI.create(ccdClaimDocument.getDocumentLink().getDocumentUrl()))
+            .documentManagementBinaryUrl(URI.create(ccdClaimDocument.getDocumentLink().getDocumentBinaryUrl()))
             .documentType(ClaimDocumentType.valueOf(ccdClaimDocument.getDocumentType().name()))
             .authoredDatetime(ccdClaimDocument.getAuthoredDatetime())
             .createdDatetime(ccdClaimDocument.getCreatedDatetime())

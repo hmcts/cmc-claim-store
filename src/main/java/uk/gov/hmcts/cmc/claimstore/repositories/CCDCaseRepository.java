@@ -16,7 +16,10 @@ import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
+import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
+import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -26,6 +29,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_DEFENDANT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service("caseRepository")
@@ -143,6 +147,19 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
+    public CreatePaymentResponse initiatePayment(User user, String submitterId, InitiatePaymentRequest data) {
+        return coreCaseDataService.savePayment(user, submitterId, data);
+    }
+
+    @Override
+    public Claim resumePayment(User user, Claim claim) {
+        return coreCaseDataService.saveCaseEvent(
+            user.getAuthorisation(),
+            claim.getCcdCaseId(),
+            RESUME_CLAIM_PAYMENT_CITIZEN);
+    }
+
+    @Override
     public void updateSettlement(
         Claim claim,
         Settlement settlement,
@@ -169,6 +186,11 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
+    public Claim saveRepresentedClaim(User user, Claim claim) {
+        return coreCaseDataService.createRepresentedClaim(user, claim);
+    }
+
+    @Override
     public Claim saveClaimDocuments(
         String authorisation,
         Long claimId,
@@ -182,6 +204,11 @@ public class CCDCaseRepository implements CaseRepository {
     @Override
     public Claim linkLetterHolder(Long claimId, String letterHolderId) {
         return coreCaseDataService.linkLetterHolder(claimId, letterHolderId);
+    }
+
+    @Override
+    public Claim saveReviewOrder(Long caseId, ReviewOrder reviewOrder, String authorisation) {
+        return coreCaseDataService.saveReviewOrder(caseId, reviewOrder, authorisation);
     }
 
     @Override

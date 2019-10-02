@@ -7,8 +7,6 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
-import uk.gov.hmcts.cmc.domain.models.party.NamedParty;
-import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -21,6 +19,7 @@ import static java.math.BigDecimal.ZERO;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
+import static uk.gov.hmcts.cmc.claimstore.utils.PartyNameUtils.getPartyNameFor;
 import static uk.gov.hmcts.cmc.claimstore.utils.Preconditions.requireNonBlank;
 
 @Component
@@ -49,7 +48,7 @@ public class DefendantPinLetterContentProvider {
             .getAmount())
             .getTotalAmount());
         totalAmountComponents.add(claim.getClaimData()
-            .getFeesPaidInPound());
+            .getFeesPaidInPounds());
 
         if (!claim.getClaimData()
             .getInterest()
@@ -95,15 +94,4 @@ public class DefendantPinLetterContentProvider {
 
         return content;
     }
-
-    private String getPartyNameFor(NamedParty party) {
-        StringBuilder name = new StringBuilder(party.getName());
-
-        if (party instanceof SoleTrader) {
-            (((SoleTrader) party).getBusinessName()).ifPresent(t -> name.append(" T/A ").append(t));
-        }
-
-        return name.toString();
-    }
-
 }

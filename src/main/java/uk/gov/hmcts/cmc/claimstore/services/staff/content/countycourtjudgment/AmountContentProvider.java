@@ -5,6 +5,7 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.content.InterestContentProvide
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.InterestContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
@@ -25,15 +26,40 @@ public class AmountContentProvider {
         this.interestContentProvider = interestContentProvider;
     }
 
+    private BigDecimal getPartAdmissionAmount(Claim claim, PartAdmissionResponse response) {
+        return response.getAmount().subtract(
+            claim.getClaimData().getFeesPaidInPounds())
+            .max(ZERO);
+    }
+
+    private BigDecimal getPartAdmissionClaimFeeInPounds(Claim claim,
+                                                       PartAdmissionResponse response, BigDecimal admissionAmount) {
+        if (admissionAmount.equals(ZERO)
+            && admissionAmount.compareTo(claim.getClaimData().getFeesPaidInPounds()) < 0) {
+            return response.getAmount();
+        } else {
+            return claim.getClaimData().getFeesPaidInPounds();
+        }
+    }
+
     public AmountContent create(Claim claim) {
         BigDecimal claimAmount = ((AmountBreakDown) claim.getClaimData().getAmount()).getTotalAmount();
 
         Response response = claim.getResponse().orElse(null);
 
         boolean isPartAdmissionResponse = response instanceof PartAdmissionResponse;
+        boolean usePartAdmitAmount = isPartAdmissionResponse && claim.getClaimantResponse()
+            .filter(claimantResponse -> ClaimantResponseType.ACCEPTATION.equals(claimantResponse.getType()))
+            .isPresent();
         BigDecimal admittedAmount = isPartAdmissionResponse
-            ? ((PartAdmissionResponse) response).getAmount()
+            ? getPartAdmissionAmount(claim, (PartAdmissionResponse) response)
             : claimAmount;
+
+        BigDecimal feeAmount = isPartAdmissionResponse
+            ? getPartAdmissionClaimFeeInPounds(claim, (PartAdmissionResponse) response, admittedAmount)
+            : claim.getClaimData().getFeesPaidInPounds();
+
+        BigDecimal ccjAmount = usePartAdmitAmount ? admittedAmount : claimAmount;
 
         requireNonNull(claim.getCountyCourtJudgment());
 
@@ -54,14 +80,14 @@ public class AmountContentProvider {
 
         return new AmountContent(
             formatMoney(claimAmount),
-            formatMoney(admittedAmount
-                .add(claim.getClaimData().getFeesPaidInPound())
+            formatMoney(ccjAmount
+                .add(feeAmount)
                 .add(interestRealValue)),
             interestContent,
-            formatMoney(claim.getClaimData().getFeesPaidInPound()),
+            formatMoney(feeAmount),
             formatMoney(paidAmount),
-            formatMoney(admittedAmount
-                .add(claim.getClaimData().getFeesPaidInPound())
+            formatMoney(ccjAmount
+                .add(feeAmount)
                 .add(interestRealValue)
                 .subtract(paidAmount)),
             formatMoney(admittedAmount)

@@ -15,6 +15,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ISSUE_CASE;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreStartResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitRepresentativeResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponse;
@@ -24,7 +25,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
         "document_management.url=false",
         "feature_toggles.ccd_async_enabled=false",
         "feature_toggles.ccd_enabled=true",
-        "feature_toggles.async_event_operations_enabled=false"
+        "feature_toggles.async_event_operations_enabled=true"
     }
 )
 public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
@@ -49,6 +50,29 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             eq(USER_ID),
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
+            eq(IGNORE_WARNING),
+            any()
+            )
+        ).willReturn(successfulCoreCaseDataStoreSubmitRepresentativeResponse());
+
+        given(coreCaseDataApi.startEventForCaseWorker(
+            eq(SOLICITOR_AUTHORISATION_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(USER_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            any(),
+            eq(ISSUE_CASE.getValue())
+            )
+        ).willReturn(successfulCoreCaseDataStoreStartResponse());
+
+        given(coreCaseDataApi.submitEventForCaseWorker(
+            eq(SOLICITOR_AUTHORISATION_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(USER_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            any(),
             eq(IGNORE_WARNING),
             any()
             )
@@ -106,6 +130,29 @@ public class SaveClaimWithCoreCaseDataStoreTest extends BaseSaveTest {
             any()
             )
         ).willReturn(successfulCoreCaseDataStoreSubmitResponse());
+
+        given(coreCaseDataApi.startEventForCitizen(
+            eq(AUTHORISATION_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(USER_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            any(),
+            eq(ISSUE_CASE.getValue())
+            )
+        ).willReturn(successfulCoreCaseDataStoreStartResponse());
+
+        given(coreCaseDataApi.submitEventForCitizen(
+            eq(AUTHORISATION_TOKEN),
+            eq(SERVICE_TOKEN),
+            eq(USER_ID),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            any(),
+            eq(IGNORE_WARNING),
+            any()
+            )
+        ).willReturn(successfulCoreCaseDataStoreSubmitRepresentativeResponse());
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
 

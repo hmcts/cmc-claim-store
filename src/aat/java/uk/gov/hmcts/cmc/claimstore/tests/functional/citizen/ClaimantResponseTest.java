@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
@@ -14,8 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse.ClaimantResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
-import java.math.BigDecimal;
-
+import static java.math.BigDecimal.TEN;
 import static java.math.BigDecimal.ZERO;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.CCJ;
@@ -28,7 +28,7 @@ public class ClaimantResponseTest extends BaseTest {
 
     @Before
     public void before() {
-        claimant = idamTestService.createCitizen();
+        claimant = bootstrap.getClaimant();
 
         String claimantId = claimant.getUserDetails().getId();
         Claim createdCase = commonOperations.submitClaim(
@@ -36,11 +36,12 @@ public class ClaimantResponseTest extends BaseTest {
             claimantId
         );
 
-        User defendant = idamTestService.createDefendant(createdCase.getLetterHolderId());
+        User defendant = idamTestService.upliftDefendant(createdCase.getLetterHolderId(), bootstrap.getDefendant());
         claim = createClaimWithResponse(createdCase, defendant);
     }
 
     @Test
+    @LogExecutionTime
     public void shouldSaveClaimantResponseAcceptationReferToJudge() {
         commonOperations.submitClaimantResponse(
             SampleClaimantResponse.validDefaultAcceptation(),
@@ -56,7 +57,7 @@ public class ClaimantResponseTest extends BaseTest {
         ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
             .orElseThrow(AssertionError::new);
 
-        assertThat(claimantResponse.getAmountPaid().orElse(ZERO)).isEqualTo(BigDecimal.TEN);
+        assertThat(claimantResponse.getAmountPaid().orElse(ZERO)).isEqualByComparingTo(TEN);
     }
 
     @Test
@@ -79,7 +80,7 @@ public class ClaimantResponseTest extends BaseTest {
         ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
             .orElseThrow(AssertionError::new);
 
-        assertThat(claimantResponse.getAmountPaid().orElse(ZERO)).isEqualTo(BigDecimal.TEN);
+        assertThat(claimantResponse.getAmountPaid().orElse(ZERO)).isEqualByComparingTo(TEN);
         assertThat(claimantResponse.getFormaliseOption().orElseThrow(AssertionError::new)).isEqualTo(CCJ);
         CountyCourtJudgment countyCourtJudgment = claimWithClaimantResponse.getCountyCourtJudgment();
         assertThat(countyCourtJudgment).isNotNull();
@@ -146,7 +147,7 @@ public class ClaimantResponseTest extends BaseTest {
         ResponseAcceptation claimantResponse = (ResponseAcceptation) claimWithClaimantResponse.getClaimantResponse()
             .orElseThrow(AssertionError::new);
 
-        assertThat(claimantResponse.getAmountPaid().orElse(ZERO)).isEqualTo(BigDecimal.TEN);
+        assertThat(claimantResponse.getAmountPaid().orElse(ZERO)).isEqualByComparingTo(TEN);
         assertThat(claimantResponse.getFormaliseOption().orElseThrow(AssertionError::new)).isEqualTo(SETTLEMENT);
         assertThat(claimWithClaimantResponse.getCountyCourtJudgment()).isNull();
         assertThat(claimWithClaimantResponse.getSettlement()).isNotEmpty();
@@ -170,7 +171,7 @@ public class ClaimantResponseTest extends BaseTest {
             .orElseThrow(AssertionError::new);
 
         assertThat(claimantResponse.getFreeMediation()).isNotEmpty();
-        assertThat(claimantResponse.getAmountPaid().orElse(ZERO)).isEqualTo(BigDecimal.TEN);
+        assertThat(claimantResponse.getAmountPaid().orElse(ZERO)).isEqualByComparingTo(TEN);
     }
 
     private Claim createClaimWithResponse(Claim createdCase, User defendant) {

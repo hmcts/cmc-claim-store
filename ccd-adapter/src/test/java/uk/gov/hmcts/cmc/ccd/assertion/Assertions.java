@@ -20,12 +20,16 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
 import uk.gov.hmcts.cmc.domain.models.Address;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.CourtDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
+import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
@@ -92,6 +96,14 @@ public class Assertions {
         return new EvidenceRowAssert(evidenceRow);
     }
 
+    public static ExpertReportAssert assertThat(ExpertReport expertReportRow) {
+        return new ExpertReportAssert(expertReportRow);
+    }
+
+    public static DirectionsQuestionnaireAssert assertThat(DirectionsQuestionnaire directionsQuestionnaire) {
+        return new DirectionsQuestionnaireAssert(directionsQuestionnaire);
+    }
+
     public static ClaimAssert assertThat(Claim claim) {
         return new ClaimAssert(claim);
     }
@@ -146,6 +158,14 @@ public class Assertions {
 
     public static EmployerAssert assertThat(Employer employer) {
         return new EmployerAssert(employer);
+    }
+
+    public static ReviewOrderAssert assertThat(ReviewOrder reviewOrder) {
+        return new ReviewOrderAssert(reviewOrder);
+    }
+
+    public static DirectionOrderAssert assertThat(DirectionOrder directionOrder) {
+        return new DirectionOrderAssert(directionOrder);
     }
 
     public static MoneyAssert assertMoney(BigDecimal amount) {

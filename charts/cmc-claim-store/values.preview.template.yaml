@@ -6,23 +6,22 @@ tags:
   postgresql-pod: false  # stop any subcharts starting their own postgres instance
 
 postgresql:
+  image:
+    tag: '11.3.0'
   resources:
     requests:
       cpu: 25m
   initdbScripts:
     init.sql: |-
-      CREATE USER claimstore WITH PASSWORD 'claimstore';
-      CREATE DATABASE claimstore WITH OWNER = claimstore ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-      CREATE USER cmc WITH PASSWORD 'cmc';
-      CREATE DATABASE cmc WITH OWNER = cmc ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
-      CREATE USER features WITH PASSWORD 'features';
-      CREATE DATABASE features WITH OWNER = features ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+      CREATE DATABASE claimstore WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+      CREATE DATABASE cmc WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+      CREATE DATABASE features WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
   postgresqlUsername: hmcts
   postgresqlPassword: hmcts
   postgresqlDatabase: user-profile
-  nameOverride: ccd-postgres  # because ccd wont work without this specific name
+  nameOverride: postgres
   persistence:
     enabled: false
 
@@ -39,19 +38,17 @@ java:
     DOC_ASSEMBLY_URL: false
     FRONTEND_BASE_URL: https://www-${SERVICE_FQDN}
     RESPOND_TO_CLAIM_URL: https://www-${SERVICE_FQDN}/first-contact/start
-    CLAIM_STORE_DB_HOST: ${SERVICE_NAME}-ccd-postgres
-    CLAIM_STORE_DB_USERNAME: claimstore
-    CLAIM_STORE_DB_PASSWORD: claimstore
-    CMC_DB_HOST: ${SERVICE_NAME}-ccd-postgres
-    CMC_DB_USERNAME: cmc
-    CMC_DB_PASSWORD: cmc
+    CLAIM_STORE_DB_HOST: ${SERVICE_NAME}-postgres
+    CLAIM_STORE_DB_USERNAME: hmcts
+    CLAIM_STORE_DB_PASSWORD: hmcts
+    CMC_DB_HOST: ${SERVICE_NAME}-postgres
+    CMC_DB_USERNAME: hmcts
+    CMC_DB_PASSWORD: hmcts
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
-    FEATURE_TOGGLES_CCD_ENABLED: false
-    FEATURE_TOGGLES_CCD_ASYNC_ENABLED: true
 
 cmc-citizen-frontend:
   nodejs:
-    image: hmcts.azurecr.io/hmcts/cmc-citizen-frontend:latest  # master
+    image: hmctspublic.azurecr.io/cmc/citizen-frontend:latest  # master
     ingressIP: ${INGRESS_IP}
     consulIP: ${CONSUL_LB_IP}
     releaseNameOverride: ${SERVICE_NAME}-nodejs
@@ -71,24 +68,41 @@ cmc-citizen-frontend:
       PAY_URL: http://payment-api-aat.service.core-compute-aat.internal
       FEES_URL: http://fees-register-api-aat.service.core-compute-aat.internal
       DRAFT_STORE_URL: http://draft-store-service-aat.service.core-compute-aat.internal
+      DOC_ASSEMBLY_URL: http://http://dg-docassembly-aat.service.core-compute-aat.interna
   rpe-feature-toggle-api:
-    releaseNameOverride: ${SERVICE_NAME}-ftr-tgl-api
     java:
       releaseNameOverride: ${SERVICE_NAME}-ftr-tgl-api
       environment:
-        FEATURES_DB_HOST: ${SERVICE_NAME}-ccd-postgres
+        FEATURES_DB_HOST: ${SERVICE_NAME}-postgres
         FEATURES_DB_NAME: features
-        FEATURES_DB_USER_NAME: features
-        FEATURES_DB_PASSWORD: features
+        FEATURES_DB_USER_NAME: hmcts
+        FEATURES_DB_PASSWORD: hmcts
+      postgresql:
+        image:
+          tag: '11.3.0'
+    importer:
+      apiUrl: http://${SERVICE_NAME}-ftr-tgl-api/api/ff4j/store/features/
+      kvSecretRef: kvcreds
+      cron:
+        enabled: false
+      oneoff:
+        command: /scripts/add-weighted-toggle.sh cmc_admissions 'CMC admissions' '1.0' &&
+          /scripts/add-weighted-toggle.sh cmc_directions_questionnaire 'CMC Directions Questionnaire' '1.0' &&
+          /scripts/add-weighted-toggle.sh cmc_mediation_pilot 'CMC Mediation Pilot' '1.0' &&
+          /scripts/add-toggle.sh cmc_defence_reminders 'CMC defence reminders' false
+        enabled: true
+        permissions: cmc-new-features-consent-given
   idam-pr:
-    service:
-      name: Money Claims - Citizen
-      redirect_uri: https://www-${SERVICE_FQDN}/receiver
+    redirect_uris:
+      Money Claims - Citizen:
+        - https://www-${SERVICE_FQDN}/receiver
 
 ccd:
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP}
+  postgresql:
+    nameOverride: postgres
   idam-pr:
     releaseNameOverride: ${SERVICE_NAME}-ccd-idam-pr
     redirect_uris:
@@ -98,7 +112,8 @@ ccd:
         - https://admin-web-${SERVICE_FQDN}/oauth2redirect
   apiGateway:
     s2sKey: ${API_GATEWAY_S2S_KEY}
-    idamClientSecret: ${API_GATEWAY_IDAM_SECRET}
+    idamClientSecret:
+      value: ${API_GATEWAY_IDAM_SECRET}
   userProfileApi:
     authorisedServices: ccd_admin,ccd_data,ccd_definition,cmc_claim_store
   dataStoreApi:
@@ -114,7 +129,8 @@ ccd:
   adminWeb:
     enabled: true
     s2sKey: ${ADMIN_S2S_KEY}
-    idamClientSecret: ${ADMIN_WEB_IDAM_SECRET}
+    idamClientSecret:
+      value: ${ADMIN_WEB_IDAM_SECRET}
     environment:
       NODE_TLS_REJECT_UNAUTHORIZED: 0
   importer:
@@ -124,14 +140,19 @@ ccd:
         - CMC
       users:
         - civilmoneyclaims+ccd@gmail.com|CMC|MoneyClaimCase|open
-      userProfileDatabaseHost: ${SERVICE_NAME}-ccd-postgres
+        - civilmoneyclaims+judge@gmail.com|CMC|MoneyClaimCase|orderForJudgeReview
+        - civilmoneyclaims+la@gmail.com|CMC|MoneyClaimCase|readyForDirections
+      userProfileDatabaseHost: ${SERVICE_NAME}-postgres
       userProfileDatabasePort: 5432
       userProfileDatabaseUser: hmcts
       userProfileDatabasePassword: hmcts
       userProfileDatabaseName: user-profile
     definition:
       enabled: true
-      image: hmcts.azurecr.io/hmcts/cmc-ccd-definition-importer:1.2.3
+      image: hmctspublic.azurecr.io/cmc/ccd-definition-importer:1.3.3
+      kvSecretRef: kvcreds
+      gitSecretRef: kvcreds
+      redirectUri: https://case-management-web-${SERVICE_FQDN}/oauth2redirect
       definitionFilename: cmc-ccd.xlsx
       userRoles:
         - citizen
@@ -140,3 +161,6 @@ ccd:
         - caseworker-cmc-systemupdate
         - letter-holder
         - caseworker-autotest1
+        - caseworker-cmc-anonymouscitizen
+        - caseworker-cmc-judge
+        - caseworker-cmc-legaladvisor
