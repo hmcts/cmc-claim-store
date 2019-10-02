@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,13 +25,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INITIATE_CLAIM_PAYMENT_CITIZEN;
-import static uk.gov.hmcts.cmc.domain.models.ChannelType.CITIZEN;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
+import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.INITIATED;
+import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @Service
-public class InitiatePaymentCallbackHandler extends CallbackHandler {
-    private static final List<CaseEvent> EVENTS = Collections.singletonList(INITIATE_CLAIM_PAYMENT_CITIZEN);
+public class ResumePaymentCallbackHandler extends CallbackHandler {
+    private static final List<CaseEvent> EVENTS = Collections.singletonList(RESUME_CLAIM_PAYMENT_CITIZEN);
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final PaymentsService paymentsService;
@@ -42,13 +42,12 @@ public class InitiatePaymentCallbackHandler extends CallbackHandler {
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
 
     @Autowired
-    public InitiatePaymentCallbackHandler(
+    public ResumePaymentCallbackHandler(
         PaymentsService paymentsService,
         CaseDetailsConverter caseDetailsConverter,
         CaseMapper caseMapper,
         IssueDateCalculator issueDateCalculator,
-        ResponseDeadlineCalculator responseDeadlineCalculator
-    ) {
+        ResponseDeadlineCalculator responseDeadlineCalculator) {
         this.paymentsService = paymentsService;
         this.caseDetailsConverter = caseDetailsConverter;
         this.caseMapper = caseMapper;
@@ -59,7 +58,7 @@ public class InitiatePaymentCallbackHandler extends CallbackHandler {
     @Override
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
-            CallbackType.ABOUT_TO_SUBMIT, this::createPayment
+            CallbackType.ABOUT_TO_SUBMIT, this::resumePayment
         );
     }
 
@@ -68,45 +67,53 @@ public class InitiatePaymentCallbackHandler extends CallbackHandler {
         return EVENTS;
     }
 
-    @Override
-    public List<String> getSupportedRoles() {
-        return ImmutableList.of("citizen");
-    }
-
-    private CallbackResponse createPayment(CallbackParams callbackParams) {
+    private CallbackResponse resumePayment(CallbackParams callbackParams)  {
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         String authorisation = callbackParams.getParams()
             .get(CallbackParams.Params.BEARER_TOKEN).toString();
 
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
 
-        LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
-        LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
-
-        Claim updatedClaim = claim.toBuilder()
-            .ccdCaseId(caseDetails.getId())
-            .issuedOn(issuedOn)
-            .responseDeadline(responseDeadline)
-            .channel(CITIZEN)
-            .build();
-
-        logger.info("Creating payment in pay hub for case {}",
-            updatedClaim.getExternalId());
-
-        Payment payment = paymentsService.createPayment(
-            authorisation,
-            updatedClaim
-        );
-
-        Claim claimAfterPayment = updatedClaim.toBuilder()
-            .claimData(updatedClaim.getClaimData().toBuilder()
-                .payment(payment)
-                .build())
-            .build();
+        Claim claimAfterPayment = withPayment(authorisation, claim);
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()
             .data(caseDetailsConverter.convertToMap(caseMapper.to(claimAfterPayment)))
             .build();
+    }
+
+    private Claim withPayment(String authorisation, Claim claim) {
+        Payment originalPayment = paymentsService.retrievePayment(authorisation, claim);
+
+        if (originalPayment.getStatus().equals(INITIATED) || originalPayment.getStatus().equals(SUCCESS)) {
+            return claim.toBuilder()
+                .claimData(claim.getClaimData().toBuilder()
+                    .payment(originalPayment)
+                    .build())
+                .build();
+        }
+
+        LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
+        LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
+
+        Claim updatedClaim = claim.toBuilder()
+            .issuedOn(issuedOn)
+            .responseDeadline(responseDeadline)
+            .build();
+
+        logger.info("Creating payment in pay hub for case {}",
+            updatedClaim.getExternalId());
+
+        Payment newPayment = paymentsService.createPayment(
+            authorisation,
+            updatedClaim
+        );
+
+        return updatedClaim.toBuilder()
+            .claimData(updatedClaim.getClaimData().toBuilder()
+                .payment(newPayment)
+                .build())
+            .build();
+
     }
 }
