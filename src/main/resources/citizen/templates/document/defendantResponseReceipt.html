@@ -329,7 +329,9 @@
       <tr>
         <td>Telephone</td>
         <td>
-          {{ defendant.mobilePhone }}
+          {{ defendant.mobilePhone }}{% if defendant.phoneAmended %}
+          (as amended)
+          {% endif %}
         </td>
       </tr>
       {% endif %}
