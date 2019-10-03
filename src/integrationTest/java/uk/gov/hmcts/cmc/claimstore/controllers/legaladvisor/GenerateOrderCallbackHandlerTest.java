@@ -47,8 +47,9 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
 public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
 
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder()
-        .withForename("Judge")
-        .withSurname("McJudge")
+        .withForename("legal")
+        .withSurname("Advisor")
+        .withRoles("caseworker-cmc-legaladvisor")
         .build();
 
     private static final String AUTHORISATION_TOKEN = "Bearer let me in";
