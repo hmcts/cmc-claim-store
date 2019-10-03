@@ -120,7 +120,7 @@ public class SampleData {
             .interestClaimStartDate(LocalDate.now())
             .interestSpecificDailyAmount("1000")
             .interestEndDateType(CCDInterestEndDateType.SUBMISSION)
-            .paymentStatus("success")
+            .paymentStatus("Success")
             .paymentDateCreated(LocalDate.of(2019, 01, 01))
             .paymentId("PaymentId")
             .paymentAmount("400000")
@@ -529,6 +529,25 @@ public class SampleData {
             .applicants(applicants)
             .respondents(respondents)
             .state(OPEN.getValue())
+            .build();
+    }
+
+    public static CCDCase getCCDCitizenCaseWithoutPayment() {
+        List<CCDCollectionElement<CCDApplicant>> applicants
+            = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
+        List<CCDCollectionElement<CCDRespondent>> respondents
+            = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(getCCDRespondentIndividual()).build());
+
+        return ccdBuilderWithDefault()
+            .amountBreakDown(getAmountBreakDown())
+            .paymentAmount(null)
+            .paymentDateCreated(null)
+            .paymentId(null)
+            .paymentStatus(null)
+            .paymentNextUrl(null)
+            .paymentReference(null)
+            .applicants(applicants)
+            .respondents(respondents)
             .build();
     }
 

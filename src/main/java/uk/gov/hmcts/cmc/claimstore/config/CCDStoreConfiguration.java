@@ -57,8 +57,16 @@ public class CCDStoreConfiguration {
         CCDCreateCaseService ccdCreateCaseService,
         CaseDetailsConverter caseDetailsConverter
     ) {
-        return new CoreCaseDataService(caseMapper, userService, referenceNumberService, coreCaseDataApi,
-            authTokenGenerator, jobSchedulerService, ccdCreateCaseService, caseDetailsConverter);
+        return new CoreCaseDataService(
+            caseMapper,
+            userService,
+            referenceNumberService,
+            coreCaseDataApi,
+            authTokenGenerator,
+            jobSchedulerService,
+            ccdCreateCaseService,
+            caseDetailsConverter
+        );
     }
 
     @Bean
