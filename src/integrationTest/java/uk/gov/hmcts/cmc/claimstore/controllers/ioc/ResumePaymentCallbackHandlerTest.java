@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
@@ -226,21 +225,5 @@ public class ResumePaymentCallbackHandlerTest extends MockSpringTest {
             .andReturn();
         assertThat(mvcResult.getResolvedException())
             .isInstanceOfAny(CallbackException.class);
-    }
-
-    @Test
-    public void shouldReturnErrorForUnsupportedRole() throws Exception {
-        UserDetails userDetails = SampleUserDetails.builder()
-            .withRoles("caseworker-cmc")
-            .build();
-
-        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
-
-        MvcResult mvcResult = makeRequest(CallbackType.ABOUT_TO_SUBMIT.getValue())
-            .andExpect(status().isForbidden())
-            .andReturn();
-
-        assertThat(mvcResult.getResolvedException())
-            .isInstanceOfAny(ForbiddenActionException.class);
     }
 }

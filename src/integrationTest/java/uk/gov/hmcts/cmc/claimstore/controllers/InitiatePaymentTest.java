@@ -32,9 +32,6 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimState.AWAITING_CITIZEN_PAYMENT
 @TestPropertySource(
     properties = {
         "document_management.url=false",
-        "feature_toggles.ccd_async_enabled=false",
-        "feature_toggles.ccd_enabled=true",
-        "feature_toggles.async_event_operations_enabled=true",
         "payments.api.url=http://payments-api",
         "fees.api.url=http://fees-api"
     }

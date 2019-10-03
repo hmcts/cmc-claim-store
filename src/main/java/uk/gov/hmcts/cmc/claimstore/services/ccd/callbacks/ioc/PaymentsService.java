@@ -139,12 +139,18 @@ public class PaymentsService {
     }
 
     private Payment from(PaymentDto paymentDto) {
+        String dateCreated = Optional.ofNullable(paymentDto.getDateCreated())
+            .map(date -> date.toLocalDate().toString())
+            .orElse(null);
+        String nextUrl = Optional.ofNullable(paymentDto.getLinks().getNextUrl())
+            .map(url -> url.getHref().toString())
+            .orElse(null);
         return Payment.builder()
             .amount(paymentDto.getAmount())
             .reference(paymentDto.getReference())
             .status(PaymentStatus.fromValue(paymentDto.getStatus()))
-            .dateCreated(paymentDto.getDateCreated().toLocalDate().toString())
-            .nextUrl(paymentDto.getLinks().getNextUrl().getHref().toString())
+            .dateCreated(dateCreated)
+            .nextUrl(nextUrl)
             .build();
     }
 }

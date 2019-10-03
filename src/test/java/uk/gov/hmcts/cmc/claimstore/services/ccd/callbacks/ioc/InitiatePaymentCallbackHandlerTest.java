@@ -11,6 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -20,7 +21,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
-import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -77,7 +77,7 @@ public class InitiatePaymentCallbackHandlerTest {
     }
 
     @Test
-    public void shouldCreatePaymentOnAboutToSubmitEvent() throws URISyntaxException {
+    public void shouldCreatePaymentOnAboutToSubmitEvent() {
         Claim claim = SampleClaim.getDefault();
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
             .thenReturn(claim);
@@ -119,6 +119,12 @@ public class InitiatePaymentCallbackHandlerTest {
 
         Payment payment = toBeSaved.getClaimData().getPayment();
         assertThat(payment).isEqualTo(expectedPayment);
+    }
+
+    @Test
+    public void shouldAcceptOnlyCitizenRoles() {
+        assertThat(handler.getSupportedRoles())
+            .containsOnly(Role.CITIZEN);
     }
 
 }

@@ -101,6 +101,60 @@ public class PaymentsServiceTest {
         assertThat(payment).isEqualTo(expectedPayment);
     }
 
+    @Test
+    public void shouldRetrieveAnExistingPaymentWithNoNextUrl() {
+        PaymentDto retrievedPayment = PaymentDto.builder()
+            .status("Success")
+            .dateCreated(PAYMENT_DATE)
+            .links(LinksDto.builder().nextUrl(null).build())
+            .build();
+        when(paymentsClient.retrievePayment(
+            BEARER_TOKEN,
+            claim.getClaimData().getPayment().getReference()
+        )).thenReturn(retrievedPayment);
+
+        Payment expectedPayment = Payment.builder()
+            .status(PaymentStatus.SUCCESS)
+            .nextUrl(null)
+            .dateCreated(PAYMENT_DATE.toLocalDate().toString())
+            .build();
+
+        Payment payment = paymentsService.retrievePayment(
+            BEARER_TOKEN,
+            claim
+        );
+
+        assertThat(payment).isEqualTo(expectedPayment);
+    }
+
+    @Test
+    public void shouldRetrieveAnExistingPaymentWithNoCreatedDate() {
+        PaymentDto retrievedPayment = PaymentDto.builder()
+            .status("Success")
+            .dateCreated(null)
+            .links(LinksDto.builder().nextUrl(
+                LinkDto.builder().href(URI.create(NEXT_URL)).build())
+                .build())
+            .build();
+        when(paymentsClient.retrievePayment(
+            BEARER_TOKEN,
+            claim.getClaimData().getPayment().getReference()
+        )).thenReturn(retrievedPayment);
+
+        Payment expectedPayment = Payment.builder()
+            .status(PaymentStatus.SUCCESS)
+            .nextUrl(NEXT_URL)
+            .dateCreated(null)
+            .build();
+
+        Payment payment = paymentsService.retrievePayment(
+            BEARER_TOKEN,
+            claim
+        );
+
+        assertThat(payment).isEqualTo(expectedPayment);
+    }
+
     @Test(expected = IllegalStateException.class)
     public void shouldThrowWhenPaymentIsNotPresent() {
         paymentsService.retrievePayment(

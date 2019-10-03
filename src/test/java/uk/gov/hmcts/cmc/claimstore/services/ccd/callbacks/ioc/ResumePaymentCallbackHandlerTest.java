@@ -11,6 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -187,5 +188,11 @@ public class ResumePaymentCallbackHandlerTest {
 
         Payment payment = toBeSaved.getClaimData().getPayment();
         assertThat(payment).isEqualTo(newPayment);
+    }
+
+    @Test
+    public void shouldAcceptOnlyCitizenRoles() {
+        assertThat(handler.getSupportedRoles())
+            .containsOnly(Role.CITIZEN);
     }
 }
