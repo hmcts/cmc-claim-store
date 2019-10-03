@@ -71,6 +71,11 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
     }
 
     @Override
+    public List<String> getSupportedRoles() {
+        return ImmutableList.of("caseworker-cmc-legaladvisor", "caseworker-cmc-judge");
+    }
+
+    @Override
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
             CallbackType.ABOUT_TO_SUBMIT, this::copyDraftToCaseDocument,

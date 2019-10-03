@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +49,8 @@ public class InitiatePaymentCallbackHandler extends CallbackHandler {
         CaseDetailsConverter caseDetailsConverter,
         CaseMapper caseMapper,
         IssueDateCalculator issueDateCalculator,
-        ResponseDeadlineCalculator responseDeadlineCalculator) {
+        ResponseDeadlineCalculator responseDeadlineCalculator
+    ) {
         this.paymentsService = paymentsService;
         this.caseDetailsConverter = caseDetailsConverter;
         this.caseMapper = caseMapper;
@@ -68,7 +70,12 @@ public class InitiatePaymentCallbackHandler extends CallbackHandler {
         return EVENTS;
     }
 
-    private CallbackResponse createPayment(CallbackParams callbackParams)  {
+    @Override
+    public List<String> getSupportedRoles() {
+        return ImmutableList.of("citizen");
+    }
+
+    private CallbackResponse createPayment(CallbackParams callbackParams) {
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         String authorisation = callbackParams.getParams()
             .get(CallbackParams.Params.BEARER_TOKEN).toString();
