@@ -7,7 +7,9 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -38,6 +40,9 @@ public class CreateLegalRepClaimCallbackHandlerTest extends MockSpringTest {
     public void setUp() {
         given(referenceNumberRepository.getReferenceNumberForLegal())
             .willReturn(REFERENCE_NO);
+
+        UserDetails userDetails = SampleUserDetails.builder().withRoles("citizen").build();
+        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
     }
 
     @Test
@@ -56,7 +61,7 @@ public class CreateLegalRepClaimCallbackHandlerTest extends MockSpringTest {
         assertThat(defendant)
             .containsEntry("responseDeadline", defendant.get("responseDeadline"));
         assertThat(responseData)
-            .contains(entry("channelType", LEGAL_REP.name()))
+            .contains(entry("channel", LEGAL_REP.name()))
             .contains(entry("previousServiceCaseReference", REFERENCE_NO))
             .containsKey("issuedOn");
     }

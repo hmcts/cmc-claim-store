@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legalrep;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +66,11 @@ public class CreateLegalRepClaimCallbackHandler extends CallbackHandler {
         return EVENTS;
     }
 
+    @Override
+    public List<String> getSupportedRoles() {
+        return ImmutableList.of("citizen");
+    }
+
     private CallbackResponse createLegalRepClaim(CallbackParams callbackParams) {
         logger.info("Creating legal rep case for callback of type {}", callbackParams.getType());
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
@@ -77,7 +83,7 @@ public class CreateLegalRepClaimCallbackHandler extends CallbackHandler {
             .referenceNumber(referenceNumber)
             .issuedOn(issuedOn)
             .responseDeadline(responseDeadline)
-            .channelType(LEGAL_REP)
+            .channel(LEGAL_REP)
             .build();
 
         return AboutToStartOrSubmitCallbackResponse

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
+package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -17,11 +17,13 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -68,13 +70,13 @@ public class GenerateOrderCallbackHandlerTest {
     @Mock
     private UserService userService;
     @Mock
-    private JsonMapper jsonMapper;
-    @Mock
     private AuthTokenGenerator authTokenGenerator;
     @Mock
     private DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
+    @Mock
+    private AppInsights appInsights;
 
     private CallbackRequest callbackRequest;
     private GenerateOrderCallbackHandler generateOrderCallbackHandler;
@@ -87,10 +89,9 @@ public class GenerateOrderCallbackHandlerTest {
             legalOrderGenerationDeadlinesCalculator,
             docAssemblyClient,
             authTokenGenerator,
-            jsonMapper,
             docAssemblyTemplateBodyMapper,
-            caseDetailsConverter
-        );
+            caseDetailsConverter,
+            appInsights);
 
         ReflectionTestUtils.setField(generateOrderCallbackHandler, "templateId", "testTemplateId");
         ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
@@ -107,6 +108,8 @@ public class GenerateOrderCallbackHandlerTest {
                             .build()).build()
                 ).build();
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+
         when(legalOrderGenerationDeadlinesCalculator.calculateOrderGenerationDeadlines())
             .thenReturn(DEADLINE);
         when(userService.getUserDetails(BEARER_TOKEN)).thenReturn(JUDGE);
@@ -120,7 +123,6 @@ public class GenerateOrderCallbackHandlerTest {
 
     @Test
     public void shouldPrepopulateFieldsOnAboutToStartEventIfNobodyObjectsCourt() {
-        when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
         ccdCase.setRespondents(
             ImmutableList.of(
                 CCDCollectionElement.<CCDRespondent>builder()
@@ -159,7 +161,6 @@ public class GenerateOrderCallbackHandlerTest {
 
     @Test
     public void shouldPrepopulateFieldsOnAboutToStartEventIfOtherDirectionHeaderIsNull() {
-        when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
         CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData().toBuilder()
             .hearingCourt(null)
             .build();
@@ -204,7 +205,6 @@ public class GenerateOrderCallbackHandlerTest {
 
     @Test
     public void shouldPrepopulateFieldsOnAboutToStartEventIfClaimantsObjectsCourt() {
-        when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
         ccdCase.setRespondents(
             ImmutableList.of(
                 CCDCollectionElement.<CCDRespondent>builder()
@@ -244,7 +244,7 @@ public class GenerateOrderCallbackHandlerTest {
                     .value(SampleData.getIndividualRespondentWithDQ())
                     .build()
             ));
-        when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
 
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_START)
@@ -273,7 +273,7 @@ public class GenerateOrderCallbackHandlerTest {
     public void shouldGenerateDocumentOnMidEvent() {
         CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         ccdCase.setDirectionOrderData(SampleData.getCCDOrderGenerationData());
-        when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
 
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
             .templateId("testTemplateId")
@@ -311,7 +311,6 @@ public class GenerateOrderCallbackHandlerTest {
 
     @Test(expected = IllegalStateException.class)
     public void shouldThrowIfClaimantResponseIsNotPresent() {
-        when(jsonMapper.fromMap(Collections.emptyMap(), CCDCase.class)).thenReturn(ccdCase);
         CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData().toBuilder()
             .otherDirections(null)
             .build();

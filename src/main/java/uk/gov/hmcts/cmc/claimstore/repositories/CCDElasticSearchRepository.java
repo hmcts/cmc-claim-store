@@ -49,7 +49,7 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
                     "data.respondents.value.claimantResponse.freeMediationOption", CCDYesNoOption.YES.name()))
                 .must(QueryBuilders.rangeQuery("data.respondents.value.claimantResponse.submittedOn")
                     .from(DateUtils.startOfDay(mediationAgreedDate), true)
-                    .to(DateUtils.endOfDay(mediationAgreedDate), true))
+                    .to(DateUtils.endOfDay(mediationAgreedDate), true)), 1000
         );
 
         return searchClaimsWith(user, mediationQuery);
