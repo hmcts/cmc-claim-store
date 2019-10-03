@@ -148,6 +148,24 @@ public class CoreCaseDataServiceFailureTest {
     }
 
     @Test(expected = CoreCaseDataStoreException.class)
+    public void submitInitiatePaymentFailure() {
+        Claim providedClaim = SampleClaim.getDefault();
+        when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
+
+        service.createNewCitizenCase(USER, providedClaim);
+
+        verify(coreCaseDataApi).submitForCitizen(
+            eq(AUTHORISATION),
+            eq(AUTH_TOKEN),
+            eq(USER_DETAILS.getId()),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(true),
+            any(CaseDataContent.class)
+        );
+    }
+
+    @Test(expected = CoreCaseDataStoreException.class)
     public void linkDefendantFailure() {
         Claim providedClaim = SampleClaim.getDefault();
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(CCDCase.builder().build());
@@ -555,4 +573,5 @@ public class CoreCaseDataServiceFailureTest {
         String newLetterHolderId = "letter_holder_id";
         service.linkLetterHolder(claim.getId(), newLetterHolderId);
     }
+
 }

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.controllers;
+package uk.gov.hmcts.cmc.claimstore.controllers.legaladvisor;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -103,7 +103,7 @@ public class DrawOrderCallbackHandlerTest extends MockSpringTest {
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
 
-        assertThat(responseData).hasSize(23);
+        assertThat(responseData).hasSize(24);
         List<Map<String, Object>> caseDocuments =
             (List<Map<String, Object>>) responseData.get("caseDocuments");
         Map<String, Object> document =
