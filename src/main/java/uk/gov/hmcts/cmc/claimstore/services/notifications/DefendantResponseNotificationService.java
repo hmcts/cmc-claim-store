@@ -113,12 +113,10 @@ public class DefendantResponseNotificationService {
         YesNoOption mediation = response.getFreeMediation().orElse(YesNoOption.YES);
         if (mediation == YesNoOption.YES) {
             return getEmailTemplates().getClaimantResponseWithMediationIssued();
-        } else {
-            if (isFullDefenceAndNoMediation(response)) {
-                return getEmailTemplates().getClaimantResponseWithNoMediationIssued();
-            }
-            return getEmailTemplates().getClaimantResponseIssued();
         }
+
+        return getEmailTemplates().getClaimantResponseIssued();
+
     }
 
     private Map<String, String> aggregateParams(Claim claim) {
