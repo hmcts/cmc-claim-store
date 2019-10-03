@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.controllers;
+package uk.gov.hmcts.cmc.claimstore.controllers.legaladvisor;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -18,8 +18,10 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -30,7 +32,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -87,6 +88,9 @@ public class DrawOrderCallbackHandlerTest extends MockSpringTest {
             .downloadDocument(
                 eq(AUTHORISATION_TOKEN),
                 any(ClaimDocument.class))).willReturn("template".getBytes());
+
+        UserDetails userDetails = SampleUserDetails.builder().withRoles("caseworker-cmc-legaladvisor").build();
+        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
     }
 
     @Test
@@ -99,7 +103,7 @@ public class DrawOrderCallbackHandlerTest extends MockSpringTest {
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
 
-        assertThat(responseData).hasSize(23);
+        assertThat(responseData).hasSize(24);
         List<Map<String, Object>> caseDocuments =
             (List<Map<String, Object>>) responseData.get("caseDocuments");
         Map<String, Object> document =
@@ -135,16 +139,12 @@ public class DrawOrderCallbackHandlerTest extends MockSpringTest {
     }
 
     private ResultActions makeRequest(String callbackType) throws Exception {
-        CaseDetails caseDetailsTemp = successfulCoreCaseDataStoreSubmitResponse();
-        Map<String, Object> data = new HashMap<>(caseDetailsTemp.getData());
-        data.put("draftOrderDoc", ImmutableMap.of("document_url", DOCUMENT_URL));
-        data.put("caseDocuments", ImmutableList.of(CLAIM_DOCUMENT));
-        data.put("directionOrder", CCDDirectionOrder.builder().hearingCourtAddress(SampleData.getCCDAddress()).build());
-
-        CaseDetails caseDetails = CaseDetails.builder()
-            .id(caseDetailsTemp.getId())
-            .data(data)
-            .build();
+        CaseDetails caseDetails = successfulCoreCaseDataStoreSubmitResponse();
+        caseDetails.getData().put("draftOrderDoc", ImmutableMap.of("document_url", DOCUMENT_URL));
+        caseDetails.getData().put("caseDocuments", ImmutableList.of(CLAIM_DOCUMENT));
+        caseDetails.getData().put("directionOrder", CCDDirectionOrder.builder()
+            .hearingCourtAddress(SampleData.getCCDAddress())
+            .build());
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .eventId(CaseEvent.DRAW_ORDER.getValue())

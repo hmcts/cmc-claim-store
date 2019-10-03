@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
+package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -13,6 +13,10 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtDetailsFinder;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
@@ -64,6 +68,11 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
     @Override
     public List<CaseEvent> handledEvents() {
         return Collections.singletonList(CaseEvent.DRAW_ORDER);
+    }
+
+    @Override
+    public List<String> getSupportedRoles() {
+        return ImmutableList.of("caseworker-cmc-legaladvisor", "caseworker-cmc-judge");
     }
 
     @Override

@@ -75,6 +75,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYE
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.OTHER;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOtherDirectionHeaderType.UPLOAD;
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicators;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
 
@@ -119,7 +120,7 @@ public class SampleData {
             .interestClaimStartDate(LocalDate.now())
             .interestSpecificDailyAmount("1000")
             .interestEndDateType(CCDInterestEndDateType.SUBMISSION)
-            .paymentStatus("success")
+            .paymentStatus("Success")
             .paymentDateCreated(LocalDate.of(2019, 01, 01))
             .paymentId("PaymentId")
             .paymentAmount("400000")
@@ -513,6 +514,7 @@ public class SampleData {
             .applicants(applicants)
             .respondents(respondents)
             .claimSubmissionOperationIndicators(defaultCCDClaimSubmissionOperationIndicators)
+            .state(OPEN.getValue())
             .build();
     }
 
@@ -524,6 +526,26 @@ public class SampleData {
 
         return ccdBuilderWithDefault()
             .amountBreakDown(amountBreakDown)
+            .applicants(applicants)
+            .respondents(respondents)
+            .state(OPEN.getValue())
+            .build();
+    }
+
+    public static CCDCase getCCDCitizenCaseWithoutPayment() {
+        List<CCDCollectionElement<CCDApplicant>> applicants
+            = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
+        List<CCDCollectionElement<CCDRespondent>> respondents
+            = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(getCCDRespondentIndividual()).build());
+
+        return ccdBuilderWithDefault()
+            .amountBreakDown(getAmountBreakDown())
+            .paymentAmount(null)
+            .paymentDateCreated(null)
+            .paymentId(null)
+            .paymentStatus(null)
+            .paymentNextUrl(null)
+            .paymentReference(null)
             .applicants(applicants)
             .respondents(respondents)
             .build();
@@ -689,6 +711,7 @@ public class SampleData {
             .applicants(applicants)
             .respondents(respondents)
             .claimSubmissionOperationIndicators(claimIndicatorSupplier)
+            .state(OPEN.getValue())
             .build();
     }
 

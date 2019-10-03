@@ -104,6 +104,7 @@
     "interestType": "NO_INTEREST",
     "paymentAmount": 25,
     "paymentStatus": "Success",
+    "paymentNextUrl": "http://nexturl.test",
     "submitterEmail": "j.smith@example.com",
     "amountBreakDown": [
       {
