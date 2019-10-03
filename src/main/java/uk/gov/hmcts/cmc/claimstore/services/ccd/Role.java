@@ -10,7 +10,7 @@ import java.util.Arrays;
 public enum Role {
     CITIZEN("citizen"),
     CASEWORKER("caseworker-cmc"),
-    SOLICITOR("solicitor"),
+    SOLICITOR("caseworker-cmc-solicitor"),
     LEGAL_ADVISOR("caseworker-cmc-legaladvisor"),
     JUDGE("caseworker-cmc-judge");
 
