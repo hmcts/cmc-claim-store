@@ -24,12 +24,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     }
 )
 public class LinkDefendantToClaimViaAuthenticationTest extends BaseIntegrationTest {
+    static final String username = "defendant.email@htcms.net";
+    static final String password = "password";
+    static final String urlFormat = "/testing-support/claims/%s/defendant/%s/%s";
 
     @Test
     public void shouldReturn200HttpStatusAndUpdatedClaimWhenLinkIsSuccessfullySet() throws Exception {
-
-        String username = "defendant.email@htcms.net";
-        String password = "password";
 
         given(userService.authenticateUser(username, password)).willReturn(SampleUser.builder()
             .withAuthorisation(BEARER_TOKEN)
@@ -42,9 +42,7 @@ public class LinkDefendantToClaimViaAuthenticationTest extends BaseIntegrationTe
         );
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-
-        String urlTemplate = String.format("/testing-support/claims/%s/defendant/%s/%s",
-            claim.getReferenceNumber(), username, password);
+        String urlTemplate = String.format(urlFormat, claim.getReferenceNumber(), username, password);
 
         webClient
             .perform(put(urlTemplate))
@@ -58,9 +56,6 @@ public class LinkDefendantToClaimViaAuthenticationTest extends BaseIntegrationTe
     @Test
     public void shouldReturn401HttpStatusWhenUserDetailsNotExist() throws Exception {
 
-        String username = "defendant.email@htcms.net";
-        String password = "password";
-
         given(userService.authenticateUser(username, password))
             .willThrow(
                 HttpClientErrorException.create(HttpStatus.UNAUTHORIZED,
@@ -72,8 +67,7 @@ public class LinkDefendantToClaimViaAuthenticationTest extends BaseIntegrationTe
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
 
-        String urlTemplate = String.format("/testing-support/claims/%s/defendant/%s/%s",
-            claim.getReferenceNumber(), username, password);
+        String urlTemplate = String.format(urlFormat, claim.getReferenceNumber(), username, password);
 
         webClient
             .perform(put(urlTemplate))
@@ -88,9 +82,6 @@ public class LinkDefendantToClaimViaAuthenticationTest extends BaseIntegrationTe
     @Test
     public void shouldReturn404HttpStatusWhenClaimNotExist() throws Exception {
 
-        String username = "defendant.email@htcms.net";
-        String password = "password";
-
         given(userService.authenticateUser(username, password))
             .willThrow(
                 HttpClientErrorException.create(HttpStatus.UNAUTHORIZED,
@@ -101,8 +92,7 @@ public class LinkDefendantToClaimViaAuthenticationTest extends BaseIntegrationTe
             );
 
         String claimReference = "Non Existent Claim Reference";
-        String urlTemplate = String.format("/testing-support/claims/%s/defendant/%s/%s",
-            claimReference, username, password);
+        String urlTemplate = String.format(urlFormat, claimReference, username, password);
 
         webClient
             .perform(put(urlTemplate))
