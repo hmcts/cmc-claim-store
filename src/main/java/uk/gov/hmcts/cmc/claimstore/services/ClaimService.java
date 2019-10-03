@@ -22,7 +22,6 @@ import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.rules.PaidInFullRule;
 import uk.gov.hmcts.cmc.claimstore.rules.ReviewOrderRule;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
-import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
@@ -38,14 +37,10 @@ import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
-import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
@@ -61,7 +56,6 @@ public class ClaimService {
     private final ClaimRepository claimRepository;
     private final IssueDateCalculator issueDateCalculator;
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
-    private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
     private final UserService userService;
     private final EventProducer eventProducer;
     private final CaseRepository caseRepository;
@@ -82,7 +76,6 @@ public class ClaimService {
         UserService userService,
         IssueDateCalculator issueDateCalculator,
         ResponseDeadlineCalculator responseDeadlineCalculator,
-        DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator,
         MoreTimeRequestRule moreTimeRequestRule,
         EventProducer eventProducer,
         AppInsights appInsights,
@@ -100,7 +93,6 @@ public class ClaimService {
         this.caseRepository = caseRepository;
         this.moreTimeRequestRule = moreTimeRequestRule;
         this.appInsights = appInsights;
-        this.directionsQuestionnaireDeadlineCalculator = directionsQuestionnaireDeadlineCalculator;
         this.paidInFullRule = paidInFullRule;
         this.ccdEventProducer = ccdEventProducer;
         this.claimAuthorisationRule = claimAuthorisationRule;
@@ -385,11 +377,6 @@ public class ClaimService {
         LocalDate claimantResponseDeadline =
             responseDeadlineCalculator.calculateClaimantResponseDeadline(LocalDate.now());
         caseRepository.saveDefendantResponse(claim, defendantEmail, response, claimantResponseDeadline, authorization);
-        if (isFullDefenceWithNoMediation(response) && !DirectionsQuestionnaireUtils.isOnlineDQ(claim)) {
-            LocalDate deadline = directionsQuestionnaireDeadlineCalculator
-                .calculateDirectionsQuestionnaireDeadlineCalculator(LocalDateTime.now());
-            caseRepository.updateDirectionsQuestionnaireDeadline(claim, deadline, authorization);
-        }
     }
 
     public Claim paidInFull(String externalId, PaidInFull paidInFull, String authorisation) {
@@ -403,11 +390,6 @@ public class ClaimService {
         appInsights.trackEvent(AppInsightsEvent.PAID_IN_FULL, REFERENCE_NUMBER, claim.getReferenceNumber());
         this.ccdEventProducer.createCCDPaidInFullEvent(authorisation, claim, paidInFull);
         return updatedClaim;
-    }
-
-    private static boolean isFullDefenceWithNoMediation(Response response) {
-        return response.getResponseType().equals(ResponseType.FULL_DEFENCE)
-            && response.getFreeMediation().filter(Predicate.isEqual(YesNoOption.NO)).isPresent();
     }
 
     public void saveReDetermination(
