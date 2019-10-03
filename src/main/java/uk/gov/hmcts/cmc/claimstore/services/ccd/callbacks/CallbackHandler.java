@@ -14,6 +14,8 @@ public abstract class CallbackHandler {
 
     public abstract List<CaseEvent> handledEvents();
 
+    public abstract List<String> getSupportedRoles();
+
     public void register(Map<String, CallbackHandler> handlers) {
         handledEvents().forEach(
             handledEvent -> handlers.put(handledEvent.getValue(), this));

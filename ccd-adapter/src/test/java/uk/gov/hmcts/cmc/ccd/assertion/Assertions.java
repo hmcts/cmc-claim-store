@@ -171,4 +171,5 @@ public class Assertions {
     public static MoneyAssert assertMoney(BigDecimal amount) {
         return new MoneyAssert(amount);
     }
+
 }
