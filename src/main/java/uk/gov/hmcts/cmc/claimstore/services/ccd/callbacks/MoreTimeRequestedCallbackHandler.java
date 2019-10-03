@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,6 +62,11 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
     @Override
     public List<CaseEvent> handledEvents() {
         return Collections.singletonList(CaseEvent.MORE_TIME_REQUESTED_PAPER);
+    }
+
+    @Override
+    public List<String> getSupportedRoles() {
+        return ImmutableList.of("caseworker-cmc");
     }
 
     public CallbackResponse requestMoreTimeOnPaperSubmitted(CallbackParams callbackParams) {
