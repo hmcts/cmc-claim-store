@@ -63,6 +63,8 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
     private static final String PREFERRED_COURT_OBJECTING_REASON = "preferredCourtObjectingReason";
     private static final String DIRECTION_LIST = "directionList";
     private static final String PREFERRED_DQ_COURT = "preferredDQCourt";
+    private static final String EXPERT_PERMISSION_BY_CLAIMANT = "expertReportPermissionPartyAskedByClaimant";
+    private static final String EXPERT_PERMISSION_BY_DEFENDANT = "expertReportPermissionPartyAskedByDefendant";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -206,5 +208,7 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
         data.put(PREFERRED_COURT_OBJECTING_PARTY, preferredCourtObjectingParty);
         data.put(PREFERRED_COURT_OBJECTING_REASON, preferredCourtObjectingReason);
         data.put(PREFERRED_DQ_COURT, DirectionsQuestionnaireUtils.getPreferredCourt(claim));
+        data.put(EXPERT_PERMISSION_BY_CLAIMANT, claimantDQ.getExpertRequired());
+        data.put(EXPERT_PERMISSION_BY_DEFENDANT, defendantDQ.getExpertRequired());
     }
 }

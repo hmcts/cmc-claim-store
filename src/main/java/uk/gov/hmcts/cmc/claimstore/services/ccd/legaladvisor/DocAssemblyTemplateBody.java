@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
 import uk.gov.hmcts.reform.docassembly.domain.FormPayload;
@@ -75,4 +76,11 @@ public class DocAssemblyTemplateBody implements FormPayload {
     private List<OtherDirection> otherDirections;
 
     private List<CCDCollectionElement<String>> extraDocUploadList;
+
+    private CCDYesNoOption expertReportPermissionPartyAskedByClaimant;
+    private CCDYesNoOption expertReportPermissionPartyAskedByDefendant;
+    private CCDYesNoOption expertReportPermissionPartyGivenToClaimant;
+    private CCDYesNoOption expertReportPermissionPartyGivenToDefendant;
+    private List<CCDCollectionElement<String>> expertReportInstructionClaimant;
+    private List<CCDCollectionElement<String>> expertReportInstructionDefendant;
 }

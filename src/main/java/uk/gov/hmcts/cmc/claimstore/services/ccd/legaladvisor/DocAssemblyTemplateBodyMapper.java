@@ -91,6 +91,12 @@ public class DocAssemblyTemplateBodyMapper {
                         .otherDirectionHeaders(ccdOrderDirection.getOtherDirectionHeaders())
                         .build())
                     .collect(Collectors.toList()))
+            .expertReportInstructionClaimant(ccdOrderGenerationData.getExpertReportInstructionClaimant())
+            .expertReportInstructionDefendant(ccdOrderGenerationData.getExpertReportInstructionDefendant())
+            .expertReportPermissionPartyAskedByClaimant(ccdOrderGenerationData.getExpertReportPermissionPartyAskedByClaimant())
+            .expertReportPermissionPartyAskedByDefendant(ccdOrderGenerationData.getExpertReportPermissionPartyAskedByDefendant())
+            .expertReportPermissionPartyGivenToClaimant(ccdOrderGenerationData.getExpertReportPermissionPartyGivenToClaimant())
+            .expertReportPermissionPartyGivenToDefendant(ccdOrderGenerationData.getExpertReportPermissionPartyGivenToDefendant())
             .build();
     }
 }

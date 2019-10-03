@@ -25,6 +25,10 @@ public class DirectionOrder {
     private PilotCourt hearingCourt;
     private Address hearingCourtAddress;
     private HearingDurationType estimatedHearingDuration;
+    private YesNoOption expertReportPermissionGivenToClaimant;
+    private YesNoOption expertReportPermissionGivenToDefendant;
+    private List<String> expertReportInstructionsForClaimant;
+    private List<String> expertReportInstructionsForDefendant;
     private LocalDateTime createdOn;
 
     public void addDirection(Direction direction) {
