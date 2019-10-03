@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -9,17 +10,26 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.PaymentsService;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,9 +37,13 @@ import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponse;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.AWAITING_CITIZEN_PAYMENT;
+import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.FAILED;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.INITIATED;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 
@@ -44,20 +58,32 @@ public class ResumePaymentCallbackHandlerTest extends MockSpringTest {
 
     private static final String AUTHORISATION_TOKEN = "Bearer let me in";
     private static final String NEXT_URL = "http://nexturl.test";
+    private static final long CASE_ID = 42L;
 
     @MockBean
     private PaymentsService paymentsService;
+    @MockBean
+    private IssueDateCalculator issueDateCalculator;
+    @MockBean
+    private ResponseDeadlineCalculator responseDeadlineCalculator;
     @Autowired
     private CaseDetailsConverter caseDetailsConverter;
     @Autowired
     private CaseMapper caseMapper;
 
+    @Before
+    public void setup() {
+        UserDetails userDetails = SampleUserDetails.builder().withRoles("citizen").build();
+        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
+    }
+
     @Test
-    public void shouldStorePaymentDetailsBeforeSubmittingEvent() throws Exception {
+    public void shouldCreatePaymentIfPaymentIsNotInitiatedOrSuccesful()
+        throws Exception {
         Payment payment = Payment.builder()
             .amount(BigDecimal.TEN)
             .reference("reference")
-            .status(SUCCESS)
+            .status(FAILED)
             .dateCreated("2017-12-03+01:00")
             .nextUrl(NEXT_URL)
             .build();
@@ -80,6 +106,10 @@ public class ResumePaymentCallbackHandlerTest extends MockSpringTest {
                 any(Claim.class)))
             .willReturn(newPayment);
 
+        LocalDate date = LocalDate.now();
+        when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(date);
+        when(responseDeadlineCalculator.calculateResponseDeadline(any(LocalDate.class))).thenReturn(date);
+
         MvcResult mvcResult = makeRequest(CallbackType.ABOUT_TO_SUBMIT.getValue())
             .andExpect(status().isOk())
             .andReturn();
@@ -88,11 +118,13 @@ public class ResumePaymentCallbackHandlerTest extends MockSpringTest {
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
 
+        verify(paymentsService).createPayment(eq(AUTHORISATION_TOKEN), any(Claim.class));
+
         assertThat(responseData).contains(
-            entry("channel", "CITIZEN"),
+            entry("issuedOn", date.toString()),
             entry("paymentAmount", "2500"),
             entry("paymentReference", newPayment.getReference()),
-            entry("paymentStatus", newPayment.getStatus()),
+            entry("paymentStatus", newPayment.getStatus().toString()),
             entry("paymentDateCreated", "2017-12-03"),
             entry("paymentNextUrl", NEXT_URL)
         );
@@ -121,10 +153,13 @@ public class ResumePaymentCallbackHandlerTest extends MockSpringTest {
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
 
+        verify(paymentsService, never())
+            .createPayment(eq(AUTHORISATION_TOKEN), any(Claim.class));
+
         assertThat(responseData).contains(
             entry("paymentAmount", "1000"),
             entry("paymentReference", payment.getReference()),
-            entry("paymentStatus", payment.getStatus()),
+            entry("paymentStatus", payment.getStatus().toString()),
             entry("paymentDateCreated", "2017-12-03"),
             entry("paymentNextUrl", NEXT_URL)
         );
@@ -153,10 +188,13 @@ public class ResumePaymentCallbackHandlerTest extends MockSpringTest {
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
 
+        verify(paymentsService, never())
+            .createPayment(eq(AUTHORISATION_TOKEN), any(Claim.class));
+
         assertThat(responseData).contains(
             entry("paymentAmount", "1000"),
             entry("paymentReference", payment.getReference()),
-            entry("paymentStatus", payment.getStatus()),
+            entry("paymentStatus", payment.getStatus().toString()),
             entry("paymentDateCreated", "2017-12-03"),
             entry("paymentNextUrl", NEXT_URL)
         );
@@ -165,7 +203,12 @@ public class ResumePaymentCallbackHandlerTest extends MockSpringTest {
     private ResultActions makeRequest(String callbackType) throws Exception {
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .eventId(CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN.getValue())
-            .caseDetails(successfulCoreCaseDataStoreSubmitResponse())
+            .caseDetails(CaseDetails.builder()
+                .id(CASE_ID)
+                .data(caseDetailsConverter.convertToMap(
+                    SampleData.getCCDCitizenCaseWithoutPayment()))
+                .state(AWAITING_CITIZEN_PAYMENT.getValue())
+                .build())
             .build();
 
         return webClient
@@ -183,5 +226,21 @@ public class ResumePaymentCallbackHandlerTest extends MockSpringTest {
             .andReturn();
         assertThat(mvcResult.getResolvedException())
             .isInstanceOfAny(CallbackException.class);
+    }
+
+    @Test
+    public void shouldReturnErrorForUnsupportedRole() throws Exception {
+        UserDetails userDetails = SampleUserDetails.builder()
+            .withRoles("caseworker-cmc")
+            .build();
+
+        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
+
+        MvcResult mvcResult = makeRequest(CallbackType.ABOUT_TO_SUBMIT.getValue())
+            .andExpect(status().isForbidden())
+            .andReturn();
+
+        assertThat(mvcResult.getResolvedException())
+            .isInstanceOfAny(ForbiddenActionException.class);
     }
 }

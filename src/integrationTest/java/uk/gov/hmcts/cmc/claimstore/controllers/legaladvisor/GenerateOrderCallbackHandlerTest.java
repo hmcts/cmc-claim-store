@@ -15,9 +15,9 @@ import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Address;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -36,6 +36,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType.ABOUT_TO_START;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType.MID;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponseWithDQ;
 
 @TestPropertySource(
@@ -47,8 +49,9 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
 public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
 
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder()
-        .withForename("Judge")
-        .withSurname("McJudge")
+        .withForename("legal")
+        .withSurname("Advisor")
+        .withRoles("caseworker-cmc-legaladvisor")
         .build();
 
     private static final String AUTHORISATION_TOKEN = "Bearer let me in";
@@ -83,7 +86,7 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
 
     @Test
     public void shouldPrepopulateFieldsOnAboutToStartEvent() throws Exception {
-        MvcResult mvcResult = makeRequestGenerateOrder(CallbackType.ABOUT_TO_START.getValue())
+        MvcResult mvcResult = makeRequestGenerateOrder(ABOUT_TO_START.getValue())
             .andExpect(status().isOk())
             .andReturn();
 
@@ -111,7 +114,7 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
 
     @Test
     public void shouldGenerateDocumentOnMidEvent() throws Exception {
-        MvcResult mvcResult = makeRequest(CallbackType.MID.getValue())
+        MvcResult mvcResult = makeRequest(MID.getValue())
             .andExpect(status().isOk())
             .andReturn();
 
@@ -131,6 +134,22 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
             .andReturn();
         assertThat(mvcResult.getResolvedException())
             .isInstanceOfAny(CallbackException.class);
+    }
+
+    @Test
+    public void shouldReturnErrorForUnsupportedRole() throws Exception {
+        UserDetails userDetails = SampleUserDetails.builder()
+            .withRoles("caseworker-cmc")
+            .build();
+
+        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
+
+        MvcResult mvcResult = makeRequest(ABOUT_TO_START.getValue())
+            .andExpect(status().isForbidden())
+            .andReturn();
+
+        assertThat(mvcResult.getResolvedException())
+            .isInstanceOfAny(ForbiddenActionException.class);
     }
 
     private ResultActions makeRequest(String callbackType) throws Exception {

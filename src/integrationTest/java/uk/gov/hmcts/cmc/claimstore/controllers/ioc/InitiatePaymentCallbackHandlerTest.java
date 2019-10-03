@@ -8,13 +8,15 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.PaymentsService;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Payment;
@@ -32,6 +34,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INITIATE_CLAIM_PAYMENT_CITIZEN;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 
@@ -71,6 +74,9 @@ public class InitiatePaymentCallbackHandlerTest extends MockSpringTest {
                 eq(AUTHORISATION_TOKEN),
                 any(Claim.class)))
             .willReturn(payment);
+
+        UserDetails userDetails = SampleUserDetails.builder().withRoles("citizen").build();
+        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
     }
 
     @Test
@@ -96,7 +102,7 @@ public class InitiatePaymentCallbackHandlerTest extends MockSpringTest {
 
     private ResultActions makeRequest(String callbackType) throws Exception {
         CallbackRequest callbackRequest = CallbackRequest.builder()
-            .eventId(CaseEvent.INITIATE_CLAIM_PAYMENT_CITIZEN.getValue())
+            .eventId(INITIATE_CLAIM_PAYMENT_CITIZEN.getValue())
             .caseDetails(CaseDetails.builder()
                 .id(CASE_ID)
                 .data(caseDetailsConverter.convertToMap(
@@ -120,5 +126,21 @@ public class InitiatePaymentCallbackHandlerTest extends MockSpringTest {
             .andReturn();
         assertThat(mvcResult.getResolvedException())
             .isInstanceOfAny(CallbackException.class);
+    }
+
+    @Test
+    public void shouldReturnErrorForUnsupportedRole() throws Exception {
+        UserDetails userDetails = SampleUserDetails.builder()
+            .withRoles("caseworker-cmc")
+            .build();
+
+        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
+
+        MvcResult mvcResult = makeRequest(CallbackType.ABOUT_TO_SUBMIT.getValue())
+            .andExpect(status().isForbidden())
+            .andReturn();
+
+        assertThat(mvcResult.getResolvedException())
+            .isInstanceOfAny(ForbiddenActionException.class);
     }
 }

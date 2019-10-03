@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -30,7 +29,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
-import static uk.gov.hmcts.cmc.domain.models.ChannelType.CITIZEN;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.INITIATED;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.PENDING;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
@@ -184,11 +182,8 @@ public class ResumePaymentCallbackHandlerTest {
         verify(caseMapper).to(claimArgumentCaptor.capture());
 
         Claim toBeSaved = claimArgumentCaptor.getValue();
-        assertThat(toBeSaved.getId()).isEqualTo(CASE_ID);
-        assertThat(toBeSaved.getCcdCaseId()).isEqualTo(CASE_ID);
         assertThat(toBeSaved.getIssuedOn()).isEqualTo(date);
         assertThat(toBeSaved.getResponseDeadline()).isEqualTo(date);
-        assertThat(toBeSaved.getChannel()).isEqualTo(Optional.of(CITIZEN));
 
         Payment payment = toBeSaved.getClaimData().getPayment();
         assertThat(payment).isEqualTo(newPayment);

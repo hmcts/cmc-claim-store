@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDResponseSubjectType;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
@@ -37,6 +38,7 @@ import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 import uk.gov.hmcts.reform.docassembly.domain.OutputType;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,10 +52,14 @@ import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.DOC
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYEWITNESS;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DRAFTED_BY_LEGAL_ADVISOR;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.LEGAL_ADVISOR;
 
 @Service
 @ConditionalOnProperty(prefix = "doc_assembly", name = "url")
 public class GenerateOrderCallbackHandler extends CallbackHandler {
+    private static final List<Role> ROLES = Collections.singletonList(LEGAL_ADVISOR);
+    private static final List<CaseEvent> EVENTS = ImmutableList.of(GENERATE_ORDER, ACTION_REVIEW_COMMENTS);
+
     private static final String DOC_UPLOAD_DEADLINE = "docUploadDeadline";
     private static final String EYEWITNESS_UPLOAD_DEADLINE = "eyewitnessUploadDeadline";
     private static final String DOC_UPLOAD_FOR_PARTY = "docUploadForParty";
@@ -108,7 +114,12 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
 
     @Override
     public List<CaseEvent> handledEvents() {
-        return ImmutableList.of(GENERATE_ORDER, ACTION_REVIEW_COMMENTS);
+        return EVENTS;
+    }
+
+    @Override
+    public List<Role> getSupportedRoles() {
+        return ROLES;
     }
 
     private CallbackResponse prepopulateOrder(CallbackParams callbackParams) {

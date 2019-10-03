@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
@@ -32,6 +33,7 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 @Service
 public class InitiatePaymentCallbackHandler extends CallbackHandler {
     private static final List<CaseEvent> EVENTS = Collections.singletonList(INITIATE_CLAIM_PAYMENT_CITIZEN);
+    private static final List<Role> ROLES = Collections.singletonList(Role.CITIZEN);
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final PaymentsService paymentsService;
@@ -46,7 +48,8 @@ public class InitiatePaymentCallbackHandler extends CallbackHandler {
         CaseDetailsConverter caseDetailsConverter,
         CaseMapper caseMapper,
         IssueDateCalculator issueDateCalculator,
-        ResponseDeadlineCalculator responseDeadlineCalculator) {
+        ResponseDeadlineCalculator responseDeadlineCalculator
+    ) {
         this.paymentsService = paymentsService;
         this.caseDetailsConverter = caseDetailsConverter;
         this.caseMapper = caseMapper;
@@ -66,7 +69,12 @@ public class InitiatePaymentCallbackHandler extends CallbackHandler {
         return EVENTS;
     }
 
-    private CallbackResponse createPayment(CallbackParams callbackParams)  {
+    @Override
+    public List<Role> getSupportedRoles() {
+        return ROLES;
+    }
+
+    private CallbackResponse createPayment(CallbackParams callbackParams) {
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         String authorisation = callbackParams.getParams()
             .get(CallbackParams.Params.BEARER_TOKEN).toString();

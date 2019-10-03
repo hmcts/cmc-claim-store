@@ -18,8 +18,11 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -86,6 +89,9 @@ public class DrawOrderCallbackHandlerTest extends MockSpringTest {
             .downloadDocument(
                 eq(AUTHORISATION_TOKEN),
                 any(ClaimDocument.class))).willReturn("template".getBytes());
+
+        UserDetails userDetails = SampleUserDetails.builder().withRoles("caseworker-cmc-legaladvisor").build();
+        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
     }
 
     @Test
@@ -98,7 +104,7 @@ public class DrawOrderCallbackHandlerTest extends MockSpringTest {
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
 
-        assertThat(responseData).hasSize(24);
+        assertThat(responseData).hasSize(23);
         List<Map<String, Object>> caseDocuments =
             (List<Map<String, Object>>) responseData.get("caseDocuments");
         Map<String, Object> document =
@@ -161,5 +167,21 @@ public class DrawOrderCallbackHandlerTest extends MockSpringTest {
             .andReturn();
         assertThat(mvcResult.getResolvedException())
             .isInstanceOfAny(CallbackException.class);
+    }
+
+    @Test
+    public void shouldReturnErrorForUnsupportedRole() throws Exception {
+        UserDetails userDetails = SampleUserDetails.builder()
+            .withRoles("caseworker-cmc")
+            .build();
+
+        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
+
+        MvcResult mvcResult = makeRequest(CallbackType.ABOUT_TO_SUBMIT.getValue())
+            .andExpect(status().isForbidden())
+            .andReturn();
+
+        assertThat(mvcResult.getResolvedException())
+            .isInstanceOfAny(ForbiddenActionException.class);
     }
 }

@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
@@ -26,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
-import static uk.gov.hmcts.cmc.domain.models.ChannelType.CITIZEN;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.INITIATED;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
@@ -34,6 +35,7 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 @Service
 public class ResumePaymentCallbackHandler extends CallbackHandler {
     private static final List<CaseEvent> EVENTS = Collections.singletonList(RESUME_CLAIM_PAYMENT_CITIZEN);
+    private static final List<Role> ROLES = Collections.singletonList(CITIZEN);
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final PaymentsService paymentsService;
@@ -68,6 +70,11 @@ public class ResumePaymentCallbackHandler extends CallbackHandler {
         return EVENTS;
     }
 
+    @Override
+    public List<Role> getSupportedRoles() {
+        return ROLES;
+    }
+
     private CallbackResponse resumePayment(CallbackParams callbackParams)  {
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         String authorisation = callbackParams.getParams()
@@ -75,7 +82,7 @@ public class ResumePaymentCallbackHandler extends CallbackHandler {
 
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
 
-        Claim claimAfterPayment = withPayment(authorisation, claim, caseDetails.getId());
+        Claim claimAfterPayment = withPayment(authorisation, claim);
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()
@@ -83,7 +90,7 @@ public class ResumePaymentCallbackHandler extends CallbackHandler {
             .build();
     }
 
-    private Claim withPayment(String authorisation, Claim claim, Long caseId) {
+    private Claim withPayment(String authorisation, Claim claim) {
         Payment originalPayment = paymentsService.retrievePayment(authorisation, claim);
 
         if (originalPayment.getStatus().equals(INITIATED) || originalPayment.getStatus().equals(SUCCESS)) {
@@ -98,10 +105,8 @@ public class ResumePaymentCallbackHandler extends CallbackHandler {
         LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
 
         Claim updatedClaim = claim.toBuilder()
-            .ccdCaseId(caseId)
             .issuedOn(issuedOn)
             .responseDeadline(responseDeadline)
-            .channel(CITIZEN)
             .build();
 
         logger.info("Creating payment in pay hub for case {}",
