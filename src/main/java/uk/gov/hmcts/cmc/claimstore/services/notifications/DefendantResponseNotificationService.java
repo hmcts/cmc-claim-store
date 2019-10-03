@@ -82,12 +82,6 @@ public class DefendantResponseNotificationService {
             && (isFullDefence(response) || isPartAdmission(response));
     }
 
-    private boolean isPaperDqWithNoMediationAndHasEitherFullDefenceOrPartAdmission(Claim claim, Response response) {
-        return !DirectionsQuestionnaireUtils.isOnlineDQ(claim)
-            && isNoMediation(response)
-            && (isFullDefence(response) || isPartAdmission(response));
-    }
-
     public void notifyClaimant(
         Claim claim,
         String reference
@@ -130,7 +124,7 @@ public class DefendantResponseNotificationService {
 
         Response response = claim.getResponse().orElse(null);
         Objects.requireNonNull(response);
-        
+
         parameters.put(INTENTION_TO_PROCEED_DEADLINE, formatDate(claim.getRespondedAt()
             .plusDays(INTENTION_TO_PROCEED_LIMIT)
             .toLocalDate()));
