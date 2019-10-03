@@ -130,10 +130,7 @@ public class DefendantResponseNotificationService {
 
         Response response = claim.getResponse().orElse(null);
         Objects.requireNonNull(response);
-
-        if (isPaperDqWithNoMediationAndHasEitherFullDefenceOrPartAdmission(claim, response)) {
-            parameters.put(DQS_DEADLINE, formatDate(claim.getDirectionsQuestionnaireDeadline()));
-        }
+        
         parameters.put(INTENTION_TO_PROCEED_DEADLINE, formatDate(claim.getRespondedAt()
             .plusDays(INTENTION_TO_PROCEED_LIMIT)
             .toLocalDate()));
@@ -161,10 +158,6 @@ public class DefendantResponseNotificationService {
         );
         parameters.put(ISSUED_ON, formatDate(claim.getIssuedOn()));
         parameters.put(RESPONSE_DEADLINE, formatDate(claim.getResponseDeadline()));
-
-        if (isPaperDqWithNoMediationAndHasEitherFullDefenceOrPartAdmission(claim, response)) {
-            parameters.put(DQS_DEADLINE, formatDate(claim.getDirectionsQuestionnaireDeadline()));
-        }
         parameters.put(INTENTION_TO_PROCEED_DEADLINE, formatDate(claim.getRespondedAt()
             .plusDays(INTENTION_TO_PROCEED_LIMIT)
             .toLocalDate()));
