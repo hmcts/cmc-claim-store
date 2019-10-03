@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CallbackHandlerFactory;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
@@ -172,7 +173,7 @@ public class CallbackHandlerFactoryTest {
 
     @Test
     public void shouldThrowIfUserDoesNotHaveSupportedRoles() {
-        expectedException.expect(CallbackException.class);
+        expectedException.expect(ForbiddenActionException.class);
         expectedException.expectMessage("User does not have supported role for event DrawOrder");
 
         UserDetails userDetails = SampleUserDetails.builder().withRoles("citizen").build();

@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
@@ -40,7 +41,7 @@ public class CallbackHandlerFactory {
         if (callbackHandler.getSupportedRoles().stream().anyMatch(userRoles::contains)) {
             return true;
         } else {
-            throw new CallbackException("User does not have supported role for event " + eventId);
+            throw new ForbiddenActionException("User does not have supported role for event " + eventId);
         }
     }
 }
