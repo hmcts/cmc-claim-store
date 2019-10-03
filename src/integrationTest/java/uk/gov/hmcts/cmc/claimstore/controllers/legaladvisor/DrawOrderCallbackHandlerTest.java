@@ -18,8 +18,10 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -86,6 +88,9 @@ public class DrawOrderCallbackHandlerTest extends MockSpringTest {
             .downloadDocument(
                 eq(AUTHORISATION_TOKEN),
                 any(ClaimDocument.class))).willReturn("template".getBytes());
+
+        UserDetails userDetails = SampleUserDetails.builder().withRoles("caseworker-cmc-legaladvisor").build();
+        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
     }
 
     @Test

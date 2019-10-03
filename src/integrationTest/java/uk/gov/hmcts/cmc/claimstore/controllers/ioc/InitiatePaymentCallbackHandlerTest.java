@@ -13,8 +13,10 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.PaymentsService;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -79,6 +81,9 @@ public class InitiatePaymentCallbackHandlerTest extends MockSpringTest {
                 eq(AUTHORISATION_TOKEN),
                 any(Claim.class)))
             .willReturn(payment);
+
+        UserDetails userDetails = SampleUserDetails.builder().withRoles("citizen").build();
+        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
     }
 
     @Test
