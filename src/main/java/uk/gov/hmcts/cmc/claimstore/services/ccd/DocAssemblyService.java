@@ -45,7 +45,7 @@ public class DocAssemblyService {
     public DocAssemblyResponse createOrder(CCDCase ccdCase, String authorisation) {
         UserDetails userDetails = userService.getUserDetails(authorisation);
 
-        logger.info("Generate order callback: creating request for doc assembly");
+        logger.info("Doc assembly service: creating request for doc assembly");
 
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
             .templateId(templateId)
@@ -53,7 +53,7 @@ public class DocAssemblyService {
             .formPayload(docAssemblyTemplateBodyMapper.from(ccdCase, userDetails))
             .build();
 
-        logger.info("Generate order callback: sending request to doc assembly");
+        logger.info("Doc assembly service: sending request to doc assembly");
 
         return docAssemblyClient.generateOrder(
             authorisation,

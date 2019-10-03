@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
+package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -17,16 +17,18 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDResponseSubjectType;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
-import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
 import java.time.LocalDate;
@@ -65,7 +67,6 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
     private String templateId;
 
     private final LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator;
-    private final JsonMapper jsonMapper;
     private final CaseDetailsConverter caseDetailsConverter;
     private final DocAssemblyService docAssemblyService;
     private final AppInsights appInsights;
@@ -73,12 +74,10 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
     @Autowired
     public GenerateOrderCallbackHandler(
         LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator,
-        JsonMapper jsonMapper,
         CaseDetailsConverter caseDetailsConverter,
         DocAssemblyService docAssemblyService,
         AppInsights appInsights
     ) {
-        this.jsonMapper = jsonMapper;
         this.legalOrderGenerationDeadlinesCalculator = legalOrderGenerationDeadlinesCalculator;
         this.caseDetailsConverter = caseDetailsConverter;
         this.docAssemblyService = docAssemblyService;
@@ -98,15 +97,22 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
         return ImmutableList.of(GENERATE_ORDER, ACTION_REVIEW_COMMENTS);
     }
 
+    @Override
+    public List<String> getSupportedRoles() {
+        return ImmutableList.of("caseworker-cmc-legaladvisor");
+    }
+
     private CallbackResponse prepopulateOrder(CallbackParams callbackParams) {
         logger.info("Generate order callback: pre populating order fields");
         CallbackRequest callbackRequest = callbackParams.getRequest();
-        Map<String, Object> caseData = callbackRequest.getCaseDetails().getData();
-        Claim claim = caseDetailsConverter.extractClaim(CaseDetails.builder().data(caseData).build());
 
         Map<String, Object> data = new HashMap<>();
         data.put(DIRECTION_LIST, ImmutableList.of(DOCUMENTS.name(), EYEWITNESS.name()));
-        addCourtData(claim, caseData, data);
+
+        Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
+        addCourtData(claim, ccdCase, data);
+
         LocalDate deadline = legalOrderGenerationDeadlinesCalculator.calculateOrderGenerationDeadlines();
         data.put(DOC_UPLOAD_DEADLINE, deadline);
         data.put(EYEWITNESS_UPLOAD_DEADLINE, deadline);
@@ -123,7 +129,7 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
     private CallbackResponse generateOrder(CallbackParams callbackParams) {
         logger.info("Generate order callback: creating order document");
         CallbackRequest callbackRequest = callbackParams.getRequest();
-        CCDCase ccdCase = jsonMapper.fromMap(callbackRequest.getCaseDetails().getData(), CCDCase.class);
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         DocAssemblyResponse docAssemblyResponse = docAssemblyService.createOrder(ccdCase, authorisation);
         logger.info("Generate order callback: received response from doc assembly");
@@ -139,8 +145,7 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
             .build();
     }
 
-    private void addCourtData(Claim claim, Map<String, Object> caseData, Map<String, Object> data) {
-        CCDCase ccdCase = jsonMapper.fromMap(caseData, CCDCase.class);
+    private void addCourtData(Claim claim, CCDCase ccdCase, Map<String, Object> data) {
         CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
 
         CCDResponseRejection claimantResponse = Optional.ofNullable(respondent.getClaimantResponse())
