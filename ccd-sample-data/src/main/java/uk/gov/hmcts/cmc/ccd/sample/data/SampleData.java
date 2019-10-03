@@ -532,6 +532,25 @@ public class SampleData {
             .build();
     }
 
+    public static CCDCase getCCDCitizenCaseWithoutPayment() {
+        List<CCDCollectionElement<CCDApplicant>> applicants
+            = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
+        List<CCDCollectionElement<CCDRespondent>> respondents
+            = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(getCCDRespondentIndividual()).build());
+
+        return ccdBuilderWithDefault()
+            .amountBreakDown(getAmountBreakDown())
+            .paymentAmount(null)
+            .paymentDateCreated(null)
+            .paymentId(null)
+            .paymentStatus(null)
+            .paymentNextUrl(null)
+            .paymentReference(null)
+            .applicants(applicants)
+            .respondents(respondents)
+            .build();
+    }
+
     public static CCDOrderGenerationData getCCDOrderGenerationData() {
         return CCDOrderGenerationData.builder()
             .directionList(ImmutableList.of(
