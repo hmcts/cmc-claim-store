@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -12,10 +13,13 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.PaymentsService;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Payment;
@@ -66,6 +70,12 @@ public class ResumePaymentCallbackHandlerTest extends MockSpringTest {
     private CaseDetailsConverter caseDetailsConverter;
     @Autowired
     private CaseMapper caseMapper;
+
+    @Before
+    public void setup() {
+        UserDetails userDetails = SampleUserDetails.builder().withRoles("citizen").build();
+        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
+    }
 
     @Test
     public void shouldCreatePaymentIfPaymentIsNotInitiatedOrSuccesful()
@@ -216,5 +226,21 @@ public class ResumePaymentCallbackHandlerTest extends MockSpringTest {
             .andReturn();
         assertThat(mvcResult.getResolvedException())
             .isInstanceOfAny(CallbackException.class);
+    }
+
+    @Test
+    public void shouldReturnErrorForUnsupportedRole() throws Exception {
+        UserDetails userDetails = SampleUserDetails.builder()
+            .withRoles("caseworker-cmc")
+            .build();
+
+        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
+
+        MvcResult mvcResult = makeRequest(CallbackType.ABOUT_TO_SUBMIT.getValue())
+            .andExpect(status().isForbidden())
+            .andReturn();
+
+        assertThat(mvcResult.getResolvedException())
+            .isInstanceOfAny(ForbiddenActionException.class);
     }
 }

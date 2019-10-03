@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public abstract class CallbackHandler {
 
     public abstract List<CaseEvent> handledEvents();
 
-    public abstract List<String> getSupportedRoles();
+    public abstract List<Role> getSupportedRoles();
 
     public void register(Map<String, CallbackHandler> handlers) {
         handledEvents().forEach(
