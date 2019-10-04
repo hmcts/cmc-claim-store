@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.support.SupportRepository;
@@ -31,17 +30,14 @@ public class IntegrationTestSupportController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final SupportRepository supportRepository;
-    private CCDEventProducer ccdEventProducer;
     private final UserService userService;
 
     @Autowired
     public IntegrationTestSupportController(
         SupportRepository supportRepository,
-        CCDEventProducer ccdEventProducer,
         UserService userService
     ) {
         this.supportRepository = supportRepository;
-        this.ccdEventProducer = ccdEventProducer;
         this.userService = userService;
     }
 
@@ -67,10 +63,7 @@ public class IntegrationTestSupportController {
         @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation
     ) {
         Claim claim = getClaim(claimReferenceNumber, authorisation);
-
         supportRepository.updateResponseDeadline(authorisation, claim, newDeadline);
-        ccdEventProducer.createCCDResponseDeadlineEvent(claimReferenceNumber, authorisation, newDeadline);
-
         return getClaim(claimReferenceNumber, authorisation);
     }
 
@@ -82,7 +75,6 @@ public class IntegrationTestSupportController {
         Claim claim = getClaim(claimReferenceNumber, null);
 
         supportRepository.linkDefendantToClaim(claim, defendantId);
-        ccdEventProducer.createCCDLinkDefendantEvent(claimReferenceNumber, defendantId);
     }
 
     @PutMapping("/claims/{claimReferenceNumber}/defendant/{defendantUsername}/{defendantPassword}")
