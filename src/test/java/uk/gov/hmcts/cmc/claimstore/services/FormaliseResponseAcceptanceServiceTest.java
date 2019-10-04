@@ -7,7 +7,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -61,9 +60,6 @@ public class FormaliseResponseAcceptanceServiceTest {
     private EventProducer eventProducer;
 
     @Mock
-    private CCDEventProducer ccdEventProducer;
-
-    @Mock
     private CaseRepository caseRepository;
 
     @Captor
@@ -78,7 +74,6 @@ public class FormaliseResponseAcceptanceServiceTest {
             countyCourtJudgmentService,
             settlementAgreementService,
             eventProducer,
-            ccdEventProducer,
             caseRepository
         );
     }
@@ -586,7 +581,6 @@ public class FormaliseResponseAcceptanceServiceTest {
             .formalise(claim, responseAcceptation, AUTH)).doesNotThrowAnyException();
 
         verify(eventProducer, once()).createInterlocutoryJudgmentEvent(eq(claim));
-        verify(ccdEventProducer, once()).createCCDInterlocutoryJudgmentEvent(eq(claim), anyString());
         verify(caseRepository, once()).saveCaseEvent(anyString(), eq(claim), eq(INTERLOCUTORY_JUDGMENT));
         verifyZeroInteractions(countyCourtJudgmentService);
         verifyZeroInteractions(settlementAgreementService);
