@@ -40,13 +40,13 @@ public class CreateLegalRepClaimCallbackHandlerTest extends MockSpringTest {
     public void setUp() {
         given(referenceNumberRepository.getReferenceNumberForLegal())
             .willReturn(REFERENCE_NO);
-
-        UserDetails userDetails = SampleUserDetails.builder().withRoles("caseworker-cmc-solicitor").build();
-        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
     }
 
     @Test
     public void shouldAddFieldsOnCaseWhenCallbackIsSuccessful() throws Exception {
+        UserDetails userDetails = SampleUserDetails.builder().withRoles("caseworker-cmc-solicitor").build();
+        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
+
         MvcResult mvcResult = makeRequest(CallbackType.ABOUT_TO_SUBMIT.getValue())
             .andExpect(status().isOk())
             .andReturn();
@@ -64,6 +64,16 @@ public class CreateLegalRepClaimCallbackHandlerTest extends MockSpringTest {
             .contains(entry("channel", LEGAL_REP.name()))
             .contains(entry("previousServiceCaseReference", REFERENCE_NO))
             .containsKey("issuedOn");
+    }
+
+    @Test
+    public void shouldThrowForbiddenExceptionWhenUserHasIncorrectRole() throws Exception {
+        UserDetails userDetails = SampleUserDetails.builder()
+            .withRoles("citizen", "caseworker-cmc-legaladvisor").build();
+        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
+
+        makeRequest(CallbackType.ABOUT_TO_SUBMIT.getValue())
+            .andExpect(status().isForbidden());
     }
 
     private ResultActions makeRequest(String callbackType) throws Exception {
