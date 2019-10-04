@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @TestPropertySource(value = "/environment.properties", properties = {
     "courtfinder.api.url=http://court-finder-api",
-    "feature_toggles.ccd_enabled=false"
+    "core_case_data.api.url=false"
 })
 public class CourtFinderTest extends BaseGetTest {
 
