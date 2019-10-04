@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
@@ -33,6 +34,7 @@ import static uk.gov.hmcts.cmc.domain.models.ChannelType.CITIZEN;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @Service
+@Conditional(FeesAndPaymentsAreUp.class)
 public class InitiatePaymentCallbackHandler extends CallbackHandler {
     private static final List<CaseEvent> EVENTS = Collections.singletonList(INITIATE_CLAIM_PAYMENT_CITIZEN);
 
