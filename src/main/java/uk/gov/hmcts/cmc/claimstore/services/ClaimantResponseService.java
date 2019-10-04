@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
-import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
@@ -41,7 +40,6 @@ public class ClaimantResponseService {
     private final EventProducer eventProducer;
     private final FormaliseResponseAcceptanceService formaliseResponseAcceptanceService;
     private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
-    private final CCDEventProducer ccdEventProducer;
     @Value("${feature_toggles.directions_questionnaire_enabled:false}")
     boolean directionsQuestionnaireEnabled;
 
@@ -53,8 +51,7 @@ public class ClaimantResponseService {
         ClaimantResponseRule claimantResponseRule,
         EventProducer eventProducer,
         FormaliseResponseAcceptanceService formaliseResponseAcceptanceService,
-        DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator,
-        CCDEventProducer ccdEventProducer
+        DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator
     ) {
         this.claimService = claimService;
         this.appInsights = appInsights;
@@ -63,7 +60,6 @@ public class ClaimantResponseService {
         this.eventProducer = eventProducer;
         this.formaliseResponseAcceptanceService = formaliseResponseAcceptanceService;
         this.directionsQuestionnaireDeadlineCalculator = directionsQuestionnaireDeadlineCalculator;
-        this.ccdEventProducer = ccdEventProducer;
     }
 
     public void save(
@@ -97,7 +93,6 @@ public class ClaimantResponseService {
                 .ifPresent(caseEvent -> caseRepository.saveCaseEvent(authorization, updatedClaim, caseEvent));
         }
 
-        ccdEventProducer.createCCDClaimantResponseEvent(claim, claimantResponse, authorization);
         AppInsightsEvent appInsightsEvent = getAppInsightsEvent(updatedClaim, claimantResponse);
         appInsights.trackEvent(appInsightsEvent, "referenceNumber", claim.getReferenceNumber());
 
