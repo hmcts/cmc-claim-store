@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.fees.client.FeesClient;
@@ -17,6 +18,7 @@ import java.math.BigDecimal;
 import static java.lang.String.format;
 
 @Service
+@Conditional(FeesAndPaymentsConfiguration.class)
 public class PaymentsService {
     private static final String FEE_CHANNEL = "online";
     private static final String FEE_EVENT = "issue";
