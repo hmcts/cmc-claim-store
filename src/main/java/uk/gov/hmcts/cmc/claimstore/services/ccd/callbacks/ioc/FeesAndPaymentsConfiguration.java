@@ -3,19 +3,19 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc;
 import org.springframework.boot.autoconfigure.condition.AllNestedConditions;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
-public class FeesAndPaymentsAreUp extends AllNestedConditions {
+public class FeesAndPaymentsConfiguration extends AllNestedConditions {
 
-    public FeesAndPaymentsAreUp() {
+    public FeesAndPaymentsConfiguration() {
         super(ConfigurationPhase.PARSE_CONFIGURATION);
     }
 
     @ConditionalOnProperty(prefix = "fees", name = "api.url")
-    static class FeesIsUp {
+    static class FeesIsConfigured {
 
     }
 
     @ConditionalOnProperty(prefix = "payments", name = "api.url")
-    static class PaymentsIsUp {
+    static class PaymentsIsConfigured {
 
     }
 

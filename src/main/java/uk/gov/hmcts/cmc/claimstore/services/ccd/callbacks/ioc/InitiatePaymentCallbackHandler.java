@@ -34,7 +34,7 @@ import static uk.gov.hmcts.cmc.domain.models.ChannelType.CITIZEN;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @Service
-@Conditional(FeesAndPaymentsAreUp.class)
+@Conditional(FeesAndPaymentsConfiguration.class)
 public class InitiatePaymentCallbackHandler extends CallbackHandler {
     private static final List<CaseEvent> EVENTS = Collections.singletonList(INITIATE_CLAIM_PAYMENT_CITIZEN);
 

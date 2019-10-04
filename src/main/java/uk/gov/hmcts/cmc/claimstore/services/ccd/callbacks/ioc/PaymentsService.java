@@ -18,7 +18,7 @@ import java.math.BigDecimal;
 import static java.lang.String.format;
 
 @Service
-@Conditional(FeesAndPaymentsAreUp.class)
+@Conditional(FeesAndPaymentsConfiguration.class)
 public class PaymentsService {
     private static final String FEE_CHANNEL = "online";
     private static final String FEE_EVENT = "issue";
