@@ -22,6 +22,12 @@ public class DocumentNameUtils {
         return format("%s-claim-form-claimant-copy", number);
     }
 
+    public static String buildReviewOrderFileBaseName(String caseRef) {
+        requireNonBlank(caseRef);
+
+        return format("%s-review-order", caseRef);
+    }
+
     public static String buildJsonClaimFileBaseName(String number) {
         requireNonBlank(number);
 
@@ -63,6 +69,12 @@ public class DocumentNameUtils {
         requireNonBlank(caseRef);
 
         return format("%s-claimant-response", caseRef);
+    }
+
+    public static String buildClaimantHearingFileBaseName(String caseRef) {
+        requireNonBlank(caseRef);
+
+        return format("%s-claimant-hearing-questions", caseRef);
     }
 
     public static String buildJsonResponseFileBaseName(String number) {

@@ -43,6 +43,11 @@ data "azurerm_key_vault_secret" "staff_email" {
   vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
 }
 
+data "azurerm_key_vault_secret" "milo_recipient" {
+  name = "milo-recipient"
+  vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
+}
+
 data "azurerm_key_vault_secret" "rpa_email_sealed_claim" {
   name = "rpa-email-sealed-claim"
   vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
@@ -100,7 +105,7 @@ resource "azurerm_key_vault_secret" "cmc-db-password" {
 }
 
 module "database" {
-  source = "git@github.com:hmcts/moj-module-postgres?ref=master"
+  source = "git@github.com:hmcts/cnp-module-postgres?ref=master"
   product = "${var.product}"
   location = "${var.location}"
   env = "${var.env}"
@@ -115,7 +120,7 @@ module "database" {
 }
 
 module "claim-store-api" {
-  source = "git@github.com:hmcts/moj-module-webapp.git?ref=master"
+  source = "git@github.com:hmcts/cnp-module-webapp?ref=master"
   product = "${var.product}-${var.microservice}"
   location = "${var.location}"
   env = "${var.env}"
@@ -183,6 +188,11 @@ module "claim-store-api" {
     // staff notifications
     STAFF_NOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"
     STAFF_NOTIFICATIONS_RECIPIENT = "${data.azurerm_key_vault_secret.staff_email.value}"
+
+    // MILO
+    MILO_CSV_SENDER = "noreply@reform.hmcts.net"
+    MILO_CSV_RECIPIENT = "${data.azurerm_key_vault_secret.milo_recipient.value}"
+    MILO_CSV_SCHEDULE = "${var.milo_csv_schedule}"
 
     // robot notifications
     RPA_NOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"
