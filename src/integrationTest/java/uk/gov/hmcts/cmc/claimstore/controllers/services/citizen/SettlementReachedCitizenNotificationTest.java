@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers.services.citizen;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import uk.gov.hmcts.cmc.claimstore.BaseOfferTest;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters;
@@ -20,6 +21,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.CLAIMANT;
 import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.DEFENDANT;
 
+@TestPropertySource(
+    properties = {
+        "core_case_data.api.url=false"
+    }
+)
 public class SettlementReachedCitizenNotificationTest extends BaseOfferTest {
 
     private static final String OFFER_COUNTER_SIGNED_EMAIL_TO_ORIGINATOR = "9d1ddac9-d6a7-41f3-bfd4-dcfbcb61dcf1";
