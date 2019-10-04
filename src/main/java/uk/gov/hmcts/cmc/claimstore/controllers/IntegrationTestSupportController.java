@@ -93,17 +93,11 @@ public class IntegrationTestSupportController {
         @PathVariable("defendantPassword") String defendantPassword
     ) {
         logger.info("Linking claim to defendant");
-            Claim claim = getClaim(claimReferenceNumber, null);
-        try {
+        Claim claim = getClaim(claimReferenceNumber, null);
 
-            User defendant = userService.authenticateUser(defendantUsername, defendantPassword);
-            String defendantId = defendant.getUserDetails().getId();
-            supportRepository.linkDefendantToClaim(claim, defendantId);
-            
-        } catch (Exception e) {
-            logger.error("Error linking defendant: " + claim.toString(), e );
-            throw e;
-        }
+        User defendant = userService.authenticateUser(defendantUsername, defendantPassword);
+        String defendantId = defendant.getUserDetails().getId();
+        supportRepository.linkDefendantToClaim(claim, defendantId);
     }
 
     private Claim getClaim(String claimReferenceNumber, String authorisation) {
