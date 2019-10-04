@@ -46,8 +46,6 @@ public class InitiatePaymentTest extends BaseSaveTest {
 
     @Test
     public void shouldReturnNewlyCreatedClaim() throws Exception {
-        ClaimData claimData = SampleClaimData.submittedByClaimant();
-
         given(coreCaseDataApi.startForCitizen(
             eq(AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
@@ -59,6 +57,8 @@ public class InitiatePaymentTest extends BaseSaveTest {
         ).willReturn(successfulCoreCaseDataStoreStartResponse());
 
         CCDCase data = getCCDCitizenCase(getAmountBreakDown());
+        data.setPaymentNextUrl("http://nexturl.test");
+
         given(coreCaseDataApi.submitForCitizen(
             eq(AUTHORISATION_TOKEN),
             eq(SERVICE_TOKEN),
@@ -76,7 +76,7 @@ public class InitiatePaymentTest extends BaseSaveTest {
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
 
-        MvcResult result = makeInitiatePaymentRequest(claimData, AUTHORISATION_TOKEN)
+        MvcResult result = makeInitiatePaymentRequest(SampleClaimData.submittedByClaimant(), AUTHORISATION_TOKEN)
             .andExpect(status().isOk())
             .andReturn();
 
