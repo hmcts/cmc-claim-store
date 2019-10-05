@@ -27,7 +27,8 @@ public class Payment {
     @NotBlank
     private final String reference;
     private final String dateCreated;
-    private final String status;
+    private final PaymentStatus status;
+    // Add not blank after we switch to IOC
     private final String nextUrl;
 
     public Payment(
@@ -35,7 +36,7 @@ public class Payment {
         BigDecimal amount,
         String reference,
         String dateCreated,
-        String status,
+        PaymentStatus status,
         String nextUrl
     ) {
         this.id = id;

@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.document;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
@@ -11,7 +10,6 @@ import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.documents.questionnaire.ClaimantDirectionsQuestionnairePdfService;
-import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
@@ -24,7 +22,6 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_DIRECTIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_SANCTIONS;
 
 @Service("documentsService")
-@ConditionalOnProperty(prefix = "document_management", name = "url")
 public class DocumentManagementBackedDocumentsService implements DocumentsService {
 
     private final ClaimService claimService;
@@ -35,7 +32,6 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     private final SettlementAgreementCopyService settlementAgreementCopyService;
     private final ReviewOrderService reviewOrderService;
     private final ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService;
-    private final CCDEventProducer ccdEventProducer;
 
     @Autowired
     @SuppressWarnings("squid:S00107")
@@ -48,8 +44,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         DefendantResponseReceiptService defendantResponseReceiptService,
         SettlementAgreementCopyService settlementAgreementCopyService,
         ReviewOrderService reviewOrderService,
-        ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService,
-        CCDEventProducer ccdEventProducer
+        ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService
     ) {
         this.claimService = claimService;
         this.documentManagementService = documentManagementService;
@@ -59,7 +54,6 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         this.settlementAgreementCopyService = settlementAgreementCopyService;
         this.reviewOrderService = reviewOrderService;
         this.claimantDirectionsQuestionnairePdfService = claimantDirectionsQuestionnairePdfService;
-        this.ccdEventProducer = ccdEventProducer;
     }
 
     private PdfService getService(ClaimDocumentType claimDocumentType) {
@@ -126,17 +120,10 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         ClaimDocument claimDocument = documentManagementService.uploadDocument(authorisation, document);
         ClaimDocumentCollection claimDocumentCollection = getClaimDocumentCollection(claim, claimDocument);
 
-        Claim newClaim = claimService.saveClaimDocuments(authorisation,
+        return claimService.saveClaimDocuments(authorisation,
             claim.getId(),
             claimDocumentCollection,
             document.getClaimDocumentType());
-
-        ccdEventProducer.saveClaimDocumentCCDEvent(authorisation,
-            claim,
-            claimDocumentCollection,
-            document.getClaimDocumentType());
-
-        return newClaim;
     }
 
     private ClaimDocumentCollection getClaimDocumentCollection(Claim claim, ClaimDocument claimDocument) {

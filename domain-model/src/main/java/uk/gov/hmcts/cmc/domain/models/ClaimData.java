@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.hibernate.validator.constraints.NotBlank;
@@ -92,6 +93,7 @@ public class ClaimData {
     @Size(max = 80, message = "must be at most {max} characters")
     private final String preferredCourt;
 
+    @Builder(toBuilder = true)
     @SuppressWarnings("squid:S00107") // Number of method parameters
     public ClaimData(
         UUID externalId,
