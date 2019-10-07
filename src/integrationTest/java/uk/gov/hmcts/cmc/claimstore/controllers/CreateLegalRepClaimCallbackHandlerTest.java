@@ -66,16 +66,6 @@ public class CreateLegalRepClaimCallbackHandlerTest extends MockSpringTest {
             .containsKey("issuedOn");
     }
 
-    @Test
-    public void shouldThrowForbiddenExceptionWhenUserHasIncorrectRole() throws Exception {
-        UserDetails userDetails = SampleUserDetails.builder()
-            .withRoles("citizen", "caseworker-cmc-legaladvisor").build();
-        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
-
-        makeRequest(CallbackType.ABOUT_TO_SUBMIT.getValue())
-            .andExpect(status().isForbidden());
-    }
-
     private ResultActions makeRequest(String callbackType) throws Exception {
         CaseDetails caseDetails = successfulCoreCaseDataStoreSubmitResponse();
 
