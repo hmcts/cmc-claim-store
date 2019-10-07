@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeRequestedAfterDeadlineException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
+import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
@@ -60,6 +61,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NUMBER_OF_RECONSIDERATION;
@@ -528,7 +530,6 @@ public class ClaimServiceTest {
             .nextUrl("http://nexturl.test")
             .build();
         assertThat(response).isEqualTo(expectedResponse);
-
     }
 
     @Test
@@ -575,6 +576,24 @@ public class ClaimServiceTest {
         CreatePaymentResponse response = claimService.resumePayment(AUTHORISATION, claimData);
 
         assertThat(response.getNextUrl()).isEqualTo("http://payment.nexturl.test");
+    }
+
+    @Test
+    public void saveCitizenClaimShouldFinishSuccessfully() {
+        when(userService.generatePin(VALID_APP.getDefendant().getName(), AUTHORISATION))
+            .thenReturn(GeneratePinResponse.builder().build());
+        when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(ISSUE_DATE);
+        when(responseDeadlineCalculator.calculateResponseDeadline(eq(ISSUE_DATE))).thenReturn(RESPONSE_DEADLINE);
+        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
+        when(caseRepository.getClaimByExternalId(VALID_APP.getExternalId().toString(), USER))
+            .thenReturn(Optional.of(claim));
+        when(caseRepository
+            .saveCaseEvent(eq(AUTHORISATION), any(Claim.class), eq(CREATE_CITIZEN_CLAIM)))
+            .thenReturn(claim);
+
+        Claim createdClaim = claimService.saveCitizenClaim(AUTHORISATION, VALID_APP);
+
+        assertThat(createdClaim).isEqualTo(claim);
     }
 
     @Test

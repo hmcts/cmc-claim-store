@@ -147,4 +147,19 @@ public class ClaimControllerTest {
         //then
         assertThat(output).isEqualTo(expectedResponse);
     }
+
+    @Test
+    public void shouldCreateClaimForCitizen() {
+        //given
+        ClaimData claimData = SampleClaimData.builder().build();
+        Claim expectedResponse = Claim.builder().claimData(claimData).build();
+        when(claimService.saveCitizenClaim(AUTHORISATION, claimData))
+            .thenReturn(expectedResponse);
+
+        //when
+        Claim output = claimController.createClaim(claimData, AUTHORISATION);
+
+        //then
+        assertThat(output).isEqualTo(expectedResponse);
+    }
 }

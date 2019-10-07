@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.Collections.emptyList;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
@@ -183,6 +184,8 @@ public class ClaimService {
         return caseRepository.getClaimsByState(claimState, user);
     }
 
+    @LogExecutionTime
+    @Transactional(transactionManager = "transactionManager")
     public CreatePaymentResponse initiatePayment(
         String authorisation,
         String submitterId,
@@ -202,6 +205,8 @@ public class ClaimService {
             .build();
     }
 
+    @LogExecutionTime
+    @Transactional(transactionManager = "transactionManager")
     public CreatePaymentResponse resumePayment(
         String authorisation,
         ClaimData claimData) {
@@ -217,6 +222,33 @@ public class ClaimService {
                     : payment.getNextUrl()
             )
             .build();
+    }
+
+    @LogExecutionTime
+    @Transactional(transactionManager = "transactionManager")
+    public Claim saveCitizenClaim(
+        String authorisation,
+        ClaimData claimData
+    ) {
+        User user = userService.getUser(authorisation);
+
+        Optional<GeneratePinResponse> pinResponse = getPinResponse(claimData, authorisation);
+        Optional<String> letterHolderId = pinResponse.map(GeneratePinResponse::getUserId);
+
+        Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), authorisation)
+            .toBuilder()
+            .letterHolderId(letterHolderId.orElse(null))
+            .build();
+
+        Claim savedClaim = caseRepository.saveCaseEvent(
+            authorisation,
+            claim,
+            CREATE_CITIZEN_CLAIM);
+        String pin = pinResponse.map(GeneratePinResponse::getPin).orElse(null);
+        createClaimEvent(authorisation, user, pin, savedClaim);
+        trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
+
+        return savedClaim;
     }
 
     @LogExecutionTime
