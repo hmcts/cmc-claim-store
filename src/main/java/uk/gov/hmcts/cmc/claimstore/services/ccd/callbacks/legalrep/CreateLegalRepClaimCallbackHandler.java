@@ -68,7 +68,7 @@ public class CreateLegalRepClaimCallbackHandler extends CallbackHandler {
 
     @Override
     public List<String> getSupportedRoles() {
-        return ImmutableList.of("citizen");
+        return ImmutableList.of("caseworker-cmc-solicitor");
     }
 
     private CallbackResponse createLegalRepClaim(CallbackParams callbackParams) {
