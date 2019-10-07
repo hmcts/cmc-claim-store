@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
@@ -23,6 +24,7 @@ import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
@@ -77,6 +79,7 @@ public class ClaimantResponseService {
         if (!DirectionsQuestionnaireUtils.isOnlineDQ(updatedClaim)
             && isRejectResponseNoMediation(claimantResponse)) {
             updateDirectionsQuestionnaireDeadline(updatedClaim, authorization);
+            updatedClaim = claimService.getClaimByExternalId(externalId, authorization);
         }
 
         if (!isSettlementAgreement(claim, claimantResponse)) {
@@ -88,9 +91,13 @@ public class ClaimantResponseService {
         }
 
         if (directionsQuestionnaireEnabled && claimantResponse.getType() == REJECTION) {
-            DirectionsQuestionnaireUtils.prepareCaseEvent(
-                (ResponseRejection) claimantResponse, updatedClaim)
-                .ifPresent(caseEvent -> caseRepository.saveCaseEvent(authorization, updatedClaim, caseEvent));
+            Optional<CaseEvent> caseEvent = DirectionsQuestionnaireUtils.prepareCaseEvent(
+                (ResponseRejection) claimantResponse,
+                updatedClaim
+            );
+            if (caseEvent.isPresent()) {
+                caseRepository.saveCaseEvent(authorization, updatedClaim, caseEvent.get());
+            }
         }
 
         AppInsightsEvent appInsightsEvent = getAppInsightsEvent(updatedClaim, claimantResponse);
