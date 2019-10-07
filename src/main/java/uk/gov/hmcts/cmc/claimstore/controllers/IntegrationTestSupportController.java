@@ -30,6 +30,7 @@ public class IntegrationTestSupportController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final SupportRepository supportRepository;
+
     private final UserService userService;
 
     @Autowired
@@ -74,7 +75,8 @@ public class IntegrationTestSupportController {
     ) {
         Claim claim = getClaim(claimReferenceNumber, null);
 
-        supportRepository.linkDefendantToClaim(claim, defendantId);
+        //using default defendant@example.com as defendant email address just for performance testing
+        supportRepository.linkDefendantToClaim(claim, defendantId, "defendant@example.com");
     }
 
     @PutMapping("/claims/{claimReferenceNumber}/defendant/{defendantUsername}/{defendantPassword}")
@@ -89,7 +91,7 @@ public class IntegrationTestSupportController {
 
         User defendant = userService.authenticateUser(defendantUsername, defendantPassword);
         String defendantId = defendant.getUserDetails().getId();
-        supportRepository.linkDefendantToClaim(claim, defendantId);
+        supportRepository.linkDefendantToClaim(claim, defendantId, defendant.getUserDetails().getEmail());
     }
 
     private Claim getClaim(String claimReferenceNumber, String authorisation) {
