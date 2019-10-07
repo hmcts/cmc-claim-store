@@ -1,9 +1,8 @@
-package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
+package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
@@ -13,6 +12,10 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtDetailsFinder;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
@@ -38,7 +41,6 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service
-@ConditionalOnProperty(prefix = "document_management", name = "url")
 public class DrawOrderCallbackHandler extends CallbackHandler {
     private final Clock clock;
     private final OrderDrawnNotificationService orderDrawnNotificationService;
@@ -64,6 +66,11 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
     @Override
     public List<CaseEvent> handledEvents() {
         return Collections.singletonList(CaseEvent.DRAW_ORDER);
+    }
+
+    @Override
+    public List<String> getSupportedRoles() {
+        return ImmutableList.of("caseworker-cmc-legaladvisor", "caseworker-cmc-judge");
     }
 
     @Override

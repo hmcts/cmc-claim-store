@@ -26,9 +26,10 @@ public class OrganisationDetails extends TheirDetails implements HasContactPerso
         Representative representative,
         Address serviceAddress,
         String contactPerson,
-        String companiesHouseNumber
+        String companiesHouseNumber,
+        String phoneNumber
     ) {
-        super(id, name, address, email, representative, serviceAddress);
+        super(id, name, address, email, representative, serviceAddress, phoneNumber);
         this.contactPerson = contactPerson;
         this.companiesHouseNumber = companiesHouseNumber;
     }

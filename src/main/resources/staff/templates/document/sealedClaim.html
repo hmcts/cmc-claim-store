@@ -329,6 +329,14 @@
         </td>
       </tr>
       {% endif %}
+      {% if defendant.mobileNumber is defined and defendant.mobileNumber is not empty %}
+      <tr>
+        <td><strong>Phone:</strong></td>
+        <td>
+          {{ defendant.mobileNumber }}
+        </td>
+      </tr>
+      {% endif %}
     </table>
   </div>
 </div>

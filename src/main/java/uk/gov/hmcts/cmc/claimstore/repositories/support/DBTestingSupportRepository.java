@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 @Service("supportRepository")
-@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled", havingValue = "false")
+@ConditionalOnProperty(prefix = "core_case_data", name = "api.url", havingValue = "false")
 public class DBTestingSupportRepository implements SupportRepository {
 
     private final TestingSupportRepository testingSupportRepository;

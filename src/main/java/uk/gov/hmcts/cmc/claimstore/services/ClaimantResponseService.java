@@ -2,9 +2,9 @@ package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
-import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
@@ -24,6 +24,7 @@ import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
@@ -41,7 +42,6 @@ public class ClaimantResponseService {
     private final EventProducer eventProducer;
     private final FormaliseResponseAcceptanceService formaliseResponseAcceptanceService;
     private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
-    private final CCDEventProducer ccdEventProducer;
     @Value("${feature_toggles.directions_questionnaire_enabled:false}")
     boolean directionsQuestionnaireEnabled;
 
@@ -53,8 +53,7 @@ public class ClaimantResponseService {
         ClaimantResponseRule claimantResponseRule,
         EventProducer eventProducer,
         FormaliseResponseAcceptanceService formaliseResponseAcceptanceService,
-        DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator,
-        CCDEventProducer ccdEventProducer
+        DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator
     ) {
         this.claimService = claimService;
         this.appInsights = appInsights;
@@ -63,7 +62,6 @@ public class ClaimantResponseService {
         this.eventProducer = eventProducer;
         this.formaliseResponseAcceptanceService = formaliseResponseAcceptanceService;
         this.directionsQuestionnaireDeadlineCalculator = directionsQuestionnaireDeadlineCalculator;
-        this.ccdEventProducer = ccdEventProducer;
     }
 
     public void save(
@@ -81,6 +79,7 @@ public class ClaimantResponseService {
         if (!DirectionsQuestionnaireUtils.isOnlineDQ(updatedClaim)
             && isRejectResponseNoMediation(claimantResponse)) {
             updateDirectionsQuestionnaireDeadline(updatedClaim, authorization);
+            updatedClaim = claimService.getClaimByExternalId(externalId, authorization);
         }
 
         if (!isSettlementAgreement(claim, claimantResponse)) {
@@ -92,12 +91,15 @@ public class ClaimantResponseService {
         }
 
         if (directionsQuestionnaireEnabled && claimantResponse.getType() == REJECTION) {
-            DirectionsQuestionnaireUtils.prepareCaseEvent(
-                (ResponseRejection) claimantResponse, updatedClaim)
-                .ifPresent(caseEvent -> caseRepository.saveCaseEvent(authorization, updatedClaim, caseEvent));
+            Optional<CaseEvent> caseEvent = DirectionsQuestionnaireUtils.prepareCaseEvent(
+                (ResponseRejection) claimantResponse,
+                updatedClaim
+            );
+            if (caseEvent.isPresent()) {
+                caseRepository.saveCaseEvent(authorization, updatedClaim, caseEvent.get());
+            }
         }
 
-        ccdEventProducer.createCCDClaimantResponseEvent(claim, claimantResponse, authorization);
         AppInsightsEvent appInsightsEvent = getAppInsightsEvent(updatedClaim, claimantResponse);
         appInsights.trackEvent(appInsightsEvent, "referenceNumber", claim.getReferenceNumber());
 
