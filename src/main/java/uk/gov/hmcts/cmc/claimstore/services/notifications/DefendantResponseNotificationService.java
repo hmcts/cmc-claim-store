@@ -20,7 +20,6 @@ import java.util.Objects;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper.admissionResponse;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isFullDefence;
-import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isFullDefenceAndNoMediation;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isFullDefenceDisputeAndNoMediation;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isNoMediation;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isPartAdmission;
@@ -82,12 +81,6 @@ public class DefendantResponseNotificationService {
             && (isFullDefence(response) || isPartAdmission(response));
     }
 
-    private boolean isPaperDqWithNoMediationAndHasEitherFullDefenceOrPartAdmission(Claim claim, Response response) {
-        return !DirectionsQuestionnaireUtils.isOnlineDQ(claim)
-            && isNoMediation(response)
-            && (isFullDefence(response) || isPartAdmission(response));
-    }
-
     public void notifyClaimant(
         Claim claim,
         String reference
@@ -113,12 +106,10 @@ public class DefendantResponseNotificationService {
         YesNoOption mediation = response.getFreeMediation().orElse(YesNoOption.YES);
         if (mediation == YesNoOption.YES) {
             return getEmailTemplates().getClaimantResponseWithMediationIssued();
-        } else {
-            if (isFullDefenceAndNoMediation(response)) {
-                return getEmailTemplates().getClaimantResponseWithNoMediationIssued();
-            }
-            return getEmailTemplates().getClaimantResponseIssued();
         }
+
+        return getEmailTemplates().getClaimantResponseIssued();
+
     }
 
     private Map<String, String> aggregateParams(Claim claim) {
@@ -133,9 +124,6 @@ public class DefendantResponseNotificationService {
         Response response = claim.getResponse().orElse(null);
         Objects.requireNonNull(response);
 
-        if (isPaperDqWithNoMediationAndHasEitherFullDefenceOrPartAdmission(claim, response)) {
-            parameters.put(DQS_DEADLINE, formatDate(claim.getDirectionsQuestionnaireDeadline()));
-        }
         parameters.put(INTENTION_TO_PROCEED_DEADLINE, formatDate(claim.getRespondedAt()
             .plusDays(INTENTION_TO_PROCEED_LIMIT)
             .toLocalDate()));
@@ -163,10 +151,6 @@ public class DefendantResponseNotificationService {
         );
         parameters.put(ISSUED_ON, formatDate(claim.getIssuedOn()));
         parameters.put(RESPONSE_DEADLINE, formatDate(claim.getResponseDeadline()));
-
-        if (isPaperDqWithNoMediationAndHasEitherFullDefenceOrPartAdmission(claim, response)) {
-            parameters.put(DQS_DEADLINE, formatDate(claim.getDirectionsQuestionnaireDeadline()));
-        }
         parameters.put(INTENTION_TO_PROCEED_DEADLINE, formatDate(claim.getRespondedAt()
             .plusDays(INTENTION_TO_PROCEED_LIMIT)
             .toLocalDate()));
