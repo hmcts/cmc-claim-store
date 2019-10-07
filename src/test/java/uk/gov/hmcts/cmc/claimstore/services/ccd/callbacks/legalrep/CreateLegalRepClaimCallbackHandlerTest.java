@@ -89,4 +89,10 @@ public class CreateLegalRepClaimCallbackHandlerTest {
         assertThat(response.getErrors()).isNull();
         assertThat(response.getWarnings()).isNull();
     }
+
+    @Test
+    public void shouldHaveCorrectLegalRepSupportingRole() {
+        assertThat(createLegalRepClaimCallbackHandler.getSupportedRoles().size()).isEqualTo(1);
+        assertThat(createLegalRepClaimCallbackHandler.getSupportedRoles()).contains("caseworker-cmc-solicitor");
+    }
 }
