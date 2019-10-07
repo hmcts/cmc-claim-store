@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
-import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
@@ -36,21 +35,18 @@ public class OffersService {
     private final CaseRepository caseRepository;
     private final EventProducer eventProducer;
     private final AppInsights appInsights;
-    private CCDEventProducer ccdEventProducer;
 
     @Autowired
     public OffersService(
         ClaimService claimService,
         CaseRepository caseRepository,
         EventProducer eventProducer,
-        AppInsights appInsights,
-        CCDEventProducer ccdEventProducer
+        AppInsights appInsights
     ) {
         this.claimService = claimService;
         this.caseRepository = caseRepository;
         this.eventProducer = eventProducer;
         this.appInsights = appInsights;
-        this.ccdEventProducer = ccdEventProducer;
     }
 
     public Claim makeOffer(Claim claim, Offer offer, MadeBy party, String authorisation) {
@@ -64,7 +60,6 @@ public class OffersService {
 
         caseRepository.updateSettlement(claim, settlement, authorisation, caseEvent);
 
-        this.ccdEventProducer.createCCDSettlementEvent(claim, settlement, authorisation, caseEvent);
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createOfferMadeEvent(updated);
         appInsights.trackEvent(OFFER_MADE, REFERENCE_NUMBER, updated.getReferenceNumber());
@@ -79,10 +74,7 @@ public class OffersService {
 
         settlement.accept(party, null);
 
-        CaseEvent caseEvent = OFFER_SIGNED_BY_CLAIMANT;
-        caseRepository.updateSettlement(claim, settlement, authorisation, caseEvent);
-        this.ccdEventProducer.createCCDSettlementEvent(claim, settlement, authorisation, caseEvent);
-
+        caseRepository.updateSettlement(claim, settlement, authorisation, OFFER_SIGNED_BY_CLAIMANT);
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createOfferAcceptedEvent(updated, party);
         return updated;
@@ -100,7 +92,6 @@ public class OffersService {
         caseRepository.updateSettlement(claim, settlement, authorisation, caseEvent);
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createOfferRejectedEvent(updated, party);
-        this.ccdEventProducer.createCCDSettlementEvent(claim, settlement, authorisation, caseEvent);
         appInsights.trackEvent(OFFER_REJECTED, REFERENCE_NUMBER, updated.getReferenceNumber());
         return updated;
     }
@@ -117,10 +108,6 @@ public class OffersService {
 
         Claim updated = claimService.getClaimByExternalId(claim.getExternalId(), authorisation);
         eventProducer.createAgreementCountersignedEvent(updated, party, authorisation);
-
-        this.ccdEventProducer.createCCDSettlementEvent(claim, settlement, authorisation,
-            OFFER_COUNTER_SIGNED_BY_DEFENDANT);
-
         appInsights.trackEvent(SETTLEMENT_REACHED, REFERENCE_NUMBER, updated.getReferenceNumber());
         return updated;
     }

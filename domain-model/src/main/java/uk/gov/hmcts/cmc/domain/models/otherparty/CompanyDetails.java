@@ -24,9 +24,10 @@ public class CompanyDetails extends TheirDetails implements HasContactPerson {
         String email,
         Representative representative,
         Address serviceAddress,
-        String contactPerson
+        String contactPerson,
+        String phoneNumber
     ) {
-        super(id, name, address, email, representative, serviceAddress);
+        super(id, name, address, email, representative, serviceAddress, phoneNumber);
         this.contactPerson = contactPerson;
     }
 
