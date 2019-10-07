@@ -40,13 +40,13 @@ public class CreateLegalRepClaimCallbackHandlerTest extends MockSpringTest {
     public void setUp() {
         given(referenceNumberRepository.getReferenceNumberForLegal())
             .willReturn(REFERENCE_NO);
+
+        UserDetails userDetails = SampleUserDetails.builder().withRoles("caseworker-cmc-solicitor").build();
+        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
     }
 
     @Test
     public void shouldAddFieldsOnCaseWhenCallbackIsSuccessful() throws Exception {
-        UserDetails userDetails = SampleUserDetails.builder().withRoles("caseworker-cmc-solicitor").build();
-        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
-
         MvcResult mvcResult = makeRequest(CallbackType.ABOUT_TO_SUBMIT.getValue())
             .andExpect(status().isOk())
             .andReturn();
