@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CallbackHandlerFactory;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.MoreTimeRequestedCallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor.DrawOrderCallbackHandler;
@@ -30,6 +31,8 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DRAW_ORDER;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.GENERATE_ORDER;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MORE_TIME_REQUESTED_PAPER;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SEALED_CLAIM_UPLOAD;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.LEGAL_ADVISOR;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CallbackHandlerFactoryTest {
@@ -69,8 +72,10 @@ public class CallbackHandlerFactoryTest {
 
     @Test
     public void shouldDispatchCallbackForMoreTimeRequested() {
-        String supportedRole = "caseworker-cmc";
-        UserDetails userDetails = SampleUserDetails.builder().withRoles(supportedRole).build();
+        Role supportedRole = CASEWORKER;
+        UserDetails userDetails = SampleUserDetails.builder()
+            .withRoles(supportedRole.getRole())
+            .build();
         when(userService.getUserDetails(eq(BEARER_TOKEN))).thenReturn(userDetails);
 
         CallbackRequest callbackRequest = CallbackRequest
@@ -92,8 +97,10 @@ public class CallbackHandlerFactoryTest {
 
     @Test
     public void shouldDispatchCallbackForGenerateOrder() {
-        String supportedRole = "caseworker-cmc-legaladvisor";
-        UserDetails userDetails = SampleUserDetails.builder().withRoles(supportedRole).build();
+        Role supportedRole = LEGAL_ADVISOR;
+        UserDetails userDetails = SampleUserDetails.builder()
+            .withRoles(supportedRole.getRole())
+            .build();
         when(userService.getUserDetails(eq(BEARER_TOKEN))).thenReturn(userDetails);
 
         CallbackRequest callbackRequest = CallbackRequest
@@ -115,8 +122,10 @@ public class CallbackHandlerFactoryTest {
 
     @Test
     public void shouldDispatchCallbackForDrawOrder() {
-        String supportedRole = "caseworker-cmc-legaladvisor";
-        UserDetails userDetails = SampleUserDetails.builder().withRoles(supportedRole).build();
+        Role supportedRole = LEGAL_ADVISOR;
+        UserDetails userDetails = SampleUserDetails.builder()
+            .withRoles(supportedRole.getRole())
+            .build();
         when(userService.getUserDetails(eq(BEARER_TOKEN))).thenReturn(userDetails);
 
         CallbackRequest callbackRequest = CallbackRequest
@@ -188,7 +197,8 @@ public class CallbackHandlerFactoryTest {
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
 
-        when(drawOrderCallbackHandler.getSupportedRoles()).thenReturn(ImmutableList.of("caseworker-cmc-legaladvisor"));
+        when(drawOrderCallbackHandler.getSupportedRoles())
+            .thenReturn(ImmutableList.of(LEGAL_ADVISOR));
 
         callbackHandlerFactory.dispatch(params);
 

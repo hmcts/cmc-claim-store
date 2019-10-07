@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
@@ -36,12 +37,18 @@ import java.util.Map;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.ORDER_DIRECTIONS;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DRAW_ORDER;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.JUDGE;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.LEGAL_ADVISOR;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service
 public class DrawOrderCallbackHandler extends CallbackHandler {
+    private static final List<Role> ROLES = ImmutableList.of(LEGAL_ADVISOR, JUDGE);
+    private static final List<CaseEvent> EVENTS = Collections.singletonList(DRAW_ORDER);
+
     private final Clock clock;
     private final OrderDrawnNotificationService orderDrawnNotificationService;
     private final CaseDetailsConverter caseDetailsConverter;
@@ -65,12 +72,12 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
 
     @Override
     public List<CaseEvent> handledEvents() {
-        return Collections.singletonList(CaseEvent.DRAW_ORDER);
+        return EVENTS;
     }
 
     @Override
-    public List<String> getSupportedRoles() {
-        return ImmutableList.of("caseworker-cmc-legaladvisor", "caseworker-cmc-judge");
+    public List<Role> getSupportedRoles() {
+        return ROLES;
     }
 
     @Override
