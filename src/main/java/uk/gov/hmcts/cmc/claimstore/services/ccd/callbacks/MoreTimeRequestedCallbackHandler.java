@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,6 +9,7 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -26,9 +26,12 @@ import java.util.Map;
 
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED_PAPER;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @Service
 public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
+
+    private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
 
     private final EventProducer eventProducer;
     private final AppInsights appInsights;
@@ -65,8 +68,8 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
     }
 
     @Override
-    public List<String> getSupportedRoles() {
-        return ImmutableList.of("caseworker-cmc");
+    public List<Role> getSupportedRoles() {
+        return ROLES;
     }
 
     public CallbackResponse requestMoreTimeOnPaperSubmitted(CallbackParams callbackParams) {
