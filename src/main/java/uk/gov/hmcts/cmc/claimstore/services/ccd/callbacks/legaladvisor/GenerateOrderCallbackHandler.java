@@ -23,6 +23,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules.GenerateOrderRule;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
@@ -80,6 +81,7 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
     private final DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
     private final CaseDetailsConverter caseDetailsConverter;
     private final AppInsights appInsights;
+    private final GenerateOrderRule generateOrderRule;
 
     @Autowired
     public GenerateOrderCallbackHandler(
@@ -89,7 +91,8 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
         AuthTokenGenerator authTokenGenerator,
         DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper,
         CaseDetailsConverter caseDetailsConverter,
-        AppInsights appInsights
+        AppInsights appInsights,
+        GenerateOrderRule generateOrderRule
     ) {
         this.docAssemblyClient = docAssemblyClient;
         this.authTokenGenerator = authTokenGenerator;
@@ -98,6 +101,7 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
         this.docAssemblyTemplateBodyMapper = docAssemblyTemplateBodyMapper;
         this.caseDetailsConverter = caseDetailsConverter;
         this.appInsights = appInsights;
+        this.generateOrderRule = generateOrderRule;
     }
 
     @Override
@@ -147,6 +151,11 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
         logger.info("Generate order callback: creating order document");
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
+
+        List<String> validations = generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase);
+        if(!validations.isEmpty()){
+            return AboutToStartOrSubmitCallbackResponse.builder().errors(validations).build();
+        }
 
         String authorisation = callbackParams.getParams()
             .get(CallbackParams.Params.BEARER_TOKEN).toString();

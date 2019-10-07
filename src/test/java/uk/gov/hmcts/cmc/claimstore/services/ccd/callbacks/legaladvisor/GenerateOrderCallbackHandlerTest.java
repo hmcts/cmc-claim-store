@@ -91,7 +91,7 @@ public class GenerateOrderCallbackHandlerTest {
             authTokenGenerator,
             docAssemblyTemplateBodyMapper,
             caseDetailsConverter,
-            appInsights);
+            appInsights, generateOrderRule);
 
         ReflectionTestUtils.setField(generateOrderCallbackHandler, "templateId", "testTemplateId");
         ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());

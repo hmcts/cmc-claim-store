@@ -81,9 +81,9 @@ public class DataFixHandler {
                         + " "
                         + details.getLastModified());
                     CCDCase ccdCase = mapToCCDCase(details.getData(), Long.toString(details.getId()));
-                    // fixResponseDeadline(failedOnUpdateMigrations, updatedClaims, claim, user, ccdCase);
+                     fixResponseDeadline(failedOnUpdateMigrations, updatedClaims, claim, user, ccdCase);
                     // fixDataIssueWithPatch(user, details);
-                    fixDataFromLastButOneEvent(user, details, failedOnUpdateMigrations, updatedClaims);
+//                    fixDataFromLastButOneEvent(user, details, failedOnUpdateMigrations, updatedClaims);
                 });
 
         } catch (Exception e) {
