@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_LEGAL_REP_CLAIM;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.SOLICITOR;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getLegalDataWithReps;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -88,5 +89,11 @@ public class CreateLegalRepClaimCallbackHandlerTest {
 
         assertThat(response.getErrors()).isNull();
         assertThat(response.getWarnings()).isNull();
+    }
+
+    @Test
+    public void shouldHaveCorrectLegalRepSupportingRole() {
+        assertThat(createLegalRepClaimCallbackHandler.getSupportedRoles().size()).isEqualTo(1);
+        assertThat(createLegalRepClaimCallbackHandler.getSupportedRoles()).contains(SOLICITOR);
     }
 }
