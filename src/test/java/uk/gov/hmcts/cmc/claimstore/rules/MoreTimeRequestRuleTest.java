@@ -45,7 +45,7 @@ public class MoreTimeRequestRuleTest {
             .withResponseDeadline(LocalDate.now().plusDays(2))
             .withMoreTimeRequested(false)
             .build();
-        assertThatCode(() -> moreTimeRequestRule.assertMoreTimeCanBeRequested(claim)).doesNotThrowAnyException();
+        assertThatCode(() -> moreTimeRequestRule.assertMoreTimeCanBeRequested(claim, claim.getResponseDeadline())).doesNotThrowAnyException();
     }
 
     @Test(expected = MoreTimeAlreadyRequestedException.class)
@@ -54,7 +54,7 @@ public class MoreTimeRequestRuleTest {
             .withResponseDeadline(LocalDate.now().plusDays(2))
             .withMoreTimeRequested(true)
             .build();
-        moreTimeRequestRule.assertMoreTimeCanBeRequested(claim);
+        moreTimeRequestRule.assertMoreTimeCanBeRequested(claim, claim.getResponseDeadline());
     }
 
     @Test(expected = MoreTimeRequestedAfterDeadlineException.class)
@@ -63,7 +63,7 @@ public class MoreTimeRequestRuleTest {
             .withResponseDeadline(LocalDate.now().minusDays(1))
             .withMoreTimeRequested(false)
             .build();
-        moreTimeRequestRule.assertMoreTimeCanBeRequested(claim);
+        moreTimeRequestRule.assertMoreTimeCanBeRequested(claim, claim.getResponseDeadline());
     }
 
     @Test
@@ -73,10 +73,10 @@ public class MoreTimeRequestRuleTest {
             .withResponseDeadline(deadlineDay)
             .withMoreTimeRequested(false)
             .build();
-        moreTimeRequestRule.assertMoreTimeCanBeRequested(claim);
+        moreTimeRequestRule.assertMoreTimeCanBeRequested(claim, claim.getResponseDeadline());
 
         verify(claimDeadlineService).isPastDeadline(currentDateTime.capture(), eq(deadlineDay));
         assertThat(currentDateTime.getValue()).isCloseTo(nowInLocalZone(), within(10, ChronoUnit.SECONDS));
     }
-    
+
 }

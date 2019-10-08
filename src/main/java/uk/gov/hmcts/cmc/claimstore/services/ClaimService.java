@@ -323,9 +323,9 @@ public class ClaimService {
     public Claim requestMoreTimeForResponse(String externalId, String authorisation) {
         Claim claim = getClaimByExternalId(externalId, authorisation);
 
-        this.moreTimeRequestRule.assertMoreTimeCanBeRequested(claim);
-
         LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
+
+        this.moreTimeRequestRule.assertMoreTimeCanBeRequested(claim, newDeadline);
 
         caseRepository.requestMoreTimeForResponse(authorisation, claim, newDeadline);
 
