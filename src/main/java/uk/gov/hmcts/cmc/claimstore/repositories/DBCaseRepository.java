@@ -34,7 +34,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service("caseRepository")
-@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled", havingValue = "false")
+@ConditionalOnProperty(prefix = "core_case_data", name = "api.url", havingValue = "false")
 public class DBCaseRepository implements CaseRepository {
 
     private final ClaimRepository claimRepository;
@@ -247,18 +247,13 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent) {
-        // No implementation required for claim-store repository
-    }
-
-    @Override
-    public Claim initiatePayment(User user, Claim claim) {
+    public Claim saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent) {
         // No implementation required for claim-store repository
         return null;
     }
 
     @Override
-    public Claim resumePayment(User user, Claim claim) {
+    public Claim initiatePayment(User user, Claim claim) {
         // No implementation required for claim-store repository
         return null;
     }
