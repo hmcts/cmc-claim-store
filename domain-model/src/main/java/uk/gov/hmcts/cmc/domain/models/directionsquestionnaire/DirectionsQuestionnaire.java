@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +36,9 @@ public class DirectionsQuestionnaire {
     private final List<UnavailableDate> unavailableDates;
 
     @Valid
+    private final YesNoOption expertRequired;
+
+    @Valid
     private final ExpertRequest expertRequest;
 
     @Builder
@@ -44,6 +48,7 @@ public class DirectionsQuestionnaire {
         Witness witness,
         List<ExpertReport> expertReports,
         List<UnavailableDate> unavailableDates,
+        YesNoOption expertRequired,
         ExpertRequest expertRequest
     ) {
         this.requireSupport = requireSupport;
@@ -51,6 +56,7 @@ public class DirectionsQuestionnaire {
         this.witness = witness;
         this.expertReports = expertReports;
         this.unavailableDates = unavailableDates;
+        this.expertRequired = expertRequired;
         this.expertRequest = expertRequest;
     }
 
@@ -68,6 +74,10 @@ public class DirectionsQuestionnaire {
 
     public List<UnavailableDate> getUnavailableDates() {
         return Optional.ofNullable(unavailableDates).orElse(emptyList());
+    }
+
+    public YesNoOption getExpertRequired() {
+        return expertRequired;
     }
 
     public Optional<ExpertRequest> getExpertRequest() {

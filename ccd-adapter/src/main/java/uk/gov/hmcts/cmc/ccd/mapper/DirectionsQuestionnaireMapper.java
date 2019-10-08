@@ -52,6 +52,7 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
             return null;
         }
 
+        System.out.println("directionsQuestionnaire " + directionsQuestionnaire);
         CCDDirectionsQuestionnaire.CCDDirectionsQuestionnaireBuilder builder = CCDDirectionsQuestionnaire.builder();
 
         directionsQuestionnaire.getRequireSupport().ifPresent(toRequireSupport(builder));
@@ -61,8 +62,7 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
 
         directionsQuestionnaire.getWitness().ifPresent(toWitness(builder));
 
-        System.out.println( directionsQuestionnaire.getExpertRequest().toString());
-
+        builder.expertRequired(yesNoMapper.to(directionsQuestionnaire.getExpertRequired()));
         directionsQuestionnaire.getExpertRequest().ifPresent(toExpertRequest(builder));
 
         builder.expertReports(directionsQuestionnaire.getExpertReports()
@@ -106,9 +106,8 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
         CCDDirectionsQuestionnaire.CCDDirectionsQuestionnaireBuilder builder
     ) {
         return expertRequest -> {
-            builder.expertRequired(yesNoMapper.to(expertRequest.getExpertRequired()));
-            expertRequest.getExpertEvidenceToExamine().ifPresent(builder::expertEvidenceToExamine);
-            expertRequest.getReasonForExpertAdvice().ifPresent(builder::reasonForExpertAdvice);
+            builder.expertEvidenceToExamine(expertRequest.getExpertEvidenceToExamine());
+            builder.reasonForExpertAdvice(expertRequest.getReasonForExpertAdvice());
         };
     }
 
@@ -146,6 +145,7 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
 
         builder.hearingLocation(extractHearingLocation(ccdDirectionsQuestionnaire));
         builder.witness(extractWitness(ccdDirectionsQuestionnaire));
+        builder.expertRequired(yesNoMapper.from(ccdDirectionsQuestionnaire.getExpertRequired()));
         builder.expertRequest(extractExpertRequest(ccdDirectionsQuestionnaire));
         builder.requireSupport(extractRequireSupport(ccdDirectionsQuestionnaire));
 
@@ -193,17 +193,13 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
     private ExpertRequest extractExpertRequest(
         CCDDirectionsQuestionnaire ccdDirectionsQuestionnaire
     ) {
-        CCDYesNoOption expertRequired = ccdDirectionsQuestionnaire.getExpertRequired();
-
         if (isAllEmpty(
             ccdDirectionsQuestionnaire.getExpertEvidenceToExamine(),
-            ccdDirectionsQuestionnaire.getReasonForExpertAdvice())
-            && isNull(expertRequired)
-        ) {
+            ccdDirectionsQuestionnaire.getReasonForExpertAdvice()
+        )) {
             return null;
         }
         return ExpertRequest.builder()
-            .expertRequired(yesNoMapper.from(expertRequired))
             .expertEvidenceToExamine(ccdDirectionsQuestionnaire.getExpertEvidenceToExamine())
             .reasonForExpertAdvice(ccdDirectionsQuestionnaire.getReasonForExpertAdvice())
             .build();

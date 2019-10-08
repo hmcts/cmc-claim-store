@@ -69,19 +69,15 @@ public class HearingContentProvider {
 
     private void mapExpertRequest(ExpertRequest expertRequest, HearingContent.HearingContentBuilder builder) {
 
-        YesNoOption expertRequired = expertRequest.getExpertRequired();
-
-        builder.expertRequired(expertRequired.toString());
-        if (expertRequired.equals(YesNoOption.YES)) {
-            if (!StringUtils.isBlank(expertRequest.getReasonForExpertAdvice().orElse(""))) {
-                expertRequest.getReasonForExpertAdvice().ifPresent(builder::reasonWhyExpertAdvice);
-                builder.courtPermissionForExpertReport(YES);
-                builder.expertExamineNeeded(YES);
-            } else {
-                builder.expertExamineNeeded(NO);
-            }
-            expertRequest.getExpertEvidenceToExamine().ifPresent(builder::whatToExamine);
+        builder.courtPermissionForExpertReport(YES);
+        if (!StringUtils.isBlank(expertRequest.getReasonForExpertAdvice())) {
+            builder.reasonWhyExpertAdvice(expertRequest.getReasonForExpertAdvice());
+            builder.expertExamineNeeded(YES);
+        } else {
+            builder.expertExamineNeeded(NO);
         }
+
+        builder.whatToExamine(expertRequest.getExpertEvidenceToExamine());
     }
 
     public HearingContent mapDirectionQuestionnaire(DirectionsQuestionnaire questionnaire) {
@@ -100,6 +96,10 @@ public class HearingContentProvider {
 
         questionnaire.getWitness().ifPresent(contentBuilder::witness);
 
+        System.out.println("questionnaire " + questionnaire);
+
+        contentBuilder.expertRequired(questionnaire.getExpertRequired().name());
+        contentBuilder.courtPermissionForExpertReport(NO);
         questionnaire.getExpertRequest().ifPresent(expertRequest -> mapExpertRequest(expertRequest, contentBuilder));
 
         contentBuilder.unavailableDates(
