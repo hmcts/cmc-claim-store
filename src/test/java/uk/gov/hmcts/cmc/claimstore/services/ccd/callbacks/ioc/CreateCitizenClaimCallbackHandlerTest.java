@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -60,6 +62,9 @@ public class CreateCitizenClaimCallbackHandlerTest {
 
     @Mock
     private PaymentsService paymentsService;
+
+    @Captor
+    private ArgumentCaptor<Claim> claimArgumentCaptor;
 
     private CallbackParams callbackParams;
     private CallbackRequest callbackRequest;
@@ -121,7 +126,6 @@ public class CreateCitizenClaimCallbackHandlerTest {
 
     @Test
     public void shouldHaveCorrectLegalRepSupportingRole() {
-        assertThat(createCitizenClaimCallbackHandler.getSupportedRoles().size()).isEqualTo(1);
-        assertThat(createCitizenClaimCallbackHandler.getSupportedRoles()).contains(CITIZEN);
+        assertThat(createCitizenClaimCallbackHandler.getSupportedRoles()).containsOnly(CITIZEN);
     }
 }

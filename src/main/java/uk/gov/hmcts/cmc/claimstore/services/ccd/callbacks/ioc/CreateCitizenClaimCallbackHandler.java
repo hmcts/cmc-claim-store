@@ -91,10 +91,10 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
                 .referenceNumber(referenceNumber)
                 .issuedOn(issuedOn)
                 .responseDeadline(responseDeadline)
-                .channel(ChannelType.CITIZEN)
                 .claimData(claim.getClaimData().toBuilder()
                     .payment(payment)
                     .build())
+                .channel(ChannelType.CITIZEN)
                 .build();
 
         return AboutToStartOrSubmitCallbackResponse
