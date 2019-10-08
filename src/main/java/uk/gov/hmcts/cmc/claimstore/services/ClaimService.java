@@ -82,7 +82,8 @@ public class ClaimService {
         ClaimAuthorisationRule claimAuthorisationRule,
         ReviewOrderRule reviewOrderRule,
         @Value("${feature_toggles.async_event_operations_enabled:false}") boolean asyncEventOperationEnabled,
-        @Value("${payments.returnUrlPattern}") String returnUrlPattern) {
+        @Value("${payments.returnUrlPattern}") String returnUrlPattern
+    ) {
         this.claimRepository = claimRepository;
         this.userService = userService;
         this.issueDateCalculator = issueDateCalculator;
