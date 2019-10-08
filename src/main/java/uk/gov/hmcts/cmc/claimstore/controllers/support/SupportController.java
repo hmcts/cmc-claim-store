@@ -4,7 +4,6 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,8 +51,6 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isReferredToJudge;
@@ -62,12 +59,12 @@ import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseTy
 
 @RestController
 @RequestMapping("/support")
-@ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff", havingValue = "true")
 public class SupportController {
 
     private static final String CLAIM = "Claim ";
     private static final String CLAIM_DOES_NOT_EXIST = "Claim %s does not exist";
     private static final String AUTHORISATION_IS_REQUIRED = "Authorisation is required";
+
     private final ClaimService claimService;
     private final UserService userService;
     private final DocumentGenerator documentGenerator;
@@ -97,7 +94,6 @@ public class SupportController {
         @Value("${feature_toggles.directions_questionnaire_enabled:false}") boolean directionsQuestionnaireEnabled,
         MediationReportService mediationReportService,
         ClaimSubmissionOperationIndicatorRule claimSubmissionOperationIndicatorRule
-
     ) {
         this.claimService = claimService;
         this.userService = userService;
@@ -223,18 +219,6 @@ public class SupportController {
         }
     }
 
-    @PutMapping("/claim/resend-rpa-notifications")
-    @ApiOperation("Resend notifications for multiple citizen claims")
-    public void resendRPANotifications(
-        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation,
-        @RequestBody List<String> referenceNumbers) {
-        if (referenceNumbers.isEmpty()) {
-            throw new IllegalArgumentException("Reference numbers not supplied");
-        }
-        List<Claim> existingClaims = checkClaimsExist(referenceNumbers);
-        resendClaimsToRPA(existingClaims, authorisation);
-    }
-
     @PostMapping(value = "/sendMediation", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation("Generate and Send Mediation Report for Telephone Mediation Service")
     public void sendMediation(
@@ -324,25 +308,6 @@ public class SupportController {
         agreementCountersignedStaffNotificationHandler.onAgreementCountersigned(event);
     }
 
-    private void resendClaimsToRPA(List<Claim> claims, String authorisation) {
-        if (StringUtils.isBlank(authorisation)) {
-            throw new BadRequestException(AUTHORISATION_IS_REQUIRED);
-        }
-
-        for (Claim claim : claims) {
-            GeneratePinResponse pinResponse = userService
-                .generatePin(claim.getClaimData().getDefendant().getName(), authorisation);
-
-            String fullName = userService.getUserDetails(authorisation).getFullName();
-
-            claimService.linkLetterHolder(claim, pinResponse.getUserId(), authorisation);
-
-            documentGenerator.generateForCitizenRPA(
-                new CitizenClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation)
-            );
-        }
-    }
-
     private void resendStaffNotificationClaimantResponse(Claim claim, String authorization) {
         ClaimantResponse claimantResponse = claim.getClaimantResponse()
             .orElseThrow(IllegalArgumentException::new);
@@ -369,17 +334,6 @@ public class SupportController {
         return ACCEPTATION == claimantResponse.getType()
             && !ResponseUtils.isResponseStatesPaid(response)
             && !ResponseUtils.isResponsePartAdmitPayImmediately(response);
-    }
-
-    private List<Claim> checkClaimsExist(List<String> referenceNumbers) {
-        List<Claim> claims = new ArrayList<>();
-        for (String referenceNumber : referenceNumbers) {
-            Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
-                .orElseThrow(() -> new NotFoundException(String.format(CLAIM_DOES_NOT_EXIST, referenceNumber)));
-
-            claims.add(claim);
-        }
-        return claims;
     }
 
 }

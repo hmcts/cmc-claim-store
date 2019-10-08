@@ -38,7 +38,8 @@ public class CallbackHandlerFactory {
 
     private boolean hasSupportedRoles(CallbackHandler callbackHandler, String authorisation, String eventId) {
         List<String> userRoles = userService.getUserDetails(authorisation).getRoles();
-        if (callbackHandler.getSupportedRoles().stream().anyMatch(userRoles::contains)) {
+        if (callbackHandler.getSupportedRoles().stream().anyMatch(role ->
+            userRoles.contains(role.getRole()))) {
             return true;
         } else {
             throw new ForbiddenActionException("User does not have supported role for event " + eventId);

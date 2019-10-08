@@ -7,10 +7,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
-import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
@@ -63,12 +61,10 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NUMBER_OF_RECONSIDERATION;
-import static uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils.DQ_FLAG;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
-import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
-import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.CLAIM_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
@@ -119,8 +115,6 @@ public class ClaimServiceTest {
     @Mock
     private EventProducer eventProducer;
     @Mock
-    private CCDEventProducer ccdEventProducer;
-    @Mock
     private AppInsights appInsights;
     @Captor
     private ArgumentCaptor<Claim> claimArgumentCaptor;
@@ -135,12 +129,10 @@ public class ClaimServiceTest {
             userService,
             issueDateCalculator,
             responseDeadlineCalculator,
-            directionsQuestionnaireDeadlineCalculator,
             new MoreTimeRequestRule(new ClaimDeadlineService()),
             eventProducer,
             appInsights,
             new PaidInFullRule(),
-            ccdEventProducer,
             new ClaimAuthorisationRule(userService),
             new ReviewOrderRule(),
             false,
@@ -220,8 +212,6 @@ public class ClaimServiceTest {
         verify(caseRepository, once()).saveClaim(any(User.class), any(Claim.class));
         verify(eventProducer, once()).createClaimIssuedEvent(eq(createdClaim), eq(null),
             anyString(), eq(AUTHORISATION));
-
-        verify(ccdEventProducer, once()).createCCDClaimIssuedEvent(eq(createdClaim), eq(USER));
     }
 
     @Test
@@ -264,12 +254,10 @@ public class ClaimServiceTest {
             userService,
             issueDateCalculator,
             responseDeadlineCalculator,
-            directionsQuestionnaireDeadlineCalculator,
             new MoreTimeRequestRule(new ClaimDeadlineService()),
             eventProducer,
             appInsights,
             new PaidInFullRule(),
-            ccdEventProducer,
             new ClaimAuthorisationRule(userService),
             new ReviewOrderRule(),
             true,
@@ -288,8 +276,6 @@ public class ClaimServiceTest {
         verify(userService, never()).generatePin(eq(outputClaimData.getDefendant().getName()), eq(AUTHORISATION));
         verify(caseRepository, once()).saveClaim(any(User.class), any(Claim.class));
         verify(eventProducer, once()).createClaimCreatedEvent(eq(createdClaim), anyString(), eq(AUTHORISATION));
-
-        verify(ccdEventProducer, once()).createCCDClaimIssuedEvent(eq(createdClaim), eq(USER));
     }
 
     @Test
@@ -370,45 +356,6 @@ public class ClaimServiceTest {
         List<Claim> claims = claimService.getClaimsByState(CREATE, USER);
 
         assertThat(claims).containsExactly(claim);
-    }
-
-    @Test
-    public void saveDefendantResponseShouldUpdateDQDeadlineWhenFullDefenceAndNoMediation() {
-        claimService.saveDefendantResponse(
-            claim, DEFENDANT_EMAIL, SampleResponse.FullDefence.builder().withMediation(NO).build(), AUTHORISATION
-        );
-
-        verify(directionsQuestionnaireDeadlineCalculator)
-            .calculateDirectionsQuestionnaireDeadlineCalculator(any());
-        verify(caseRepository)
-            .updateDirectionsQuestionnaireDeadline(eq(claim), any(), eq(AUTHORISATION));
-    }
-
-    @Test
-    public void saveDefendantResponseShouldNotUpdateDQDeadlineWhenFullDefenceAndNoMediationAndNoDQOnline() {
-        Claim input = claim.toBuilder().features(ImmutableList.of("admissions", DQ_FLAG)).build();
-
-        claimService.saveDefendantResponse(
-            input, DEFENDANT_EMAIL, SampleResponse.FullDefence.builder().withMediation(NO).build(), AUTHORISATION
-        );
-
-        verify(directionsQuestionnaireDeadlineCalculator, never())
-            .calculateDirectionsQuestionnaireDeadlineCalculator(any(LocalDateTime.class));
-
-        verify(caseRepository, never())
-            .updateDirectionsQuestionnaireDeadline(eq(input), any(LocalDate.class), eq(AUTHORISATION));
-    }
-
-    @Test
-    public void saveDefendantResponseShouldUpdateDQDeadlineWhenFullDefenceAndMediation() {
-        claimService.saveDefendantResponse(
-            claim, DEFENDANT_EMAIL, SampleResponse.FullDefence.builder().withMediation(YES).build(), AUTHORISATION
-        );
-
-        verify(directionsQuestionnaireDeadlineCalculator, never())
-            .calculateDirectionsQuestionnaireDeadlineCalculator(any());
-        verify(caseRepository, never())
-            .updateDirectionsQuestionnaireDeadline(eq(claim), any(), eq(AUTHORISATION));
     }
 
     @Test
@@ -597,7 +544,7 @@ public class ClaimServiceTest {
 
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
             .thenReturn(Optional.of(claim));
-        when(caseRepository.resumePayment(USER, claim))
+        when(caseRepository.saveCaseEvent(AUTHORISATION, claim, RESUME_CLAIM_PAYMENT_CITIZEN))
             .thenReturn(claim);
         CreatePaymentResponse response = claimService.resumePayment(AUTHORISATION, claimData);
 
@@ -623,7 +570,7 @@ public class ClaimServiceTest {
 
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
             .thenReturn(Optional.of(claim));
-        when(caseRepository.resumePayment(USER, claim))
+        when(caseRepository.saveCaseEvent(AUTHORISATION, claim, RESUME_CLAIM_PAYMENT_CITIZEN))
             .thenReturn(claim);
         CreatePaymentResponse response = claimService.resumePayment(AUTHORISATION, claimData);
 
