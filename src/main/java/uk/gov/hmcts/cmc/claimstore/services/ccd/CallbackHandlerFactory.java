@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
 import java.util.HashMap;
@@ -27,6 +28,7 @@ public class CallbackHandlerFactory {
         beans.forEach(bean -> bean.register(eventHandlers));
     }
 
+    @LogExecutionTime
     public CallbackResponse dispatch(CallbackParams callbackParams) {
         String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
         String eventId = callbackParams.getRequest().getEventId();
@@ -38,7 +40,8 @@ public class CallbackHandlerFactory {
 
     private boolean hasSupportedRoles(CallbackHandler callbackHandler, String authorisation, String eventId) {
         List<String> userRoles = userService.getUserDetails(authorisation).getRoles();
-        if (callbackHandler.getSupportedRoles().stream().anyMatch(userRoles::contains)) {
+        if (callbackHandler.getSupportedRoles().stream().anyMatch(role ->
+            userRoles.contains(role.getRole()))) {
             return true;
         } else {
             throw new ForbiddenActionException("User does not have supported role for event " + eventId);

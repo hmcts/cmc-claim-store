@@ -1,6 +1,5 @@
-package uk.gov.hmcts.cmc.claimstore.controllers;
+package uk.gov.hmcts.cmc.claimstore.controllers.support;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -8,7 +7,6 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.claimstore.controllers.support.SupportController;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimCreatedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
@@ -49,7 +47,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -135,42 +132,6 @@ public class SupportControllerTest {
         );
         sampleClaim = SampleClaim.getDefault();
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldNotResendRPANotificationsWhenRequestBodyIsEmpty() {
-        controller.resendRPANotifications(AUTHORISATION, Collections.emptyList());
-    }
-
-    @Test(expected = NotFoundException.class)
-    public void shouldNotResendRPANotificationsWhenRequestBodyClaimsDoesNotExistForMultipleClaims() {
-        // given
-        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(sampleClaim));
-
-        // when
-        controller.resendRPANotifications(AUTHORISATION, ImmutableList.of(CLAIM_REFERENCE, "000CM003"));
-
-        // then
-        verify(documentGenerator, never()).generateForCitizenRPA(any());
-    }
-
-    @Test
-    public void shouldResendRPANotifications() {
-        // given
-        String letterHolderId = "333";
-        GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", letterHolderId);
-        given(userService.generatePin(anyString(), eq(AUTHORISATION))).willReturn(pinResponse);
-
-        // when
-        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(sampleClaim));
-        when(userService.getUserDetails(AUTHORISATION)).thenReturn(USER_DETAILS);
-
-        when(claimService.linkLetterHolder(sampleClaim, letterHolderId, AUTHORISATION)).thenReturn(sampleClaim);
-
-        controller.resendRPANotifications(AUTHORISATION, Collections.singletonList(CLAIM_REFERENCE));
-
-        // then
-        verify(documentGenerator).generateForCitizenRPA(any());
     }
 
     @Test
