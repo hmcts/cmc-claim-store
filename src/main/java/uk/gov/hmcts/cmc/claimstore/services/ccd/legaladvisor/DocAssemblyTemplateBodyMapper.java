@@ -93,10 +93,14 @@ public class DocAssemblyTemplateBodyMapper {
                     .collect(Collectors.toList()))
             .expertReportInstructionClaimant(ccdOrderGenerationData.getExpertReportInstructionClaimant())
             .expertReportInstructionDefendant(ccdOrderGenerationData.getExpertReportInstructionDefendant())
-            .expertReportPermissionPartyAskedByClaimant(ccdOrderGenerationData.getExpertReportPermissionPartyAskedByClaimant())
-            .expertReportPermissionPartyAskedByDefendant(ccdOrderGenerationData.getExpertReportPermissionPartyAskedByDefendant())
-            .expertReportPermissionPartyGivenToClaimant(ccdOrderGenerationData.getExpertReportPermissionPartyGivenToClaimant())
-            .expertReportPermissionPartyGivenToDefendant(ccdOrderGenerationData.getExpertReportPermissionPartyGivenToDefendant())
+            .expertReportPermissionPartyAskedByClaimant(ccdOrderGenerationData
+                .getExpertReportPermissionPartyAskedByClaimant().toBoolean())
+            .expertReportPermissionPartyAskedByDefendant(ccdOrderGenerationData
+                .getExpertReportPermissionPartyAskedByDefendant().toBoolean())
+            .expertReportPermissionPartyGivenToClaimant(ccdOrderGenerationData
+                .getExpertReportPermissionPartyGivenToClaimant().toBoolean())
+            .expertReportPermissionPartyGivenToDefendant(ccdOrderGenerationData
+                .getExpertReportPermissionPartyGivenToDefendant().toBoolean())
             .build();
     }
 }

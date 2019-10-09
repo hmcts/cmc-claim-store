@@ -77,10 +77,10 @@ public class DocAssemblyTemplateBody implements FormPayload {
 
     private List<CCDCollectionElement<String>> extraDocUploadList;
 
-    private CCDYesNoOption expertReportPermissionPartyAskedByClaimant;
-    private CCDYesNoOption expertReportPermissionPartyAskedByDefendant;
-    private CCDYesNoOption expertReportPermissionPartyGivenToClaimant;
-    private CCDYesNoOption expertReportPermissionPartyGivenToDefendant;
+    private boolean expertReportPermissionPartyAskedByClaimant;
+    private boolean expertReportPermissionPartyAskedByDefendant;
+    private boolean expertReportPermissionPartyGivenToClaimant;
+    private boolean expertReportPermissionPartyGivenToDefendant;
     private List<CCDCollectionElement<String>> expertReportInstructionClaimant;
     private List<CCDCollectionElement<String>> expertReportInstructionDefendant;
 }
