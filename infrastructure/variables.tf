@@ -42,6 +42,14 @@ variable "doc_assembly_api_url" {
   default = "false"
 }
 
+variable "fees_url" {
+  default = "false"
+}
+
+variable "payments_url" {
+  default = "false"
+}
+
 variable "ilbIp" {}
 
 variable "tenant_id" {
@@ -76,14 +84,6 @@ variable "enable_staff_email" {
   default = "true"
 }
 
-variable "ccd_enabled" {
-  default = "false"
-}
-
-variable "ccd_async_enabled" {
-  default = "false"
-}
-
 variable "save_claim_state_enabled" {
   default = "false"
 }
@@ -94,6 +94,10 @@ variable "async_event_operations_enabled" {
 
 variable "directions_questionnaire_enabled" {
   default = "false"
+}
+
+variable milo_csv_schedule  {
+  default = "-"
 }
 
 variable "common_tags" {

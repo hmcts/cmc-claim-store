@@ -6,7 +6,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
-import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CountyCourtJudgmentAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
@@ -37,7 +36,6 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_INSTALMENTS;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_SET_DATE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_STATES_PAID;
-
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_ID;
@@ -58,9 +56,6 @@ public class DefendantResponseServiceTest {
     private EventProducer eventProducer;
 
     @Mock
-    private CCDEventProducer ccdEventProducer;
-
-    @Mock
     private UserService userService;
 
     @Mock
@@ -75,8 +70,8 @@ public class DefendantResponseServiceTest {
             eventProducer,
             claimService,
             userService,
-            appInsights,
-            ccdEventProducer);
+            appInsights
+        );
     }
 
     @Test

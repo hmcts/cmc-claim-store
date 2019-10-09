@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.document;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
@@ -11,7 +10,6 @@ import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.documents.questionnaire.ClaimantDirectionsQuestionnairePdfService;
-import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
@@ -20,8 +18,10 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 
 import java.util.Optional;
 
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_DIRECTIONS;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_SANCTIONS;
+
 @Service("documentsService")
-@ConditionalOnProperty(prefix = "document_management", name = "url")
 public class DocumentManagementBackedDocumentsService implements DocumentsService {
 
     private final ClaimService claimService;
@@ -32,7 +32,6 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     private final SettlementAgreementCopyService settlementAgreementCopyService;
     private final ReviewOrderService reviewOrderService;
     private final ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService;
-    private final CCDEventProducer ccdEventProducer;
 
     @Autowired
     @SuppressWarnings("squid:S00107")
@@ -45,8 +44,7 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         DefendantResponseReceiptService defendantResponseReceiptService,
         SettlementAgreementCopyService settlementAgreementCopyService,
         ReviewOrderService reviewOrderService,
-        ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService,
-        CCDEventProducer ccdEventProducer
+        ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService
     ) {
         this.claimService = claimService;
         this.documentManagementService = documentManagementService;
@@ -56,7 +54,6 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
         this.settlementAgreementCopyService = settlementAgreementCopyService;
         this.reviewOrderService = reviewOrderService;
         this.claimantDirectionsQuestionnairePdfService = claimantDirectionsQuestionnairePdfService;
-        this.ccdEventProducer = ccdEventProducer;
     }
 
     private PdfService getService(ClaimDocumentType claimDocumentType) {
@@ -82,47 +79,51 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
     @Override
     public byte[] generateDocument(String externalId, ClaimDocumentType claimDocumentType, String authorisation) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorisation);
-        return processRequest(claim,
-            authorisation,
-            claimDocumentType,
-            getService(claimDocumentType));
+        return processRequest(claim, authorisation, claimDocumentType);
     }
 
-    private byte[] processRequest(
-        Claim claim,
-        String authorisation,
-        ClaimDocumentType claimDocumentType,
-        PdfService pdfService
-    ) {
-        Optional<ClaimDocument> claimDocument = claim.getClaimDocument(claimDocumentType);
-        try {
-            if (claimDocument.isPresent()) {
-                return documentManagementService.downloadDocument(authorisation, claimDocument.get());
-            } else {
-                PDF document = pdfService.createPdf(claim);
-                uploadToDocumentManagement(document, authorisation, claim);
-                return document.getBytes();
-            }
-        } catch (Exception ex) {
-            return pdfService.createPdf(claim).getBytes();
+    private byte[] processRequest(Claim claim, String authorisation, ClaimDocumentType claimDocumentType) {
+
+        if (claimDocumentType == ORDER_DIRECTIONS || claimDocumentType == ORDER_SANCTIONS) {
+            return getOrderDocuments(claim, authorisation, claimDocumentType);
+        } else {
+            return getClaimJourneyDocuments(claim, authorisation, claimDocumentType);
         }
+    }
+
+    private byte[] getOrderDocuments(Claim claim, String authorisation, ClaimDocumentType claimDocumentType) {
+        Optional<ClaimDocument> claimDocument = claim.getClaimDocument(claimDocumentType);
+        return claimDocument
+            .map(document -> documentManagementService.downloadDocument(authorisation, document))
+            .orElseThrow(() -> new IllegalArgumentException("Document is not available for download."));
+    }
+
+    private byte[] getClaimJourneyDocuments(Claim claim, String authorisation, ClaimDocumentType claimDocumentType) {
+        try {
+            Optional<ClaimDocument> claimDocument = claim.getClaimDocument(claimDocumentType);
+            return claimDocument
+                .map(document -> documentManagementService.downloadDocument(authorisation, document))
+                .orElseGet(() -> generateNewDocument(claim, authorisation, claimDocumentType));
+
+        } catch (Exception ex) {
+            return getService(claimDocumentType).createPdf(claim).getBytes();
+        }
+    }
+
+    private byte[] generateNewDocument(Claim claim, String authorisation, ClaimDocumentType claimDocumentType) {
+        PDF document = getService(claimDocumentType).createPdf(claim);
+        uploadToDocumentManagement(document, authorisation, claim);
+        return document.getBytes();
     }
 
     public Claim uploadToDocumentManagement(PDF document, String authorisation, Claim claim) {
         ClaimDocument claimDocument = documentManagementService.uploadDocument(authorisation, document);
         ClaimDocumentCollection claimDocumentCollection = getClaimDocumentCollection(claim, claimDocument);
 
-        Claim newClaim = claimService.saveClaimDocuments(authorisation,
+        return claimService.saveClaimDocuments(authorisation,
             claim.getId(),
             claimDocumentCollection,
             document.getClaimDocumentType());
-
-        ccdEventProducer.saveClaimDocumentCCDEvent(authorisation,
-            claim,
-            claimDocumentCollection,
-            document.getClaimDocumentType());
-
-        return newClaim;
     }
 
     private ClaimDocumentCollection getClaimDocumentCollection(Claim claim, ClaimDocument claimDocument) {

@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.documents.questionnaire.ClaimantDirectionsQuestionnairePdfService;
-import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
@@ -43,7 +42,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEM
 public class DocumentManagementBackedDocumentsServiceTest {
 
     private static final String AUTHORISATION = "Bearer: aaa";
-    private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
+    private static final byte[] PDF_BYTES = new byte[] {1, 2, 3, 4};
 
     private DocumentManagementBackedDocumentsService documentManagementBackedDocumentsService;
 
@@ -62,8 +61,6 @@ public class DocumentManagementBackedDocumentsServiceTest {
     @Mock
     private ReviewOrderService reviewOrderService;
     @Mock
-    private CCDEventProducer ccdEventProducer;
-    @Mock
     private ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService;
 
     @Before
@@ -76,8 +73,8 @@ public class DocumentManagementBackedDocumentsServiceTest {
             defendantResponseReceiptService,
             settlementAgreementCopyService,
             reviewOrderService,
-            claimantDirectionsQuestionnairePdfService,
-            ccdEventProducer);
+            claimantDirectionsQuestionnairePdfService
+        );
     }
 
     @Test
@@ -172,6 +169,10 @@ public class DocumentManagementBackedDocumentsServiceTest {
         Claim claim = SampleClaim.getWithSealedClaimDocument();
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(AUTHORISATION)))
             .thenReturn(claim);
+
+        when(documentManagementService.downloadDocument(eq(AUTHORISATION), any(ClaimDocument.class)))
+            .thenReturn(PDF_BYTES);
+
         documentManagementBackedDocumentsService.generateDocument(
             claim.getExternalId(),
             SEALED_CLAIM,

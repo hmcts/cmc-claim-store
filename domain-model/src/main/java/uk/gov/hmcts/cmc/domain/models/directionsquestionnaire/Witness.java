@@ -20,6 +20,7 @@ public class Witness {
 
     @NotNull
     private final YesNoOption selfWitness;
+
     @Valid
     @Min(1)
     @Max(100)

@@ -24,22 +24,23 @@ import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.PART_ADMISSIO
 
 public class DirectionsQuestionnaireUtils {
 
-    private static final String DQ_FLAG = "directionsQuestionnaire";
+    public static final String DQ_FLAG = "directionsQuestionnaire";
 
     private DirectionsQuestionnaireUtils() {
         // utility class, no instances
     }
 
     public static boolean isOnlineDQ(Claim claim) {
-        return claim.getFeatures().contains(DQ_FLAG);
+        return claim.getFeatures() != null && claim.getFeatures().contains(DQ_FLAG);
     }
 
     public static Optional<CaseEvent> prepareCaseEvent(ResponseRejection responseRejection, Claim claim) {
         if (isOptedForMediation(responseRejection)) {
             return Optional.of(REFERRED_TO_MEDIATION);
         }
-        String preferredCourt = getPreferredCourt(claim);
+
         if (isOnlineDQ(claim)) {
+            String preferredCourt = getPreferredCourt(claim);
             if (isPilotCourt(preferredCourt)) {
                 return Optional.of(ASSIGNING_FOR_DIRECTIONS);
             } else {

@@ -227,10 +227,7 @@ public class JsonMapperTest {
             .submitterId("2")
             .submittedOn(timestamp)
             .externalId(uuid)
-            .orderGenerationData(
-                CCDOrderGenerationData
-                    .builder()
-                    .build())
+            .directionOrderData(CCDOrderGenerationData.builder().build())
             .build();
 
         assertThat(ccdCase).isEqualTo(expected);
