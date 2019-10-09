@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
+import uk.gov.hmcts.cmc.domain.models.ChannelType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
@@ -28,7 +30,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Supplier;
 
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
@@ -91,10 +92,12 @@ public final class SampleClaim {
     private ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
     private LocalDate claimantResponseDeadline;
     private ClaimState state = null;
-    private static Supplier<ClaimSubmissionOperationIndicators> getDefaultClaimSubmissionOperationIndicators =
-        () -> ClaimSubmissionOperationIndicators.builder().build();
+    private ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
+        = ClaimSubmissionOperationIndicators.builder().build();
     private Long ccdCaseId = 1023467890123456L;
     private ReviewOrder reviewOrder;
+    private DirectionOrder directionOrder;
+    private ChannelType channel;
 
     private SampleClaim() {
     }
@@ -113,6 +116,34 @@ public final class SampleClaim {
                 .withMediation(YES)
                 .build()
             ).withState(ClaimState.OPEN)
+            .build();
+    }
+
+    public static Claim getWithClaimSubmissionOperationIndicators() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimantBuilder().withExternalId(RAND_UUID).build())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .ccjType(CountyCourtJudgmentType.ADMISSIONS)
+                    .paymentOption(IMMEDIATELY)
+                    .build()
+            ).withResponse(SampleResponse.FullDefence
+                .builder()
+                .withDefenceType(DefenceType.DISPUTE)
+                .withMediation(YES)
+                .build()
+            )
+            .withClaimSubmissionOperationIndicators(
+                ClaimSubmissionOperationIndicators.builder()
+                    .bulkPrint(YES)
+                    .claimantNotification(YES)
+                    .claimIssueReceiptUpload(YES)
+                    .defendantNotification(YES)
+                    .rpa(YES)
+                    .sealedClaimUpload(YES)
+                    .staffNotification(YES)
+                    .build()
+            )
             .build();
     }
 
@@ -149,6 +180,32 @@ public final class SampleClaim {
             .build();
     }
 
+    public static Claim getClaimWithPartAdmissionAndNoMediation() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .paymentOption(IMMEDIATELY)
+                    .build()
+            ).withResponse(SampleResponse.PartAdmission.builder()
+                .buildWithDirectionsQuestionnaireWitNoMediation()
+            )
+            .withRespondedAt(LocalDateTime.now())
+            .withDirectionsQuestionnaireDeadline(LocalDate.now())
+            .build();
+    }
+
+    public static Claim getClaimWithFullDefenceWithMediation() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withResponse(SampleResponse.FullAdmission.builder()
+                .buildWithFreeMediation()
+            )
+            .withRespondedAt(LocalDateTime.now())
+            .withDirectionsQuestionnaireDeadline(LocalDate.now())
+            .build();
+    }
+
     public static Claim getClaimWithFullDefenceAlreadyPaid() {
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
@@ -160,7 +217,7 @@ public final class SampleClaim {
                 .builder()
                 .withDefenceType(DefenceType.ALREADY_PAID)
                 .build()
-            )
+            ).withRespondedAt(LocalDateTime.now())
             .build();
     }
 
@@ -336,7 +393,7 @@ public final class SampleClaim {
         return SampleClaim.builder()
             .withClaimData(
                 SampleClaimData.builder()
-                    .withDefendant(SampleTheirDetails.builder().withEmail(null).individualDetails())
+                    .withDefendant(SampleTheirDetails.builder().withPhone(null).withEmail(null).individualDetails())
                     .build()
             ).build();
     }
@@ -460,9 +517,11 @@ public final class SampleClaim {
             claimDocumentCollection,
             claimantResponseDeadline,
             state,
-            getDefaultClaimSubmissionOperationIndicators.get(),
+            claimSubmissionOperationIndicators,
             ccdCaseId,
-            reviewOrder
+            reviewOrder,
+            directionOrder,
+            channel
         );
     }
 
@@ -668,6 +727,18 @@ public final class SampleClaim {
 
     public SampleClaim withReviewOrder(ReviewOrder reviewOrder) {
         this.reviewOrder = reviewOrder;
+        return this;
+    }
+
+    public SampleClaim withDirectionOrder(DirectionOrder directionOrder) {
+        this.directionOrder = directionOrder;
+        return this;
+    }
+
+    public SampleClaim withClaimSubmissionOperationIndicators(
+        ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
+    ) {
+        this.claimSubmissionOperationIndicators = claimSubmissionOperationIndicators;
         return this;
     }
 }

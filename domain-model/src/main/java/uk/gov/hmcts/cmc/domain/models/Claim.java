@@ -11,10 +11,10 @@ import uk.gov.hmcts.cmc.domain.amount.TotalAmountCalculator;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInTheFuture;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.math.BigDecimal;
-import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,7 +24,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 // Create these fields in JSON when serialize Java object, ignore them when deserialize.
 @JsonIgnoreProperties(
-    value = {"totalAmountTillToday", "totalAmountTillDateOfIssue",
+    value = {"totalClaimAmount", "totalAmountTillToday", "totalAmountTillDateOfIssue",
         "amountWithInterestUntilIssueDate", "totalInterestTillDateOfIssue", "totalInterest",
         "serviceDate", "amountWithInterest", "directionsQuestionnaireDeadline", "claimSubmissionOperationIndicators"},
     allowGetters = true
@@ -68,6 +68,8 @@ public class Claim {
     private final ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
     private final Long ccdCaseId;
     private final ReviewOrder reviewOrder;
+    private final DirectionOrder directionOrder;
+    private final ChannelType channel;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -104,7 +106,9 @@ public class Claim {
         ClaimState state,
         ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators,
         Long ccdCaseId,
-        ReviewOrder reviewOrder
+        ReviewOrder reviewOrder,
+        DirectionOrder directionOrder,
+        ChannelType channel
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -139,6 +143,8 @@ public class Claim {
         this.ccdCaseId = ccdCaseId;
         this.claimSubmissionOperationIndicators = claimSubmissionOperationIndicators;
         this.reviewOrder = reviewOrder;
+        this.directionOrder = directionOrder;
+        this.channel = channel;
     }
 
     public Optional<Response> getResponse() {
@@ -150,20 +156,16 @@ public class Claim {
     }
 
     @JsonIgnore
-    public Optional<URI> getClaimDocument(ClaimDocumentType claimDocumentType) {
-        if (claimDocumentCollection == null) {
-            return Optional.empty();
-        } else {
-            Optional<ClaimDocument> claimDocument = claimDocumentCollection.getDocument(claimDocumentType);
-            if (claimDocument.isPresent()) {
-                return Optional.ofNullable(claimDocument.get().getDocumentManagementUrl());
-            }
-        }
-        return Optional.empty();
+    public Optional<ClaimDocument> getClaimDocument(ClaimDocumentType claimDocumentType) {
+        return Optional.ofNullable(claimDocumentCollection)
+            .flatMap(c -> c.getDocument(claimDocumentType));
     }
 
     public LocalDate getServiceDate() {
-        return serviceDate == null ? issuedOn.plusDays(5) : serviceDate;
+        if (serviceDate != null) {
+            return serviceDate;
+        }
+        return issuedOn != null ? issuedOn.plusDays(5) : null;
     }
 
     public Optional<BigDecimal> getAmountWithInterest() {
@@ -176,6 +178,10 @@ public class Claim {
 
     public Optional<BigDecimal> getTotalAmountTillToday() {
         return TotalAmountCalculator.totalTillToday(this);
+    }
+
+    public Optional<BigDecimal> getTotalClaimAmount() {
+        return TotalAmountCalculator.totalClaimAmount(this);
     }
 
     public Optional<BigDecimal> getTotalAmountTillDateOfIssue() {
@@ -225,6 +231,14 @@ public class Claim {
 
     public Optional<ReviewOrder> getReviewOrder() {
         return Optional.ofNullable(reviewOrder);
+    }
+
+    public Optional<DirectionOrder> getDirectionOrder() {
+        return Optional.ofNullable(directionOrder);
+    }
+
+    public Optional<ChannelType> getChannel() {
+        return Optional.ofNullable(channel);
     }
 
     @Override

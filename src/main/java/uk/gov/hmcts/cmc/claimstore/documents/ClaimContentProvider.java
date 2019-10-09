@@ -9,7 +9,6 @@ import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 
 import java.util.HashMap;
-
 import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
@@ -53,7 +52,7 @@ public class ClaimContentProvider {
             defendant.getEmail().orElse(null),
             PartyUtils.getContactPerson(defendant).orElse(null),
             PartyUtils.getBusinessName(defendant).orElse(null),
-            null,
+            defendant.getPhone().orElse(null),
             null)
         );
 

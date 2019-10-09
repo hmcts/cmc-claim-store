@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.reform.docassembly.domain.FormPayload;
 
 import java.time.LocalDate;
@@ -60,7 +59,6 @@ public class DocAssemblyTemplateBody implements FormPayload {
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate eyewitnessUploadDeadline;
 
-    @JsonProperty("hearingRequired")
     private boolean paperDetermination;
 
     private CCDDirectionPartyType docUploadForParty;
@@ -74,7 +72,11 @@ public class DocAssemblyTemplateBody implements FormPayload {
     private CCDHearingDurationType estimatedHearingDuration;
 
     @JsonTypeInfo(include = JsonTypeInfo.As.WRAPPER_OBJECT, use = JsonTypeInfo.Id.NAME)
-    private List<CCDOrderDirection> otherDirections;
+    private List<OtherDirection> otherDirections;
 
     private List<CCDCollectionElement<String>> extraDocUploadList;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @JsonSerialize(using = LocalDateSerializer.class)
+    private LocalDate directionDeadline;
 }

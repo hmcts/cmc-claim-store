@@ -53,9 +53,11 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
         }
 
         CCDDirectionsQuestionnaire.CCDDirectionsQuestionnaireBuilder builder = CCDDirectionsQuestionnaire.builder();
+
         directionsQuestionnaire.getRequireSupport().ifPresent(toRequireSupport(builder));
 
-        toHearingLocation(directionsQuestionnaire.getHearingLocation(), builder);
+        directionsQuestionnaire.getHearingLocation()
+            .ifPresent(hearingLocation -> toHearingLocation(hearingLocation, builder));
 
         directionsQuestionnaire.getWitness().ifPresent(toWitness(builder));
 

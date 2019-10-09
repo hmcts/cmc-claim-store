@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
@@ -11,6 +10,8 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.pdf.DocumentTemplates;
 import uk.gov.hmcts.cmc.claimstore.events.legaladvisor.DirectionsOrderReadyToPrintEvent;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.net.URI;
@@ -21,7 +22,6 @@ import java.util.Collections;
 import static java.util.Objects.requireNonNull;
 
 @Service
-@ConditionalOnProperty(prefix = "document_management", name = "url")
 public class LegalOrderService {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -71,10 +71,14 @@ public class LegalOrderService {
     }
 
     private Document downloadLegalOrder(String authorisation, CCDDocument ccdLegalOrder) throws URISyntaxException {
-        return new Document(Base64.getEncoder().encodeToString(documentManagementService.downloadDocument(
-            authorisation,
-            new URI(ccdLegalOrder.getDocumentUrl()),
-            ccdLegalOrder.getDocumentFileName())),
+        return new Document(Base64.getEncoder().encodeToString(
+            documentManagementService.downloadDocument(
+                authorisation,
+                ClaimDocument.builder()
+                    .documentName(ccdLegalOrder.getDocumentFileName())
+                    .documentType(ClaimDocumentType.ORDER_DIRECTIONS)
+                    .documentManagementUrl(new URI(ccdLegalOrder.getDocumentUrl()))
+                    .build())),
             Collections.emptyMap());
     }
 }

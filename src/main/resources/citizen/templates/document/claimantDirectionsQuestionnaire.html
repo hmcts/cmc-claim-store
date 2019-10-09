@@ -1,0 +1,495 @@
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <title>Money Claim response receipt</title>
+  <style>
+
+    @page {
+      size: 8.5in 11in;
+      margin: 10%;
+
+      @top-right {
+        content: "Claim number: {{ claim.referenceNumber }}";
+        font-size: 12px;
+        /*noinspection CssNoGenericFontName*/
+        font-family: "Open Sans";
+      }
+
+      @bottom-left {
+        content: "{{ formNumber }}";
+        /*noinspection CssNoGenericFontName*/
+        font-family: "Open Sans";
+        font-size: 10px;
+        font-weight: bold;
+      }
+
+      @bottom-center {
+        content: "For further details of the courts www.gov.uk/find-court-tribunal";
+        font-size: 10px;
+      }
+
+      @bottom-right {
+        content: "&#169; Crown copyright Page " counter(page) " of " counter(pages);
+        font-size: 10px;
+        padding-left: 50px;
+      }
+
+    }
+
+    html {
+      /*noinspection CssNoGenericFontName*/
+      font-family: "Open Sans";
+    }
+
+    body {
+      counter-reset: section;
+      font-family: "nta", Arial, sans-serif;
+      font-weight: 400;
+      text-transform: none;
+      font-size: 18px;
+      line-height: 1.25;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .crestLogo {
+      margin-top: 40px;
+    }
+
+    .claim-details {
+      text-align: right;
+    }
+
+    header table td, header table tr:last-child td {
+      border: none;
+    }
+
+    div table tr td:first-child {
+      font-weight: bold;
+    }
+
+    .normal-font {
+      font-weight: normal;
+    }
+
+    header p, header h2 {
+      text-align: right;
+      margin: 0;
+      padding: 0;
+    }
+
+    header td {
+      margin: 0;
+      padding: 0;
+    }
+
+    table {
+      width: 100%;
+      border-spacing: 0;
+    }
+
+    table.new-dq td, table.new-dq th {
+      border-bottom: none;
+    }
+
+    table.new-dq td:first-child {
+      font-weight: auto;
+    }
+
+    table.new-dq td:last-child div {
+      border: 1px solid gray;
+      padding: 5px;
+    }
+
+    .new-dq h2 span {
+      color: #fff;
+      background-color: #5D514D;
+      padding: 5px;
+    }
+
+    table.new-dq td:last-child div {
+      border: 1px solid gray;
+      padding: 5px;
+      min-height: 18px;
+    }
+
+    table.new-dq tr {
+      border: none;
+    }
+
+    table.new-dq td {
+      padding: 0.63158em 1.05263em 0.67368em 0;
+      border-top: none;
+      border-bottom: none !important;
+      min-height: 18px;
+    }
+
+    .new-dq h2 {
+      color: #000;
+      background-color: #EDEDED;
+      font-size: 21px !important;
+    }
+
+    .heading-medium {
+      padding-bottom: 0;
+      margin-bottom: 0.4em;
+      margin-top: 1.5em;
+      font-size: 22px;
+    }
+
+  </style>
+</head>
+<body>
+
+<header>
+  <table>
+    <tr>
+      <td colspan="2" class="spacing-bottom"><h2 class="normal-font">Directions Questionnaire Online</h2></td>
+    </tr>
+    <tr>
+      <td colspan="2"><p>In the County Court Business Centre</p></td>
+    </tr>
+    <tr>
+      <td colspan="2" class="spacing-bottom"><p>Online Civil Money Claims</p></td>
+    </tr>
+    <tr>
+      <td colspan="2"><p><strong>Claim number: </strong>{{ claim.referenceNumber }}</p></td>
+    </tr>
+    <tr>
+      <td colspan="2"><p><strong>Issued on: </strong> {{ claim.issuedOn }}</p></td>
+    </tr>
+    <tr>
+      <td colspan="2" class="spacing-bottom"><p><strong>Response received on: </strong> {{ claimantSubmittedOn }}</p>
+      </td>
+    </tr>
+  </table>
+</header>
+<table style="width: 80%" class="new-dq">
+  <thead>
+  <tr>
+    <th colspan="2">
+      <h2 class="heading-medium" id="name">
+        <span>A</span> Your details - Claimant
+      </h2>
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td>
+      <div>{% if claimant.partyType == 'on behalf of a company' %}
+        {% set claimantNameLabel = 'Company name' %}
+        {% elseif claimant.partyType == 'on behalf of an organisation' %}
+        {% set claimantNameLabel = 'Organisation name' %}
+        {% else %}
+        {% set claimantNameLabel = 'Name' %}
+        {% endif %}
+        <strong>{{ claimantNameLabel }}:</strong></div>
+    </td>
+    <td>
+      <div>{{ claimant.fullName }}</div>
+    </td>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+    <td>
+      Address:
+    </td>
+    <td>
+      <div>
+        {{ claimant.address.line1 }}
+        <br/>
+        {% if claimant.address.line2 is defined and claimant.address.line2 is not empty %}
+        {{ claimant.address.line2 }}
+        <br/>
+        {% endif %}
+        {% if claimant.address.line3 is defined and claimant.address.line3 is not empty %}
+        {{ claimant.address.line3 }}
+        <br/>
+        {% endif %}
+        {{ claimant.address.city }}
+        <br/>
+        {{ claimant.address.postcode }}
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <div>
+        Date of birth:
+      </div>
+    </td>
+    <td>
+      <div>
+        {{ claimant.dateOfBirth }}
+      </div>
+    </td>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+    <td>
+      <div>
+        Telephone:
+      </div>
+    </td>
+    <td>
+      <div>{{ claimant.mobileNumber }}</div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <div>
+        Email:
+      </div>
+    </td>
+    <td>
+      <div>{{ claimant.email }}</div>
+    </td>
+  </tr>
+  </tbody>
+</table>
+<table style="width: 80%" class="new-dq">
+  <thead>
+  <tr>
+    <th colspan="2">
+      <h2 class="heading-medium">
+        <span>B</span> About the hearing
+      </h2>
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+
+  {% if hearingContent.supportRequired is not empty %}
+    <tr>
+      <td>
+        <div>
+          Support required for a hearing
+        </div>
+      </td>
+      <td>
+        <div>
+          {% for support in hearingContent.supportRequired %}
+          {{ support }}<br/>
+          {% endfor %}
+        </div>
+      </td>
+    </tr>
+  {% endif %}
+
+  {% if hearingContent.hearingLocation is not empty %}
+    <tr>
+      <td><b>Hearing location</b></td>
+    </tr>
+    <tr>
+      <td>
+        Preferred hearing centre
+      </td>
+      <td>
+        <div>{{ hearingContent.hearingLocation }}</div>
+      </td>
+    </tr>
+  {% endif %}
+
+
+  {% if hearingContent.locationReason is not empty %}
+    <tr>
+      <td>
+        <div>
+          Briefly explain your reasons
+        </div>
+      </td>
+      <td>
+        <div>
+          {{ hearingContent.locationReason }}
+        </div>
+      </td>
+    </tr>
+  {% endif %}
+
+    {% if hearingContent.hasExpertReport equals "Yes" %}
+      <tr>
+        <td><b>Expert evidence</b></td>
+      </tr>
+      <tr>
+        <td>
+          Have you already got a report written by an expert?
+        </td>
+        <td>
+          <div>
+            {{ hearingContent.hasExpertReport }}
+          </div>
+        </td>
+      </tr>
+      {% for report in hearingContent.expertReports %}
+      <tr>
+        <td>
+          <div>
+            Report {{ loop.index + 1 }}
+          </div>
+        </td>
+        <td>
+          <div>
+            {{ report.expertName }} <br/>
+            {{ report.expertReportDate }}
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    {% else %}
+      {% if hearingContent.expertExamineNeeded is defined %}
+      <tr>
+        <td><b>Expert evidence</b></td>
+      </tr>
+      {% if hearingContent.courtPermissionForExpertReport is not empty %}
+        <tr>
+          <td>
+            Have you already got a report written by an expert?
+          </td>
+          <td>
+            <div>
+              {{ hearingContent.hasExpertReport }}
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <div>
+              Do you want the court's permission to hire an expert?
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ hearingContent.courtPermissionForExpertReport | capitalize }}
+            </div>
+          </td>
+        </tr>
+      {% endif %}
+
+      {% if hearingContent.expertExamineNeeded is not empty %}
+        <tr>
+          <td>
+            <div>
+              Does the claim involve something an expert can still examine?
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ hearingContent.expertExamineNeeded }}
+            </div>
+          </td>
+        </tr>
+      {% endif %}
+
+      {% if hearingContent.whatToExamine is not empty %}
+        <tr>
+          <td>
+            <div>
+              What is there to examine?
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ hearingContent.whatToExamine }}
+            </div>
+          </td>
+        </tr>
+      {% endif %}
+
+      {% if hearingContent.reasonWhyExpertAdvice is not empty %}
+        <tr>
+          <td>
+            <div>
+              Briefly explain why you believe an expert is needed
+            </div>
+          </td>
+          <td>
+            <div>
+              {{ hearingContent.reasonWhyExpertAdvice }}
+            </div>
+          </td>
+        </tr>
+      {% endif %}
+    {% endif %}
+  {% endif %}
+
+  <tr>
+    <td><b>Witnesses</b></td>
+  </tr>
+  <tr>
+    <td>
+      <div>
+        Do you want to give evidence?
+      </div>
+    </td>
+    <td>
+      <div>
+        {{ hearingContent.witness.selfWitness | capitalize }}
+      </div>
+    </td>
+
+  </tr>
+
+  <tr>
+    <td>
+      <div>
+        Other witnesses
+      </div>
+    </td>
+    <td>
+      {% if hearingContent.witness.noOfOtherWitness is not empty %}
+      <div>{{ hearingContent.witness.noOfOtherWitness }}</div>
+      {% else %}
+      <div>None</div>
+      {% endif %}
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <div>Dates unavailable</div>
+    </td>
+    <td>
+      {% if hearingContent.unavailableDates is not empty  %}
+      <div>
+        {% for unavailableDate in hearingContent.unavailableDates %}
+        {{ unavailableDate }} <br/>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div>None</div>
+      {% endif %}
+    </td>
+  </tr>
+
+  </tbody>
+</table>
+
+<table style="width: 80%" class="new-dq">
+  <thead>
+  <tr>
+    <th colspan="2">
+      <h2 class="heading-medium">
+        <span>C</span> Signature
+      </h2>
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  </tbody>
+  <tbody>
+  <tr>
+    <td>
+      Signed
+    </td>
+    <td>
+      <div>{{ claimant.fullName }}<br/>{{ claimantSubmittedOn }}
+      </div>
+    </td>
+  </tr>
+  </tbody>
+</table>
+</body>
+</html>
