@@ -175,6 +175,7 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
+    @LogExecutionTime
     public Claim saveRepresentedClaim(User user, Claim claim) {
         return coreCaseDataService.createRepresentedClaim(user, claim);
     }
