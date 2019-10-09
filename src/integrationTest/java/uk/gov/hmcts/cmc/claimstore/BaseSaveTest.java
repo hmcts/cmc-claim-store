@@ -16,7 +16,7 @@ public abstract class BaseSaveTest extends BaseIntegrationTest {
 
     @Before
     public void setup() {
-        UserDetails userDetails = SampleUserDetails.builder().build();
+        UserDetails userDetails = SampleUserDetails.builder().withRoles("citizen").build();
         given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
         given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(new User(AUTHORISATION_TOKEN, userDetails));
 

@@ -41,7 +41,7 @@ public class CreateLegalRepClaimCallbackHandlerTest extends MockSpringTest {
         given(referenceNumberRepository.getReferenceNumberForLegal())
             .willReturn(REFERENCE_NO);
 
-        UserDetails userDetails = SampleUserDetails.builder().withRoles("citizen").build();
+        UserDetails userDetails = SampleUserDetails.builder().withRoles("caseworker-cmc-solicitor").build();
         given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
     }
 
