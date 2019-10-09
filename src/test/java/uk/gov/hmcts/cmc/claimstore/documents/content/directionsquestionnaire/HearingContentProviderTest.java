@@ -46,7 +46,7 @@ public class HearingContentProviderTest {
         dq.getRequireSupport()
             .ifPresent(reqSupport -> compareSupportRequired(reqSupport, hearingContent.getSupportRequired()));
 
-        assertEquals("YES", hearingContent.getExpertRequired());
+        assertEquals(yes, hearingContent.getExpertRequired());
 
         dq.getExpertRequest()
             .ifPresent(request -> {
