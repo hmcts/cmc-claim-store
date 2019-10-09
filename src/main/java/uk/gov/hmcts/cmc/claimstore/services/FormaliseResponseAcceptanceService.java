@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -40,7 +39,6 @@ public class FormaliseResponseAcceptanceService {
     private final CountyCourtJudgmentService countyCourtJudgmentService;
     private final SettlementAgreementService settlementAgreementService;
     private final EventProducer eventProducer;
-    private final CCDEventProducer ccdEventProducer;
     private final CaseRepository caseRepository;
 
     @Autowired
@@ -48,13 +46,11 @@ public class FormaliseResponseAcceptanceService {
         CountyCourtJudgmentService countyCourtJudgmentService,
         SettlementAgreementService settlementAgreementService,
         EventProducer eventProducer,
-        CCDEventProducer ccdEventProducer,
         CaseRepository caseRepository
     ) {
         this.countyCourtJudgmentService = countyCourtJudgmentService;
         this.settlementAgreementService = settlementAgreementService;
         this.eventProducer = eventProducer;
-        this.ccdEventProducer = ccdEventProducer;
         this.caseRepository = caseRepository;
     }
 
@@ -80,11 +76,9 @@ public class FormaliseResponseAcceptanceService {
         if (isCompanyOrOrganisation(response.getDefendant())) {
             eventProducer.createRejectOrganisationPaymentPlanEvent(claim);
             caseEvent = REJECT_ORGANISATION_PAYMENT_PLAN;
-            ccdEventProducer.createCCDRejectOrganisationPaymentPlanEvent(claim, authorisation);
         } else {
             eventProducer.createInterlocutoryJudgmentEvent(claim);
             caseEvent = INTERLOCUTORY_JUDGMENT;
-            ccdEventProducer.createCCDInterlocutoryJudgmentEvent(claim, authorisation);
         }
         caseRepository.saveCaseEvent(authorisation, claim, caseEvent);
     }

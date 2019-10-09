@@ -14,6 +14,7 @@ java:
         - system-update-username
         - system-update-password
         - notify-api-key
+        - milo-recipient
   environment:
     REFORM_TEAM: cmc
     REFORM_SERVICE_NAME: claim-store
@@ -28,10 +29,9 @@ java:
     CLAIM_STORE_DB_PORT: 5432
     CMC_DB_NAME: cmc
     CMC_DB_PORT: 5432
-    FEATURE_TOGGLES_EMAILTOSTAFF: true
-    FEATURE_TOGGLES_CCD_ENABLED: false
-    FEATURE_TOGGLES_CCD_ASYNC_ENABLED: false
     FEATURE_TOGGLES_ASYNC_EVENT_OPERATIONS_ENABLED: true
+    FEATURE_TOGGLES_DIRECTIONS_QUESTIONNAIRE_ENABLED: true
+    FEATURE_TOGGLES_SAVE_CLAIM_STATE_ENABLED: true
     FRONTEND_BASE_URL: https://FRONTEND_BASE_URL
     RESPOND_TO_CLAIM_URL: https://RESPOND_TO_CLAIM_URL/first-contact/start
     STAFF_NOTIFICATIONS_RECIPIENT: civilmoneyclaims+staff-int-tests@gmail.com
@@ -43,3 +43,7 @@ java:
     RPA_NOTIFICATIONS_COUNTYCOURTJUDGEMENTRECIPIENT: civilmoneyclaims+rpa-county-court-judgement@gmail.com
     RPA_NOTIFICATIONS_PAIDINFULLRECIPIENT: civilmoneyclaims+rpa-paid-in-full@gmail.com
     DOCUMENT_MANAGEMENT_USERROLES: caseworker-cmc,citizen
+    MILO_CSV_SCHEDULE: '-'
+    MILO_CSV_SENDER: noreply@reform.hmcts.net
+    PAY_URL: false
+    FEES_URL: false
