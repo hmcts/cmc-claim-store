@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
@@ -23,7 +22,6 @@ import java.util.Collections;
 import static java.util.Objects.requireNonNull;
 
 @Service
-@ConditionalOnProperty(prefix = "document_management", name = "url")
 public class LegalOrderService {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

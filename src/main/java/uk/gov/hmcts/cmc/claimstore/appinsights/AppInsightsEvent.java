@@ -30,6 +30,8 @@ public enum AppInsightsEvent {
     BULK_PRINT_FAILED("Bulk print failed"),
     SCHEDULER_JOB_FAILED("Scheduler job failed"),
     CLAIMANT_RESPONSE_REJECTED("Claimant response - rejected"),
+    LA_PILOT_ELIGIBLE("LA pilot eligible"),
+    NON_LA_CASES("Non LA cases"),
     CLAIMANT_RESPONSE_ACCEPTED("Claimant response - accepted"),
     CCD_ASYNC_FAILURE("CCD Async handling - failure"),
     REDETERMINATION_REQUESTED("CCJ - Requested by re-determination "),
@@ -37,7 +39,15 @@ public enum AppInsightsEvent {
     NOTIFICATION_FAILURE("Notification - failure"),
     DOCUMENT_MANAGEMENT_UPLOAD_FAILURE("Document management upload - failure"),
     DOCUMENT_MANAGEMENT_DOWNLOAD_FAILURE("Document management download - failure"),
-    MEDIATION_REPORT_FAILURE("Mediation Report - failure");
+    DRAFTED_BY_LEGAL_ADVISOR("Drafted by LA"),
+    NUMBER_OF_RECONSIDERATION("Num of reconsideration's"),
+    TRANSFERRED_OUT("Transferred out"),
+    RETURNED_TO_LA_FROM_JUDGE("Returned to LA from Judge"),
+    NOT_TOO_COMPLICATED_FOR_LA("Not too complicated for LA"),
+    COMPLICATED_FOR_ORDER_PILOT("Complicated for order pilot"),
+    MEDIATION_REPORT_FAILURE("Mediation Report - failure"),
+    MEDIATION_PILOT_ELIGIBLE("Mediation Pilot Eligible"),
+    MEDIATION_NON_PILOT_ELIGIBLE("Mediation Non Pilot Eligible");
 
     private String displayName;
 

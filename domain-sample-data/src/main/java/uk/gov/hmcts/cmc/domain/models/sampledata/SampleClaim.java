@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
+import uk.gov.hmcts.cmc.domain.models.ChannelType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
@@ -29,7 +30,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Supplier;
 
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
@@ -92,11 +92,12 @@ public final class SampleClaim {
     private ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
     private LocalDate claimantResponseDeadline;
     private ClaimState state = null;
-    private static Supplier<ClaimSubmissionOperationIndicators> getDefaultClaimSubmissionOperationIndicators =
-        () -> ClaimSubmissionOperationIndicators.builder().build();
+    private ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
+        = ClaimSubmissionOperationIndicators.builder().build();
     private Long ccdCaseId = 1023467890123456L;
     private ReviewOrder reviewOrder;
     private DirectionOrder directionOrder;
+    private ChannelType channel;
 
     private SampleClaim() {
     }
@@ -115,6 +116,34 @@ public final class SampleClaim {
                 .withMediation(YES)
                 .build()
             ).withState(ClaimState.OPEN)
+            .build();
+    }
+
+    public static Claim getWithClaimSubmissionOperationIndicators() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimantBuilder().withExternalId(RAND_UUID).build())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .ccjType(CountyCourtJudgmentType.ADMISSIONS)
+                    .paymentOption(IMMEDIATELY)
+                    .build()
+            ).withResponse(SampleResponse.FullDefence
+                .builder()
+                .withDefenceType(DefenceType.DISPUTE)
+                .withMediation(YES)
+                .build()
+            )
+            .withClaimSubmissionOperationIndicators(
+                ClaimSubmissionOperationIndicators.builder()
+                    .bulkPrint(YES)
+                    .claimantNotification(YES)
+                    .claimIssueReceiptUpload(YES)
+                    .defendantNotification(YES)
+                    .rpa(YES)
+                    .sealedClaimUpload(YES)
+                    .staffNotification(YES)
+                    .build()
+            )
             .build();
     }
 
@@ -145,6 +174,21 @@ public final class SampleClaim {
                 .withMediation(NO)
                 .withMoreTimeNeededOption(NO)
                 .build()
+            )
+            .withRespondedAt(LocalDateTime.now())
+            .withDirectionsQuestionnaireDeadline(LocalDate.now())
+            .build();
+    }
+
+    public static Claim getClaimWithPartAdmissionAndNoMediation() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .paymentOption(IMMEDIATELY)
+                    .build()
+            ).withResponse(SampleResponse.PartAdmission.builder()
+                .buildWithDirectionsQuestionnaireWitNoMediation()
             )
             .withRespondedAt(LocalDateTime.now())
             .withDirectionsQuestionnaireDeadline(LocalDate.now())
@@ -349,7 +393,7 @@ public final class SampleClaim {
         return SampleClaim.builder()
             .withClaimData(
                 SampleClaimData.builder()
-                    .withDefendant(SampleTheirDetails.builder().withEmail(null).individualDetails())
+                    .withDefendant(SampleTheirDetails.builder().withPhone(null).withEmail(null).individualDetails())
                     .build()
             ).build();
     }
@@ -473,10 +517,11 @@ public final class SampleClaim {
             claimDocumentCollection,
             claimantResponseDeadline,
             state,
-            getDefaultClaimSubmissionOperationIndicators.get(),
+            claimSubmissionOperationIndicators,
             ccdCaseId,
             reviewOrder,
-            directionOrder
+            directionOrder,
+            channel
         );
     }
 
@@ -687,6 +732,13 @@ public final class SampleClaim {
 
     public SampleClaim withDirectionOrder(DirectionOrder directionOrder) {
         this.directionOrder = directionOrder;
+        return this;
+    }
+
+    public SampleClaim withClaimSubmissionOperationIndicators(
+        ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
+    ) {
+        this.claimSubmissionOperationIndicators = claimSubmissionOperationIndicators;
         return this;
     }
 }

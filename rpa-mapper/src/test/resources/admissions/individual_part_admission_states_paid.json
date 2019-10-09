@@ -28,5 +28,6 @@
     "phoneNumber": "07873727165"
   },
   "payment": null,
-  "mediation": false
+  "mediation": false,
+  "hearingRequirements": false
 }

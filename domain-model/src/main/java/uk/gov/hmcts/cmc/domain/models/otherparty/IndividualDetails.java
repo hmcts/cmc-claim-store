@@ -44,9 +44,10 @@ public class IndividualDetails extends TheirDetails implements TitledParty, Spli
         String email,
         Representative representative,
         Address serviceAddress,
-        LocalDate dateOfBirth
+        LocalDate dateOfBirth,
+        String phoneNumber
     ) {
-        super(id, name, address, email, representative, serviceAddress);
+        super(id, name, address, email, representative, serviceAddress, phoneNumber);
         this.dateOfBirth = dateOfBirth;
         this.title = title;
         this.firstName = firstName;
