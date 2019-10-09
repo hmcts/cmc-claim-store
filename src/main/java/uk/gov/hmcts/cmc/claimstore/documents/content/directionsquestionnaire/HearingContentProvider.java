@@ -96,9 +96,8 @@ public class HearingContentProvider {
 
         questionnaire.getWitness().ifPresent(contentBuilder::witness);
 
-        System.out.println("questionnaire " + questionnaire);
-
-        contentBuilder.expertRequired(questionnaire.getExpertRequired().name());
+        contentBuilder.expertRequired(
+            questionnaire.getExpertRequired().name().equalsIgnoreCase("no") ? NO : YES);
         contentBuilder.courtPermissionForExpertReport(NO);
         questionnaire.getExpertRequest().ifPresent(expertRequest -> mapExpertRequest(expertRequest, contentBuilder));
 

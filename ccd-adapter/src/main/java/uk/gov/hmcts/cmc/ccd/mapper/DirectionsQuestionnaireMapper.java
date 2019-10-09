@@ -51,8 +51,6 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
         if (directionsQuestionnaire == null) {
             return null;
         }
-
-        System.out.println("directionsQuestionnaire " + directionsQuestionnaire);
         CCDDirectionsQuestionnaire.CCDDirectionsQuestionnaireBuilder builder = CCDDirectionsQuestionnaire.builder();
 
         directionsQuestionnaire.getRequireSupport().ifPresent(toRequireSupport(builder));
