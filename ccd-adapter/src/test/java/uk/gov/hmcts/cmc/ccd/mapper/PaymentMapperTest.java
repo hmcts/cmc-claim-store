@@ -9,6 +9,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.domain.models.Payment;
+import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SamplePayment;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
@@ -42,7 +43,8 @@ public class PaymentMapperTest {
         assertThat(payment.getId()).isEqualTo(ccdCase.getPaymentId());
         assertMoney(payment.getAmount()).isEqualTo(ccdCase.getPaymentAmount());
         assertThat(payment.getReference()).isEqualTo(ccdCase.getPaymentReference());
-        assertThat(payment.getStatus()).isEqualTo(ccdCase.getPaymentStatus());
+        assertThat(payment.getStatus()).isEqualTo(PaymentStatus.fromValue(ccdCase.getPaymentStatus()));
+        assertThat(payment.getNextUrl()).isEqualTo(ccdCase.getPaymentNextUrl());
     }
 
     @Test
@@ -60,7 +62,8 @@ public class PaymentMapperTest {
         assertThat(payment.getId()).isEqualTo(ccdCase.getPaymentId());
         assertMoney(payment.getAmount()).isEqualTo(ccdCase.getPaymentAmount());
         assertThat(payment.getReference()).isEqualTo(ccdCase.getPaymentReference());
-        assertThat(payment.getStatus()).isEqualTo(ccdCase.getPaymentStatus());
+        assertThat(payment.getNextUrl()).isEqualTo(ccdCase.getPaymentNextUrl());
+        assertThat(payment.getStatus()).isEqualTo(PaymentStatus.fromValue(ccdCase.getPaymentStatus()));
     }
 
     @Test
@@ -79,7 +82,8 @@ public class PaymentMapperTest {
         assertThat(payment.getId()).isEqualTo(ccdCase.getPaymentId());
         assertMoney(payment.getAmount()).isEqualTo(ccdCase.getPaymentAmount());
         assertThat(payment.getReference()).isEqualTo(ccdCase.getPaymentReference());
-        assertThat(payment.getStatus()).isEqualTo(ccdCase.getPaymentStatus());
+        assertThat(payment.getStatus()).isEqualTo(PaymentStatus.fromValue(ccdCase.getPaymentStatus()));
+        assertThat(payment.getNextUrl()).isEqualTo(ccdCase.getPaymentNextUrl());
     }
 
     @Test
@@ -89,6 +93,7 @@ public class PaymentMapperTest {
             .paymentAmount("400000")
             .paymentReference("RC-1524-6488-1670-7520")
             .paymentId("PaymentId")
+            .paymentNextUrl("http://nexturl.test")
             .paymentStatus("success")
             .paymentDateCreated(LocalDate.of(2019, 01, 01))
             .build();
@@ -102,7 +107,8 @@ public class PaymentMapperTest {
         assertThat(payment.getId()).isEqualTo(ccdCase.getPaymentId());
         assertMoney(payment.getAmount()).isEqualTo(ccdCase.getPaymentAmount());
         assertThat(payment.getReference()).isEqualTo(ccdCase.getPaymentReference());
-        assertThat(payment.getStatus()).isEqualTo(ccdCase.getPaymentStatus());
+        assertThat(payment.getStatus()).isEqualTo(PaymentStatus.fromValue(ccdCase.getPaymentStatus()));
+        assertThat(payment.getNextUrl()).isEqualTo(ccdCase.getPaymentNextUrl());
     }
 
     @Test
@@ -124,6 +130,7 @@ public class PaymentMapperTest {
         assertThat(payment.getId()).isEqualTo(ccdCase.getPaymentId());
         assertMoney(payment.getAmount()).isEqualTo(ccdCase.getPaymentAmount());
         assertThat(payment.getReference()).isEqualTo(ccdCase.getPaymentReference());
-        assertThat(payment.getStatus()).isEqualTo(ccdCase.getPaymentStatus());
+        assertThat(payment.getStatus()).isEqualTo(PaymentStatus.fromValue(ccdCase.getPaymentStatus()));
+        assertThat(payment.getNextUrl()).isEqualTo(ccdCase.getPaymentNextUrl());
     }
 }

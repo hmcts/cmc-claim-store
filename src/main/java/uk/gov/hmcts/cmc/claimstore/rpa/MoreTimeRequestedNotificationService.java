@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.rpa;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
@@ -19,7 +18,6 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.JSON_EXTENSION;
 
 @Service("rpa/more-time-requested-notification-service")
-@ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff", havingValue = "true")
 public class MoreTimeRequestedNotificationService {
 
     private final EmailService emailService;

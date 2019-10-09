@@ -4,8 +4,7 @@ import com.google.common.base.Throwables;
 import feign.FeignException;
 import org.postgresql.util.PSQLException;
 import org.skife.jdbi.v2.exceptions.UnableToExecuteStatementException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsExceptionLogger;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ClaimantLinkException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
@@ -36,19 +36,24 @@ import java.util.Optional;
 
 @ControllerAdvice
 public class ResourceExceptionHandler {
-    private static final Logger logger = LoggerFactory.getLogger(ResourceExceptionHandler.class);
     private static final CharSequence UNIQUE_CONSTRAINT_MESSAGE = "duplicate key value violates unique constraint";
     private static final String INTERNAL_SERVER_ERROR = "Internal server error";
+    private final AppInsightsExceptionLogger logger;
+
+    @Autowired
+    public ResourceExceptionHandler(AppInsightsExceptionLogger logger) {
+        this.logger = logger;
+    }
 
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<Object> internalServiceError(Exception exception) {
-        logger.error(exception.getMessage(), exception);
+        logger.error(exception);
         return new ResponseEntity<>(INTERNAL_SERVER_ERROR, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(value = UnableToExecuteStatementException.class)
     public ResponseEntity<Object> unableToExecuteStatement(UnableToExecuteStatementException exception) {
-        logger.error(exception.getMessage(), exception);
+        logger.error(exception);
 
         Optional<Throwable> cause = Optional.ofNullable(Throwables.getRootCause(exception))
             .filter(c -> c != exception);
@@ -66,14 +71,14 @@ public class ResourceExceptionHandler {
 
     @ExceptionHandler(value = HttpClientErrorException.class)
     public ResponseEntity<Object> httpClientErrorException(HttpClientErrorException exception) {
-        logger.error(exception.getMessage(), exception);
+        logger.error(exception);
         return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(),
             HttpStatus.valueOf(exception.getRawStatusCode()));
     }
 
     @ExceptionHandler(value = ForbiddenActionException.class)
     public ResponseEntity<Object> forbidden(Exception exception) {
-        logger.error(exception.getMessage(), exception);
+        logger.error(exception);
         return ResponseEntity
             .status(HttpStatus.FORBIDDEN)
             .body(new ExceptionForClient(HttpStatus.FORBIDDEN.value(), exception.getMessage()));
@@ -83,33 +88,33 @@ public class ResourceExceptionHandler {
         DefendantLinkingException.class, ClaimantLinkException.class
     })
     public ResponseEntity<Object> partyNotLinkedWithClaim(Exception exception) {
-        logger.error(exception.getMessage(), exception);
+        logger.error(exception);
         return ResponseEntity.status(HttpStatus.FORBIDDEN.value())
             .body(new ExceptionForClient(HttpStatus.FORBIDDEN.value(), exception.getMessage()));
     }
 
     @ExceptionHandler(value = NotFoundException.class)
     public ResponseEntity<Object> notFoundClaim(Exception exception) {
-        logger.debug(exception.getMessage(), exception);
+        logger.debug(exception);
         return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(value = ConflictException.class)
     public ResponseEntity<Object> conflict(Exception exception) {
-        logger.error(exception.getMessage(), exception);
+        logger.error(exception);
         return ResponseEntity.status(HttpStatus.CONFLICT.value())
             .body(new ExceptionForClient(HttpStatus.CONFLICT.value(), exception.getMessage()));
     }
 
     @ExceptionHandler(value = OnHoldClaimAccessAttemptException.class)
     public ResponseEntity<Object> onHoldClaim(Exception exception) {
-        logger.error(exception.getMessage(), exception);
+        logger.error(exception);
         return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(value = HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<Object> methodNotSupported(HttpRequestMethodNotSupportedException exception) {
-        logger.trace(exception.getMessage(), exception);
+        logger.trace(exception);
         return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.NOT_IMPLEMENTED);
     }
 
@@ -118,19 +123,19 @@ public class ResourceExceptionHandler {
         HttpMediaTypeNotSupportedException.class,
         ServletRequestBindingException.class})
     public ResponseEntity<Object> badRequest(Exception exception) {
-        logger.trace(exception.getMessage(), exception);
+        logger.trace(exception);
         return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = InvalidApplicationException.class)
     public ResponseEntity<Object> invalidApplicationException(InvalidApplicationException exception) {
-        logger.error(exception.getMessage(), exception);
+        logger.error(exception);
         return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> validatedMethod(MethodArgumentNotValidException exception) {
-        logger.error(exception.getMessage(), exception);
+        logger.error(exception);
 
         BindingResult result = exception.getBindingResult();
         StringBuilder builder = new StringBuilder();
@@ -159,24 +164,24 @@ public class ResourceExceptionHandler {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<String> methodArgumentConversionFailure(MethodArgumentTypeMismatchException exception) {
-        logger.debug(exception.getMessage(), exception);
+        logger.debug(exception);
         return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(IllegalSettlementStatementException.class)
     public ResponseEntity<String> illegalSettlementStatement(IllegalSettlementStatementException exception) {
-        logger.debug(exception.getMessage(), exception);
+        logger.debug(exception);
         return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<String> badRequestException(BadRequestException exception) {
-        logger.debug(exception.getMessage(), exception);
+        logger.debug(exception);
         return new ResponseEntity<>(exception.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(FeignException.class)
-    protected ResponseEntity<Object> handleFeignException(FeignException exc) {
+    public ResponseEntity<Object> handleFeignException(FeignException exc) {
         logger.warn("Error communicating with an API", exc);
         String errorMessage = exc.status() < HttpStatus.INTERNAL_SERVER_ERROR.value() ? exc
             .getMessage() : INTERNAL_SERVER_ERROR;
