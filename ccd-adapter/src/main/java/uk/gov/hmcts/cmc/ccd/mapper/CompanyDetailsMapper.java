@@ -13,11 +13,15 @@ public class CompanyDetailsMapper {
 
     private final AddressMapper addressMapper;
     private final DefendantRepresentativeMapper representativeMapper;
+    private final TelephoneMapper telephoneMapper;
 
     @Autowired
-    public CompanyDetailsMapper(AddressMapper addressMapper, DefendantRepresentativeMapper representativeMapper) {
+    public CompanyDetailsMapper(AddressMapper addressMapper,
+                                DefendantRepresentativeMapper representativeMapper,
+                                TelephoneMapper telephoneMapper) {
         this.addressMapper = addressMapper;
         this.representativeMapper = representativeMapper;
+        this.telephoneMapper = telephoneMapper;
     }
 
     public void to(CompanyDetails company,
@@ -25,7 +29,8 @@ public class CompanyDetailsMapper {
         CCDParty.CCDPartyBuilder claimantProvidedPartyDetail = CCDParty.builder().type(CCDPartyType.COMPANY);
         company.getEmail().ifPresent(claimantProvidedPartyDetail::emailAddress);
         company.getContactPerson().ifPresent(claimantProvidedPartyDetail::contactPerson);
-
+        company.getPhone()
+            .ifPresent(phoneNo -> claimantProvidedPartyDetail.telephoneNumber(telephoneMapper.to(phoneNo)));
         company.getServiceAddress()
             .ifPresent(address -> claimantProvidedPartyDetail.correspondenceAddress(addressMapper.to(address)));
 
@@ -47,6 +52,7 @@ public class CompanyDetailsMapper {
             .name(ccdRespondent.getClaimantProvidedPartyName())
             .address(addressMapper.from(claimantProvidedPartyDetail.getPrimaryAddress()))
             .email(claimantProvidedPartyDetail.getEmailAddress())
+            .phoneNumber(telephoneMapper.from(claimantProvidedPartyDetail.getTelephoneNumber()))
             .representative(representativeMapper.from(ccdRespondent))
             .serviceAddress(addressMapper.from(claimantProvidedPartyDetail.getCorrespondenceAddress()))
             .contactPerson(claimantProvidedPartyDetail.getContactPerson())

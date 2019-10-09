@@ -9,15 +9,18 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
-import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantPinLetterPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
+import uk.gov.hmcts.cmc.claimstore.documents.ReviewOrderService;
 import uk.gov.hmcts.cmc.claimstore.documents.SealedClaimPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
+import uk.gov.hmcts.cmc.claimstore.documents.questionnaire.ClaimantDirectionsQuestionnairePdfService;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
+import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
+import uk.gov.hmcts.cmc.claimstore.events.revieworder.ReviewOrderEvent;
 import uk.gov.hmcts.cmc.claimstore.events.settlement.CountersignSettlementAgreementEvent;
 import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
@@ -27,6 +30,8 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 
 import java.util.Arrays;
@@ -39,15 +44,18 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimIssueReceiptFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSettlementReachedFileBaseName;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIMANT_DIRECTIONS_QUESTIONNAIRE;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.REVIEW_ORDER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
 
@@ -63,8 +71,6 @@ public class DocumentUploadHandlerTest {
     @Mock
     private DefendantResponseReceiptService defendantResponseReceiptService;
     @Mock
-    private CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
-    @Mock
     private SettlementAgreementCopyService settlementAgreementCopyService;
     @Mock
     private SealedClaimPdfService sealedClaimPdfService;
@@ -73,7 +79,11 @@ public class DocumentUploadHandlerTest {
     @Mock
     private DefendantPinLetterPdfService defendantPinLetterPdfService;
     @Mock
+    private ReviewOrderService reviewOrderService;
+    @Mock
     private DocumentsService documentService;
+    @Mock
+    private ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService;
 
     private DocumentUploadHandler documentUploadHandler;
 
@@ -98,13 +108,20 @@ public class DocumentUploadHandlerTest {
         new CountersignSettlementAgreementEvent(SampleClaim.builder().withSettlement(mock(Settlement.class)).build(),
             AUTHORISATION);
 
+    private final ReviewOrderEvent reviewOrderEvent = new ReviewOrderEvent(
+        AUTHORISATION,
+        SampleClaim.builder().withReviewOrder(SampleReviewOrder.getDefault()).build()
+    );
+
     @Before
     public void setUp() {
-        documentUploadHandler = new DocumentUploadHandler(defendantResponseReceiptService,
-            countyCourtJudgmentPdfService,
+        documentUploadHandler = new DocumentUploadHandler(
+            defendantResponseReceiptService,
             settlementAgreementCopyService,
             claimIssueReceiptService,
-            documentService);
+            documentService,
+            reviewOrderService,
+            claimantDirectionsQuestionnairePdfService);
     }
 
     @Test
@@ -243,9 +260,78 @@ public class DocumentUploadHandlerTest {
         );
     }
 
+    @Test
+    public void claimantAcceptationResponseDoesNothing() {
+        documentUploadHandler.uploadClaimantDirectionsQuestionnaireToDM(
+            new ClaimantResponseEvent(
+                SampleClaim.getWithClaimantResponse(
+                    SampleClaimantResponse.validDefaultAcceptation()), AUTHORISATION));
+
+        verifyZeroInteractions(claimantDirectionsQuestionnairePdfService);
+    }
+
+    @Test
+    public void claimantResponseWithoutQuestionnaireDoesNothing() {
+        documentUploadHandler.uploadClaimantDirectionsQuestionnaireToDM(
+            new ClaimantResponseEvent(
+                SampleClaim.getWithClaimantResponse(
+                    SampleClaimantResponse.validDefaultRejection()), AUTHORISATION));
+
+        verifyZeroInteractions(claimantDirectionsQuestionnairePdfService);
+    }
+
+    @Test
+    public void claimantResponseWithQuestionnaireUploadsToDM() {
+        Claim claim = SampleClaim.getWithClaimantResponse(
+            SampleClaimantResponse.ClaimantResponseRejection.builder()
+                .buildRejectionWithDirectionsQuestionnaire());
+
+        when(claimantDirectionsQuestionnairePdfService.createPdf(any())).thenReturn(new PDF(
+            buildClaimIssueReceiptFileBaseName(claim.getReferenceNumber()),
+            PDF_CONTENT,
+            CLAIMANT_DIRECTIONS_QUESTIONNAIRE
+        ));
+        documentUploadHandler.uploadClaimantDirectionsQuestionnaireToDM(
+            new ClaimantResponseEvent(claim, AUTHORISATION));
+        assertCommon(CLAIMANT_DIRECTIONS_QUESTIONNAIRE);
+
+    }
+
     private void assertCommon(ClaimDocumentType claimDocumentType) {
         verify(documentService, times(1))
             .uploadToDocumentManagement(argumentCaptor.capture(), anyString(), any(Claim.class));
         assertTrue(argumentCaptor.getValue().getClaimDocumentType() == claimDocumentType);
+    }
+
+    @Test
+    public void reviewOrderEventTriggersDocumentUpload() {
+        PDF reviewOrderDocument = new PDF(buildResponseFileBaseName(
+            reviewOrderEvent.getClaim().getReferenceNumber()),
+            PDF_CONTENT,
+            REVIEW_ORDER);
+        when(reviewOrderService.createPdf(reviewOrderEvent.getClaim()))
+            .thenReturn(reviewOrderDocument);
+        documentUploadHandler.uploadReviewOrderRequestDocument(reviewOrderEvent);
+        assertCommon(REVIEW_ORDER);
+    }
+
+    @Test
+    public void reviewOrderEventForDocumentUploadThrowsExceptionWhenClaimNotPresent() {
+        exceptionRule.expect(NullPointerException.class);
+        exceptionRule.expectMessage(CLAIM_MUST_NOT_BE_NULL);
+        documentUploadHandler.uploadReviewOrderRequestDocument(
+            new ReviewOrderEvent(AUTHORISATION, null)
+        );
+    }
+
+    @Test
+    public void reviewOrderEventForDocumentUploadThrowsExceptionWhenReviewOrderNotPresent() {
+        exceptionRule.expect(NotFoundException.class);
+        exceptionRule.expectMessage("Review Order does not exist for this claim");
+        documentUploadHandler.uploadReviewOrderRequestDocument(
+            new ReviewOrderEvent(
+                AUTHORISATION,
+                SampleClaim.getDefault()
+            ));
     }
 }

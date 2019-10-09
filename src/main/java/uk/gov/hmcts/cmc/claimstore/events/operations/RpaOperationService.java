@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.claim.ClaimCreationEventsStatusService;
 import uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssuedNotificationService;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.Arrays;
@@ -28,6 +29,7 @@ public class RpaOperationService {
         this.eventsStatusService = eventsStatusService;
     }
 
+    @LogExecutionTime
     public Claim notify(Claim claim, String authorisation, PDF... documents) {
 
         notificationService.notifyRobotics(claim, Arrays.asList(documents));

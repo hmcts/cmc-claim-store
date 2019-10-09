@@ -49,7 +49,7 @@ public class ClaimSubmissionOperationIndicators {
             bulkPrint,
             staffNotification,
             defendantNotification
-        ).allMatch(ind -> ind.equals(YES));
+        ).allMatch(YES::equals);
     }
 
     @JsonIgnore
@@ -62,6 +62,6 @@ public class ClaimSubmissionOperationIndicators {
             staffNotification,
             sealedClaimUpload,
             claimIssueReceiptUpload
-        ).allMatch(option -> option == YES);
+        ).allMatch(YES::equals);
     }
 }

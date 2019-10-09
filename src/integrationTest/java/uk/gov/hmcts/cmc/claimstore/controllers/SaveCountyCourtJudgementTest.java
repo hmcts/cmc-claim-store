@@ -6,7 +6,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
@@ -22,11 +21,9 @@ import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.reform.document.domain.Classification;
-import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,7 +43,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NOTIFICATION_FAILURE;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildRequestForJudgementFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementUploadResponse;
 
 @TestPropertySource(
@@ -128,15 +124,7 @@ public class SaveCountyCourtJudgementTest extends BaseIntegrationTest {
 
     @Test
     public void shouldNotUploadDocumentToDocumentManagementAfterSuccessfulSave() throws Exception {
-        final ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
 
-        InMemoryMultipartFile ccj = new InMemoryMultipartFile(
-            "files",
-            buildRequestForJudgementFileBaseName(claim.getReferenceNumber(),
-                claim.getClaimData().getDefendant().getName()) + ".pdf",
-            MediaType.APPLICATION_PDF_VALUE,
-            PDF_BYTES
-        );
         makeRequest(claim.getExternalId(), COUNTY_COURT_JUDGMENT).andExpect(status().isOk());
         verify(documentUploadClient, never()).upload(anyString(),
             anyString(),
@@ -178,6 +166,16 @@ public class SaveCountyCourtJudgementTest extends BaseIntegrationTest {
             eq(REFERENCE_NUMBER),
             eq("claimant-ccj-requested-notification-" + claim.getReferenceNumber())
         );
+    }
+
+    @Test
+    public void shouldReturnUnprocessableEntityWhenInvalidJudgementIsSubmitted() throws Exception {
+        CountyCourtJudgment invalidCCJ = SampleCountyCourtJudgment.builder()
+            .paymentOption(null)
+            .build();
+
+        makeRequest(claim.getExternalId(), invalidCCJ)
+            .andExpect(status().isUnprocessableEntity());
     }
 
     private ResultActions makeRequest(String externalId, CountyCourtJudgment countyCourtJudgment) throws Exception {

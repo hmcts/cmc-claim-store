@@ -7,6 +7,7 @@ import org.mockito.Captor;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,6 +52,11 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseF
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumentManagementUploadResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.unsuccessfulDocumentManagementUploadResponse;
 
+@TestPropertySource(
+    properties = {
+        "core_case_data.api.url=false"
+    }
+)
 public class SaveDefendantResponseTest extends BaseIntegrationTest {
 
     protected static final byte[] PDF_BYTES = new byte[] {1, 2, 3, 4};
@@ -209,6 +215,17 @@ public class SaveDefendantResponseTest extends BaseIntegrationTest {
 
         makeRequest(claim.getExternalId(), DEFENDANT_ID, response)
             .andExpect(status().isInternalServerError());
+    }
+
+    @Test
+    public void shouldReturnUnprocessableEntityWhenInvalidResponseIsSubmitted() throws Exception {
+
+        Response invalidResponse = SampleResponse.FullDefence.builder()
+            .withDefenceType(null)
+            .build();
+
+        makeRequest(claim.getExternalId(), DEFENDANT_ID, invalidResponse)
+            .andExpect(status().isUnprocessableEntity());
     }
 
     private ResultActions makeRequest(String externalId, String defendantId, Response response) throws Exception {
