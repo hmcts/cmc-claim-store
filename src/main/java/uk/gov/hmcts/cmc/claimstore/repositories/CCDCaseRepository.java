@@ -18,8 +18,6 @@ import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
-import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
-import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -29,11 +27,10 @@ import java.util.List;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_DEFENDANT;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service("caseRepository")
-@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class CCDCaseRepository implements CaseRepository {
     private final CCDCaseApi ccdCaseApi;
     private final CoreCaseDataService coreCaseDataService;
@@ -147,16 +144,8 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public CreatePaymentResponse initiatePayment(User user, String submitterId, InitiatePaymentRequest data) {
-        return coreCaseDataService.savePayment(user, submitterId, data);
-    }
-
-    @Override
-    public Claim resumePayment(User user, Claim claim) {
-        return coreCaseDataService.saveCaseEvent(
-            user.getAuthorisation(),
-            claim.getCcdCaseId(),
-            RESUME_CLAIM_PAYMENT_CITIZEN);
+    public Claim initiatePayment(User user, Claim claim) {
+        return coreCaseDataService.createNewCitizenCase(user, claim);
     }
 
     @Override
@@ -186,6 +175,7 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
+    @LogExecutionTime
     public Claim saveRepresentedClaim(User user, Claim claim) {
         return coreCaseDataService.createRepresentedClaim(user, claim);
     }
@@ -233,8 +223,8 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent) {
-        coreCaseDataService.saveCaseEvent(authorisation, claim.getId(), caseEvent);
+    public Claim saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent) {
+        return coreCaseDataService.saveCaseEvent(authorisation, claim.getId(), caseEvent);
     }
 
     @Override

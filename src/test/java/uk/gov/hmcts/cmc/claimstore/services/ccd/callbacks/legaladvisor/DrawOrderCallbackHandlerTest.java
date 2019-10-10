@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
+package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
@@ -16,6 +17,9 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtDetailsFinder;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
@@ -25,6 +29,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -35,6 +40,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.MapEntry.entry;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DRAW_ORDER;
@@ -77,6 +83,8 @@ public class DrawOrderCallbackHandlerTest {
     private LegalOrderService legalOrderService;
     @Mock
     private HearingCourtDetailsFinder hearingCourtDetailsFinder;
+    @Mock
+    private DocAssemblyService docAssemblyService;
 
     private CallbackParams callbackParams;
 
@@ -91,8 +99,8 @@ public class DrawOrderCallbackHandlerTest {
             orderDrawnNotificationService,
             caseDetailsConverter,
             legalOrderService,
-            hearingCourtDetailsFinder
-        );
+            hearingCourtDetailsFinder,
+            docAssemblyService);
 
         when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
@@ -103,6 +111,38 @@ public class DrawOrderCallbackHandlerTest {
             .eventId(DRAW_ORDER.getValue())
             .caseDetails(caseDetails)
             .build();
+    }
+
+    @Test
+    public void shouldRegeneratesOrderOnBeforeEventStart() {
+        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
+        ccdCase.setDirectionOrderData(SampleData.getCCDOrderGenerationData());
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+
+        CallbackRequest callbackRequest = CallbackRequest
+            .builder()
+            .eventId(DRAW_ORDER.getValue())
+            .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
+            .caseDetailsBefore(CaseDetails.builder().data(Collections.emptyMap()).build())
+            .build();
+
+        DocAssemblyResponse docAssemblyResponse = Mockito.mock(DocAssemblyResponse.class);
+        when(docAssemblyResponse.getRenditionOutputLocation()).thenReturn(DOCUMENT_URL);
+        when(docAssemblyService.createOrder(eq(ccdCase), eq(BEARER_TOKEN)))
+            .thenReturn(docAssemblyResponse);
+
+        CallbackParams callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_START)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response =
+            (AboutToStartOrSubmitCallbackResponse) drawOrderCallbackHandler
+                .handle(callbackParams);
+
+        CCDDocument document = CCDDocument.builder().documentUrl(DOCUMENT_URL).build();
+        assertThat(response.getData()).contains(entry("draftOrderDoc", document));
     }
 
     @Test

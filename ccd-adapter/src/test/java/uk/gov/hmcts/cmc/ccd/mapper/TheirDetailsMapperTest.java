@@ -9,12 +9,14 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
+import uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDTelephone;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleData.getCCDRespondentCompany;
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleData.getCCDRespondentIndividual;
@@ -78,6 +80,45 @@ public class TheirDetailsMapperTest {
 
         //then
         assertThat(party).isEqualTo(builder.build());
+    }
+
+    @Test
+    public void shouldMapClaimantProvidedDefendantPhoneToCCD() {
+        //given
+        String claimantProvidedPhone = "0773646636464";
+        TheirDetails individualParty = SampleTheirDetails.builder().withPhone(claimantProvidedPhone)
+            .individualDetails();
+        TheirDetails soleTraderParty = SampleTheirDetails.builder().withPhone(claimantProvidedPhone)
+            .soleTraderDetails();
+        TheirDetails organisationParty = SampleTheirDetails.builder().withPhone(claimantProvidedPhone)
+            .organisationDetails();
+        TheirDetails companyParty = SampleTheirDetails.builder().withPhone(claimantProvidedPhone)
+            .companyDetails();
+
+        //when
+        CCDRespondent.CCDRespondentBuilder individualBuilder = CCDRespondent.builder();
+        CCDRespondent.CCDRespondentBuilder soleTraderBuilder = CCDRespondent.builder();
+        CCDRespondent.CCDRespondentBuilder companyBuilder = CCDRespondent.builder();
+        CCDRespondent.CCDRespondentBuilder organisationBuilder = CCDRespondent.builder();
+
+        theirDetailsMapper.to(individualBuilder, individualParty);
+        theirDetailsMapper.to(soleTraderBuilder, soleTraderParty);
+        theirDetailsMapper.to(companyBuilder, companyParty);
+        theirDetailsMapper.to(organisationBuilder, organisationParty);
+
+        //then
+        assertEquals("Phone number should be mapped properly for individual party type",
+            individualParty.getPhone().orElse(null),
+            individualBuilder.build().getClaimantProvidedDetail().getTelephoneNumber().getTelephoneNumber());
+        assertEquals("Phone number should be mapped properly for sole trader party type",
+            soleTraderParty.getPhone().orElse(null),
+            soleTraderBuilder.build().getClaimantProvidedDetail().getTelephoneNumber().getTelephoneNumber());
+        assertEquals("Phone number should be mapped properly for company party type",
+            companyParty.getPhone().orElse(null),
+            companyBuilder.build().getClaimantProvidedDetail().getTelephoneNumber().getTelephoneNumber());
+        assertEquals("Phone number should be mapped properly for organisation party type",
+            organisationParty.getPhone().orElse(null),
+            organisationBuilder.build().getClaimantProvidedDetail().getTelephoneNumber().getTelephoneNumber());
     }
 
     @Test
@@ -146,6 +187,44 @@ public class TheirDetailsMapperTest {
         //then
         assertThat(party).isEqualTo(ccdParty);
         assertThat(party.getId()).isEqualTo(collectionId);
+    }
+
+    @Test
+    public void shouldMapClaimantProvidedDefendantPhoneFromCCD() {
+        String collectionId = UUID.randomUUID().toString();
+
+        TheirDetails individualParty = theirDetailsMapper
+            .from(CCDCollectionElement.<CCDRespondent>builder()
+                .id(collectionId)
+                .value(getCCDRespondentIndividual()).build());
+        assertEquals("Telephone no from claimant provided details not properly mapped for individual",
+            SampleCCDTelephone.withDefaultPhoneNumber().getTelephoneNumber(),
+            individualParty.getPhone().orElse(null));
+
+        TheirDetails companyParty = theirDetailsMapper
+            .from(CCDCollectionElement.<CCDRespondent>builder()
+                .id(collectionId)
+                .value(getCCDRespondentCompany()).build());
+        assertEquals("Telephone no from claimant provided details not properly mapped for company",
+            SampleCCDTelephone.withDefaultPhoneNumber().getTelephoneNumber(),
+            companyParty.getPhone().orElse(null));
+
+        TheirDetails soleTraderParty = theirDetailsMapper
+            .from(CCDCollectionElement.<CCDRespondent>builder()
+                .id(collectionId)
+                .value(getCCDRespondentSoleTrader()).build());
+        assertEquals("Telephone no from claimant provided details not properly mapped for sole trader",
+            SampleCCDTelephone.withDefaultPhoneNumber().getTelephoneNumber(),
+            soleTraderParty.getPhone().orElse(null));
+
+        TheirDetails organisationParty = theirDetailsMapper
+            .from(CCDCollectionElement.<CCDRespondent>builder()
+                .id(collectionId)
+                .value(getCCDRespondentOrganisation()).build());
+        assertEquals("Telephone no from claimant provided details not properly mapped for organisation",
+            SampleCCDTelephone.withDefaultPhoneNumber().getTelephoneNumber(),
+            organisationParty.getPhone().orElse(null));
+
     }
 
 }
