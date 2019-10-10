@@ -57,8 +57,12 @@ public class PaymentMapper implements BuilderMapper<CCDCase, Payment, CCDCase.CC
             ccdCase.getPaymentId(),
             moneyMapper.from(ccdCase.getPaymentAmount()),
             ccdCase.getPaymentReference(),
-            ccdCase.getPaymentDateCreated() != null ? ccdCase.getPaymentDateCreated().format(ISO_DATE) : null,
-            PaymentStatus.fromValue(ccdCase.getPaymentStatus()),
+            ccdCase.getPaymentDateCreated() != null
+                ? ccdCase.getPaymentDateCreated().format(ISO_DATE)
+                : null,
+            ccdCase.getPaymentStatus() != null
+                ? PaymentStatus.fromValue(ccdCase.getPaymentStatus())
+                : null,
             ccdCase.getPaymentNextUrl());
     }
 
