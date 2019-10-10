@@ -3,6 +3,9 @@ package uk.gov.hmcts.cmc.claimstore.appinsights;
 import com.microsoft.applicationinsights.TelemetryClient;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
+import java.util.Map;
+
 import static java.util.Collections.singletonMap;
 
 @Component
@@ -25,6 +28,10 @@ public class AppInsights {
 
     public void trackException(Exception exception) {
         telemetry.trackException(exception);
+    }
+
+    public void trackException(Exception exception, Map<String, String> properties) {
+        telemetry.trackException(exception, properties, Collections.emptyMap());
     }
 
 }
