@@ -20,6 +20,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Map;
 
+import static java.time.format.DateTimeFormatter.ISO_DATE;
+
 @Service
 public class MediationReportService {
 
@@ -87,20 +89,22 @@ public class MediationReportService {
 
     private void reportMediationException(RuntimeException e, LocalDate reportDate) {
         ImmutableMap<String, String> exceptionProperties = ImmutableMap.<String, String>builder()
-            .put("MILO report date time", reportDate.format(DateTimeFormatter.ISO_DATE_TIME))
+            .put("MILO report date time", reportDate.format(ISO_DATE))
             .put("Error Message ", e.getMessage())
             .put("Error Stack", ExceptionUtils.getFullStackTrace(e))
             .build();
 
-        appInsights.trackException(e, exceptionProperties);
+        appInsights.trackEvent(AppInsightsEvent.MEDIATION_REPORT_FAILURE, exceptionProperties);
         throw e;
     }
 
     private void reportMediationExceptions(LocalDate reportDate, Map<String, String> problems) {
+        ImmutableMap<String, String> exceptionRecords = ImmutableMap.<String, String>builder()
+            .put("MILO report date time", reportDate.format(ISO_DATE))
+            .putAll(problems).build();
         appInsights.trackEvent(
             AppInsightsEvent.MEDIATION_REPORT_FAILURE,
-            "MILO report " + reportDate,
-            problems.toString()
+            exceptionRecords
         );
     }
 }

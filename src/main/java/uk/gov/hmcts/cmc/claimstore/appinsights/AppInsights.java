@@ -30,8 +30,8 @@ public class AppInsights {
         telemetry.trackException(exception);
     }
 
-    public void trackException(Exception exception, Map<String, String> properties) {
-        telemetry.trackException(exception, properties, Collections.emptyMap());
+    public void trackEvent(AppInsightsEvent appInsightsEvent, Map<String, String> properties) {
+        telemetry.trackEvent(appInsightsEvent.toString(), properties, Collections.emptyMap());
     }
 
 }
