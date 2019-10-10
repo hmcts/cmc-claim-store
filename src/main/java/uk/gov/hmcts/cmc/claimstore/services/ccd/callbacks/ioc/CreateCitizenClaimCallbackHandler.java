@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.ChannelType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Payment;
+import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
@@ -86,8 +87,10 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
         String referenceNumber = referenceNumberRepository.getReferenceNumberForLegal();
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         Payment payment = paymentsService.retrievePayment(authorisation, claim);
+        Claim updatedClaim = null;
 
-        Claim updatedClaim = claim.toBuilder()
+        if (payment.getStatus().equals(PaymentStatus.SUCCESS)) {
+            updatedClaim = claim.toBuilder()
                 .referenceNumber(referenceNumber)
                 .issuedOn(issuedOn)
                 .responseDeadline(responseDeadline)
@@ -96,6 +99,14 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
                     .build())
                 .channel(ChannelType.CITIZEN)
                 .build();
+        } else {
+            updatedClaim = claim.toBuilder()
+                .claimData(claim.getClaimData().toBuilder()
+                    .payment(payment)
+                    .build())
+                .channel(ChannelType.CITIZEN)
+                .build();
+        }
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()
