@@ -10,7 +10,6 @@ import lombok.Builder;
 import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
 import uk.gov.hmcts.reform.docassembly.domain.FormPayload;
@@ -76,6 +75,10 @@ public class DocAssemblyTemplateBody implements FormPayload {
     private List<OtherDirection> otherDirections;
 
     private List<CCDCollectionElement<String>> extraDocUploadList;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @JsonSerialize(using = LocalDateSerializer.class)
+    private LocalDate directionDeadline;
 
     private boolean expertReportPermissionPartyAskedByClaimant;
     private boolean expertReportPermissionPartyAskedByDefendant;

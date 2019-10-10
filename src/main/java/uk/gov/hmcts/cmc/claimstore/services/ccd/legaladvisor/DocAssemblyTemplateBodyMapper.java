@@ -4,9 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -18,13 +20,20 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 @Component
 public class DocAssemblyTemplateBodyMapper {
 
+    public static final long DIRECTION_DEADLINE_NO_OF_DAYS = 19L;
     private Clock clock;
     private final HearingCourtDetailsFinder hearingCourtDetailsFinder;
+    private final WorkingDayIndicator workingDayIndicator;
 
     @Autowired
-    public DocAssemblyTemplateBodyMapper(Clock clock, HearingCourtDetailsFinder hearingCourtDetailsFinder) {
+    public DocAssemblyTemplateBodyMapper(
+        Clock clock,
+        HearingCourtDetailsFinder hearingCourtDetailsFinder,
+        WorkingDayIndicator workingDayIndicator
+    ) {
         this.clock = clock;
         this.hearingCourtDetailsFinder = hearingCourtDetailsFinder;
+        this.workingDayIndicator = workingDayIndicator;
     }
 
     public DocAssemblyTemplateBody from(CCDCase ccdCase, UserDetails userDetails) {
@@ -34,6 +43,7 @@ public class DocAssemblyTemplateBodyMapper {
             .map(hearingCourtDetailsFinder::findHearingCourtAddress)
             .orElseGet(() -> HearingCourt.builder().build());
 
+        LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
         return DocAssemblyTemplateBody.builder()
             .claimant(Party.builder()
                 .partyName(ccdCase.getApplicants()
@@ -51,7 +61,7 @@ public class DocAssemblyTemplateBodyMapper {
                 .firstName(userDetails.getForename())
                 .lastName(userDetails.getSurname().orElse(""))
                 .build())
-            .currentDate(LocalDate.now(clock.withZone(UTC_ZONE)))
+            .currentDate(currentDate)
             .referenceNumber(ccdCase.getPreviousServiceCaseReference())
             .hasFirstOrderDirections(
                 ccdOrderGenerationData.getDirectionList().contains(CCDOrderDirectionType.DOCUMENTS))
@@ -91,16 +101,22 @@ public class DocAssemblyTemplateBodyMapper {
                         .otherDirectionHeaders(ccdOrderDirection.getOtherDirectionHeaders())
                         .build())
                     .collect(Collectors.toList()))
+            .directionDeadline(workingDayIndicator.getNextWorkingDay(currentDate
+                .plusDays(DIRECTION_DEADLINE_NO_OF_DAYS)))
             .expertReportInstructionClaimant(ccdOrderGenerationData.getExpertReportInstructionClaimant())
             .expertReportInstructionDefendant(ccdOrderGenerationData.getExpertReportInstructionDefendant())
-            .expertReportPermissionPartyAskedByClaimant(ccdOrderGenerationData
-                .getExpertReportPermissionPartyAskedByClaimant().toBoolean())
-            .expertReportPermissionPartyAskedByDefendant(ccdOrderGenerationData
-                .getExpertReportPermissionPartyAskedByDefendant().toBoolean())
-            .expertReportPermissionPartyGivenToClaimant(ccdOrderGenerationData
-                .getExpertReportPermissionPartyGivenToClaimant().toBoolean())
-            .expertReportPermissionPartyGivenToDefendant(ccdOrderGenerationData
-                .getExpertReportPermissionPartyGivenToDefendant().toBoolean())
+            .expertReportPermissionPartyAskedByClaimant(fromEnum(ccdOrderGenerationData
+                .getExpertReportPermissionPartyAskedByClaimant()))
+            .expertReportPermissionPartyAskedByDefendant(fromEnum(ccdOrderGenerationData
+                .getExpertReportPermissionPartyAskedByDefendant()))
+            .expertReportPermissionPartyGivenToClaimant(fromEnum(ccdOrderGenerationData
+                .getExpertReportPermissionPartyGivenToClaimant()))
+            .expertReportPermissionPartyGivenToDefendant(fromEnum(ccdOrderGenerationData
+                .getExpertReportPermissionPartyGivenToDefendant()))
             .build();
+    }
+
+    private boolean fromEnum(CCDYesNoOption input) {
+        return Optional.ofNullable(input).map(CCDYesNoOption::toBoolean).orElse(false);
     }
 }
