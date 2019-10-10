@@ -99,7 +99,7 @@ allprojects {
       // remove once spring manager incorporates this changes
       dependencySet(
         group: 'com.fasterxml.jackson.core',
-        version: dependencyManagement.importedProperties['jackson.version']
+        version: '2.10.0'
       ) {
         entry 'jackson-core'
       }
@@ -111,14 +111,14 @@ allprojects {
       }
       dependencySet(
         group: 'com.fasterxml.jackson.datatype',
-        version: dependencyManagement.importedProperties['jackson.version']
+        version: '2.10.0'
       ) {
         entry 'jackson-datatype-jdk8'
         entry 'jackson-datatype-jsr310'
       }
       dependencySet(
         group: 'com.fasterxml.jackson.module',
-        version: dependencyManagement.importedProperties['jackson.version']
+        version: '2.10.0'
       ) {
         entry 'jackson-module-parameter-names'
       }
