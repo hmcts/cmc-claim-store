@@ -10,10 +10,12 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -25,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_LEGAL_REP_CLAIM;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.SOLICITOR;
 import static uk.gov.hmcts.cmc.domain.models.ChannelType.LEGAL_REP;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
@@ -32,6 +35,7 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 public class CreateLegalRepClaimCallbackHandler extends CallbackHandler {
 
     private static final List<CaseEvent> EVENTS = Collections.singletonList(CREATE_LEGAL_REP_CLAIM);
+    private static final List<Role> ROLES = Collections.singletonList(SOLICITOR);
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final CaseDetailsConverter caseDetailsConverter;
@@ -65,6 +69,12 @@ public class CreateLegalRepClaimCallbackHandler extends CallbackHandler {
         return EVENTS;
     }
 
+    @Override
+    public List<Role> getSupportedRoles() {
+        return ROLES;
+    }
+
+    @LogExecutionTime
     private CallbackResponse createLegalRepClaim(CallbackParams callbackParams) {
         logger.info("Creating legal rep case for callback of type {}", callbackParams.getType());
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
@@ -77,7 +87,7 @@ public class CreateLegalRepClaimCallbackHandler extends CallbackHandler {
             .referenceNumber(referenceNumber)
             .issuedOn(issuedOn)
             .responseDeadline(responseDeadline)
-            .channelType(LEGAL_REP)
+            .channel(LEGAL_REP)
             .build();
 
         return AboutToStartOrSubmitCallbackResponse

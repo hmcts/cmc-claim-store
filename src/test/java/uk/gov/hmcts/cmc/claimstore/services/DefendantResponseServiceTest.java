@@ -6,7 +6,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
-import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CountyCourtJudgmentAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
@@ -57,9 +56,6 @@ public class DefendantResponseServiceTest {
     private EventProducer eventProducer;
 
     @Mock
-    private CCDEventProducer ccdEventProducer;
-
-    @Mock
     private UserService userService;
 
     @Mock
@@ -74,8 +70,8 @@ public class DefendantResponseServiceTest {
             eventProducer,
             claimService,
             userService,
-            appInsights,
-            ccdEventProducer);
+            appInsights
+        );
     }
 
     @Test

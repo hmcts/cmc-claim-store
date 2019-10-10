@@ -12,8 +12,6 @@ import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
-import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentRequest;
-import uk.gov.hmcts.cmc.domain.models.ioc.InitiatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
@@ -70,11 +68,13 @@ public interface CaseRepository {
 
     Claim saveClaim(User user, Claim claim);
 
+    Claim saveRepresentedClaim(User user, Claim claim);
+
     void saveReDetermination(String authorisation, Claim claim, ReDetermination reDetermination);
 
-    void saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent);
+    Claim saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent);
 
-    InitiatePaymentResponse initiatePayment(User user, String submitterId, InitiatePaymentRequest data);
+    Claim initiatePayment(User user, Claim claim);
 
     Claim saveClaimDocuments(
         String authorisation,

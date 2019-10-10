@@ -158,4 +158,11 @@
         <gav regex="true">.*</gav>
         <cve>CVE-2019-16335</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+			Netty before 4.1.42.Final mishandles whitespace before the colon in HTTP headers
+			]]></notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2019-16869</cve>
+    </suppress>
 </suppressions>

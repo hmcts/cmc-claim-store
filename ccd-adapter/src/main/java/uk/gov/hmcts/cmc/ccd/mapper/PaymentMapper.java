@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.domain.models.Payment;
+import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.time.LocalDate;
@@ -34,7 +35,7 @@ public class PaymentMapper implements BuilderMapper<CCDCase, Payment, CCDCase.CC
             .paymentId(payment.getId())
             .paymentReference(payment.getReference())
             .paymentNextUrl(payment.getNextUrl())
-            .paymentStatus(payment.getStatus());
+            .paymentStatus(payment.getStatus().toString());
 
         if (StringUtils.isNotBlank(payment.getDateCreated())) {
             builder.paymentDateCreated(parseDate(payment.getDateCreated()));
@@ -56,8 +57,12 @@ public class PaymentMapper implements BuilderMapper<CCDCase, Payment, CCDCase.CC
             ccdCase.getPaymentId(),
             moneyMapper.from(ccdCase.getPaymentAmount()),
             ccdCase.getPaymentReference(),
-            ccdCase.getPaymentDateCreated() != null ? ccdCase.getPaymentDateCreated().format(ISO_DATE) : null,
-            ccdCase.getPaymentStatus(),
+            ccdCase.getPaymentDateCreated() != null
+                ? ccdCase.getPaymentDateCreated().format(ISO_DATE)
+                : null,
+            ccdCase.getPaymentStatus() != null
+                ? PaymentStatus.fromValue(ccdCase.getPaymentStatus())
+                : null,
             ccdCase.getPaymentNextUrl());
     }
 

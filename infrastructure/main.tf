@@ -177,6 +177,8 @@ module "claim-store-api" {
     DOC_ASSEMBLY_URL = "${var.doc_assembly_api_url}"
     CORE_CASE_DATA_API_URL = "${local.ccdCnpUrl}"
     SEND_LETTER_URL = "${var.env == "saat" || var.env == "sprod" ? "false" : local.sendLetterUrl}"
+    FEES_URL = "${var.fees_url}"
+    PAY_URL = "${var.payments_url}"
 
     // mail
     SPRING_MAIL_HOST = "${var.mail-host}"
@@ -204,9 +206,6 @@ module "claim-store-api" {
 
     // feature toggles
     CLAIM_STORE_TEST_SUPPORT_ENABLED = "${var.env == "prod" ? "false" : "true"}"
-    FEATURE_TOGGLES_EMAILTOSTAFF = "${var.enable_staff_email}"
-    FEATURE_TOGGLES_CCD_ENABLED = "${var.ccd_enabled}"
-    FEATURE_TOGGLES_CCD_ASYNC_ENABLED = "${var.ccd_async_enabled}"
     FEATURE_TOGGLES_SAVE_CLAIM_STATE_ENABLED = "${var.save_claim_state_enabled}"
     FEATURE_TOGGLES_ASYNC_EVENT_OPERATIONS_ENABLED = "${var.async_event_operations_enabled}"
     FEATURE_TOGGLES_DIRECTIONS_QUESTIONNAIRE_ENABLED = "${var.directions_questionnaire_enabled}"

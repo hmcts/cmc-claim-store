@@ -10,20 +10,27 @@ public class QueryTest {
 
     @Test
     public void queryBuilderShouldNotBeNull() {
-        Assertions.assertThatThrownBy(() -> new Query(null))
+        Assertions.assertThatThrownBy(() -> new Query(null, 10))
             .hasMessage("QueryBuilder cannot be null in search");
+    }
 
+    @Test
+    public void pageSizeShouldNotBeLessThanOne() {
+        Assertions.assertThatThrownBy(() -> new Query(QueryBuilders.matchAllQuery(), 0))
+            .hasMessage("Page size cant be less than 1");
     }
 
     @Test
     public void queryToStringToMatch() {
-        final String matchAllQueryString = "{\"query\": {\n"
+        final String matchAllQueryString = "{"
+            + "\"size\": 10,"
+            + "\"query\": {\n"
             + "  \"match_all\" : {\n"
             + "    \"boost\" : 1.0\n"
             + "  }\n"
             + "}}";
 
-        Query matchAll = new Query(QueryBuilders.matchAllQuery());
+        Query matchAll = new Query(QueryBuilders.matchAllQuery(), 10);
         assertEquals(matchAllQueryString, matchAll.toString());
     }
 
