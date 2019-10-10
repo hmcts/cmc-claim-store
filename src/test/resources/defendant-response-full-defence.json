@@ -91,6 +91,7 @@
       }
     ],
     "expertRequired": "yes",
+    "permissionForExpert": "yes",
     "expertRequest": {
       "expertEvidenceToExamine": "Evidence to examine",
       "reasonForExpertAdvice": "A valid reason"

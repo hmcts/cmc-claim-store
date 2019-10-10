@@ -61,6 +61,8 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
         directionsQuestionnaire.getWitness().ifPresent(toWitness(builder));
 
         builder.expertRequired(yesNoMapper.to(directionsQuestionnaire.getExpertRequired()));
+        directionsQuestionnaire.getPermissionForExpert()
+            .ifPresent(permission -> builder.permissionForExpert(yesNoMapper.to(permission)));
         directionsQuestionnaire.getExpertRequest().ifPresent(toExpertRequest(builder));
 
         builder.expertReports(directionsQuestionnaire.getExpertReports()

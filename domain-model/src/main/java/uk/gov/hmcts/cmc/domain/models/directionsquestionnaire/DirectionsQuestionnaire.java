@@ -39,6 +39,9 @@ public class DirectionsQuestionnaire {
     private final YesNoOption expertRequired;
 
     @Valid
+    private final YesNoOption permissionForExpert;
+
+    @Valid
     private final ExpertRequest expertRequest;
 
     @Builder
@@ -49,6 +52,7 @@ public class DirectionsQuestionnaire {
         List<ExpertReport> expertReports,
         List<UnavailableDate> unavailableDates,
         YesNoOption expertRequired,
+        YesNoOption permissionForExpert,
         ExpertRequest expertRequest
     ) {
         this.requireSupport = requireSupport;
@@ -57,6 +61,7 @@ public class DirectionsQuestionnaire {
         this.expertReports = expertReports;
         this.unavailableDates = unavailableDates;
         this.expertRequired = expertRequired;
+        this.permissionForExpert = permissionForExpert;
         this.expertRequest = expertRequest;
     }
 
@@ -80,6 +85,9 @@ public class DirectionsQuestionnaire {
         return expertRequired;
     }
 
+    public Optional<YesNoOption> getPermissionForExpert() {
+        return Optional.ofNullable(permissionForExpert);
+    }
     public Optional<ExpertRequest> getExpertRequest() {
         return Optional.ofNullable(expertRequest);
     }

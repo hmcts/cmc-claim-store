@@ -43,6 +43,7 @@ public class DefendantResponseController {
         @PathVariable("externalId") String externalId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization
     ) {
+        System.out.println("response " + response);
         return defendantResponseService.save(externalId, defendantId, response, authorization);
     }
 }

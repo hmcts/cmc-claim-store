@@ -51,6 +51,7 @@ public class SampleCCDDirectionsQuestionnaire {
             .otherSupportRequired("maybe")
             .expertReports(expertReportRow)
             .expertRequired(NO)
+            .permissionForExpert(NO)
             .expertEvidenceToExamine("nothing")
             .reasonForExpertAdvice("for specified reason")
             .build();
