@@ -69,10 +69,7 @@ public class CaseDetailsConverter {
 
     private LocalDate calculateIntentionToProceedDeadline(LocalDateTime respondedDate) {
         LocalDate deadline = respondedDate.toLocalDate().plusDays(this.intentionToProceedDeadline);
-
-        while (!workingDayIndicator.isWorkingDay(deadline)) {
-            deadline = deadline.plusDays(1);
-        }
+        deadline = workingDayIndicator.getNextWorkingDay(deadline);
 
         return deadline;
     }
