@@ -153,11 +153,11 @@ public class ClaimControllerTest {
         //given
         ClaimData claimData = SampleClaimData.builder().build();
         Claim expectedResponse = Claim.builder().claimData(claimData).build();
-        when(claimService.saveCitizenClaim(AUTHORISATION, claimData))
+        when(claimService.saveCitizenClaim(AUTHORISATION, claimData, FEATURES))
             .thenReturn(expectedResponse);
 
         //when
-        Claim output = claimController.createClaim(claimData, AUTHORISATION);
+        Claim output = claimController.createClaim(claimData, AUTHORISATION, FEATURES);
 
         //then
         assertThat(output).isEqualTo(expectedResponse);

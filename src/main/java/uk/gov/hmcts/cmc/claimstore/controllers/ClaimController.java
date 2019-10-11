@@ -137,11 +137,13 @@ public class ClaimController {
     @ApiOperation("Creates a citizen claim")
     public Claim createClaim(
         @Valid @NotNull @RequestBody ClaimData claimData,
-        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
+        @RequestHeader(value = "Features", required = false) List<String> features
     ) {
         return claimService.saveCitizenClaim(
             authorisation,
-            claimData);
+            claimData,
+            features);
     }
 
     @PutMapping("/defendant/link")
