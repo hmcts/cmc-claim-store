@@ -68,8 +68,7 @@ public class HearingContentProvider {
     }
 
     private void mapExpertRequest(DirectionsQuestionnaire questionnaire, HearingContent.HearingContentBuilder builder) {
-
-        System.out.println("questionnaire " + questionnaire);
+        
         YesNoOption expertRequired = questionnaire.getExpertRequired();
         builder.expertRequired(NO);
         if (expertRequired == YesNoOption.YES) {
