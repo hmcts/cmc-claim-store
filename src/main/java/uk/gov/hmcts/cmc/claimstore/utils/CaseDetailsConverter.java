@@ -26,8 +26,8 @@ public class CaseDetailsConverter {
         CaseMapper caseMapper,
         JsonMapper jsonMapper,
         WorkingDayIndicator workingDayIndicator,
-        @Value("${intention.to.proceed.deadline:33}")int intentionToProceedDeadline
-        ) {
+        @Value("${intention.to.proceed.deadline:33}") int intentionToProceedDeadline
+    ) {
 
         this.caseMapper = caseMapper;
         this.jsonMapper = jsonMapper;
