@@ -24,8 +24,17 @@ dependencyUpdates.resolutionStrategy = {
   }
 }
 
-def springBootVersion = '2.1.7.RELEASE'
+def springBootVersion = '2.1.9.RELEASE'
 def springCloudVersion = 'Greenwich.SR2'
+
+def versions = [
+  logback           : '1.2.3',
+  springBoot        : springBootVersion,
+  springfoxSwagger  : '2.9.2',
+  reformJavaLogging : '5.0.1',
+  restAssuredVersion: '4.0.0',
+  jackson           : '2.10.0'
+]
 
 allprojects {
   apply plugin: 'java'
@@ -99,40 +108,32 @@ allprojects {
       // remove once spring manager incorporates this changes
       dependencySet(
         group: 'com.fasterxml.jackson.core',
-        version: dependencyManagement.importedProperties['jackson.version']
+        version: versions.jackson
       ) {
         entry 'jackson-core'
       }
       dependencySet(
         group: 'com.fasterxml.jackson.core',
-        version: '2.9.9.3'
+        version: versions.jackson
       ) {
         entry 'jackson-databind'
       }
       dependencySet(
         group: 'com.fasterxml.jackson.datatype',
-        version: dependencyManagement.importedProperties['jackson.version']
+        version: versions.jackson
       ) {
         entry 'jackson-datatype-jdk8'
         entry 'jackson-datatype-jsr310'
       }
       dependencySet(
         group: 'com.fasterxml.jackson.module',
-        version: dependencyManagement.importedProperties['jackson.version']
+        version: versions.jackson
       ) {
         entry 'jackson-module-parameter-names'
       }
     }
   }
 }
-
-def versions = [
-  logback           : '1.2.3',
-  springBoot        : springBootVersion,
-  springfoxSwagger  : '2.9.2',
-  reformJavaLogging : '5.0.1',
-  restAssuredVersion: '4.0.0'
-]
 
 configurations {
   aatCompile.extendsFrom(testCompile)
