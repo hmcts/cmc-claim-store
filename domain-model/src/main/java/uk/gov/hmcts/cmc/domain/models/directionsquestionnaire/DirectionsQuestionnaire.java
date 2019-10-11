@@ -88,6 +88,7 @@ public class DirectionsQuestionnaire {
     public Optional<YesNoOption> getPermissionForExpert() {
         return Optional.ofNullable(permissionForExpert);
     }
+    
     public Optional<ExpertRequest> getExpertRequest() {
         return Optional.ofNullable(expertRequest);
     }
