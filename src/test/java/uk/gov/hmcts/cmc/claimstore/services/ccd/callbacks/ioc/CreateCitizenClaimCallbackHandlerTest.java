@@ -38,7 +38,6 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
-import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getLegalDataWithReps;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.withFullClaimData;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -46,7 +45,7 @@ public class CreateCitizenClaimCallbackHandlerTest {
 
     public static final String REFERENCE_NO = "000MC001";
     public static final LocalDate ISSUE_DATE = now();
-    public static final LocalDate RESPONSE_DEADLINE= ISSUE_DATE.plusDays(14);
+    public static final LocalDate RESPONSE_DEADLINE = ISSUE_DATE.plusDays(14);
     private static final String BEARER_TOKEN = "Bearer let me in";
     private static final String NEXT_URL = "http://nexturl.test";
 
@@ -98,7 +97,6 @@ public class CreateCitizenClaimCallbackHandlerTest {
         Mockito.when(issueDateCalculator.calculateIssueDay(any())).thenReturn(ISSUE_DATE);
         Mockito.when(responseDeadlineCalculator.calculateResponseDeadline(ISSUE_DATE)).thenReturn(RESPONSE_DEADLINE);
         Mockito.when(referenceNumberRepository.getReferenceNumberForLegal()).thenReturn(REFERENCE_NO);
-        Mockito.when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(getLegalDataWithReps());
     }
 
     @Test
@@ -114,7 +112,8 @@ public class CreateCitizenClaimCallbackHandlerTest {
             .nextUrl(NEXT_URL)
             .build();
 
-        Mockito.when(paymentsService.retrievePayment(eq(BEARER_TOKEN), any(Claim.class))).thenReturn(expectedSuccessfulPayment);
+        Mockito.when(paymentsService.retrievePayment(eq(BEARER_TOKEN), any(Claim.class)))
+            .thenReturn(expectedSuccessfulPayment);
 
         Claim claim = SampleClaim.getDefault().toBuilder()
             .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
@@ -158,11 +157,10 @@ public class CreateCitizenClaimCallbackHandlerTest {
             .nextUrl(NEXT_URL)
             .build();
 
-        Mockito.when(paymentsService.retrievePayment(eq(BEARER_TOKEN), any(Claim.class))).thenReturn(expectedUnSuccessfulPayment);
+        Mockito.when(paymentsService.retrievePayment(eq(BEARER_TOKEN), any(Claim.class)))
+            .thenReturn(expectedUnSuccessfulPayment);
 
-        Claim claim = SampleClaim.getDefault().toBuilder()
-            .claimData(withFullClaimData().getClaimData())
-            .build();
+        Claim claim = SampleClaim.withFullClaimDataButFailedPayment();
 
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
             .thenReturn(claim);
@@ -182,9 +180,9 @@ public class CreateCitizenClaimCallbackHandlerTest {
         verify(caseMapper).to(claimArgumentCaptor.capture());
 
         Claim toBeSaved = claimArgumentCaptor.getValue();
-        assertThat(toBeSaved.getIssuedOn()).isEqualTo(claim.getIssuedOn());
-        assertThat(toBeSaved.getReferenceNumber()).isEqualTo(claim.getReferenceNumber());
-        assertThat(toBeSaved.getClaimData()).isEqualTo(claim.getClaimData());
+        assertThat(toBeSaved.getIssuedOn()).isNull();
+        assertThat(toBeSaved.getReferenceNumber()).isNull();
+        assertThat(toBeSaved.getResponseDeadline()).isNull();
     }
 
     @Test

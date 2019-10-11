@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.Interest;
+import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
@@ -158,6 +159,25 @@ public final class SampleClaim {
                     .withReason("Need flat rate").build())
                 .withPayment(SamplePayment.builder().build())
                 .build())
+            .build();
+    }
+
+    public static Claim withFullClaimDataButFailedPayment() {
+        return builder()
+            .withClaimData(SampleClaimData.builder()
+                .withExternalId(RAND_UUID)
+                .withInterest(new SampleInterest()
+                    .withType(Interest.InterestType.BREAKDOWN)
+                    .withInterestBreakdown(SampleInterestBreakdown.validDefaults())
+                    .withRate(BigDecimal.valueOf(8))
+                    .withReason("Need flat rate").build())
+                .withPayment(SamplePayment.builder()
+                    .status(PaymentStatus.FAILED)
+                    .build())
+                .build())
+            .withIssuedOn(null)
+            .withReferenceNumber(null)
+            .withResponseDeadline(null)
             .build();
     }
 
@@ -496,7 +516,7 @@ public final class SampleClaim {
             claimData,
             createdAt,
             issuedOn,
-            issuedOn.plusDays(5),
+            issuedOn != null ? issuedOn.plusDays(5) : null,
             responseDeadline,
             isMoreTimeRequested,
             submitterEmail,
