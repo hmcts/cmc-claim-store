@@ -80,12 +80,13 @@ public class HearingContentProvider {
             if (permissionForExpert == YesNoOption.YES) {
                 builder.courtPermissionForExpertReport(YES);
                 builder.expertExamineNeeded(NO);
-                ExpertRequest expertRequest = questionnaire.getExpertRequest().orElse(null);
-                if (!StringUtils.isBlank(expertRequest.getReasonForExpertAdvice())) {
-                    builder.reasonWhyExpertAdvice(expertRequest.getReasonForExpertAdvice());
-                    builder.expertExamineNeeded(YES);
-                    builder.whatToExamine(expertRequest.getExpertEvidenceToExamine());
-                }
+                questionnaire.getExpertRequest().ifPresent( expertRequest -> {
+                    if (!StringUtils.isBlank(expertRequest.getReasonForExpertAdvice())) {
+                        builder.reasonWhyExpertAdvice(expertRequest.getReasonForExpertAdvice());
+                        builder.expertExamineNeeded(YES);
+                        builder.whatToExamine(expertRequest.getExpertEvidenceToExamine());
+                    }
+                });
             } else {
                 builder.courtPermissionForExpertReport(NO);
             }
