@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.claimstore.utils.DateUtils;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertRequest;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.RequireSupport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.UnavailableDate;
@@ -80,7 +79,7 @@ public class HearingContentProvider {
             if (permissionForExpert == YesNoOption.YES) {
                 builder.courtPermissionForExpertReport(YES);
                 builder.expertExamineNeeded(NO);
-                questionnaire.getExpertRequest().ifPresent( expertRequest -> {
+                questionnaire.getExpertRequest().ifPresent(expertRequest -> {
                     if (!StringUtils.isBlank(expertRequest.getReasonForExpertAdvice())) {
                         builder.reasonWhyExpertAdvice(expertRequest.getReasonForExpertAdvice());
                         builder.expertExamineNeeded(YES);
