@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
@@ -41,6 +40,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.Collections.emptyList;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
@@ -81,7 +82,8 @@ public class ClaimService {
         ClaimAuthorisationRule claimAuthorisationRule,
         ReviewOrderRule reviewOrderRule,
         @Value("${feature_toggles.async_event_operations_enabled:false}") boolean asyncEventOperationEnabled,
-        @Value("${payments.returnUrlPattern}") String returnUrlPattern) {
+        @Value("${payments.returnUrlPattern}") String returnUrlPattern
+    ) {
         this.claimRepository = claimRepository;
         this.userService = userService;
         this.issueDateCalculator = issueDateCalculator;
@@ -203,9 +205,8 @@ public class ClaimService {
     public CreatePaymentResponse resumePayment(
         String authorisation,
         ClaimData claimData) {
-        User user = userService.getUser(authorisation);
         Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), authorisation);
-        Claim resumedClaim = caseRepository.resumePayment(user, claim);
+        Claim resumedClaim = caseRepository.saveCaseEvent(authorisation, claim, RESUME_CLAIM_PAYMENT_CITIZEN);
 
         Payment payment = resumedClaim.getClaimData().getPayment();
 
@@ -401,7 +402,7 @@ public class ClaimService {
             authorisation,
             claim.getId(),
             claimSubmissionOperationIndicators,
-            CaseEvent.RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS
+            RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS
         );
     }
 

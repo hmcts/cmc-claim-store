@@ -142,8 +142,7 @@ public class ClaimControllerTest {
             .thenReturn(expectedResponse);
 
         //when
-        CreatePaymentResponse output = claimController.resumePayment(
-            claimData, "123", AUTHORISATION);
+        CreatePaymentResponse output = claimController.resumePayment(claimData, AUTHORISATION);
 
         //then
         assertThat(output).isEqualTo(expectedResponse);
