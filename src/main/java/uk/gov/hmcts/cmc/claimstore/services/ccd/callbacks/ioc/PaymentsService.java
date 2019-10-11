@@ -90,12 +90,9 @@ public class PaymentsService {
             FEE_CHANNEL, FEE_EVENT, amountPlusInterest
         );
 
-        BigDecimal totalAmountPlusFees = amountPlusInterest.add(feeOutcome.getFeeAmount());
-
         CardPaymentRequest paymentRequest = buildPaymentRequest(
             claim,
-            feeOutcome,
-            totalAmountPlusFees
+            feeOutcome
         );
 
         PaymentDto payment = paymentsClient.createPayment(
@@ -104,7 +101,7 @@ public class PaymentsService {
             format(returnUrlPattern, claim.getExternalId())
         );
 
-        payment.setAmount(totalAmountPlusFees);
+        payment.setAmount(feeOutcome.getFeeAmount());
         return from(payment);
     }
 
@@ -121,15 +118,14 @@ public class PaymentsService {
 
     private CardPaymentRequest buildPaymentRequest(
         Claim claim,
-        FeeLookupResponseDto feeOutcome,
-        BigDecimal amountPlusFees
+        FeeLookupResponseDto feeOutcome
     ) {
         String ccdCaseId = String.valueOf(claim.getCcdCaseId());
         FeeDto[] fees = buildFees(ccdCaseId, feeOutcome);
         return CardPaymentRequest.builder()
             .caseReference(claim.getExternalId())
             .ccdCaseNumber(ccdCaseId)
-            .amount(amountPlusFees)
+            .amount(feeOutcome.getFeeAmount())
             .fees(fees)
             .service(service)
             .currency(currency)
