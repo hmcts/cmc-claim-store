@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.utils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
@@ -11,6 +12,9 @@ import uk.gov.hmcts.cmc.ccd.config.CCDMapperConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.mapping.JsonMapperFactory;
+import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
+import uk.gov.hmcts.cmc.claimstore.services.bankholidays.NonWorkingDaysCollection;
+import uk.gov.hmcts.cmc.claimstore.services.bankholidays.PublicHolidaysCollection;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
@@ -27,9 +31,18 @@ public class CaseDetailsConverterTest {
     @Autowired
     private CaseMapper caseMapper;
 
+    @Mock
+    private PublicHolidaysCollection publicHolidaysCollection;
+
+    @Mock
+    private NonWorkingDaysCollection nonWorkingDaysCollection;
+
     @Before
     public void setup() {
-        caseDetailsConverter = new CaseDetailsConverter(caseMapper, JsonMapperFactory.create());
+        caseDetailsConverter = new CaseDetailsConverter(caseMapper,
+            JsonMapperFactory.create(),
+            new WorkingDayIndicator(publicHolidaysCollection, nonWorkingDaysCollection),
+            33);
     }
 
     @Test
@@ -47,5 +60,12 @@ public class CaseDetailsConverterTest {
         assertThat(claim.getId()).isEqualTo(caseDetails.getId());
         assertThat(claim.getState()).isPresent();
         assertThat(claim.getState().orElseThrow(AssertionError::new).getValue()).isEqualTo(caseDetails.getState());
+    }
+
+    @Test
+    public void convertsCaseDetailsToClaimWithIntentionToProceedDeadline() {
+        CaseDetails caseDetails = successfulCoreCaseDataStoreSubmitResponse();
+        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
+        assertThat(claim.getIntentionToProceedDeadline()).isNotNull();
     }
 }
