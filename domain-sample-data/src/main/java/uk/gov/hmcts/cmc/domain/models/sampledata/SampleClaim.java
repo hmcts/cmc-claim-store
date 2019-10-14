@@ -98,6 +98,7 @@ public final class SampleClaim {
     private ReviewOrder reviewOrder;
     private DirectionOrder directionOrder;
     private ChannelType channel;
+    private LocalDate intentionToProceedDeadline = NOW_IN_LOCAL_ZONE.toLocalDate().plusDays(33);
 
     private SampleClaim() {
     }
@@ -521,7 +522,8 @@ public final class SampleClaim {
             ccdCaseId,
             reviewOrder,
             directionOrder,
-            channel
+            channel,
+            intentionToProceedDeadline
         );
     }
 
