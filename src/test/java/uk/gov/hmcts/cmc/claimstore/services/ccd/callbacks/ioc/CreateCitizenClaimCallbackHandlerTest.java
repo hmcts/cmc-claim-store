@@ -96,7 +96,7 @@ public class CreateCitizenClaimCallbackHandlerTest {
 
         Mockito.when(issueDateCalculator.calculateIssueDay(any())).thenReturn(ISSUE_DATE);
         Mockito.when(responseDeadlineCalculator.calculateResponseDeadline(ISSUE_DATE)).thenReturn(RESPONSE_DEADLINE);
-        Mockito.when(referenceNumberRepository.getReferenceNumberForLegal()).thenReturn(REFERENCE_NO);
+        Mockito.when(referenceNumberRepository.getReferenceNumberForCitizen()).thenReturn(REFERENCE_NO);
     }
 
     @Test
