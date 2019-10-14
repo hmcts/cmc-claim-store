@@ -69,6 +69,8 @@ public class Claim {
     private final Long ccdCaseId;
     private final ReviewOrder reviewOrder;
     private final DirectionOrder directionOrder;
+    private final ChannelType channel;
+    private final LocalDate intentionToProceedDeadline;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -106,7 +108,9 @@ public class Claim {
         ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators,
         Long ccdCaseId,
         ReviewOrder reviewOrder,
-        DirectionOrder directionOrder
+        DirectionOrder directionOrder,
+        ChannelType channel,
+        LocalDate intentionToProceedDeadline
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -142,6 +146,8 @@ public class Claim {
         this.claimSubmissionOperationIndicators = claimSubmissionOperationIndicators;
         this.reviewOrder = reviewOrder;
         this.directionOrder = directionOrder;
+        this.channel = channel;
+        this.intentionToProceedDeadline = intentionToProceedDeadline;
     }
 
     public Optional<Response> getResponse() {
@@ -159,7 +165,10 @@ public class Claim {
     }
 
     public LocalDate getServiceDate() {
-        return serviceDate == null ? issuedOn.plusDays(5) : serviceDate;
+        if (serviceDate != null) {
+            return serviceDate;
+        }
+        return issuedOn != null ? issuedOn.plusDays(5) : null;
     }
 
     public Optional<BigDecimal> getAmountWithInterest() {
@@ -229,6 +238,10 @@ public class Claim {
 
     public Optional<DirectionOrder> getDirectionOrder() {
         return Optional.ofNullable(directionOrder);
+    }
+
+    public Optional<ChannelType> getChannel() {
+        return Optional.ofNullable(channel);
     }
 
     @Override

@@ -213,7 +213,7 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
                     failWithMessage("Expected CCDCase.paymentDateCreated to be <%s> but was <%s>",
                         ccdCase.getPaymentDateCreated(), payment.getDateCreated());
                 }
-                if (!Objects.equals(payment.getStatus(), ccdCase.getPaymentStatus())) {
+                if (!Objects.equals(payment.getStatus().getStatus(), ccdCase.getPaymentStatus())) {
                     failWithMessage("Expected CCDCase.paymentStatus to be <%s> but was <%s>",
                         ccdCase.getPaymentStatus(), payment.getStatus());
                 }
@@ -261,6 +261,18 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
 
         actual.getReviewOrder()
             .ifPresent(reviewOrder -> assertThat(reviewOrder).isEqualTo(ccdCase.getReviewOrder()));
+
+        if (ccdCase.getChannel() != null && !actual.getChannel().isPresent()) {
+            failWithMessage("Expected CCDCase.channel to be not present but was <%s>",
+                actual.getChannel());
+        }
+        actual.getChannel()
+            .ifPresent(channelType -> {
+                if (!Objects.equals(channelType.name(), ccdCase.getChannel().name())) {
+                    failWithMessage("Expected CCDCase.channel to be <%s> but was <%s>",
+                        ccdCase.getChannel(), channelType);
+                }
+            });
 
         return this;
     }
