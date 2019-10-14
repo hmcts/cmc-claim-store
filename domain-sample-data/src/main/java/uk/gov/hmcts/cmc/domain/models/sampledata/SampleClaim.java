@@ -162,7 +162,7 @@ public final class SampleClaim {
             .build();
     }
 
-    public static Claim withFullClaimDataButFailedPayment() {
+    public static Claim withFullClaimDataAndFailedPayment() {
         return builder()
             .withClaimData(SampleClaimData.builder()
                 .withExternalId(RAND_UUID)

@@ -160,7 +160,7 @@ public class CreateCitizenClaimCallbackHandlerTest {
         Mockito.when(paymentsService.retrievePayment(eq(BEARER_TOKEN), any(Claim.class)))
             .thenReturn(expectedUnSuccessfulPayment);
 
-        Claim claim = SampleClaim.withFullClaimDataButFailedPayment();
+        Claim claim = SampleClaim.withFullClaimDataAndFailedPayment();
 
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
             .thenReturn(claim);
