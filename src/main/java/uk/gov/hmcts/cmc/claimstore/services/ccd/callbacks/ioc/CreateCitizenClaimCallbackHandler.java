@@ -84,12 +84,12 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
 
         LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
         LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
-        String referenceNumber = referenceNumberRepository.getReferenceNumberForLegal();
+        String referenceNumber = referenceNumberRepository.getReferenceNumberForCitizen();
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         Payment payment = paymentsService.retrievePayment(authorisation, claim);
         Claim updatedClaim = null;
 
-        if (payment.getStatus().equals(PaymentStatus.SUCCESS)) {
+        if (payment.getStatus() == PaymentStatus.SUCCESS) {
             updatedClaim = claim.toBuilder()
                 .referenceNumber(referenceNumber)
                 .issuedOn(issuedOn)
