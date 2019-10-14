@@ -515,7 +515,7 @@ public final class SampleClaim {
             claimData,
             createdAt,
             issuedOn,
-            issuedOn != null ? issuedOn.plusDays(5) : null,
+            issuedOn.plusDays(5),
             responseDeadline,
             isMoreTimeRequested,
             submitterEmail,
