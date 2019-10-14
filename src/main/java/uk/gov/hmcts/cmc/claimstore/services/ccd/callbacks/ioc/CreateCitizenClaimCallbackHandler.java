@@ -28,14 +28,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_LEGAL_REP_CLAIM;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @Service
 public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
 
-    private static final List<CaseEvent> EVENTS = Collections.singletonList(CREATE_LEGAL_REP_CLAIM);
+    private static final List<CaseEvent> EVENTS = Collections.singletonList(CREATE_CITIZEN_CLAIM);
     private static final List<Role> ROLES = Collections.singletonList(CITIZEN);
 
     private final Logger logger = LoggerFactory.getLogger(getClass());

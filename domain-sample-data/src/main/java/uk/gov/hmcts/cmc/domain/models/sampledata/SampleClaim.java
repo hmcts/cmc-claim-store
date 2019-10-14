@@ -176,9 +176,7 @@ public final class SampleClaim {
                     .status(PaymentStatus.FAILED)
                     .build())
                 .build())
-            .withIssuedOn(null)
             .withReferenceNumber(null)
-            .withResponseDeadline(null)
             .build();
     }
 
