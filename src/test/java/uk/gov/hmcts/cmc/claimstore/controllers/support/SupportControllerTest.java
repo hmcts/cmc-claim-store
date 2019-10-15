@@ -7,6 +7,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.web.server.ServerErrorException;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimCreatedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.DocumentGenerator;
@@ -43,7 +44,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse.Claimant
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse.PartAdmission;
-import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 
 import java.time.LocalDate;
@@ -324,35 +324,108 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldUploadSealedClaimDocument() {
-        Claim claim = SampleClaim.getWithSealedClaimDocument();
-        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
-        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SEALED_CLAIM, AUTHORISATION);
+    public void shouldUploadSealedClaimDocumentWhenAbsent() {
+        Claim claim = SampleClaim.getCitizenClaim();
+        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE))
+            .thenReturn(Optional.of(claim))
+            .thenReturn(Optional.of(SampleClaim.getWithSealedClaimDocument()));
+        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SEALED_CLAIM);
         verify(documentsService).generateDocument(claim.getExternalId(), SEALED_CLAIM, AUTHORISATION);
     }
 
     @Test
-    public void shouldUploadClaimIssueReceiptDocument() {
-        Claim claim = SampleClaim.getWithClaimIssueReceiptDocument();
+    public void shouldNotUploadSealedClaimDocumentWhenAlreadyExists() {
+        Claim claim = SampleClaim.getWithSealedClaimDocument();
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
-        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, CLAIM_ISSUE_RECEIPT, AUTHORISATION);
+        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SEALED_CLAIM);
+        verify(documentsService, never()).generateDocument(claim.getExternalId(), SEALED_CLAIM, AUTHORISATION);
+    }
+
+    @Test
+    public void shouldThrowServerExceptionWhenSealedClaimUploadFailed() {
+        exceptionRule.expect(ServerErrorException.class);
+        Claim claim = SampleClaim.getCitizenClaim();
+        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
+        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SEALED_CLAIM);
+    }
+
+    @Test
+    public void shouldUploadClaimIssueReceiptDocumentWhenAbsent() {
+        Claim claim = SampleClaim.getCitizenClaim();
+        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE))
+            .thenReturn(Optional.of(claim))
+            .thenReturn(Optional.of(SampleClaim.getWithClaimIssueReceiptDocument()));
+        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, CLAIM_ISSUE_RECEIPT);
         verify(documentsService).generateDocument(claim.getExternalId(), CLAIM_ISSUE_RECEIPT, AUTHORISATION);
     }
 
     @Test
-    public void shouldUploadDefendantResponseReceiptDocument() {
-        Claim claim = SampleClaim.getWithDefendantResponseReceiptDocument();
+    public void shouldNotUploadClaimIssueReceiptDocumentWhenAlreadyExists() {
+        Claim claim = SampleClaim.getWithClaimIssueReceiptDocument();
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
-        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, DEFENDANT_RESPONSE_RECEIPT, AUTHORISATION);
+        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, CLAIM_ISSUE_RECEIPT);
+        verify(documentsService, never()).generateDocument(claim.getExternalId(), CLAIM_ISSUE_RECEIPT, AUTHORISATION);
+    }
+
+    @Test
+    public void shouldThrowServerExceptionWhenClaimIssueReceiptUploadFailed() {
+        exceptionRule.expect(ServerErrorException.class);
+        Claim claim = SampleClaim.getCitizenClaim();
+        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
+        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, CLAIM_ISSUE_RECEIPT);
+    }
+
+    @Test
+    public void shouldUploadDefendantResponseReceiptDocumentWhenAbsent() {
+        Claim claim = SampleClaim.getCitizenClaim();
+        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE))
+            .thenReturn(Optional.of(claim))
+            .thenReturn(Optional.of(SampleClaim.getWithDefendantResponseReceiptDocument()));
+        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, DEFENDANT_RESPONSE_RECEIPT);
         verify(documentsService).generateDocument(claim.getExternalId(), DEFENDANT_RESPONSE_RECEIPT, AUTHORISATION);
     }
 
     @Test
-    public void shouldUploadSettlementAgreementDocument() {
+    public void shouldNotUploadDefendantResponseReceiptDocumentWhenAlreadyExists() {
+        Claim claim = SampleClaim.getWithDefendantResponseReceiptDocument();
+        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
+        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, DEFENDANT_RESPONSE_RECEIPT);
+        verify(documentsService, never()).generateDocument(claim.getExternalId(), DEFENDANT_RESPONSE_RECEIPT,
+            AUTHORISATION);
+    }
+
+    @Test
+    public void shouldThrowServerExceptionWhenDefendantResponseReceiptUploadFailed() {
+        exceptionRule.expect(ServerErrorException.class);
+        Claim claim = SampleClaim.getCitizenClaim();
+        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
+        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, DEFENDANT_RESPONSE_RECEIPT);
+    }
+
+    @Test
+    public void shouldUploadSettlementAgreementDocumentWhenAbsent() {
+        Claim claim = SampleClaim.getCitizenClaim();
+        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE))
+            .thenReturn(Optional.of(claim))
+            .thenReturn(Optional.of(SampleClaim.getWithSettlementAgreementDocument()));
+        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SETTLEMENT_AGREEMENT);
+        verify(documentsService).generateDocument(claim.getExternalId(), SETTLEMENT_AGREEMENT, AUTHORISATION);
+    }
+
+    @Test
+    public void shouldNotUploadSettlementAgreementDocumentWhenAlreadyExists() {
         Claim claim = SampleClaim.getWithSettlementAgreementDocument();
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
-        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SETTLEMENT_AGREEMENT, AUTHORISATION);
-        verify(documentsService).generateDocument(claim.getExternalId(), SETTLEMENT_AGREEMENT, AUTHORISATION);
+        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SETTLEMENT_AGREEMENT);
+        verify(documentsService, never()).generateDocument(claim.getExternalId(), SETTLEMENT_AGREEMENT, AUTHORISATION);
+    }
+
+    @Test
+    public void shouldThrowServerExceptionWhenSettlementAgreementUploadFailed() {
+        exceptionRule.expect(ServerErrorException.class);
+        Claim claim = SampleClaim.getCitizenClaim();
+        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
+        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SETTLEMENT_AGREEMENT);
     }
 
     @Test
@@ -360,16 +433,7 @@ public class SupportControllerTest {
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.empty());
         exceptionRule.expect(NotFoundException.class);
         exceptionRule.expectMessage("Claim " + CLAIM_REFERENCE + " does not exist");
-        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SEALED_CLAIM, AUTHORISATION);
-    }
-
-    @Test
-    public void shouldThrowBadRequestExceptionWhenAuthorisationStringIsInvalid() {
-        Claim claim = SampleClaim.getWithSettlement(SampleSettlement.validDefaults());
-        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
-        exceptionRule.expect(BadRequestException.class);
-        exceptionRule.expectMessage("Authorisation is required");
-        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SEALED_CLAIM, "");
+        controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SEALED_CLAIM);
     }
 
     @Test
