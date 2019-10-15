@@ -81,36 +81,29 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
     private CallbackResponse createCitizenClaim(CallbackParams callbackParams) {
         logger.info("Created citizen case for callback of type {}", callbackParams.getType());
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
-
-        LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
-        LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
-        String referenceNumber = referenceNumberRepository.getReferenceNumberForCitizen();
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         Payment payment = paymentsService.retrievePayment(authorisation, claim);
-        Claim updatedClaim = null;
+
+        Claim.ClaimBuilder claimBuilder = claim.toBuilder()
+            .channel(ChannelType.CITIZEN)
+            .claimData(claim.getClaimData().toBuilder()
+                .payment(payment)
+                .build());
 
         if (payment.getStatus() == PaymentStatus.SUCCESS) {
-            updatedClaim = claim.toBuilder()
+            LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
+            LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
+            String referenceNumber = referenceNumberRepository.getReferenceNumberForCitizen();
+
+            claimBuilder
                 .referenceNumber(referenceNumber)
                 .issuedOn(issuedOn)
-                .responseDeadline(responseDeadline)
-                .claimData(claim.getClaimData().toBuilder()
-                    .payment(payment)
-                    .build())
-                .channel(ChannelType.CITIZEN)
-                .build();
-        } else {
-            updatedClaim = claim.toBuilder()
-                .claimData(claim.getClaimData().toBuilder()
-                    .payment(payment)
-                    .build())
-                .channel(ChannelType.CITIZEN)
-                .build();
+                .responseDeadline(responseDeadline);
         }
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()
-            .data(caseDetailsConverter.convertToMap(caseMapper.to(updatedClaim)))
+            .data(caseDetailsConverter.convertToMap(caseMapper.to(claimBuilder.build())))
             .build();
     }
 }
