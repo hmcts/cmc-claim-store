@@ -10,8 +10,10 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.claimstore.utils.DateUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
+import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -56,17 +58,33 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
 
     }
 
+    public List<Claim> getCasesPastIntentionToProceed(User user, LocalDate responseDate) {
+        Query stayableClaimsQuery = new Query(
+            QueryBuilders.boolQuery()
+                .must(QueryBuilders.termQuery("state", ClaimState.OPEN.getValue()))
+                .must(QueryBuilders.rangeQuery("data.respondents.value.responseSubmittedOn")
+                    .from(LocalDate.ofEpochDay(0), true)
+                    .to(responseDate, true)),
+            1000
+        );
+
+        return searchClaimsWith(user, stayableClaimsQuery);
+
+    }
+
     private List<Claim> searchClaimsWith(User user,
                                          Query query) {
 
         String serviceAuthToken = this.authTokenGenerator.generate();
 
-        return coreCaseDataApi.searchCases(
+        SearchResult searchResult = coreCaseDataApi.searchCases(
             user.getAuthorisation(),
             serviceAuthToken,
             CASE_TYPE_ID,
             query.toString()
-        ).getCases()
+        );
+
+        return searchResult.getCases()
             .stream()
             .map(ccdCaseDetailsConverter::extractClaim)
             .collect(Collectors.toList());
