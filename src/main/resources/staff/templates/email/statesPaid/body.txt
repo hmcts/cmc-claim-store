@@ -9,7 +9,7 @@ Claimant has rejected the states paid defence.
 Both parties have agreed to mediation.
 
 {% endif %}
-Please enter a code 67 & 196
+Please enter a code 67
 {% endif %}
 
 Defendant's details can be found on the attached defence copy. Additional contact details are:
