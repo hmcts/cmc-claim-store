@@ -162,6 +162,7 @@ public class SupportController {
         @ApiResponse(code = 404, message = "Claim not found"),
         @ApiResponse(code = 500, message = "Unable to upload document")
     })
+    @SuppressWarnings("squid:S2201") // orElseThrow does not ignore the result
     public ResponseEntity<?> uploadDocumentToDocumentManagement(
         @PathVariable("referenceNumber") String referenceNumber,
         @PathVariable("documentType") ClaimDocumentType documentType
