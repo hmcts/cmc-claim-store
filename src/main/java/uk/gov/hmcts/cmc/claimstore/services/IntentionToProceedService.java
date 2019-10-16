@@ -23,8 +23,6 @@ public class IntentionToProceedService {
 
     public LocalDate calculateIntentionToProceedDeadline(LocalDate respondedAt) {
         LocalDate intentionToProceedDeadline = respondedAt.plusDays(this.intentionToProceedDeadline);
-        intentionToProceedDeadline = workingDayIndicator.getNextWorkingDay(intentionToProceedDeadline);
-
-        return intentionToProceedDeadline;
+        return workingDayIndicator.getNextWorkingDay(intentionToProceedDeadline);
     }
 }
