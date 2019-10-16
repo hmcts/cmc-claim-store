@@ -229,21 +229,16 @@ public class ClaimService {
         ClaimData claimData,
         List<String> features
     ) {
-        User user = userService.getUser(authorisation);
         Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), authorisation)
             .toBuilder()
             .claimData(claimData)
             .features(features)
             .build();
 
-        Claim savedClaim = caseRepository.saveCaseEvent(
+        return caseRepository.saveCaseEvent(
             authorisation,
             claim,
             CREATE_CITIZEN_CLAIM);
-        createClaimEvent(authorisation, user, savedClaim);
-        trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
-
-        return savedClaim;
     }
 
     @LogExecutionTime

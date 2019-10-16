@@ -40,8 +40,7 @@ import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 @TestPropertySource(
     properties = {
         "document_management.url=false",
-        "payments.api.url=http://payments-api",
-        "fees.api.url=http://fees-api"
+        "core_case_data.api.url=http://core-case-data-api"
     }
 )
 public class CreateClaimCitizenTest extends BaseIntegrationTest {
@@ -68,30 +67,33 @@ public class CreateClaimCitizenTest extends BaseIntegrationTest {
     @Test
     public void shouldReturnCreatedClaim() throws Exception {
         UUID externalId = UUID.randomUUID();
+        ClaimData claimData = SampleClaimData.submittedByClaimant()
+            .toBuilder()
+            .externalId(externalId)
+            .payment(Payment.builder()
+                .amount(new BigDecimal("10.00"))
+                .reference("reference")
+                .status(SUCCESS)
+                .dateCreated("2017-12-03")
+                .nextUrl("http://nexturl.test")
+                .build())
+            .build();
         Claim claim = SampleClaim.getDefault()
             .toBuilder()
             .externalId(externalId.toString())
             .submitterId(SUBMITTER_ID)
-            .claimData(SampleClaimData.submittedByClaimant()
-                .toBuilder()
-                .externalId(externalId)
-                .payment(Payment.builder()
-                    .amount(BigDecimal.TEN)
-                    .reference("reference")
-                    .status(SUCCESS)
-                    .dateCreated("2017-12-03+01:00")
-                    .nextUrl("http://nexturl.test")
-                    .build())
-                .build())
+            .response(null)
+            .claimData(claimData)
             .build();
         mockCcdCallsFor(claim);
 
         MvcResult result = makeRequest(claim.getClaimData(), BEARER_TOKEN)
             .andExpect(status().isOk())
             .andReturn();
-
-        assertThat(deserializeObjectFrom(result, Claim.class))
-            .isEqualTo(claim);
+        Claim returnedClaim = deserializeObjectFrom(result, Claim.class);
+        assertThat(returnedClaim.getExternalId()).isEqualTo(claim.getExternalId());
+        assertThat(returnedClaim.getSubmitterId()).isEqualTo(claim.getSubmitterId());
+        assertThat(returnedClaim.getClaimData()).isEqualTo(claimData);
     }
 
     private void mockCcdCallsFor(Claim claim) {
