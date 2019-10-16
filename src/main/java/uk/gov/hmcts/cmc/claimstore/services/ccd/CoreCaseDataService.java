@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -11,9 +12,11 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.IntentionToProceedService;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -87,6 +90,7 @@ public class CoreCaseDataService {
     private final JobSchedulerService jobSchedulerService;
     private final CCDCreateCaseService ccdCreateCaseService;
     private final CaseDetailsConverter caseDetailsConverter;
+    private final IntentionToProceedService intentionToProceedService;
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     @Autowired
@@ -98,7 +102,8 @@ public class CoreCaseDataService {
         AuthTokenGenerator authTokenGenerator,
         JobSchedulerService jobSchedulerService,
         CCDCreateCaseService ccdCreateCaseService,
-        CaseDetailsConverter caseDetailsConverter
+        CaseDetailsConverter caseDetailsConverter,
+        IntentionToProceedService intentionToProceedService
     ) {
         this.caseMapper = caseMapper;
         this.userService = userService;
@@ -108,6 +113,7 @@ public class CoreCaseDataService {
         this.jobSchedulerService = jobSchedulerService;
         this.ccdCreateCaseService = ccdCreateCaseService;
         this.caseDetailsConverter = caseDetailsConverter;
+        this.intentionToProceedService = intentionToProceedService;
     }
 
     @LogExecutionTime
@@ -416,10 +422,15 @@ public class CoreCaseDataService {
                 userDetails.isSolicitor() || userDetails.isCaseworker()
             );
 
+            LocalDateTime respondedAt = nowInUTC();
+            LocalDate intentionToProceedDeadline =
+                intentionToProceedService.calculateIntentionToProceedDeadline(respondedAt.toLocalDate());
+
             Claim updatedClaim = toClaimBuilder(startEventResponse)
                 .response(response)
                 .defendantEmail(defendantEmail)
-                .respondedAt(nowInUTC())
+                .respondedAt(respondedAt)
+                .intentionToProceedDeadline(intentionToProceedDeadline)
                 .build();
 
             CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);

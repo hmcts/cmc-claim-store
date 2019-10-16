@@ -32,19 +32,23 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 @Service("caseRepository")
 @ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class CCDCaseRepository implements CaseRepository {
-    private final CCDCaseApi ccdCaseApi;
-    private final CoreCaseDataService coreCaseDataService;
+    private CCDCaseApi ccdCaseApi;
+    private CoreCaseDataService coreCaseDataService;
     private final UserService userService;
 
     @Autowired
-    public CCDCaseRepository(
-        CCDCaseApi ccdCaseApi,
-        CoreCaseDataService coreCaseDataService,
-        UserService userService
-    ) {
-        this.ccdCaseApi = ccdCaseApi;
-        this.coreCaseDataService = coreCaseDataService;
+    public CCDCaseRepository(UserService userService) {
         this.userService = userService;
+    }
+
+    @Autowired
+    public void setCcdCaseApi(CCDCaseApi ccdCaseApi) {
+        this.ccdCaseApi = ccdCaseApi;
+    }
+
+    @Autowired
+    public void setCoreCaseDataService(CoreCaseDataService coreCaseDataService){
+        this.coreCaseDataService = coreCaseDataService;
     }
 
     @Override
