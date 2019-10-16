@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
@@ -21,9 +20,8 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMB
 
 @Service
 public class IntentionToProceedService {
-    Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final int intentionToProceedDeadline;
+    Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final WorkingDayIndicator workingDayIndicator;
 
@@ -35,20 +33,22 @@ public class IntentionToProceedService {
 
     private final AppInsights appInsights;
 
+    private final IntentionToProceedDeadlineCalculator intentionToProceedDeadlineCalculator;
+
     public IntentionToProceedService(
         WorkingDayIndicator workingDayIndicator,
         CaseSearchApi caseSearchApi,
         UserService userService,
         AppInsights appInsights,
         CaseRepository caseRepository,
-        @Value("${intention.to.proceed.deadline:33}") int intentionToProceedDeadline
+        IntentionToProceedDeadlineCalculator intentionToProceedDeadlineCalculator
     ) {
         this.workingDayIndicator = workingDayIndicator;
         this.caseSearchApi = caseSearchApi;
         this.userService = userService;
         this.caseRepository = caseRepository;
         this.appInsights = appInsights;
-        this.intentionToProceedDeadline = intentionToProceedDeadline;
+        this.intentionToProceedDeadlineCalculator = intentionToProceedDeadlineCalculator;
     }
 
     @Scheduled(cron = "#{'${claim.stayed.schedule:-}' ?: '-'}")
@@ -63,27 +63,26 @@ public class IntentionToProceedService {
     public void checkClaimsPastIntentionToProceedDeadline(LocalDateTime dateTime) {
         int adjustDays = dateTime.getHour() >= 16 ? 0 : 1;
         LocalDate runDate = dateTime.toLocalDate().minusDays(adjustDays);
-        runDate = workingDayIndicator.getPreviousWorkingDay(runDate).minusDays(intentionToProceedDeadline);
+        LocalDate responseDate = intentionToProceedDeadlineCalculator.calculateResponseDate(runDate);
 
         // get all cases that are not stayed and were created DEADLINE (if run after 4pm)
         // or DEADLINE+1 (if run before 4pm) days ago
         User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
-        Collection<Claim> claims = caseSearchApi.getClaimsPastIntentionToProceed(anonymousCaseWorker, runDate);
+        Collection<Claim> claims = caseSearchApi.getClaimsPastIntentionToProceed(anonymousCaseWorker, responseDate);
 
-        claims.forEach(claim -> {
+        claims.forEach(claim -> updateClaim(anonymousCaseWorker, claim));
+    }
+
+    private void updateClaim(User anonymousCaseWorker, Claim claim) {
+        try {
             appInsights.trackEvent(AppInsightsEvent.CLAIM_STAYED, REFERENCE_NUMBER, claim.getReferenceNumber());
             caseRepository.saveCaseEvent(
                 anonymousCaseWorker.getAuthorisation(),
                 claim,
                 CaseEvent.INTENTION_TO_PROCEED_DEADLINE_PASSED
             );
-        });
-    }
-
-    public LocalDate calculateIntentionToProceedDeadline(LocalDate respondedAt) {
-        LocalDate intentionToProceedDeadline = respondedAt.plusDays(this.intentionToProceedDeadline);
-        intentionToProceedDeadline = workingDayIndicator.getNextWorkingDay(intentionToProceedDeadline);
-
-        return intentionToProceedDeadline;
+        } catch (Exception e) {
+            logger.error(String.format("Error whilst staying claim %s", claim.getId()), e);
+        }
     }
 }
