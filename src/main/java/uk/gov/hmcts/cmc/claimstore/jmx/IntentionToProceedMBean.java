@@ -24,13 +24,13 @@ public class IntentionToProceedMBean {
     }
 
     @ManagedOperation
-    public void checkClaimsToBeStayed() {
+    public void checkClaimsPastIntentionToProceedDeadline() {
         try {
 
             LocalDateTime now = LocalDateTime.now();
-            logger.info(String.format("checkClaimsToBeStayed called for date: %s", now));
+            logger.info(String.format("checkClaimsPastIntentionToProceedDeadline called for date: %s", now));
 
-            intentionToProceedService.checkClaimsToBeStayed(now);
+            intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(now);
 
         } catch (Exception e) {
             logger.error("Error triggering stayClaim via jmx", e);
@@ -38,14 +38,14 @@ public class IntentionToProceedMBean {
     }
 
     @ManagedOperation(description = "DateTime to be provided in format 'yyyy-MM-dd HH:mm:ss'")
-    public void checkClaimsToBeStayed(String dateTime) {
+    public void checkClaimsPastIntentionToProceedDeadline(String dateTime) {
         try {
 
             LocalDateTime localDateTime = LocalDateTime.parse(dateTime,
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            logger.info(String.format("checkClaimsToBeStayed called for date: %s", localDateTime));
+            logger.info(String.format("checkClaimsPastIntentionToProceedDeadline called for date: %s", localDateTime));
 
-            intentionToProceedService.checkClaimsToBeStayed(localDateTime);
+            intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(localDateTime);
 
         } catch (Exception e) {
             logger.error("Error triggering stayClaim via jmx", e);

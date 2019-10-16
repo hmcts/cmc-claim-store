@@ -58,7 +58,8 @@ public enum CaseEvent {
     //inversion of control
     INITIATE_CLAIM_PAYMENT_CITIZEN("InitiateClaimPaymentCitizen"),
     RESUME_CLAIM_PAYMENT_CITIZEN("ResumeClaimPaymentCitizen"),
-    CREATE_LEGAL_REP_CLAIM("CreateLegalRepClaim");
+    CREATE_LEGAL_REP_CLAIM("CreateLegalRepClaim"),
+    INTENTION_TO_PROCEED_DEADLINE_PASSED("IntentionToProceedDeadlinePassed");
 
     private String value;
 

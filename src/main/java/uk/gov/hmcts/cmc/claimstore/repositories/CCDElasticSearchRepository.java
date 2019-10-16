@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.repositories;
 
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -16,6 +17,8 @@ import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,22 +61,20 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
 
     }
 
-    public List<Claim> getCasesPastIntentionToProceed(User user, LocalDate responseDate) {
-        Query stayableClaimsQuery = new Query(
-            QueryBuilders.boolQuery()
-                .must(QueryBuilders.termQuery("state", ClaimState.OPEN.getValue()))
-                .must(QueryBuilders.rangeQuery("data.respondents.value.responseSubmittedOn")
-                    .from(LocalDate.ofEpochDay(0), true)
-                    .to(responseDate, true)),
-            1000
-        );
+    public List<Claim> getClaimsPastIntentionToProceed(User user, LocalDate responseDate) {
+        // Release date for 5.0
+        LocalDateTime release5pt0Date = LocalDateTime.of(2019, Month.SEPTEMBER, 9, 3, 12, 00);
 
-        return searchClaimsWith(user, stayableClaimsQuery);
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
+            .must(QueryBuilders.termQuery("state", ClaimState.OPEN.getValue()))
+            .must(QueryBuilders.rangeQuery("data.respondents.value.responseSubmittedOn").lte(responseDate))
+            .must(QueryBuilders.rangeQuery("data.submittedOn").gte(release5pt0Date));
+
+        return searchClaimsWith(user, new Query(queryBuilder, 1000));
 
     }
 
-    private List<Claim> searchClaimsWith(User user,
-                                         Query query) {
+    private List<Claim> searchClaimsWith(User user, Query query) {
 
         String serviceAuthToken = this.authTokenGenerator.generate();
 

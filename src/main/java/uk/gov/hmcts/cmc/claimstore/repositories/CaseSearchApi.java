@@ -9,5 +9,5 @@ import java.util.List;
 public interface CaseSearchApi {
     List<Claim> getMediationClaims(String authorisation, LocalDate mediationAgreementDate);
 
-    List<Claim> getCasesPastIntentionToProceed(User user, LocalDate responseDate);
+    List<Claim> getClaimsPastIntentionToProceed(User user, LocalDate responseDate);
 }

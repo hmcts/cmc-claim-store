@@ -76,7 +76,7 @@ public class CCDElasticSearchRepositoryTest {
     @Test
     public void casesPastIntentionToProceedQueriesElastic() {
         User user = new User(AUTHORISATION, null);
-        ccdElasticSearchRepository.getCasesPastIntentionToProceed(user,
+        ccdElasticSearchRepository.getClaimsPastIntentionToProceed(user,
             LocalDate.of(2019, 07, 07));
         verify(coreCaseDataApi).searchCases(
             eq(AUTHORISATION),
