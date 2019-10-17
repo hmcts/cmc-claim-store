@@ -62,7 +62,9 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
 
         builder.expertRequired(yesNoMapper.to(directionsQuestionnaire.getExpertRequired()));
         directionsQuestionnaire.getPermissionForExpert()
-            .ifPresent(permission -> builder.permissionForExpert(yesNoMapper.to(permission)));
+            .map(YesNoOption::name)
+            .map(CCDYesNoOption::valueOf)
+            .ifPresent(builder::permissionForExpert);
         directionsQuestionnaire.getExpertRequest().ifPresent(toExpertRequest(builder));
 
         builder.expertReports(directionsQuestionnaire.getExpertReports()
@@ -146,6 +148,7 @@ public class DirectionsQuestionnaireMapper implements Mapper<CCDDirectionsQuesti
         builder.hearingLocation(extractHearingLocation(ccdDirectionsQuestionnaire));
         builder.witness(extractWitness(ccdDirectionsQuestionnaire));
         builder.expertRequired(yesNoMapper.from(ccdDirectionsQuestionnaire.getExpertRequired()));
+        builder.permissionForExpert(yesNoMapper.from(ccdDirectionsQuestionnaire.getPermissionForExpert()));
         builder.expertRequest(extractExpertRequest(ccdDirectionsQuestionnaire));
         builder.requireSupport(extractRequireSupport(ccdDirectionsQuestionnaire));
 
