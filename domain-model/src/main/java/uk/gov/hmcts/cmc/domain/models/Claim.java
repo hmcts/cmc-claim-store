@@ -71,6 +71,7 @@ public class Claim {
     private final DirectionOrder directionOrder;
     private final ChannelType channel;
     private final LocalDate intentionToProceedDeadline;
+    private final MediationOutcome mediationOutcome;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -110,7 +111,8 @@ public class Claim {
         ReviewOrder reviewOrder,
         DirectionOrder directionOrder,
         ChannelType channel,
-        LocalDate intentionToProceedDeadline
+        LocalDate intentionToProceedDeadline,
+        MediationOutcome mediationOutcome
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -148,6 +150,7 @@ public class Claim {
         this.directionOrder = directionOrder;
         this.channel = channel;
         this.intentionToProceedDeadline = intentionToProceedDeadline;
+        this.mediationOutcome = mediationOutcome;
     }
 
     public Optional<Response> getResponse() {
@@ -242,6 +245,10 @@ public class Claim {
 
     public Optional<ChannelType> getChannel() {
         return Optional.ofNullable(channel);
+    }
+
+    public Optional<MediationOutcome> getMediationOutcome(){
+        return Optional.of(mediationOutcome);
     }
 
     @Override

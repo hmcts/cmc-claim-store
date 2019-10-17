@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.Interest;
+import uk.gov.hmcts.cmc.domain.models.MediationOutcome;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
@@ -99,6 +100,7 @@ public final class SampleClaim {
     private DirectionOrder directionOrder;
     private ChannelType channel;
     private LocalDate intentionToProceedDeadline = NOW_IN_LOCAL_ZONE.toLocalDate().plusDays(33);
+    private MediationOutcome mediationOutcome;
 
     private SampleClaim() {
     }
@@ -523,7 +525,8 @@ public final class SampleClaim {
             reviewOrder,
             directionOrder,
             channel,
-            intentionToProceedDeadline
+            intentionToProceedDeadline,
+            mediationOutcome
         );
     }
 
@@ -741,6 +744,11 @@ public final class SampleClaim {
         ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
     ) {
         this.claimSubmissionOperationIndicators = claimSubmissionOperationIndicators;
+        return this;
+    }
+
+    public SampleClaim withMediationOutcome(MediationOutcome mediationOutcome){
+        this.mediationOutcome = mediationOutcome;
         return this;
     }
 }

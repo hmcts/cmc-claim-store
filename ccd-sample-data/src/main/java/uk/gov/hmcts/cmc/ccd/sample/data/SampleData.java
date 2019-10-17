@@ -720,6 +720,21 @@ public class SampleData {
             .build();
     }
 
+    public static CCDCase getCCDCitizenCaseWithRespondent(CCDRespondent respondent){
+        List<CCDCollectionElement<CCDApplicant>> applicants
+            = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
+        List<CCDCollectionElement<CCDRespondent>> respondents
+            = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(respondent).build());
+
+        return ccdBuilderWithDefault()
+            .amountBreakDown(getAmountBreakDown())
+            .applicants(applicants)
+            .respondents(respondents)
+            .claimSubmissionOperationIndicators(defaultCCDClaimSubmissionOperationIndicators)
+            .state(OPEN.getValue())
+            .build();
+    }
+
     public static CCDAddress getAddress() {
         return CCDAddress.builder()
             .addressLine1("52")

@@ -98,7 +98,9 @@ public class CaseMapper {
             .claimSubmissionOperationIndicators(
                 mapFromCCDClaimSubmissionOperationIndicators.apply(ccdCase.getClaimSubmissionOperationIndicators()))
             .directionOrder(directionOrderMapper.from(ccdCase.getDirectionOrder(), ccdCase.getDirectionOrderData()))
-            .reviewOrder(reviewOrderMapper.from(ccdCase.getReviewOrder()));
+            .reviewOrder(reviewOrderMapper.from(ccdCase.getReviewOrder()))
+            .mediationOutcome(MediationOutcomeMapper.from(ccdCase))
+        ;
 
         if (ccdCase.getFeatures() != null) {
             builder.features(Arrays.asList(ccdCase.getFeatures().split(",")));
