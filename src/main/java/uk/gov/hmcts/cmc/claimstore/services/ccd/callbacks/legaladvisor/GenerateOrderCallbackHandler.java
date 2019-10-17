@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
@@ -192,7 +193,23 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
         data.put(PREFERRED_COURT_OBJECTING_PARTY, preferredCourtObjectingParty);
         data.put(PREFERRED_COURT_OBJECTING_REASON, preferredCourtObjectingReason);
         data.put(PREFERRED_DQ_COURT, DirectionsQuestionnaireUtils.getPreferredCourt(claim));
-        data.put(EXPERT_PERMISSION_BY_CLAIMANT, claimantDQ.getExpertRequired());
-        data.put(EXPERT_PERMISSION_BY_DEFENDANT, defendantDQ.getExpertRequired());
+
+        if (Optional.ofNullable(claimantDQ).isPresent()) {
+            data.put(EXPERT_PERMISSION_BY_CLAIMANT, hasRequestedExpertPermission(claimantDQ));
+        }
+
+        if (Optional.ofNullable(defendantDQ).isPresent()) {
+            data.put(EXPERT_PERMISSION_BY_DEFENDANT, hasRequestedExpertPermission(defendantDQ));
+        }
+    }
+
+    private CCDYesNoOption hasRequestedExpertPermission(CCDDirectionsQuestionnaire directionsQuestionnaire) {
+        return (directionsQuestionnaire.getExpertRequired() != null
+            && directionsQuestionnaire.getExpertRequired().toBoolean())
+            || (directionsQuestionnaire.getPermissionForExpert() != null
+            && directionsQuestionnaire.getPermissionForExpert().toBoolean())
+            || StringUtils.isNotBlank(directionsQuestionnaire.getExpertEvidenceToExamine())
+            ? CCDYesNoOption.YES
+            : NO;
     }
 }
