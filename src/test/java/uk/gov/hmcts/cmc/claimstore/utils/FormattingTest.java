@@ -1,11 +1,14 @@
 package uk.gov.hmcts.cmc.claimstore.utils;
 
 import org.junit.Test;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.ZonedDateTime;
 
 import static java.math.BigDecimal.valueOf;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,11 +45,11 @@ public class FormattingTest {
 
     @Test
     public void formatDateTimeShouldFormatWithExpectedPattern() {
-        LocalDateTime dateTime = LocalDateTime.of(2017, 7, 27, 17, 44);
+        LocalDateTime dateTime = LocalDateTime.of(2017, 2, 27, 17, 44);
 
         String formattedDate = Formatting.formatDateTime(dateTime);
 
-        assertThat(formattedDate).matches("27 July 2017 at 5:44(?i)pm");
+        assertThat(formattedDate).matches("27 February 2017 at 5:44(?i)pm");
     }
 
     @Test(expected = NullPointerException.class)
@@ -113,5 +116,14 @@ public class FormattingTest {
         String formatted = Formatting.formatPercent(new BigDecimal("4.5"));
 
         assertThat(formatted).isEqualTo("4.5%");
+    }
+
+    @Test
+    public void formatDateShouldHandleBST() {
+        ZonedDateTime zonedDateTime = ZonedDateTime.of(2019, Month.JULY.getValue(), 1, 1, 15, 0, 0,
+            LocalDateTimeFactory.UTC_ZONE);
+
+        String formatted = Formatting.formatDateTime(zonedDateTime.toLocalDateTime());
+        assertThat(formatted).matches("1 July 2019 at 2:15(?i)am");
     }
 }
