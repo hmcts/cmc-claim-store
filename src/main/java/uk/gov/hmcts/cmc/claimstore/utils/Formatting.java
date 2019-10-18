@@ -8,7 +8,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.chrono.ChronoLocalDateTime;
 import java.time.chrono.ChronoZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -31,7 +30,8 @@ public class Formatting {
 
     private static String formatTemporalWithPattern(TemporalAccessor temporal, String pattern) {
         requireNonNull(temporal);
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern).withZone(LocalDateTimeFactory.LOCAL_ZONE);
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern)
+            .withZone(LocalDateTimeFactory.LOCAL_ZONE);
 
         if (temporal instanceof ChronoLocalDateTime) {
             ChronoZonedDateTime chronoZonedDateTime =
