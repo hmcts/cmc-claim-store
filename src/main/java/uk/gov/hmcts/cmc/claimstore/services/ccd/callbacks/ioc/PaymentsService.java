@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.Payment;
+import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.reform.fees.client.FeesClient;
 import uk.gov.hmcts.reform.fees.client.model.FeeLookupResponseDto;
 import uk.gov.hmcts.reform.payments.client.CardPaymentRequest;
@@ -14,6 +16,7 @@ import uk.gov.hmcts.reform.payments.client.models.FeeDto;
 import uk.gov.hmcts.reform.payments.client.models.PaymentDto;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import static java.lang.String.format;
 
@@ -50,7 +53,24 @@ public class PaymentsService {
         this.description = description;
     }
 
-    public PaymentDto createPayment(
+    public Payment retrievePayment(
+        String authorisation,
+        Claim claim
+    ) {
+
+        logger.info("Retrieving payment amount for case {}",
+            claim.getExternalId());
+
+        Payment claimPayment =
+            Optional.ofNullable(claim.getClaimData().getPayment())
+                .orElseThrow(IllegalStateException::new);
+
+        return from(paymentsClient.retrievePayment(
+            authorisation,
+            claimPayment.getReference()));
+    }
+
+    public Payment createPayment(
         String authorisation,
         Claim claim
     ) {
@@ -70,12 +90,9 @@ public class PaymentsService {
             FEE_CHANNEL, FEE_EVENT, amountPlusInterest
         );
 
-        BigDecimal totalAmountPlusFees = amountPlusInterest.add(feeOutcome.getFeeAmount());
-
         CardPaymentRequest paymentRequest = buildPaymentRequest(
             claim,
-            feeOutcome,
-            totalAmountPlusFees
+            feeOutcome
         );
 
         PaymentDto payment = paymentsClient.createPayment(
@@ -84,8 +101,8 @@ public class PaymentsService {
             format(returnUrlPattern, claim.getExternalId())
         );
 
-        payment.setAmount(totalAmountPlusFees);
-        return payment;
+        payment.setAmount(feeOutcome.getFeeAmount());
+        return from(payment);
     }
 
     private FeeDto[] buildFees(String ccdCaseId, FeeLookupResponseDto feeOutcome) {
@@ -101,20 +118,35 @@ public class PaymentsService {
 
     private CardPaymentRequest buildPaymentRequest(
         Claim claim,
-        FeeLookupResponseDto feeOutcome,
-        BigDecimal amountPlusFees
+        FeeLookupResponseDto feeOutcome
     ) {
         String ccdCaseId = String.valueOf(claim.getCcdCaseId());
         FeeDto[] fees = buildFees(ccdCaseId, feeOutcome);
         return CardPaymentRequest.builder()
             .caseReference(claim.getExternalId())
             .ccdCaseNumber(ccdCaseId)
-            .amount(amountPlusFees)
+            .amount(feeOutcome.getFeeAmount())
             .fees(fees)
             .service(service)
             .currency(currency)
             .description(description)
             .siteId(siteId)
+            .build();
+    }
+
+    private Payment from(PaymentDto paymentDto) {
+        String dateCreated = Optional.ofNullable(paymentDto.getDateCreated())
+            .map(date -> date.toLocalDate().toString())
+            .orElse(null);
+        String nextUrl = Optional.ofNullable(paymentDto.getLinks().getNextUrl())
+            .map(url -> url.getHref().toString())
+            .orElse(null);
+        return Payment.builder()
+            .amount(paymentDto.getAmount())
+            .reference(paymentDto.getReference())
+            .status(PaymentStatus.fromValue(paymentDto.getStatus()))
+            .dateCreated(dateCreated)
+            .nextUrl(nextUrl)
             .build();
     }
 }

@@ -128,7 +128,6 @@ public class ClaimController {
     @ApiOperation("Resumes a citizen payment")
     public CreatePaymentResponse resumePayment(
         @Valid @NotNull @RequestBody ClaimData claimData,
-        @PathVariable("submitterId") String submitterId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
         return claimService.resumePayment(authorisation, claimData);

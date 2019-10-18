@@ -112,6 +112,31 @@ public class PaymentMapperTest {
     }
 
     @Test
+    public void shouldMapPaymentFromCCDIfPaymentStatusIsNull() {
+        //given
+        CCDCase ccdCase = CCDCase.builder()
+            .paymentAmount("400000")
+            .paymentReference("RC-1524-6488-1670-7520")
+            .paymentId("PaymentId")
+            .paymentNextUrl("http://nexturl.test")
+            .paymentStatus(null)
+            .paymentDateCreated(LocalDate.of(2019, 01, 01))
+            .build();
+
+        //when
+        Payment payment = mapper.from(ccdCase);
+
+        //then
+        assertThat(LocalDate.parse(payment.getDateCreated(), ISO_DATE))
+            .isEqualTo(ccdCase.getPaymentDateCreated());
+        assertThat(payment.getId()).isEqualTo(ccdCase.getPaymentId());
+        assertMoney(payment.getAmount()).isEqualTo(ccdCase.getPaymentAmount());
+        assertThat(payment.getReference()).isEqualTo(ccdCase.getPaymentReference());
+        assertThat(payment.getStatus()).isNull();
+        assertThat(payment.getNextUrl()).isEqualTo(ccdCase.getPaymentNextUrl());
+    }
+
+    @Test
     public void shouldMapPaymentFromCCDWhenNoDateCreatedProvided() {
         //given
         CCDCase ccdCase = CCDCase.builder()
