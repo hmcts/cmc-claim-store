@@ -31,7 +31,7 @@ public class Formatting {
 
     private static String formatTemporalWithPattern(TemporalAccessor temporal, String pattern) {
         requireNonNull(temporal);
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern).withZone(ZoneId.systemDefault());
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern).withZone(LocalDateTimeFactory.LOCAL_ZONE);
 
         if (temporal instanceof ChronoLocalDateTime) {
             ChronoZonedDateTime chronoZonedDateTime =
