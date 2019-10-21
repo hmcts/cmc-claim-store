@@ -81,7 +81,9 @@ public class DirectionsQuestionnaire {
         return Optional.ofNullable(unavailableDates).orElse(emptyList());
     }
 
-    public Optional<YesNoOption> getExpertRequired() { return Optional.ofNullable(expertRequired); }
+    public Optional<YesNoOption> getExpertRequired() {
+        return Optional.ofNullable(expertRequired);
+    }
 
     public Optional<YesNoOption> getPermissionForExpert() {
         return Optional.ofNullable(permissionForExpert);
