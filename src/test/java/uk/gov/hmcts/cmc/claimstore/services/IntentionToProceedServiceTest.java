@@ -120,5 +120,5 @@ public class IntentionToProceedServiceTest {
         verify(caseSearchApi, once()).getClaimsPastIntentionToProceed(any(), eq(responseDate));
 
     }
-    
+
 }
