@@ -63,6 +63,7 @@ public class CaseMapperTest {
         assertEquals(NO, ccdCase.getMigratedFromClaimStore());
         assertEquals(YES, ccdCase.getApplicants().get(0).getValue().getLeadApplicantIndicator());
         assertEquals(MapperUtil.toCaseName.apply(claim), ccdCase.getCaseName());
+        assertEquals(claim.getState().get().getValue(), ccdCase.getState());
     }
 
     @Test(expected = NullPointerException.class)

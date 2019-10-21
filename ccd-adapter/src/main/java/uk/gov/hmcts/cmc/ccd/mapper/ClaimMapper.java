@@ -5,6 +5,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.mapper.defendant.DefendantMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 
@@ -96,7 +97,7 @@ public class ClaimMapper {
         paymentMapper.to(claimData.getPayment(), builder);
         interestMapper.to(claimData.getInterest(), builder);
         amountMapper.to(claimData.getAmount(), builder);
-
+        claim.getState().map(state -> builder.state(state.getValue()));
         claim.getTotalAmountTillDateOfIssue().map(moneyMapper::to).ifPresent(builder::totalAmount);
         builder
             .reason(claimData.getReason())
@@ -114,6 +115,7 @@ public class ClaimMapper {
             .map(claimantMapper::from)
             .collect(Collectors.toList());
 
+        claimBuilder.state(ClaimState.fromValue(ccdCase.getState()));
         claimBuilder.claimData(
             new ClaimData(
                 UUID.fromString(ccdCase.getExternalId()),

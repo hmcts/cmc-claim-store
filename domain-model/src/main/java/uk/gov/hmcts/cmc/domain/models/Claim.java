@@ -227,7 +227,6 @@ public class Claim {
         return Optional.ofNullable(claimantResponseDeadline);
     }
 
-    @JsonIgnore
     public Optional<ClaimState> getState() {
         return Optional.ofNullable(state);
     }
