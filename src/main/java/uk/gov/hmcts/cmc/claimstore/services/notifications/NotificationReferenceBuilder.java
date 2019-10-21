@@ -164,6 +164,10 @@ public class NotificationReferenceBuilder {
         public static String referenceForDefendant(String claimReferenceNumber, String otherParty) {
             return reference(TEMPLATE, DEFENDANT, otherParty.toLowerCase(), claimReferenceNumber);
         }
+
+        public static String referenceForStaff(String claimReferenceNumber) {
+            return reference(TEMPLATE, CLAIMANT, DEFENDANT, claimReferenceNumber);
+        }
     }
 
     public static class PaidInFull {

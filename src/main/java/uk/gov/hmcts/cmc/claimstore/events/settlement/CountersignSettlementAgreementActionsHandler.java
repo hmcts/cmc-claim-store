@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
@@ -20,14 +21,17 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 public class CountersignSettlementAgreementActionsHandler {
     private final NotificationService notificationService;
     private final NotificationsProperties notificationsProperties;
+    private final StaffEmailProperties staffEmailProperties;
 
     @Autowired
     public CountersignSettlementAgreementActionsHandler(
         NotificationService notificationService,
-        NotificationsProperties notificationsProperties
+        NotificationsProperties notificationsProperties,
+        StaffEmailProperties staffEmailProperties
     ) {
         this.notificationService = notificationService;
         this.notificationsProperties = notificationsProperties;
+        this.staffEmailProperties = staffEmailProperties;
     }
 
     @EventListener
@@ -55,6 +59,19 @@ public class CountersignSettlementAgreementActionsHandler {
             parameters,
             NotificationReferenceBuilder.AgreementCounterSigned.referenceForDefendant(referenceNumber,
                 NotificationReferenceBuilder.DEFENDANT)
+        );
+    }
+
+    @EventListener
+    public void sendNotificationToStaff(CountersignSettlementAgreementEvent event) {
+        final Claim claim = event.getClaim();
+        final Map<String, String> parameters = aggregateParams(claim);
+        final String referenceNumber = claim.getReferenceNumber();
+        this.notificationService.sendMail(
+            staffEmailProperties.getRecipient(),
+            notificationsProperties.getTemplates().getEmail().getBothSignedSettlementAgreementToStaff(),
+            parameters,
+            NotificationReferenceBuilder.AgreementCounterSigned.referenceForStaff(referenceNumber)
         );
     }
 
