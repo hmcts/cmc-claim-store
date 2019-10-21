@@ -53,6 +53,8 @@ cmc-citizen-frontend:
     image: hmctspublic.azurecr.io/cmc/citizen-frontend:latest  # master
     ingressIP: ${INGRESS_IP}
     consulIP: ${CONSUL_LB_IP}
+    memoryRequests: 512Mi
+    memoryLimits: 1024Mi
     releaseNameOverride: ${SERVICE_NAME}-nodejs
     readinessDelay: 90  # claim-store will start much slower
     livenessDelay: 90  # claim-store will start much slower
