@@ -4,8 +4,6 @@ import com.google.common.collect.Maps;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -14,6 +12,7 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.IntentionToProceedService;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -43,7 +42,6 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 
 import java.net.URI;
 import java.time.LocalDate;
-import java.util.Map;
 
 import static java.time.LocalDate.now;
 import static org.junit.Assert.assertNotNull;
@@ -85,9 +83,8 @@ public class CoreCaseDataServiceFailureTest {
     private JobSchedulerService jobSchedulerService;
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
-
-    @Captor
-    private ArgumentCaptor<Map<String, Object>> caseDataCaptor;
+    @Mock
+    private IntentionToProceedService intentionToProceedService;
 
     private CoreCaseDataService service;
 
@@ -131,7 +128,8 @@ public class CoreCaseDataServiceFailureTest {
             authTokenGenerator,
             jobSchedulerService,
             ccdCreateCaseService,
-            caseDetailsConverter
+            caseDetailsConverter,
+            intentionToProceedService
         );
     }
 
@@ -141,6 +139,24 @@ public class CoreCaseDataServiceFailureTest {
         when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
 
         service.createNewCase(USER, providedClaim);
+
+        verify(coreCaseDataApi).submitForCitizen(
+            eq(AUTHORISATION),
+            eq(AUTH_TOKEN),
+            eq(USER_DETAILS.getId()),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(true),
+            any(CaseDataContent.class)
+        );
+    }
+
+    @Test(expected = CoreCaseDataStoreException.class)
+    public void submitInitiatePaymentFailure() {
+        Claim providedClaim = SampleClaim.getDefault();
+        when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
+
+        service.createNewCitizenCase(USER, providedClaim);
 
         verify(coreCaseDataApi).submitForCitizen(
             eq(AUTHORISATION),
@@ -561,4 +577,5 @@ public class CoreCaseDataServiceFailureTest {
         String newLetterHolderId = "letter_holder_id";
         service.linkLetterHolder(claim.getId(), newLetterHolderId);
     }
+
 }

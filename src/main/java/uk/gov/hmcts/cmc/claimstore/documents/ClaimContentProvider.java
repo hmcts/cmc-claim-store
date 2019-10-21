@@ -52,7 +52,7 @@ public class ClaimContentProvider {
             defendant.getEmail().orElse(null),
             PartyUtils.getContactPerson(defendant).orElse(null),
             PartyUtils.getBusinessName(defendant).orElse(null),
-            null,
+            defendant.getPhone().orElse(null),
             null)
         );
 

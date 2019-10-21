@@ -65,7 +65,7 @@ public class BulkPrintHandlerTest {
         bulkPrintHandler.print(printEvent);
 
         //verify
-        verify(bulkPrintService).print(
+        verify(bulkPrintService).printPdf(
             claim,
             ImmutableList.of(
                 new PrintablePdf(

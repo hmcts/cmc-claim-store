@@ -106,7 +106,7 @@ resource "azurerm_key_vault_secret" "cmc-db-password" {
 }
 
 module "database" {
-  source = "git@github.com:hmcts/moj-module-postgres?ref=master"
+  source = "git@github.com:hmcts/cnp-module-postgres?ref=master"
   product = "${var.product}"
   location = "${var.location}"
   env = "${var.env}"
@@ -122,7 +122,7 @@ module "database" {
 }
 
 module "claim-store-api" {
-  source = "git@github.com:hmcts/moj-module-webapp.git?ref=master"
+  source = "git@github.com:hmcts/cnp-module-webapp?ref=master"
   product = "${var.product}-${var.microservice}"
   location = "${var.location}"
   env = "${var.env}"
@@ -172,6 +172,8 @@ module "claim-store-api" {
     DOC_ASSEMBLY_URL = "${var.doc_assembly_api_url}"
     CORE_CASE_DATA_API_URL = "${local.ccdCnpUrl}"
     SEND_LETTER_URL = "${var.env == "saat" || var.env == "sprod" ? "false" : local.sendLetterUrl}"
+    FEES_URL = "${var.fees_url}"
+    PAY_URL = "${var.payments_url}"
 
     // mail
     SPRING_MAIL_HOST = "${var.mail-host}"

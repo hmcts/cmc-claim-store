@@ -4,6 +4,8 @@ import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDChannelType;
+import uk.gov.hmcts.cmc.domain.models.ChannelType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
@@ -51,6 +53,11 @@ public class CaseMapper {
             .map(reviewOrderMapper::to)
             .ifPresent(builder::reviewOrder);
 
+        claim.getChannel()
+            .map(ChannelType::name)
+            .map(CCDChannelType::valueOf)
+            .ifPresent(builder::channel);
+
         return builder
             .id(claim.getId())
             .externalId(claim.getExternalId())
@@ -68,6 +75,7 @@ public class CaseMapper {
             .caseName(toCaseName.apply(claim))
             .claimSubmissionOperationIndicators(
                 mapClaimSubmissionOperationIndicatorsToCCD.apply(claim.getClaimSubmissionOperationIndicators()))
+            .intentionToProceedDeadline(claim.getIntentionToProceedDeadline())
             .build();
     }
 
@@ -87,13 +95,19 @@ public class CaseMapper {
             .createdAt(ccdCase.getSubmittedOn())
             .issuedOn(ccdCase.getIssuedOn())
             .submitterEmail(ccdCase.getSubmitterEmail())
+            .state(ClaimState.fromValue(ccdCase.getState()))
             .claimSubmissionOperationIndicators(
                 mapFromCCDClaimSubmissionOperationIndicators.apply(ccdCase.getClaimSubmissionOperationIndicators()))
             .directionOrder(directionOrderMapper.from(ccdCase.getDirectionOrder(), ccdCase.getDirectionOrderData()))
+            .intentionToProceedDeadline(ccdCase.getIntentionToProceedDeadline())
             .reviewOrder(reviewOrderMapper.from(ccdCase.getReviewOrder()));
 
         if (ccdCase.getFeatures() != null) {
             builder.features(Arrays.asList(ccdCase.getFeatures().split(",")));
+        }
+
+        if (ccdCase.getChannel() != null) {
+            builder.channel(ChannelType.valueOf(ccdCase.getChannel().name()));
         }
 
         return builder.build();

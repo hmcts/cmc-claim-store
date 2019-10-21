@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks;
+package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -12,6 +12,12 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtDetailsFinder;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
@@ -23,6 +29,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -32,17 +39,26 @@ import java.util.Map;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.ORDER_DIRECTIONS;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DRAW_ORDER;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.JUDGE;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.LEGAL_ADVISOR;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service
+@ConditionalOnProperty(prefix = "doc_assembly", name = "url")
 public class DrawOrderCallbackHandler extends CallbackHandler {
+    private static final List<Role> ROLES = ImmutableList.of(LEGAL_ADVISOR, JUDGE);
+    private static final List<CaseEvent> EVENTS = Collections.singletonList(DRAW_ORDER);
+    private static final String DRAFT_ORDER_DOC = "draftOrderDoc";
+
     private final Clock clock;
     private final OrderDrawnNotificationService orderDrawnNotificationService;
     private final CaseDetailsConverter caseDetailsConverter;
     private final LegalOrderService legalOrderService;
     private final HearingCourtDetailsFinder hearingCourtDetailsFinder;
+    private final DocAssemblyService docAssemblyService;
 
     @Autowired
     public DrawOrderCallbackHandler(
@@ -50,26 +66,49 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
         OrderDrawnNotificationService orderDrawnNotificationService,
         CaseDetailsConverter caseDetailsConverter,
         LegalOrderService legalOrderService,
-        HearingCourtDetailsFinder hearingCourtDetailsFinder
+        HearingCourtDetailsFinder hearingCourtDetailsFinder,
+        DocAssemblyService docAssemblyService
     ) {
         this.clock = clock;
         this.orderDrawnNotificationService = orderDrawnNotificationService;
         this.caseDetailsConverter = caseDetailsConverter;
         this.legalOrderService = legalOrderService;
         this.hearingCourtDetailsFinder = hearingCourtDetailsFinder;
+        this.docAssemblyService = docAssemblyService;
     }
 
     @Override
     public List<CaseEvent> handledEvents() {
-        return Collections.singletonList(CaseEvent.DRAW_ORDER);
+        return EVENTS;
+    }
+
+    @Override
+    public List<Role> getSupportedRoles() {
+        return ROLES;
     }
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
+            CallbackType.ABOUT_TO_START, this::regenerateOrder,
             CallbackType.ABOUT_TO_SUBMIT, this::copyDraftToCaseDocument,
             CallbackType.SUBMITTED, this::notifyPartiesAndPrintOrder
         );
+    }
+
+    private CallbackResponse regenerateOrder(CallbackParams callbackParams) {
+        CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
+        String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
+        DocAssemblyResponse docAssemblyResponse = docAssemblyService.createOrder(ccdCase, authorisation);
+
+        return AboutToStartOrSubmitCallbackResponse
+            .builder()
+            .data(ImmutableMap.of(
+                DRAFT_ORDER_DOC,
+                CCDDocument.builder().documentUrl(docAssemblyResponse.getRenditionOutputLocation()).build()
+            ))
+            .build();
     }
 
     private CallbackResponse notifyPartiesAndPrintOrder(CallbackParams callbackParams) {

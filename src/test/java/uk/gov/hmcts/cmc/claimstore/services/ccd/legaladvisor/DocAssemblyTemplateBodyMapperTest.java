@@ -20,6 +20,7 @@ import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Address;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 
@@ -52,6 +53,8 @@ public class DocAssemblyTemplateBodyMapperTest {
     private Clock clock;
     @Mock
     private CourtFinderApi courtFinderApi;
+    @Mock
+    private WorkingDayIndicator workingDayIndicator;
 
     private DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
     private CCDCase ccdCase;
@@ -63,7 +66,8 @@ public class DocAssemblyTemplateBodyMapperTest {
         HearingCourtDetailsFinder hearingCourtDetailsFinder
             = new HearingCourtDetailsFinder(courtFinderApi, new HearingCourtMapper());
 
-        docAssemblyTemplateBodyMapper = new DocAssemblyTemplateBodyMapper(clock, hearingCourtDetailsFinder);
+        docAssemblyTemplateBodyMapper
+            = new DocAssemblyTemplateBodyMapper(clock, hearingCourtDetailsFinder, workingDayIndicator);
 
         when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString())).thenReturn(ImmutableList.of(Court.builder()
             .name("Birmingham Court")

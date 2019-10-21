@@ -23,7 +23,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
 
 @TestPropertySource(
     properties = {
-        "feature_toggles.async_event_operations_enabled=false"
+        "feature_toggles.async_event_operations_enabled=true"
     }
 )
 @Ignore("to be fixed as part of task ROC-6278")

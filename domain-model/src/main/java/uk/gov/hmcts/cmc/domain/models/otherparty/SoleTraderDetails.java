@@ -42,9 +42,10 @@ public class SoleTraderDetails extends TheirDetails implements TitledParty, Spli
         Representative representative,
         Address serviceAddress,
         String title,
-        String businessName
+        String businessName,
+        String phoneNumber
     ) {
-        super(id, name, address, email, representative, serviceAddress);
+        super(id, name, address, email, representative, serviceAddress, phoneNumber);
         this.title = title;
         this.businessName = businessName;
         this.firstName = firstName;

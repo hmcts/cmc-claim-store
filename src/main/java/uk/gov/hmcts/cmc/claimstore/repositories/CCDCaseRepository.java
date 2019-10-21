@@ -144,6 +144,11 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
+    public Claim initiatePayment(User user, Claim claim) {
+        return coreCaseDataService.createNewCitizenCase(user, claim);
+    }
+
+    @Override
     public void updateSettlement(
         Claim claim,
         Settlement settlement,
@@ -167,6 +172,12 @@ public class CCDCaseRepository implements CaseRepository {
     @Override
     public Claim saveClaim(User user, Claim claim) {
         return coreCaseDataService.createNewCase(user, claim);
+    }
+
+    @Override
+    @LogExecutionTime
+    public Claim saveRepresentedClaim(User user, Claim claim) {
+        return coreCaseDataService.createRepresentedClaim(user, claim);
     }
 
     @Override
@@ -212,8 +223,8 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent) {
-        coreCaseDataService.saveCaseEvent(authorisation, claim.getId(), caseEvent);
+    public Claim saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent) {
+        return coreCaseDataService.saveCaseEvent(authorisation, claim.getId(), caseEvent);
     }
 
     @Override
