@@ -2,11 +2,13 @@ package uk.gov.hmcts.cmc.ccd.assertion;
 
 import org.assertj.core.api.AbstractAssert;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
+import uk.gov.hmcts.cmc.ccd.mapper.YesNoMapper;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertRequest;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.RequireSupport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.Witness;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -30,6 +32,21 @@ public class DirectionsQuestionnaireAssert
         actual.getRequireSupport().ifPresent(isEqualToRequireSupport(ccdDirectionsQuestionnaire));
 
         actual.getWitness().ifPresent(isEqualToWitness(ccdDirectionsQuestionnaire));
+
+        actual.getExpertRequired().ifPresent(expertRequired -> {
+            if (!Objects.equals(expertRequired.name(), ccdDirectionsQuestionnaire.getExpertRequired().name())) {
+                failWithMessage("Expected DirectionsQuestionnaire.expertRequired to be <%s> but was <%s>",
+                    ccdDirectionsQuestionnaire.getExpertRequired(), expertRequired);
+            }
+        });
+
+        actual.getPermissionForExpert().ifPresent(permissionForExpert -> {
+            if (!Objects.equals(permissionForExpert.name(), ccdDirectionsQuestionnaire.getPermissionForExpert().name())) {
+                failWithMessage(
+                    "Expected DirectionsQuestionnaire.permissionForExpert to be <%s> but was <%s>",
+                    ccdDirectionsQuestionnaire.getPermissionForExpert(), permissionForExpert);
+            }
+        });
 
         actual.getExpertRequest().ifPresent(isEqualToExpertRequest(ccdDirectionsQuestionnaire));
 
