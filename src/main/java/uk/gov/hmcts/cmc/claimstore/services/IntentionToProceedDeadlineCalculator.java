@@ -12,7 +12,7 @@ public class IntentionToProceedDeadlineCalculator {
 
     public IntentionToProceedDeadlineCalculator(
         WorkingDayIndicator workingDayIndicator,
-        @Value("${intention.to.proceed.deadline:33}") int intentionToProceedAdjustment
+        @Value("${dateCalculations.intentionToProceedDeadlineInDays:33}") int intentionToProceedAdjustment
     ) {
         this.intentionToProceedAdjustment = intentionToProceedAdjustment;
         this.workingDayIndicator = workingDayIndicator;
