@@ -6,11 +6,7 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.models.ExpertReportContent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.HearingContent;
 import uk.gov.hmcts.cmc.claimstore.utils.DateUtils;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.RequireSupport;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.UnavailableDate;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.*;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.ArrayList;
@@ -75,19 +71,23 @@ public class HearingContentProvider {
             builder.hasExpertReport(questionnaire.getExpertReports().isEmpty() ? NO : YES);
 
             YesNoOption permissionForExpert = questionnaire.getPermissionForExpert().orElse(YesNoOption.NO);
+            builder.courtPermissionForExpertReport(NO);
 
             if (permissionForExpert == YesNoOption.YES) {
                 builder.courtPermissionForExpertReport(YES);
                 builder.expertExamineNeeded(NO);
-                questionnaire.getExpertRequest().ifPresent(expertRequest -> {
+
+                ExpertRequest expertRequest = questionnaire.getExpertRequest().orElse(null);
+                if (expertRequest != null) {
                     if (!StringUtils.isBlank(expertRequest.getReasonForExpertAdvice())) {
                         builder.reasonWhyExpertAdvice(expertRequest.getReasonForExpertAdvice());
                         builder.expertExamineNeeded(YES);
                         builder.whatToExamine(expertRequest.getExpertEvidenceToExamine());
                     }
-                });
-            } else {
-                builder.courtPermissionForExpertReport(NO);
+                } else {
+                    builder.expertRequired(NO);
+                }
+
             }
 
         }
