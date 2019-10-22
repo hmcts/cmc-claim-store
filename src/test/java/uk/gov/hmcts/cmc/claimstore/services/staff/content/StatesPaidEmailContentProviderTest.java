@@ -116,7 +116,7 @@ public class StatesPaidEmailContentProviderTest {
         EmailContent content = service.createContent(wrapInMap(claim));
         assertThat(content.getBody())
             .contains("Claimant has rejected the states paid defence.")
-            .contains("Please enter a code 67 & 196");
+            .contains("Please enter a code 67");
     }
 
     @Test
