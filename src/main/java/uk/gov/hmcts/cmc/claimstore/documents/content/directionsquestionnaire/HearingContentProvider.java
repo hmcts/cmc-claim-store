@@ -6,7 +6,12 @@ import uk.gov.hmcts.cmc.claimstore.services.staff.models.ExpertReportContent;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.HearingContent;
 import uk.gov.hmcts.cmc.claimstore.utils.DateUtils;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.*;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertRequest;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.RequireSupport;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.UnavailableDate;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.ArrayList;
