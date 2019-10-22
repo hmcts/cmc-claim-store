@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.controllers;
+package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Before;
