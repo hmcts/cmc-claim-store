@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 
+import com.github.tomakehurst.wiremock.http.MimeType;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,7 +120,7 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
 
         return webClient
             .perform(post("/cases/callbacks/" + callbackType)
-                .header(HttpHeaders.CONTENT_TYPE, "application/json")
+                .header(HttpHeaders.CONTENT_TYPE, MimeType.JSON)
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
                 .content(jsonMapper.toJson(callbackRequest))
             );

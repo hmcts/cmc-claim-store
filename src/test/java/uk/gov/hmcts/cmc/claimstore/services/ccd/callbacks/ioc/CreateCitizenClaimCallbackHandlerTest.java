@@ -102,13 +102,11 @@ public class CreateCitizenClaimCallbackHandlerTest {
     @Test
     public void shouldSuccessfullyReturnCallBackResponseWhenSuccessfulPayment() {
 
-        OffsetDateTime paymentDate = OffsetDateTime.parse("2017-02-03T10:15:30+01:00");
-
         Payment expectedSuccessfulPayment = Payment.builder()
             .amount(TEN)
             .reference("reference")
             .status(SUCCESS)
-            .dateCreated(paymentDate.toLocalDate().toString())
+            .dateCreated(now().toString())
             .nextUrl(NEXT_URL)
             .build();
 
@@ -147,13 +145,11 @@ public class CreateCitizenClaimCallbackHandlerTest {
     @Test
     public void shouldSuccessfullyReturnCallBackResponseWhenUnSuccessfulPayment() {
 
-        OffsetDateTime paymentDate = OffsetDateTime.parse("2017-02-03T10:15:30+01:00");
-
         Payment expectedUnSuccessfulPayment = Payment.builder()
             .amount(TEN)
             .reference("reference")
             .status(PaymentStatus.FAILED)
-            .dateCreated(paymentDate.toLocalDate().toString())
+            .dateCreated(now().toString())
             .nextUrl(NEXT_URL)
             .build();
 
