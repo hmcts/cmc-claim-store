@@ -6,15 +6,18 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
+import uk.gov.hmcts.cmc.claimstore.documents.content.settlementagreement.SettlementCountersignedEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.events.settlement.CountersignSettlementAgreementActionsHandler;
 import uk.gov.hmcts.cmc.claimstore.events.settlement.CountersignSettlementAgreementEvent;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -45,6 +48,12 @@ public class CountersignSettlementAgreementActionsHandlerTest {
     private EmailTemplates emailTemplates;
     @Mock
     private AppInsights appInsights;
+    @Mock
+    private StaffEmailProperties staffEmailProperties;
+    @Mock
+    private EmailService emailService;
+    @Mock
+    private SettlementCountersignedEmailContentProvider settlementCountersignedEmailContentProvider;
 
     @Before
     public void setUp() {
@@ -58,7 +67,8 @@ public class CountersignSettlementAgreementActionsHandlerTest {
 
         NotificationService notificationService = new NotificationService(notificationClient, appInsights, false);
 
-        handler = new CountersignSettlementAgreementActionsHandler(notificationService, notificationsProperties);
+        handler = new CountersignSettlementAgreementActionsHandler(notificationService, notificationsProperties,
+            staffEmailProperties, emailService, settlementCountersignedEmailContentProvider);
     }
 
     @Test
