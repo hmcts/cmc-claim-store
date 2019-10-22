@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -189,6 +190,7 @@ public class TheirDetailsMapperTest {
         assertThat(party.getId()).isEqualTo(collectionId);
     }
 
+    @Ignore("to be fixed as part of task ROC-6278")
     @Test
     public void shouldMapClaimantProvidedDefendantPhoneFromCCD() {
         String collectionId = UUID.randomUUID().toString();

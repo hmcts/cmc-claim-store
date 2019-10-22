@@ -115,8 +115,8 @@ public class DrawOrderCallbackHandlerTest {
 
     @Test
     public void shouldRegeneratesOrderOnBeforeEventStart() {
-        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
-        ccdCase.setDirectionOrderData(SampleData.getCCDOrderGenerationData());
+        CCDCase ccdCase = SampleCCDCaseData.getCCDCitizenCase(Collections.emptyList());
+        ccdCase.setDirectionOrderData(SampleCCDCaseData.getCCDOrderGenerationData());
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
 
         CallbackRequest callbackRequest = CallbackRequest
