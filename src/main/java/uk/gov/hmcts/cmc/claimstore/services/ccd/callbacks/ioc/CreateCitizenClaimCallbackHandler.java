@@ -20,8 +20,8 @@ import uk.gov.hmcts.cmc.domain.models.ChannelType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
-import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -65,7 +65,7 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
-        return ImmutableMap.of(CallbackType.ABOUT_TO_SUBMIT, this::createCitizenClaim);
+        return ImmutableMap.of(CallbackType.SUBMITTED, this::createCitizenClaim);
     }
 
     @Override
@@ -101,9 +101,6 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
                 .responseDeadline(responseDeadline);
         }
 
-        return AboutToStartOrSubmitCallbackResponse
-            .builder()
-            .data(caseDetailsConverter.convertToMap(caseMapper.to(claimBuilder.build())))
-            .build();
+        return SubmittedCallbackResponse.builder().build();
     }
 }
