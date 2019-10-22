@@ -133,6 +133,19 @@ public class ClaimController {
         return claimService.resumePayment(authorisation, claimData);
     }
 
+    @PutMapping(value = "/{submitterId}/create-citizen-claim", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation("Creates a citizen claim")
+    public Claim createClaim(
+        @Valid @NotNull @RequestBody ClaimData claimData,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
+        @RequestHeader(value = "Features", required = false) List<String> features
+    ) {
+        return claimService.saveCitizenClaim(
+            authorisation,
+            claimData,
+            features);
+    }
+
     @PutMapping("/defendant/link")
     @ApiOperation("Links defendant to all unlinked letter-holder cases")
     public void linkDefendantToClaim(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
