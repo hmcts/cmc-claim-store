@@ -36,6 +36,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleData.getAmountBreakDown;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.CreateCitizenClaimCallbackHandlerTest.ISSUE_DATE;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.CreateCitizenClaimCallbackHandlerTest.RESPONSE_DEADLINE;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 
@@ -72,6 +74,7 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
             .build();
 
         given(referenceNumberRepository.getReferenceNumberForCitizen()).willReturn(REFERENCE_NO);
+        given(responseDeadlineCalculator.calculateResponseDeadline(any())).willReturn(RESPONSE_DEADLINE);
 
         given(paymentsService
             .retrievePayment(
@@ -98,11 +101,11 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
         Map<String, Object> defendant = (Map<String, Object>) respondents.get(0).get("value");
 
         assertThat(responseData).contains(
-            entry("paymentStatus", responseData.get("paymentStatus")),
-            entry("issuedOn", responseData.get("issuedOn"))
+            entry("paymentStatus", payment.getStatus().toString()),
+            entry("issuedOn", ISSUE_DATE.toString())
         );
 
-        assertThat(defendant).contains(entry("responseDeadline", defendant.get("responseDeadline")));
+        assertThat(defendant).contains(entry("responseDeadline", RESPONSE_DEADLINE.toString()));
     }
 
     private ResultActions makeRequest(String callbackType) throws Exception {
