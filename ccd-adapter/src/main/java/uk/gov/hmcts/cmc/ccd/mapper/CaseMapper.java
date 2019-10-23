@@ -65,9 +65,6 @@ public class CaseMapper {
             .submitterId(claim.getSubmitterId())
             .submitterEmail(claim.getSubmitterEmail())
             .issuedOn(claim.getIssuedOn())
-            .state(claim.getState()
-                .map(ClaimState::getValue)
-                .orElse(null))
             .currentInterestAmount(
                 claim.getTotalInterestTillDateOfIssue()
                     .map(interest -> String.valueOf(MonetaryConversions.poundsToPennies(interest)))
