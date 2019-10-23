@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.utils.DateUtils;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertRequest;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.RequireSupport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.UnavailableDate;
@@ -66,31 +67,17 @@ public class HearingContentProvider {
 
     }
 
-    private void mapExpertRequest(DirectionsQuestionnaire questionnaire, HearingContent.HearingContentBuilder builder) {
-        
-        YesNoOption expertRequired = questionnaire.getExpertRequired();
-        builder.expertRequired(NO);
-        if (expertRequired == YesNoOption.YES) {
-            builder.expertRequired(YES);
-            builder.hasExpertReport(questionnaire.getExpertReports().isEmpty() ? NO : YES);
+    private void mapExpertRequest(ExpertRequest expertRequest, HearingContent.HearingContentBuilder builder) {
 
-            YesNoOption permissionForExpert = questionnaire.getPermissionForExpert().orElse(YesNoOption.NO);
-
-            if (permissionForExpert == YesNoOption.YES) {
-                builder.courtPermissionForExpertReport(YES);
-                builder.expertExamineNeeded(NO);
-                questionnaire.getExpertRequest().ifPresent(expertRequest -> {
-                    if (!StringUtils.isBlank(expertRequest.getReasonForExpertAdvice())) {
-                        builder.reasonWhyExpertAdvice(expertRequest.getReasonForExpertAdvice());
-                        builder.expertExamineNeeded(YES);
-                        builder.whatToExamine(expertRequest.getExpertEvidenceToExamine());
-                    }
-                });
-            } else {
-                builder.courtPermissionForExpertReport(NO);
-            }
-
+        builder.courtPermissionForExpertReport(YES);
+        if (!StringUtils.isBlank(expertRequest.getReasonForExpertAdvice())) {
+            builder.reasonWhyExpertAdvice(expertRequest.getReasonForExpertAdvice());
+            builder.expertExamineNeeded(YES);
+        } else {
+            builder.expertExamineNeeded(NO);
         }
+
+        builder.whatToExamine(expertRequest.getExpertEvidenceToExamine());
     }
 
     public HearingContent mapDirectionQuestionnaire(DirectionsQuestionnaire questionnaire) {
@@ -105,9 +92,12 @@ public class HearingContentProvider {
         questionnaire.getHearingLocation().ifPresent(hearingLocation -> mapHearingLocationDetails(hearingLocation,
             contentBuilder));
 
-        mapExpertRequest(questionnaire, contentBuilder);
+        contentBuilder.hasExpertReport(questionnaire.getExpertReports().isEmpty() ? NO : YES);
 
         questionnaire.getWitness().ifPresent(contentBuilder::witness);
+        contentBuilder.courtPermissionForExpertReport(NO);
+
+        questionnaire.getExpertRequest().ifPresent(expertRequest -> mapExpertRequest(expertRequest, contentBuilder));
 
         contentBuilder.unavailableDates(
             questionnaire.getUnavailableDates().stream().map(mapToISOFullStyle).collect(toList())
