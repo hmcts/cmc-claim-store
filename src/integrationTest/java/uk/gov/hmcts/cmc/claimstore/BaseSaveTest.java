@@ -16,11 +16,11 @@ public abstract class BaseSaveTest extends BaseIntegrationTest {
 
     @Before
     public void setup() {
-        UserDetails userDetails = SampleUserDetails.builder().build();
+        UserDetails userDetails = SampleUserDetails.builder().withUserId(USER_ID).build();
         given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
         given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(new User(AUTHORISATION_TOKEN, userDetails));
 
-        UserDetails solicitorDetails = SampleUserDetails.builder().withRoles("solicitor").build();
+        UserDetails solicitorDetails = SampleUserDetails.builder().withUserId(USER_ID).withRoles("solicitor").build();
         given(userService.getUserDetails(SOLICITOR_AUTHORISATION_TOKEN))
             .willReturn(solicitorDetails);
         given(userService.getUser(SOLICITOR_AUTHORISATION_TOKEN))

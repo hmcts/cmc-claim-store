@@ -47,7 +47,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends MockedCoreCaseDataApiTes
         final ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
         final String externalId = claimData.getExternalId().toString();
 
-        stubForSearchForRepresentative(externalId);
+        stubForSearchNonExistingClaimForRepresentative(externalId);
         stubForStartForRepresentativeWithServerError();
 
         MvcResult result = makeIssueClaimRequest(claimData, SOLICITOR_AUTHORISATION_TOKEN)
@@ -63,7 +63,7 @@ public class SaveClaimWithCoreCaseDataStoreTest extends MockedCoreCaseDataApiTes
         final ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
         final String externalId = claimData.getExternalId().toString();
 
-        stubForSearchForRepresentative(externalId);
+        stubForSearchNonExistingClaimForRepresentative(externalId);
         stubForStartForRepresentative();
         stubForSubmitForRepresentativeWithServerError(externalId);
 

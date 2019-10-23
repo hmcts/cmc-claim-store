@@ -81,7 +81,7 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
     }
 
     protected void commonStubStepsClaimRequestForRepresentative(String caseId, String externalId) {
-        stubForSearchForRepresentative(externalId);
+        stubForSearchNonExistingClaimForRepresentative(externalId);
         stubForStartForRepresentative();
         stubForSubmitForRepresentative(externalId);
 
@@ -149,7 +149,7 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
         );
     }
 
-    protected void stubForSearchForRepresentative(String externalId) {
+    protected void stubForSearchNonExistingClaimForRepresentative(String externalId) {
         final String URI = "/caseworkers/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
                          + "/case-types/" + CASE_TYPE_ID + "/cases" + "?" + "case.externalId="
                          + externalId + "&" + "sortDirection=desc" + "&" + "page=1";
@@ -158,6 +158,18 @@ public class MockedCoreCaseDataApiTest extends BaseSaveTest {
             .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
             .withHeader(HttpHeaders.AUTHORIZATION, equalTo(SOLICITOR_AUTHORISATION_TOKEN))
             .willReturn(okForJson(Collections.emptyList()))
+        );
+    }
+
+    protected void stubForSearchExistingClaimForRepresentative(String externalId) {
+        final String URI = "/caseworkers/" + USER_ID + "/jurisdictions/" + JURISDICTION_ID
+            + "/case-types/" + CASE_TYPE_ID + "/cases" + "?" + "case.externalId="
+            + externalId + "&" + "sortDirection=desc" + "&" + "page=1";
+
+        stubFor(get(urlEqualTo(URI))
+            .withHeader(HttpHeaders.CONTENT_TYPE, equalTo(MediaType.APPLICATION_JSON_VALUE))
+            .withHeader(HttpHeaders.AUTHORIZATION, equalTo(SOLICITOR_AUTHORISATION_TOKEN))
+            .willReturn(okForJson(Collections.singletonList(representativeSampleCaseDetails)))
         );
     }
 

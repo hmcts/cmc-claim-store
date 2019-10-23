@@ -31,7 +31,7 @@ public abstract class BaseIntegrationTest extends MockSpringTest {
 
     protected static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
 
-    protected static final String USER_ID = "1";
+    protected static final String USER_ID = SUBMITTER_ID;
     protected static final String JURISDICTION_ID = "CMC";
     protected static final String CASE_TYPE_ID = "MoneyClaimCase";
     protected static final boolean IGNORE_WARNING = true;
