@@ -148,6 +148,22 @@ public class SampleCCDCaseData {
             );
     }
 
+    public static List<CCDCollectionElement<CCDClaimDocument>> getCaseDocuments() {
+        return ImmutableList.of(CCDCollectionElement.<CCDClaimDocument>builder()
+            .value(CCDClaimDocument.builder()
+                   .documentLink(CCDDocument.builder()
+                       .documentUrl("http://some-url")
+                       .documentBinaryUrl("http://some-url")
+                       .documentFileName("document file name")
+                       .build()
+                   )
+                   .documentType(CCDClaimDocumentType.SEALED_CLAIM)
+                   .size(3457L)
+                   .createdDatetime(LocalDateTimeFactory.nowInUTC())
+                .build())
+            .build());
+    }
+
     public static CCDResponseAcceptation getResponseAcceptation(CCDFormaliseOption formaliseOption) {
         return CCDResponseAcceptation.builder()
             .amountPaid(AMOUNT)
@@ -560,6 +576,7 @@ public class SampleCCDCaseData {
             .applicants(getApplicants())
             .respondents(getRespondents())
             .claimSubmissionOperationIndicators(defaultCCDClaimSubmissionOperationIndicatorsAllYes)
+            .caseDocuments(getCaseDocuments())
             .build();
     }
 
