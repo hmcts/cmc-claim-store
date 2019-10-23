@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
-import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.content.settlementagreement.SettlementCountersignedEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder;
@@ -15,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
 
+import java.util.Collections;
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
@@ -76,11 +76,12 @@ public class CountersignSettlementAgreementActionsHandler {
     @EventListener
     public void sendNotificationToStaff(CountersignSettlementAgreementEvent event) {
         final Claim claim = event.getClaim();
-        final Map<String, Object> parameters = aggregateParameters(claim);
-        EmailContent emailcontent = settlementCountersignedEmailContentProvider.createContent(parameters);
+        final Map<String, Object> parameterss = aggregateParameters(claim);
+        EmailContent emailcontent = settlementCountersignedEmailContentProvider.createContent(parameterss);
         this.emailService.sendEmail(
             staffEmailProperties.getSender(),
-            new EmailData(staffEmailProperties.getRecipient(), emailcontent.getSubject(), emailcontent.getBody(), null));
+            new EmailData(staffEmailProperties.getRecipient(), emailcontent.getSubject(), emailcontent.getBody(),
+                Collections.EMPTY_LIST));
     }
 
     private Map<String, Object> aggregateParameters(Claim claim) {

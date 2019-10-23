@@ -11,7 +11,7 @@ import java.util.Map;
 import static org.apache.commons.lang3.Validate.notEmpty;
 
 @Component
-public class SettlementCountersignedEmailContentProvider  implements EmailContentProvider<Map<String, Object>>{
+public class SettlementCountersignedEmailContentProvider  implements EmailContentProvider<Map<String, Object>> {
 
     private final TemplateService templateService;
     private final StaffEmailTemplates staffEmailTemplates;
