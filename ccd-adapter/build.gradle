@@ -16,7 +16,6 @@ dependencies {
   testCompile group: 'junit', name: 'junit', version: '4.12'
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.13.2'
   testCompile project(':domain-sample-data')
-  testCompile project(':ccd-sample-data')
 }
 
 configurations {
