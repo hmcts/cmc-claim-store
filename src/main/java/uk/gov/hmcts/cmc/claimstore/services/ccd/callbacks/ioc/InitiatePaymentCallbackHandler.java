@@ -83,6 +83,10 @@ public class InitiatePaymentCallbackHandler extends CallbackHandler {
 
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
 
+        logger.info("Initiating payment for callback of type {}, claim with external id {}",
+            callbackParams.getType(),
+            claim.getExternalId());
+
         LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
         LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
 
@@ -93,7 +97,7 @@ public class InitiatePaymentCallbackHandler extends CallbackHandler {
             .channel(CITIZEN)
             .build();
 
-        logger.info("Creating payment in pay hub for case {}",
+        logger.info("Creating payment for claim with external id {}",
             updatedClaim.getExternalId());
 
         Payment payment = paymentsService.createPayment(

@@ -202,3 +202,8 @@ smoke-test-citizen:
   password: "${SMOKE_TEST_USER_PASSWORD:}"
 smoke-test-solicitor:
   password: "${SMOKE_TEST_USER_PASSWORD:}"
+
+intention:
+  to:
+    proceed:
+      deadline: 33
