@@ -67,35 +67,17 @@ public class HearingContentProvider {
 
     }
 
-    private void mapExpertRequest(DirectionsQuestionnaire questionnaire, HearingContent.HearingContentBuilder builder) {
-        
-        YesNoOption expertRequired = questionnaire.getExpertRequired().orElse(YesNoOption.NO);
-        builder.expertRequired(NO);
-        if (expertRequired == YesNoOption.YES) {
-            builder.expertRequired(YES);
-            builder.hasExpertReport(questionnaire.getExpertReports().isEmpty() ? NO : YES);
+    private void mapExpertRequest(ExpertRequest expertRequest, HearingContent.HearingContentBuilder builder) {
 
-            YesNoOption permissionForExpert = questionnaire.getPermissionForExpert().orElse(YesNoOption.NO);
-            builder.courtPermissionForExpertReport(NO);
-
-            if (permissionForExpert == YesNoOption.YES) {
-                builder.courtPermissionForExpertReport(YES);
-                builder.expertExamineNeeded(NO);
-
-                ExpertRequest expertRequest = questionnaire.getExpertRequest().orElse(null);
-                if (expertRequest != null) {
-                    if (!StringUtils.isBlank(expertRequest.getReasonForExpertAdvice())) {
-                        builder.reasonWhyExpertAdvice(expertRequest.getReasonForExpertAdvice());
-                        builder.expertExamineNeeded(YES);
-                        builder.whatToExamine(expertRequest.getExpertEvidenceToExamine());
-                    }
-                } else {
-                    builder.expertRequired(NO);
-                }
-
-            }
-
+        builder.courtPermissionForExpertReport(YES);
+        if (!StringUtils.isBlank(expertRequest.getReasonForExpertAdvice())) {
+            builder.reasonWhyExpertAdvice(expertRequest.getReasonForExpertAdvice());
+            builder.expertExamineNeeded(YES);
+        } else {
+            builder.expertExamineNeeded(NO);
         }
+
+        builder.whatToExamine(expertRequest.getExpertEvidenceToExamine());
     }
 
     public HearingContent mapDirectionQuestionnaire(DirectionsQuestionnaire questionnaire) {
@@ -110,9 +92,12 @@ public class HearingContentProvider {
         questionnaire.getHearingLocation().ifPresent(hearingLocation -> mapHearingLocationDetails(hearingLocation,
             contentBuilder));
 
-        mapExpertRequest(questionnaire, contentBuilder);
+        contentBuilder.hasExpertReport(questionnaire.getExpertReports().isEmpty() ? NO : YES);
 
         questionnaire.getWitness().ifPresent(contentBuilder::witness);
+        contentBuilder.courtPermissionForExpertReport(NO);
+
+        questionnaire.getExpertRequest().ifPresent(expertRequest -> mapExpertRequest(expertRequest, contentBuilder));
 
         contentBuilder.unavailableDates(
             questionnaire.getUnavailableDates().stream().map(mapToISOFullStyle).collect(toList())
