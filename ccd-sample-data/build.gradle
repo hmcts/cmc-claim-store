@@ -9,6 +9,6 @@ repositories {
 dependencies {
   compile project(':ccd-adapter')
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.6.2'
-  compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.9'
-  compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.9.3'
+  compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.10.0'
+  compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.0'
 }

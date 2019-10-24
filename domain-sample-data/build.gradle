@@ -8,5 +8,4 @@ repositories {
 
 dependencies {
   compile project(':domain-model')
-  compile project(':ccd-adapter')
 }
