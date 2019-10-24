@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
@@ -184,7 +183,6 @@ public class ClaimService {
     }
 
     @LogExecutionTime
-    @Transactional(transactionManager = "transactionManager")
     public CreatePaymentResponse initiatePayment(
         String authorisation,
         String submitterId,
@@ -204,7 +202,6 @@ public class ClaimService {
     }
 
     @LogExecutionTime
-    @Transactional(transactionManager = "transactionManager")
     public CreatePaymentResponse resumePayment(
         String authorisation,
         ClaimData claimData) {
@@ -223,7 +220,6 @@ public class ClaimService {
     }
 
     @LogExecutionTime
-    @Transactional(transactionManager = "transactionManager")
     public Claim saveCitizenClaim(
         String authorisation,
         ClaimData claimData,
@@ -242,7 +238,6 @@ public class ClaimService {
     }
 
     @LogExecutionTime
-    @Transactional(transactionManager = "transactionManager")
     public Claim saveClaim(
         String submitterId,
         ClaimData claimData,
@@ -269,7 +264,6 @@ public class ClaimService {
     }
 
     @LogExecutionTime
-    @Transactional(transactionManager = "transactionManager")
     public Claim saveRepresentedClaim(
         String submitterId,
         ClaimData claimData,
