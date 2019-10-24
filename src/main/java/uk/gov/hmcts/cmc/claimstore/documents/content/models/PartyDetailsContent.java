@@ -14,6 +14,7 @@ public class PartyDetailsContent {
     private final String contactPerson;
     private final Address address;
     private final boolean addressAmended;
+    private final boolean phoneAmended;
     private final Address correspondenceAddress;
     private final String mobilePhone;
     private final String dateOfBirth;
@@ -37,7 +38,8 @@ public class PartyDetailsContent {
         String dateOfBirth,
         String email,
         List<TimelineEvent> events,
-        List<EvidenceContent> evidences
+        List<EvidenceContent> evidences,
+        Boolean phoneAmended
     ) {
         this.type = type;
         this.fullName = fullName;
@@ -52,6 +54,7 @@ public class PartyDetailsContent {
         this.email = email;
         this.events = events;
         this.evidences = evidences;
+        this.phoneAmended = phoneAmended;
     }
 
     public String getType() {
@@ -80,6 +83,10 @@ public class PartyDetailsContent {
 
     public boolean getAddressAmended() {
         return addressAmended;
+    }
+
+    public boolean getPhoneAmended() {
+        return phoneAmended;
     }
 
     public Address getCorrespondenceAddress() {
