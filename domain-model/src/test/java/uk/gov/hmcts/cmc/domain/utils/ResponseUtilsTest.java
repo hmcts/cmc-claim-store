@@ -90,7 +90,7 @@ public class ResponseUtilsTest {
     public void isResponseFullDefenceStatesPaidNullResponseShouldBeFalse() {
         assertThat(ResponseUtils.isResponseFullDefenceStatesPaid(null)).isFalse();
     }
-  
+
     @Test
     public void isResponsePartAdmitPayImmediatelyOnPartAdmissionWithPayImmediatelyShouldBeTrue() {
         Response response = PartAdmissionResponse.builder().paymentIntention(
@@ -169,6 +169,22 @@ public class ResponseUtilsTest {
             .withMediation(YesNoOption.NO).build();
 
         assertThat(ResponseUtils.isFullDefenceDisputeAndNoMediation(response)).isTrue();
+    }
+
+    @Test
+    public void shouldReturnTrueWhenFullDefenceDisputeOptionAndNoMediation() {
+        Response response = SampleResponse.FullDefence.builder().withDefenceType(DefenceType.DISPUTE)
+            .withMediation(YesNoOption.NO).build();
+
+        assertThat(ResponseUtils.isFullDefenceDispute(response)).isTrue();
+    }
+
+    @Test
+    public void shouldReturnTrueWhenFullDefenceDisputeOptionAndYesMediation() {
+        Response response = SampleResponse.FullDefence.builder().withDefenceType(DefenceType.DISPUTE)
+            .withMediation(YesNoOption.YES).build();
+
+        assertThat(ResponseUtils.isFullDefenceDispute(response)).isTrue();
     }
 
     @Test
