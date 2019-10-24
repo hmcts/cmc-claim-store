@@ -76,8 +76,8 @@ public class CountersignSettlementAgreementActionsHandler {
     @EventListener
     public void sendNotificationToStaff(CountersignSettlementAgreementEvent event) {
         final Claim claim = event.getClaim();
-        final Map<String, Object> parameterss = aggregateParameters(claim);
-        EmailContent emailcontent = settlementCountersignedEmailContentProvider.createContent(parameterss);
+        final Map<String, Object> parameters = aggregateParameters(claim);
+        EmailContent emailcontent = settlementCountersignedEmailContentProvider.createContent(parameters);
         this.emailService.sendEmail(
             staffEmailProperties.getSender(),
             new EmailData(staffEmailProperties.getRecipient(), emailcontent.getSubject(), emailcontent.getBody(),
