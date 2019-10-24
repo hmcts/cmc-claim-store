@@ -133,21 +133,12 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        Map<String, Object> responseData = deserializeObjectFrom(
+        List<String> responseData = deserializeObjectFrom(
             mvcResult,
             AboutToStartOrSubmitCallbackResponse.class
-        ).getData();
+        ).getErrors();
 
-        List<Map<String, Object>> respondents = (List<Map<String, Object>>) responseData.get("respondents");
-        Map<String, Object> defendant = (Map<String, Object>) respondents.get(0).get("value");
-
-        assertThat(responseData)
-            .contains(
-                entry("paymentStatus", FAILED.toString()),
-                entry("issuedOn", "2017-11-15"))
-            .doesNotContainKeys("referenceNumber");
-
-        assertThat(defendant).doesNotContainKeys("responseDeadline");
+        assertThat(responseData).contains("Payment not successful");
     }
 
     private ResultActions makeRequestAndRespondWithSuccess(String callbackType) throws Exception {

@@ -171,7 +171,7 @@ public class CreateCitizenClaimCallbackHandlerTest {
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
             createCitizenClaimCallbackHandler.handle(callbackParams);
 
-        assertThat(response.getWarnings()).containsOnly("Payment not successful");
+        assertThat(response.getErrors()).containsOnly("Payment not successful");
     }
 
     @Test

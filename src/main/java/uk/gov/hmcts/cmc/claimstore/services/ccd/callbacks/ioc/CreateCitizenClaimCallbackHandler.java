@@ -99,7 +99,7 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
         if (payment.getStatus() != PaymentStatus.SUCCESS) {
             return AboutToStartOrSubmitCallbackResponse
                 .builder()
-                .warnings(ImmutableList.of("Payment not successful"))
+                .errors(ImmutableList.of("Payment not successful"))
                 .build();
         }
 
