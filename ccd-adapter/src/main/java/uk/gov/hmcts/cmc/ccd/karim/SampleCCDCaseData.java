@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.ccd.sampledata;
+package uk.gov.hmcts.cmc.ccd.karim;
 
 import com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
@@ -74,18 +74,17 @@ import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EXP
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYEWITNESS;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.OTHER;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOtherDirectionHeaderType.UPLOAD;
-import static uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicators;
-import static uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDTelephone.withDefaultPhoneNumber;
-import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
+import static uk.gov.hmcts.cmc.ccd.karim.SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicators;
+import static uk.gov.hmcts.cmc.ccd.karim.SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicatorsAllYes;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
 
-public class SampleData {
+public class SampleCCDCaseData {
 
     public static final String AMOUNT = "12398";
 
     //Utility class
-    private SampleData() {
+    private SampleCCDCaseData() {
     }
 
     private static CCDCase.CCDCaseBuilder ccdBuilderWithDefault() {
@@ -121,7 +120,7 @@ public class SampleData {
             .interestClaimStartDate(LocalDate.now())
             .interestSpecificDailyAmount("1000")
             .interestEndDateType(CCDInterestEndDateType.SUBMISSION)
-            .paymentStatus("Success")
+            .paymentStatus("success")
             .paymentDateCreated(LocalDate.of(2019, 01, 01))
             .paymentId("PaymentId")
             .paymentAmount("400000")
@@ -269,7 +268,6 @@ public class SampleData {
                     .primaryAddress(ccdAddress)
                     .dateOfBirth(LocalDate.of(1950, 01, 01))
                     .correspondenceAddress(ccdAddress)
-                    .telephoneNumber(withDefaultPhoneNumber())
                     .build())
             .partyDetail(
                 CCDParty.builder()
@@ -282,6 +280,28 @@ public class SampleData {
             .claimantProvidedRepresentativeOrganisationPhone("07987654321")
             .claimantProvidedRepresentativeOrganisationPhone("my@email.com")
             .claimantProvidedRepresentativeOrganisationDxAddress("dx123")
+            .responseDeadline(LocalDate.of(2019, 01, 21))
+            .build();
+    }
+
+    public static CCDRespondent getCCDRespondentIndividualWithDefault() {
+        CCDAddress ccdAddress = getCCDAddress();
+        return CCDRespondent.builder()
+            .partyName("Mary Richards")
+            .claimantProvidedDetail(
+                CCDParty.builder()
+                    .type(INDIVIDUAL)
+                    .primaryAddress(ccdAddress)
+                    .dateOfBirth(LocalDate.of(1950, 01, 01))
+                    .correspondenceAddress(ccdAddress)
+                    .build())
+            .partyDetail(
+                CCDParty.builder()
+                    .emailAddress("defendant@email.test")
+                    .build()
+            )
+            .claimantProvidedPartyName("Individual")
+            .responseDeadline(LocalDate.of(2019, 01, 21))
             .build();
     }
 
@@ -293,7 +313,6 @@ public class SampleData {
                 .primaryAddress(ccdAddress)
                 .correspondenceAddress(ccdAddress)
                 .contactPerson("MR. Hyde")
-                .telephoneNumber(withDefaultPhoneNumber())
                 .companiesHouseNumber("12345678")
                 .build()
             )
@@ -313,7 +332,6 @@ public class SampleData {
                 .type(COMPANY)
                 .primaryAddress(ccdAddress)
                 .correspondenceAddress(ccdAddress)
-                .telephoneNumber(withDefaultPhoneNumber())
                 .contactPerson("MR. Hyde")
                 .build())
             .claimantProvidedPartyName("Abc Ltd")
@@ -333,7 +351,6 @@ public class SampleData {
                 .primaryAddress(ccdAddress)
                 .title("Mr.")
                 .businessName("My Trade")
-                .telephoneNumber(withDefaultPhoneNumber())
                 .correspondenceAddress(ccdAddress)
                 .build()
             )
@@ -363,6 +380,21 @@ public class SampleData {
             .representativeOrganisationPhone("07987654321")
             .representativeOrganisationEmail("my@email.com")
             .representativeOrganisationDxAddress("dx123")
+            .build();
+    }
+
+    public static CCDApplicant getCCDApplicantIndividualWithDefault() {
+        CCDAddress ccdAddress = getCCDAddress();
+        return CCDApplicant.builder()
+            .partyDetail(CCDParty.builder()
+                .type(INDIVIDUAL)
+                .primaryAddress(ccdAddress)
+                .emailAddress("claimant@email.test")
+                .telephoneNumber(CCDTelephone.builder().telephoneNumber("07987654321").build())
+                .dateOfBirth(LocalDate.of(1950, 01, 01))
+                .correspondenceAddress(ccdAddress)
+                .build())
+            .partyName("Individual")
             .build();
     }
 
@@ -488,11 +520,19 @@ public class SampleData {
             .build();
     }
 
+    public static List<CCDCollectionElement<CCDApplicant>> getApplicants() {
+        return singletonList(CCDCollectionElement.<CCDApplicant>builder()
+            .id(UUID.randomUUID().toString())
+            .value(getCCDApplicantIndividual()).build());
+    }
+
+    public static List<CCDCollectionElement<CCDRespondent>> getRespondents() {
+        return singletonList(CCDCollectionElement.<CCDRespondent>builder()
+            .id(UUID.randomUUID().toString())
+            .value(getCCDRespondentIndividual()).build());
+    }
+
     public static CCDCase getCCDLegalCase() {
-        List<CCDCollectionElement<CCDApplicant>> applicants
-            = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
-        List<CCDCollectionElement<CCDRespondent>> respondents
-            = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(getCCDRespondentIndividual()).build());
         return CCDCase.builder()
             .id(1L)
             .submittedOn(LocalDateTime.of(2017, 11, 01, 10, 15, 30))
@@ -513,46 +553,33 @@ public class SampleData {
             .externalReferenceNumber("external ref")
             .externalId(UUID.randomUUID().toString())
             .feeAccountNumber("PBA1234567")
+            .feeAmountInPennies("75000")
             .feeCode("X1202")
             .reason("Reason for the case")
             .preferredCourt("London Court")
-            .applicants(applicants)
-            .respondents(respondents)
-            .claimSubmissionOperationIndicators(defaultCCDClaimSubmissionOperationIndicators)
-            .state(OPEN.getValue())
+            .applicants(getApplicants())
+            .respondents(getRespondents())
+            .claimSubmissionOperationIndicators(defaultCCDClaimSubmissionOperationIndicatorsAllYes)
             .build();
     }
 
     public static CCDCase getCCDCitizenCase(List<CCDCollectionElement<CCDAmountRow>> amountBreakDown) {
-        List<CCDCollectionElement<CCDApplicant>> applicants
-            = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
-        List<CCDCollectionElement<CCDRespondent>> respondents
-            = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(getCCDRespondentIndividual()).build());
 
         return ccdBuilderWithDefault()
             .amountBreakDown(amountBreakDown)
-            .applicants(applicants)
-            .respondents(respondents)
-            .state(OPEN.getValue())
+            .applicants(getApplicants())
+            .respondents(getRespondents())
             .build();
     }
 
-    public static CCDCase getCCDCitizenCaseWithoutPayment() {
-        List<CCDCollectionElement<CCDApplicant>> applicants
-            = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
-        List<CCDCollectionElement<CCDRespondent>> respondents
-            = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(getCCDRespondentIndividual()).build());
+    public static CCDCase getCCDCitizenCaseWithDefault() {
 
         return ccdBuilderWithDefault()
-            .amountBreakDown(getAmountBreakDown())
-            .paymentAmount(null)
-            .paymentDateCreated(null)
-            .paymentId(null)
-            .paymentStatus(null)
-            .paymentNextUrl(null)
-            .paymentReference(null)
-            .applicants(applicants)
-            .respondents(respondents)
+            .amountType(RANGE)
+            .amountLowerValue("5000")
+            .amountHigherValue("50000")
+            .applicants(getApplicants())
+            .respondents(getRespondents())
             .build();
     }
 
@@ -716,7 +743,6 @@ public class SampleData {
             .applicants(applicants)
             .respondents(respondents)
             .claimSubmissionOperationIndicators(claimIndicatorSupplier)
-            .state(OPEN.getValue())
             .build();
     }
 

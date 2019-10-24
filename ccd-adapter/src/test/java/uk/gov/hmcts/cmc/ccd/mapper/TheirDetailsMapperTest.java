@@ -10,7 +10,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
-import uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDTelephone;
+import uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDTelephone;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
@@ -19,10 +19,10 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
-import static uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDCaseData.getCCDRespondentCompany;
-import static uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDCaseData.getCCDRespondentIndividual;
-import static uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDCaseData.getCCDRespondentOrganisation;
-import static uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDCaseData.getCCDRespondentSoleTrader;
+import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDCaseData.getCCDRespondentCompany;
+import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDCaseData.getCCDRespondentIndividual;
+import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDCaseData.getCCDRespondentOrganisation;
+import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDCaseData.getCCDRespondentSoleTrader;
 
 @SpringBootTest
 @ContextConfiguration(classes = CCDAdapterConfig.class)

@@ -15,7 +15,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
-import uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDCaseData;
+import uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDCaseData;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Address;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;

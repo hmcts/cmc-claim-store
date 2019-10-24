@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDCaseData;
+import uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDCaseData;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Classification;
 

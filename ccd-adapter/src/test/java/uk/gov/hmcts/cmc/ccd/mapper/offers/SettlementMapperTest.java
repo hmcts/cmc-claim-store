@@ -10,7 +10,7 @@ import uk.gov.hmcts.cmc.ccd.config.CCDAdapterConfig;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
-import uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDDefendant;
+import uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDDefendant;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;

@@ -15,7 +15,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.ccd.sampledata.SampleCCDCaseData;
+import uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDCaseData;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
