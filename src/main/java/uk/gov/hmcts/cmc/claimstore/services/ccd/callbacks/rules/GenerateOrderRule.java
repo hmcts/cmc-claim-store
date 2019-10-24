@@ -24,21 +24,21 @@ public class GenerateOrderRule {
 
         List<String> validationErrors = new ArrayList<>();
 
-        if (fromEnum(directionOrderData.getExpertReportPermissionPartyAskedByClaimant())
-            && !fromEnum(directionOrderData.getExpertReportPermissionPartyGivenToClaimant())
+        if (isPresent(directionOrderData.getExpertReportPermissionPartyAskedByClaimant())
+            && !isPresent(directionOrderData.getExpertReportPermissionPartyGivenToClaimant())
         ) {
             validationErrors.add(CLAIMANT_REQUESTED_FOR_EXPORT_REPORT);
         }
 
-        if (fromEnum(directionOrderData.getExpertReportPermissionPartyAskedByDefendant())
-            && !fromEnum(directionOrderData.getExpertReportPermissionPartyGivenToDefendant())
+        if (isPresent(directionOrderData.getExpertReportPermissionPartyAskedByDefendant())
+            && !isPresent(directionOrderData.getExpertReportPermissionPartyGivenToDefendant())
         ) {
             validationErrors.add(DEFENDANT_REQUESTED_FOR_EXPORT_REPORT);
         }
         return validationErrors;
     }
 
-    private boolean fromEnum(CCDYesNoOption input) {
-        return Optional.ofNullable(input).map(CCDYesNoOption::toBoolean).orElse(false);
+    private boolean isPresent(CCDYesNoOption input) {
+        return Optional.ofNullable(input).isPresent();
     }
 }
