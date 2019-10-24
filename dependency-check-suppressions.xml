@@ -151,14 +151,4 @@
         <gav regex="true">.*</gav>
         <cve>CVE-2019-16869</cve>
     </suppress>
-    <suppress>
-        <notes><![CDATA[
-           no fix available, not affected anyway
-           ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson-databind@.*$</packageUrl>
-        <cve>CVE-2019-12814</cve>
-        <cve>CVE-2019-14379</cve>
-        <cve>CVE-2019-14439</cve>
-        <cve>CVE-2019-12384</cve>
-    </suppress>
 </suppressions>

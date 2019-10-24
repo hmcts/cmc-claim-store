@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
@@ -48,7 +47,6 @@ public class DefendantResponseService {
         this.appInsights = appInsights;
     }
 
-    @Transactional(transactionManager = "cmcTransactionManager")
     public Claim save(
         String externalId,
         String defendantId,

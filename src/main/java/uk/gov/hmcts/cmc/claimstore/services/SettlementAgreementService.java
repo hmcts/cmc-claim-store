@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
@@ -25,7 +24,6 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.SETTLEMEN
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.SETTLEMENT_AGREEMENT_REJECTED;
 
 @Service
-@Transactional(transactionManager = "cmcTransactionManager")
 public class SettlementAgreementService {
 
     private static final String REJECTION_EXPECTED_STATE_ERROR =
