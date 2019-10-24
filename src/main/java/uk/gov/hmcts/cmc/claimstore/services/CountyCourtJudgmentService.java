@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
@@ -45,7 +44,6 @@ public class CountyCourtJudgmentService {
         this.appInsights = appInsights;
     }
 
-    @Transactional(transactionManager = "transactionManager")
     public Claim save(
         CountyCourtJudgment countyCourtJudgment,
         String externalId,
@@ -80,7 +78,6 @@ public class CountyCourtJudgmentService {
         return claimWithCCJ;
     }
 
-    @Transactional(transactionManager = "transactionManager")
     public Claim reDetermination(
         ReDetermination redetermination,
         String externalId,
