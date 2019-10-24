@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
@@ -48,6 +49,7 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
     private final CaseMapper caseMapper;
     private final PaymentsService paymentsService;
     private final EventProducer eventProducer;
+    private final UserService userService;
 
     @Autowired
     public CreateCitizenClaimCallbackHandler(
@@ -57,7 +59,8 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
         ResponseDeadlineCalculator responseDeadlineCalculator,
         CaseMapper caseMapper,
         PaymentsService paymentsService,
-        EventProducer eventProducer
+        EventProducer eventProducer,
+        UserService userService
 
     ) {
         this.caseDetailsConverter = caseDetailsConverter;
@@ -67,6 +70,7 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
         this.caseMapper = caseMapper;
         this.paymentsService = paymentsService;
         this.eventProducer = eventProducer;
+        this.userService = userService;
     }
 
     @Override
@@ -129,12 +133,8 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
             callbackParams.getType(),
             claim.getExternalId());
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
-        User user = null; //TODO:
-        eventProducer.createClaimCreatedEvent(
-            claim,
-            user.getUserDetails().getFullName(),
-            authorisation
-        );
+        User user = userService.getUser(authorisation);
+        eventProducer.createClaimCreatedEvent(claim, user.getUserDetails().getFullName(), authorisation);
         return AboutToStartOrSubmitCallbackResponse.builder().build();
     }
 }
