@@ -44,4 +44,19 @@ public class GenerateOrderRuleTest {
 
         Assertions.assertThat(validations).isEmpty();
     }
+
+    @Test
+    public void shouldNotReturnValidationMessageWhenUserHasNotAskedFprPermission() {
+        CCDCase ccdCase = CCDCase.builder()
+            .directionOrderData(CCDOrderGenerationData.builder()
+                .expertReportPermissionPartyAskedByClaimant(CCDYesNoOption.NO)
+                .expertReportPermissionPartyAskedByDefendant(CCDYesNoOption.NO)
+                .expertReportPermissionPartyGivenToClaimant(null)
+                .expertReportPermissionPartyGivenToDefendant(null)
+                .build())
+            .build();
+        List<String> validations = generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase);
+
+        Assertions.assertThat(validations).isEmpty();
+    }
 }

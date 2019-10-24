@@ -24,13 +24,13 @@ public class GenerateOrderRule {
 
         List<String> validationErrors = new ArrayList<>();
 
-        if (isPresent(directionOrderData.getExpertReportPermissionPartyAskedByClaimant())
+        if (isPresentAndIsYes(directionOrderData.getExpertReportPermissionPartyAskedByClaimant())
             && !isPresent(directionOrderData.getExpertReportPermissionPartyGivenToClaimant())
         ) {
             validationErrors.add(CLAIMANT_REQUESTED_FOR_EXPORT_REPORT);
         }
 
-        if (isPresent(directionOrderData.getExpertReportPermissionPartyAskedByDefendant())
+        if (isPresentAndIsYes(directionOrderData.getExpertReportPermissionPartyAskedByDefendant())
             && !isPresent(directionOrderData.getExpertReportPermissionPartyGivenToDefendant())
         ) {
             validationErrors.add(DEFENDANT_REQUESTED_FOR_EXPORT_REPORT);
@@ -40,5 +40,9 @@ public class GenerateOrderRule {
 
     private boolean isPresent(CCDYesNoOption input) {
         return Optional.ofNullable(input).isPresent();
+    }
+
+    private boolean isPresentAndIsYes(CCDYesNoOption input) {
+        return isPresent(input) && input == CCDYesNoOption.YES;
     }
 }
