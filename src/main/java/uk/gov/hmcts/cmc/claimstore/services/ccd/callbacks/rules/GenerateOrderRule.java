@@ -43,6 +43,6 @@ public class GenerateOrderRule {
     }
 
     private boolean isPresentAndIsYes(CCDYesNoOption input) {
-        return isPresent(input) && input == CCDYesNoOption.YES;
+        return isPresent(input) && input.toBoolean();
     }
 }
