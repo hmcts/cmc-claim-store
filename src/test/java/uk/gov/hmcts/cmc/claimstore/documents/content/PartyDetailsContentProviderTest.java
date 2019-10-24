@@ -21,7 +21,7 @@ public class PartyDetailsContentProviderTest {
 
     private final PartyDetailsContentProvider provider = new PartyDetailsContentProvider();
 
-    private final TheirDetails defendant = SampleTheirDetails.builder()
+    private final TheirDetails defendant = SampleTheirDetails.builder().withPhone("0999")
         .individualDetails();
 
     private final Address correspondenceAddress = SampleAddress.builder()
@@ -53,6 +53,7 @@ public class PartyDetailsContentProviderTest {
             .withDateOfBirth(
                 DATE_OF_BIRTH
             )
+            .withMobilePhone("9384772782883")
             .individual();
     }
 
@@ -141,6 +142,28 @@ public class PartyDetailsContentProviderTest {
         );
 
         assertThat(content.getCorrespondenceAddress()).isEqualTo(correspondenceAddress);
+    }
+
+    @Test
+    public void phoneShouldBeAsGivenByClaimantWhenNotAmended() {
+        PartyDetailsContent content = provider.createContent(SampleTheirDetails.builder().individualDetails(),
+            amendedDetails(),
+            DEFENDANT_EMAIL,
+            null,
+            null);
+
+        assertThat(content.getPhoneAmended()).isFalse();
+    }
+
+    @Test
+    public void phoneShouldBeAsGivenByDefendantWhenAmended() {
+        PartyDetailsContent content = provider.createContent(defendant,
+            amendedDetails(),
+            DEFENDANT_EMAIL,
+            null,
+            null);
+
+        assertThat(content.getPhoneAmended()).isTrue();
     }
 
 }
