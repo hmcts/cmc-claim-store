@@ -9,10 +9,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.PaymentsService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
@@ -39,6 +40,7 @@ import static uk.gov.hmcts.cmc.ccd.sample.data.SampleData.getAmountBreakDown;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.CreateCitizenClaimCallbackHandlerTest.ISSUE_DATE;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.CreateCitizenClaimCallbackHandlerTest.RESPONSE_DEADLINE;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
+import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.FAILED;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 
 @TestPropertySource(
@@ -56,31 +58,31 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
 
     @MockBean
     private PaymentsService paymentsService;
+
+    @MockBean
+    protected ResponseDeadlineCalculator responseDeadlineCalculator;
+
+    @MockBean
+    protected IssueDateCalculator issueDateCalculator;
+
     @Autowired
     private CaseDetailsConverter caseDetailsConverter;
-    @Autowired
-    private CaseMapper caseMapper;
+
+    private Payment.PaymentBuilder paymentBuilder;
 
     private Payment payment;
 
     @Before
     public void setUp() {
-        payment = Payment.builder()
+        paymentBuilder = Payment.builder()
             .amount(TEN)
             .reference("reference2")
-            .status(SUCCESS)
             .dateCreated("2017-12-03")
-            .nextUrl(NEXT_URL)
-            .build();
+            .nextUrl(NEXT_URL);
 
         given(referenceNumberRepository.getReferenceNumberForCitizen()).willReturn(REFERENCE_NO);
         given(responseDeadlineCalculator.calculateResponseDeadline(any())).willReturn(RESPONSE_DEADLINE);
-
-        given(paymentsService
-            .retrievePayment(
-                eq(AUTHORISATION_TOKEN),
-                any(Claim.class)))
-            .willReturn(payment);
+        given(issueDateCalculator.calculateIssueDay(any())).willReturn(ISSUE_DATE);
 
         UserDetails userDetails = SampleUserDetails.builder().withRoles("citizen").build();
         given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
@@ -88,8 +90,15 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
 
     @Test
     public void shouldAddFieldsOnCaseWhenCallbackIsSuccessful() throws Exception {
+        payment = paymentBuilder.status(SUCCESS).build();
 
-        MvcResult mvcResult = makeRequest(CallbackType.ABOUT_TO_SUBMIT.getValue())
+        given(paymentsService
+            .retrievePayment(
+                eq(AUTHORISATION_TOKEN),
+                any(Claim.class)))
+            .willReturn(payment);
+
+        MvcResult mvcResult = makeRequestAndRespondWithSuccess(CallbackType.ABOUT_TO_SUBMIT.getValue())
             .andExpect(status().isOk())
             .andReturn();
         Map<String, Object> responseData = deserializeObjectFrom(
@@ -101,18 +110,72 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
         Map<String, Object> defendant = (Map<String, Object>) respondents.get(0).get("value");
 
         assertThat(responseData).contains(
-            entry("paymentStatus", payment.getStatus().toString()),
-            entry("issuedOn", ISSUE_DATE.toString())
+            entry("paymentStatus", SUCCESS.toString()),
+            entry("issuedOn", ISSUE_DATE.toString()),
+            //not sure why previousServiceCaseReference, i thought it should be caseReference
+            entry("previousServiceCaseReference", REFERENCE_NO)
         );
 
         assertThat(defendant).contains(entry("responseDeadline", RESPONSE_DEADLINE.toString()));
     }
 
-    private ResultActions makeRequest(String callbackType) throws Exception {
+    @Test
+    public void shouldAddFieldsOnCaseWhenCallbackIsSuccessfulButWithErrors() throws Exception {
+        payment = paymentBuilder.status(FAILED).build();
+
+        given(paymentsService
+            .retrievePayment(
+                eq(AUTHORISATION_TOKEN),
+                any(Claim.class)))
+            .willReturn(payment);
+
+        MvcResult mvcResult = makeRequestAndRespondWithError(CallbackType.ABOUT_TO_SUBMIT.getValue())
+            .andExpect(status().isOk())
+            .andReturn();
+
+        Map<String, Object> responseData = deserializeObjectFrom(
+            mvcResult,
+            AboutToStartOrSubmitCallbackResponse.class
+        ).getData();
+
+        List<Map<String, Object>> respondents = (List<Map<String, Object>>) responseData.get("respondents");
+        Map<String, Object> defendant = (Map<String, Object>) respondents.get(0).get("value");
+
+        assertThat(responseData)
+            .contains(
+                entry("paymentStatus", FAILED.toString()),
+                entry("issuedOn", "2017-11-15"))
+            .doesNotContainKeys("referenceNumber");
+
+        assertThat(defendant).doesNotContainKeys("responseDeadline");
+    }
+
+    private ResultActions makeRequestAndRespondWithSuccess(String callbackType) throws Exception {
         CaseDetails caseDetails = CaseDetails.builder()
             .id(CASE_ID)
             .data(caseDetailsConverter.convertToMap(
                 SampleData.getCCDCitizenCase(getAmountBreakDown())))
+            .state(OPEN.getValue())
+            .build();
+
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .eventId(CREATE_CITIZEN_CLAIM.getValue())
+            .caseDetails(caseDetails)
+            .build();
+
+        return webClient
+            .perform(post("/cases/callbacks/" + callbackType)
+                .header(HttpHeaders.CONTENT_TYPE, MimeType.JSON)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
+                .content(jsonMapper.toJson(callbackRequest))
+            );
+    }
+
+    private ResultActions makeRequestAndRespondWithError(String callbackType) throws Exception {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(CASE_ID)
+            .data(caseDetailsConverter.convertToMap(
+                SampleData.getCCDCitizenCase(getAmountBreakDown()).toBuilder().paymentStatus(FAILED.toString()).build()))
             .state(OPEN.getValue())
             .build();
 

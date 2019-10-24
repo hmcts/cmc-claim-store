@@ -177,6 +177,7 @@ public final class SampleClaim {
                     .build())
                 .build())
             .withReferenceNumber(null)
+            .withResponseDeadline(null)
             .build();
     }
 

@@ -23,7 +23,6 @@ import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -86,26 +85,26 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         Payment payment = paymentsService.retrievePayment(authorisation, claim);
 
-        Claim.ClaimBuilder claimBuilder = claim.toBuilder()
-            .channel(ChannelType.CITIZEN)
-            .claimData(claim.getClaimData().toBuilder()
-                .payment(payment)
-                .build());
-
-        if (payment.getStatus() == PaymentStatus.SUCCESS) {
-            LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
-            LocalDate responseDeadline = responseDeadlineCalculator.calculateResponseDeadline(issuedOn);
-            String referenceNumber = referenceNumberRepository.getReferenceNumberForCitizen();
-
-            claimBuilder
-                .referenceNumber(referenceNumber)
-                .issuedOn(issuedOn)
-                .responseDeadline(responseDeadline);
+        if (payment.getStatus() != PaymentStatus.SUCCESS) {
+            return AboutToStartOrSubmitCallbackResponse
+                .builder()
+//                .warnings(ImmutableList.of("Payment not successful"))
+                .build();
         }
+
+        Claim updatedClaim = claim.toBuilder()
+            .channel(ChannelType.CITIZEN)
+            .claimData(claim.getClaimData().toBuilder().payment(payment).build())
+            .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
+            .issuedOn(issueDateCalculator.calculateIssueDay(nowInLocalZone()))
+            .responseDeadline(responseDeadlineCalculator
+                .calculateResponseDeadline(issueDateCalculator.calculateIssueDay(nowInLocalZone())))
+            .build();
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()
-            .data(caseDetailsConverter.convertToMap(caseMapper.to(claimBuilder.build())))
+            .data(caseDetailsConverter.convertToMap(caseMapper.to(updatedClaim)))
             .build();
+
     }
 }

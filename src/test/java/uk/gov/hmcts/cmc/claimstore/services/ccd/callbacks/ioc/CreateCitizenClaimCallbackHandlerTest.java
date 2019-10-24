@@ -18,7 +18,6 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Payment;
-import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
@@ -36,6 +35,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
+import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.FAILED;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.withFullClaimData;
 
@@ -75,8 +75,16 @@ public class CreateCitizenClaimCallbackHandlerTest {
 
     private CaseDetails caseDetails = CaseDetails.builder().id(3L).data(Collections.emptyMap()).build();
 
+    private Payment.PaymentBuilder paymentBuilder;
+
     @Before
     public void setUp() {
+        paymentBuilder = Payment.builder()
+            .amount(TEN)
+            .reference("reference2")
+            .dateCreated("2017-12-03")
+            .nextUrl(NEXT_URL);
+
         createCitizenClaimCallbackHandler =
             new CreateCitizenClaimCallbackHandler(
             caseDetailsConverter,
@@ -101,16 +109,8 @@ public class CreateCitizenClaimCallbackHandlerTest {
     @Test
     public void shouldSuccessfullyReturnCallBackResponseWhenSuccessfulPayment() {
 
-        Payment expectedSuccessfulPayment = Payment.builder()
-            .amount(TEN)
-            .reference("reference")
-            .status(SUCCESS)
-            .dateCreated(now().toString())
-            .nextUrl(NEXT_URL)
-            .build();
-
         Mockito.when(paymentsService.retrievePayment(eq(BEARER_TOKEN), any(Claim.class)))
-            .thenReturn(expectedSuccessfulPayment);
+            .thenReturn(paymentBuilder.status(SUCCESS).build());
 
         Claim claim = SampleClaim.getDefault().toBuilder()
             .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
@@ -139,21 +139,14 @@ public class CreateCitizenClaimCallbackHandlerTest {
         Claim toBeSaved = claimArgumentCaptor.getValue();
         assertThat(toBeSaved.getIssuedOn()).isEqualTo(ISSUE_DATE);
         assertThat(toBeSaved.getReferenceNumber()).isEqualTo(REFERENCE_NO);
+        assertThat(toBeSaved.getResponseDeadline()).isEqualTo(RESPONSE_DEADLINE);
     }
 
     @Test
     public void shouldSuccessfullyReturnCallBackResponseWhenUnSuccessfulPayment() {
 
-        Payment expectedUnSuccessfulPayment = Payment.builder()
-            .amount(TEN)
-            .reference("reference")
-            .status(PaymentStatus.FAILED)
-            .dateCreated(now().toString())
-            .nextUrl(NEXT_URL)
-            .build();
-
         Mockito.when(paymentsService.retrievePayment(eq(BEARER_TOKEN), any(Claim.class)))
-            .thenReturn(expectedUnSuccessfulPayment);
+            .thenReturn(paymentBuilder.status(FAILED).build());
 
         Claim claim = SampleClaim.withFullClaimDataAndFailedPayment();
 
@@ -169,15 +162,14 @@ public class CreateCitizenClaimCallbackHandlerTest {
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
             createCitizenClaimCallbackHandler.handle(callbackParams);
 
-        assertThat(response.getErrors()).isNull();
+        assertThat(response.getErrors()).containsOnly("Payment not successful");
         assertThat(response.getWarnings()).isNull();
 
         verify(caseMapper).to(claimArgumentCaptor.capture());
 
         Claim toBeSaved = claimArgumentCaptor.getValue();
-        assertThat(toBeSaved.getIssuedOn()).isEqualTo(claim.getIssuedOn());
         assertThat(toBeSaved.getReferenceNumber()).isNull();
-        assertThat(toBeSaved.getResponseDeadline()).isEqualTo(claim.getResponseDeadline());
+        assertThat(toBeSaved.getResponseDeadline()).isNull();
     }
 
     @Test
