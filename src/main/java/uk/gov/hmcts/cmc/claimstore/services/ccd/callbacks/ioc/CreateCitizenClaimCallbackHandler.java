@@ -96,34 +96,26 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         Payment payment = paymentsService.retrievePayment(authorisation, claim);
 
-        Claim.ClaimBuilder claimBuilder = claim.toBuilder()
-            .channel(ChannelType.CITIZEN)
-            .claimData(claim.getClaimData().toBuilder()
-                .payment(payment)
-                .build());
-
-        if (payment.getStatus() == PaymentStatus.SUCCESS) {
-
-            claimBuilder
-                .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
-                .issuedOn(issueDateCalculator.calculateIssueDay(nowInLocalZone()))
-                .responseDeadline(
-                    responseDeadlineCalculator.calculateResponseDeadline(
-                        issueDateCalculator.calculateIssueDay(nowInLocalZone()))
-                );
-
+        if (payment.getStatus() != PaymentStatus.SUCCESS) {
             return AboutToStartOrSubmitCallbackResponse
                 .builder()
-                .data(caseDetailsConverter.convertToMap(caseMapper.to(claimBuilder.build())))
-                .build();
-        } else {
-            return AboutToStartOrSubmitCallbackResponse
-                .builder()
-                .data(caseDetailsConverter.convertToMap(caseMapper.to(claimBuilder.build())))
                 .warnings(ImmutableList.of("Payment not successful"))
-//                .errors(ImmutableList.of("Payment not successful"))
                 .build();
         }
+
+        Claim updatedClaim = claim.toBuilder()
+            .channel(ChannelType.CITIZEN)
+            .claimData(claim.getClaimData().toBuilder().payment(payment).build())
+            .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
+            .issuedOn(issueDateCalculator.calculateIssueDay(nowInLocalZone()))
+            .responseDeadline(responseDeadlineCalculator
+                .calculateResponseDeadline(issueDateCalculator.calculateIssueDay(nowInLocalZone())))
+            .build();
+
+        return AboutToStartOrSubmitCallbackResponse
+            .builder()
+            .data(caseDetailsConverter.convertToMap(caseMapper.to(updatedClaim)))
+            .build();
     }
 
     private CallbackResponse startClaimIssuedPostOperations(CallbackParams callbackParams) {

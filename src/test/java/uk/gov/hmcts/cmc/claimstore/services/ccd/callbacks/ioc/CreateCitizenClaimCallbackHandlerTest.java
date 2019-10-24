@@ -10,9 +10,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -66,6 +68,12 @@ public class CreateCitizenClaimCallbackHandlerTest {
     @Mock
     private PaymentsService paymentsService;
 
+    @Mock
+    private EventProducer eventProducer;
+
+    @Mock
+    private UserService userService;
+
     @Captor
     private ArgumentCaptor<Claim> claimArgumentCaptor;
 
@@ -87,12 +95,13 @@ public class CreateCitizenClaimCallbackHandlerTest {
 
         createCitizenClaimCallbackHandler =
             new CreateCitizenClaimCallbackHandler(
-            caseDetailsConverter,
-            issueDateCalculator,
-            referenceNumberRepository,
-            responseDeadlineCalculator,
-            caseMapper,
-            paymentsService
+                caseDetailsConverter,
+                issueDateCalculator,
+                referenceNumberRepository,
+                responseDeadlineCalculator,
+                caseMapper,
+                paymentsService,
+                eventProducer,userService
         );
 
         callbackRequest = CallbackRequest
@@ -162,14 +171,7 @@ public class CreateCitizenClaimCallbackHandlerTest {
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
             createCitizenClaimCallbackHandler.handle(callbackParams);
 
-        assertThat(response.getErrors()).containsOnly("Payment not successful");
-        assertThat(response.getWarnings()).isNull();
-
-        verify(caseMapper).to(claimArgumentCaptor.capture());
-
-        Claim toBeSaved = claimArgumentCaptor.getValue();
-        assertThat(toBeSaved.getReferenceNumber()).isNull();
-        assertThat(toBeSaved.getResponseDeadline()).isNull();
+        assertThat(response.getWarnings()).containsOnly("Payment not successful");
     }
 
     @Test
