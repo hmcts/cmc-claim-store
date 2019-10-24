@@ -141,6 +141,10 @@ notifications:
       defendantLegalOrderDrawn: "4bc101c9-1cbd-45f6-849f-b8bafc2ca535"
       reviewOrderEmailToClaimant: "3bea01fb-bfc5-4354-841c-432d80489362"
       reviewOrderEmailToDefendant: "d568fc1e-f1fc-441a-94da-6506df12cae6"
+      claimantReadyForDirections: "84151dc4-1534-47a3-8a4e-44c97bddd511"
+      defendantReadyForDirections: "5d003f50-4da9-4c23-b42c-6dff075b93e4"
+      claimantReadyForTransfer: "50c8bdd3-f68d-44cc-b46f-72e9ed1f55a6"
+      defendantReadyForTransfer: "487fdd65-131e-4547-a3ed-f632872fe957"
 
 staff-notifications:
   sender:

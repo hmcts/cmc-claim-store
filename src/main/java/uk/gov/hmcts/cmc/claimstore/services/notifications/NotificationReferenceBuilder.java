@@ -218,4 +218,19 @@ public class NotificationReferenceBuilder {
             return referenceForClaim(claimReferenceNumber, CLAIMANT);
         }
     }
+
+    public static class MediationUnsuccessful {
+        private MediationUnsuccessful() {
+            // do not instantiate
+        }
+
+        public static String referenceForTransfer(String claimReferenceNumber, String party) {
+            return reference("mediation-unsuccessful-%s-transfer", party, claimReferenceNumber);
+
+        }
+
+        public static String referenceForDirections(String claimReferenceNumber, String party) {
+            return reference("mediation-unsuccessful-%s-directions", party, claimReferenceNumber);
+        }
+    }
 }

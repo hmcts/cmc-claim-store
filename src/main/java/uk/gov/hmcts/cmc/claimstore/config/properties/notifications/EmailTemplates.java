@@ -124,4 +124,16 @@ public class EmailTemplates {
     @NotEmpty
     private String reviewOrderEmailToDefendant;
 
+    @NotEmpty
+    private String claimantReadyForDirections;
+
+    @NotEmpty
+    private String defendantReadyForDirections;
+
+    @NotEmpty
+    private String claimantReadyForTransfer;
+
+    @NotEmpty
+    private String defendantReadyForTransfer;
+
 }
