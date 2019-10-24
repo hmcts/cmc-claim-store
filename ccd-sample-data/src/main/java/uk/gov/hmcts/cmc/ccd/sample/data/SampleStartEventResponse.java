@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.domain.models.sampledata;
+package uk.gov.hmcts.cmc.ccd.sample.data;
 
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 

@@ -124,7 +124,8 @@ public class SampleData {
             .paymentId("PaymentId")
             .paymentAmount("400000")
             .paymentReference("RC-1524-6488-1670-7520")
-            .claimSubmissionOperationIndicators(SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicators)
+            .claimSubmissionOperationIndicators(SampleCCDClaimSubmissionOperationIndicators
+                .defaultCCDClaimSubmissionOperationIndicators)
             .timeline(singletonList(CCDCollectionElement.<CCDTimelineEvent>builder()
                 .value(CCDTimelineEvent.builder().date("some Date").description("description of event").build())
                 .build()))
@@ -516,7 +517,8 @@ public class SampleData {
             .preferredCourt("London Court")
             .applicants(applicants)
             .respondents(respondents)
-            .claimSubmissionOperationIndicators(SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicators)
+            .claimSubmissionOperationIndicators(SampleCCDClaimSubmissionOperationIndicators
+                .defaultCCDClaimSubmissionOperationIndicators)
             .state(OPEN.getValue())
             .build();
     }
