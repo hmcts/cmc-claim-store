@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
@@ -45,6 +47,7 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
     private final CaseMapper caseMapper;
     private final PaymentsService paymentsService;
+    private final EventProducer eventProducer;
 
     @Autowired
     public CreateCitizenClaimCallbackHandler(
@@ -53,7 +56,9 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
         ReferenceNumberRepository referenceNumberRepository,
         ResponseDeadlineCalculator responseDeadlineCalculator,
         CaseMapper caseMapper,
-        PaymentsService paymentsService
+        PaymentsService paymentsService,
+        EventProducer eventProducer
+
     ) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.issueDateCalculator = issueDateCalculator;
@@ -61,11 +66,15 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
         this.responseDeadlineCalculator = responseDeadlineCalculator;
         this.caseMapper = caseMapper;
         this.paymentsService = paymentsService;
+        this.eventProducer = eventProducer;
     }
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
-        return ImmutableMap.of(CallbackType.ABOUT_TO_SUBMIT, this::createCitizenClaim);
+        return ImmutableMap.of(
+            CallbackType.ABOUT_TO_SUBMIT, this::createCitizenClaim,
+            CallbackType.SUBMITTED, this::startClaimIssuedPostOperations
+        );
     }
 
     @Override
@@ -112,5 +121,20 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
             .builder()
             .data(caseDetailsConverter.convertToMap(caseMapper.to(updatedClaim)))
             .build();
+    }
+
+    private CallbackResponse startClaimIssuedPostOperations(CallbackParams callbackParams) {
+        Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
+        logger.info("Created citizen case for callback of type {}, claim with external id {}",
+            callbackParams.getType(),
+            claim.getExternalId());
+        String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
+        User user = null; //TODO:
+        eventProducer.createClaimCreatedEvent(
+            claim,
+            user.getUserDetails().getFullName(),
+            authorisation
+        );
+        return AboutToStartOrSubmitCallbackResponse.builder().build();
     }
 }
