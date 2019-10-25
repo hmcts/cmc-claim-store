@@ -213,7 +213,8 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
     }
 
     private boolean hasProvidedExpertReports(CCDDirectionsQuestionnaire directionsQuestionnaire) {
-        return !directionsQuestionnaire.getExpertReports().isEmpty();
+        return directionsQuestionnaire.getExpertReports() != null
+            && !directionsQuestionnaire.getExpertReports().isEmpty();
     }
 
     private boolean hasRequestedForPermissionWithProvidedEvidence(CCDDirectionsQuestionnaire directionsQuestionnaire) {
