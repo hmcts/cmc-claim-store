@@ -204,12 +204,21 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
     }
 
     private CCDYesNoOption hasRequestedExpertPermission(CCDDirectionsQuestionnaire directionsQuestionnaire) {
-        return (directionsQuestionnaire.getExpertRequired() != null
+        return directionsQuestionnaire.getExpertRequired() != null
             && directionsQuestionnaire.getExpertRequired().toBoolean()
-            && directionsQuestionnaire.getPermissionForExpert() != null
-            && directionsQuestionnaire.getPermissionForExpert().toBoolean()
-            && StringUtils.isNotBlank(directionsQuestionnaire.getExpertEvidenceToExamine()))
+            && (hasRequestedForPermissionWithProvidedEvidence(directionsQuestionnaire)
+            || hasProvidedExpertReports(directionsQuestionnaire))
             ? CCDYesNoOption.YES
             : NO;
+    }
+
+    private boolean hasProvidedExpertReports(CCDDirectionsQuestionnaire directionsQuestionnaire) {
+        return !directionsQuestionnaire.getExpertReports().isEmpty();
+    }
+
+    private boolean hasRequestedForPermissionWithProvidedEvidence(CCDDirectionsQuestionnaire directionsQuestionnaire) {
+        return directionsQuestionnaire.getPermissionForExpert() != null
+            && directionsQuestionnaire.getPermissionForExpert().toBoolean()
+            && StringUtils.isNotBlank(directionsQuestionnaire.getExpertEvidenceToExamine());
     }
 }
