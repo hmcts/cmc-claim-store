@@ -148,6 +148,7 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
             .caseDocuments(updateCaseDocumentsWithOrder(ccdCase, draftOrderDoc))
             .directionOrder(CCDDirectionOrder.builder()
                 .createdOn(nowInUTC())
+                .hearingCourtName(hearingCourt.getName())
                 .hearingCourtAddress(hearingCourt.getAddress())
                 .build())
             .build();
