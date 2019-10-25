@@ -26,6 +26,7 @@ import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.util.Collections;
 import java.util.List;
@@ -130,6 +131,6 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
             user.getUserDetails().getFullName(),
             authorisation
         );
-        return AboutToStartOrSubmitCallbackResponse.builder().build();
+        return SubmittedCallbackResponse.builder().build();
     }
 }
