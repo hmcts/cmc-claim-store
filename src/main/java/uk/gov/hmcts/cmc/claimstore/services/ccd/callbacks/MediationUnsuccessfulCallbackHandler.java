@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -39,10 +38,6 @@ public class MediationUnsuccessfulCallbackHandler extends CallbackHandler {
     private final CaseDetailsConverter caseDetailsConverter;
     private final NotificationService notificationService;
     private final NotificationsProperties notificationsProperties;
-
-    @Value("${doc_assembly.templateId}")
-    private String templateId;
-
 
     @Autowired
     public MediationUnsuccessfulCallbackHandler(
