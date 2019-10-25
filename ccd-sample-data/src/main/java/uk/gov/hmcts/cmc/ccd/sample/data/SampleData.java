@@ -84,6 +84,8 @@ public class SampleData {
 
     public static final String AMOUNT = "12398";
     public static final String SUBMIT_MORE_DOCS_INSTRUCTION = "submit more docs";
+    public static final String MANCHESTER_CIVIL_JUSTICE_CENTRE_CIVIL_AND_FAMILY_COURTS
+        = "Manchester Civil Justice Centre (Civil and Family Courts)";
 
     //Utility class
     private SampleData() {
@@ -739,6 +741,14 @@ public class SampleData {
             .addressLine3("Salford")
             .postTown("Manchester")
             .postCode("DF1 3LJ")
+            .build();
+    }
+
+    public static CCDAddress getHearingCourtAddress() {
+        return CCDAddress.builder()
+            .addressLine1("1 Bridge Street West")
+            .postTown("Manchester")
+            .postCode("M60 9DJ")
             .build();
     }
 }
