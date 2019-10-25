@@ -387,7 +387,10 @@ public class SampleData {
             .claimantProvidedRepresentativeOrganisationPhone("my@email.com")
             .claimantProvidedRepresentativeOrganisationDxAddress("dx123")
             .claimantResponse(CCDResponseRejection.builder()
-                .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder().build())
+                .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder()
+                    .expertRequired(YES)
+                    .expertReports(null)
+                    .build())
                 .build())
             .directionsQuestionnaire(CCDDirectionsQuestionnaire
                 .builder()

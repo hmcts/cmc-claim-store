@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
+import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDExpertReport;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
@@ -107,6 +108,60 @@ public class GenerateOrderCallbackHandlerTest {
             .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
             .eventId(GENERATE_ORDER.getValue())
             .build();
+    }
+
+    @Test
+    public void shouldPrepopulateFieldsOnAboutToStartEventIfExpertReportsAreProvided() {
+        ccdCase.setRespondents(
+            ImmutableList.of(
+                CCDCollectionElement.<CCDRespondent>builder()
+                    .value(CCDRespondent.builder()
+                        .claimantResponse(CCDResponseRejection.builder()
+                            .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder()
+                                .expertRequired(YES)
+                                .expertReports(ImmutableList.of(CCDCollectionElement.<CCDExpertReport>builder()
+                                    .value(CCDExpertReport.builder().expertName("expertName")
+                                        .expertReportDate(LocalDate.now())
+                                        .build())
+                                    .build()))
+                                .build())
+                            .build())
+                        .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder()
+                            .expertRequired(YES)
+                            .expertReports(ImmutableList.of(CCDCollectionElement.<CCDExpertReport>builder()
+                                .value(CCDExpertReport.builder().expertName("expertName")
+                                    .expertReportDate(LocalDate.now())
+                                    .build())
+                                .build()))
+                            .build())
+                        .build())
+                    .build()
+            ));
+        ccdCase.setDirectionOrderData(SampleData.getCCDOrderGenerationData());
+
+        CallbackParams callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_START)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+        AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
+            generateOrderCallbackHandler
+                .handle(callbackParams);
+
+        assertThat(response.getData()).contains(
+            entry("directionList", ImmutableList.of("DOCUMENTS", "EYEWITNESS")),
+            entry("docUploadDeadline", DEADLINE),
+            entry("docUploadForParty", "BOTH"),
+            entry("eyewitnessUploadDeadline", DEADLINE),
+            entry("eyewitnessUploadForParty", "BOTH"),
+            entry("paperDetermination", "NO"),
+            entry("preferredDQCourt", "Defendant Preferred Court"),
+            entry("newRequestedCourt", null),
+            entry("preferredCourtObjectingParty", null),
+            entry("preferredCourtObjectingReason", null),
+            entry("expertReportPermissionPartyAskedByClaimant", YES),
+            entry("expertReportPermissionPartyAskedByDefendant", YES)
+        );
     }
 
     @Test

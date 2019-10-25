@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ACTION_REVIEW_COMMENTS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.GENERATE_ORDER;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOTH;
@@ -204,12 +205,22 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
     }
 
     private CCDYesNoOption hasRequestedExpertPermission(CCDDirectionsQuestionnaire directionsQuestionnaire) {
-        return (directionsQuestionnaire.getExpertRequired() != null
+        return directionsQuestionnaire.getExpertRequired() != null
             && directionsQuestionnaire.getExpertRequired().toBoolean()
-            && directionsQuestionnaire.getPermissionForExpert() != null
-            && directionsQuestionnaire.getPermissionForExpert().toBoolean()
-            && StringUtils.isNotBlank(directionsQuestionnaire.getExpertEvidenceToExamine()))
-            ? CCDYesNoOption.YES
+            && (hasRequestedForPermissionWithProvidedEvidence(directionsQuestionnaire)
+            || hasProvidedExpertReports(directionsQuestionnaire))
+            ? YES
             : NO;
+    }
+
+    private boolean hasProvidedExpertReports(CCDDirectionsQuestionnaire directionsQuestionnaire) {
+        return directionsQuestionnaire.getExpertReports() != null
+            && !directionsQuestionnaire.getExpertReports().isEmpty();
+    }
+
+    private boolean hasRequestedForPermissionWithProvidedEvidence(CCDDirectionsQuestionnaire directionsQuestionnaire) {
+        return directionsQuestionnaire.getPermissionForExpert() != null
+            && directionsQuestionnaire.getPermissionForExpert().toBoolean()
+            && StringUtils.isNotBlank(directionsQuestionnaire.getExpertEvidenceToExamine());
     }
 }
