@@ -4,8 +4,6 @@ import com.google.common.collect.Maps;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -13,6 +11,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.IntentionToProceedService;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -46,7 +45,6 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.Map;
 
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -100,9 +98,8 @@ public class CoreCaseDataServiceTest {
     private JobSchedulerService jobSchedulerService;
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
-
-    @Captor
-    private ArgumentCaptor<Map<String, Object>> caseDataCaptor;
+    @Mock
+    private IntentionToProceedService intentionToProceedService;
 
     private CoreCaseDataService service;
 
@@ -151,7 +148,8 @@ public class CoreCaseDataServiceTest {
             authTokenGenerator,
             jobSchedulerService,
             ccdCreateCaseService,
-            caseDetailsConverter
+            caseDetailsConverter,
+            intentionToProceedService
         );
     }
 
@@ -186,6 +184,76 @@ public class CoreCaseDataServiceTest {
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(expectedClaim);
 
         Claim returnedClaim = service.createNewCase(USER, providedClaim);
+
+        assertEquals(expectedClaim, returnedClaim);
+    }
+
+    @Test
+    public void submitRepresentedClaimShouldReturnLegalRepClaim() {
+        Claim providedLegalRepClaim = SampleClaim.getDefaultForLegal();
+        Claim expectedLegalRepClaim = SampleClaim.claim(providedLegalRepClaim.getClaimData(), "012LR345");
+
+        when(ccdCreateCaseService.startCreate(
+            eq(AUTHORISATION),
+            any(EventRequestData.class),
+            eq(false)
+        ))
+            .thenReturn(StartEventResponse.builder()
+                .caseDetails(CaseDetails.builder().build())
+                .eventId("eventId")
+                .token("token")
+                .build());
+
+        when(ccdCreateCaseService.submitCreate(
+            eq(AUTHORISATION),
+            any(EventRequestData.class),
+            any(CaseDataContent.class),
+            eq(false)
+        ))
+            .thenReturn(CaseDetails.builder()
+                .id(SampleClaim.CLAIM_ID)
+                .data(new HashMap<>())
+                .build());
+
+        when(caseMapper.to(providedLegalRepClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(expectedLegalRepClaim);
+
+        Claim returnedLegalRepClaim = service.createNewCase(USER, providedLegalRepClaim);
+
+        assertEquals(expectedLegalRepClaim, returnedLegalRepClaim);
+    }
+
+    @Test
+    public void submitCitizenClaimShouldReturnClaim() {
+        Claim providedClaim = SampleClaim.getDefault();
+        Claim expectedClaim = SampleClaim.claim(providedClaim.getClaimData(), "000MC001");
+
+        when(ccdCreateCaseService.startCreate(
+            eq(AUTHORISATION),
+            any(EventRequestData.class),
+            eq(false)
+        ))
+            .thenReturn(StartEventResponse.builder()
+                .caseDetails(CaseDetails.builder().build())
+                .eventId("eventId")
+                .token("token")
+                .build());
+
+        when(ccdCreateCaseService.submitCreate(
+            eq(AUTHORISATION),
+            any(EventRequestData.class),
+            any(CaseDataContent.class),
+            eq(false)
+        ))
+            .thenReturn(CaseDetails.builder()
+                .id(SampleClaim.CLAIM_ID)
+                .data(new HashMap<>())
+                .build());
+
+        when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(expectedClaim);
+
+        Claim returnedClaim = service.createNewCitizenCase(USER, providedClaim);
 
         assertEquals(expectedClaim, returnedClaim);
     }

@@ -11,10 +11,16 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @EqualsAndHashCode
 public class ReviewOrderEvent {
 
+    private final String authorisation;
     private final Claim claim;
 
-    public ReviewOrderEvent(Claim claim) {
+    public ReviewOrderEvent(String authorisation, Claim claim) {
         this.claim = claim;
+        this.authorisation = authorisation;
+    }
+
+    public String getAuthorisation() {
+        return this.authorisation;
     }
 
     @Override

@@ -40,7 +40,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @TestPropertySource(
     properties = {
-        "document_management.url=false",
         "core_case_data.api.url=false",
         "feature_toggles.async_event_operations_enabled=false"
     }
@@ -103,20 +102,6 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
 
         makeRequest(claim.getReferenceNumber(), event)
             .andExpect(status().isConflict());
-
-        verify(emailService, never()).sendEmail(any(), any());
-    }
-
-    @Test
-    public void shouldRespond400AndNotProceedForClaimIssuedEventWhenAuthorisationIsMissing() throws Exception {
-        String event = "claim-issued";
-        Claim claim = claimStore.saveClaim(SampleClaimData.submittedByClaimant());
-
-        webClient
-            .perform(put("/support/claim/"
-                    + claim.getReferenceNumber()
-                    + "/event/" + event + "/resend-staff-notifications"))
-            .andExpect(status().isBadRequest());
 
         verify(emailService, never()).sendEmail(any(), any());
     }

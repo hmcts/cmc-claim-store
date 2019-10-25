@@ -211,7 +211,6 @@ public class JsonMapperTest {
 
         LocalDateTime timestamp = LocalDateTime.now();
         String uuid = UUID.randomUUID().toString();
-        LocalDate date = LocalDate.now();
 
         Map<String, Object> data = new HashMap<>();
         data.put("id", "1");
@@ -228,10 +227,7 @@ public class JsonMapperTest {
             .submitterId("2")
             .submittedOn(timestamp)
             .externalId(uuid)
-            .orderGenerationData(
-                CCDOrderGenerationData
-                    .builder()
-                    .build())
+            .directionOrderData(CCDOrderGenerationData.builder().build())
             .build();
 
         assertThat(ccdCase).isEqualTo(expected);

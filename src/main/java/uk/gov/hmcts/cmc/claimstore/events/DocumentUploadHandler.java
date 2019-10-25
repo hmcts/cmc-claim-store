@@ -3,21 +3,24 @@ package uk.gov.hmcts.cmc.claimstore.events;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimIssueReceiptService;
-import uk.gov.hmcts.cmc.claimstore.documents.CountyCourtJudgmentPdfService;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
+import uk.gov.hmcts.cmc.claimstore.documents.ReviewOrderService;
 import uk.gov.hmcts.cmc.claimstore.documents.SettlementAgreementCopyService;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
+import uk.gov.hmcts.cmc.claimstore.documents.questionnaire.ClaimantDirectionsQuestionnairePdfService;
+import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
+import uk.gov.hmcts.cmc.claimstore.events.revieworder.ReviewOrderEvent;
 import uk.gov.hmcts.cmc.claimstore.events.settlement.CountersignSettlementAgreementEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,7 +30,6 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
 @Component
-@ConditionalOnProperty(prefix = "document_management", name = "url")
 public class DocumentUploadHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(DocumentUploadHandler.class);
@@ -35,23 +37,26 @@ public class DocumentUploadHandler {
 
     private final DocumentsService documentService;
     private final DefendantResponseReceiptService defendantResponseReceiptService;
-    private final CountyCourtJudgmentPdfService countyCourtJudgmentPdfService;
     private final SettlementAgreementCopyService settlementAgreementCopyService;
     private final ClaimIssueReceiptService claimIssueReceiptService;
+    private final ReviewOrderService reviewOrderService;
+    private final ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService;
 
     @Autowired
     public DocumentUploadHandler(
         DefendantResponseReceiptService defendantResponseReceiptService,
-        CountyCourtJudgmentPdfService countyCourtJudgmentPdfService,
         SettlementAgreementCopyService settlementAgreementCopyService,
         ClaimIssueReceiptService claimIssueReceiptService,
-        DocumentsService documentService
+        DocumentsService documentService,
+        ReviewOrderService reviewOrderService,
+        ClaimantDirectionsQuestionnairePdfService claimantDirectionsQuestionnairePdfService
     ) {
         this.defendantResponseReceiptService = defendantResponseReceiptService;
-        this.countyCourtJudgmentPdfService = countyCourtJudgmentPdfService;
+        this.reviewOrderService = reviewOrderService;
         this.settlementAgreementCopyService = settlementAgreementCopyService;
         this.claimIssueReceiptService = claimIssueReceiptService;
         this.documentService = documentService;
+        this.claimantDirectionsQuestionnairePdfService = claimantDirectionsQuestionnairePdfService;
     }
 
     @EventListener
@@ -94,6 +99,22 @@ public class DocumentUploadHandler {
         processSettlementAgreementUpload(event.getClaim(), event.getAuthorisation());
     }
 
+    @EventListener
+    public void uploadClaimantDirectionsQuestionnaireToDM(ClaimantResponseEvent event) {
+        Claim claim = event.getClaim();
+
+        ResponseRejection responseRejection = claim.getClaimantResponse()
+            .filter(ResponseRejection.class::isInstance)
+            .map(ResponseRejection.class::cast)
+            .orElse(null);
+
+        if (responseRejection != null && responseRejection.getDirectionsQuestionnaire().isPresent()) {
+            PDF claimantDirectionsQuestionnaire = claimantDirectionsQuestionnairePdfService.createPdf(claim);
+            uploadToDocumentManagement(claim, event.getAuthorisation(), singletonList(claimantDirectionsQuestionnaire));
+        }
+
+    }
+
     private void processSettlementAgreementUpload(Claim claim, String authorisation) {
         requireNonNull(claim, CLAIM_MUST_NOT_BE_NULL);
         if (!claim.getSettlement().isPresent() && null == claim.getSettlementReachedAt()) {
@@ -101,6 +122,19 @@ public class DocumentUploadHandler {
         }
         PDF document = settlementAgreementCopyService.createPdf(claim);
         uploadToDocumentManagement(claim, authorisation, singletonList(document));
+    }
+
+    @EventListener
+    public void uploadReviewOrderRequestDocument(ReviewOrderEvent event) {
+        Claim claim = event.getClaim();
+        requireNonNull(claim, CLAIM_MUST_NOT_BE_NULL);
+
+        if (!claim.getReviewOrder().isPresent()) {
+            throw new NotFoundException("Review Order does not exist for this claim");
+        }
+
+        PDF reviewOrderDocument = reviewOrderService.createPdf(claim);
+        uploadToDocumentManagement(claim, event.getAuthorisation(), singletonList(reviewOrderDocument));
     }
 
     public Claim uploadToDocumentManagement(Claim claim, String authorisation, List<PDF> documents) {

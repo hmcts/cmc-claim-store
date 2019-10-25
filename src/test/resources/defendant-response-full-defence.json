@@ -58,7 +58,7 @@
     "requireSupport": {
       "languageInterpreter": "English",
       "signLanguageInterpreter": "Need Sign Language",
-      "hearingLoop": "no",
+      "hearingLoop": "yes",
       "disabledAccess": "yes"
     },
     "hearingLocation": {
@@ -90,6 +90,8 @@
         "unavailableDate": "2050-01-01"
       }
     ],
+    "expertRequired": "yes",
+    "permissionForExpert": "yes",
     "expertRequest": {
       "expertEvidenceToExamine": "Evidence to examine",
       "reasonForExpertAdvice": "A valid reason"

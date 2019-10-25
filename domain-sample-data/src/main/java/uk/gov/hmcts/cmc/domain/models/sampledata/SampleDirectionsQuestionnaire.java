@@ -1,10 +1,8 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.CourtLocationType;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertRequest;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.RequireSupport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.UnavailableDate;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.Witness;
@@ -13,8 +11,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleHearingLocation.defaultHearingLocation;
 
 public class SampleDirectionsQuestionnaire {
 
@@ -34,16 +32,12 @@ public class SampleDirectionsQuestionnaire {
                 .languageInterpreter("English")
                 .signLanguageInterpreter("Need Sign Language")
                 .disabledAccess(YES)
-                .hearingLoop(NO)
+                .hearingLoop(YES)
                 .build()
             )
-            .hearingLocation(HearingLocation.builder()
-                .courtName("A Court")
-                .hearingLocationSlug("a-court")
-                .courtAddress(SampleAddress.builder().build())
-                .locationOption(CourtLocationType.ALTERNATE_COURT)
-                .build()
-            )
+            .hearingLocation(defaultHearingLocation)
+            .expertRequired(YES)
+            .permissionForExpert(YES)
             .expertRequest(ExpertRequest.builder()
                 .reasonForExpertAdvice("A valid reason")
                 .expertEvidenceToExamine("Evidence to examine")

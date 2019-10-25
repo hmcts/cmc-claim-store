@@ -4,6 +4,8 @@ import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDChannelType;
+import uk.gov.hmcts.cmc.domain.models.ChannelType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
@@ -23,17 +25,20 @@ public class CaseMapper {
     private final boolean isMigrated;
     private final ClaimDocumentCollectionMapper claimDocumentCollectionMapper;
     private final ReviewOrderMapper reviewOrderMapper;
+    private final DirectionOrderMapper directionOrderMapper;
 
     public CaseMapper(
         ClaimMapper claimMapper,
         @Value("${migration.cases.flag:false}") boolean isMigrated,
         ClaimDocumentCollectionMapper claimDocumentCollectionMapper,
-        ReviewOrderMapper reviewOrderMapper
+        ReviewOrderMapper reviewOrderMapper,
+        DirectionOrderMapper directionOrderMapper
     ) {
         this.claimMapper = claimMapper;
         this.isMigrated = isMigrated;
         this.claimDocumentCollectionMapper = claimDocumentCollectionMapper;
         this.reviewOrderMapper = reviewOrderMapper;
+        this.directionOrderMapper = directionOrderMapper;
     }
 
     public CCDCase to(Claim claim) {
@@ -47,6 +52,11 @@ public class CaseMapper {
         claim.getReviewOrder()
             .map(reviewOrderMapper::to)
             .ifPresent(builder::reviewOrder);
+
+        claim.getChannel()
+            .map(ChannelType::name)
+            .map(CCDChannelType::valueOf)
+            .ifPresent(builder::channel);
 
         return builder
             .id(claim.getId())
@@ -65,6 +75,7 @@ public class CaseMapper {
             .caseName(toCaseName.apply(claim))
             .claimSubmissionOperationIndicators(
                 mapClaimSubmissionOperationIndicatorsToCCD.apply(claim.getClaimSubmissionOperationIndicators()))
+            .intentionToProceedDeadline(claim.getIntentionToProceedDeadline())
             .build();
     }
 
@@ -84,12 +95,19 @@ public class CaseMapper {
             .createdAt(ccdCase.getSubmittedOn())
             .issuedOn(ccdCase.getIssuedOn())
             .submitterEmail(ccdCase.getSubmitterEmail())
+            .state(ClaimState.fromValue(ccdCase.getState()))
             .claimSubmissionOperationIndicators(
                 mapFromCCDClaimSubmissionOperationIndicators.apply(ccdCase.getClaimSubmissionOperationIndicators()))
+            .directionOrder(directionOrderMapper.from(ccdCase.getDirectionOrder(), ccdCase.getDirectionOrderData()))
+            .intentionToProceedDeadline(ccdCase.getIntentionToProceedDeadline())
             .reviewOrder(reviewOrderMapper.from(ccdCase.getReviewOrder()));
 
         if (ccdCase.getFeatures() != null) {
             builder.features(Arrays.asList(ccdCase.getFeatures().split(",")));
+        }
+
+        if (ccdCase.getChannel() != null) {
+            builder.channel(ChannelType.valueOf(ccdCase.getChannel().name()));
         }
 
         return builder.build();

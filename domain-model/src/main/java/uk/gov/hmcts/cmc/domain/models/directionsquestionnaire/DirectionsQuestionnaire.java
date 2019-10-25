@@ -4,10 +4,11 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.List;
 import java.util.Optional;
-import javax.validation.constraints.NotNull;
+import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
 import static java.util.Collections.emptyList;
@@ -17,14 +18,30 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @EqualsAndHashCode
 public class DirectionsQuestionnaire {
 
+    @Valid
     private final RequireSupport requireSupport;
 
-    @NotNull
+    @Valid
     private final HearingLocation hearingLocation;
+
+    @Valid
     private final Witness witness;
-    @Size(min = 1)
+
+    @Valid
+    @Size(min = 1, max = 20)
     private final List<ExpertReport> expertReports;
+
+    @Valid
+    @Size(max = 280)
     private final List<UnavailableDate> unavailableDates;
+
+    @Valid
+    private final YesNoOption expertRequired;
+
+    @Valid
+    private final YesNoOption permissionForExpert;
+
+    @Valid
     private final ExpertRequest expertRequest;
 
     @Builder
@@ -34,6 +51,8 @@ public class DirectionsQuestionnaire {
         Witness witness,
         List<ExpertReport> expertReports,
         List<UnavailableDate> unavailableDates,
+        YesNoOption expertRequired,
+        YesNoOption permissionForExpert,
         ExpertRequest expertRequest
     ) {
         this.requireSupport = requireSupport;
@@ -41,6 +60,8 @@ public class DirectionsQuestionnaire {
         this.witness = witness;
         this.expertReports = expertReports;
         this.unavailableDates = unavailableDates;
+        this.expertRequired = expertRequired;
+        this.permissionForExpert = permissionForExpert;
         this.expertRequest = expertRequest;
     }
 
@@ -48,12 +69,24 @@ public class DirectionsQuestionnaire {
         return Optional.ofNullable(requireSupport);
     }
 
+    public Optional<HearingLocation> getHearingLocation() {
+        return Optional.ofNullable(hearingLocation);
+    }
+
     public Optional<Witness> getWitness() {
         return Optional.ofNullable(witness);
     }
 
     public List<UnavailableDate> getUnavailableDates() {
-        return unavailableDates == null ? emptyList() : unavailableDates;
+        return Optional.ofNullable(unavailableDates).orElse(emptyList());
+    }
+
+    public Optional<YesNoOption> getExpertRequired() {
+        return Optional.ofNullable(expertRequired);
+    }
+
+    public Optional<YesNoOption> getPermissionForExpert() {
+        return Optional.ofNullable(permissionForExpert);
     }
 
     public Optional<ExpertRequest> getExpertRequest() {
@@ -61,7 +94,7 @@ public class DirectionsQuestionnaire {
     }
 
     public List<ExpertReport> getExpertReports() {
-        return expertReports == null ? emptyList() : expertReports;
+        return Optional.ofNullable(expertReports).orElse(emptyList());
     }
 
     @Override

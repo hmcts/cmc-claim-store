@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUser;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.metadata.CaseMetadata;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
@@ -180,9 +181,13 @@ public class CaseMetadataControllerTest {
     private static void assertValid(Claim dto, CaseMetadata metadata) {
         assertEquals(dto.getId(), metadata.getId());
         assertEquals(dto.getSubmitterId(), metadata.getSubmitterId());
-        assertEquals(dto.getClaimData().getClaimant().getClass().getSimpleName(), metadata.getSubmitterPartyType());
+        assertEquals(
+            dto.getClaimData().getClaimant().getClass().getSimpleName(),
+            metadata.getSubmitterPartyTypes().get(0));
         assertEquals(dto.getDefendantId(), metadata.getDefendantId());
-        assertEquals(dto.getClaimData().getDefendant().getClass().getSimpleName(), metadata.getDefendantPartyType());
+        assertEquals(
+            dto.getClaimData().getDefendant().getClass().getSimpleName(),
+            metadata.getDefendantPartyTypes().get(0));
         assertEquals(dto.getExternalId(), metadata.getExternalId());
         assertEquals(dto.getReferenceNumber(), metadata.getReferenceNumber());
         assertEquals(dto.getCreatedAt(), metadata.getCreatedAt());
@@ -190,7 +195,9 @@ public class CaseMetadataControllerTest {
         assertEquals(dto.getResponseDeadline(), metadata.getResponseDeadline());
         assertEquals(dto.isMoreTimeRequested(), metadata.getMoreTimeRequested());
 
-        assertEquals(dto.getClaimDocument(SEALED_CLAIM).orElse(null), metadata.getSealedClaimDocument());
+        assertEquals(
+            dto.getClaimDocument(SEALED_CLAIM).map(ClaimDocument::getDocumentManagementUrl).orElse(null),
+            metadata.getSealedClaimDocument());
         assertEquals(dto.getMoneyReceivedOn().orElse(null), metadata.getMoneyReceivedOn());
 
         if (dto.getClaimData().getPayment() == null) {

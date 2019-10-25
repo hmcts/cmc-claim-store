@@ -18,7 +18,7 @@ public class RequestForJudgementJsonMapper {
             .add("caseNumber", claim.getReferenceNumber())
             .add("ccjRequestedOn", DateFormatter.format(claim.getCountyCourtJudgmentRequestedAt()))
             .add("amountWithInterest", claim.getAmountWithInterest().orElse(null))
-            .add("courtFee", claim.getClaimData().getFeesPaidInPound())
+            .add("courtFee", claim.getClaimData().getFeesPaidInPounds())
             .add("alreadyPaid", countyCourtJudgment.getPaidAmount().orElse(null))
             .add("paymentType", countyCourtJudgment.getPaymentOption().name())
             .add("fullPaymentDeadline", countyCourtJudgment.getPayBySetDate().map(DateFormatter::format).orElse(null))

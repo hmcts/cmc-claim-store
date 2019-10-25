@@ -3,11 +3,12 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
-import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
@@ -27,13 +28,18 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDet
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
+import uk.gov.hmcts.cmc.domain.models.Payment;
+import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SamplePayment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 
@@ -41,7 +47,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
+import static java.lang.String.format;
 import static java.time.LocalDate.now;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.empty;
@@ -52,16 +60,17 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NUMBER_OF_RECONSIDERATION;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
-import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
-import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.CLAIM_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.LETTER_HOLDER_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.NOT_REQUESTED_FOR_MORE_TIME;
-import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.SUBMITTER_EMAIL;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
@@ -70,10 +79,13 @@ import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.RESPONSE_DEADLINE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClaimServiceTest {
+    private static final String RETURN_URL = "http://returnUrl.test/%s/bla";
 
     private static final ClaimData VALID_APP = SampleClaimData.submittedByClaimant();
+    private static final ClaimData VALID_LEGAL_APP = SampleClaimData.submittedByLegalRepresentative();
     private static final String DEFENDANT_EMAIL = "defendant@email.com";
     private static final Claim claim = createClaimModel(VALID_APP, LETTER_HOLDER_ID);
+    private static final Claim representedClaim = createRepresentedClaimModel(VALID_LEGAL_APP);
     private static final String AUTHORISATION = "Bearer: aaa";
 
     private static final UserDetails UNAUTHORISED_USER_DETAILS = SampleUserDetails.builder().withUserId("300").build();
@@ -100,13 +112,11 @@ public class ClaimServiceTest {
     @Mock
     private ResponseDeadlineCalculator responseDeadlineCalculator;
     @Mock
-    private DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
-    @Mock
     private EventProducer eventProducer;
     @Mock
-    private CCDEventProducer ccdEventProducer;
-    @Mock
     private AppInsights appInsights;
+    @Captor
+    private ArgumentCaptor<Claim> claimArgumentCaptor;
 
     @Before
     public void setup() {
@@ -118,16 +128,14 @@ public class ClaimServiceTest {
             userService,
             issueDateCalculator,
             responseDeadlineCalculator,
-            directionsQuestionnaireDeadlineCalculator,
             new MoreTimeRequestRule(new ClaimDeadlineService()),
             eventProducer,
             appInsights,
             new PaidInFullRule(),
-            ccdEventProducer,
             new ClaimAuthorisationRule(userService),
             new ReviewOrderRule(),
-            false
-        );
+            true,
+            RETURN_URL);
     }
 
     @Test
@@ -187,27 +195,6 @@ public class ClaimServiceTest {
 
     @Test
     public void saveClaimShouldFinishSuccessfully() {
-
-        ClaimData claimData = SampleClaimData.validDefaults();
-
-        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
-        when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(ISSUE_DATE);
-        when(responseDeadlineCalculator.calculateResponseDeadline(eq(ISSUE_DATE))).thenReturn(RESPONSE_DEADLINE);
-        when(caseRepository.saveClaim(eq(USER), any())).thenReturn(claim);
-
-        Claim createdClaim = claimService.saveClaim(USER_ID, claimData, AUTHORISATION, singletonList("admissions"));
-
-        assertThat(createdClaim.getClaimData()).isEqualTo(claim.getClaimData());
-
-        verify(caseRepository, once()).saveClaim(any(User.class), any(Claim.class));
-        verify(eventProducer, once()).createClaimIssuedEvent(eq(createdClaim), eq(null),
-            anyString(), eq(AUTHORISATION));
-
-        verify(ccdEventProducer, once()).createCCDClaimIssuedEvent(eq(createdClaim), eq(USER));
-    }
-
-    @Test
-    public void saveClaimShouldFinishWithoutPinGenerationSuccessfully() {
         //given
 
         when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
@@ -221,21 +208,20 @@ public class ClaimServiceTest {
             userService,
             issueDateCalculator,
             responseDeadlineCalculator,
-            directionsQuestionnaireDeadlineCalculator,
             new MoreTimeRequestRule(new ClaimDeadlineService()),
             eventProducer,
             appInsights,
             new PaidInFullRule(),
-            ccdEventProducer,
             new ClaimAuthorisationRule(userService),
             new ReviewOrderRule(),
-            true
-        );
+            true,
+            RETURN_URL);
 
         ClaimData claimData = SampleClaimData.validDefaults();
 
         //when
-        Claim createdClaim = claimService.saveClaim(USER_ID, claimData, AUTHORISATION, singletonList("admissions"));
+        Claim createdClaim = claimService
+            .saveClaim(USER_ID, claimData, AUTHORISATION, singletonList("admissions"));
 
         //verify
         ClaimData outputClaimData = claim.getClaimData();
@@ -243,10 +229,32 @@ public class ClaimServiceTest {
 
         verify(userService, never()).generatePin(eq(outputClaimData.getDefendant().getName()), eq(AUTHORISATION));
         verify(caseRepository, once()).saveClaim(any(User.class), any(Claim.class));
-        verify(eventProducer, once()).createClaimCreatedEvent(eq(createdClaim), eq(null),
+        verify(eventProducer, once()).createClaimCreatedEvent(eq(createdClaim), anyString(), eq(AUTHORISATION));
+    }
+
+    @Test
+    public void saveLegalRepClaimShouldFinishSuccessfully() {
+        ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
+
+        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
+        when(caseRepository.saveRepresentedClaim(eq(USER), any(Claim.class))).thenReturn(representedClaim);
+
+        Claim createdLegalRepClaim = claimService
+            .saveRepresentedClaim(
+                USER_ID, claimData, AUTHORISATION);
+
+        assertThat(createdLegalRepClaim.getClaimData()).isEqualTo(representedClaim.getClaimData());
+
+        verify(caseRepository, once()).saveRepresentedClaim(
+            eq(USER), claimArgumentCaptor.capture());
+        verify(eventProducer, once()).createClaimCreatedEvent(eq(createdLegalRepClaim),
             anyString(), eq(AUTHORISATION));
 
-        verify(ccdEventProducer, once()).createCCDClaimIssuedEvent(eq(createdClaim), eq(USER));
+        Claim argumentCaptorValue = claimArgumentCaptor.getValue();
+        assertThat(argumentCaptorValue.getClaimData()).isEqualTo(claimData);
+        assertThat(argumentCaptorValue.getExternalId()).isEqualTo(claimData.getExternalId().toString());
+        assertThat(argumentCaptorValue.getSubmitterId()).isEqualTo(USER_ID);
+        assertThat(argumentCaptorValue.getSubmitterEmail()).isEqualTo(USER.getUserDetails().getEmail());
     }
 
     @Test
@@ -327,30 +335,6 @@ public class ClaimServiceTest {
         List<Claim> claims = claimService.getClaimsByState(CREATE, USER);
 
         assertThat(claims).containsExactly(claim);
-    }
-
-    @Test
-    public void saveDefendantResponseShouldUpdateDQDeadlineWhenFullDefenceAndNoMediation() {
-        claimService.saveDefendantResponse(
-            claim, DEFENDANT_EMAIL, SampleResponse.FullDefence.builder().withMediation(NO).build(), AUTHORISATION
-        );
-
-        verify(directionsQuestionnaireDeadlineCalculator)
-            .calculateDirectionsQuestionnaireDeadlineCalculator(any());
-        verify(caseRepository)
-            .updateDirectionsQuestionnaireDeadline(eq(claim), any(), eq(AUTHORISATION));
-    }
-
-    @Test
-    public void saveDefendantResponseShouldUpdateDQDeadlineWhenFullDefenceAndMediation() {
-        claimService.saveDefendantResponse(
-            claim, DEFENDANT_EMAIL, SampleResponse.FullDefence.builder().withMediation(YES).build(), AUTHORISATION
-        );
-
-        verify(directionsQuestionnaireDeadlineCalculator, never())
-            .calculateDirectionsQuestionnaireDeadlineCalculator(any());
-        verify(caseRepository, never())
-            .updateDirectionsQuestionnaireDeadline(eq(claim), any(), eq(AUTHORISATION));
     }
 
     @Test
@@ -491,6 +475,104 @@ public class ClaimServiceTest {
     }
 
     @Test
+    public void updateClaimSubmissionOperationIndicatorsShouldCallCaseRepository() {
+        ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators = ClaimSubmissionOperationIndicators
+            .builder().build();
+        claimService.updateClaimSubmissionOperationIndicators(AUTHORISATION, claim, claimSubmissionOperationIndicators);
+        verify(caseRepository).updateClaimSubmissionOperationStatus(
+            eq(AUTHORISATION),
+            eq(claim.getId()),
+            eq(claimSubmissionOperationIndicators),
+            eq(RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS)
+        );
+    }
+
+    @Test
+    public void initiatePaymentShouldFinishSuccessfully() {
+        Claim claim = SampleClaim.builder()
+            .withClaimData(SampleClaimData.builder()
+                .withPayment(
+                    Payment.builder().nextUrl("http://nexturl.test").build())
+                .build())
+            .build();
+        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
+        when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(ISSUE_DATE);
+        when(responseDeadlineCalculator.calculateResponseDeadline(eq(ISSUE_DATE))).thenReturn(RESPONSE_DEADLINE);
+        when(caseRepository.initiatePayment(eq(USER), any(Claim.class)))
+            .thenReturn(claim);
+
+        CreatePaymentResponse response = claimService.initiatePayment(AUTHORISATION, "submitterId", VALID_APP);
+
+        CreatePaymentResponse expectedResponse = CreatePaymentResponse.builder()
+            .nextUrl("http://nexturl.test")
+            .build();
+        assertThat(response).isEqualTo(expectedResponse);
+    }
+
+    @Test
+    public void resumePaymentShouldReturnReturnUrlIfPaymentIsSuccessful() {
+        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
+        ClaimData claimData = SampleClaimData.builder()
+            .withExternalId(UUID.fromString(EXTERNAL_ID))
+            .build();
+        Claim claim = SampleClaim.builder()
+            .withExternalId(EXTERNAL_ID)
+            .withClaimData(claimData)
+            .build();
+
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
+            .thenReturn(Optional.of(claim));
+        when(caseRepository.saveCaseEvent(AUTHORISATION, claim, RESUME_CLAIM_PAYMENT_CITIZEN))
+            .thenReturn(claim);
+        CreatePaymentResponse response = claimService.resumePayment(AUTHORISATION, claimData);
+
+        assertThat(response.getNextUrl()).isEqualTo(format(RETURN_URL, claim.getExternalId()));
+    }
+
+    @Test
+    public void resumePaymentShouldReturnNextUrlIfPaymentIsNotSuccessful() {
+        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
+        ClaimData claimData = SampleClaimData.builder()
+            .withExternalId(UUID.fromString(EXTERNAL_ID))
+            .withPayment(
+                SamplePayment.builder()
+                    .status(PaymentStatus.INITIATED)
+                    .nextUrl("http://payment.nexturl.test")
+                    .build()
+            )
+            .build();
+        Claim claim = SampleClaim.builder()
+            .withExternalId(EXTERNAL_ID)
+            .withClaimData(claimData)
+            .build();
+
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
+            .thenReturn(Optional.of(claim));
+        when(caseRepository.saveCaseEvent(AUTHORISATION, claim, RESUME_CLAIM_PAYMENT_CITIZEN))
+            .thenReturn(claim);
+        CreatePaymentResponse response = claimService.resumePayment(AUTHORISATION, claimData);
+
+        assertThat(response.getNextUrl()).isEqualTo("http://payment.nexturl.test");
+    }
+
+    @Test
+    public void saveCitizenClaimShouldFinishSuccessfully() {
+        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
+        when(caseRepository.getClaimByExternalId(VALID_APP.getExternalId().toString(), USER))
+            .thenReturn(Optional.of(claim));
+        when(caseRepository
+            .saveCaseEvent(eq(AUTHORISATION), any(Claim.class), eq(CREATE_CITIZEN_CLAIM)))
+            .thenReturn(claim);
+
+        Claim createdClaim = claimService.saveCitizenClaim(
+            AUTHORISATION,
+            VALID_APP,
+            singletonList("admissions"));
+
+        assertThat(createdClaim).isEqualTo(claim);
+    }
+
+    @Test
     public void saveReviewOrderShouldFinishSuccessfully() {
         when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(VALID_CLAIMANT);
@@ -501,7 +583,11 @@ public class ClaimServiceTest {
 
         claimService.saveReviewOrder(EXTERNAL_ID, reviewOrder, AUTHORISATION);
 
-        verify(caseRepository, once()).saveReviewOrder(eq(claim.getId()), eq(reviewOrder), eq(AUTHORISATION));
+        verify(caseRepository).saveReviewOrder(eq(claim.getId()), eq(reviewOrder), eq(AUTHORISATION));
+
+        verify(appInsights).trackEvent(eq(NUMBER_OF_RECONSIDERATION),
+            eq(AppInsights.REFERENCE_NUMBER),
+            eq(claim.getReferenceNumber()));
     }
 
     @Test(expected = ConflictException.class)
@@ -524,6 +610,12 @@ public class ClaimServiceTest {
         claimService.saveReviewOrder(EXTERNAL_ID, SampleReviewOrder.getDefault(), AUTHORISATION);
     }
 
+    private static Claim createRepresentedClaimModel(ClaimData claimData) {
+        return createSampleClaim()
+            .withClaimData(claimData)
+            .build();
+    }
+
     private static Claim createClaimModel(ClaimData claimData, String letterHolderId) {
         return createSampleClaim()
             .withClaimData(claimData)
@@ -538,7 +630,7 @@ public class ClaimServiceTest {
             .withLetterHolderId(LETTER_HOLDER_ID)
             .withDefendantId(DEFENDANT_ID)
             .withExternalId(EXTERNAL_ID)
-            .withReferenceNumber(REFERENCE_NUMBER)
+            .withReferenceNumber(SampleClaim.REFERENCE_NUMBER)
             .withClaimData(VALID_APP)
             .withCreatedAt(NOW_IN_LOCAL_ZONE)
             .withIssuedOn(ISSUE_DATE)
@@ -561,7 +653,7 @@ public class ClaimServiceTest {
             .withSubmitterId(USER_ID)
             .withDefendantId(DEFENDANT_ID)
             .withExternalId(EXTERNAL_ID)
-            .withReferenceNumber(REFERENCE_NUMBER)
+            .withReferenceNumber(SampleClaim.REFERENCE_NUMBER)
             .withCreatedAt(NOW_IN_LOCAL_ZONE)
             .withIssuedOn(ISSUE_DATE)
             .withResponseDeadline(RESPONSE_DEADLINE)

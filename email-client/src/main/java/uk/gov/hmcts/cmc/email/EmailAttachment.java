@@ -21,18 +21,22 @@ public class EmailAttachment {
     }
 
     public static EmailAttachment pdf(byte[] content, String fileName) {
-        return new EmailAttachment(
-            new ByteArrayResource(content),
-            "application/pdf",
-            fileName
-        );
+        return create("application/pdf", content, fileName);
     }
 
     public static EmailAttachment json(byte[] content, String fileName) {
+        return create("application/json", content, fileName);
+    }
+
+    public static EmailAttachment csv(byte[] content, String fileName) {
+        return create("text/csv", content, fileName);
+    }
+
+    private static EmailAttachment create(String contentType, byte[] content, String filename) {
         return new EmailAttachment(
             new ByteArrayResource(content),
-            "application/json",
-            fileName
+            contentType,
+            filename
         );
     }
 

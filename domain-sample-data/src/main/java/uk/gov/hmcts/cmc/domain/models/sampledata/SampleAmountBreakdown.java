@@ -22,4 +22,13 @@ public class SampleAmountBreakdown {
             .build();
         return AmountBreakDown.builder().rows(singletonList(amountRow));
     }
+
+    public static AmountBreakDownBuilder withThousandAsAmount() {
+        AmountRow amountRow = AmountRow.builder()
+            .id("359fda9d-e5fd-4d6e-9525-238642d0157d")
+            .reason("reason")
+            .amount(new BigDecimal("1000.99"))
+            .build();
+        return AmountBreakDown.builder().rows(singletonList(amountRow));
+    }
 }

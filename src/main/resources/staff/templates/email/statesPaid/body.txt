@@ -1,15 +1,15 @@
 The defendant has submitted a States Paid defence.
 
-The claimant has stated that the claim is: {{claimantResponse}}
-
-{%if claimantResponse == 'ACCEPTATION' %}
-
+{% if claimantResponse == 'ACCEPTATION' %}
 Claimant has accepted the states paid defence. Please enter a code 73
-
 {% elseif claimantResponse == 'REJECTION' %}
+Claimant has rejected the states paid defence.
+{% if defendantFreeMediation == 'yes' and claimantFreeMediation == 'yes' %}
 
-Claimant has rejected the states paid defence. Please enter a code 67 & 196
+Both parties have agreed to mediation.
 
+{% endif %}
+Please enter a code 67
 {% endif %}
 
 Defendant's details can be found on the attached defence copy. Additional contact details are:

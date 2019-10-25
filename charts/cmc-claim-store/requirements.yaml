@@ -8,12 +8,12 @@ dependencies:
     tags:
       - cmc-claim-store-postgresql-pod
   - name: cmc-citizen-frontend
-    version: ~1.0.7
+    version: ~1.0.8
     repository: '@hmctspublic'
     tags:
       - cmc-citizen-frontend-pod
   - name: ccd
-    version: ~3.0.3
+    version: ~3.0.6
     repository: '@hmctspublic'
     tags:
       - cmc-ccd-stack
