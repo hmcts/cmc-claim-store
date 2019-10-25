@@ -72,7 +72,6 @@ public class MediationUnsuccessfulCallbackHandlerTest {
                     .build())
             .build();
 
-
         when(notificationsProperties.getTemplates()).thenReturn(notificationTemplates);
         when(notificationTemplates.getEmail()).thenReturn(emailTemplates);
 
@@ -86,7 +85,6 @@ public class MediationUnsuccessfulCallbackHandlerTest {
             .thenReturn(TRANSFER_DEFENDANT);
         when(notificationsProperties.getFrontendBaseUrl()).thenReturn("BASELINE_URL");
     }
-
 
     @Test
     public void shouldSendTransferNotificationsWhenNonPilotCourtIsSelected() {

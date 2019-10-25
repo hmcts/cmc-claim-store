@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -19,19 +20,22 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MEDIATION_UNSUCCESSFUL;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
 
-
 @Service
 public class MediationUnsuccessfulCallbackHandler extends CallbackHandler {
+
+    private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -62,6 +66,11 @@ public class MediationUnsuccessfulCallbackHandler extends CallbackHandler {
         return ImmutableList.of(MEDIATION_UNSUCCESSFUL);
     }
 
+    @Override
+    public List<Role> getSupportedRoles() {
+        return ROLES;
+    }
+
     private CallbackResponse notifyParties(CallbackParams callbackParams) {
         logger.info("Mediation unsuccessful callback: notifying parties");
         CallbackRequest callbackRequest = callbackParams.getRequest();
@@ -75,29 +84,30 @@ public class MediationUnsuccessfulCallbackHandler extends CallbackHandler {
     private void notifyClaimant(Claim claim) {
         notificationService.sendMail(
             claim.getSubmitterEmail(),
-            isPilotCourt(claim) ?
-                notificationsProperties.getTemplates().getEmail().getClaimantReadyForDirections() :
+            isPilotCourt(claim)
+                ? notificationsProperties.getTemplates().getEmail().getClaimantReadyForDirections() :
                 notificationsProperties.getTemplates().getEmail().getClaimantReadyForTransfer(),
             aggregateParams(claim),
-            isPilotCourt(claim) ?
-                NotificationReferenceBuilder.MediationUnsuccessful.referenceForDirections(claim.getReferenceNumber(), "claimant") :
-                NotificationReferenceBuilder.MediationUnsuccessful.referenceForTransfer(claim.getReferenceNumber(), "claimant")
-
+            isPilotCourt(claim)
+                ? NotificationReferenceBuilder.MediationUnsuccessful
+                    .referenceForDirections(claim.getReferenceNumber(), "claimant") :
+                NotificationReferenceBuilder.MediationUnsuccessful
+                    .referenceForTransfer(claim.getReferenceNumber(), "claimant")
         );
     }
 
     private void notifyDefendant(Claim claim) {
         notificationService.sendMail(
             claim.getDefendantEmail(),
-            isPilotCourt(claim) ?
-                notificationsProperties.getTemplates().getEmail().getDefendantReadyForDirections() :
+            isPilotCourt(claim)
+                ? notificationsProperties.getTemplates().getEmail().getDefendantReadyForDirections() :
                 notificationsProperties.getTemplates().getEmail().getDefendantReadyForTransfer(),
             aggregateParams(claim),
-            isPilotCourt(claim) ?
-                NotificationReferenceBuilder.MediationUnsuccessful.referenceForDirections(claim.getReferenceNumber(), "defendant") :
-                NotificationReferenceBuilder.MediationUnsuccessful.referenceForTransfer(claim.getReferenceNumber(), "defendant")
-
-
+            isPilotCourt(claim)
+                ? NotificationReferenceBuilder.MediationUnsuccessful
+                    .referenceForDirections(claim.getReferenceNumber(), "defendant") :
+                NotificationReferenceBuilder.MediationUnsuccessful
+                    .referenceForTransfer(claim.getReferenceNumber(), "defendant")
         );
     }
 
@@ -113,6 +123,5 @@ public class MediationUnsuccessfulCallbackHandler extends CallbackHandler {
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
         return parameters;
     }
-
 
 }
