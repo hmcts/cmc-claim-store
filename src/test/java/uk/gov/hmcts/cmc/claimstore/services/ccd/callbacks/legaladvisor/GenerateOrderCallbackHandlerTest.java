@@ -24,6 +24,7 @@ import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalcula
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules.GenerateOrderRule;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
@@ -43,6 +44,8 @@ import static org.assertj.core.data.MapEntry.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.GENERATE_ORDER;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -76,7 +79,8 @@ public class GenerateOrderCallbackHandlerTest {
             legalOrderGenerationDeadlinesCalculator,
             caseDetailsConverter,
             docAssemblyService,
-            appInsights);
+            appInsights,
+            new GenerateOrderRule());
 
         ReflectionTestUtils.setField(generateOrderCallbackHandler, "templateId", "testTemplateId");
         ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
@@ -112,9 +116,17 @@ public class GenerateOrderCallbackHandlerTest {
                 CCDCollectionElement.<CCDRespondent>builder()
                     .value(CCDRespondent.builder()
                         .claimantResponse(CCDResponseRejection.builder()
-                            .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder().build())
+                            .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder()
+                                .expertRequired(YES)
+                                .permissionForExpert(YES)
+                                .expertEvidenceToExamine("Some Evidence")
+                                .build())
                             .build())
-                        .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder().build())
+                        .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder()
+                            .expertRequired(YES)
+                            .permissionForExpert(YES)
+                            .expertEvidenceToExamine("Some Evidence")
+                            .build())
                         .build())
                     .build()
             ));
@@ -139,7 +151,9 @@ public class GenerateOrderCallbackHandlerTest {
             entry("preferredDQCourt", "Defendant Preferred Court"),
             entry("newRequestedCourt", null),
             entry("preferredCourtObjectingParty", null),
-            entry("preferredCourtObjectingReason", null)
+            entry("preferredCourtObjectingReason", null),
+            entry("expertReportPermissionPartyAskedByClaimant", YES),
+            entry("expertReportPermissionPartyAskedByDefendant", YES)
         );
     }
 
@@ -181,7 +195,9 @@ public class GenerateOrderCallbackHandlerTest {
             entry("preferredDQCourt", "Defendant Preferred Court"),
             entry("newRequestedCourt", null),
             entry("preferredCourtObjectingParty", null),
-            entry("preferredCourtObjectingReason", null)
+            entry("preferredCourtObjectingReason", null),
+            entry("expertReportPermissionPartyAskedByClaimant", NO),
+            entry("expertReportPermissionPartyAskedByDefendant", NO)
         ).doesNotContain(
             entry("hearingCourt", null)
         );
@@ -214,7 +230,9 @@ public class GenerateOrderCallbackHandlerTest {
             entry("preferredDQCourt", "Defendant Preferred Court"),
             entry("newRequestedCourt", "Claimant Court"),
             entry("preferredCourtObjectingParty", "Res_CLAIMANT"),
-            entry("preferredCourtObjectingReason", "As a claimant I like this court more")
+            entry("preferredCourtObjectingReason", "As a claimant I like this court more"),
+            entry("expertReportPermissionPartyAskedByClaimant", YES),
+            entry("expertReportPermissionPartyAskedByDefendant", NO)
         ).doesNotContain(
             entry("otherDirectionHeaders", "HEADER_UPLOAD")
         );
@@ -249,7 +267,9 @@ public class GenerateOrderCallbackHandlerTest {
             entry("preferredDQCourt", "Defendant Preferred Court"),
             entry("newRequestedCourt", "Defendant Court"),
             entry("preferredCourtObjectingParty", "Res_DEFENDANT"),
-            entry("preferredCourtObjectingReason", "As a defendant I like this court more")
+            entry("preferredCourtObjectingReason", "As a defendant I like this court more"),
+            entry("expertReportPermissionPartyAskedByDefendant", NO),
+            entry("expertReportPermissionPartyAskedByClaimant", NO)
         );
     }
 
