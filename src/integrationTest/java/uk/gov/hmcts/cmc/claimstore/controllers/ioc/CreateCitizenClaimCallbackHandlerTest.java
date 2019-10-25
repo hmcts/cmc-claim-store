@@ -3,8 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 import com.github.tomakehurst.wiremock.http.MimeType;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
@@ -13,8 +11,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
-import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
-import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
@@ -27,7 +23,6 @@ import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -36,16 +31,12 @@ import static java.math.BigDecimal.TEN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleData.getAmountBreakDown;
-import static uk.gov.hmcts.cmc.claimstore.services.CallbackHandlerFactoryTest.BEARER_TOKEN;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.CreateCitizenClaimCallbackHandlerTest.ISSUE_DATE;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.CreateCitizenClaimCallbackHandlerTest.RESPONSE_DEADLINE;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
@@ -74,20 +65,8 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
     @MockBean
     protected IssueDateCalculator issueDateCalculator;
 
-    @MockBean
-    private EventProducer eventProducer;
-
     @Autowired
     private CaseDetailsConverter caseDetailsConverter;
-
-    @Captor
-    private ArgumentCaptor<Claim> claimArgumentCaptor;
-
-    @Captor
-    private ArgumentCaptor<String> submitterNameCaptor;
-
-    @Captor
-    private ArgumentCaptor<String> authorisationCaptor;
 
     private Payment.PaymentBuilder paymentBuilder;
 
@@ -133,6 +112,7 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
         assertThat(responseData).contains(
             entry("paymentStatus", SUCCESS.toString()),
             entry("issuedOn", ISSUE_DATE.toString()),
+            //not sure why previousServiceCaseReference, i thought it should be caseReference
             entry("previousServiceCaseReference", REFERENCE_NO)
         );
 
@@ -159,27 +139,6 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
         ).getErrors();
 
         assertThat(responseData).contains("Payment not successful");
-    }
-
-    @Test
-    public void shouldCallClaimIssuePostOperationsWhenSubmittedCallbackIsSuccessful() throws Exception {
-
-        given(userService.getUser(anyString())).willReturn(new User(BEARER_TOKEN,
-            SampleUserDetails.builder().build()));
-
-        MvcResult mvcResult = makeRequestAndRespondWithError(CallbackType.SUBMITTED.getValue())
-            .andExpect(status().isOk())
-            .andReturn();
-
-        SubmittedCallbackResponse response = deserializeObjectFrom(
-            mvcResult,
-            SubmittedCallbackResponse.class
-        );
-
-        verify(eventProducer, atLeast(1))
-            .createClaimCreatedEvent(any(Claim.class), anyString(), anyString());
-
-        assertThat(response.getConfirmationBody()).isNull();
     }
 
     private ResultActions makeRequestAndRespondWithSuccess(String callbackType) throws Exception {

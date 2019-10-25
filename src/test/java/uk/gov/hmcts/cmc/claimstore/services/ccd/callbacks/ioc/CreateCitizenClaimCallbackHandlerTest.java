@@ -11,14 +11,12 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
-import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
-import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Payment;
@@ -35,7 +33,6 @@ import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
@@ -79,12 +76,6 @@ public class CreateCitizenClaimCallbackHandlerTest {
 
     @Captor
     private ArgumentCaptor<Claim> claimArgumentCaptor;
-
-    @Captor
-    private ArgumentCaptor<String> submitterNameCaptor;
-
-    @Captor
-    private ArgumentCaptor<String> authorisationCaptor;
 
     private CallbackParams callbackParams;
     private CallbackRequest callbackRequest;
@@ -182,39 +173,6 @@ public class CreateCitizenClaimCallbackHandlerTest {
             createCitizenClaimCallbackHandler.handle(callbackParams);
 
         assertThat(response.getErrors()).containsOnly("Payment not successful");
-    }
-
-    @Test
-    public void shouldSuccessfullyReturnCallBackResponseForPostOperations() {
-
-        Claim claim = SampleClaim.getDefault().toBuilder()
-            .claimData(withFullClaimData().getClaimData())
-            .build();
-
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class)))
-            .thenReturn(claim);
-
-        callbackParams = CallbackParams.builder()
-            .type(CallbackType.SUBMITTED)
-            .request(callbackRequest)
-            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
-            .build();
-
-        when(userService.getUser(BEARER_TOKEN)).thenReturn(new User(BEARER_TOKEN,
-            SampleUserDetails.builder().withRoles("letter-" + claim.getLetterHolderId()).build()));
-
-        createCitizenClaimCallbackHandler.handle(callbackParams);
-
-        verify(eventProducer, atLeast(1))
-            .createClaimCreatedEvent(
-                claimArgumentCaptor.capture(),
-                submitterNameCaptor.capture(),
-                authorisationCaptor.capture());
-
-        Claim toBeSaved = claimArgumentCaptor.getValue();
-        assertThat(toBeSaved.getClaimData()).isEqualTo(claim.getClaimData());
-        assertThat(submitterNameCaptor.getValue()).isEqualTo("Steven Smith");
-        assertThat(authorisationCaptor.getValue()).isEqualTo(BEARER_TOKEN);
     }
 
     @Test
