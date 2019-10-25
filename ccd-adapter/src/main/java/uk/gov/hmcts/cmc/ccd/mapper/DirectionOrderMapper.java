@@ -46,6 +46,22 @@ public class DirectionOrderMapper {
         Optional.ofNullable(directionOrderData.getPaperDetermination()).ifPresent(paperDetermination ->
             builder.paperDetermination(YesNoOption.valueOf(paperDetermination.name())));
 
+        Optional.ofNullable(directionOrderData.getExpertReportPermissionPartyGivenToClaimant())
+            .ifPresent(permission -> builder
+                .expertReportPermissionGivenToClaimant(YesNoOption.valueOf(permission.name())));
+
+        Optional.ofNullable(directionOrderData.getExpertReportPermissionPartyGivenToDefendant())
+            .ifPresent(permission -> builder
+                .expertReportPermissionGivenToDefendant(YesNoOption.valueOf(permission.name())));
+
+        Optional.ofNullable(directionOrderData.getExpertReportPermissionPartyAskedByClaimant())
+            .ifPresent(permission -> builder
+                .expertReportPermissionAskedByClaimant(YesNoOption.valueOf(permission.name())));
+
+        Optional.ofNullable(directionOrderData.getExpertReportPermissionPartyAskedByDefendant())
+            .ifPresent(permission -> builder
+                .expertReportPermissionAskedByDefendant(YesNoOption.valueOf(permission.name())));
+
         DirectionOrder directionOrder = builder
             .createdOn(ccdDirectionOrder.getCreatedOn())
             .hearingCourtName(ccdDirectionOrder.getHearingCourtName())
@@ -56,6 +72,10 @@ public class DirectionOrderMapper {
             .extraDocUploadList(directionOrderData.getExtraDocUploadList().stream()
                 .map(CCDCollectionElement::getValue)
                 .collect(Collectors.toList()))
+            .expertReportInstructionsForClaimant(directionOrderData.getExpertReportInstructionClaimant()
+                .stream().map(CCDCollectionElement::getValue).collect(Collectors.toList()))
+            .expertReportInstructionsForDefendant(directionOrderData.getExpertReportInstructionDefendant()
+                .stream().map(CCDCollectionElement::getValue).collect(Collectors.toList()))
             .build();
 
         addUploadDocumentDirection(directionOrderData, directionOrder);

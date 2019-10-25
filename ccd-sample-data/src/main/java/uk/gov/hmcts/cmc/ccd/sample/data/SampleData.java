@@ -83,6 +83,7 @@ import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOU
 public class SampleData {
 
     public static final String AMOUNT = "12398";
+    public static final String SUBMIT_MORE_DOCS_INSTRUCTION = "submit more docs";
     public static final String MANCHESTER_CIVIL_JUSTICE_CENTRE_CIVIL_AND_FAMILY_COURTS
         = "Manchester Civil Justice Centre (Civil and Family Courts)";
 
@@ -417,6 +418,9 @@ public class SampleData {
                 .directionsQuestionnaire(CCDDirectionsQuestionnaire
                     .builder()
                     .hearingLocation("Claimant Court")
+                    .expertRequired(YES)
+                    .permissionForExpert(YES)
+                    .expertEvidenceToExamine("Expert evidence required to examine")
                     .exceptionalCircumstancesReason("As a claimant I like this court more").build())
                 .build())
             .directionsQuestionnaire(CCDDirectionsQuestionnaire
@@ -619,6 +623,14 @@ public class SampleData {
                         .build()))
             .eyewitnessUploadForParty(CCDDirectionPartyType.DEFENDANT)
             .estimatedHearingDuration(CCDHearingDurationType.FOUR_HOURS)
+            .expertReportPermissionPartyAskedByClaimant(YES)
+            .expertReportPermissionPartyAskedByDefendant(YES)
+            .expertReportPermissionPartyGivenToClaimant(YES)
+            .expertReportPermissionPartyGivenToDefendant(YES)
+            .expertReportInstructionClaimant(ImmutableList.of(CCDCollectionElement.<String>builder()
+                .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()))
+            .expertReportInstructionDefendant(ImmutableList.of(CCDCollectionElement.<String>builder()
+                .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()))
             .build();
     }
 
