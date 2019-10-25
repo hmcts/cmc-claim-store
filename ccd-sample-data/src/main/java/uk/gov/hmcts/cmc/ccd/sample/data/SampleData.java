@@ -416,6 +416,8 @@ public class SampleData {
                 .directionsQuestionnaire(CCDDirectionsQuestionnaire
                     .builder()
                     .hearingLocation("Claimant Court")
+                    .expertRequired(NO)
+                    .permissionForExpert(YES)
                     .expertEvidenceToExamine("Expert evidence required to examine")
                     .exceptionalCircumstancesReason("As a claimant I like this court more").build())
                 .build())
