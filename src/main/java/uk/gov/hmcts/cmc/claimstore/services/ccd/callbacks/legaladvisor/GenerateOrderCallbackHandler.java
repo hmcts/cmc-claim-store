@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ACTION_REVIEW_COMMENTS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.GENERATE_ORDER;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOTH;
@@ -208,7 +209,7 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
             && directionsQuestionnaire.getExpertRequired().toBoolean()
             && (hasRequestedForPermissionWithProvidedEvidence(directionsQuestionnaire)
             || hasProvidedExpertReports(directionsQuestionnaire))
-            ? CCDYesNoOption.YES
+            ? YES
             : NO;
     }
 
