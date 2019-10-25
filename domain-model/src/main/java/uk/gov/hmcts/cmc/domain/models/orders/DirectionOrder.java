@@ -27,6 +27,8 @@ public class DirectionOrder {
     private HearingDurationType estimatedHearingDuration;
     private YesNoOption expertReportPermissionGivenToClaimant;
     private YesNoOption expertReportPermissionGivenToDefendant;
+    private YesNoOption expertReportPermissionAskedByClaimant;
+    private YesNoOption expertReportPermissionAskedByDefendant;
     private List<String> expertReportInstructionsForClaimant;
     private List<String> expertReportInstructionsForDefendant;
     private LocalDateTime createdOn;

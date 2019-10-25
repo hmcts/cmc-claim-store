@@ -54,6 +54,14 @@ public class DirectionOrderMapper {
             .ifPresent(permission -> builder
                 .expertReportPermissionGivenToDefendant(YesNoOption.valueOf(permission.name())));
 
+        Optional.ofNullable(directionOrderData.getExpertReportPermissionPartyAskedByClaimant())
+            .ifPresent(permission -> builder
+                .expertReportPermissionAskedByClaimant(YesNoOption.valueOf(permission.name())));
+
+        Optional.ofNullable(directionOrderData.getExpertReportPermissionPartyAskedByDefendant())
+            .ifPresent(permission -> builder
+                .expertReportPermissionAskedByDefendant(YesNoOption.valueOf(permission.name())));
+
         DirectionOrder directionOrder = builder
             .createdOn(ccdDirectionOrder.getCreatedOn())
             .hearingCourtAddress(addressMapper.from(ccdDirectionOrder.getHearingCourtAddress()))
