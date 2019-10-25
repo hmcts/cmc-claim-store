@@ -798,22 +798,16 @@ public class CoreCaseDataService {
                 caseDataContent
             );
         } else {
-            CaseDetails caseDetails = null;
-            try {
-                caseDetails = coreCaseDataApi.submitEventForCitizen(
-                    authorisation,
-                    authTokenGenerator.generate(),
-                    eventRequestData.getUserId(),
-                    eventRequestData.getJurisdictionId(),
-                    eventRequestData.getCaseTypeId(),
-                    caseId.toString(),
-                    eventRequestData.isIgnoreWarning(),
-                    caseDataContent
-                );
-            } catch (Exception e) {
-                System.out.println(e);
-            }
-            return caseDetails;
+            return coreCaseDataApi.submitEventForCitizen(
+                authorisation,
+                authTokenGenerator.generate(),
+                eventRequestData.getUserId(),
+                eventRequestData.getJurisdictionId(),
+                eventRequestData.getCaseTypeId(),
+                caseId.toString(),
+                eventRequestData.isIgnoreWarning(),
+                caseDataContent
+            );
         }
     }
 
