@@ -48,6 +48,7 @@ public class DirectionOrderMapper {
 
         DirectionOrder directionOrder = builder
             .createdOn(ccdDirectionOrder.getCreatedOn())
+            .hearingCourtName(ccdDirectionOrder.getHearingCourtName())
             .hearingCourtAddress(addressMapper.from(ccdDirectionOrder.getHearingCourtAddress()))
             .preferredDQCourt(directionOrderData.getPreferredDQCourt())
             .preferredCourtObjectingReason(directionOrderData.getPreferredCourtObjectingReason())

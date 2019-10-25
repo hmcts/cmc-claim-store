@@ -29,7 +29,8 @@ public class DirectionOrderMapperTest {
     @Test
     public void shouldMapDirectionOrderFromCCD() {
         CCDDirectionOrder ccdDirectionOrder = CCDDirectionOrder.builder()
-            .hearingCourtAddress(SampleData.getCCDAddress())
+            .hearingCourtAddress(SampleData.getHearingCourtAddress())
+            .hearingCourtName(SampleData.MANCHESTER_CIVIL_JUSTICE_CENTRE_CIVIL_AND_FAMILY_COURTS)
             .createdOn(LocalDateTime.now())
             .build();
 
@@ -48,7 +49,8 @@ public class DirectionOrderMapperTest {
     @Test
     public void shouldMapNullCCDOrderGenerationDataFromCCD() {
         CCDDirectionOrder ccdDirectionOrder = CCDDirectionOrder.builder()
-            .hearingCourtAddress(SampleData.getCCDAddress())
+            .hearingCourtAddress(SampleData.getHearingCourtAddress())
+            .hearingCourtName(SampleData.MANCHESTER_CIVIL_JUSTICE_CENTRE_CIVIL_AND_FAMILY_COURTS)
             .createdOn(LocalDateTime.now())
             .build();
 
