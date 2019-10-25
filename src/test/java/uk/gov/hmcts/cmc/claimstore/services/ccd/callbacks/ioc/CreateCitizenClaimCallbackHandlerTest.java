@@ -101,7 +101,8 @@ public class CreateCitizenClaimCallbackHandlerTest {
                 responseDeadlineCalculator,
                 caseMapper,
                 paymentsService,
-                eventProducer,userService
+                eventProducer,
+                userService
         );
 
         callbackRequest = CallbackRequest

@@ -166,7 +166,8 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
         CaseDetails caseDetails = CaseDetails.builder()
             .id(CASE_ID)
             .data(caseDetailsConverter.convertToMap(
-                SampleData.getCCDCitizenCase(getAmountBreakDown()).toBuilder().paymentStatus(FAILED.toString()).build()))
+                SampleData.getCCDCitizenCase(
+                    getAmountBreakDown()).toBuilder().paymentStatus(FAILED.toString()).build()))
             .state(OPEN.getValue())
             .build();
 
