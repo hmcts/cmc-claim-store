@@ -205,8 +205,8 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
 
     private CCDYesNoOption hasRequestedExpertPermission(CCDDirectionsQuestionnaire directionsQuestionnaire) {
         return (directionsQuestionnaire.getExpertRequired() != null
-            && directionsQuestionnaire.getExpertRequired().toBoolean())
-            || (directionsQuestionnaire.getPermissionForExpert() != null
+            && directionsQuestionnaire.getExpertRequired().toBoolean()
+            && directionsQuestionnaire.getPermissionForExpert() != null
             && directionsQuestionnaire.getPermissionForExpert().toBoolean()
             && StringUtils.isNotBlank(directionsQuestionnaire.getExpertEvidenceToExamine()))
             ? CCDYesNoOption.YES
