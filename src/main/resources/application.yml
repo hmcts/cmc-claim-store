@@ -63,6 +63,13 @@ idam:
     url: "http://localhost:4552"
     totp_secret: "AAAAAAAAAAAAAAAA"
     microservice: "cmc_claim_store"
+  caseworker:
+    anonymous:
+      username : civilmoneyclaims+anonymouscitizen@gmail.com
+      password : Password12
+    system:
+      username : civilmoneyclaims+systemupdate@gmail.com
+      password : Password12
 
 courtfinder:
   api:
