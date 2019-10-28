@@ -15,6 +15,8 @@ import uk.gov.hmcts.cmc.claimstore.events.claim.PostClaimOrchestrationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedStaffNotificationHandler;
+import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
+import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimCreatedEvent;
@@ -98,6 +100,9 @@ public class SupportControllerTest {
     private ClaimantResponseStaffNotificationHandler claimantResponseStaffNotificationHandler;
 
     @Mock
+    private PaidInFullStaffNotificationHandler paidInFullStaffNotificationHandler;
+
+    @Mock
     private DocumentsService documentsService;
 
     @Mock
@@ -124,6 +129,7 @@ public class SupportControllerTest {
             ccjStaffNotificationHandler,
             agreementCountersignedStaffNotificationHandler,
             claimantResponseStaffNotificationHandler,
+            paidInFullStaffNotificationHandler,
             documentsService,
             postClaimOrchestrationHandler,
             false,
@@ -173,8 +179,8 @@ public class SupportControllerTest {
         controller = new SupportController(claimService, userService, documentGenerator,
             moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
             ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
-            claimantResponseStaffNotificationHandler, documentsService, postClaimOrchestrationHandler,
-            true, mediationReportService, new ClaimSubmissionOperationIndicatorRule()
+            claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
+            postClaimOrchestrationHandler, true, mediationReportService, new ClaimSubmissionOperationIndicatorRule()
         );
 
         // when
@@ -201,8 +207,8 @@ public class SupportControllerTest {
         controller = new SupportController(claimService, userService, documentGenerator,
             moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
             ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
-            claimantResponseStaffNotificationHandler, documentsService, postClaimOrchestrationHandler,
-            false, mediationReportService, new ClaimSubmissionOperationIndicatorRule()
+            claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
+            postClaimOrchestrationHandler, false, mediationReportService, new ClaimSubmissionOperationIndicatorRule()
         );
 
         // when
@@ -223,8 +229,8 @@ public class SupportControllerTest {
         controller = new SupportController(claimService, userService, documentGenerator,
             moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
             ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
-            claimantResponseStaffNotificationHandler, documentsService, postClaimOrchestrationHandler,
-            true, mediationReportService, new ClaimSubmissionOperationIndicatorRule()
+            claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
+            postClaimOrchestrationHandler, true, mediationReportService, new ClaimSubmissionOperationIndicatorRule()
         );
 
         // when
@@ -321,6 +327,23 @@ public class SupportControllerTest {
             Optional.of(SampleClaim.builder().withClaimantResponse(null).build()));
 
         controller.resendStaffNotifications(CLAIM_REFERENCE, "claimant-response");
+    }
+
+    @Test
+    public void shouldResendStaffNotificationForPaidInFull() {
+        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(
+            Optional.of(SampleClaim.builder().withMoneyReceivedOn(LocalDate.now()).build()));
+        controller.resendStaffNotifications(CLAIM_REFERENCE, "paid-in-full");
+        verify(paidInFullStaffNotificationHandler).onPaidInFullEvent(any(PaidInFullEvent.class));
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenClaimHasNoMoneyReceivedOnDate() {
+        exceptionRule.expect(IllegalArgumentException.class);
+        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(
+            Optional.of(SampleClaim.builder().withMoneyReceivedOn(null).build()));
+        controller.resendStaffNotifications(CLAIM_REFERENCE, "paid-in-full");
+        verify(paidInFullStaffNotificationHandler, never()).onPaidInFullEvent(any(PaidInFullEvent.class));
     }
 
     @Test
