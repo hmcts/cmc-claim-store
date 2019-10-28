@@ -111,6 +111,9 @@ milo:
   recipient: ${MILO_CSV_RECIPIENT:}
   sender: ${MILO_CSV_SENDER:}
 
+claim_stayed:
+  schedule: "-"
+
 dateCalculations:
   endOfBusinessDayHour: 16
   serviceDays: 5

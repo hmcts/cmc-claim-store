@@ -51,7 +51,7 @@ public class IntentionToProceedService {
         this.intentionToProceedDeadlineCalculator = intentionToProceedDeadlineCalculator;
     }
 
-    @Scheduled(cron = "#{'${claim.stayed.schedule:-}' ?: '-'}")
+    @Scheduled(cron = "#{'${claim_stayed.schedule}' ?: '-'}")
     public void scheduledTrigger() {
         // if not weekend or bank holiday
         LocalDateTime now = LocalDateTime.now();
