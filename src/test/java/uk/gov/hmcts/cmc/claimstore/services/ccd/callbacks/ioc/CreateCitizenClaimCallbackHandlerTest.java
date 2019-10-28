@@ -80,12 +80,6 @@ public class CreateCitizenClaimCallbackHandlerTest {
     @Captor
     private ArgumentCaptor<Claim> claimArgumentCaptor;
 
-    @Captor
-    private ArgumentCaptor<String> submitterNameCaptor;
-
-    @Captor
-    private ArgumentCaptor<String> authorisationCaptor;
-
     private CallbackParams callbackParams;
     private CallbackRequest callbackRequest;
     private CreateCitizenClaimCallbackHandler createCitizenClaimCallbackHandler;
