@@ -198,7 +198,7 @@ public final class SampleClaim {
             .build();
     }
 
-    public static Claim getClaimWithFullDefenceWithMediation() {
+    public static Claim getClaimWithFullAdmission() {
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withResponse(SampleResponse.FullAdmission.builder()
@@ -293,14 +293,15 @@ public final class SampleClaim {
                 SampleResponse
                     .PartAdmission
                     .builder()
-                    .buildWithFreeMediation())
+                    .buildWithDirectionsQuestionnaire()
+            )
             .withRespondedAt(LocalDateTime.now())
             .withDefendantEmail(DEFENDANT_EMAIL)
             .withClaimantRespondedAt(LocalDateTime.now())
             .withClaimantResponse(SampleClaimantResponse
                 .ClaimantResponseRejection
                 .builder()
-                .buildRejectionWithFreeMediation())
+                .buildRejectionWithDirectionsQuestionnaire())
             .build();
     }
 

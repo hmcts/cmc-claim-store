@@ -248,7 +248,7 @@ public class Claim {
     }
 
     public Optional<MediationOutcome> getMediationOutcome(){
-        return Optional.of(mediationOutcome);
+        return Optional.ofNullable(mediationOutcome);
     }
 
     @Override
