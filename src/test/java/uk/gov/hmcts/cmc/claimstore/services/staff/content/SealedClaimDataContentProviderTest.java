@@ -51,7 +51,7 @@ public class SealedClaimDataContentProviderTest {
         PersonContent defendantContent = (PersonContent)content.get("defendant");
 
         assertThat(content).containsKey("defendant");
-        Assert.assertEquals("0776655443322", defendantContent.getMobileNumber());
+        Assert.assertEquals("0776655443322", defendantContent.getPhoneNumber());
     }
 
     @Test
