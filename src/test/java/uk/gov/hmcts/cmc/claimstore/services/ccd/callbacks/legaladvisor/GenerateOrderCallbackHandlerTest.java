@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
+import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDExpertReport;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalcula
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules.GenerateOrderRule;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
@@ -43,6 +45,8 @@ import static org.assertj.core.data.MapEntry.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.GENERATE_ORDER;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -76,7 +80,8 @@ public class GenerateOrderCallbackHandlerTest {
             legalOrderGenerationDeadlinesCalculator,
             caseDetailsConverter,
             docAssemblyService,
-            appInsights);
+            appInsights,
+            new GenerateOrderRule());
 
         ReflectionTestUtils.setField(generateOrderCallbackHandler, "templateId", "testTemplateId");
         ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
@@ -106,15 +111,29 @@ public class GenerateOrderCallbackHandlerTest {
     }
 
     @Test
-    public void shouldPrepopulateFieldsOnAboutToStartEventIfNobodyObjectsCourt() {
+    public void shouldPrepopulateFieldsOnAboutToStartEventIfExpertReportsAreProvided() {
         ccdCase.setRespondents(
             ImmutableList.of(
                 CCDCollectionElement.<CCDRespondent>builder()
                     .value(CCDRespondent.builder()
                         .claimantResponse(CCDResponseRejection.builder()
-                            .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder().build())
+                            .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder()
+                                .expertRequired(YES)
+                                .expertReports(ImmutableList.of(CCDCollectionElement.<CCDExpertReport>builder()
+                                    .value(CCDExpertReport.builder().expertName("expertName")
+                                        .expertReportDate(LocalDate.now())
+                                        .build())
+                                    .build()))
+                                .build())
                             .build())
-                        .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder().build())
+                        .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder()
+                            .expertRequired(YES)
+                            .expertReports(ImmutableList.of(CCDCollectionElement.<CCDExpertReport>builder()
+                                .value(CCDExpertReport.builder().expertName("expertName")
+                                    .expertReportDate(LocalDate.now())
+                                    .build())
+                                .build()))
+                            .build())
                         .build())
                     .build()
             ));
@@ -139,7 +158,57 @@ public class GenerateOrderCallbackHandlerTest {
             entry("preferredDQCourt", "Defendant Preferred Court"),
             entry("newRequestedCourt", null),
             entry("preferredCourtObjectingParty", null),
-            entry("preferredCourtObjectingReason", null)
+            entry("preferredCourtObjectingReason", null),
+            entry("expertReportPermissionPartyAskedByClaimant", YES),
+            entry("expertReportPermissionPartyAskedByDefendant", YES)
+        );
+    }
+
+    @Test
+    public void shouldPrepopulateFieldsOnAboutToStartEventIfNobodyObjectsCourt() {
+        ccdCase.setRespondents(
+            ImmutableList.of(
+                CCDCollectionElement.<CCDRespondent>builder()
+                    .value(CCDRespondent.builder()
+                        .claimantResponse(CCDResponseRejection.builder()
+                            .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder()
+                                .expertRequired(YES)
+                                .permissionForExpert(YES)
+                                .expertEvidenceToExamine("Some Evidence")
+                                .build())
+                            .build())
+                        .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder()
+                            .expertRequired(YES)
+                            .permissionForExpert(YES)
+                            .expertEvidenceToExamine("Some Evidence")
+                            .build())
+                        .build())
+                    .build()
+            ));
+        ccdCase.setDirectionOrderData(SampleData.getCCDOrderGenerationData());
+
+        CallbackParams callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_START)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+        AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
+            generateOrderCallbackHandler
+                .handle(callbackParams);
+
+        assertThat(response.getData()).contains(
+            entry("directionList", ImmutableList.of("DOCUMENTS", "EYEWITNESS")),
+            entry("docUploadDeadline", DEADLINE),
+            entry("docUploadForParty", "BOTH"),
+            entry("eyewitnessUploadDeadline", DEADLINE),
+            entry("eyewitnessUploadForParty", "BOTH"),
+            entry("paperDetermination", "NO"),
+            entry("preferredDQCourt", "Defendant Preferred Court"),
+            entry("newRequestedCourt", null),
+            entry("preferredCourtObjectingParty", null),
+            entry("preferredCourtObjectingReason", null),
+            entry("expertReportPermissionPartyAskedByClaimant", YES),
+            entry("expertReportPermissionPartyAskedByDefendant", YES)
         );
     }
 
@@ -181,7 +250,9 @@ public class GenerateOrderCallbackHandlerTest {
             entry("preferredDQCourt", "Defendant Preferred Court"),
             entry("newRequestedCourt", null),
             entry("preferredCourtObjectingParty", null),
-            entry("preferredCourtObjectingReason", null)
+            entry("preferredCourtObjectingReason", null),
+            entry("expertReportPermissionPartyAskedByClaimant", NO),
+            entry("expertReportPermissionPartyAskedByDefendant", NO)
         ).doesNotContain(
             entry("hearingCourt", null)
         );
@@ -214,7 +285,9 @@ public class GenerateOrderCallbackHandlerTest {
             entry("preferredDQCourt", "Defendant Preferred Court"),
             entry("newRequestedCourt", "Claimant Court"),
             entry("preferredCourtObjectingParty", "Res_CLAIMANT"),
-            entry("preferredCourtObjectingReason", "As a claimant I like this court more")
+            entry("preferredCourtObjectingReason", "As a claimant I like this court more"),
+            entry("expertReportPermissionPartyAskedByClaimant", YES),
+            entry("expertReportPermissionPartyAskedByDefendant", NO)
         ).doesNotContain(
             entry("otherDirectionHeaders", "HEADER_UPLOAD")
         );
@@ -249,7 +322,9 @@ public class GenerateOrderCallbackHandlerTest {
             entry("preferredDQCourt", "Defendant Preferred Court"),
             entry("newRequestedCourt", "Defendant Court"),
             entry("preferredCourtObjectingParty", "Res_DEFENDANT"),
-            entry("preferredCourtObjectingReason", "As a defendant I like this court more")
+            entry("preferredCourtObjectingReason", "As a defendant I like this court more"),
+            entry("expertReportPermissionPartyAskedByDefendant", NO),
+            entry("expertReportPermissionPartyAskedByClaimant", NO)
         );
     }
 

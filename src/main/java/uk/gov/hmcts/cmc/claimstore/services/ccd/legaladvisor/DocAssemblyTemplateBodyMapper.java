@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -102,6 +103,20 @@ public class DocAssemblyTemplateBodyMapper {
                     .collect(Collectors.toList()))
             .directionDeadline(workingDayIndicator.getNextWorkingDay(currentDate
                 .plusDays(DIRECTION_DEADLINE_NO_OF_DAYS)))
+            .expertReportInstructionClaimant(ccdOrderGenerationData.getExpertReportInstructionClaimant())
+            .expertReportInstructionDefendant(ccdOrderGenerationData.getExpertReportInstructionDefendant())
+            .expertReportPermissionPartyAskedByClaimant(fromEnum(ccdOrderGenerationData
+                .getExpertReportPermissionPartyAskedByClaimant()))
+            .expertReportPermissionPartyAskedByDefendant(fromEnum(ccdOrderGenerationData
+                .getExpertReportPermissionPartyAskedByDefendant()))
+            .expertReportPermissionPartyGivenToClaimant(fromEnum(ccdOrderGenerationData
+                .getExpertReportPermissionPartyGivenToClaimant()))
+            .expertReportPermissionPartyGivenToDefendant(fromEnum(ccdOrderGenerationData
+                .getExpertReportPermissionPartyGivenToDefendant()))
             .build();
+    }
+
+    private boolean fromEnum(CCDYesNoOption input) {
+        return Optional.ofNullable(input).map(CCDYesNoOption::toBoolean).orElse(false);
     }
 }

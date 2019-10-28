@@ -273,6 +273,7 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
                         ccdCase.getChannel(), channelType);
                 }
             });
+        assertThat(actual.getIntentionToProceedDeadline()).isEqualTo(ccdCase.getIntentionToProceedDeadline());
 
         return this;
     }

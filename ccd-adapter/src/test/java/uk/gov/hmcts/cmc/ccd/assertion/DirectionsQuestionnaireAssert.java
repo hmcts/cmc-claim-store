@@ -31,6 +31,22 @@ public class DirectionsQuestionnaireAssert
 
         actual.getWitness().ifPresent(isEqualToWitness(ccdDirectionsQuestionnaire));
 
+        actual.getExpertRequired().ifPresent(expertRequired -> {
+            if (!Objects.equals(expertRequired.name(), ccdDirectionsQuestionnaire.getExpertRequired().name())) {
+                failWithMessage("Expected DirectionsQuestionnaire.expertRequired to be <%s> but was <%s>",
+                    ccdDirectionsQuestionnaire.getExpertRequired(), expertRequired);
+            }
+        });
+
+        actual.getPermissionForExpert().ifPresent(permissionForExpert -> {
+            if (!Objects.equals(permissionForExpert.name(),
+                ccdDirectionsQuestionnaire.getPermissionForExpert().name())) {
+                failWithMessage(
+                    "Expected DirectionsQuestionnaire.permissionForExpert to be <%s> but was <%s>",
+                    ccdDirectionsQuestionnaire.getPermissionForExpert(), permissionForExpert);
+            }
+        });
+
         actual.getExpertRequest().ifPresent(isEqualToExpertRequest(ccdDirectionsQuestionnaire));
 
         return this;
