@@ -78,10 +78,10 @@ public class DefendantPartyAssert extends AbstractAssert<DefendantPartyAssert, P
             assertThat(partyDetail.getCorrespondenceAddress()).isEqualTo(address)
         );
 
-        String mobilePhone = actual.getMobilePhone().orElse(null);
-        if (!Objects.equals(mobilePhone, partyDetail.getTelephoneNumber().getTelephoneNumber())) {
+        String phone = actual.getPhone().orElse(null);
+        if (!Objects.equals(phone, partyDetail.getTelephoneNumber().getTelephoneNumber())) {
             failWithMessage("Expected CCDRespondent.partyPhone to be <%s> but was <%s>",
-                partyDetail.getTelephoneNumber().getTelephoneNumber(), mobilePhone);
+                partyDetail.getTelephoneNumber().getTelephoneNumber(), phone);
         }
 
         actual.getRepresentative()
