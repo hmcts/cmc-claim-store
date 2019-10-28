@@ -53,7 +53,7 @@ public class PartyDetailsContentProviderTest {
             .withDateOfBirth(
                 DATE_OF_BIRTH
             )
-            .withMobilePhone("9384772782883")
+            .withPhone("9384772782883")
             .individual();
     }
 

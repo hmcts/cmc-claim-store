@@ -93,9 +93,9 @@ public class DefendantResponseStaffNotificationService {
         map.put("claim", claim);
         map.put("response", response);
         map.put("defendantEmail", defendantEmail);
-        map.put("defendantMobilePhone", response
+        map.put("defendantPhone", response
             .getDefendant()
-            .getMobilePhone()
+            .getPhone()
             .orElse(null));
         map.put("isCompanyOrOrganisation", isCompanyOrOrganisation(response.getDefendant()));
 
