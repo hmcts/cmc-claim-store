@@ -3,8 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 import com.github.tomakehurst.wiremock.http.MimeType;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
@@ -39,7 +37,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -79,15 +77,6 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
 
     @Autowired
     private CaseDetailsConverter caseDetailsConverter;
-
-    @Captor
-    private ArgumentCaptor<Claim> claimArgumentCaptor;
-
-    @Captor
-    private ArgumentCaptor<String> submitterNameCaptor;
-
-    @Captor
-    private ArgumentCaptor<String> authorisationCaptor;
 
     private Payment.PaymentBuilder paymentBuilder;
 
@@ -176,7 +165,7 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
             SubmittedCallbackResponse.class
         );
 
-        verify(eventProducer, atLeast(1))
+        verify(eventProducer, times(1))
             .createClaimCreatedEvent(any(Claim.class), anyString(), anyString());
 
         assertThat(response.getConfirmationBody()).isNull();

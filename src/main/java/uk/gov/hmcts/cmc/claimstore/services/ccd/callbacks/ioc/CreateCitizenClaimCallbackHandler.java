@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,10 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
 
     private static final List<CaseEvent> EVENTS = Collections.singletonList(CREATE_CITIZEN_CLAIM);
     private static final List<Role> ROLES = Collections.singletonList(CITIZEN);
+    private final Map<CallbackType, Callback> CALLBACKS =
+        ImmutableMap.of(
+            CallbackType.ABOUT_TO_SUBMIT, this::createCitizenClaim,
+            CallbackType.SUBMITTED, this::startClaimIssuedPostOperations);
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final CaseDetailsConverter caseDetailsConverter;
@@ -75,10 +80,7 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
-        return ImmutableMap.of(
-            CallbackType.ABOUT_TO_SUBMIT, this::createCitizenClaim,
-            CallbackType.SUBMITTED, this::startClaimIssuedPostOperations
-        );
+        return CALLBACKS;
     }
 
     @Override
@@ -92,8 +94,10 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
     }
 
     private CallbackResponse createCitizenClaim(CallbackParams callbackParams) {
-        logger.info("Created citizen case for callback of type {}", callbackParams.getType());
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
+        logger.info("Created citizen case for callback of type {}, claim with external id {}",
+            callbackParams.getType(),
+            claim.getExternalId());
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         Payment payment = paymentsService.retrievePayment(authorisation, claim);
 
@@ -104,13 +108,14 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
                 .build();
         }
 
+        LocalDate issuedOn = issueDateCalculator.calculateIssueDay(nowInLocalZone());
+
         Claim updatedClaim = claim.toBuilder()
             .channel(ChannelType.CITIZEN)
             .claimData(claim.getClaimData().toBuilder().payment(payment).build())
             .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
-            .issuedOn(issueDateCalculator.calculateIssueDay(nowInLocalZone()))
-            .responseDeadline(responseDeadlineCalculator
-                .calculateResponseDeadline(issueDateCalculator.calculateIssueDay(nowInLocalZone())))
+            .issuedOn(issuedOn)
+            .responseDeadline(responseDeadlineCalculator.calculateResponseDeadline(issuedOn))
             .build();
 
         return AboutToStartOrSubmitCallbackResponse

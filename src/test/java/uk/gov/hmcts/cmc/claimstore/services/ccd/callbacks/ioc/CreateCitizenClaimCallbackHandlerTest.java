@@ -35,7 +35,7 @@ import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
@@ -205,20 +205,18 @@ public class CreateCitizenClaimCallbackHandlerTest {
 
         createCitizenClaimCallbackHandler.handle(callbackParams);
 
-        verify(eventProducer, atLeast(1))
+        verify(eventProducer, times(1))
             .createClaimCreatedEvent(
                 claimArgumentCaptor.capture(),
-                submitterNameCaptor.capture(),
-                authorisationCaptor.capture());
+                eq("Steven Smith"),
+                eq(BEARER_TOKEN));
 
         Claim toBeSaved = claimArgumentCaptor.getValue();
         assertThat(toBeSaved.getClaimData()).isEqualTo(claim.getClaimData());
-        assertThat(submitterNameCaptor.getValue()).isEqualTo("Steven Smith");
-        assertThat(authorisationCaptor.getValue()).isEqualTo(BEARER_TOKEN);
     }
 
     @Test
-    public void shouldHaveCorrectLegalRepSupportingRole() {
+    public void shouldHaveCorrectCitizenRepSupportingRole() {
         assertThat(createCitizenClaimCallbackHandler.getSupportedRoles()).containsOnly(CITIZEN);
     }
 }
