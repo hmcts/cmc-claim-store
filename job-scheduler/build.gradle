@@ -8,7 +8,7 @@ def versions = [
 dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
   compile group: 'org.springframework.retry', name: 'spring-retry'
-  compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
+  compile group: 'org.flywaydb', name: 'flyway-core', version: '6.0.7'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   compile group: 'org.postgresql', name: 'postgresql', version: '42.2.6'
