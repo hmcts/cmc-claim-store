@@ -14,6 +14,6 @@ public class PersonContent {
     private final String email;
     private final String contactPerson;
     private final String businessName;
-    private final String mobileNumber;
+    private final String phoneNumber;
     private final String dateOfBirth;
 }
