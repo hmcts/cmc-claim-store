@@ -102,6 +102,8 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
         Payment payment = paymentsService.retrievePayment(authorisation, claim);
 
         if (payment.getStatus() != PaymentStatus.SUCCESS) {
+            logger.info("Payment not successful for claim with external id {}", claim.getExternalId());
+
             return AboutToStartOrSubmitCallbackResponse
                 .builder()
                 .errors(ImmutableList.of("Payment not successful"))

@@ -141,11 +141,7 @@ public class CreateCitizenClaimCallbackHandlerTest {
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
-            createCitizenClaimCallbackHandler.handle(callbackParams);
-
-        assertThat(response.getErrors()).isNull();
-        assertThat(response.getWarnings()).isNull();
+        createCitizenClaimCallbackHandler.handle(callbackParams);
 
         verify(caseMapper).to(claimArgumentCaptor.capture());
 
