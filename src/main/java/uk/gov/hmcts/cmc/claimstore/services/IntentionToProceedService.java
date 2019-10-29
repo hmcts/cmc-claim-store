@@ -79,7 +79,7 @@ public class IntentionToProceedService {
             caseRepository.saveCaseEvent(
                 anonymousCaseWorker.getAuthorisation(),
                 claim,
-                CaseEvent.INTENTION_TO_PROCEED_DEADLINE_PASSED
+                CaseEvent.STAY_CLAIM
             );
         } catch (Exception e) {
             logger.error(String.format("Error whilst staying claim %s", claim.getId()), e);
