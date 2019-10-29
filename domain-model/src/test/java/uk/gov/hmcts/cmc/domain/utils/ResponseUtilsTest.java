@@ -195,6 +195,13 @@ public class ResponseUtilsTest {
     }
 
     @Test
+    public void shouldReturnFalseWhenNotFullDefense() {
+        Response response = SampleResponse.PartAdmission.builder().build();
+
+        assertThat(ResponseUtils.isFullDefenceDispute(response)).isFalse();
+    }
+
+    @Test
     public void shouldReturnFalseWhenFullDefenceAlreadyPaidAndYesMediation() {
         Response response = SampleResponse.FullDefence.builder().withDefenceType(DefenceType.ALREADY_PAID)
             .withMediation(YesNoOption.YES).build();
