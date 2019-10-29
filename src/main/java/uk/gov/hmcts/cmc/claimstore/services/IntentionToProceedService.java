@@ -71,11 +71,11 @@ public class IntentionToProceedService {
         claims.forEach(claim -> updateClaim(user, claim));
     }
 
-    private void updateClaim(User anonymousCaseWorker, Claim claim) {
+    private void updateClaim(User user, Claim claim) {
         try {
             appInsights.trackEvent(AppInsightsEvent.CLAIM_STAYED, REFERENCE_NUMBER, claim.getReferenceNumber());
             caseRepository.saveCaseEvent(
-                anonymousCaseWorker.getAuthorisation(),
+                user.getAuthorisation(),
                 claim,
                 CaseEvent.STAY_CLAIM
             );

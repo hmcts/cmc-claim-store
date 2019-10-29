@@ -27,6 +27,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimSubmissionOperationIndicatorRule;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
+import uk.gov.hmcts.cmc.claimstore.services.IntentionToProceedService;
 import uk.gov.hmcts.cmc.claimstore.services.MediationReportService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
@@ -111,6 +112,9 @@ public class SupportControllerTest {
     @Mock
     private MediationReportService mediationReportService;
 
+    @Mock
+    private IntentionToProceedService intentionToProceedService;
+
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
 
@@ -134,7 +138,8 @@ public class SupportControllerTest {
             postClaimOrchestrationHandler,
             false,
             mediationReportService,
-            new ClaimSubmissionOperationIndicatorRule()
+            new ClaimSubmissionOperationIndicatorRule(),
+            intentionToProceedService
         );
         sampleClaim = SampleClaim.getDefault();
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
@@ -180,7 +185,8 @@ public class SupportControllerTest {
             moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
             ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
             claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
-            postClaimOrchestrationHandler, true, mediationReportService, new ClaimSubmissionOperationIndicatorRule()
+            postClaimOrchestrationHandler, true, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
+            intentionToProceedService
         );
 
         // when
@@ -208,7 +214,8 @@ public class SupportControllerTest {
             moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
             ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
             claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
-            postClaimOrchestrationHandler, false, mediationReportService, new ClaimSubmissionOperationIndicatorRule()
+            postClaimOrchestrationHandler, false, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
+            intentionToProceedService
         );
 
         // when
@@ -230,7 +237,8 @@ public class SupportControllerTest {
             moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
             ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
             claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
-            postClaimOrchestrationHandler, true, mediationReportService, new ClaimSubmissionOperationIndicatorRule()
+            postClaimOrchestrationHandler, true, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
+            intentionToProceedService
         );
 
         // when

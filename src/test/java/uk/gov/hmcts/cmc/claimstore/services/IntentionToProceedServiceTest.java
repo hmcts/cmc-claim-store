@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseSearchApi;
 
@@ -67,7 +68,7 @@ public class IntentionToProceedServiceTest {
         LocalDateTime workdayAfter4pm = LocalDateTime.of(2019, Month.OCTOBER, 15, 16, 00, 00);
         when(workingDayIndicator.getPreviousWorkingDay(any())).then(returnsFirstArg());
 
-        intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(workdayAfter4pm);
+        intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(workdayAfter4pm, new User(null, null));
 
         LocalDate responseDate = workdayAfter4pm.toLocalDate().minusDays(intentionToProceedAdjustment);
         verify(caseSearchApi, once()).getClaimsPastIntentionToProceed(any(), eq(responseDate));
@@ -80,7 +81,7 @@ public class IntentionToProceedServiceTest {
         LocalDateTime workdayBefore4pm = LocalDateTime.of(2019, Month.OCTOBER, 15, 15, 59, 59);
         when(workingDayIndicator.getPreviousWorkingDay(any())).then(returnsFirstArg());
 
-        intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(workdayBefore4pm);
+        intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(workdayBefore4pm, new User(null, null));
 
         LocalDate responseDate = workdayBefore4pm.toLocalDate().minusDays(intentionToProceedAdjustment + 1);
         verify(caseSearchApi, once()).getClaimsPastIntentionToProceed(any(), eq(responseDate));
@@ -96,7 +97,7 @@ public class IntentionToProceedServiceTest {
         when(workingDayIndicator.getPreviousWorkingDay(any()))
             .thenReturn(nonWorkdayAfter4pm.minusDays(workdayAdjustment).toLocalDate());
 
-        intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(nonWorkdayAfter4pm);
+        intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(nonWorkdayAfter4pm, new User(null, null));
 
         LocalDate responseDate = nonWorkdayAfter4pm.toLocalDate()
             .minusDays(intentionToProceedAdjustment + workdayAdjustment);
@@ -113,7 +114,7 @@ public class IntentionToProceedServiceTest {
         when(workingDayIndicator.getPreviousWorkingDay(any()))
             .thenReturn(workdayBefore4pm.minusDays(workdayAdjustment + timeOfDayAdjustment).toLocalDate());
 
-        intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(workdayBefore4pm);
+        intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(workdayBefore4pm, new User(null, null));
 
         LocalDate responseDate = workdayBefore4pm.toLocalDate()
             .minusDays(intentionToProceedAdjustment + timeOfDayAdjustment + workdayAdjustment);
