@@ -53,24 +53,22 @@ public class IntentionToProceedService {
 
     @Scheduled(cron = "#{'${claim_stayed.schedule}' ?: '-'}")
     public void scheduledTrigger() {
-        // if not weekend or bank holiday
         LocalDateTime now = LocalDateTime.now();
         if (workingDayIndicator.isWorkingDay(now.toLocalDate())) {
-            checkClaimsPastIntentionToProceedDeadline(now);
+            User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
+            checkClaimsPastIntentionToProceedDeadline(now, anonymousCaseWorker);
         }
     }
 
-    public void checkClaimsPastIntentionToProceedDeadline(LocalDateTime dateTime) {
+    public void checkClaimsPastIntentionToProceedDeadline(LocalDateTime dateTime, User user) {
+
+        //4pm cut off for court working days
         int adjustDays = dateTime.getHour() >= 16 ? 0 : 1;
         LocalDate runDate = dateTime.toLocalDate().minusDays(adjustDays);
         LocalDate responseDate = intentionToProceedDeadlineCalculator.calculateResponseDate(runDate);
 
-        // get all cases that are not stayed and were created DEADLINE (if run after 4pm)
-        // or DEADLINE+1 (if run before 4pm) days ago
-        User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
-        Collection<Claim> claims = caseSearchApi.getClaimsPastIntentionToProceed(anonymousCaseWorker, responseDate);
-
-        claims.forEach(claim -> updateClaim(anonymousCaseWorker, claim));
+        Collection<Claim> claims = caseSearchApi.getClaimsPastIntentionToProceed(user, responseDate);
+        claims.forEach(claim -> updateClaim(user, claim));
     }
 
     private void updateClaim(User anonymousCaseWorker, Claim claim) {

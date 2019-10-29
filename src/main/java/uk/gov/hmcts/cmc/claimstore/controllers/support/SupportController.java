@@ -1,9 +1,12 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.support;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerErrorException;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
@@ -43,6 +47,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimSubmissionOperationIndicatorRule;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
+import uk.gov.hmcts.cmc.claimstore.services.IntentionToProceedService;
 import uk.gov.hmcts.cmc.claimstore.services.MediationReportService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
@@ -58,6 +63,8 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isReferredToJudge;
@@ -67,6 +74,8 @@ import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseTy
 @RestController
 @RequestMapping("/support")
 public class SupportController {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static final String CLAIM = "Claim ";
     private static final String CLAIM_DOES_NOT_EXIST = "Claim %s does not exist";
@@ -86,6 +95,7 @@ public class SupportController {
     private final MediationReportService mediationReportService;
     private final boolean directionsQuestionnaireEnabled;
     private final ClaimSubmissionOperationIndicatorRule claimSubmissionOperationIndicatorRule;
+    private final IntentionToProceedService intentionToProceedService;
 
     @SuppressWarnings("squid:S00107")
     public SupportController(
@@ -102,7 +112,8 @@ public class SupportController {
         @Autowired(required = false) PostClaimOrchestrationHandler postClaimOrchestrationHandler,
         @Value("${feature_toggles.directions_questionnaire_enabled:false}") boolean directionsQuestionnaireEnabled,
         MediationReportService mediationReportService,
-        ClaimSubmissionOperationIndicatorRule claimSubmissionOperationIndicatorRule
+        ClaimSubmissionOperationIndicatorRule claimSubmissionOperationIndicatorRule,
+        IntentionToProceedService intentionToProceedService
     ) {
         this.claimService = claimService;
         this.userService = userService;
@@ -118,6 +129,7 @@ public class SupportController {
         this.mediationReportService = mediationReportService;
         this.directionsQuestionnaireEnabled = directionsQuestionnaireEnabled;
         this.claimSubmissionOperationIndicatorRule = claimSubmissionOperationIndicatorRule;
+        this.intentionToProceedService = intentionToProceedService;
     }
 
     @PutMapping("/claim/{referenceNumber}/event/{event}/resend-staff-notifications")
@@ -256,6 +268,23 @@ public class SupportController {
         mediationReportService
             .sendMediationReport(authorisation, mediationRequest.getReportDate());
 
+    }
+
+    @PostMapping(value = "/claims/checkIntentionToProceedDeadline")
+    @ApiOperation("Stay claims past their intention proceed deadline")
+    public void checkClaimsPastIntentionToProceedDeadline(
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation,
+        @RequestParam(required = false)
+        @ApiParam("Optional. If supplied will run as if on this date")
+            LocalDateTime localDateTime) {
+
+        LocalDateTime runDateTime = localDateTime == null ? LocalDateTime.now() : localDateTime;
+
+        User user = userService.getUser(authorisation);
+        String format = runDateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss"));
+        logger.info(String.format("checkClaimsPastIntentionToProceedDeadline called by %s for date: %s ",
+            user.getUserDetails().getId(), format));
+        intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(runDateTime, user);
     }
 
     private void resendStaffNotificationCCJRequestSubmitted(Claim claim, String authorisation) {
