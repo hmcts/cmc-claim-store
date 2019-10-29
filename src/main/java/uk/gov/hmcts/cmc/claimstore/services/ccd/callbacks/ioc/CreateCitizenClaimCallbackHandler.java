@@ -42,10 +42,6 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
 
     private static final List<CaseEvent> EVENTS = Collections.singletonList(CREATE_CITIZEN_CLAIM);
     private static final List<Role> ROLES = Collections.singletonList(CITIZEN);
-    private final Map<CallbackType, Callback> CALLBACKS =
-        ImmutableMap.of(
-            CallbackType.ABOUT_TO_SUBMIT, this::createCitizenClaim,
-            CallbackType.SUBMITTED, this::startClaimIssuedPostOperations);
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final CaseDetailsConverter caseDetailsConverter;
@@ -80,7 +76,10 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
-        return CALLBACKS;
+        return ImmutableMap.of(
+            CallbackType.ABOUT_TO_SUBMIT, this::createCitizenClaim,
+            CallbackType.SUBMITTED, this::startClaimIssuedPostOperations
+        );
     }
 
     @Override
