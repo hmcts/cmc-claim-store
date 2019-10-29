@@ -52,17 +52,17 @@ public class FullDefenceStaffEmailContentProviderTest {
         EmailContent content = service.createContent(wrapInMap(claim, DEFENDANT_EMAIL));
         assertThat(content.getBody())
             .contains("Email: " + DEFENDANT_EMAIL)
-            .contains("Mobile number: " + claim.getResponse().orElseThrow(IllegalStateException::new).getDefendant()
-                .getMobilePhone().orElseThrow(IllegalStateException::new));
+            .contains("Phone number: " + claim.getResponse().orElseThrow(IllegalStateException::new).getDefendant()
+                .getPhone().orElseThrow(IllegalStateException::new));
     }
 
     @Test
-    public void shouldDisplayAppropriateMessageWhenMobileNumberIsNotGiven() {
+    public void shouldDisplayAppropriateMessageWhenPhoneNumberIsNotGiven() {
         Claim claim = SampleClaim.builder().withResponse(
             SampleResponse.FullDefence.builder()
                 .withDefendantDetails(
                     SampleParty.builder()
-                        .withMobilePhone(null)
+                        .withPhone(null)
                         .individual())
                 .build())
             .build();
@@ -71,7 +71,7 @@ public class FullDefenceStaffEmailContentProviderTest {
             claim, DEFENDANT_EMAIL
         ));
         assertThat(content.getBody())
-            .contains("Mobile number: not given");
+            .contains("Phone number: not given");
     }
 
     @Test
