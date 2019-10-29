@@ -63,6 +63,14 @@ public class StaffEmailTemplates {
         return readString("/staff/templates/email/settlementAgreement/rejected/subject.txt");
     }
 
+    public String getCountersignedSettlementEmailBody() {
+        return readString("/staff/templates/email/settlementAgreement/countersigned/body.txt");
+    }
+
+    public String getCountersignedSettlementEmailSubject() {
+        return readString("/staff/templates/email/settlementAgreement/countersigned/subject.txt");
+    }
+
     public String getBulkPrintEmailBody() {
         return readString("/staff/templates/email/bulkPrintFailure/body.txt");
     }
