@@ -36,6 +36,8 @@ public class SampleDirectionsQuestionnaire {
                 .build()
             )
             .hearingLocation(defaultHearingLocation)
+            .expertRequired(YES)
+            .permissionForExpert(YES)
             .expertRequest(ExpertRequest.builder()
                 .reasonForExpertAdvice("A valid reason")
                 .expertEvidenceToExamine("Evidence to examine")

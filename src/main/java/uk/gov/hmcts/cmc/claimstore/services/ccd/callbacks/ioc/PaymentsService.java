@@ -58,7 +58,7 @@ public class PaymentsService {
         Claim claim
     ) {
 
-        logger.info("Retrieving payment amount for case {}",
+        logger.info("Retrieving payment amount for claim with external id {}",
             claim.getExternalId());
 
         Payment claimPayment =
@@ -75,7 +75,7 @@ public class PaymentsService {
         Claim claim
     ) {
 
-        logger.info("Calculating interest amount for case {}",
+        logger.info("Calculating interest amount for claim with external id {}",
             claim.getExternalId());
 
         BigDecimal amount = claim.getTotalClaimAmount().orElseThrow(IllegalStateException::new);
@@ -83,7 +83,7 @@ public class PaymentsService {
 
         BigDecimal amountPlusInterest = amount.add(interest);
 
-        logger.info("Retrieving fee for case {}",
+        logger.info("Retrieving fee for claim with external id {}",
             claim.getExternalId());
 
         FeeLookupResponseDto feeOutcome = feesClient.lookupFee(
@@ -94,6 +94,9 @@ public class PaymentsService {
             claim,
             feeOutcome
         );
+
+        logger.info("Creating payment in pay hub for claim with external id {}",
+            claim.getExternalId());
 
         PaymentDto payment = paymentsClient.createPayment(
             authorisation,
