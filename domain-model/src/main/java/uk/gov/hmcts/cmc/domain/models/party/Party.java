@@ -45,7 +45,7 @@ public abstract class Party extends CollectionId implements NamedParty {
     private final Address correspondenceAddress;
 
     @Size(max = 30, message = "may not be longer than {max} characters")
-    private final String mobilePhone;
+    private final String phone;
 
     @Valid
     private final Representative representative;
@@ -55,6 +55,7 @@ public abstract class Party extends CollectionId implements NamedParty {
         String name,
         Address address,
         Address correspondenceAddress,
+        String phone,
         String mobilePhone,
         Representative representative
     ) {
@@ -62,7 +63,7 @@ public abstract class Party extends CollectionId implements NamedParty {
         this.name = name;
         this.address = address;
         this.correspondenceAddress = correspondenceAddress;
-        this.mobilePhone = mobilePhone;
+        this.phone = Optional.ofNullable(phone).orElse(mobilePhone);
         this.representative = representative;
     }
 
@@ -79,8 +80,8 @@ public abstract class Party extends CollectionId implements NamedParty {
         return Optional.ofNullable(correspondenceAddress);
     }
 
-    public Optional<String> getMobilePhone() {
-        return Optional.ofNullable(mobilePhone);
+    public Optional<String> getPhone() {
+        return Optional.ofNullable(phone);
     }
 
     public Optional<Representative> getRepresentative() {

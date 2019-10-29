@@ -181,9 +181,13 @@ public class CaseMetadataControllerTest {
     private static void assertValid(Claim dto, CaseMetadata metadata) {
         assertEquals(dto.getId(), metadata.getId());
         assertEquals(dto.getSubmitterId(), metadata.getSubmitterId());
-        assertEquals(dto.getClaimData().getClaimant().getClass().getSimpleName(), metadata.getSubmitterPartyType());
+        assertEquals(
+            dto.getClaimData().getClaimant().getClass().getSimpleName(),
+            metadata.getSubmitterPartyTypes().get(0));
         assertEquals(dto.getDefendantId(), metadata.getDefendantId());
-        assertEquals(dto.getClaimData().getDefendant().getClass().getSimpleName(), metadata.getDefendantPartyType());
+        assertEquals(
+            dto.getClaimData().getDefendant().getClass().getSimpleName(),
+            metadata.getDefendantPartyTypes().get(0));
         assertEquals(dto.getExternalId(), metadata.getExternalId());
         assertEquals(dto.getReferenceNumber(), metadata.getReferenceNumber());
         assertEquals(dto.getCreatedAt(), metadata.getCreatedAt());

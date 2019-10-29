@@ -74,4 +74,5 @@ public class CCDCase {
     private CCDDirectionOrder directionOrder;
     private CCDReviewOrder reviewOrder;
     private CCDChannelType channel;
+    private LocalDate intentionToProceedDeadline;
 }

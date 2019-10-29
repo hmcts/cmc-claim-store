@@ -59,6 +59,7 @@ public enum CaseEvent {
     INITIATE_CLAIM_PAYMENT_CITIZEN("InitiateClaimPaymentCitizen"),
     RESUME_CLAIM_PAYMENT_CITIZEN("ResumeClaimPaymentCitizen"),
     CREATE_LEGAL_REP_CLAIM("CreateLegalRepClaim"),
+    CREATE_CITIZEN_CLAIM("CreateCitizenClaim"),
     MEDIATION_FAILED("FailedMediation");
 
     private String value;

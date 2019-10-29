@@ -3,13 +3,11 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
-import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseRepository;
@@ -40,6 +38,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.Collections.emptyList;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
@@ -64,8 +63,8 @@ public class ClaimService {
     private final PaidInFullRule paidInFullRule;
     private final ClaimAuthorisationRule claimAuthorisationRule;
     private final ReviewOrderRule reviewOrderRule;
-    private final boolean asyncEventOperationEnabled;
     private final String returnUrlPattern;
+    private final boolean asyncEventOperationEnabled;
 
     @SuppressWarnings("squid:S00107") //Constructor need all parameters
     @Autowired
@@ -183,6 +182,7 @@ public class ClaimService {
         return caseRepository.getClaimsByState(claimState, user);
     }
 
+    @LogExecutionTime
     public CreatePaymentResponse initiatePayment(
         String authorisation,
         String submitterId,
@@ -192,7 +192,6 @@ public class ClaimService {
         Claim claim = buildClaimFrom(user,
             submitterId,
             claimData,
-            null,
             emptyList());
 
         Claim createdClaim = caseRepository.initiatePayment(user, claim);
@@ -202,6 +201,7 @@ public class ClaimService {
             .build();
     }
 
+    @LogExecutionTime
     public CreatePaymentResponse resumePayment(
         String authorisation,
         ClaimData claimData) {
@@ -220,7 +220,24 @@ public class ClaimService {
     }
 
     @LogExecutionTime
-    @Transactional(transactionManager = "transactionManager")
+    public Claim saveCitizenClaim(
+        String authorisation,
+        ClaimData claimData,
+        List<String> features
+    ) {
+        Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), authorisation)
+            .toBuilder()
+            .claimData(claimData)
+            .features(features)
+            .build();
+
+        return caseRepository.saveCaseEvent(
+            authorisation,
+            claim,
+            CREATE_CITIZEN_CLAIM);
+    }
+
+    @LogExecutionTime
     public Claim saveClaim(
         String submitterId,
         ClaimData claimData,
@@ -233,25 +250,20 @@ public class ClaimService {
             throw new ConflictException(
                 String.format("Claim already exist with same external reference as %s", externalId));
         });
-        Optional<GeneratePinResponse> pinResponse = getPinResponse(claimData, authorisation);
-        Optional<String> letterHolderId = pinResponse.map(GeneratePinResponse::getUserId);
 
         Claim claim = buildClaimFrom(user,
             submitterId,
             claimData,
-            letterHolderId.orElse(null),
             features);
 
         Claim savedClaim = caseRepository.saveClaim(user, claim);
-        String pin = pinResponse.map(GeneratePinResponse::getPin).orElse(null);
-        createClaimEvent(authorisation, user, pin, savedClaim);
+        createClaimEvent(authorisation, user, savedClaim);
         trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
 
         return savedClaim;
     }
 
     @LogExecutionTime
-    @Transactional(transactionManager = "transactionManager")
     public Claim saveRepresentedClaim(
         String submitterId,
         ClaimData claimData,
@@ -272,40 +284,10 @@ public class ClaimService {
             .build();
 
         Claim savedClaim = caseRepository.saveRepresentedClaim(user, claim);
-        eventProducer.createRepresentedClaimCreatedEvent(
-            savedClaim,
-            user.getUserDetails().getFullName(),
-            authorisation
-        );
+        createClaimEvent(authorisation, user, savedClaim);
         trackClaimIssued(savedClaim.getReferenceNumber(), savedClaim.getClaimData().isClaimantRepresented());
 
         return savedClaim;
-    }
-
-    private void createClaimEvent(String authorisation, User user, String pin, Claim savedClaim) {
-        if (asyncEventOperationEnabled) {
-            eventProducer.createClaimCreatedEvent(
-                savedClaim,
-                user.getUserDetails().getFullName(),
-                authorisation
-            );
-        } else {
-            eventProducer.createClaimIssuedEvent(
-                savedClaim,
-                pin,
-                user.getUserDetails().getFullName(),
-                authorisation
-            );
-            caseRepository.updateClaimState(user.getAuthorisation(), savedClaim.getId(), OPEN);
-        }
-    }
-
-    private Optional<GeneratePinResponse> getPinResponse(ClaimData claimData, String authorisation) {
-        if (!claimData.isClaimantRepresented() && !asyncEventOperationEnabled) {
-            return Optional.of(userService.generatePin(claimData.getDefendant().getName(), authorisation));
-        }
-
-        return Optional.empty();
     }
 
     private void trackClaimIssued(String referenceNumber, boolean represented) {
@@ -420,7 +402,6 @@ public class ClaimService {
         User user,
         String submitterId,
         ClaimData claimData,
-        String letterHolderId,
         List<String> features) {
         String externalId = claimData.getExternalId().toString();
 
@@ -437,9 +418,26 @@ public class ClaimService {
             .externalId(externalId)
             .submitterEmail(submitterEmail)
             .createdAt(nowInLocalZone())
-            .letterHolderId(letterHolderId)
             .features(features)
             .claimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators.builder().build())
             .build();
+    }
+
+    private void createClaimEvent(String authorisation, User user, Claim savedClaim) {
+        if (asyncEventOperationEnabled) {
+            eventProducer.createClaimCreatedEvent(
+                savedClaim,
+                user.getUserDetails().getFullName(),
+                authorisation
+            );
+        } else {
+            eventProducer.createClaimIssuedEvent(
+                savedClaim,
+                "to-be-removed",
+                user.getUserDetails().getFullName(),
+                authorisation
+            );
+            caseRepository.updateClaimState(user.getAuthorisation(), savedClaim.getId(), OPEN);
+        }
     }
 }

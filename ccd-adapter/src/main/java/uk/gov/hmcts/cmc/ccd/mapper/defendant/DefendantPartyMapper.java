@@ -49,7 +49,7 @@ public class DefendantPartyMapper {
         party.getCorrespondenceAddress().ifPresent(
             address -> defendantDetail.correspondenceAddress(addressMapper.to(address))
         );
-        party.getMobilePhone()
+        party.getPhone()
             .ifPresent(telephoneNo -> defendantDetail.telephoneNumber(telephoneMapper.to(telephoneNo)));
         party.getRepresentative().ifPresent(representative -> toRepresentative(builder, representative));
 
@@ -126,7 +126,7 @@ public class DefendantPartyMapper {
             .name(respondent.getPartyName())
             .address(addressMapper.from(partyDetail.getPrimaryAddress()))
             .correspondenceAddress(addressMapper.from(partyDetail.getCorrespondenceAddress()))
-            .mobilePhone(telephoneMapper.from(partyDetail.getTelephoneNumber()))
+            .phone(telephoneMapper.from(partyDetail.getTelephoneNumber()))
             .representative(extractRepresentative(respondent))
             .contactPerson(partyDetail.getContactPerson())
             .companiesHouseNumber(partyDetail.getCompaniesHouseNumber())
@@ -142,7 +142,7 @@ public class DefendantPartyMapper {
             .name(respondent.getPartyName())
             .address(addressMapper.from(partyDetail.getPrimaryAddress()))
             .correspondenceAddress(addressMapper.from(partyDetail.getCorrespondenceAddress()))
-            .mobilePhone(telephoneMapper.from(partyDetail.getTelephoneNumber()))
+            .phone(telephoneMapper.from(partyDetail.getTelephoneNumber()))
             .representative(extractRepresentative(respondent))
             .title(partyDetail.getTitle())
             .businessName(partyDetail.getBusinessName())
@@ -158,7 +158,7 @@ public class DefendantPartyMapper {
             .name(respondent.getPartyName())
             .address(addressMapper.from(partyDetail.getPrimaryAddress()))
             .correspondenceAddress(addressMapper.from(partyDetail.getCorrespondenceAddress()))
-            .mobilePhone(telephoneMapper.from(partyDetail.getTelephoneNumber()))
+            .phone(telephoneMapper.from(partyDetail.getTelephoneNumber()))
             .representative(extractRepresentative(respondent))
             .contactPerson(partyDetail.getContactPerson())
             .build();
@@ -173,7 +173,7 @@ public class DefendantPartyMapper {
             .name(respondent.getPartyName())
             .address(addressMapper.from(partyDetail.getPrimaryAddress()))
             .correspondenceAddress(addressMapper.from(partyDetail.getCorrespondenceAddress()))
-            .mobilePhone(telephoneMapper.from(partyDetail.getTelephoneNumber()))
+            .phone(telephoneMapper.from(partyDetail.getTelephoneNumber()))
             .dateOfBirth(partyDetail.getDateOfBirth())
             .representative(extractRepresentative(respondent))
             .build();

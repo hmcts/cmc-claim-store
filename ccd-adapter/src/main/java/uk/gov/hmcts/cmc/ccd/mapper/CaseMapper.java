@@ -75,6 +75,7 @@ public class CaseMapper {
             .caseName(toCaseName.apply(claim))
             .claimSubmissionOperationIndicators(
                 mapClaimSubmissionOperationIndicatorsToCCD.apply(claim.getClaimSubmissionOperationIndicators()))
+            .intentionToProceedDeadline(claim.getIntentionToProceedDeadline())
             .build();
     }
 
@@ -98,9 +99,9 @@ public class CaseMapper {
             .claimSubmissionOperationIndicators(
                 mapFromCCDClaimSubmissionOperationIndicators.apply(ccdCase.getClaimSubmissionOperationIndicators()))
             .directionOrder(directionOrderMapper.from(ccdCase.getDirectionOrder(), ccdCase.getDirectionOrderData()))
+            .intentionToProceedDeadline(ccdCase.getIntentionToProceedDeadline())
             .reviewOrder(reviewOrderMapper.from(ccdCase.getReviewOrder()))
-            .mediationOutcome(MediationOutcomeMapper.from(ccdCase))
-        ;
+            .mediationOutcome(MediationOutcomeMapper.from(ccdCase));
 
         if (ccdCase.getFeatures() != null) {
             builder.features(Arrays.asList(ccdCase.getFeatures().split(",")));

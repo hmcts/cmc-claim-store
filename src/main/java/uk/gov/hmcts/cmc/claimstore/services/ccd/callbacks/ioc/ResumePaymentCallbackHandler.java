@@ -84,6 +84,10 @@ public class ResumePaymentCallbackHandler extends CallbackHandler {
 
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
 
+        logger.info("Resuming payment for callback of type {}, claim with external id {}",
+            callbackParams.getType(),
+            claim.getExternalId());
+
         Claim claimAfterPayment = withPayment(authorisation, claim);
 
         return AboutToStartOrSubmitCallbackResponse
@@ -94,6 +98,10 @@ public class ResumePaymentCallbackHandler extends CallbackHandler {
 
     private Claim withPayment(String authorisation, Claim claim) {
         Payment originalPayment = paymentsService.retrievePayment(authorisation, claim);
+
+        logger.info("Retrieved payment from pay hub with status {}, claim with external id {}",
+            originalPayment.getStatus().toString(),
+            claim.getExternalId());
 
         if (originalPayment.getStatus().equals(INITIATED) || originalPayment.getStatus().equals(SUCCESS)) {
             return claim.toBuilder()
@@ -111,7 +119,7 @@ public class ResumePaymentCallbackHandler extends CallbackHandler {
             .responseDeadline(responseDeadline)
             .build();
 
-        logger.info("Creating payment in pay hub for case {}",
+        logger.info("Creating payment for claim with external id {}",
             updatedClaim.getExternalId());
 
         Payment newPayment = paymentsService.createPayment(

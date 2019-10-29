@@ -214,7 +214,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
         assertThat(emailDataArgument.getValue().getMessage()).contains(
             "Defendant's details can be found on the attached defence copy. Additional contact details are:",
             "Email: j.smith@example.com",
-            "Mobile number: 07873727165"
+            "Phone number: 07873727165"
         );
     }
 

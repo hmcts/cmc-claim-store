@@ -15,6 +15,7 @@ public class HearingContent {
     String hasExpertReport;
     List<ExpertReportContent> expertReports;
     String courtPermissionForExpertReport;
+    String expertRequired;
     String expertExamineNeeded;
     String whatToExamine;
     String reasonWhyExpertAdvice;

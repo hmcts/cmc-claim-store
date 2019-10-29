@@ -131,6 +131,13 @@ allprojects {
       ) {
         entry 'jackson-module-parameter-names'
       }
+      // solves CVE-2019-13990
+      dependencySet(
+        group: 'org.quartz-scheduler',
+        version: '2.3.2'
+      ) {
+        entry 'quartz'
+      }
     }
   }
 }

@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
@@ -28,7 +27,6 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.OFFER_REJ
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.SETTLEMENT_REACHED;
 
 @Service
-@Transactional(transactionManager = "transactionManager")
 public class OffersService {
 
     private final ClaimService claimService;
