@@ -63,10 +63,10 @@ public class ClaimantContentProviderTest {
     }
 
     @Test
-    public void shouldProvideMobileNumber() {
+    public void shouldProvidePhoneNumber() {
         ClaimantContent content = provider.createContent(claimant, EMAIL);
 
-        assertThat(content.getMobileNumber()).isNotNull();
+        assertThat(content.getPhoneNumber()).isNotNull();
     }
 
 }
