@@ -194,7 +194,7 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
         assertThat(emailDataArgument.getValue().getMessage()).contains(
             "The defendant has submitted an already paid defence which is attached as a PDF",
             "Email: j.smith@example.com",
-            "Mobile number: 07873727165"
+            "Phone number: 07873727165"
         );
     }
 

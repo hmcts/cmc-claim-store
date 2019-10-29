@@ -70,10 +70,10 @@ public class StatesPaidStaffNotificationService {
         map.put("response", response);
         map.put("claimantResponse", claimantResponse.getType());
         map.put("defendantEmail", claim.getDefendantEmail());
-        map.put("defendantMobilePhone", response
-            .getDefendant()
-            .getMobilePhone()
-            .orElse(null));
+        map.put("defendantPhone", response
+                .getDefendant()
+                .getPhone()
+                .orElse(null));
 
         map.put("defendantFreeMediation", claim.getResponse()
             .flatMap(Response::getFreeMediation)

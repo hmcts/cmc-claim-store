@@ -10,5 +10,6 @@ import java.time.LocalDateTime;
 public class CCDDirectionOrder {
 
     private LocalDateTime createdOn;
+    private String hearingCourtName;
     private CCDAddress hearingCourtAddress;
 }

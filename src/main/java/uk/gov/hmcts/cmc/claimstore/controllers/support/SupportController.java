@@ -28,6 +28,8 @@ import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedStaffNotificationHandler;
+import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
+import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
@@ -78,6 +80,7 @@ public class SupportController {
     private final CCJStaffNotificationHandler ccjStaffNotificationHandler;
     private final AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler;
     private final ClaimantResponseStaffNotificationHandler claimantResponseStaffNotificationHandler;
+    private final PaidInFullStaffNotificationHandler paidInFullStaffNotificationHandler;
     private final DocumentsService documentsService;
     private final PostClaimOrchestrationHandler postClaimOrchestrationHandler;
     private final MediationReportService mediationReportService;
@@ -94,6 +97,7 @@ public class SupportController {
         CCJStaffNotificationHandler ccjStaffNotificationHandler,
         AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler,
         ClaimantResponseStaffNotificationHandler claimantResponseStaffNotificationHandler,
+        PaidInFullStaffNotificationHandler paidInFullStaffNotificationHandler,
         DocumentsService documentsService,
         @Autowired(required = false) PostClaimOrchestrationHandler postClaimOrchestrationHandler,
         @Value("${feature_toggles.directions_questionnaire_enabled:false}") boolean directionsQuestionnaireEnabled,
@@ -108,6 +112,7 @@ public class SupportController {
         this.ccjStaffNotificationHandler = ccjStaffNotificationHandler;
         this.agreementCountersignedStaffNotificationHandler = agreementCountersignedStaffNotificationHandler;
         this.claimantResponseStaffNotificationHandler = claimantResponseStaffNotificationHandler;
+        this.paidInFullStaffNotificationHandler = paidInFullStaffNotificationHandler;
         this.documentsService = documentsService;
         this.postClaimOrchestrationHandler = postClaimOrchestrationHandler;
         this.mediationReportService = mediationReportService;
@@ -148,6 +153,9 @@ public class SupportController {
                 break;
             case "intent-to-proceed":
                 resendStaffNotificationForIntentToProceed(claim, authorisation);
+                break;
+            case "paid-in-full":
+                resendStaffNotificationForPaidInFull(claim);
                 break;
             default:
                 throw new NotFoundException("Event " + event + " is not supported");
@@ -338,6 +346,12 @@ public class SupportController {
             claimantResponseStaffNotificationHandler
                 .onClaimantResponse(new ClaimantResponseEvent(claim, authorization));
         }
+    }
+
+    @SuppressWarnings("squid:S2201") // not ignored
+    private void resendStaffNotificationForPaidInFull(Claim claim) {
+        claim.getMoneyReceivedOn().orElseThrow(IllegalArgumentException::new);
+        paidInFullStaffNotificationHandler.onPaidInFullEvent(new PaidInFullEvent(claim));
     }
 
     private boolean isSettlementAgreement(Claim claim, ClaimantResponse claimantResponse) {
