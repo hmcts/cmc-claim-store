@@ -181,15 +181,20 @@ public class CaseMetadataControllerTest {
     private static void assertValid(Claim dto, CaseMetadata metadata) {
         assertEquals(dto.getId(), metadata.getId());
         assertEquals(dto.getSubmitterId(), metadata.getSubmitterId());
-        assertEquals(dto.getClaimData().getClaimant().getClass().getSimpleName(), metadata.getSubmitterPartyType());
+        assertEquals(
+            dto.getClaimData().getClaimant().getClass().getSimpleName(),
+            metadata.getSubmitterPartyTypes().get(0));
         assertEquals(dto.getDefendantId(), metadata.getDefendantId());
-        assertEquals(dto.getClaimData().getDefendant().getClass().getSimpleName(), metadata.getDefendantPartyType());
+        assertEquals(
+            dto.getClaimData().getDefendant().getClass().getSimpleName(),
+            metadata.getDefendantPartyTypes().get(0));
         assertEquals(dto.getExternalId(), metadata.getExternalId());
         assertEquals(dto.getReferenceNumber(), metadata.getReferenceNumber());
         assertEquals(dto.getCreatedAt(), metadata.getCreatedAt());
         assertEquals(dto.getIssuedOn(), metadata.getIssuedOn());
         assertEquals(dto.getResponseDeadline(), metadata.getResponseDeadline());
         assertEquals(dto.isMoreTimeRequested(), metadata.getMoreTimeRequested());
+        assertEquals(dto.getIntentionToProceedDeadline(), metadata.getIntentionToProceedDeadline());
 
         assertEquals(
             dto.getClaimDocument(SEALED_CLAIM).map(ClaimDocument::getDocumentManagementUrl).orElse(null),

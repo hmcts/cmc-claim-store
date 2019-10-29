@@ -72,27 +72,20 @@ public class IntentionToProceedService {
         this.intentionToProceedDeadlineCalculator = intentionToProceedDeadlineCalculator;
     }
 
-    @Scheduled(cron = "#{'${claim.stayed.schedule:-}' ?: '-'}")
+    @Scheduled(cron = "#{'${claim_stayed.schedule}' ?: '-'}")
     public void scheduledTrigger() {
-        // if not weekend or bank holiday
         LocalDateTime now = LocalDateTime.now();
         if (workingDayIndicator.isWorkingDay(now.toLocalDate())) {
-            checkClaimsPastIntentionToProceedDeadline(now);
+            User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
+            checkClaimsPastIntentionToProceedDeadline(now, anonymousCaseWorker);
         }
     }
 
-    public void checkClaimsPastIntentionToProceedDeadline(LocalDateTime dateTime) {
-        int adjustDays = dateTime.getHour() >= 16 ? 0 : 1;
-        LocalDate runDate = dateTime.toLocalDate().minusDays(adjustDays);
-        LocalDate responseDate = intentionToProceedDeadlineCalculator.calculateResponseDate(runDate);
-
-        // get all cases that are not stayed and were created DEADLINE (if run after 4pm)
-        // or DEADLINE+1 (if run before 4pm) days ago
-        User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
-        Collection<Claim> claims = caseSearchApi.getClaimsPastIntentionToProceed(anonymousCaseWorker, responseDate);
-
+    public void checkClaimsPastIntentionToProceedDeadline(LocalDateTime runDateTime, User user) {
+        LocalDate responseDate = intentionToProceedDeadlineCalculator.calculateResponseDate(runDateTime);
+        Collection<Claim> claims = caseSearchApi.getClaimsPastIntentionToProceed(user, responseDate);
         Collection<Claim> failedClaims = claims.stream()
-            .map(claim -> updateClaim(anonymousCaseWorker, claim))
+            .map(claim -> updateClaim(user, claim))
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
@@ -101,13 +94,13 @@ public class IntentionToProceedService {
         }
     }
 
-    private Claim updateClaim(User anonymousCaseWorker, Claim claim) {
+    private void updateClaim(User anonymousCaseWorker, Claim claim) {
         try {
             appInsights.trackEvent(AppInsightsEvent.CLAIM_STAYED, REFERENCE_NUMBER, claim.getReferenceNumber());
             caseRepository.saveCaseEvent(
-                anonymousCaseWorker.getAuthorisation(),
+                user.getAuthorisation(),
                 claim,
-                CaseEvent.INTENTION_TO_PROCEED_DEADLINE_PASSED
+                CaseEvent.STAY_CLAIM
             );
             return null;
         } catch (Exception e) {

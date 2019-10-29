@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Service
 public class IntentionToProceedDeadlineCalculator {
@@ -12,7 +13,7 @@ public class IntentionToProceedDeadlineCalculator {
 
     public IntentionToProceedDeadlineCalculator(
         WorkingDayIndicator workingDayIndicator,
-        @Value("${intention.to.proceed.deadline:33}") int intentionToProceedAdjustment
+        @Value("${dateCalculations.intentionToProceedDeadlineInDays:33}") int intentionToProceedAdjustment
     ) {
         this.intentionToProceedAdjustment = intentionToProceedAdjustment;
         this.workingDayIndicator = workingDayIndicator;
@@ -23,9 +24,12 @@ public class IntentionToProceedDeadlineCalculator {
         return workingDayIndicator.getNextWorkingDay(intentionToProceedDeadline);
     }
 
-    public LocalDate calculateResponseDate(LocalDate intentionToProceedDeadline) {
-        return workingDayIndicator.getPreviousWorkingDay(intentionToProceedDeadline)
-            .minusDays(this.intentionToProceedAdjustment);
+    public LocalDate calculateResponseDate(LocalDateTime runDateTime) {
+        //4pm cut off for court working days
+        int adjustDays = runDateTime.getHour() >= 16 ? 0 : 1;
+        LocalDate adjustedDate = runDateTime.toLocalDate().minusDays(adjustDays);
+
+        return workingDayIndicator.getPreviousWorkingDay(adjustedDate).minusDays(this.intentionToProceedAdjustment);
     }
 
 }

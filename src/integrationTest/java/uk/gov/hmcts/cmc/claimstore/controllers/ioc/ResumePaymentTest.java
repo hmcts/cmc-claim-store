@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.controllers;
+package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Before;
@@ -178,7 +178,7 @@ public class ResumePaymentTest extends BaseIntegrationTest {
 
     private ResultActions makeResumePaymentRequest(ClaimData claimData, String authorization) throws Exception {
         return webClient
-            .perform(put("/claims/" + USER_ID + "/resume-citizen-payment")
+            .perform(put("/claims/resume-citizen-payment")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, authorization)
                 .content(jsonMapper.toJson(claimData))

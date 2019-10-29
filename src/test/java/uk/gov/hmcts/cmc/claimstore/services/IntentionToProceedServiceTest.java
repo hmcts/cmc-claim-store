@@ -6,9 +6,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.documents.content.IntentionToProceedContentProvider;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
@@ -16,6 +20,7 @@ import uk.gov.hmcts.cmc.claimstore.repositories.CaseSearchApi;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.email.EmailService;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,8 +32,10 @@ import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -86,61 +93,55 @@ public class IntentionToProceedServiceTest {
 
     @Test
     public void checkClaimsPastIntentionToProceedDeadlineOnAWorkdayAfter4pm() {
-        //Tuesday 15th October
-        LocalDateTime workdayAfter4pm = LocalDateTime.of(2019, Month.OCTOBER, 15, 16, 00, 00);
+        LocalDateTime tuesdayAfter4pm = LocalDateTime.of(2019, Month.OCTOBER, 15, 16, 00, 00);
         when(workingDayIndicator.getPreviousWorkingDay(any())).then(returnsFirstArg());
 
-        intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(workdayAfter4pm);
+        intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(tuesdayAfter4pm, new User(null, null));
 
-        LocalDate responseDate = workdayAfter4pm.toLocalDate().minusDays(intentionToProceedAdjustment);
+        LocalDate responseDate = tuesdayAfter4pm.toLocalDate().minusDays(intentionToProceedAdjustment);
         verify(caseSearchApi, once()).getClaimsPastIntentionToProceed(any(), eq(responseDate));
-
     }
 
     @Test
     public void checkClaimsPastIntentionToProceedDeadlineOnAWorkdayBefore4pm() {
-        //Tuesday 15th October
-        LocalDateTime workdayBefore4pm = LocalDateTime.of(2019, Month.OCTOBER, 15, 15, 59, 59);
+        LocalDateTime tuesdayBefore4pm = LocalDateTime.of(2019, Month.OCTOBER, 15, 15, 59, 59);
         when(workingDayIndicator.getPreviousWorkingDay(any())).then(returnsFirstArg());
 
-        intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(workdayBefore4pm);
+        intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(tuesdayBefore4pm, new User(null, null));
 
-        LocalDate responseDate = workdayBefore4pm.toLocalDate().minusDays(intentionToProceedAdjustment + 1);
+        LocalDate responseDate = tuesdayBefore4pm.toLocalDate().minusDays(intentionToProceedAdjustment + 1);
         verify(caseSearchApi, once()).getClaimsPastIntentionToProceed(any(), eq(responseDate));
-
     }
 
     @Test
     public void checkClaimsPastIntentionToProceedDeadlineONonWorkdayAfter4pm() {
-        //Saturday 14th October
-        LocalDateTime nonWorkdayAfter4pm = LocalDateTime.of(2019, Month.OCTOBER, 12, 16, 00, 00);
+        LocalDateTime saturday = LocalDateTime.of(2019, Month.OCTOBER, 12, 16, 00, 00);
 
         int workdayAdjustment = 1;
         when(workingDayIndicator.getPreviousWorkingDay(any()))
-            .thenReturn(nonWorkdayAfter4pm.minusDays(workdayAdjustment).toLocalDate());
+            .thenReturn(saturday.minusDays(workdayAdjustment).toLocalDate());
 
-        intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(nonWorkdayAfter4pm);
+        intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(saturday, new User(null, null));
 
-        LocalDate responseDate = nonWorkdayAfter4pm.toLocalDate()
+        LocalDate responseDate = saturday.toLocalDate()
             .minusDays(intentionToProceedAdjustment + workdayAdjustment);
         verify(caseSearchApi, once()).getClaimsPastIntentionToProceed(any(), eq(responseDate));
-
     }
 
     @Test
     public void checkClaimsPastIntentionToProceedDeadlineOnDayAfterNonWorkdayBefore4pm() {
-        //Monday 14th October
-        LocalDateTime workdayBefore4pm = LocalDateTime.of(2019, Month.OCTOBER, 14, 15, 59, 59);
+        LocalDateTime mondayBefore4pm = LocalDateTime.of(2019, Month.OCTOBER, 14, 15, 59, 59);
         int workdayAdjustment = 2;
         int timeOfDayAdjustment = 1;
         when(workingDayIndicator.getPreviousWorkingDay(any()))
-            .thenReturn(workdayBefore4pm.minusDays(workdayAdjustment + timeOfDayAdjustment).toLocalDate());
+            .thenReturn(mondayBefore4pm.minusDays(workdayAdjustment + timeOfDayAdjustment).toLocalDate());
 
-        intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(workdayBefore4pm);
+        intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(mondayBefore4pm, new User(null, null));
 
-        LocalDate responseDate = workdayBefore4pm.toLocalDate()
+        LocalDate responseDate = mondayBefore4pm.toLocalDate()
             .minusDays(intentionToProceedAdjustment + timeOfDayAdjustment + workdayAdjustment);
         verify(caseSearchApi, once()).getClaimsPastIntentionToProceed(any(), eq(responseDate));
+    }
 
     }
 
@@ -186,6 +187,53 @@ public class IntentionToProceedServiceTest {
         verify(emailService, once()).sendEmail(any(), any());
 
         verify(emailContentProvider, once()).createContent(input);
+    }
+	
+    @Test
+    public void scheduleTriggerShouldRunOnWorkday() {
+        when(workingDayIndicator.isWorkingDay(any())).thenReturn(true);
+        IntentionToProceedService intentionToProceedServiceSpy = Mockito.spy(intentionToProceedService);
+        when(workingDayIndicator.getPreviousWorkingDay(any())).then(returnsFirstArg());
+
+        intentionToProceedServiceSpy.scheduledTrigger();
+
+        verify(intentionToProceedServiceSpy).checkClaimsPastIntentionToProceedDeadline(any(), any());
+    }
+
+    @Test
+    public void scheduleTriggerShouldNotRunOnWorkday() {
+        when(workingDayIndicator.isWorkingDay(any())).thenReturn(false);
+        IntentionToProceedService intentionToProceedServiceSpy = Mockito.spy(intentionToProceedService);
+
+        intentionToProceedServiceSpy.scheduledTrigger();
+
+        verify(intentionToProceedServiceSpy, never()).checkClaimsPastIntentionToProceedDeadline(any(), any());
+    }
+
+    @Test
+    public void saveCaseEventShouldBeTriggeredForFoundCases() {
+        when(workingDayIndicator.getPreviousWorkingDay(any())).then(returnsFirstArg());
+
+        Claim sampleClaim = SampleClaim.builder().build();
+        when(caseSearchApi.getClaimsPastIntentionToProceed(any(), any()))
+            .thenReturn(ImmutableList.of(sampleClaim, sampleClaim));
+
+        intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(LocalDateTime.now(), new User(null, null));
+
+        verify(caseRepository, times(2)).saveCaseEvent(any(), any(), eq(CaseEvent.STAY_CLAIM));
+    }
+
+    @Test
+    public void appInsightsEventShouldBeRaisedForFoundCases() {
+        when(workingDayIndicator.getPreviousWorkingDay(any())).then(returnsFirstArg());
+
+        Claim sampleClaim = SampleClaim.builder().build();
+        when(caseSearchApi.getClaimsPastIntentionToProceed(any(), any()))
+            .thenReturn(ImmutableList.of(sampleClaim, sampleClaim));
+
+        intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(LocalDateTime.now(), new User(null, null));
+
+        verify(appInsights, times(2)).trackEvent(eq(AppInsightsEvent.CLAIM_STAYED), eq(REFERENCE_NUMBER), any());
     }
 
 }
