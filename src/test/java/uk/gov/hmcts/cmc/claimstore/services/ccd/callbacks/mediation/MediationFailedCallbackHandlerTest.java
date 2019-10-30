@@ -59,9 +59,20 @@ public class MediationFailedCallbackHandlerTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void throwsExceptionIfNotDefenseOrPartAdmit() {
+    public void throwsExceptionIfNotDefenseOrFullAdmit() {
         CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         Claim claim = SampleClaim.getClaimWithFullAdmission();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+
+        mediationFailedCallbackHandler.handle(callbackParams);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void throwsExceptionIfClaimantResponseAcceptation() {
+        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
+        Claim claim = SampleClaim.getClaimFullDefenceStatesPaidWithAcceptation();
 
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);

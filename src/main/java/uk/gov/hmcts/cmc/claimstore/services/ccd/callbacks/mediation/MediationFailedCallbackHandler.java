@@ -16,7 +16,9 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
@@ -25,10 +27,13 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MEDIATION_FAILED;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
+import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
+import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_DEFENCE;
+import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.PART_ADMISSION;
 
 @Service
 public class MediationFailedCallbackHandler extends CallbackHandler {
@@ -85,20 +90,26 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
     }
 
     private String stateByOnlineDQnPilotCheck(Claim claim) {
-        Optional<String> stateToReturn;
+
+        Predicate<Response> isPartAdmitOrFullDefence = response ->
+            response.getResponseType() == PART_ADMISSION
+                || response.getResponseType() == FULL_DEFENCE;
+
+        claim.getResponse().filter(isPartAdmitOrFullDefence).orElseThrow(IllegalStateException::new);
+        claim.getClaimantResponse()
+            .map(ClaimantResponse::getType)
+            .filter(REJECTION::equals)
+            .orElseThrow(IllegalStateException::new);
+
+        if (!(claim.getTotalClaimAmount().map(BigDecimal::longValue).orElse(0L) < 300
+            && DirectionsQuestionnaireUtils.isOnlineDQ(claim))) {
+            return OPEN_STATE;
+        }
 
         if (PilotCourt.isPilotCourt(DirectionsQuestionnaireUtils.getPreferredCourt(claim))) {
-            stateToReturn = Optional.of(READY_FOR_DIRECTIONS_STATE);
+            return READY_FOR_DIRECTIONS_STATE;
         } else {
-            stateToReturn =  Optional.of(READY_FOR_TRANSFER_STATE);
+            return READY_FOR_TRANSFER_STATE;
         }
-
-        if (!(claim.getTotalClaimAmount().map(BigDecimal::longValue).orElse(0L) < 300 &&
-            DirectionsQuestionnaireUtils.isOnlineDQ(claim))) {
-            stateToReturn = Optional.of(OPEN_STATE);
-        }
-
-        return stateToReturn.orElseThrow(IllegalStateException::new);
-
     }
 }
