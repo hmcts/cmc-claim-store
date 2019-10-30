@@ -69,6 +69,11 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
             }
         });
 
+        if (actual.getState() != null && !Objects.equals(actual.getState().getValue(), ccdCase.getState())) {
+            failWithMessage("Expected CCDCase.state to be <%s> but was <%s>",
+                ccdCase.getState(), actual.getState());
+        }
+
         actual.getTotalInterestTillDateOfIssue().ifPresent(currentInterestAmount -> {
             if (ccdCase.getCurrentInterestAmount() != null) {
                 assertMoney(currentInterestAmount)

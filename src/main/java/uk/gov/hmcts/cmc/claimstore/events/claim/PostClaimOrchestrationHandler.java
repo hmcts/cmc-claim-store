@@ -20,7 +20,6 @@ import uk.gov.hmcts.cmc.domain.models.ClaimState;
 
 import java.util.function.Function;
 
-import static java.util.function.Predicate.isEqual;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 
 @Async("threadPoolTaskExecutor")
@@ -113,12 +112,11 @@ public class PostClaimOrchestrationHandler {
                 .andThen(c -> notifyClaimantOperation.perform(c, event))
                 .apply(claim);
 
-            updatedClaim.getState()
-                .filter(isEqual(ClaimState.CREATE))
-                .ifPresent(state -> claimService.updateClaimState(authorisation, updatedClaim, ClaimState.OPEN));
-
+            if (updatedClaim.getState().equals(ClaimState.CREATE)) {
+                claimService.updateClaimState(authorisation, updatedClaim, ClaimState.OPEN);
+            }
         } catch (Exception e) {
-            logger.error("Failed operation processing for event ()", event, e);
+            logger.error("Failed operation processing for event {}", event, e);
         }
     }
 
@@ -141,12 +139,11 @@ public class PostClaimOrchestrationHandler {
                 .andThen(c -> notifyRepresentativeOperation.perform(c, event))
                 .apply(claim);
 
-            updatedClaim.getState()
-                .filter(isEqual(ClaimState.CREATE))
-                .ifPresent(state -> claimService.updateClaimState(authorisation, updatedClaim, ClaimState.OPEN));
-
+            if (updatedClaim.getState().equals(ClaimState.CREATE)) {
+                claimService.updateClaimState(authorisation, updatedClaim, ClaimState.OPEN);
+            }
         } catch (Exception e) {
-            logger.error("Failed operation processing for event ()", event, e);
+            logger.error("Failed operation processing for event {}", event, e);
         }
     }
 }
