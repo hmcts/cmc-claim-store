@@ -114,17 +114,16 @@ public class ClaimController {
         return claimService.saveRepresentedClaim(submitterId, claimData, authorisation);
     }
 
-    @PostMapping(value = "/{submitterId}/initiate-citizen-payment", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/initiate-citizen-payment", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation("Initiates a citizen payment")
     public CreatePaymentResponse initiatePayment(
         @Valid @NotNull @RequestBody ClaimData claimData,
-        @PathVariable("submitterId") String submitterId,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
     ) {
-        return claimService.initiatePayment(authorisation, submitterId, claimData);
+        return claimService.initiatePayment(authorisation, claimData);
     }
 
-    @PutMapping(value = "/{submitterId}/resume-citizen-payment", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PutMapping(value = "/resume-citizen-payment", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation("Resumes a citizen payment")
     public CreatePaymentResponse resumePayment(
         @Valid @NotNull @RequestBody ClaimData claimData,
@@ -133,7 +132,7 @@ public class ClaimController {
         return claimService.resumePayment(authorisation, claimData);
     }
 
-    @PutMapping(value = "/{submitterId}/create-citizen-claim", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PutMapping(value = "/create-citizen-claim", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation("Creates a citizen claim")
     public Claim createClaim(
         @Valid @NotNull @RequestBody ClaimData claimData,

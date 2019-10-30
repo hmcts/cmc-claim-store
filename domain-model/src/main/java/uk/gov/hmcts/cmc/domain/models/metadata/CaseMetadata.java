@@ -86,7 +86,7 @@ public class CaseMetadata {
             .countyCourtJudgment(CountyCourtJudgmentMetadata.fromClaim(claim))
             .redetermination(RedeterminationMetadata.fromClaim(claim))
             .moneyReceivedOn(claim.getMoneyReceivedOn().orElse(null))
-            .state(claim.getState().orElse(null))
+            .state(claim.getState())
             .claimSubmissionOperationIndicators(claim.getClaimSubmissionOperationIndicators())
             .build();
     }
