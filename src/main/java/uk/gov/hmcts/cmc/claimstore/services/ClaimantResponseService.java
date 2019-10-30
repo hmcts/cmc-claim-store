@@ -1,11 +1,14 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
 import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
@@ -28,12 +31,15 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isSettlePreJudgment;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
 
 @Service
 public class ClaimantResponseService {
+
+    Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final ClaimService claimService;
     private final AppInsights appInsights;
@@ -74,8 +80,25 @@ public class ClaimantResponseService {
         claimantResponseRule.assertCanBeRequested(claim, claimantId);
 
         Claim updatedClaim = caseRepository.saveClaimantResponse(claim, claimantResponse, authorization);
+
         claimantResponseRule.isValid(updatedClaim);
         formaliseResponseAcceptance(claimantResponse, updatedClaim, authorization);
+
+        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+
+        if(isFullDefenseDisputeAcceptation(response, claimantResponse)) {
+            try {
+                appInsights.trackEvent(AppInsightsEvent.CLAIM_STAYED, REFERENCE_NUMBER, updatedClaim.getReferenceNumber());
+                caseRepository.saveCaseEvent(
+                    authorization,
+                    updatedClaim,
+                    CaseEvent.STAY_CLAIM
+                );
+            } catch (Exception e) {
+                logger.error(String.format("Error whilst staying claim %s", claim.getId()), e);
+            }
+        }
+
         if (!DirectionsQuestionnaireUtils.isOnlineDQ(updatedClaim)
             && isRejectResponseNoMediation(claimantResponse)) {
             updateDirectionsQuestionnaireDeadline(updatedClaim, authorization);
@@ -177,6 +200,11 @@ public class ClaimantResponseService {
         ResponseType responseType = response.getResponseType();
         return responseType == ResponseType.FULL_DEFENCE
             && ((FullDefenceResponse) response).getDefenceType() == DefenceType.ALREADY_PAID;
+    }
+
+    private boolean isFullDefenseDisputeAcceptation(Response response, ClaimantResponse claimantResponse) {
+        return ACCEPTATION == claimantResponse.getType()
+            && ResponseUtils.isFullDefenceDispute(response);
     }
 
     private boolean shouldFormaliseResponseAcceptance(Response response, ClaimantResponse claimantResponse) {
