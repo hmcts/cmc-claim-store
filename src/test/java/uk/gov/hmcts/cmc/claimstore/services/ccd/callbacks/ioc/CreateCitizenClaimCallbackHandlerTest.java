@@ -7,7 +7,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
@@ -35,21 +34,20 @@ import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
+import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.FAILED;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.withFullClaimData;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CreateCitizenClaimCallbackHandlerTest {
-
-    public static final String REFERENCE_NO = "000MC001";
-    public static final LocalDate ISSUE_DATE = now();
-    public static final LocalDate RESPONSE_DEADLINE = ISSUE_DATE.plusDays(14);
+    private static final String REFERENCE_NO = "000MC001";
+    private static final LocalDate ISSUE_DATE = now();
+    private static final LocalDate RESPONSE_DEADLINE = ISSUE_DATE.plusDays(14);
     private static final String BEARER_TOKEN = "Bearer let me in";
     private static final String NEXT_URL = "http://nexturl.test";
 
@@ -96,39 +94,36 @@ public class CreateCitizenClaimCallbackHandlerTest {
             .dateCreated("2017-12-03")
             .nextUrl(NEXT_URL);
 
-        createCitizenClaimCallbackHandler =
-            new CreateCitizenClaimCallbackHandler(
-                caseDetailsConverter,
-                issueDateCalculator,
-                referenceNumberRepository,
-                responseDeadlineCalculator,
-                caseMapper,
-                paymentsService,
-                eventProducer,
-                userService
-            );
+        createCitizenClaimCallbackHandler = new CreateCitizenClaimCallbackHandler(
+            caseDetailsConverter,
+            issueDateCalculator,
+            referenceNumberRepository,
+            responseDeadlineCalculator,
+            caseMapper,
+            paymentsService,
+            eventProducer,
+            userService
+        );
 
-        callbackRequest = CallbackRequest
-            .builder()
+        callbackRequest = CallbackRequest.builder()
             .eventId(CREATE_CITIZEN_CLAIM.getValue())
             .caseDetails(caseDetails)
             .build();
 
-        Mockito.when(issueDateCalculator.calculateIssueDay(any())).thenReturn(ISSUE_DATE);
-        Mockito.when(responseDeadlineCalculator.calculateResponseDeadline(ISSUE_DATE)).thenReturn(RESPONSE_DEADLINE);
-        Mockito.when(referenceNumberRepository.getReferenceNumberForCitizen()).thenReturn(REFERENCE_NO);
+        when(issueDateCalculator.calculateIssueDay(any())).thenReturn(ISSUE_DATE);
+        when(responseDeadlineCalculator.calculateResponseDeadline(ISSUE_DATE)).thenReturn(RESPONSE_DEADLINE);
+        when(referenceNumberRepository.getReferenceNumberForCitizen()).thenReturn(REFERENCE_NO);
     }
 
     @Test
     public void shouldSuccessfullyReturnCallBackResponseWhenSuccessfulPayment() {
-
-        Mockito.when(paymentsService.retrievePayment(eq(BEARER_TOKEN), any(Claim.class)))
+        when(paymentsService.retrievePayment(eq(BEARER_TOKEN), any(Claim.class)))
             .thenReturn(paymentBuilder.status(SUCCESS).build());
 
         Claim claim = SampleClaim.getDefault().toBuilder()
             .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
             .issuedOn(ISSUE_DATE)
-            .responseDeadline(responseDeadlineCalculator.calculateResponseDeadline(now()))
+            .responseDeadline(RESPONSE_DEADLINE)
             .claimData(withFullClaimData().getClaimData())
             .build();
 
@@ -153,8 +148,7 @@ public class CreateCitizenClaimCallbackHandlerTest {
 
     @Test
     public void shouldSuccessfullyReturnCallBackResponseWhenUnSuccessfulPayment() {
-
-        Mockito.when(paymentsService.retrievePayment(eq(BEARER_TOKEN), any(Claim.class)))
+        when(paymentsService.retrievePayment(eq(BEARER_TOKEN), any(Claim.class)))
             .thenReturn(paymentBuilder.status(FAILED).build());
 
         Claim claim = SampleClaim.withFullClaimDataAndFailedPayment();
@@ -176,7 +170,6 @@ public class CreateCitizenClaimCallbackHandlerTest {
 
     @Test
     public void shouldSuccessfullyReturnCallBackResponseForPostOperations() {
-
         Claim claim = SampleClaim.getDefault().toBuilder()
             .claimData(withFullClaimData().getClaimData())
             .build();
@@ -190,16 +183,17 @@ public class CreateCitizenClaimCallbackHandlerTest {
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
 
-        when(userService.getUser(BEARER_TOKEN)).thenReturn(new User(BEARER_TOKEN,
-            SampleUserDetails.builder().withRoles("letter-" + claim.getLetterHolderId()).build()));
+        when(userService.getUser(BEARER_TOKEN))
+            .thenReturn(new User(BEARER_TOKEN, SampleUserDetails.builder()
+                .withRoles("letter-" + claim.getLetterHolderId())
+                .build()));
 
         createCitizenClaimCallbackHandler.handle(callbackParams);
 
-        verify(eventProducer, times(1))
-            .createClaimCreatedEvent(
-                claimArgumentCaptor.capture(),
-                eq("Steven Smith"),
-                eq(BEARER_TOKEN));
+        verify(eventProducer, once()).createClaimCreatedEvent(
+            claimArgumentCaptor.capture(),
+            eq("Steven Smith"),
+            eq(BEARER_TOKEN));
 
         Claim toBeSaved = claimArgumentCaptor.getValue();
         assertThat(toBeSaved.getClaimData()).isEqualTo(claim.getClaimData());

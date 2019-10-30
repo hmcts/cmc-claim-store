@@ -27,25 +27,25 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
 import static java.math.BigDecimal.TEN;
+import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleData.getAmountBreakDown;
 import static uk.gov.hmcts.cmc.claimstore.services.CallbackHandlerFactoryTest.BEARER_TOKEN;
-import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.CreateCitizenClaimCallbackHandlerTest.ISSUE_DATE;
-import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.CreateCitizenClaimCallbackHandlerTest.RESPONSE_DEADLINE;
+import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.FAILED;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
@@ -62,6 +62,8 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
     private static final long CASE_ID = 42L;
     private static final String NEXT_URL = "http://nexturl.test";
     private static final String REFERENCE_NO = "000MC001";
+    private static final LocalDate ISSUE_DATE = now();
+    private static final LocalDate RESPONSE_DEADLINE = ISSUE_DATE.plusDays(14);
 
     @MockBean
     private PaymentsService paymentsService;
@@ -98,15 +100,12 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
         given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void shouldAddFieldsOnCaseWhenCallbackIsSuccessful() throws Exception {
         payment = paymentBuilder.status(SUCCESS).build();
 
-        given(paymentsService
-            .retrievePayment(
-                eq(AUTHORISATION_TOKEN),
-                any(Claim.class)))
-            .willReturn(payment);
+        given(paymentsService.retrievePayment(eq(AUTHORISATION_TOKEN), any(Claim.class))).willReturn(payment);
 
         MvcResult mvcResult = makeRequestAndRespondWithSuccess(CallbackType.ABOUT_TO_SUBMIT.getValue())
             .andExpect(status().isOk())
@@ -132,11 +131,7 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
     public void shouldAddFieldsOnCaseWhenCallbackIsSuccessfulButWithErrors() throws Exception {
         payment = paymentBuilder.status(FAILED).build();
 
-        given(paymentsService
-            .retrievePayment(
-                eq(AUTHORISATION_TOKEN),
-                any(Claim.class)))
-            .willReturn(payment);
+        given(paymentsService.retrievePayment(eq(AUTHORISATION_TOKEN), any(Claim.class))).willReturn(payment);
 
         MvcResult mvcResult = makeRequestAndRespondWithError(CallbackType.ABOUT_TO_SUBMIT.getValue())
             .andExpect(status().isOk())
@@ -152,9 +147,7 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
 
     @Test
     public void shouldCallClaimIssuePostOperationsWhenSubmittedCallbackIsSuccessful() throws Exception {
-
-        given(userService.getUser(anyString())).willReturn(new User(BEARER_TOKEN,
-            SampleUserDetails.builder().build()));
+        given(userService.getUser(anyString())).willReturn(new User(BEARER_TOKEN, SampleUserDetails.builder().build()));
 
         MvcResult mvcResult = makeRequestAndRespondWithError(CallbackType.SUBMITTED.getValue())
             .andExpect(status().isOk())
@@ -165,8 +158,7 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
             SubmittedCallbackResponse.class
         );
 
-        verify(eventProducer, times(1))
-            .createClaimCreatedEvent(any(Claim.class), anyString(), anyString());
+        verify(eventProducer, once()).createClaimCreatedEvent(any(Claim.class), anyString(), anyString());
 
         assertThat(response.getConfirmationBody()).isNull();
     }
@@ -174,8 +166,7 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
     private ResultActions makeRequestAndRespondWithSuccess(String callbackType) throws Exception {
         CaseDetails caseDetails = CaseDetails.builder()
             .id(CASE_ID)
-            .data(caseDetailsConverter.convertToMap(
-                SampleData.getCCDCitizenCase(getAmountBreakDown())))
+            .data(caseDetailsConverter.convertToMap(SampleData.getCCDCitizenCase(getAmountBreakDown())))
             .state(OPEN.getValue())
             .build();
 
@@ -184,12 +175,11 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
             .caseDetails(caseDetails)
             .build();
 
-        return webClient
-            .perform(post("/cases/callbacks/" + callbackType)
-                .header(HttpHeaders.CONTENT_TYPE, MimeType.JSON)
-                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
-                .content(jsonMapper.toJson(callbackRequest))
-            );
+        return webClient.perform(post("/cases/callbacks/" + callbackType)
+            .header(HttpHeaders.CONTENT_TYPE, MimeType.JSON)
+            .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
+            .content(jsonMapper.toJson(callbackRequest))
+        );
     }
 
     private ResultActions makeRequestAndRespondWithError(String callbackType) throws Exception {
@@ -206,11 +196,10 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
             .caseDetails(caseDetails)
             .build();
 
-        return webClient
-            .perform(post("/cases/callbacks/" + callbackType)
-                .header(HttpHeaders.CONTENT_TYPE, MimeType.JSON)
-                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
-                .content(jsonMapper.toJson(callbackRequest))
-            );
+        return webClient.perform(post("/cases/callbacks/" + callbackType)
+            .header(HttpHeaders.CONTENT_TYPE, MimeType.JSON)
+            .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
+            .content(jsonMapper.toJson(callbackRequest))
+        );
     }
 }

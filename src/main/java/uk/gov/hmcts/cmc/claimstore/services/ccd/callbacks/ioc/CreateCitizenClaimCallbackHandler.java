@@ -39,9 +39,13 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @Service
 public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
-
     private static final List<CaseEvent> EVENTS = Collections.singletonList(CREATE_CITIZEN_CLAIM);
     private static final List<Role> ROLES = Collections.singletonList(CITIZEN);
+
+    private final ImmutableMap<CallbackType, Callback> callbacks = ImmutableMap.of(
+        CallbackType.ABOUT_TO_SUBMIT, this::createCitizenClaim,
+        CallbackType.SUBMITTED, this::startClaimIssuedPostOperations
+    );
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final CaseDetailsConverter caseDetailsConverter;
@@ -76,10 +80,7 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
-        return ImmutableMap.of(
-            CallbackType.ABOUT_TO_SUBMIT, this::createCitizenClaim,
-            CallbackType.SUBMITTED, this::startClaimIssuedPostOperations
-        );
+        return callbacks;
     }
 
     @Override
@@ -103,8 +104,7 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
         if (payment.getStatus() != PaymentStatus.SUCCESS) {
             logger.info("Payment not successful for claim with external id {}", claim.getExternalId());
 
-            return AboutToStartOrSubmitCallbackResponse
-                .builder()
+            return AboutToStartOrSubmitCallbackResponse.builder()
                 .errors(ImmutableList.of("Payment not successful"))
                 .build();
         }
@@ -113,14 +113,15 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
 
         Claim updatedClaim = claim.toBuilder()
             .channel(ChannelType.CITIZEN)
-            .claimData(claim.getClaimData().toBuilder().payment(payment).build())
+            .claimData(claim.getClaimData().toBuilder()
+                .payment(payment)
+                .build())
             .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
             .issuedOn(issuedOn)
             .responseDeadline(responseDeadlineCalculator.calculateResponseDeadline(issuedOn))
             .build();
 
-        return AboutToStartOrSubmitCallbackResponse
-            .builder()
+        return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetailsConverter.convertToMap(caseMapper.to(updatedClaim)))
             .build();
     }
