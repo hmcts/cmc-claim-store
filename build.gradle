@@ -42,6 +42,7 @@ allprojects {
   apply plugin: 'io.spring.dependency-management'
   apply plugin: 'org.owasp.dependencycheck'
   apply plugin: 'com.github.ben-manes.versions'
+  apply plugin: 'jacoco'
 
   group 'uk.gov.hmcts.cmc'
   version '1.1.0'
@@ -193,7 +194,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.3.0'
   compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.4'
-  compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version:'0.0.4'
+  compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.0.4'
 
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
   compile group: 'org.apache.commons', name: 'commons-csv', version: '1.4'
@@ -227,6 +228,16 @@ dependencies {
   testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.4.0'
   testCompile group: 'net.jodah', name: 'failsafe', version: '2.1.1'
 
+}
+
+subprojects {
+  jacocoTestReport {
+    reports {
+      html.enabled = true
+      xml.enabled = true
+      csv.enabled = false
+    }
+  }
 }
 
 sourceSets {
@@ -304,20 +315,21 @@ compileIntegrationTestJava {
   options.compilerArgs << '-Xlint:deprecation'
 }
 
-task jacocoMerge(type: JacocoMerge) {
-  dependsOn(subprojects.jacocoTestReport.dependsOn)
-  mustRunAfter(subprojects.jacocoTestReport.mustRunAfter)
-  destinationFile = file("${buildDir}/jacoco/test.exec")
-  executionData = files(subprojects.jacocoTestReport.executionData)
-    .filter { f -> f.exists() }
-}
-
 jacocoTestReport {
-  dependsOn(jacocoMerge)
+  dependsOn subprojects.test, test, apiTest
+
   reports {
-    xml.enabled true
-    html.enabled true
-    html.destination file("${buildDir}/reports/jacoco")
+    html.enabled = true
+    xml.enabled = true
+    csv.enabled = false
+  }
+  onlyIf = {
+    true
+  }
+  doFirst {
+    executionData = files(executionData.findAll {
+      it.exists()
+    })
   }
 }
 
