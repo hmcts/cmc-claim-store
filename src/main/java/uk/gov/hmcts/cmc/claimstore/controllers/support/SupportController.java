@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -275,7 +276,9 @@ public class SupportController {
     public void checkClaimsPastIntentionToProceedDeadline(
         @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation,
         @RequestParam(required = false)
-        @ApiParam("Optional. If supplied will run as if on this date")
+        @ApiParam("Optional. If supplied check will run as if triggered at this timestamp. Format is "
+            + "yyyy-MM-ddThh:mm:ss")
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             LocalDateTime localDateTime) {
 
         LocalDateTime runDateTime = localDateTime == null ? LocalDateTime.now() : localDateTime;
