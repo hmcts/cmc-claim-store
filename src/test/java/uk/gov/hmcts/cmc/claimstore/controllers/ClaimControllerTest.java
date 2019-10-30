@@ -117,16 +117,14 @@ public class ClaimControllerTest {
     @Test
     public void shouldInitiatePaymentForCitizen() {
         //given
-        String submitterId = "234";
         ClaimData input = SampleClaimData.validDefaults();
 
         CreatePaymentResponse response = CreatePaymentResponse.builder().build();
-        when(claimService.initiatePayment(AUTHORISATION, submitterId, input))
+        when(claimService.initiatePayment(AUTHORISATION, input))
             .thenReturn(response);
 
         //when
-        CreatePaymentResponse output = claimController.initiatePayment(
-            input, submitterId, AUTHORISATION);
+        CreatePaymentResponse output = claimController.initiatePayment(input, AUTHORISATION);
 
         //then
         assertThat(output).isEqualTo(response);
