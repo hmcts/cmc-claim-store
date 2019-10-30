@@ -61,6 +61,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
@@ -274,14 +275,14 @@ public class SupportController {
     @PostMapping(value = "/claims/checkIntentionToProceedDeadline")
     @ApiOperation("Stay claims past their intention proceed deadline")
     public void checkClaimsPastIntentionToProceedDeadline(
-        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation,
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation,
         @RequestParam(required = false)
         @ApiParam("Optional. If supplied check will run as if triggered at this timestamp. Format is "
             + "yyyy-MM-ddThh:mm:ss")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             LocalDateTime localDateTime) {
 
-        LocalDateTime runDateTime = localDateTime == null ? LocalDateTime.now() : localDateTime;
+        LocalDateTime runDateTime = localDateTime == null ? LocalDateTimeFactory.nowInLocalZone() : localDateTime;
 
         User user = userService.getUser(authorisation);
         String format = runDateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss"));

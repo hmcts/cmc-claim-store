@@ -50,10 +50,12 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse.PartAdmission;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doNothing;
@@ -570,6 +572,37 @@ public class SupportControllerTest {
             ClaimSubmissionOperationIndicators
                 .builder().build(),
             "");
+    }
+
+    @Test
+    public void shouldPerformIntentionToProceedCheckWithDatetime() {
+        // given
+        final LocalDateTime localDateTime = LocalDateTime.of(2019, 1, 1, 1, 1, 1);
+        final String auth = "auth";
+        final UserDetails userDetails = new UserDetails("id", null, null, null, null);
+        final User user = new User(null, userDetails);
+        when(userService.getUser(auth)).thenReturn(user);
+
+        // when
+        controller.checkClaimsPastIntentionToProceedDeadline(auth, localDateTime);
+
+        //then
+        verify(intentionToProceedService).checkClaimsPastIntentionToProceedDeadline(localDateTime, user);
+    }
+
+    @Test
+    public void shouldPerformIntentionToProceedCheckWithNullDatetime() {
+        // given
+        final String auth = "auth";
+        final UserDetails userDetails = new UserDetails("id", null, null, null, null);
+        final User user = new User(null, userDetails);
+        when(userService.getUser(auth)).thenReturn(user);
+
+        // when
+        controller.checkClaimsPastIntentionToProceedDeadline(auth, null);
+
+        //then
+        verify(intentionToProceedService).checkClaimsPastIntentionToProceedDeadline(notNull(), eq(user));
     }
 
 }
