@@ -166,7 +166,7 @@ public class InitiatePaymentTest extends BaseSaveTest {
 
     private ResultActions makeInitiatePaymentRequest(ClaimData claimData, String authorization) throws Exception {
         return webClient
-            .perform(post("/claims/" + USER_ID + "/initiate-citizen-payment")
+            .perform(post("/claims/initiate-citizen-payment")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, authorization)
                 .content(jsonMapper.toJson(claimData))
