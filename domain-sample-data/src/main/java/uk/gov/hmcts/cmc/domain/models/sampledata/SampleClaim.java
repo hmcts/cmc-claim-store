@@ -748,7 +748,7 @@ public final class SampleClaim {
         return this;
     }
 
-    public SampleClaim withMediationOutcome(MediationOutcome mediationOutcome){
+    public SampleClaim withMediationOutcome(MediationOutcome mediationOutcome) {
         this.mediationOutcome = mediationOutcome;
         return this;
     }

@@ -247,7 +247,7 @@ public class Claim {
         return Optional.ofNullable(channel);
     }
 
-    public Optional<MediationOutcome> getMediationOutcome(){
+    public Optional<MediationOutcome> getMediationOutcome() {
         return Optional.ofNullable(mediationOutcome);
     }
 

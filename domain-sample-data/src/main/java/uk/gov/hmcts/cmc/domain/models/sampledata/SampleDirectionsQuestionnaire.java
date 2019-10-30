@@ -23,7 +23,7 @@ public class SampleDirectionsQuestionnaire {
         return new SampleDirectionsQuestionnaire();
     }
 
-    public SampleDirectionsQuestionnaire withHearingLocation(HearingLocation hearingLocation){
+    public SampleDirectionsQuestionnaire withHearingLocation(HearingLocation hearingLocation) {
         this.hearingLocation = hearingLocation;
         return this;
     }

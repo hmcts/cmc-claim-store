@@ -18,7 +18,6 @@ import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt;
-import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
@@ -27,13 +26,11 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MEDIATION_FAILED;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
+import static uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper.isResponsePartOrFullDefence;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
-import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_DEFENCE;
-import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.PART_ADMISSION;
 
 @Service
 public class MediationFailedCallbackHandler extends CallbackHandler {
@@ -91,11 +88,7 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
 
     private String stateByOnlineDQnPilotCheck(Claim claim) {
 
-        Predicate<Response> isPartAdmitOrFullDefence = response ->
-            response.getResponseType() == PART_ADMISSION
-                || response.getResponseType() == FULL_DEFENCE;
-
-        claim.getResponse().filter(isPartAdmitOrFullDefence).orElseThrow(IllegalStateException::new);
+        claim.getResponse().filter(isResponsePartOrFullDefence).orElseThrow(IllegalStateException::new);
         claim.getClaimantResponse()
             .map(ClaimantResponse::getType)
             .filter(REJECTION::equals)
