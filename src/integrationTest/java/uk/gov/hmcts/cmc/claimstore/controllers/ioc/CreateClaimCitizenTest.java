@@ -143,7 +143,7 @@ public class CreateClaimCitizenTest extends BaseIntegrationTest {
 
     private ResultActions makeRequest(ClaimData claimData, String authorization) throws Exception {
         return webClient
-            .perform(put("/claims/" + USER_ID + "/create-citizen-claim")
+            .perform(put("/claims/create-citizen-claim")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, authorization)
                 .content(jsonMapper.toJson(claimData))
