@@ -8,6 +8,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
@@ -26,6 +27,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -37,8 +39,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.STAY_CLAIM;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_RESPONSE_ACCEPTED;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_STAYED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.LA_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_NON_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_PILOT_ELIGIBLE;
@@ -46,6 +50,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NON_LA_CA
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getWithResponse;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClaimantResponseServiceTest {
@@ -113,6 +118,31 @@ public class ClaimantResponseServiceTest {
             .formalise(any(), any(), anyString());
         verify(caseRepository, never()).saveCaseEvent(AUTHORISATION, claim, ASSIGNING_FOR_DIRECTIONS);
         verify(caseRepository, never()).saveCaseEvent(AUTHORISATION, claim, REFERRED_TO_MEDIATION);
+    }
+
+    @Test
+    public void saveCaseEventCaseStayedAfterFullDefenseDispute() {
+
+        ClaimantResponse claimantResponse = SampleClaimantResponse
+            .ClaimantResponseAcceptation
+            .builder()
+            .build();
+
+        Claim claim = SampleClaim.builder()
+            .withResponse(SampleResponse.FullDefence.builder().withDefenceType(DefenceType.DISPUTE).build())
+            .withRespondedAt(LocalDateTime.now())
+            .withClaimantResponse(claimantResponse)
+            .build();
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+        when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION)))
+            .thenReturn(claim);
+
+        claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
+
+        verify(appInsights, once()).trackEvent(eq(CLAIM_STAYED), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+        verify(caseRepository).saveCaseEvent(eq(AUTHORISATION), eq(claim), eq(STAY_CLAIM));
+
     }
 
     @Test
