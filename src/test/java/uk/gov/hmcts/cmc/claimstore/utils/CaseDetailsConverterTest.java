@@ -58,8 +58,7 @@ public class CaseDetailsConverterTest {
         CaseDetails caseDetails = successfulCoreCaseDataStoreSubmitResponse();
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
         assertThat(claim.getId()).isEqualTo(caseDetails.getId());
-        assertThat(claim.getState()).isPresent();
-        assertThat(claim.getState().orElseThrow(AssertionError::new).getValue()).isEqualTo(caseDetails.getState());
+        assertThat(claim.getState().getValue()).isEqualTo(caseDetails.getState());
     }
 
     @Test
