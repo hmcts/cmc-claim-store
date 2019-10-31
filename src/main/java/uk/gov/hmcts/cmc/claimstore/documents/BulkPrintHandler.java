@@ -52,12 +52,12 @@ public class BulkPrintHandler {
         bulkPrintService.printPdf(
             claim,
             ImmutableList.of(
-                new PrintablePdf(
-                    event.getDirectionsOrder(),
-                    buildDirectionsOrderFileBaseName(claim.getReferenceNumber())),
                 new PrintableTemplate(
                     event.getCoverSheet(),
-                    buildCoverSheetFileBaseName(claim.getReferenceNumber()))
+                    buildCoverSheetFileBaseName(claim.getReferenceNumber())),
+                new PrintablePdf(
+                    event.getDirectionsOrder(),
+                    buildDirectionsOrderFileBaseName(claim.getReferenceNumber()))
             )
         );
     }

@@ -74,10 +74,10 @@ public class ClaimantAssert extends AbstractAssert<ClaimantAssert, Party> {
                 applicant.getPartyName(), this.actual.getName());
         }
 
-        String mobilePhone = actual.getMobilePhone().orElse(null);
-        if (!Objects.equals(mobilePhone, applicant.getPartyDetail().getTelephoneNumber().getTelephoneNumber())) {
-            failWithMessage("Expected CCDCompany.mobilePhone to be <%s> but was <%s>",
-                applicant.getPartyDetail().getTelephoneNumber().getTelephoneNumber(), mobilePhone);
+        String phone = actual.getPhone().orElse(null);
+        if (!Objects.equals(phone, applicant.getPartyDetail().getTelephoneNumber().getTelephoneNumber())) {
+            failWithMessage("Expected CCDCompany.phone to be <%s> but was <%s>",
+                applicant.getPartyDetail().getTelephoneNumber().getTelephoneNumber(), phone);
         }
 
         if (!Objects.equals(actual.getBusinessName().orElse(null),
@@ -103,10 +103,10 @@ public class ClaimantAssert extends AbstractAssert<ClaimantAssert, Party> {
                 ccdParty.getPartyName(), actual.getName());
         }
 
-        String mobilePhone = actual.getMobilePhone().orElse(null);
-        if (!Objects.equals(mobilePhone, ccdParty.getPartyDetail().getTelephoneNumber().getTelephoneNumber())) {
-            failWithMessage("Expected CCDCompany.mobilePhone to be <%s> but was <%s>",
-                ccdParty.getPartyDetail().getTelephoneNumber().getTelephoneNumber(), mobilePhone);
+        String phone = actual.getPhone().orElse(null);
+        if (!Objects.equals(phone, ccdParty.getPartyDetail().getTelephoneNumber().getTelephoneNumber())) {
+            failWithMessage("Expected CCDCompany.phone to be <%s> but was <%s>",
+                ccdParty.getPartyDetail().getTelephoneNumber().getTelephoneNumber(), phone);
         }
 
         if (!Objects.equals(actual.getContactPerson().orElse(null),
@@ -132,10 +132,10 @@ public class ClaimantAssert extends AbstractAssert<ClaimantAssert, Party> {
                 ccdParty.getPartyName(), actual.getName());
         }
 
-        String mobilePhone = actual.getMobilePhone().orElse(null);
-        if (!Objects.equals(mobilePhone, ccdParty.getPartyDetail().getTelephoneNumber().getTelephoneNumber())) {
-            failWithMessage("Expected CCDOrganisation.mobilePhone to be <%s> but was <%s>",
-                ccdParty.getPartyDetail().getTelephoneNumber().getTelephoneNumber(), mobilePhone);
+        String phone = actual.getPhone().orElse(null);
+        if (!Objects.equals(phone, ccdParty.getPartyDetail().getTelephoneNumber().getTelephoneNumber())) {
+            failWithMessage("Expected CCDOrganisation.phone to be <%s> but was <%s>",
+                ccdParty.getPartyDetail().getTelephoneNumber().getTelephoneNumber(), phone);
         }
 
         String contactPerson = actual.getContactPerson().orElse(null);

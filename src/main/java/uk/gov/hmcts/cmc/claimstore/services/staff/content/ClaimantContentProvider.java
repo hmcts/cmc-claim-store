@@ -32,7 +32,7 @@ public class ClaimantContentProvider {
             submitterEmail,
             PartyUtils.getContactPerson(claimant).orElse(null),
             PartyUtils.getBusinessName(claimant).orElse(null),
-            claimant.getMobilePhone().orElse(null),
+            claimant.getPhone().orElse(null),
             PartyUtils.claimantDateOfBirth(claimant).map(Formatting::formatDate).orElse(null)
         );
         return new ClaimantContent(
@@ -43,7 +43,7 @@ public class ClaimantContentProvider {
             submitterEmail,
             personContent.getContactPerson(),
             personContent.getBusinessName(),
-            personContent.getMobileNumber(),
+            personContent.getPhoneNumber(),
             personContent.getDateOfBirth()
         );
     }

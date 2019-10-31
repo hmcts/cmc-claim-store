@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules.GenerateOrderRule;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -40,6 +42,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ACTION_REVIEW_COMMENTS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.GENERATE_ORDER;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOTH;
@@ -66,6 +69,8 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
     private static final String PREFERRED_COURT_OBJECTING_REASON = "preferredCourtObjectingReason";
     private static final String DIRECTION_LIST = "directionList";
     private static final String PREFERRED_DQ_COURT = "preferredDQCourt";
+    private static final String EXPERT_PERMISSION_BY_CLAIMANT = "expertReportPermissionPartyAskedByClaimant";
+    private static final String EXPERT_PERMISSION_BY_DEFENDANT = "expertReportPermissionPartyAskedByDefendant";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -76,18 +81,21 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
     private final CaseDetailsConverter caseDetailsConverter;
     private final DocAssemblyService docAssemblyService;
     private final AppInsights appInsights;
+    private final GenerateOrderRule generateOrderRule;
 
     @Autowired
     public GenerateOrderCallbackHandler(
         LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator,
         CaseDetailsConverter caseDetailsConverter,
         DocAssemblyService docAssemblyService,
-        AppInsights appInsights
+        AppInsights appInsights,
+        GenerateOrderRule generateOrderRule
     ) {
         this.legalOrderGenerationDeadlinesCalculator = legalOrderGenerationDeadlinesCalculator;
         this.caseDetailsConverter = caseDetailsConverter;
         this.docAssemblyService = docAssemblyService;
         this.appInsights = appInsights;
+        this.generateOrderRule = generateOrderRule;
     }
 
     @Override
@@ -136,6 +144,12 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
         logger.info("Generate order callback: creating order document");
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
+
+        List<String> validations = generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase);
+        if (!validations.isEmpty()) {
+            return AboutToStartOrSubmitCallbackResponse.builder().errors(validations).build();
+        }
+
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         DocAssemblyResponse docAssemblyResponse = docAssemblyService.createOrder(ccdCase, authorisation);
         logger.info("Generate order callback: received response from doc assembly");
@@ -180,5 +194,33 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
         data.put(PREFERRED_COURT_OBJECTING_PARTY, preferredCourtObjectingParty);
         data.put(PREFERRED_COURT_OBJECTING_REASON, preferredCourtObjectingReason);
         data.put(PREFERRED_DQ_COURT, DirectionsQuestionnaireUtils.getPreferredCourt(claim));
+
+        if (Optional.ofNullable(claimantDQ).isPresent()) {
+            data.put(EXPERT_PERMISSION_BY_CLAIMANT, hasRequestedExpertPermission(claimantDQ));
+        }
+
+        if (Optional.ofNullable(defendantDQ).isPresent()) {
+            data.put(EXPERT_PERMISSION_BY_DEFENDANT, hasRequestedExpertPermission(defendantDQ));
+        }
+    }
+
+    private CCDYesNoOption hasRequestedExpertPermission(CCDDirectionsQuestionnaire directionsQuestionnaire) {
+        return directionsQuestionnaire.getExpertRequired() != null
+            && directionsQuestionnaire.getExpertRequired().toBoolean()
+            && (hasRequestedForPermissionWithProvidedEvidence(directionsQuestionnaire)
+            || hasProvidedExpertReports(directionsQuestionnaire))
+            ? YES
+            : NO;
+    }
+
+    private boolean hasProvidedExpertReports(CCDDirectionsQuestionnaire directionsQuestionnaire) {
+        return directionsQuestionnaire.getExpertReports() != null
+            && !directionsQuestionnaire.getExpertReports().isEmpty();
+    }
+
+    private boolean hasRequestedForPermissionWithProvidedEvidence(CCDDirectionsQuestionnaire directionsQuestionnaire) {
+        return directionsQuestionnaire.getPermissionForExpert() != null
+            && directionsQuestionnaire.getPermissionForExpert().toBoolean()
+            && StringUtils.isNotBlank(directionsQuestionnaire.getExpertEvidenceToExamine());
     }
 }
