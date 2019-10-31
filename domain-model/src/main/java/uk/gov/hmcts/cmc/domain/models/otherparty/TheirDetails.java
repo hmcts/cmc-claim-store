@@ -14,6 +14,7 @@ import uk.gov.hmcts.cmc.domain.models.party.NamedParty;
 import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
@@ -48,13 +49,17 @@ public abstract class TheirDetails extends CollectionId implements NamedParty {
     @Valid
     private final Address serviceAddress;
 
+    @Size(max = 30, message = "may not be longer than {max} characters")
+    private final String phone;
+
     public TheirDetails(
         String id,
         String name,
         Address address,
         String email,
         Representative representative,
-        Address serviceAddress
+        Address serviceAddress,
+        String phone
     ) {
         super(id);
         this.name = name;
@@ -62,6 +67,7 @@ public abstract class TheirDetails extends CollectionId implements NamedParty {
         this.email = email;
         this.representative = representative;
         this.serviceAddress = serviceAddress;
+        this.phone = phone;
     }
 
     @Override
@@ -83,6 +89,10 @@ public abstract class TheirDetails extends CollectionId implements NamedParty {
 
     public Optional<Address> getServiceAddress() {
         return Optional.ofNullable(serviceAddress);
+    }
+
+    public Optional<String> getPhone() {
+        return Optional.ofNullable(phone);
     }
 
     @Override

@@ -117,16 +117,14 @@ public class ClaimControllerTest {
     @Test
     public void shouldInitiatePaymentForCitizen() {
         //given
-        String submitterId = "234";
         ClaimData input = SampleClaimData.validDefaults();
 
         CreatePaymentResponse response = CreatePaymentResponse.builder().build();
-        when(claimService.initiatePayment(AUTHORISATION, submitterId, input))
+        when(claimService.initiatePayment(AUTHORISATION, input))
             .thenReturn(response);
 
         //when
-        CreatePaymentResponse output = claimController.initiatePayment(
-            input, submitterId, AUTHORISATION);
+        CreatePaymentResponse output = claimController.initiatePayment(input, AUTHORISATION);
 
         //then
         assertThat(output).isEqualTo(response);
@@ -142,8 +140,22 @@ public class ClaimControllerTest {
             .thenReturn(expectedResponse);
 
         //when
-        CreatePaymentResponse output = claimController.resumePayment(
-            claimData, "123", AUTHORISATION);
+        CreatePaymentResponse output = claimController.resumePayment(claimData, AUTHORISATION);
+
+        //then
+        assertThat(output).isEqualTo(expectedResponse);
+    }
+
+    @Test
+    public void shouldCreateClaimForCitizen() {
+        //given
+        ClaimData claimData = SampleClaimData.builder().build();
+        Claim expectedResponse = Claim.builder().claimData(claimData).build();
+        when(claimService.saveCitizenClaim(AUTHORISATION, claimData, FEATURES))
+            .thenReturn(expectedResponse);
+
+        //when
+        Claim output = claimController.createClaim(claimData, AUTHORISATION, FEATURES);
 
         //then
         assertThat(output).isEqualTo(expectedResponse);

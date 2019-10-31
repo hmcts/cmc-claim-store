@@ -1,11 +1,15 @@
 package uk.gov.hmcts.cmc.claimstore.controllers.support;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -13,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ServerErrorException;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CCJStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.CountyCourtJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimCreatedEvent;
@@ -23,6 +28,8 @@ import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedStaffNotificationHandler;
+import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
+import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseStaffNotificationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
@@ -51,8 +58,6 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isReferredToJudge;
@@ -66,6 +71,7 @@ public class SupportController {
     private static final String CLAIM = "Claim ";
     private static final String CLAIM_DOES_NOT_EXIST = "Claim %s does not exist";
     private static final String AUTHORISATION_IS_REQUIRED = "Authorisation is required";
+
     private final ClaimService claimService;
     private final UserService userService;
     private final DocumentGenerator documentGenerator;
@@ -74,6 +80,7 @@ public class SupportController {
     private final CCJStaffNotificationHandler ccjStaffNotificationHandler;
     private final AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler;
     private final ClaimantResponseStaffNotificationHandler claimantResponseStaffNotificationHandler;
+    private final PaidInFullStaffNotificationHandler paidInFullStaffNotificationHandler;
     private final DocumentsService documentsService;
     private final PostClaimOrchestrationHandler postClaimOrchestrationHandler;
     private final MediationReportService mediationReportService;
@@ -90,12 +97,12 @@ public class SupportController {
         CCJStaffNotificationHandler ccjStaffNotificationHandler,
         AgreementCountersignedStaffNotificationHandler agreementCountersignedStaffNotificationHandler,
         ClaimantResponseStaffNotificationHandler claimantResponseStaffNotificationHandler,
+        PaidInFullStaffNotificationHandler paidInFullStaffNotificationHandler,
         DocumentsService documentsService,
         @Autowired(required = false) PostClaimOrchestrationHandler postClaimOrchestrationHandler,
         @Value("${feature_toggles.directions_questionnaire_enabled:false}") boolean directionsQuestionnaireEnabled,
         MediationReportService mediationReportService,
         ClaimSubmissionOperationIndicatorRule claimSubmissionOperationIndicatorRule
-
     ) {
         this.claimService = claimService;
         this.userService = userService;
@@ -105,6 +112,7 @@ public class SupportController {
         this.ccjStaffNotificationHandler = ccjStaffNotificationHandler;
         this.agreementCountersignedStaffNotificationHandler = agreementCountersignedStaffNotificationHandler;
         this.claimantResponseStaffNotificationHandler = claimantResponseStaffNotificationHandler;
+        this.paidInFullStaffNotificationHandler = paidInFullStaffNotificationHandler;
         this.documentsService = documentsService;
         this.postClaimOrchestrationHandler = postClaimOrchestrationHandler;
         this.mediationReportService = mediationReportService;
@@ -146,29 +154,47 @@ public class SupportController {
             case "intent-to-proceed":
                 resendStaffNotificationForIntentToProceed(claim, authorisation);
                 break;
+            case "paid-in-full":
+                resendStaffNotificationForPaidInFull(claim);
+                break;
             default:
                 throw new NotFoundException("Event " + event + " is not supported");
         }
     }
 
-    @PutMapping("/claim/{referenceNumber}/claimDocumentType/{claimDocumentType}/uploadDocumentToDocumentManagement")
-    @ApiOperation("Upload document to document Management")
-    public void uploadDocumentToDocumentManagement(
+    @PutMapping("/documents/{referenceNumber}/{documentType}")
+    @ApiOperation("Ensure a document is available on CCD")
+    @ApiResponses({
+        @ApiResponse(code = 200, message = "OK"),
+        @ApiResponse(code = 201, message = "Created"),
+        @ApiResponse(code = 404, message = "Claim not found"),
+        @ApiResponse(code = 500, message = "Unable to upload document")
+    })
+    @SuppressWarnings("squid:S2201") // orElseThrow does not ignore the result
+    public ResponseEntity<?> uploadDocumentToDocumentManagement(
         @PathVariable("referenceNumber") String referenceNumber,
-        @PathVariable("claimDocumentType") ClaimDocumentType claimDocumentType,
-        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation
+        @PathVariable("documentType") ClaimDocumentType documentType
     ) {
+        User caseworker = userService.authenticateAnonymousCaseWorker();
 
         Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
             .orElseThrow(() -> new NotFoundException(String.format(CLAIM_DOES_NOT_EXIST, referenceNumber)));
-        if (StringUtils.isBlank(authorisation)) {
-            throw new BadRequestException(AUTHORISATION_IS_REQUIRED);
+
+        if (claim.getClaimDocument(documentType).isPresent()) {
+            return new ResponseEntity<>(HttpStatus.OK);
         }
-        documentsService.generateDocument(claim.getExternalId(), claimDocumentType, authorisation);
+
+        documentsService.generateDocument(claim.getExternalId(), documentType, caseworker.getAuthorisation());
 
         claimService.getClaimByReferenceAnonymous(referenceNumber)
-            .ifPresent(updatedClaim -> updatedClaim.getClaimDocument(claimDocumentType)
-                .orElseThrow(() -> new NotFoundException("Unable to upload the document. Please try again later")));
+            .orElseThrow(IllegalStateException::new)
+            .getClaimDocument(documentType)
+            .orElseThrow(() -> new ServerErrorException(
+                "Unable to upload the document. Please try again later",
+                new NotFoundException("Unable to upload the document. Please try again later")
+            ));
+
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping("/claim/{referenceNumber}/reset-operation")
@@ -219,18 +245,6 @@ public class SupportController {
             this.postClaimOrchestrationHandler
                 .citizenIssueHandler(new CitizenClaimCreatedEvent(claim, submitterName, authorisation));
         }
-    }
-
-    @PutMapping("/claim/resend-rpa-notifications")
-    @ApiOperation("Resend notifications for multiple citizen claims")
-    public void resendRPANotifications(
-        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation,
-        @RequestBody List<String> referenceNumbers) {
-        if (referenceNumbers.isEmpty()) {
-            throw new IllegalArgumentException("Reference numbers not supplied");
-        }
-        List<Claim> existingClaims = checkClaimsExist(referenceNumbers);
-        resendClaimsToRPA(existingClaims, authorisation);
     }
 
     @PostMapping(value = "/sendMediation", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -322,25 +336,6 @@ public class SupportController {
         agreementCountersignedStaffNotificationHandler.onAgreementCountersigned(event);
     }
 
-    private void resendClaimsToRPA(List<Claim> claims, String authorisation) {
-        if (StringUtils.isBlank(authorisation)) {
-            throw new BadRequestException(AUTHORISATION_IS_REQUIRED);
-        }
-
-        for (Claim claim : claims) {
-            GeneratePinResponse pinResponse = userService
-                .generatePin(claim.getClaimData().getDefendant().getName(), authorisation);
-
-            String fullName = userService.getUserDetails(authorisation).getFullName();
-
-            claimService.linkLetterHolder(claim, pinResponse.getUserId(), authorisation);
-
-            documentGenerator.generateForCitizenRPA(
-                new CitizenClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation)
-            );
-        }
-    }
-
     private void resendStaffNotificationClaimantResponse(Claim claim, String authorization) {
         ClaimantResponse claimantResponse = claim.getClaimantResponse()
             .orElseThrow(IllegalArgumentException::new);
@@ -351,6 +346,12 @@ public class SupportController {
             claimantResponseStaffNotificationHandler
                 .onClaimantResponse(new ClaimantResponseEvent(claim, authorization));
         }
+    }
+
+    @SuppressWarnings("squid:S2201") // not ignored
+    private void resendStaffNotificationForPaidInFull(Claim claim) {
+        claim.getMoneyReceivedOn().orElseThrow(IllegalArgumentException::new);
+        paidInFullStaffNotificationHandler.onPaidInFullEvent(new PaidInFullEvent(claim));
     }
 
     private boolean isSettlementAgreement(Claim claim, ClaimantResponse claimantResponse) {
@@ -367,17 +368,6 @@ public class SupportController {
         return ACCEPTATION == claimantResponse.getType()
             && !ResponseUtils.isResponseStatesPaid(response)
             && !ResponseUtils.isResponsePartAdmitPayImmediately(response);
-    }
-
-    private List<Claim> checkClaimsExist(List<String> referenceNumbers) {
-        List<Claim> claims = new ArrayList<>();
-        for (String referenceNumber : referenceNumbers) {
-            Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
-                .orElseThrow(() -> new NotFoundException(String.format(CLAIM_DOES_NOT_EXIST, referenceNumber)));
-
-            claims.add(claim);
-        }
-        return claims;
     }
 
 }

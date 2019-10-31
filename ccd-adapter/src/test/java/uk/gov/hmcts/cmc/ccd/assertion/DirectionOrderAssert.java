@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
 public class DirectionOrderAssert extends AbstractAssert<DirectionOrderAssert, DirectionOrder> {
@@ -23,6 +24,7 @@ public class DirectionOrderAssert extends AbstractAssert<DirectionOrderAssert, D
         Optional.ofNullable(ccdDirectionOrder.getCreatedOn()).ifPresent(isCreatedOnEqual());
 
         assertThat(actual.getHearingCourtAddress()).isEqualTo(ccdDirectionOrder.getHearingCourtAddress());
+        assertThat(actual.getHearingCourtName()).isEqualTo(ccdDirectionOrder.getHearingCourtName());
 
         return this;
     }

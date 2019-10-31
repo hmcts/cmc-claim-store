@@ -75,6 +75,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYE
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.OTHER;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOtherDirectionHeaderType.UPLOAD;
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicators;
+import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDTelephone.withDefaultPhoneNumber;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
@@ -82,6 +83,9 @@ import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOU
 public class SampleData {
 
     public static final String AMOUNT = "12398";
+    public static final String SUBMIT_MORE_DOCS_INSTRUCTION = "submit more docs";
+    public static final String MANCHESTER_CIVIL_JUSTICE_CENTRE_CIVIL_AND_FAMILY_COURTS
+        = "Manchester Civil Justice Centre (Civil and Family Courts)";
 
     //Utility class
     private SampleData() {
@@ -268,6 +272,7 @@ public class SampleData {
                     .primaryAddress(ccdAddress)
                     .dateOfBirth(LocalDate.of(1950, 01, 01))
                     .correspondenceAddress(ccdAddress)
+                    .telephoneNumber(withDefaultPhoneNumber())
                     .build())
             .partyDetail(
                 CCDParty.builder()
@@ -291,6 +296,7 @@ public class SampleData {
                 .primaryAddress(ccdAddress)
                 .correspondenceAddress(ccdAddress)
                 .contactPerson("MR. Hyde")
+                .telephoneNumber(withDefaultPhoneNumber())
                 .companiesHouseNumber("12345678")
                 .build()
             )
@@ -310,6 +316,7 @@ public class SampleData {
                 .type(COMPANY)
                 .primaryAddress(ccdAddress)
                 .correspondenceAddress(ccdAddress)
+                .telephoneNumber(withDefaultPhoneNumber())
                 .contactPerson("MR. Hyde")
                 .build())
             .claimantProvidedPartyName("Abc Ltd")
@@ -329,6 +336,7 @@ public class SampleData {
                 .primaryAddress(ccdAddress)
                 .title("Mr.")
                 .businessName("My Trade")
+                .telephoneNumber(withDefaultPhoneNumber())
                 .correspondenceAddress(ccdAddress)
                 .build()
             )
@@ -379,7 +387,10 @@ public class SampleData {
             .claimantProvidedRepresentativeOrganisationPhone("my@email.com")
             .claimantProvidedRepresentativeOrganisationDxAddress("dx123")
             .claimantResponse(CCDResponseRejection.builder()
-                .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder().build())
+                .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder()
+                    .expertRequired(YES)
+                    .expertReports(null)
+                    .build())
                 .build())
             .directionsQuestionnaire(CCDDirectionsQuestionnaire
                 .builder()
@@ -410,6 +421,9 @@ public class SampleData {
                 .directionsQuestionnaire(CCDDirectionsQuestionnaire
                     .builder()
                     .hearingLocation("Claimant Court")
+                    .expertRequired(YES)
+                    .permissionForExpert(YES)
+                    .expertEvidenceToExamine("Expert evidence required to examine")
                     .exceptionalCircumstancesReason("As a claimant I like this court more").build())
                 .build())
             .directionsQuestionnaire(CCDDirectionsQuestionnaire
@@ -612,6 +626,14 @@ public class SampleData {
                         .build()))
             .eyewitnessUploadForParty(CCDDirectionPartyType.DEFENDANT)
             .estimatedHearingDuration(CCDHearingDurationType.FOUR_HOURS)
+            .expertReportPermissionPartyAskedByClaimant(YES)
+            .expertReportPermissionPartyAskedByDefendant(YES)
+            .expertReportPermissionPartyGivenToClaimant(YES)
+            .expertReportPermissionPartyGivenToDefendant(YES)
+            .expertReportInstructionClaimant(ImmutableList.of(CCDCollectionElement.<String>builder()
+                .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()))
+            .expertReportInstructionDefendant(ImmutableList.of(CCDCollectionElement.<String>builder()
+                .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()))
             .build();
     }
 
@@ -722,6 +744,14 @@ public class SampleData {
             .addressLine3("Salford")
             .postTown("Manchester")
             .postCode("DF1 3LJ")
+            .build();
+    }
+
+    public static CCDAddress getHearingCourtAddress() {
+        return CCDAddress.builder()
+            .addressLine1("1 Bridge Street West")
+            .postTown("Manchester")
+            .postCode("M60 9DJ")
             .build();
     }
 }

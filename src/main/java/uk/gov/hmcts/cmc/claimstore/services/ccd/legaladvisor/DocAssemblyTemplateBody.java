@@ -75,4 +75,15 @@ public class DocAssemblyTemplateBody implements FormPayload {
     private List<OtherDirection> otherDirections;
 
     private List<CCDCollectionElement<String>> extraDocUploadList;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @JsonSerialize(using = LocalDateSerializer.class)
+    private LocalDate directionDeadline;
+
+    private boolean expertReportPermissionPartyAskedByClaimant;
+    private boolean expertReportPermissionPartyAskedByDefendant;
+    private boolean expertReportPermissionPartyGivenToClaimant;
+    private boolean expertReportPermissionPartyGivenToDefendant;
+    private List<CCDCollectionElement<String>> expertReportInstructionClaimant;
+    private List<CCDCollectionElement<String>> expertReportInstructionDefendant;
 }
