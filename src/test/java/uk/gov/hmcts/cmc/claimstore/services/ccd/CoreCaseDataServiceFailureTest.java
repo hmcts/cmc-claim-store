@@ -177,7 +177,7 @@ public class CoreCaseDataServiceFailureTest {
             any(CaseDataContent.class),
             eq(solicitorUser.isRepresented())
         ))
-            .thenThrow(new FeignException().Conflict("Status 409 while creating the case", null));
+            .thenThrow(new FeignException.Conflict("Status 409 while creating the case", null));
 
         service.createRepresentedClaim(solicitorUser, providedClaim);
     }
