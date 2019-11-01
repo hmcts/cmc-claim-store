@@ -48,9 +48,6 @@ public class ClaimIssuedNotificationService {
     private final AppInsights appInsights;
     private final boolean asyncEventOperationEnabled;
 
-    @Value("${log.reference.pin:false}")
-    private boolean logReferencePin = false;
-
     @Autowired
     public ClaimIssuedNotificationService(
         NotificationClient notificationClient,
@@ -75,9 +72,6 @@ public class ClaimIssuedNotificationService {
         String submitterName
     ) {
         Map<String, String> parameters = aggregateParams(claim, pin, submitterName);
-        if (logReferencePin) {
-            logger.info(String.format("notification: reference %s , pin %s", reference, pin));
-        }
         try {
             notificationClient.sendEmail(emailTemplateId, targetEmail, parameters, reference);
         } catch (NotificationClientException e) {
