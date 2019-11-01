@@ -51,4 +51,15 @@ public class CCDOrderGenerationData {
     private CCDHearingDurationType estimatedHearingDuration;
 
     private CCDDocument draftOrderDoc;
+
+    private CCDYesNoOption expertReportPermissionPartyAskedByClaimant;
+    private CCDYesNoOption expertReportPermissionPartyAskedByDefendant;
+    private CCDYesNoOption expertReportPermissionPartyGivenToClaimant;
+    private CCDYesNoOption expertReportPermissionPartyGivenToDefendant;
+
+    @Builder.Default
+    private List<CCDCollectionElement<String>> expertReportInstructionClaimant = Collections.emptyList();
+
+    @Builder.Default
+    private List<CCDCollectionElement<String>> expertReportInstructionDefendant = Collections.emptyList();
 }

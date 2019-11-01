@@ -54,42 +54,42 @@ public class PhoneNumberConstraintValidatorTest {
     }
 
     @Test
-    public void shouldBeValidForValidMobileNumber() {
+    public void shouldBeValidForValidPhoneNumber() {
         assertThat(validator.isValid("07873738547", context)).isTrue();
     }
 
     @Test
-    public void shouldBeValidForValidMobileNumberWithSpaces() {
+    public void shouldBeValidForValidPhoneNumberWithSpaces() {
         assertThat(validator.isValid("0 787 373 8547", context)).isTrue();
     }
 
     @Test
-    public void shouldBeValidForValidMobileNumberWithDashes() {
+    public void shouldBeValidForValidPhoneNumberWithDashes() {
         assertThat(validator.isValid("0-787-373-8547", context)).isTrue();
     }
 
     @Test
-    public void shouldBeValidForValidMobileNumberWithParens() {
+    public void shouldBeValidForValidPhoneNumberWithParens() {
         assertThat(validator.isValid("(0) 7873738547", context)).isTrue();
     }
 
     @Test
-    public void shouldBeInvalidForValidMobileNumberWithIllegalCharacters() {
+    public void shouldBeInvalidForValidPhoneNumberWithIllegalCharacters() {
         assertThat(validator.isValid("#07873738547", context)).isFalse();
     }
 
     @Test
-    public void shouldBeInvalidForMobileNumberStartingWithDoubleZeroes() {
+    public void shouldBeInvalidForPhoneNumberStartingWithDoubleZeroes() {
         assertThat(validator.isValid("007873738547", context)).isFalse();
     }
 
     @Test
-    public void shouldBeInvalidForTooShortMobileNumber() {
+    public void shouldBeInvalidForTooShortPhoneNumber() {
         assertThat(validator.isValid("078737385", context)).isFalse();
     }
 
     @Test
-    public void shouldBeInvalidForTooLongMobileNumber() {
+    public void shouldBeInvalidForTooLongPhoneNumber() {
         assertThat(validator.isValid("078737385478", context)).isFalse();
     }
 
@@ -99,17 +99,17 @@ public class PhoneNumberConstraintValidatorTest {
     }
 
     @Test
-    public void shouldBeValidForMobileNumberWithDoubleZeroesCountryCode() {
+    public void shouldBeValidForPhoneNumberWithDoubleZeroesCountryCode() {
         assertThat(validator.isValid("00447873738547", context)).isTrue();
     }
 
     @Test
-    public void shouldBeValidForMobileNumberWithPlusCountryCode() {
+    public void shouldBeValidForPhoneNumberWithPlusCountryCode() {
         assertThat(validator.isValid("+447873738547", context)).isTrue();
     }
 
     @Test
-    public void shouldBeInvalidForMobileNumberWithNonUKCountryCode() {
+    public void shouldBeInvalidForPhoneNumberWithNonUKCountryCode() {
         assertThat(validator.isValid("+48 7873738547", context)).isFalse();
     }
 
