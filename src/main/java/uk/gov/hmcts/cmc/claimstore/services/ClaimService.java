@@ -186,12 +186,11 @@ public class ClaimService {
     @LogExecutionTime
     public CreatePaymentResponse initiatePayment(
         String authorisation,
-        String submitterId,
         ClaimData claimData) {
         User user = userService.getUser(authorisation);
 
         Claim claim = buildClaimFrom(user,
-            submitterId,
+            user.getUserDetails().getId(),
             claimData,
             emptyList());
 

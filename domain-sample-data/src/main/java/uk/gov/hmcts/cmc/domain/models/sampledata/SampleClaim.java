@@ -91,7 +91,7 @@ public final class SampleClaim {
     private ReDetermination reDetermination = new ReDetermination("I feel defendant can pay", CLAIMANT);
     private ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
     private LocalDate claimantResponseDeadline;
-    private ClaimState state = null;
+    private ClaimState state = ClaimState.OPEN;
     private ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
         = ClaimSubmissionOperationIndicators.builder().build();
     private Long ccdCaseId = 1023467890123456L;

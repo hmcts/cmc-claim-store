@@ -501,7 +501,7 @@ public class ClaimServiceTest {
         when(caseRepository.initiatePayment(eq(USER), any(Claim.class)))
             .thenReturn(claim);
 
-        CreatePaymentResponse response = claimService.initiatePayment(AUTHORISATION, "submitterId", VALID_APP);
+        CreatePaymentResponse response = claimService.initiatePayment(AUTHORISATION, VALID_APP);
 
         CreatePaymentResponse expectedResponse = CreatePaymentResponse.builder()
             .nextUrl("http://nexturl.test")
