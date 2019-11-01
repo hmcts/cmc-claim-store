@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -55,8 +54,6 @@ public class ClaimData {
     @NotNull
     private final Amount amount;
 
-    @NotNull
-    @Min(0)
     private final BigInteger feeAmountInPennies;
 
     private final String feeCode;
