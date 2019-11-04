@@ -26,7 +26,6 @@ import java.time.LocalDate;
 @ConditionalOnProperty("claim-store.test-support.enabled")
 public class IntegrationTestSupportController {
 
-
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final SupportRepository supportRepository;
