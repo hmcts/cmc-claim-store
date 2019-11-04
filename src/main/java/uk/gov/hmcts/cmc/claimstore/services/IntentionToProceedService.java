@@ -60,13 +60,8 @@ public class IntentionToProceedService {
         }
     }
 
-    public void checkClaimsPastIntentionToProceedDeadline(LocalDateTime dateTime, User user) {
-
-        //4pm cut off for court working days
-        int adjustDays = dateTime.getHour() >= 16 ? 0 : 1;
-        LocalDate runDate = dateTime.toLocalDate().minusDays(adjustDays);
-        LocalDate responseDate = intentionToProceedDeadlineCalculator.calculateResponseDate(runDate);
-
+    public void checkClaimsPastIntentionToProceedDeadline(LocalDateTime runDateTime, User user) {
+        LocalDate responseDate = intentionToProceedDeadlineCalculator.calculateResponseDate(runDateTime);
         Collection<Claim> claims = caseSearchApi.getClaimsPastIntentionToProceed(user, responseDate);
         claims.forEach(claim -> updateClaim(user, claim));
     }

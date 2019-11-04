@@ -31,6 +31,7 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
     private final AuthTokenGenerator authTokenGenerator;
     private final UserService userService;
     private final CaseDetailsConverter ccdCaseDetailsConverter;
+    private final LocalDateTime DATE_OF_5_POINT_0_RELEASE = LocalDateTime.of(2019, Month.SEPTEMBER, 9, 3, 12, 00);
 
     @Autowired
     public CCDElasticSearchRepository(CoreCaseDataApi coreCaseDataApi,
@@ -62,13 +63,11 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
     }
 
     public List<Claim> getClaimsPastIntentionToProceed(User user, LocalDate responseDate) {
-        // Release date for 5.0
-        LocalDateTime release5pt0Date = LocalDateTime.of(2019, Month.SEPTEMBER, 9, 3, 12, 00);
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
             .must(QueryBuilders.termQuery("state", ClaimState.OPEN.getValue()))
             .must(QueryBuilders.rangeQuery("data.respondents.value.responseSubmittedOn").lte(responseDate))
-            .must(QueryBuilders.rangeQuery("data.submittedOn").gte(release5pt0Date));
+            .must(QueryBuilders.rangeQuery("data.submittedOn").gte(DATE_OF_5_POINT_0_RELEASE));
 
         return searchClaimsWith(user, new Query(queryBuilder, 1000));
 
