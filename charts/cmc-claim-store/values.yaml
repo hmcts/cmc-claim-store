@@ -1,7 +1,6 @@
 java:
   image: hmctspublic.azurecr.io/cmc/claim-store:latest
   applicationPort: 4400
-  cpuRequests: 25m
   keyVaults:
     cmc:
       resourceGroup: cmc

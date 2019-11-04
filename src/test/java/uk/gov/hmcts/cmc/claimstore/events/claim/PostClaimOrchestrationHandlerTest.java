@@ -132,6 +132,31 @@ public class PostClaimOrchestrationHandlerTest {
         verify(rpaOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
         verify(uploadOperationService, atLeast(2)).uploadDocument(eq(CLAIM),
             eq(AUTHORISATION), any());
+        verify(claimService, never()).updateClaimState(eq(AUTHORISATION), any(Claim.class), eq(ClaimState.OPEN));
+
+    }
+
+    @Test
+    public void citizenIssueHandlerWithClaimInCreate() {
+        //given
+        Claim claim = SampleClaim.getDefault().toBuilder().state(ClaimState.CREATE).build();
+        given(claimantOperationService.notifyCitizen(eq(CLAIM), any(), eq(AUTHORISATION))).willReturn(claim);
+
+        CitizenClaimCreatedEvent event = new CitizenClaimCreatedEvent(CLAIM, SUBMITTER_NAME, AUTHORISATION);
+
+        //when
+        postClaimOrchestrationHandler.citizenIssueHandler(event);
+
+        //then
+        verify(citizenServiceDocumentsService).sealedClaimDocument(eq(CLAIM));
+        verify(pdfServiceClient).generateFromHtml(any(), anyMap());
+        verify(claimIssueReceiptService).createPdf(eq(CLAIM));
+        verify(pinOrchestrationService).process(eq(CLAIM), anyString(), anyString());
+        verify(claimantOperationService).notifyCitizen(eq(CLAIM), any(), eq(AUTHORISATION));
+        verify(rpaOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
+        verify(uploadOperationService, atLeast(2)).uploadDocument(eq(CLAIM),
+            eq(AUTHORISATION), any());
+        verify(claimService).updateClaimState(eq(AUTHORISATION), any(Claim.class), eq(ClaimState.OPEN));
 
     }
 
@@ -452,5 +477,31 @@ public class PostClaimOrchestrationHandlerTest {
         verify(rpaOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
         verify(notifyStaffOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
         verify(uploadOperationService).uploadDocument(eq(CLAIM), eq(AUTHORISATION), any());
+        verify(claimService, never()).updateClaimState(eq(AUTHORISATION), any(Claim.class), eq(ClaimState.OPEN));
+
+    }
+
+    @Test
+    public void representativeIssueHandlerWithClaimInCreate() {
+        //given
+        Claim claim = SampleClaim.getDefault().toBuilder().state(ClaimState.CREATE).build();
+        given(claimantOperationService
+            .confirmRepresentative(eq(CLAIM), eq(SUBMITTER_NAME), anyString(), eq(AUTHORISATION)))
+            .willReturn(claim);
+
+        RepresentedClaimCreatedEvent event = new RepresentedClaimCreatedEvent(CLAIM, SUBMITTER_NAME, AUTHORISATION);
+
+        //when
+        postClaimOrchestrationHandler.representativeIssueHandler(event);
+
+        //then
+        verify(sealedClaimPdfService).createPdf(eq(CLAIM));
+        verify(claimantOperationService)
+            .confirmRepresentative(eq(CLAIM), eq(SUBMITTER_NAME), anyString(), eq(AUTHORISATION));
+
+        verify(rpaOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
+        verify(notifyStaffOperationService).notify(eq(CLAIM), eq(AUTHORISATION), any());
+        verify(uploadOperationService).uploadDocument(eq(CLAIM), eq(AUTHORISATION), any());
+        verify(claimService).updateClaimState(eq(AUTHORISATION), any(Claim.class), eq(ClaimState.OPEN));
     }
 }
