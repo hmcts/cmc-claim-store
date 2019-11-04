@@ -67,6 +67,10 @@ allprojects {
     }
   }
 
+  jacoco {
+    toolVersion = "0.8.0"
+  }
+
   sourceCompatibility = 1.8
   compileJava {
     options.compilerArgs << '-parameters' << '-Xlint:deprecation'

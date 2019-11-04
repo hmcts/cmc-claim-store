@@ -48,7 +48,7 @@ public class PaidInFullStaffNotificationServiceWithEmailServiceRetryTest {
     protected TelemetryClient telemetry;
     @MockBean
     protected PostClaimOrchestrationHandler postClaimOrchestrationHandler;
-    
+
     @Autowired
     private PaidInFullStaffNotificationService service;
 
