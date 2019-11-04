@@ -79,7 +79,7 @@ public class ClaimantResponseActionsHandler {
         ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
         return claimantResponse.getType() == ClaimantResponseType.ACCEPTATION
-            && (isResponseFullDefenceStatesPaid(response) || isFullDefenceDispute(response));
+            && response.getResponseType() == ResponseType.FULL_DEFENCE;
     }
 
     @EventListener
