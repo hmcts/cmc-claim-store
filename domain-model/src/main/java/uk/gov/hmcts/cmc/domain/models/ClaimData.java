@@ -138,8 +138,8 @@ public class ClaimData {
         return amount;
     }
 
-    public BigInteger getFeeAmountInPennies() {
-        return feeAmountInPennies;
+    public Optional<BigInteger> getFeeAmountInPennies() {
+        return Optional.ofNullable(feeAmountInPennies);
     }
 
     public Interest getInterest() {
@@ -194,8 +194,8 @@ public class ClaimData {
         return externalId;
     }
 
-    public Payment getPayment() {
-        return payment;
+    public Optional<Payment> getPayment() {
+        return Optional.ofNullable(payment);
     }
 
     public Optional<StatementOfTruth> getStatementOfTruth() {

@@ -61,9 +61,7 @@ public class PaymentsService {
         logger.info("Retrieving payment amount for claim with external id {}",
             claim.getExternalId());
 
-        Payment claimPayment =
-            Optional.ofNullable(claim.getClaimData().getPayment())
-                .orElseThrow(IllegalStateException::new);
+        Payment claimPayment = claim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
 
         return from(paymentsClient.retrievePayment(
             authorisation,
@@ -109,7 +107,7 @@ public class PaymentsService {
     }
 
     private FeeDto[] buildFees(String ccdCaseId, FeeLookupResponseDto feeOutcome) {
-        return new FeeDto[] {
+        return new FeeDto[]{
             FeeDto.builder()
                 .ccdCaseNumber(ccdCaseId)
                 .calculatedAmount(feeOutcome.getFeeAmount())
