@@ -94,7 +94,7 @@ public class ClaimantResponseService {
                 );
             } catch (Exception e) {
                 throw new IllegalArgumentException("Unknown case event provided in "
-                    + "'save' method for claim after claimant response ");
+                    + "'save' method for claim after claimant response ", e);
             }
         }
 
