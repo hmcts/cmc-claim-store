@@ -75,7 +75,7 @@ public class ClaimantResponseActionsHandler {
             && isOptedForMediation(response);
     }
 
-    private boolean hasClaimantSettledForFullDefense(Claim claim){
+    private boolean hasClaimantSettledForFullDefense(Claim claim) {
         ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
         return claimantResponse.getType() == ClaimantResponseType.ACCEPTATION

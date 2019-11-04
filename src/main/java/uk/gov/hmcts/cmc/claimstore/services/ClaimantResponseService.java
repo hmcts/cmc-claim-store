@@ -8,7 +8,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
-import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
 import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
@@ -86,9 +85,10 @@ public class ClaimantResponseService {
 
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
 
-        if(isFullDefenseDisputeAcceptation(response, claimantResponse)) {
+        if (isFullDefenseDisputeAcceptation(response, claimantResponse)) {
             try {
-                appInsights.trackEvent(AppInsightsEvent.CLAIM_STAYED, REFERENCE_NUMBER, updatedClaim.getReferenceNumber());
+                appInsights.trackEvent(AppInsightsEvent.CLAIM_STAYED, REFERENCE_NUMBER,
+                        updatedClaim.getReferenceNumber());
                 caseRepository.saveCaseEvent(
                     authorization,
                     updatedClaim,
