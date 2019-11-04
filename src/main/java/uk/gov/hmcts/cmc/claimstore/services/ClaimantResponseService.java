@@ -95,7 +95,7 @@ public class ClaimantResponseService {
                     CaseEvent.STAY_CLAIM
                 );
             } catch (Exception e) {
-                logger.error(String.format("Error whilst staying claim %s", claim.getId()), e);
+                logger.error(String.format("Error whilst staying claim %s", claim.getReferenceNumber()), e);
                 throw e;
             }
         }
