@@ -31,7 +31,8 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
     private final AuthTokenGenerator authTokenGenerator;
     private final UserService userService;
     private final CaseDetailsConverter ccdCaseDetailsConverter;
-    private final LocalDateTime DATE_OF_5_POINT_0_RELEASE = LocalDateTime.of(2019, Month.SEPTEMBER, 9, 3, 12, 00);
+    private static final LocalDateTime DATE_OF_5_POINT_0_RELEASE =
+        LocalDateTime.of(2019, Month.SEPTEMBER, 9, 3, 12, 0);
 
     @Autowired
     public CCDElasticSearchRepository(CoreCaseDataApi coreCaseDataApi,
