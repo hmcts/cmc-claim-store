@@ -77,9 +77,8 @@ public class ClaimantResponseActionsHandler {
 
     private boolean hasClaimantSettledForFullDefense(Claim claim){
         ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
-        Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
+        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
         return claimantResponse.getType() == ClaimantResponseType.ACCEPTATION
-            && response.getResponseType() == ResponseType.FULL_DEFENCE
             && (isResponseFullDefenceStatesPaid(response) || isFullDefenceDispute(response));
     }
 

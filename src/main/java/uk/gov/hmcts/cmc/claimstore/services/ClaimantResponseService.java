@@ -39,8 +39,6 @@ import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseTy
 @Service
 public class ClaimantResponseService {
 
-    Logger logger = LoggerFactory.getLogger(this.getClass());
-
     private final ClaimService claimService;
     private final AppInsights appInsights;
     private final CaseRepository caseRepository;
@@ -95,7 +93,8 @@ public class ClaimantResponseService {
                     CaseEvent.STAY_CLAIM
                 );
             } catch (Exception e) {
-                logger.error(String.format("Error whilst staying claim %s", claim.getId()), e);
+                throw new IllegalArgumentException("Unknown case event provided in "
+                    + "'save' method for claim after claimant response ");
             }
         }
 
@@ -203,7 +202,7 @@ public class ClaimantResponseService {
     }
 
     private boolean isFullDefenseDisputeAcceptation(Response response, ClaimantResponse claimantResponse) {
-        return ACCEPTATION == claimantResponse.getType()
+        return claimantResponse.getType() == ACCEPTATION
             && ResponseUtils.isFullDefenceDispute(response);
     }
 
