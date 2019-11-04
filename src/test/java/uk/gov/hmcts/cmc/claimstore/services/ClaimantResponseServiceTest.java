@@ -140,8 +140,8 @@ public class ClaimantResponseServiceTest {
 
         claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
 
-        verify(appInsights, once()).trackEvent(eq(CLAIM_STAYED), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
-        verify(caseRepository).saveCaseEvent(eq(AUTHORISATION), eq(claim), eq(STAY_CLAIM));
+        verify(appInsights).trackEvent(CLAIM_STAYED, REFERENCE_NUMBER, claim.getReferenceNumber());
+        verify(caseRepository).saveCaseEvent(AUTHORISATION, claim, STAY_CLAIM);
 
     }
 
