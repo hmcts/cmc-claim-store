@@ -1,11 +1,15 @@
 package uk.gov.hmcts.cmc.claimstore.utils;
 
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDateTime;
+import java.time.chrono.ChronoZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.Locale;
@@ -26,7 +30,18 @@ public class Formatting {
 
     private static String formatTemporalWithPattern(TemporalAccessor temporal, String pattern) {
         requireNonNull(temporal);
-        return DateTimeFormatter.ofPattern(pattern).format(temporal);
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern)
+            .withZone(LocalDateTimeFactory.LOCAL_ZONE);
+
+        if (temporal instanceof ChronoLocalDateTime) {
+            ChronoZonedDateTime chronoZonedDateTime =
+                ((ChronoLocalDateTime) temporal).atZone(LocalDateTimeFactory.UTC_ZONE);
+            return dateTimeFormatter.format(chronoZonedDateTime);
+
+        } else {
+            return dateTimeFormatter.format(temporal);
+
+        }
     }
 
     public static String formatDate(LocalDate date) {
