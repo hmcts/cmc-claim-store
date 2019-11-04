@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.ccd.util.MapperUtil;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
@@ -38,7 +39,8 @@ public class CaseMapperTest {
     @Test
     public void shouldMapLegalClaimToCCD() {
         //given
-        Claim claim = SampleClaim.getLegalDataWithReps();
+        Claim claim = SampleClaim.getLegalDataWithReps()
+            .toBuilder().state(null).build();
 
         //when
         CCDCase ccdCase = ccdCaseMapper.to(claim);
@@ -53,7 +55,8 @@ public class CaseMapperTest {
     @Test
     public void shouldMapCitizenClaimToCCD() {
         //given
-        Claim claim = SampleClaim.getCitizenClaim();
+        Claim claim = SampleClaim.getCitizenClaim()
+            .toBuilder().state(null).build();
 
         //when
         CCDCase ccdCase = ccdCaseMapper.to(claim);
@@ -96,6 +99,7 @@ public class CaseMapperTest {
 
         //then
         assertThat(claim).isEqualTo(ccdCase);
+        assertEquals(ClaimState.OPEN, claim.getState());
     }
 
     @Test(expected = NullPointerException.class)
