@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
@@ -23,6 +24,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +41,7 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
     private static final List<CaseEvent> EVENTS = ImmutableList.of(MEDIATION_FAILED);
 
     private static final String STATE = "state";
+    private static final String DIRECTIONS_QUESTIONNAIRE_DEADLINE = "directionsQuestionnaireDeadline";
     private static final String OPEN_STATE = "open";
     private static final String READY_FOR_DIRECTIONS_STATE = "readyForDirections";
     private static final String READY_FOR_TRANSFER_STATE = "readyForTransfer";
@@ -46,9 +50,13 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
 
     private final CaseDetailsConverter caseDetailsConverter;
 
+    private final DirectionsQuestionnaireDeadlineCalculator deadlineCalculator;
+
     @Autowired
-    public MediationFailedCallbackHandler(CaseDetailsConverter caseDetailsConverter) {
+    public MediationFailedCallbackHandler(CaseDetailsConverter caseDetailsConverter,
+                                          DirectionsQuestionnaireDeadlineCalculator deadlineCalculator) {
         this.caseDetailsConverter = caseDetailsConverter;
+        this.deadlineCalculator = deadlineCalculator;
     }
 
     @Override
@@ -78,7 +86,13 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
         Map<String, Object> dataMap = caseDetailsConverter.convertToMap(ccdCase);
         dataMap.put(STATE, stateByOnlineDQnPilotCheck(claim));
 
-        logger.info("Mediation failure about-to-submit callback: state determined - " + dataMap.get("state"));
+        if (!DirectionsQuestionnaireUtils.isOnlineDQ(claim)) {
+            LocalDate deadline = deadlineCalculator
+                .calculateDirectionsQuestionnaireDeadlineCalculator(LocalDateTime.now());
+            dataMap.put(DIRECTIONS_QUESTIONNAIRE_DEADLINE, deadline);
+        }
+
+        logger.info("Mediation failure about-to-submit callback: state determined - {}", dataMap.get(STATE));
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()

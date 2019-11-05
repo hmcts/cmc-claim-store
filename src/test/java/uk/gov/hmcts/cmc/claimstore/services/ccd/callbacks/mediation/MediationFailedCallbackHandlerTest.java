@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
+import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
+import java.time.LocalDate;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,6 +36,9 @@ public class MediationFailedCallbackHandlerTest {
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
 
+    @Mock
+    private DirectionsQuestionnaireDeadlineCalculator deadlineCalculator;
+
     private MediationFailedCallbackHandler mediationFailedCallbackHandler;
 
     private CallbackParams callbackParams;
@@ -44,7 +49,7 @@ public class MediationFailedCallbackHandlerTest {
 
     @Before
     public void setUp() {
-        mediationFailedCallbackHandler = new MediationFailedCallbackHandler(caseDetailsConverter);
+        mediationFailedCallbackHandler = new MediationFailedCallbackHandler(caseDetailsConverter, deadlineCalculator);
         CallbackRequest callbackRequest = CallbackRequest
             .builder()
             .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
@@ -90,12 +95,15 @@ public class MediationFailedCallbackHandlerTest {
 
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+        when(deadlineCalculator.calculateDirectionsQuestionnaireDeadlineCalculator(any()))
+            .thenReturn(LocalDate.now().plusDays(8));
 
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
             mediationFailedCallbackHandler
                 .handle(callbackParams);
 
         assertThat(response.getData()).containsEntry("state", "open");
+        assertThat(response.getData()).containsEntry("directionsQuestionnaireDeadline", LocalDate.now().plusDays(8));
 
     }
 
