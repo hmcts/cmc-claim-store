@@ -87,4 +87,6 @@ public class CCDRespondent {
     private CCDAddress preferredCourtAddress;
     private String preferredCourtReason;
 
+    private CCDYesNoOption paperResponse;
+
 }
