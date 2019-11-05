@@ -76,7 +76,7 @@ public class ClaimantResponseService {
         claimantResponseRule.assertCanBeRequested(claim, claimantId);
 
         if (claim.getState().equals(ClaimState.STAYED) && isFullAdmissionOrPartAdmission(claim)) {
-            caseRepository.saveCaseEvent(authorization, claim, LIFT_STAY);
+            claim = caseRepository.saveCaseEvent(authorization, claim, LIFT_STAY);
         }
 
         Claim updatedClaim = caseRepository.saveClaimantResponse(claim, claimantResponse, authorization);
