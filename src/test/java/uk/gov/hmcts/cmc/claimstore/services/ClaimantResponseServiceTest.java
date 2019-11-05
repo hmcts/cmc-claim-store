@@ -516,7 +516,7 @@ public class ClaimantResponseServiceTest {
     }
 
     @Test
-    public void shouldLiftStayedClaimwWhenPartAdmission() {
+    public void shouldLiftStayedClaimWhenPartAdmission() {
         ClaimantResponse claimantResponse = SampleClaimantResponse
             .ClaimantResponseAcceptation
             .builder()
@@ -537,13 +537,14 @@ public class ClaimantResponseServiceTest {
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
         when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION)))
             .thenReturn(claim);
+        when(caseRepository.saveCaseEvent(eq(AUTHORISATION), eq(claim), eq(LIFT_STAY))).thenReturn(claim);
 
         claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
         verify(caseRepository, once()).saveCaseEvent(AUTHORISATION, claim, LIFT_STAY);
     }
 
     @Test
-    public void shouldNotLiftStayedClaimwWhenFullDefence() {
+    public void shouldNotLiftStayedClaimWhenFullDefence() {
         ClaimantResponse claimantResponse = SampleClaimantResponse
             .ClaimantResponseAcceptation
             .builder()
