@@ -167,7 +167,9 @@ public class IdamTestService {
     private CreateUserRequest createSolicitorRequest(String username, String password) {
         return new CreateUserRequest(
             username,
-            ImmutableList.of(new UserRole("solicitor"), new UserRole("caseworker-cmc-solicitor"), new UserRole("caseworker-cmc")),
+            ImmutableList.of(new UserRole("solicitor"),
+                new UserRole("caseworker-cmc-solicitor"),
+                new UserRole("caseworker-cmc")),
             password
         );
     }
