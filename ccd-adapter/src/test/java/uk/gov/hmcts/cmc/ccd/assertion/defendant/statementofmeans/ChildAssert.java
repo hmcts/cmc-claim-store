@@ -1,36 +1,31 @@
 package uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans;
 
-import org.assertj.core.api.AbstractAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.CustomAssert;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDChildCategory;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Child;
 
-import java.util.Objects;
+import java.util.Optional;
 
-public class ChildAssert extends AbstractAssert<ChildAssert, Child> {
+public class ChildAssert extends CustomAssert<ChildAssert, Child> {
 
     public ChildAssert(Child actual) {
-        super(actual, ChildAssert.class);
+        super("Child", actual, ChildAssert.class);
     }
 
-    public ChildAssert isEqualTo(CCDChildCategory ccdChildCategory) {
+    public ChildAssert isEqualTo(CCDChildCategory expected) {
         isNotNull();
 
-        if (!Objects.equals(actual.getNumberOfChildren(), ccdChildCategory.getNumberOfChildren())) {
-            failWithMessage("Expected Child.numberOfChildren to be <%s> but was <%s>",
-                ccdChildCategory.getNumberOfChildren(), actual.getNumberOfChildren());
-        }
+        compare("numberOfChildren",
+            expected.getNumberOfChildren(),
+            Optional.ofNullable(actual.getNumberOfChildren()));
 
-        if (!Objects.equals(actual.getAgeGroupType().name(), ccdChildCategory.getAgeGroupType().name())) {
-            failWithMessage("Expected Child.ageGroupType to be <%s> but was <%s>",
-                ccdChildCategory.getAgeGroupType(), actual.getAgeGroupType());
-        }
+        compare("ageGroupType",
+            expected.getAgeGroupType(), Enum::name,
+            Optional.ofNullable(actual.getAgeGroupType()).map(Enum::name));
 
-        if (!Objects.equals(actual.getNumberOfChildrenLivingWithYou().orElse(null),
-            ccdChildCategory.getNumberOfResidentChildren())
-        ) {
-            failWithMessage("Expected Child.numberOfChildrenLivingWithYou to be <%s> but was <%s>",
-                ccdChildCategory.getNumberOfResidentChildren(), actual.getNumberOfChildrenLivingWithYou());
-        }
+        compare("numberOfChildrenLivingWithYou",
+            expected.getNumberOfResidentChildren(),
+            actual.getNumberOfChildrenLivingWithYou());
 
         return this;
     }
