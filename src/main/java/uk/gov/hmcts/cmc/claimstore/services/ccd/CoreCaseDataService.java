@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd;
 
+import feign.FeignException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -8,6 +9,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseEventMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -171,7 +173,8 @@ public class CoreCaseDataService {
             }
 
             return caseDetailsConverter.extractClaim(caseDetails);
-
+        } catch (FeignException.Conflict conflict) {
+            throw new ConflictException("Claim already exists in CCD with externalId " + claim.getExternalId());
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(
