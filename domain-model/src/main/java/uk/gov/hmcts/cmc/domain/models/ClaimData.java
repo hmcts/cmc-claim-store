@@ -173,10 +173,9 @@ public class ClaimData {
 
     @JsonIgnore
     public Optional<BigDecimal> getFeesPaidInPounds() {
-        if (feeAmountInPennies == null) {
-            return Optional.empty();
-        }
-        return Optional.ofNullable(MonetaryConversions.penniesToPounds(new BigDecimal(feeAmountInPennies)));
+        return Optional.ofNullable(feeAmountInPennies)
+            .map(BigDecimal::new)
+            .map(MonetaryConversions::penniesToPounds);
     }
 
     public List<TheirDetails> getDefendants() {
