@@ -111,7 +111,7 @@ ccd:
     releaseNameOverride: ${SERVICE_NAME}-ccd-idam-pr
     redirect_uris:
       CCD:
-        - https://ccd-case-management-web-aat.service.core-compute-aat.internal/oauth2redirect
+        - https://case-management-web-${SERVICE_FQDN}/oauth2redirect
       CCD Admin:
         - https://admin-web-${SERVICE_FQDN}/oauth2redirect
   apiGateway:
