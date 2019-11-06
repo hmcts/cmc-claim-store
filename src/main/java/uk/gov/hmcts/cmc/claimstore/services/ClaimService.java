@@ -196,9 +196,9 @@ public class ClaimService {
 
         Claim createdClaim = caseRepository.initiatePayment(user, claim);
 
-        Optional<Payment> payment = createdClaim.getClaimData().getPayment();
+        Payment payment = createdClaim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
         return CreatePaymentResponse.builder()
-            .nextUrl(payment.orElseThrow(IllegalStateException::new).getNextUrl())
+            .nextUrl(payment.getNextUrl())
             .build();
     }
 
