@@ -203,9 +203,8 @@ public class ClaimService {
     }
 
     @LogExecutionTime
-    public CreatePaymentResponse resumePayment(
-        String authorisation,
-        ClaimData claimData) {
+    public CreatePaymentResponse resumePayment(String authorisation, ClaimData claimData) {
+
         Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), authorisation);
         Claim resumedClaim = caseRepository.saveCaseEvent(authorisation, claim, RESUME_CLAIM_PAYMENT_CITIZEN);
 
