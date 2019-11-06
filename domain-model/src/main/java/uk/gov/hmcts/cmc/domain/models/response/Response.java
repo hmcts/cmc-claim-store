@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
@@ -28,7 +27,6 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
     @JsonSubTypes.Type(value = PartAdmissionResponse.class, name = "PART_ADMISSION")
 })
 @EqualsAndHashCode
-@Builder
 public abstract class Response {
 
     @NotNull
@@ -52,8 +50,6 @@ public abstract class Response {
     @Valid
     private final StatementOfTruth statementOfTruth;
 
-    private final YesNoOption paperResponse;
-
     public Response(
         ResponseType responseType,
         YesNoOption freeMediation,
@@ -61,8 +57,7 @@ public abstract class Response {
         String mediationContactPerson,
         YesNoOption moreTimeNeeded,
         Party defendant,
-        StatementOfTruth statementOfTruth,
-        YesNoOption paperResponse
+        StatementOfTruth statementOfTruth
     ) {
         this.responseType = responseType;
         this.freeMediation = freeMediation;
@@ -71,7 +66,6 @@ public abstract class Response {
         this.moreTimeNeeded = moreTimeNeeded;
         this.defendant = defendant;
         this.statementOfTruth = statementOfTruth;
-        this.paperResponse = paperResponse;
     }
 
     public ResponseType getResponseType() {
@@ -92,10 +86,6 @@ public abstract class Response {
 
     public YesNoOption getMoreTimeNeeded() {
         return moreTimeNeeded;
-    }
-
-    public YesNoOption getPaperResponse() {
-        return paperResponse;
     }
 
     public Party getDefendant() {

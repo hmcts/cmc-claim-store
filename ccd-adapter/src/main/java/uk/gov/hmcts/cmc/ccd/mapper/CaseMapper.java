@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDChannelType;
+import uk.gov.hmcts.cmc.ccd.util.MapperUtil;
 import uk.gov.hmcts.cmc.domain.models.ChannelType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
@@ -100,7 +101,8 @@ public class CaseMapper {
                 mapFromCCDClaimSubmissionOperationIndicators.apply(ccdCase.getClaimSubmissionOperationIndicators()))
             .directionOrder(directionOrderMapper.from(ccdCase.getDirectionOrder(), ccdCase.getDirectionOrderData()))
             .intentionToProceedDeadline(ccdCase.getIntentionToProceedDeadline())
-            .reviewOrder(reviewOrderMapper.from(ccdCase.getReviewOrder()));
+            .reviewOrder(reviewOrderMapper.from(ccdCase.getReviewOrder()))
+            .offlineJourney(MapperUtil.canContinueOnline.apply(ccdCase));
 
         if (ccdCase.getFeatures() != null) {
             builder.features(Arrays.asList(ccdCase.getFeatures().split(",")));

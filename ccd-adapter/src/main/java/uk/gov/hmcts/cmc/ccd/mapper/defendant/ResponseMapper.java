@@ -114,10 +114,7 @@ public class ResponseMapper {
         }
     }
 
-    public void from(Claim.ClaimBuilder claimBuilder,
-                     CCDCollectionElement<CCDRespondent> respondentElement,
-                     YesNoOption canClaimContineOnline
-    ) {
+    public void from(Claim.ClaimBuilder claimBuilder, CCDCollectionElement<CCDRespondent> respondentElement) {
         CCDRespondent respondent = respondentElement.getValue();
         requireNonNull(claimBuilder, "claimBuilder must not be null");
         requireNonNull(respondent, "respondent must not be null");
@@ -127,13 +124,13 @@ public class ResponseMapper {
 
         switch (respondent.getResponseType()) {
             case FULL_DEFENCE:
-                claimBuilder.response(extractFullDefence(respondentElement, canClaimContineOnline));
+                claimBuilder.response(extractFullDefence(respondentElement));
                 break;
             case FULL_ADMISSION:
-                claimBuilder.response(extractFullAdmission(respondentElement, canClaimContineOnline));
+                claimBuilder.response(extractFullAdmission(respondentElement));
                 break;
             case PART_ADMISSION:
-                claimBuilder.response(extractPartAdmission(respondentElement, canClaimContineOnline));
+                claimBuilder.response(extractPartAdmission(respondentElement));
                 break;
             default:
                 throw new MappingException("Invalid responseType");
@@ -218,8 +215,7 @@ public class ResponseMapper {
         };
     }
 
-    private FullDefenceResponse extractFullDefence(CCDCollectionElement<CCDRespondent> respondentElement,
-                                                   YesNoOption canClaimContineOnline) {
+    private FullDefenceResponse extractFullDefence(CCDCollectionElement<CCDRespondent> respondentElement) {
         CCDRespondent respondent = respondentElement.getValue();
 
         return FullDefenceResponse.builder()
@@ -236,7 +232,6 @@ public class ResponseMapper {
             .timeline(extractDefendantTimeline(respondent))
             .paymentDeclaration(extractPaymentDeclaration(respondent))
             .directionsQuestionnaire(directionsQuestionnaireMapper.from(respondent.getDirectionsQuestionnaire()))
-            .paperResponse(canClaimContineOnline)
             .build();
     }
 
@@ -321,7 +316,6 @@ public class ResponseMapper {
             .mediationContactPerson(respondent.getResponseMediationContactPerson())
             .paymentIntention(paymentIntentionMapper.from(respondent.getDefendantPaymentIntention()))
             .statementOfMeans(statementOfMeansMapper.from(respondent.getStatementOfMeans()))
-            .paperResponse(canClaimContineOnline)
             .build();
     }
 

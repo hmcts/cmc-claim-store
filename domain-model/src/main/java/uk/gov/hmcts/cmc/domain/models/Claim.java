@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -71,6 +72,7 @@ public class Claim {
     private final DirectionOrder directionOrder;
     private final ChannelType channel;
     private final LocalDate intentionToProceedDeadline;
+    private final YesNoOption offlineJourney;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -110,7 +112,8 @@ public class Claim {
         ReviewOrder reviewOrder,
         DirectionOrder directionOrder,
         ChannelType channel,
-        LocalDate intentionToProceedDeadline
+        LocalDate intentionToProceedDeadline,
+        YesNoOption offlineJourney
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -148,6 +151,7 @@ public class Claim {
         this.directionOrder = directionOrder;
         this.channel = channel;
         this.intentionToProceedDeadline = intentionToProceedDeadline;
+        this.offlineJourney = offlineJourney;
     }
 
     public Optional<Response> getResponse() {

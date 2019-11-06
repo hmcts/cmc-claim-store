@@ -38,8 +38,6 @@ public class FullDefenceResponse extends Response {
     @Valid
     private final DirectionsQuestionnaire directionsQuestionnaire;
 
-    private final YesNoOption paperResponse;
-
     @Builder
     public FullDefenceResponse(
         YesNoOption freeMediation,
@@ -53,8 +51,7 @@ public class FullDefenceResponse extends Response {
         PaymentDeclaration paymentDeclaration,
         DefendantTimeline timeline,
         DefendantEvidence evidence,
-        DirectionsQuestionnaire directionsQuestionnaire,
-        YesNoOption paperResponse
+        DirectionsQuestionnaire directionsQuestionnaire
     ) {
         super(
             FULL_DEFENCE,
@@ -63,8 +60,7 @@ public class FullDefenceResponse extends Response {
             mediationContactPerson,
             moreTimeNeeded,
             defendant,
-            statementOfTruth,
-            paperResponse
+            statementOfTruth
         );
         this.defenceType = defenceType;
         this.defence = defence;
@@ -72,7 +68,6 @@ public class FullDefenceResponse extends Response {
         this.timeline = timeline;
         this.evidence = evidence;
         this.directionsQuestionnaire = directionsQuestionnaire;
-        this.paperResponse = paperResponse;
     }
 
     public DefenceType getDefenceType() {

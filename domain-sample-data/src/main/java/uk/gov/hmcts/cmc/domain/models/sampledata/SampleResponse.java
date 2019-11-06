@@ -28,6 +28,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
 
     protected YesNoOption freeMediationOption = YesNoOption.YES;
     protected YesNoOption moreTimeNeededOption = YesNoOption.YES;
+    protected YesNoOption paperResponse = YesNoOption.NO;
     protected StatementOfTruth statementOfTruth;
     protected Party defendantDetails = SampleParty.builder()
         .withCollectionId(COLLECTION_ID)

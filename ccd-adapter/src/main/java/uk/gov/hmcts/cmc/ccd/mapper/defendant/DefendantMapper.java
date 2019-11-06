@@ -10,11 +10,9 @@ import uk.gov.hmcts.cmc.ccd.mapper.TheirDetailsMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.ccj.CountyCourtJudgmentMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.claimantresponse.ClaimantResponseMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.offers.SettlementMapper;
-import uk.gov.hmcts.cmc.ccd.util.MapperUtil;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
-import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -72,7 +70,6 @@ public class DefendantMapper {
             )
         );
         respondentBuilder.settlementReachedAt(claim.getSettlementReachedAt());
-        respondentBuilder.paperResponse(MapperUtil.canContinueOnline(claim));
 
         respondentBuilder.partyDetail(partyDetail.build());
         claim.getResponse().ifPresent(toResponse(claim, respondentBuilder, partyDetail));
@@ -90,9 +87,7 @@ public class DefendantMapper {
             .build();
     }
 
-    public TheirDetails from(Claim.ClaimBuilder builder,
-                             CCDCollectionElement<CCDRespondent> respondentElement,
-                             YesNoOption canClaimContineOnline) {
+    public TheirDetails from(Claim.ClaimBuilder builder, CCDCollectionElement<CCDRespondent> respondentElement) {
 
         CCDRespondent ccdRespondent = respondentElement.getValue();
         CCDParty partyDetail = ccdRespondent.getPartyDetail();
@@ -114,7 +109,7 @@ public class DefendantMapper {
         );
 
         builder.respondedAt(ccdRespondent.getResponseSubmittedOn());
-        responseMapper.from(builder, respondentElement, canClaimContineOnline);
+        responseMapper.from(builder, respondentElement);
 
         claimantResponseMapper.from(ccdRespondent.getClaimantResponse(), builder);
 
