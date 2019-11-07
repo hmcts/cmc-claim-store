@@ -111,6 +111,9 @@ milo:
   recipient: ${MILO_CSV_RECIPIENT:}
   sender: ${MILO_CSV_SENDER:}
 
+claim_stayed:
+  schedule: "-"
+
 dateCalculations:
   endOfBusinessDayHour: 16
   serviceDays: 5
@@ -121,6 +124,7 @@ dateCalculations:
   offerMadeTimeForResponseInDays: 14
   lastResponseReminderDay: 1
   firstResponseReminderDay: 5
+  intentionToProceedDeadlineInDays: 33
 
 notifications:
   govNotifyApiKey: ${GOV_NOTIFY_API_KEY:}
@@ -202,8 +206,3 @@ smoke-test-citizen:
   password: "${SMOKE_TEST_USER_PASSWORD:}"
 smoke-test-solicitor:
   password: "${SMOKE_TEST_USER_PASSWORD:}"
-
-intention:
-  to:
-    proceed:
-      deadline: 33
