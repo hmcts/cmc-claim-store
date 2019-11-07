@@ -194,6 +194,7 @@ public class CaseMetadataControllerTest {
         assertEquals(dto.getIssuedOn(), metadata.getIssuedOn());
         assertEquals(dto.getResponseDeadline(), metadata.getResponseDeadline());
         assertEquals(dto.isMoreTimeRequested(), metadata.getMoreTimeRequested());
+        assertEquals(dto.getIntentionToProceedDeadline(), metadata.getIntentionToProceedDeadline());
 
         assertEquals(
             dto.getClaimDocument(SEALED_CLAIM).map(ClaimDocument::getDocumentManagementUrl).orElse(null),
