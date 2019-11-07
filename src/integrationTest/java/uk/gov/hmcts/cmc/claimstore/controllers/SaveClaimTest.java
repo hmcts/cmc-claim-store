@@ -41,8 +41,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @TestPropertySource(
     properties = {
-        "core_case_data.api.url=false",
-        "feature_toggles.async_event_operations_enabled=false"
+        "core_case_data.api.url=false"
     }
 )
 public class SaveClaimTest extends BaseSaveTest {

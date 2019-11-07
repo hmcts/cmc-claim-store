@@ -8,7 +8,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
@@ -45,11 +44,6 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.listOfCaseDetails
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreStartResponse;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitRepresentativeResponse;
 
-@TestPropertySource(
-    properties = {
-        "feature_toggles.async_event_operations_enabled=false"
-    }
-)
 public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTest {
 
     private static final String CASE_REFERENCE = "000MC023";

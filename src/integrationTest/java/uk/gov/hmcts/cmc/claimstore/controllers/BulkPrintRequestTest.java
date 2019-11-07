@@ -31,8 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(
     properties = {
         "core_case_data.api.url=false",
-        "send-letter.url=http://localhost:${wiremock.server.port}",
-        "feature_toggles.async_event_operations_enabled=false"
+        "send-letter.url=http://localhost:${wiremock.server.port}"
     }
 )
 @AutoConfigureWireMock(port = 0)
@@ -57,7 +56,7 @@ public class BulkPrintRequestTest extends BaseSaveTest {
         );
 
         MvcResult result = makeIssueClaimRequest(SampleClaimData.submittedByClaimant(), AUTHORISATION_TOKEN)
-            .andExpect(status().isOk())
+            .andExpect(status().is5xxServerError())
             .andReturn();
 
         verify(bulkPrintNotificationService, never())
