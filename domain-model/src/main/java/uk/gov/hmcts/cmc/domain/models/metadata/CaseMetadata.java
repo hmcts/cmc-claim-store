@@ -47,6 +47,7 @@ public class CaseMetadata {
     private final LocalDate claimantResponseDeadline;
     private final ClaimantResponseMetadata claimantResponse;
     private final LocalDate directionsQuestionnaireDeadline;
+    private final LocalDate intentionToProceedDeadline;
     private final SettlementMetadata settlement;
     private final CountyCourtJudgmentMetadata countyCourtJudgment;
     private final RedeterminationMetadata redetermination;
@@ -82,6 +83,7 @@ public class CaseMetadata {
             .claimantResponseDeadline(claim.getClaimantResponseDeadline().orElse(null))
             .claimantResponse(ClaimantResponseMetadata.fromClaim(claim))
             .directionsQuestionnaireDeadline(claim.getDirectionsQuestionnaireDeadline())
+            .intentionToProceedDeadline(claim.getIntentionToProceedDeadline())
             .settlement(SettlementMetadata.fromClaim(claim))
             .countyCourtJudgment(CountyCourtJudgmentMetadata.fromClaim(claim))
             .redetermination(RedeterminationMetadata.fromClaim(claim))
