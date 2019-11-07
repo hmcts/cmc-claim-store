@@ -2,6 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.repositories;
 
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
@@ -26,6 +28,8 @@ import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 
 @Repository("searchRepository")
 public class CCDElasticSearchRepository implements CaseSearchApi {
+
+    Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final CoreCaseDataApi coreCaseDataApi;
     private final AuthTokenGenerator authTokenGenerator;
@@ -64,6 +68,8 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
     }
 
     public List<Claim> getClaimsPastIntentionToProceed(User user, LocalDate responseDate) {
+        logger.info(String.format("Intention to proceed called with user: %s, on date %s",
+            user.getUserDetails().getId(), responseDate.toString()));
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery()
             .must(QueryBuilders.termQuery("state", ClaimState.OPEN.getValue()))
@@ -75,6 +81,7 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
     }
 
     private List<Claim> searchClaimsWith(User user, Query query) {
+        logger.info(query.toString());
 
         String serviceAuthToken = this.authTokenGenerator.generate();
 
