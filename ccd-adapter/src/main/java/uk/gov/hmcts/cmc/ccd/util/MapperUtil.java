@@ -60,7 +60,7 @@ public class MapperUtil {
         StreamUtil.asStream(ccdCase.getCaseDocuments())
             .map(CCDCollectionElement::getValue)
             .anyMatch(filterStaffUploadedPaperResponseDoc) ||
-        StreamUtil.asStream(ccdCase.getScannedDocs()).map(CCDCollectionElement::getValue)
+        StreamUtil.asStream(ccdCase.getScannedDocuments()).map(CCDCollectionElement::getValue)
             .anyMatch(filterCaseDocumentsPaperResponseDoc) ? YesNoOption.YES : YesNoOption.NO;
 
     private static String fetchDefendantName(Claim claim) {

@@ -13,6 +13,7 @@ public class CCDScannedDocument {
     private String controlNumber;
     private CCDScannedDocumentType documentType;
     private String subtype;
+    private CCDScannedDocumentType type;
     private LocalDateTime scannedDate;
     private LocalDateTime deliveryDate;
     private CCDDocument url;

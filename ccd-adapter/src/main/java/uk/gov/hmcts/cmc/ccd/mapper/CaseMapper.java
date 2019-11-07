@@ -104,7 +104,7 @@ public class CaseMapper {
             .reviewOrder(reviewOrderMapper.from(ccdCase.getReviewOrder()))
             .paperResponse(MapperUtil.canContinueOnline.apply(ccdCase));
 
-        if (ccdCase.getFeatures() != null) {
+            if (ccdCase.getFeatures() != null) {
             builder.features(Arrays.asList(ccdCase.getFeatures().split(",")));
         }
 

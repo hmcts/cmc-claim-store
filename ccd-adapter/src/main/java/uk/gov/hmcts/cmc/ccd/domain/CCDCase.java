@@ -64,8 +64,7 @@ public class CCDCase {
     private String features;
     private CCDYesNoOption migratedFromClaimStore;
     private List<CCDCollectionElement<CCDClaimDocument>> caseDocuments;
-    private List<CCDCollectionElement<CCDClaimDocument>> staffUploadedDocuments;
-    private List<CCDCollectionElement<CCDScannedDocument>> scannedDocs;
+    private List<CCDCollectionElement<CCDScannedDocument>> scannedDocuments;
     private String caseName;
     private CCDClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
