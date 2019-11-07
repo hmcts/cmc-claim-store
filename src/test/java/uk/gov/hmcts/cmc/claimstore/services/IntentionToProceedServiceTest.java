@@ -5,9 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.verification.VerificationMode;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
@@ -21,12 +19,10 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.Collection;
 
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -138,7 +134,6 @@ public class IntentionToProceedServiceTest {
         verify(intentionToProceedServiceSpy).checkClaimsPastIntentionToProceedDeadline(any(), any());
     }
 
-
     @Test
     public void scheduleTriggerShouldNotRunOnWorkday(){
         when(workingDayIndicator.isWorkingDay(any())).thenReturn(false);
@@ -148,7 +143,6 @@ public class IntentionToProceedServiceTest {
 
         verify(intentionToProceedServiceSpy, never()).checkClaimsPastIntentionToProceedDeadline(any(), any());
     }
-
 
     @Test
     public void saveCaseEventShouldBeTriggeredForFoundCases() {
