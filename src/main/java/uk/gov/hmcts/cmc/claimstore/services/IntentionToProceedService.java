@@ -75,6 +75,7 @@ public class IntentionToProceedService {
     @Scheduled(cron = "#{'${claim_stayed.schedule}' ?: '-'}")
     public void scheduledTrigger() {
         LocalDateTime now = LocalDateTime.now();
+        logger.info(String.format("IntentionToProceedService schedule triggered at %s", now) );
         if (workingDayIndicator.isWorkingDay(now.toLocalDate())) {
             User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
             checkClaimsPastIntentionToProceedDeadline(now, anonymousCaseWorker);

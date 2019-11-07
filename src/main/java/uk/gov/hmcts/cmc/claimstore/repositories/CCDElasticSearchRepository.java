@@ -92,6 +92,8 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
             query.toString()
         );
 
+        logger.info(String.format("Found %s claims", searchResult.getTotal()));
+
         return searchResult.getCases()
             .stream()
             .map(ccdCaseDetailsConverter::extractClaim)
