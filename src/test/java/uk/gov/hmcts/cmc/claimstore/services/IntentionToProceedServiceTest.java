@@ -124,7 +124,7 @@ public class IntentionToProceedServiceTest {
     }
 
     @Test
-    public void scheduleTriggerShouldRunOnWorkday(){
+    public void scheduleTriggerShouldRunOnWorkday() {
         when(workingDayIndicator.isWorkingDay(any())).thenReturn(true);
         IntentionToProceedService intentionToProceedServiceSpy = Mockito.spy(intentionToProceedService);
         when(workingDayIndicator.getPreviousWorkingDay(any())).then(returnsFirstArg());
@@ -135,7 +135,7 @@ public class IntentionToProceedServiceTest {
     }
 
     @Test
-    public void scheduleTriggerShouldNotRunOnWorkday(){
+    public void scheduleTriggerShouldNotRunOnWorkday() {
         when(workingDayIndicator.isWorkingDay(any())).thenReturn(false);
         IntentionToProceedService intentionToProceedServiceSpy = Mockito.spy(intentionToProceedService);
 
