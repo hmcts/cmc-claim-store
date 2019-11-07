@@ -149,7 +149,6 @@ public class SupportControllerTest {
 
     @Test
     public void shouldResendStaffNotifications() {
-        // given
         sampleClaim = SampleClaim.builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withDefendantId(null)
@@ -159,7 +158,6 @@ public class SupportControllerTest {
         GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", letterHolderId);
         given(userService.generatePin(anyString(), eq(AUTHORISATION))).willReturn(pinResponse);
 
-        // when
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(sampleClaim));
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(USER_DETAILS);
 
@@ -167,13 +165,11 @@ public class SupportControllerTest {
 
         controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claim-issued");
 
-        // then
         verify(documentGenerator).generateForNonRepresentedClaim(any());
     }
 
     @Test
     public void shouldResendStaffNotificationsForIntentToProceed() {
-        // given
         ClaimantResponse claimantResponse = ClaimantResponseRejection.builder()
             .buildRejectionWithDirectionsQuestionnaire();
 
@@ -191,18 +187,15 @@ public class SupportControllerTest {
             intentionToProceedService
         );
 
-        // when
         when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE))).thenReturn(Optional.of(sampleClaim));
         controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "intent-to-proceed");
 
-        // then
         verify(claimantResponseStaffNotificationHandler)
             .notifyStaffWithClaimantsIntentionToProceed(new ClaimantResponseEvent(sampleClaim, AUTHORISATION));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowForIntentToProceedIfDQFeatureToggledIsOff() {
-        // given
         ClaimantResponse claimantResponse = ClaimantResponseRejection.builder()
             .buildRejectionWithDirectionsQuestionnaire();
 
@@ -220,7 +213,6 @@ public class SupportControllerTest {
             intentionToProceedService
         );
 
-        // when
         when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE))).thenReturn(Optional.of(sampleClaim));
 
         controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "intent-to-proceed");
@@ -228,7 +220,6 @@ public class SupportControllerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowForIntentToProceedIfClaimantResponseIsNotRejection() {
-        // given
         sampleClaim = SampleClaim.builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withResponse(PartAdmission.builder().buildWithFreeMediation())
@@ -243,7 +234,6 @@ public class SupportControllerTest {
             intentionToProceedService
         );
 
-        // when
         when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE))).thenReturn(Optional.of(sampleClaim));
 
         controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "intent-to-proceed");
@@ -576,32 +566,26 @@ public class SupportControllerTest {
 
     @Test
     public void shouldPerformIntentionToProceedCheckWithDatetime() {
-        // given
         final LocalDateTime localDateTime = LocalDateTime.of(2019, 1, 1, 1, 1, 1);
         final String auth = "auth";
         final UserDetails userDetails = new UserDetails("id", null, null, null, null);
         final User user = new User(null, userDetails);
         when(userService.getUser(auth)).thenReturn(user);
 
-        // when
         controller.checkClaimsPastIntentionToProceedDeadline(auth, localDateTime);
 
-        //then
         verify(intentionToProceedService).checkClaimsPastIntentionToProceedDeadline(localDateTime, user);
     }
 
     @Test
     public void shouldPerformIntentionToProceedCheckWithNullDatetime() {
-        // given
         final String auth = "auth";
         final UserDetails userDetails = new UserDetails("id", null, null, null, null);
         final User user = new User(null, userDetails);
         when(userService.getUser(auth)).thenReturn(user);
 
-        // when
         controller.checkClaimsPastIntentionToProceedDeadline(auth, null);
 
-        //then
         verify(intentionToProceedService).checkClaimsPastIntentionToProceedDeadline(notNull(), eq(user));
     }
 

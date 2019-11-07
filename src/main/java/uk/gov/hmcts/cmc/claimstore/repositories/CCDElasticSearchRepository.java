@@ -75,7 +75,6 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
     }
 
     private List<Claim> searchClaimsWith(User user, Query query) {
-
         String serviceAuthToken = this.authTokenGenerator.generate();
 
         SearchResult searchResult = coreCaseDataApi.searchCases(
