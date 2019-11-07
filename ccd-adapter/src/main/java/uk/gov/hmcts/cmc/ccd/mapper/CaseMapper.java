@@ -102,7 +102,7 @@ public class CaseMapper {
             .directionOrder(directionOrderMapper.from(ccdCase.getDirectionOrder(), ccdCase.getDirectionOrderData()))
             .intentionToProceedDeadline(ccdCase.getIntentionToProceedDeadline())
             .reviewOrder(reviewOrderMapper.from(ccdCase.getReviewOrder()))
-            .offlineJourney(MapperUtil.canContinueOnline.apply(ccdCase));
+            .paperResponse(MapperUtil.canContinueOnline.apply(ccdCase));
 
         if (ccdCase.getFeatures() != null) {
             builder.features(Arrays.asList(ccdCase.getFeatures().split(",")));

@@ -72,7 +72,7 @@ public class Claim {
     private final DirectionOrder directionOrder;
     private final ChannelType channel;
     private final LocalDate intentionToProceedDeadline;
-    private final YesNoOption offlineJourney;
+    private final YesNoOption paperResponse;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -113,7 +113,7 @@ public class Claim {
         DirectionOrder directionOrder,
         ChannelType channel,
         LocalDate intentionToProceedDeadline,
-        YesNoOption offlineJourney
+        YesNoOption paperResponse
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -151,7 +151,7 @@ public class Claim {
         this.directionOrder = directionOrder;
         this.channel = channel;
         this.intentionToProceedDeadline = intentionToProceedDeadline;
-        this.offlineJourney = offlineJourney;
+        this.paperResponse = paperResponse;
     }
 
     public Optional<Response> getResponse() {

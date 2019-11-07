@@ -45,7 +45,7 @@ public class MapperUtil {
         paperResponseDocTypes.stream().anyMatch(type -> type.equals(doc.getDocumentType()));
 
     private static Predicate<CCDScannedDocument> filterCaseDocumentsPaperResponseDoc = doc ->
-        paperResponseScannedType.stream().anyMatch(type -> type.equals(doc.getSubtype()));
+        paperResponseScannedType.stream().anyMatch(type -> type.equalsIgnoreCase(doc.getSubtype()));
 
     private MapperUtil() {
         // Utility class, no instances
@@ -61,9 +61,7 @@ public class MapperUtil {
             .map(CCDCollectionElement::getValue)
             .anyMatch(filterStaffUploadedPaperResponseDoc) ||
         StreamUtil.asStream(ccdCase.getScannedDocs()).map(CCDCollectionElement::getValue)
-            .anyMatch(filterCaseDocumentsPaperResponseDoc)
-
-            ? YesNoOption.NO : YesNoOption.YES;
+            .anyMatch(filterCaseDocumentsPaperResponseDoc) ? YesNoOption.YES : YesNoOption.NO;
 
     private static String fetchDefendantName(Claim claim) {
         StringBuilder defendantNameBuilder = new StringBuilder();
