@@ -18,8 +18,8 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseSearchApi;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.email.EmailService;
 
 import java.time.LocalDate;
@@ -31,8 +31,8 @@ import java.util.stream.Collectors;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
@@ -143,8 +143,6 @@ public class IntentionToProceedServiceTest {
         verify(caseSearchApi, once()).getClaimsPastIntentionToProceed(any(), eq(responseDate));
     }
 
-    }
-
     @Test
     public void claimStayingSuccessShouldNotSendNotificationEmail() {
         List<Claim> claims =
@@ -186,7 +184,7 @@ public class IntentionToProceedServiceTest {
 
         verify(emailContentProvider, once()).createContent(input);
     }
-	
+
     @Test
     public void scheduleTriggerShouldRunOnWorkday() {
         when(workingDayIndicator.isWorkingDay(any())).thenReturn(true);

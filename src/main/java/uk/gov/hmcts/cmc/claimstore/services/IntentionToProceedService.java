@@ -94,7 +94,7 @@ public class IntentionToProceedService {
         }
     }
 
-    private void updateClaim(User anonymousCaseWorker, Claim claim) {
+    private Claim updateClaim(User user, Claim claim) {
         try {
             appInsights.trackEvent(AppInsightsEvent.CLAIM_STAYED, REFERENCE_NUMBER, claim.getReferenceNumber());
             caseRepository.saveCaseEvent(
