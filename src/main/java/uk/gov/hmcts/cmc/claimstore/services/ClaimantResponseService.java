@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
 import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
@@ -27,6 +28,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LIFT_STAY;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isSettlePreJudgment;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
@@ -72,6 +74,10 @@ public class ClaimantResponseService {
     ) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorization);
         claimantResponseRule.assertCanBeRequested(claim, claimantId);
+
+        if (claim.getState().equals(ClaimState.STAYED) && isFullAdmissionOrPartAdmission(claim)) {
+            claim = caseRepository.saveCaseEvent(authorization, claim, LIFT_STAY);
+        }
 
         Claim updatedClaim = caseRepository.saveClaimantResponse(claim, claimantResponse, authorization);
         claimantResponseRule.isValid(updatedClaim);
@@ -163,6 +169,14 @@ public class ClaimantResponseService {
         return isPartAdmissionOrIsStatePaidOrIsFullDefence(claim) && DirectionsQuestionnaireUtils.isOnlineDQ(claim)
             ? AppInsightsEvent.LA_PILOT_ELIGIBLE
             : AppInsightsEvent.NON_LA_CASES;
+    }
+
+    private boolean isFullAdmissionOrPartAdmission(Claim claim) {
+        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+        ResponseType responseType = response.getResponseType();
+
+        return responseType == ResponseType.FULL_ADMISSION
+            || responseType == ResponseType.PART_ADMISSION;
     }
 
     private boolean isPartAdmissionOrIsStatePaidOrIsFullDefence(Claim claim) {
