@@ -39,7 +39,7 @@ public interface SampleQueryConstants {
         + "  }\n"
         + "}}";
 
-    String stayableCaseQuery = "{\"size\": 1000,\"query\": {\n"
+    String stayableCaseQuery = "{\n"
         + "  \"bool\" : {\n"
         + "    \"must\" : [\n"
         + "      {\n"
@@ -76,5 +76,33 @@ public interface SampleQueryConstants {
         + "    \"adjust_pure_negative\" : true,\n"
         + "    \"boost\" : 1.0\n"
         + "  }\n"
-        + "}}";
+        + "}";
+
+    String waitingTransferQuery = "{\n"
+        + "  \"bool\" : {\n"
+        + "    \"must\" : [\n"
+        + "      {\n"
+        + "        \"term\" : {\n"
+        + "          \"state\" : {\n"
+        + "            \"value\" : \"orderDrawn\",\n"
+        + "            \"boost\" : 1.0\n"
+        + "          }\n"
+        + "        }\n"
+        + "      },\n"
+        + "      {\n"
+        + "        \"range\" : {\n"
+        + "          \"data.directionOrder.createdOn\" : {\n"
+        + "            \"from\" : null,\n"
+        + "            \"to\" : \"2019-07-07\",\n"
+        + "            \"include_lower\" : true,\n"
+        + "            \"include_upper\" : true,\n"
+        + "            \"boost\" : 1.0\n"
+        + "          }\n"
+        + "        }\n"
+        + "      }\n"
+        + "    ],\n"
+        + "    \"adjust_pure_negative\" : true,\n"
+        + "    \"boost\" : 1.0\n"
+        + "  }\n"
+        + "}";
 }

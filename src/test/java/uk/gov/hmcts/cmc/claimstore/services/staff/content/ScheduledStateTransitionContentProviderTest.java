@@ -2,9 +2,10 @@ package uk.gov.hmcts.cmc.claimstore.services.staff.content;
 
 import org.junit.Before;
 import org.junit.Test;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.config.PebbleConfiguration;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailTemplates;
-import uk.gov.hmcts.cmc.claimstore.documents.content.IntentionToProceedContentProvider;
+import uk.gov.hmcts.cmc.claimstore.documents.content.ScheduledStateTransitionContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.TemplateService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -18,7 +19,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class IntentionToProceedContentProviderTest {
+public class ScheduledStateTransitionContentProviderTest {
 
     private TemplateService templateService = new TemplateService(
         new PebbleConfiguration().pebbleEngine()
@@ -26,11 +27,11 @@ public class IntentionToProceedContentProviderTest {
 
     private StaffEmailTemplates templates = new StaffEmailTemplates();
 
-    private IntentionToProceedContentProvider contentProvider;
+    private ScheduledStateTransitionContentProvider contentProvider;
 
     @Before
     public void beforeEachTest() {
-        contentProvider = new IntentionToProceedContentProvider(
+        contentProvider = new ScheduledStateTransitionContentProvider(
             templateService,
             templates
         );
@@ -45,16 +46,18 @@ public class IntentionToProceedContentProviderTest {
                 .map(c -> c.toBuilder().id(i.getAndIncrement()).build())
                 .collect(Collectors.toList());
 
-        final Map<String, Object> parameters = contentProvider.createParameters(claims);
+        CaseEvent caseEvent = CaseEvent.STAY_CLAIM;
+
+        final Map<String, Object> parameters = contentProvider.createParameters(claims, caseEvent);
 
         EmailContent content = contentProvider.createContent(parameters);
 
-        String subject = String.format("Transitioning to stayed state failed for %s claims.\n"
+        String subject = String.format("Transitioning via %s failed for %s claims.\n"
                                        + "\n"
                                        + "Failed claims:\n"
                                        + "1\n"
                                        + "2\n"
-                                       + "3", claims.size());
+                                       + "3", caseEvent, claims.size());
 
         assertThat(content.getBody()).isEqualTo(subject);
     }
@@ -63,11 +66,13 @@ public class IntentionToProceedContentProviderTest {
     public void shouldGenerateContentsForEmailSubject() {
 
         final List<Claim> claims = Stream.generate(SampleClaim::getDefault).limit(3).collect(Collectors.toList());
-        final Map<String, Object> parameters = contentProvider.createParameters(claims);
+        CaseEvent caseEvent = CaseEvent.STAY_CLAIM;
+
+        final Map<String, Object> parameters = contentProvider.createParameters(claims, caseEvent);
 
         EmailContent content = contentProvider.createContent(parameters);
 
-        String subject = "Claims failed to transition to stayed state";
+        String subject = String.format("Claims failed to transition via %s", caseEvent);
 
         assertThat(content.getSubject()).isEqualTo(subject);
     }

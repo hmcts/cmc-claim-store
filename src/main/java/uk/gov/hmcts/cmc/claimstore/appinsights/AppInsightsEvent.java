@@ -48,7 +48,8 @@ public enum AppInsightsEvent {
     MEDIATION_REPORT_FAILURE("Mediation Report - failure"),
     MEDIATION_PILOT_ELIGIBLE("Mediation Pilot Eligible"),
     MEDIATION_NON_PILOT_ELIGIBLE("Mediation Non Pilot Eligible"),
-    CLAIM_STAYED("Claim Stayed"),;
+    CLAIM_STAYED("Claim Stayed"),
+    WAITING_TRANSFER("Claim ready for transfer");
 
     private String displayName;
 

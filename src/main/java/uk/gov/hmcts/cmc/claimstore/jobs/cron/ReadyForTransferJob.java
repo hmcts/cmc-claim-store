@@ -5,10 +5,10 @@ import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.cmc.claimstore.services.StateTransition;
 
 @Getter
-public class IntentionToProceedJob extends AbstractStateTransitionJob {
+public class ReadyForTransferJob extends AbstractStateTransitionJob {
 
-    private final StateTransition stateTransition = StateTransition.STAY_CLAIM;
+    private final StateTransition stateTransition = StateTransition.WAITING_TRANSFER;
 
-    @Value("${stateTransition.stayClaim}")
+    @Value("${stateTransition.waitingTransfer}")
     private String cronExpression;
 }

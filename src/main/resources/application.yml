@@ -112,8 +112,9 @@ milo:
   recipient: ${MILO_CSV_RECIPIENT:}
   sender: ${MILO_CSV_SENDER:}
 
-claim_stayed:
-  schedule: ""
+stateTransition:
+  waitingTransfer: ""
+  stayClaim: ""
 
 dateCalculations:
   endOfBusinessDayHour: 16
@@ -125,7 +126,8 @@ dateCalculations:
   offerMadeTimeForResponseInDays: 14
   lastResponseReminderDay: 1
   firstResponseReminderDay: 5
-  intentionToProceedDeadlineInDays: 33
+  stayClaimDeadlineInDays: 33
+  waitingTransferDeadlineInDays: 19
 
 notifications:
   govNotifyApiKey: ${GOV_NOTIFY_API_KEY:}
@@ -196,8 +198,8 @@ claim-store:
     enabled: true
 
 oauth2:
- client:
-  id: 'cmc_citizen'
+  client:
+    id: 'cmc_citizen'
 ---
 spring:
   profiles: 'aat'

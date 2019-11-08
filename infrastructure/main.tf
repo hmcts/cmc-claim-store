@@ -197,7 +197,10 @@ module "claim-store-api" {
     MILO_CSV_SCHEDULE = "${var.milo_csv_schedule}"
 
     // Intention to proceed
-    CLAIM_STAYED_SCHEDULE = "${var.claim_stayed_schedule}"
+    STATETRANSITION_STAY_CLAIM = "${var.stateTransition_stayClaim}"
+
+    // Intention to proceed
+    STATETRANSITION_WAITINGTRANSFER = "${var.stateTransition_waitingTransfer}"
 
     // robot notifications
     RPA_NOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"

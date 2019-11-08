@@ -27,8 +27,9 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimSubmissionOperationIndicatorRule;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
-import uk.gov.hmcts.cmc.claimstore.services.IntentionToProceedService;
 import uk.gov.hmcts.cmc.claimstore.services.MediationReportService;
+import uk.gov.hmcts.cmc.claimstore.services.ScheduledStateTransitionService;
+import uk.gov.hmcts.cmc.claimstore.services.StateTransition;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
@@ -115,7 +116,7 @@ public class SupportControllerTest {
     private MediationReportService mediationReportService;
 
     @Mock
-    private IntentionToProceedService intentionToProceedService;
+    private ScheduledStateTransitionService scheduledStateTransitionService;
 
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
@@ -141,7 +142,7 @@ public class SupportControllerTest {
             false,
             mediationReportService,
             new ClaimSubmissionOperationIndicatorRule(),
-            intentionToProceedService
+            scheduledStateTransitionService
         );
         sampleClaim = SampleClaim.getDefault();
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
@@ -184,7 +185,7 @@ public class SupportControllerTest {
             ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
             claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
             postClaimOrchestrationHandler, true, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
-            intentionToProceedService
+            scheduledStateTransitionService
         );
 
         when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE))).thenReturn(Optional.of(sampleClaim));
@@ -210,7 +211,7 @@ public class SupportControllerTest {
             ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
             claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
             postClaimOrchestrationHandler, false, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
-            intentionToProceedService
+            scheduledStateTransitionService
         );
 
         when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE))).thenReturn(Optional.of(sampleClaim));
@@ -231,7 +232,7 @@ public class SupportControllerTest {
             ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
             claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
             postClaimOrchestrationHandler, true, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
-            intentionToProceedService
+            scheduledStateTransitionService
         );
 
         when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE))).thenReturn(Optional.of(sampleClaim));
@@ -572,9 +573,11 @@ public class SupportControllerTest {
         final User user = new User(null, userDetails);
         when(userService.getUser(auth)).thenReturn(user);
 
-        controller.checkClaimsPastIntentionToProceedDeadline(auth, localDateTime);
+        controller.transitionClaimState(auth, StateTransition.STAY_CLAIM,
+            localDateTime);
 
-        verify(intentionToProceedService).checkClaimsPastIntentionToProceedDeadline(localDateTime, user);
+        verify(scheduledStateTransitionService).transitionClaims(localDateTime, user,
+            StateTransition.STAY_CLAIM);
     }
 
     @Test
@@ -584,9 +587,10 @@ public class SupportControllerTest {
         final User user = new User(null, userDetails);
         when(userService.getUser(auth)).thenReturn(user);
 
-        controller.checkClaimsPastIntentionToProceedDeadline(auth, null);
+        controller.transitionClaimState(auth, StateTransition.STAY_CLAIM, null);
 
-        verify(intentionToProceedService).checkClaimsPastIntentionToProceedDeadline(notNull(), eq(user));
+        verify(scheduledStateTransitionService).transitionClaims(notNull(), eq(user),
+            eq(StateTransition.STAY_CLAIM));
     }
 
 }

@@ -48,8 +48,9 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimSubmissionOperationIndicatorRule;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
-import uk.gov.hmcts.cmc.claimstore.services.IntentionToProceedService;
 import uk.gov.hmcts.cmc.claimstore.services.MediationReportService;
+import uk.gov.hmcts.cmc.claimstore.services.ScheduledStateTransitionService;
+import uk.gov.hmcts.cmc.claimstore.services.StateTransition;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
@@ -97,7 +98,7 @@ public class SupportController {
     private final MediationReportService mediationReportService;
     private final boolean directionsQuestionnaireEnabled;
     private final ClaimSubmissionOperationIndicatorRule claimSubmissionOperationIndicatorRule;
-    private final IntentionToProceedService intentionToProceedService;
+    private final ScheduledStateTransitionService scheduledStateTransitionService;
 
     @SuppressWarnings("squid:S00107")
     public SupportController(
@@ -115,7 +116,7 @@ public class SupportController {
             @Value("${feature_toggles.directions_questionnaire_enabled:false}") boolean directionsQuestionnaireEnabled,
             MediationReportService mediationReportService,
             ClaimSubmissionOperationIndicatorRule claimSubmissionOperationIndicatorRule,
-            IntentionToProceedService intentionToProceedService
+            ScheduledStateTransitionService scheduledStateTransitionService
     ) {
         this.claimService = claimService;
         this.userService = userService;
@@ -131,7 +132,7 @@ public class SupportController {
         this.mediationReportService = mediationReportService;
         this.directionsQuestionnaireEnabled = directionsQuestionnaireEnabled;
         this.claimSubmissionOperationIndicatorRule = claimSubmissionOperationIndicatorRule;
-        this.intentionToProceedService = intentionToProceedService;
+        this.scheduledStateTransitionService = scheduledStateTransitionService;
     }
 
     @PutMapping("/claim/{referenceNumber}/event/{event}/resend-staff-notifications")
@@ -272,10 +273,11 @@ public class SupportController {
 
     }
 
-    @PostMapping(value = "/claims/checkIntentionToProceedDeadline")
-    @ApiOperation("Stay claims past their intention proceed deadline")
-    public void checkClaimsPastIntentionToProceedDeadline(
+    @PostMapping(value = "/claims/transitionClaimState")
+    @ApiOperation("Trigger scheduled state transition")
+    public void transitionClaimState(
             @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation,
+            @RequestParam StateTransition stateTransition,
             @RequestParam(required = false)
             @ApiParam("Optional. If supplied check will run as if triggered at this timestamp. Format is "
                     + "yyyy-MM-ddThh:mm:ss")
@@ -286,9 +288,9 @@ public class SupportController {
 
         User user = userService.getUser(authorisation);
         String format = runDateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss"));
-        logger.info(String.format("checkClaimsPastIntentionToProceedDeadline called by %s for date: %s ",
+        logger.info(String.format("transitionClaimState %s called by %s for date: %s ", stateTransition,
                 user.getUserDetails().getId(), format));
-        intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(runDateTime, user);
+        scheduledStateTransitionService.transitionClaims(runDateTime, user, stateTransition);
     }
 
     private void resendStaffNotificationCCJRequestSubmitted(Claim claim, String authorisation) {

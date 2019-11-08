@@ -15,24 +15,24 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class IntentionToProceedJobTest {
+public class ReadyForTransferJobTest {
 
     @Mock
     private ScheduledStateTransitionService scheduledStateTransitionService;
 
-    private IntentionToProceedJob intentionToProceedJob;
+    private ReadyForTransferJob intentionToProceedJob;
 
     @Before
     public void setup() {
-        intentionToProceedJob = new IntentionToProceedJob();
+        intentionToProceedJob = new ReadyForTransferJob();
         intentionToProceedJob.setScheduledStateTransitionService(scheduledStateTransitionService);
     }
 
     @Test
-    public void executeShouldTriggerIntentionToProceed() throws Exception {
+    public void executeShouldTriggerReadyForTransfer() throws Exception {
         intentionToProceedJob.execute(null);
 
-        verify(scheduledStateTransitionService).stateChangeTriggered(eq(StateTransition.STAY_CLAIM));
+        verify(scheduledStateTransitionService).stateChangeTriggered(eq(StateTransition.WAITING_TRANSFER));
     }
 
     @Test(expected = JobExecutionException.class)

@@ -100,6 +100,10 @@ variable "common_tags" {
   type = "map"
 }
 
-variable claim_stayed_schedule  {
+variable stateTransition_stayClaim  {
+  default = ""
+}
+
+variable stateTransition_waitingTransfer  {
   default = ""
 }
