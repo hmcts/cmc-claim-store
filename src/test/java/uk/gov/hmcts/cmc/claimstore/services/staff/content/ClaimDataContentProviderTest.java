@@ -5,6 +5,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
@@ -94,6 +95,25 @@ public class ClaimDataContentProviderTest {
 
         assertThat(claimContent.getClaimTotalAmount()).isEqualTo("£80.99");
     }
+//
+//    @Test
+//    public void shouldProvideCompanyStatementOfTruth() {
+//        Claim claim = SampleClaim.builder()
+//                .withClaimData(SampleClaimData.builder().withStatementOfTruth(StatementOfTruth.builder().build()).build())
+//                .build();
+//        ClaimContent claimContent = provider.createContent(claim);
+//        assertThat(claimContent.getStatementOfTruth().getSignerName()).containsSequence();
+//    }
+//
+//    @Test
+//    public void shouldProvideIndividualStatementOfTruth() {
+//        Claim claim = SampleClaim.builder()
+//                .withClaimData(SampleClaimData.builder().withClaimant().type.build())
+//                .build();
+//        ClaimContent claimContent = provider.createContent(claim);
+//        List<String> reason = claimContent.getReason();
+//        assertThat(reason).containsSequence(expectations);
+//    }
 
     private void testReason(String inputReason, String... expectations) {
         Claim claim = SampleClaim.builder()

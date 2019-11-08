@@ -513,29 +513,17 @@
     <table>
       <tr>
         <td></td>
-        {% if claim.statementOfTruth is not defined or claim.statementOfTruth is empty %}
         <td>
           I believe that the facts stated in this claim form are true.
         </td>
-        {% else %}
-        <td>
-          The claimant believes that the facts stated in this claim are true.
-        </td>
-        {% endif %}
       </tr>
       {% if claim.statementOfTruth is not defined or claim.statementOfTruth is empty %}
       <tr>
-        <td>
-          <strong>Name:</strong>
-        </td>
         <td>
           {{ claimant.fullName }}
         </td>
       </tr>
       <tr>
-        <td>
-          <strong>Date:</strong>
-        </td>
         <td>
           {{ claim.issuedOn }}
         </td>
@@ -544,31 +532,31 @@
       {% if claim.statementOfTruth is defined and claim.statementOfTruth is not empty %}
       <tr>
         <td>
+          <strong>Company:</strong>
+          {% if claimant.fullName is defined and claimant.fullName is not empty %}
+            {{ claimant.fullName }}
+          {% elseif claimant.businessName is defined and claimant.businessName is not empty %}
+           {{ claimant.businessName }}
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td>
           <strong>Name:</strong>
+          {{ claim.statementOfTruth.signerName }}
         </td>
-        <td>{{ claim.statementOfTruth.signerName }}</td>
       </tr>
       <tr>
         <td>
-          <strong>Organisation:</strong>
+          <strong>Job title:</strong>
+          {{ claim.statementOfTruth.signerRole }}
+          {{ claim.issuedOn }}
         </td>
-        {% if claimant.fullName is defined and claimant.fullName is not empty %}
-        <td>{{ claimant.fullName }}</td>
-        {% elseif claimant.businessName is defined and claimant.businessName is not empty %}
-        <td>{{ claimant.businessName }}</td>
-        {% endif %}
       </tr>
       <tr>
         <td>
-          <strong>Position held:</strong>
+          {{ claim.issuedOn }}
         </td>
-        <td>{{ claim.statementOfTruth.signerRole }}</td>
-      </tr>
-      <tr>
-        <td>
-          <strong>Date:</strong>
-        </td>
-        <td>{{ claim.issuedOn }}</td>
       </tr>
       {% endif %}
     </table>
