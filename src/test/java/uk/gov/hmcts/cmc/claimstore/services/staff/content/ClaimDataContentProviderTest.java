@@ -99,7 +99,8 @@ public class ClaimDataContentProviderTest {
     @Test
     public void shouldProvideCompanyStatementOfSignerName() {
         Claim claim = SampleClaim.builder()
-                .withClaimData(SampleClaimData.builder().withStatementOfTruth(StatementOfTruth.builder().signerName("Jana").build()).build())
+                .withClaimData(SampleClaimData.builder().withStatementOfTruth(StatementOfTruth.builder()
+                        .signerName("Jana").build()).build())
                 .build();
         ClaimContent claimContent = provider.createContent(claim);
         assertThat(claimContent.getStatementOfTruth().getSignerName()).containsSequence("Jana");
@@ -108,7 +109,8 @@ public class ClaimDataContentProviderTest {
     @Test
     public void shouldProvideCompanyStatementOfTruthSignerRole() {
         Claim claim = SampleClaim.builder()
-                .withClaimData(SampleClaimData.builder().withStatementOfTruth(StatementOfTruth.builder().signerRole("Director").build()).build())
+                .withClaimData(SampleClaimData.builder().withStatementOfTruth(StatementOfTruth.builder()
+                        .signerRole("Director").build()).build())
                 .build();
         ClaimContent claimContent = provider.createContent(claim);
         assertThat(claimContent.getStatementOfTruth().getSignerRole()).containsSequence("Director");

@@ -22,7 +22,6 @@ public class ClaimContent {
     private final List<AmountRowContent> amountBreakdown;
     private final StatementOfTruth statementOfTruth;
 
-
     @SuppressWarnings("squid:S00107") // Suppressed due to MVP timelines, require more time to investigate and fix
     public ClaimContent(
             String referenceNumber,
