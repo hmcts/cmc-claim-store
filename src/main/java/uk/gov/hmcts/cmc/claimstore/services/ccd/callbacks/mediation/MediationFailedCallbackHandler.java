@@ -6,8 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -52,11 +51,15 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
 
     private final DirectionsQuestionnaireDeadlineCalculator deadlineCalculator;
 
+    private final CaseMapper caseMapper;
+
     @Autowired
     public MediationFailedCallbackHandler(CaseDetailsConverter caseDetailsConverter,
-                                          DirectionsQuestionnaireDeadlineCalculator deadlineCalculator) {
+                                          DirectionsQuestionnaireDeadlineCalculator deadlineCalculator,
+                                          CaseMapper caseMapper) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.deadlineCalculator = deadlineCalculator;
+        this.caseMapper = caseMapper;
     }
 
     @Override
@@ -80,17 +83,16 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
         logger.info("Mediation failure about-to-submit callback: state determination start");
         CallbackRequest callbackRequest = callbackParams.getRequest();
 
-        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
         Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
-
-        Map<String, Object> dataMap = caseDetailsConverter.convertToMap(ccdCase);
-        dataMap.put(STATE, stateByOnlineDQnPilotCheck(claim));
 
         if (!DirectionsQuestionnaireUtils.isOnlineDQ(claim)) {
             LocalDate deadline = deadlineCalculator
                 .calculateDirectionsQuestionnaireDeadlineCalculator(LocalDateTime.now());
-            dataMap.put(DIRECTIONS_QUESTIONNAIRE_DEADLINE, deadline);
+            claim.toBuilder().directionsQuestionnaireDeadline(deadline);
         }
+
+        Map<String, Object> dataMap = caseDetailsConverter.convertToMap(caseMapper.to(claim));
+        dataMap.put(STATE, stateByOnlineDQnPilotCheck(claim));
 
         logger.info("Mediation failure about-to-submit callback: state determined - {}", dataMap.get(STATE));
 
@@ -102,14 +104,17 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
 
     private String stateByOnlineDQnPilotCheck(Claim claim) {
 
-        claim.getResponse().filter(isResponsePartOrFullDefence).orElseThrow(IllegalStateException::new);
-        claim.getClaimantResponse()
-            .map(ClaimantResponse::getType)
-            .filter(REJECTION::equals)
-            .orElseThrow(IllegalStateException::new);
+        if (!claim.getResponse().filter(isResponsePartOrFullDefence).isPresent()) {
+            throw new IllegalStateException("There was no Mediation involved as its not full defence or part admit");
+        }
 
-        if (!(claim.getTotalClaimAmount().map(BigDecimal::longValue).orElse(0L) < 300
-            && DirectionsQuestionnaireUtils.isOnlineDQ(claim))) {
+        if (!claim.getClaimantResponse()
+            .map(ClaimantResponse::getType)
+            .filter(REJECTION::equals).isPresent()) {
+            throw new IllegalStateException("Claimant response is not an Rejection");
+        }
+
+        if (!DirectionsQuestionnaireUtils.isOnlineDQ(claim)) {
             return OPEN_STATE;
         }
 
