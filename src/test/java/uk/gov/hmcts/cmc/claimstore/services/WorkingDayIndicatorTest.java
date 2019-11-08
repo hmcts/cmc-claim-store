@@ -23,9 +23,9 @@ import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.toDate;
 @RunWith(MockitoJUnitRunner.class)
 public class WorkingDayIndicatorTest {
 
-    private static final LocalDate BANK_HOLIDAY_FRIDAY = toDate("2017-05-29");
     private static final LocalDate BANK_HOLIDAY = toDate("2017-05-29");
     private static final LocalDate NEXT_WORKING_DAY_AFTER_BANK_HOLIDAY = toDate("2017-05-30");
+    private static final LocalDate PREVIOUS_WORKING_DAY_BEFORE_BANK_HOLIDAY = toDate("2017-05-26");
     private static final LocalDate SATURDAY_WEEK_BEFORE = toDate("2017-06-03");
     private static final LocalDate SUNDAY_WEEK_BEFORE = toDate("2017-06-04");
     private static final LocalDate MONDAY = toDate("2017-06-05");
@@ -115,11 +115,36 @@ public class WorkingDayIndicatorTest {
     @Test
     public void shouldReturnFollowingTuesdayForNextWorkingDayGivenABankHolidayFridayAndMonday() {
         when(publicHolidaysApiClient.getPublicHolidays()).thenReturn(
-            new HashSet<>(Arrays.asList(BANK_HOLIDAY_FRIDAY, BANK_HOLIDAY))
+            new HashSet<>(Arrays.asList(BANK_HOLIDAY))
         );
 
-        LocalDate nextWorkingDay = service.getNextWorkingDay(BANK_HOLIDAY_FRIDAY);
+        LocalDate nextWorkingDay = service.getNextWorkingDay(BANK_HOLIDAY);
 
         assertEquals(nextWorkingDay, NEXT_WORKING_DAY_AFTER_BANK_HOLIDAY);
+    }
+
+    @Test
+    public void shouldReturnPreviousFridayForNextWorkingDayGivenASunday() {
+        LocalDate previousWorkingDay = service.getPreviousWorkingDay(SUNDAY);
+
+        assertEquals(FRIDAY, previousWorkingDay);
+    }
+
+    @Test
+    public void shouldReturnPreviousFridayForNextWorkingDayGivenASaturday() {
+        LocalDate previousWorkingDay = service.getPreviousWorkingDay(SATURDAY);
+
+        assertEquals(FRIDAY, previousWorkingDay);
+    }
+
+    @Test
+    public void shouldReturnPreviousThursdayForNextWorkingDayGivenABankHolidayFridayAndMonday() {
+        when(publicHolidaysApiClient.getPublicHolidays()).thenReturn(
+            new HashSet<>(Arrays.asList(BANK_HOLIDAY))
+        );
+
+        LocalDate previousWorkingDay = service.getPreviousWorkingDay(BANK_HOLIDAY);
+
+        assertEquals(PREVIOUS_WORKING_DAY_BEFORE_BANK_HOLIDAY, previousWorkingDay);
     }
 }

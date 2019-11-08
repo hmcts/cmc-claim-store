@@ -103,3 +103,7 @@ variable milo_csv_schedule  {
 variable "common_tags" {
   type = "map"
 }
+
+variable claim_stayed_schedule  {
+  default = "-"
+}
