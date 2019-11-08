@@ -95,25 +95,24 @@ public class ClaimDataContentProviderTest {
 
         assertThat(claimContent.getClaimTotalAmount()).isEqualTo("£80.99");
     }
-//
-//    @Test
-//    public void shouldProvideCompanyStatementOfTruth() {
-//        Claim claim = SampleClaim.builder()
-//                .withClaimData(SampleClaimData.builder().withStatementOfTruth(StatementOfTruth.builder().build()).build())
-//                .build();
-//        ClaimContent claimContent = provider.createContent(claim);
-//        assertThat(claimContent.getStatementOfTruth().getSignerName()).containsSequence();
-//    }
-//
-//    @Test
-//    public void shouldProvideIndividualStatementOfTruth() {
-//        Claim claim = SampleClaim.builder()
-//                .withClaimData(SampleClaimData.builder().withClaimant().type.build())
-//                .build();
-//        ClaimContent claimContent = provider.createContent(claim);
-//        List<String> reason = claimContent.getReason();
-//        assertThat(reason).containsSequence(expectations);
-//    }
+
+    @Test
+    public void shouldProvideCompanyStatementOfSignerName() {
+        Claim claim = SampleClaim.builder()
+                .withClaimData(SampleClaimData.builder().withStatementOfTruth(StatementOfTruth.builder().signerName("Jana").build()).build())
+                .build();
+        ClaimContent claimContent = provider.createContent(claim);
+        assertThat(claimContent.getStatementOfTruth().getSignerName()).containsSequence("Jana");
+    }
+
+    @Test
+    public void shouldProvideCompanyStatementOfTruthSignerRole() {
+        Claim claim = SampleClaim.builder()
+                .withClaimData(SampleClaimData.builder().withStatementOfTruth(StatementOfTruth.builder().signerRole("Director").build()).build())
+                .build();
+        ClaimContent claimContent = provider.createContent(claim);
+        assertThat(claimContent.getStatementOfTruth().getSignerRole()).containsSequence("Director");
+    }
 
     private void testReason(String inputReason, String... expectations) {
         Claim claim = SampleClaim.builder()
