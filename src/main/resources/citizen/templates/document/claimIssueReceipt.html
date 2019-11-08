@@ -525,13 +525,17 @@
       </tr>
       {% if claim.statementOfTruth is not defined or claim.statementOfTruth is empty %}
       <tr>
-        <td></td>
+        <td>
+          <strong>Name:</strong>
+        </td>
         <td>
           {{ claimant.fullName }}
         </td>
       </tr>
       <tr>
-        <td></td>
+        <td>
+          <strong>Date:</strong>
+        </td>
         <td>
           {{ claim.issuedOn }}
         </td>
@@ -559,6 +563,12 @@
           <strong>Position held:</strong>
         </td>
         <td>{{ claim.statementOfTruth.signerRole }}</td>
+      </tr>
+      <tr>
+        <td>
+          <strong>Date:</strong>
+        </td>
+        <td>{{ claim.issuedOn }}</td>
       </tr>
       {% endif %}
     </table>
