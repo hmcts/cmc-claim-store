@@ -32,6 +32,7 @@ import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -279,7 +280,7 @@ public class ClaimService {
             .submitterId(submitterId)
             .externalId(externalId)
             .submitterEmail(submitterEmail)
-            .createdAt(nowInLocalZone())
+            .createdAt(LocalDateTimeFactory.nowInUTC())
             .claimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators.builder().build())
             .build();
 
@@ -417,7 +418,7 @@ public class ClaimService {
             .responseDeadline(responseDeadline)
             .externalId(externalId)
             .submitterEmail(submitterEmail)
-            .createdAt(nowInLocalZone())
+            .createdAt(LocalDateTimeFactory.nowInUTC())
             .features(features)
             .claimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators.builder().build())
             .build();
