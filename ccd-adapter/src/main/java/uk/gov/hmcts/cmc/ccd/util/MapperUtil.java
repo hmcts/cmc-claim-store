@@ -57,7 +57,7 @@ public class MapperUtil {
 
     public static Function<CCDCase, YesNoOption>
         canContinueOnline = (ccdCase) ->
-        StreamUtil.asStream(ccdCase.getCaseDocuments())
+        StreamUtil.asStream(ccdCase.getStaffUploadedDocuments())
             .map(CCDCollectionElement::getValue)
             .anyMatch(filterStaffUploadedPaperResponseDoc) ||
         StreamUtil.asStream(ccdCase.getScannedDocuments()).map(CCDCollectionElement::getValue)
