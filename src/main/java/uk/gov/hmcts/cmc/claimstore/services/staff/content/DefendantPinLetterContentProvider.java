@@ -44,11 +44,11 @@ public class DefendantPinLetterContentProvider {
         requireNonBlank(defendantPin);
 
         List<BigDecimal> totalAmountComponents = new ArrayList<>();
-        totalAmountComponents.add(((AmountBreakDown)claim.getClaimData()
+        totalAmountComponents.add(((AmountBreakDown) claim.getClaimData()
             .getAmount())
             .getTotalAmount());
         totalAmountComponents.add(claim.getClaimData()
-            .getFeesPaidInPounds());
+            .getFeesPaidInPounds().orElse(ZERO));
 
         if (!claim.getClaimData()
             .getInterest()
@@ -60,7 +60,7 @@ public class DefendantPinLetterContentProvider {
                 claim.getClaimData()
                     .getInterest()
                     .getInterestDate(),
-                ((AmountBreakDown)claim.getClaimData()
+                ((AmountBreakDown) claim.getClaimData()
                     .getAmount())
                     .getTotalAmount(),
                 claim.getIssuedOn(),
