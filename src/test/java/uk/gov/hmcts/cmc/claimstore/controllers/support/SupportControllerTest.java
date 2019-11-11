@@ -27,6 +27,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimSubmissionOperationIndicatorRule;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
+import uk.gov.hmcts.cmc.claimstore.services.IntentionToProceedService;
 import uk.gov.hmcts.cmc.claimstore.services.MediationReportService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
@@ -49,10 +50,12 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse.PartAdmission;
 import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doNothing;
@@ -111,6 +114,9 @@ public class SupportControllerTest {
     @Mock
     private MediationReportService mediationReportService;
 
+    @Mock
+    private IntentionToProceedService intentionToProceedService;
+
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
 
@@ -134,7 +140,8 @@ public class SupportControllerTest {
             postClaimOrchestrationHandler,
             false,
             mediationReportService,
-            new ClaimSubmissionOperationIndicatorRule()
+            new ClaimSubmissionOperationIndicatorRule(),
+            intentionToProceedService
         );
         sampleClaim = SampleClaim.getDefault();
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
@@ -142,7 +149,6 @@ public class SupportControllerTest {
 
     @Test
     public void shouldResendStaffNotifications() {
-        // given
         sampleClaim = SampleClaim.builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withDefendantId(null)
@@ -152,7 +158,6 @@ public class SupportControllerTest {
         GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", letterHolderId);
         given(userService.generatePin(anyString(), eq(AUTHORISATION))).willReturn(pinResponse);
 
-        // when
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(sampleClaim));
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(USER_DETAILS);
 
@@ -160,13 +165,11 @@ public class SupportControllerTest {
 
         controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claim-issued");
 
-        // then
         verify(documentGenerator).generateForNonRepresentedClaim(any());
     }
 
     @Test
     public void shouldResendStaffNotificationsForIntentToProceed() {
-        // given
         ClaimantResponse claimantResponse = ClaimantResponseRejection.builder()
             .buildRejectionWithDirectionsQuestionnaire();
 
@@ -180,21 +183,19 @@ public class SupportControllerTest {
             moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
             ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
             claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
-            postClaimOrchestrationHandler, true, mediationReportService, new ClaimSubmissionOperationIndicatorRule()
+            postClaimOrchestrationHandler, true, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
+            intentionToProceedService
         );
 
-        // when
         when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE))).thenReturn(Optional.of(sampleClaim));
         controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "intent-to-proceed");
 
-        // then
         verify(claimantResponseStaffNotificationHandler)
             .notifyStaffWithClaimantsIntentionToProceed(new ClaimantResponseEvent(sampleClaim, AUTHORISATION));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowForIntentToProceedIfDQFeatureToggledIsOff() {
-        // given
         ClaimantResponse claimantResponse = ClaimantResponseRejection.builder()
             .buildRejectionWithDirectionsQuestionnaire();
 
@@ -208,10 +209,10 @@ public class SupportControllerTest {
             moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
             ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
             claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
-            postClaimOrchestrationHandler, false, mediationReportService, new ClaimSubmissionOperationIndicatorRule()
+            postClaimOrchestrationHandler, false, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
+            intentionToProceedService
         );
 
-        // when
         when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE))).thenReturn(Optional.of(sampleClaim));
 
         controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "intent-to-proceed");
@@ -219,7 +220,6 @@ public class SupportControllerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowForIntentToProceedIfClaimantResponseIsNotRejection() {
-        // given
         sampleClaim = SampleClaim.builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withResponse(PartAdmission.builder().buildWithFreeMediation())
@@ -230,10 +230,10 @@ public class SupportControllerTest {
             moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
             ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
             claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
-            postClaimOrchestrationHandler, true, mediationReportService, new ClaimSubmissionOperationIndicatorRule()
+            postClaimOrchestrationHandler, true, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
+            intentionToProceedService
         );
 
-        // when
         when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE))).thenReturn(Optional.of(sampleClaim));
 
         controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "intent-to-proceed");
@@ -562,6 +562,31 @@ public class SupportControllerTest {
             ClaimSubmissionOperationIndicators
                 .builder().build(),
             "");
+    }
+
+    @Test
+    public void shouldPerformIntentionToProceedCheckWithDatetime() {
+        final LocalDateTime localDateTime = LocalDateTime.of(2019, 1, 1, 1, 1, 1);
+        final String auth = "auth";
+        final UserDetails userDetails = new UserDetails("id", null, null, null, null);
+        final User user = new User(null, userDetails);
+        when(userService.getUser(auth)).thenReturn(user);
+
+        controller.checkClaimsPastIntentionToProceedDeadline(auth, localDateTime);
+
+        verify(intentionToProceedService).checkClaimsPastIntentionToProceedDeadline(localDateTime, user);
+    }
+
+    @Test
+    public void shouldPerformIntentionToProceedCheckWithNullDatetime() {
+        final String auth = "auth";
+        final UserDetails userDetails = new UserDetails("id", null, null, null, null);
+        final User user = new User(null, userDetails);
+        when(userService.getUser(auth)).thenReturn(user);
+
+        controller.checkClaimsPastIntentionToProceedDeadline(auth, null);
+
+        verify(intentionToProceedService).checkClaimsPastIntentionToProceedDeadline(notNull(), eq(user));
     }
 
 }

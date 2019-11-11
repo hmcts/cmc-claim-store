@@ -45,9 +45,8 @@ public class CCDTestingSupportRepository implements SupportRepository {
         return this.ccdCaseApi.getByReferenceNumber(claimReferenceNumber, authorisation);
     }
 
-    //using default defendant@example.com as defendant email address just for performance testing
     @Override
-    public void linkDefendantToClaim(Claim claim, String defendantId) {
-        this.ccdCaseApi.linkDefendant(claim.getId().toString(), defendantId, "defendant@example.com");
+    public void linkDefendantToClaim(Claim claim, String defendantId, String defendantEmail) {
+        this.ccdCaseApi.linkDefendant(claim.getId().toString(), defendantId, defendantEmail);
     }
 }
