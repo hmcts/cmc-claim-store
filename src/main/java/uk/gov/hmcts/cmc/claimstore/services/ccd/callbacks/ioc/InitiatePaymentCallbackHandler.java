@@ -30,6 +30,7 @@ import java.util.Map;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INITIATE_CLAIM_PAYMENT_CITIZEN;
 import static uk.gov.hmcts.cmc.domain.models.ChannelType.CITIZEN;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
+import static uk.gov.hmcts.cmc.domain.utils.MonetaryConversions.poundsToPennies;
 
 @Service
 @Conditional(FeesAndPaymentsConfiguration.class)
@@ -108,6 +109,7 @@ public class InitiatePaymentCallbackHandler extends CallbackHandler {
         Claim claimAfterPayment = updatedClaim.toBuilder()
             .claimData(updatedClaim.getClaimData().toBuilder()
                 .payment(payment)
+                .feeAmountInPennies(poundsToPennies(payment.getAmount()))
                 .build())
             .build();
 
