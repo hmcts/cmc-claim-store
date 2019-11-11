@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
@@ -11,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.reform.document.domain.Classification;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
@@ -40,12 +42,15 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulDocumen
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.unsuccessfulDocumentManagementUploadResponse;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
 @TestPropertySource(
     properties = {
         "core_case_data.api.url=false",
     }
 )
+@ActiveProfiles("test")
 public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
 
     private static final String EXTENSION = ".pdf";
@@ -53,15 +58,16 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
     @Test
     public void shouldUploadSealedCopyOfNonRepresentedClaimIntoDocumentManagementStore() throws Exception {
         ClaimData claimData = SampleClaimData.submittedByClaimant();
-        given(documentUploadClient
-            .upload(eq(AUTHORISATION_TOKEN), anyString(), anyString(), anyList(), any(Classification.class), anyList()))
-            .willReturn(successfulDocumentManagementUploadResponse());
-        given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
+
         MvcResult result = makeIssueClaimRequest(claimData, AUTHORISATION_TOKEN)
             .andExpect(status().isOk())
             .andReturn();
-        final ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
+
         Claim claim = deserializeObjectFrom(result, Claim.class);
+
+        getClaimOperation.getClaim(claim.getExternalId(), AUTHORISATION_TOKEN);
+
+        final ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
         InMemoryMultipartFile sealedClaimForm = new InMemoryMultipartFile(
             "files",
             buildSealedClaimFileBaseName(claim.getReferenceNumber()) + EXTENSION,
@@ -160,13 +166,11 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        MvcResult resultWithDocument = makeGetRequest("/claims/"
-            + deserializeObjectFrom(result, Claim.class).getExternalId())
-            .andExpect(status().isOk())
-            .andReturn();
+        Claim claim = deserializeObjectFrom(result, Claim.class);
+        Claim resultWithDocument = getClaimOperation.getClaim(claim.getExternalId(), authorization);
 
-        Optional<ClaimDocumentCollection> claimDocumentCollection = deserializeObjectFrom(resultWithDocument,
-            Claim.class).getClaimDocumentCollection();
+        Optional<ClaimDocumentCollection> claimDocumentCollection = resultWithDocument.getClaimDocumentCollection();
+
         ClaimDocument claimDocument = claimDocumentCollection
             .orElseThrow(AssertionError::new)
             .getDocument(claimDocumentType)
@@ -182,11 +186,17 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
             .upload(eq(AUTHORISATION_TOKEN), anyString(), anyString(), anyList(), any(Classification.class), anyList()))
             .willReturn(unsuccessfulDocumentManagementUploadResponse());
 
-        makeIssueClaimRequest(SampleClaimData.submittedByLegalRepresentativeBuilder().build(), AUTHORISATION_TOKEN)
+        MvcResult result = makeIssueClaimRequest(SampleClaimData
+            .submittedByLegalRepresentativeBuilder().build(), AUTHORISATION_TOKEN)
             .andExpect(status().isOk())
             .andReturn();
 
-        verify(emailService, times(1)).sendEmail(anyString(), any());
+        Claim claim = deserializeObjectFrom(result, Claim.class);
+
+        Claim updated = getClaimOperation.getClaim(claim.getExternalId(), AUTHORISATION_TOKEN);
+
+        assertThat(updated.getClaimSubmissionOperationIndicators())
+            .isEqualTo(ClaimSubmissionOperationIndicators.builder().build());
     }
 
     @Test

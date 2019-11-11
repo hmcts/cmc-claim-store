@@ -49,9 +49,6 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseIntegrationTes
     private static final String CASE_REFERENCE = "000MC023";
     private static final String PAGE = "1";
 
-    @MockBean
-    private SendLetterApi sendLetterApi;
-
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
 

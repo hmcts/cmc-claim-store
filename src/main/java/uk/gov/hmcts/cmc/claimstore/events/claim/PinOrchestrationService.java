@@ -49,9 +49,9 @@ public class PinOrchestrationService {
 
         ClaimSubmissionOperationIndicators.ClaimSubmissionOperationIndicatorsBuilder updatedOperationIndicator =
             claim.getClaimSubmissionOperationIndicators().toBuilder()
-                .bulkPrint(NO)
-                .staffNotification(NO)
-                .defendantNotification(NO);
+            .bulkPrint(NO)
+            .staffNotification(NO)
+            .defendantNotification(NO);
 
         try {
             bulkPrintService.print(

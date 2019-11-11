@@ -8,6 +8,7 @@ import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
@@ -35,6 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     }
 )
 @AutoConfigureWireMock(port = 0)
+@ActiveProfiles("test")
 public class BulkPrintRequestTest extends BaseSaveTest {
 
     @Autowired
@@ -56,8 +58,12 @@ public class BulkPrintRequestTest extends BaseSaveTest {
         );
 
         MvcResult result = makeIssueClaimRequest(SampleClaimData.submittedByClaimant(), AUTHORISATION_TOKEN)
-            .andExpect(status().is5xxServerError())
+            .andExpect(status().isOk())
             .andReturn();
+
+        Claim savedClaim = deserializeObjectFrom(result, Claim.class);
+
+        getClaimOperation.getClaim(savedClaim.getExternalId(), AUTHORISATION_TOKEN);
 
         verify(bulkPrintNotificationService, never())
             .notifyFailedBulkPrint(
