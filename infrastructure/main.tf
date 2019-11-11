@@ -196,6 +196,9 @@ module "claim-store-api" {
     MILO_CSV_RECIPIENT = "${data.azurerm_key_vault_secret.milo_recipient.value}"
     MILO_CSV_SCHEDULE = "${var.milo_csv_schedule}"
 
+    // Intention to proceed
+    CLAIM_STAYED_SCHEDULE = "${var.claim_stayed_schedule}"
+
     // robot notifications
     RPA_NOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"
     RPA_NOTIFICATIONS_SEALEDCLAIMRECIPIENT = "${data.azurerm_key_vault_secret.rpa_email_sealed_claim.value}"
