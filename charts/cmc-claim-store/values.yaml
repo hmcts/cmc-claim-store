@@ -44,5 +44,6 @@ java:
     DOCUMENT_MANAGEMENT_USERROLES: caseworker-cmc,citizen
     MILO_CSV_SCHEDULE: '-'
     MILO_CSV_SENDER: noreply@reform.hmcts.net
+    CLAIM_STAYED_SCHEDULE: '-'
     PAY_URL: false
     FEES_URL: false
