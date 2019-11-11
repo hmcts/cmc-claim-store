@@ -56,6 +56,7 @@ public class ResumePaymentTest extends BaseIntegrationTest {
     private static final Long CASE_ID = 42L;
     private static final String NEXT_URL = "http://nexturl.test";
     private static final String RETURN_URL = "http://returnUrl.test/blah/%s/test";
+    public static final String PAYMENT_REFERENCE = "reference";
 
     @Autowired
     private CaseDetailsConverter caseDetailsConverter;
@@ -106,7 +107,7 @@ public class ResumePaymentTest extends BaseIntegrationTest {
 
         assertThat(deserializeObjectFrom(result, CreatePaymentResponse.class))
             .extracting(CreatePaymentResponse::getNextUrl)
-            .isEqualTo(claim.getClaimData().getPayment().getNextUrl());
+            .isEqualTo(NEXT_URL);
     }
 
     private void mockCcdCallsFor(Claim claim) {
@@ -159,7 +160,7 @@ public class ResumePaymentTest extends BaseIntegrationTest {
 
         Payment payment = Payment.builder()
             .amount(BigDecimal.TEN)
-            .reference("reference")
+            .reference(PAYMENT_REFERENCE)
             .status(status)
             .dateCreated("2017-12-03+01:00")
             .nextUrl(NEXT_URL)
