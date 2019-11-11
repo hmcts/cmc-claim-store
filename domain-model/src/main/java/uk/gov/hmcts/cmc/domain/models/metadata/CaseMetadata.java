@@ -18,7 +18,6 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
@@ -62,7 +61,7 @@ public class CaseMetadata {
             .referenceNumber(claim.getReferenceNumber())
             .createdAt(claim.getCreatedAt())
             .issuedOn(claim.getIssuedOn())
-            .paymentReference(Optional.ofNullable(claim.getClaimData().getPayment())
+            .paymentReference(claim.getClaimData().getPayment()
                 .map(Payment::getReference)
                 .orElse(null))
             .features(claim.getFeatures())

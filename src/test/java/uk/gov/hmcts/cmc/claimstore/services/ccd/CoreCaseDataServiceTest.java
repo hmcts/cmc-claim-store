@@ -11,7 +11,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.services.IntentionToProceedService;
+import uk.gov.hmcts.cmc.claimstore.services.IntentionToProceedDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -99,7 +99,7 @@ public class CoreCaseDataServiceTest {
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
     @Mock
-    private IntentionToProceedService intentionToProceedService;
+    private IntentionToProceedDeadlineCalculator intentionToProceedDeadlineCalculator;
 
     private CoreCaseDataService service;
 
@@ -149,7 +149,7 @@ public class CoreCaseDataServiceTest {
             jobSchedulerService,
             ccdCreateCaseService,
             caseDetailsConverter,
-            intentionToProceedService
+            intentionToProceedDeadlineCalculator
         );
     }
 
@@ -253,7 +253,7 @@ public class CoreCaseDataServiceTest {
         when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(expectedClaim);
 
-        Claim returnedClaim = service.createNewCitizenCase(USER, providedClaim);
+        Claim returnedClaim = service.initiatePaymentForCitizenCase(USER, providedClaim);
 
         assertEquals(expectedClaim, returnedClaim);
     }

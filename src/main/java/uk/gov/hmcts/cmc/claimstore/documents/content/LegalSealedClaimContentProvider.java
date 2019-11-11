@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.math.BigDecimal.ZERO;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
@@ -22,7 +23,7 @@ public class LegalSealedClaimContentProvider {
 
     @Autowired
     public LegalSealedClaimContentProvider(StatementOfValueProvider statementOfValueProvider,
-        @Value("${feature_toggles.watermark_pdf}") boolean watermarkPdf) {
+                                           @Value("${feature_toggles.watermark_pdf}") boolean watermarkPdf) {
         this.statementOfValueProvider = statementOfValueProvider;
         this.watermarkPdf = watermarkPdf;
     }
@@ -47,7 +48,7 @@ public class LegalSealedClaimContentProvider {
             .getRepresentative().orElseThrow(IllegalArgumentException::new);
 
         content.put("preferredCourt", claim.getClaimData().getPreferredCourt());
-        content.put("feePaid", formatMoney(claim.getClaimData().getFeesPaidInPounds()));
+        content.put("feePaid", formatMoney(claim.getClaimData().getFeesPaidInPounds().orElse(ZERO)));
         StatementOfTruth statementOfTruth = claim.getClaimData()
             .getStatementOfTruth()
             .orElseThrow(IllegalArgumentException::new);

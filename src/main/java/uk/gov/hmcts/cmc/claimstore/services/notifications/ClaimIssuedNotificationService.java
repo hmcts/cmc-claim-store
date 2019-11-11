@@ -25,6 +25,7 @@ import uk.gov.service.notify.NotificationClientException;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.math.BigDecimal.ZERO;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_TYPE;
@@ -121,7 +122,7 @@ public class ClaimIssuedNotificationService {
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
         parameters.put(RESPOND_TO_CLAIM_URL, notificationsProperties.getRespondToClaimUrl());
         parameters.put(EXTERNAL_ID, claim.getExternalId());
-        parameters.put(FEES_PAID, claim.getClaimData().getFeesPaidInPounds().toString());
+        parameters.put(FEES_PAID, claim.getClaimData().getFeesPaidInPounds().orElse(ZERO).toString());
         parameters.put(NEW_FEATURES, claim.getFeatures() == null || claim.getFeatures().isEmpty() ? "false" : "true");
         Optional.ofNullable(pin).ifPresent(p -> parameters.put(PIN, p));
         return parameters.build();
