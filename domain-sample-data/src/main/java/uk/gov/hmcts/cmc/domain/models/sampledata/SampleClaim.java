@@ -527,7 +527,9 @@ public final class SampleClaim {
             directionOrder,
             channel,
             intentionToProceedDeadline,
-            mediationOutcome
+            mediationOutcome,
+            null,
+            null
         );
     }
 

@@ -8,6 +8,8 @@ import uk.gov.hmcts.cmc.domain.models.MediationOutcome;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
@@ -38,6 +40,21 @@ public class MapperUtil {
         } else {
             return null;
         }
+    }
+
+    public static String getMediationFailedReason(List<CCDCollectionElement<CCDRespondent>> ccdRespondentList) {
+        return ccdRespondentList.stream().findFirst()
+            .map(CCDCollectionElement::getValue)
+            .map(CCDRespondent::getMediationFailedReason)
+            .orElse(null);
+    }
+
+    public static LocalDateTime getMediationSettlementReachedAt(
+        List<CCDCollectionElement<CCDRespondent>> ccdRespondentList) {
+        return ccdRespondentList.stream().findFirst()
+            .map(CCDCollectionElement::getValue)
+            .map(CCDRespondent::getMediationSettlementReachedAt)
+            .orElse(null);
     }
 
     public static boolean isAnyNotNull(Object... objects) {

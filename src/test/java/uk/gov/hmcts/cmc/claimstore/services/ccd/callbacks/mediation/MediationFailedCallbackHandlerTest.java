@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
@@ -39,6 +40,9 @@ public class MediationFailedCallbackHandlerTest {
     @Mock
     private DirectionsQuestionnaireDeadlineCalculator deadlineCalculator;
 
+    @Mock
+    private CaseMapper caseMapper;
+
     private MediationFailedCallbackHandler mediationFailedCallbackHandler;
 
     private CallbackParams callbackParams;
@@ -49,7 +53,10 @@ public class MediationFailedCallbackHandlerTest {
 
     @Before
     public void setUp() {
-        mediationFailedCallbackHandler = new MediationFailedCallbackHandler(caseDetailsConverter, deadlineCalculator);
+        mediationFailedCallbackHandler = new MediationFailedCallbackHandler(
+            caseDetailsConverter,
+            deadlineCalculator,
+            caseMapper);
         CallbackRequest callbackRequest = CallbackRequest
             .builder()
             .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
