@@ -4,7 +4,6 @@ respond_to_claim_url = "https://www.moneyclaims.demo.platform.hmcts.net/first-co
 db_host = "preprod-data-lb.moneyclaim.reform.hmcts.net"
 capacity = "2"
 dm_url = "http://dm-store-demo.service.core-compute-demo.internal"
-async_event_operations_enabled = "true"
 save_claim_state_enabled = "true"
 directions_questionnaire_enabled = "true"
 doc_assembly_api_url = "http://dg-docassembly-demo.service.core-compute-demo.internal"
