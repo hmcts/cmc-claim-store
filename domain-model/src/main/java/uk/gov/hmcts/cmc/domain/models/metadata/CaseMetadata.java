@@ -18,7 +18,6 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
@@ -47,6 +46,7 @@ public class CaseMetadata {
     private final LocalDate claimantResponseDeadline;
     private final ClaimantResponseMetadata claimantResponse;
     private final LocalDate directionsQuestionnaireDeadline;
+    private final LocalDate intentionToProceedDeadline;
     private final SettlementMetadata settlement;
     private final CountyCourtJudgmentMetadata countyCourtJudgment;
     private final RedeterminationMetadata redetermination;
@@ -61,7 +61,7 @@ public class CaseMetadata {
             .referenceNumber(claim.getReferenceNumber())
             .createdAt(claim.getCreatedAt())
             .issuedOn(claim.getIssuedOn())
-            .paymentReference(Optional.ofNullable(claim.getClaimData().getPayment())
+            .paymentReference(claim.getClaimData().getPayment()
                 .map(Payment::getReference)
                 .orElse(null))
             .features(claim.getFeatures())
@@ -82,11 +82,12 @@ public class CaseMetadata {
             .claimantResponseDeadline(claim.getClaimantResponseDeadline().orElse(null))
             .claimantResponse(ClaimantResponseMetadata.fromClaim(claim))
             .directionsQuestionnaireDeadline(claim.getDirectionsQuestionnaireDeadline())
+            .intentionToProceedDeadline(claim.getIntentionToProceedDeadline())
             .settlement(SettlementMetadata.fromClaim(claim))
             .countyCourtJudgment(CountyCourtJudgmentMetadata.fromClaim(claim))
             .redetermination(RedeterminationMetadata.fromClaim(claim))
             .moneyReceivedOn(claim.getMoneyReceivedOn().orElse(null))
-            .state(claim.getState().orElse(null))
+            .state(claim.getState())
             .claimSubmissionOperationIndicators(claim.getClaimSubmissionOperationIndicators())
             .build();
     }

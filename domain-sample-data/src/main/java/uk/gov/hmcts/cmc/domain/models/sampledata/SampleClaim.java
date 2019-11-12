@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.Interest;
+import uk.gov.hmcts.cmc.domain.models.MediationOutcome;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
@@ -91,7 +92,7 @@ public final class SampleClaim {
     private ReDetermination reDetermination = new ReDetermination("I feel defendant can pay", CLAIMANT);
     private ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
     private LocalDate claimantResponseDeadline;
-    private ClaimState state = null;
+    private ClaimState state = ClaimState.OPEN;
     private ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
         = ClaimSubmissionOperationIndicators.builder().build();
     private Long ccdCaseId = 1023467890123456L;
@@ -99,6 +100,7 @@ public final class SampleClaim {
     private DirectionOrder directionOrder;
     private ChannelType channel;
     private LocalDate intentionToProceedDeadline = NOW_IN_LOCAL_ZONE.toLocalDate().plusDays(33);
+    private MediationOutcome mediationOutcome;
 
     private SampleClaim() {
     }
@@ -196,7 +198,7 @@ public final class SampleClaim {
             .build();
     }
 
-    public static Claim getClaimWithFullDefenceWithMediation() {
+    public static Claim getClaimWithFullAdmission() {
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withResponse(SampleResponse.FullAdmission.builder()
@@ -291,14 +293,15 @@ public final class SampleClaim {
                 SampleResponse
                     .PartAdmission
                     .builder()
-                    .buildWithFreeMediation())
+                    .buildWithDirectionsQuestionnaire()
+            )
             .withRespondedAt(LocalDateTime.now())
             .withDefendantEmail(DEFENDANT_EMAIL)
             .withClaimantRespondedAt(LocalDateTime.now())
             .withClaimantResponse(SampleClaimantResponse
                 .ClaimantResponseRejection
                 .builder()
-                .buildRejectionWithFreeMediation())
+                .buildRejectionWithDirectionsQuestionnaire())
             .build();
     }
 
@@ -523,7 +526,10 @@ public final class SampleClaim {
             reviewOrder,
             directionOrder,
             channel,
-            intentionToProceedDeadline
+            intentionToProceedDeadline,
+            mediationOutcome,
+            null,
+            null
         );
     }
 
@@ -741,6 +747,11 @@ public final class SampleClaim {
         ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
     ) {
         this.claimSubmissionOperationIndicators = claimSubmissionOperationIndicators;
+        return this;
+    }
+
+    public SampleClaim withMediationOutcome(MediationOutcome mediationOutcome) {
+        this.mediationOutcome = mediationOutcome;
         return this;
     }
 }

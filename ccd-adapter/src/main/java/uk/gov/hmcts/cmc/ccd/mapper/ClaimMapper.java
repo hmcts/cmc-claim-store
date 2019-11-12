@@ -3,11 +3,13 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.mapper.defendant.DefendantMapper;
+import uk.gov.hmcts.cmc.ccd.util.MapperUtil;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -92,15 +94,18 @@ public class ClaimMapper {
 
         claimData.getTimeline().ifPresent(timeline -> timelineMapper.to(timeline, builder));
         claimData.getEvidence().ifPresent(evidence -> evidenceMapper.to(evidence, builder));
+        claimData.getPayment().ifPresent(payment -> paymentMapper.to(payment, builder));
 
-        paymentMapper.to(claimData.getPayment(), builder);
         interestMapper.to(claimData.getInterest(), builder);
         amountMapper.to(claimData.getAmount(), builder);
-
         claim.getTotalAmountTillDateOfIssue().map(moneyMapper::to).ifPresent(builder::totalAmount);
+
+        claimData.getFeeAmountInPennies()
+            .map(BigInteger::toString)
+            .ifPresent(builder::feeAmountInPennies);
+        
         builder
-            .reason(claimData.getReason())
-            .feeAmountInPennies(claimData.getFeeAmountInPennies().toString());
+            .reason(claimData.getReason());
     }
 
     private boolean isLeadApplicant(Claim claim, int applicantIndex) {
@@ -113,7 +118,8 @@ public class ClaimMapper {
         List<Party> claimants = asStream(ccdCase.getApplicants())
             .map(claimantMapper::from)
             .collect(Collectors.toList());
-
+        claimBuilder.failedMediationReason(MapperUtil.getMediationFailedReason(ccdCase.getRespondents()));
+        claimBuilder.mediationSettlementReachedAt(MapperUtil.getMediationSettlementReachedAt(ccdCase.getRespondents()));
         claimBuilder.claimData(
             new ClaimData(
                 UUID.fromString(ccdCase.getExternalId()),

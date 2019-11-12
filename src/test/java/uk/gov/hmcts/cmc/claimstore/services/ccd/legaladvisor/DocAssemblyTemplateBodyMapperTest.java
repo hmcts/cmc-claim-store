@@ -47,6 +47,7 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 @RunWith(MockitoJUnitRunner.class)
 public class DocAssemblyTemplateBodyMapperTest {
 
+    public static final String SUBMIT_MORE_DOCS_INSTRUCTION = "submit more docs";
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Mock
@@ -151,7 +152,15 @@ public class DocAssemblyTemplateBodyMapperTest {
                                 .value("second document")
                                 .build()))
                     .build()
-            ));
+            ))
+            .expertReportPermissionPartyAskedByClaimant(true)
+            .expertReportPermissionPartyAskedByDefendant(true)
+            .expertReportPermissionPartyGivenToClaimant(true)
+            .expertReportPermissionPartyGivenToDefendant(true)
+            .expertReportInstructionClaimant(ImmutableList.of(CCDCollectionElement.<String>builder()
+                .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()))
+            .expertReportInstructionDefendant(ImmutableList.of(CCDCollectionElement.<String>builder()
+                .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()));
 
         //when
         when(clock.instant()).thenReturn(LocalDate.parse("2019-04-24")
@@ -234,7 +243,16 @@ public class DocAssemblyTemplateBodyMapperTest {
                                 .value("second document")
                                 .build()))
                     .build()
-            )).build();
+            ))
+            .expertReportPermissionPartyAskedByClaimant(true)
+            .expertReportPermissionPartyAskedByDefendant(true)
+            .expertReportPermissionPartyGivenToClaimant(true)
+            .expertReportPermissionPartyGivenToDefendant(true)
+            .expertReportInstructionClaimant(ImmutableList.of(CCDCollectionElement.<String>builder()
+                .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()))
+            .expertReportInstructionDefendant(ImmutableList.of(CCDCollectionElement.<String>builder()
+                .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()))
+            .build();
 
         assertThat(requestBody).isEqualTo(expectedBody);
         verify(courtFinderApi).findMoneyClaimCourtByPostcode(anyString());

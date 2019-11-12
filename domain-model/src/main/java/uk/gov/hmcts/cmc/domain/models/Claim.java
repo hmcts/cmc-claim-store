@@ -71,6 +71,9 @@ public class Claim {
     private final DirectionOrder directionOrder;
     private final ChannelType channel;
     private final LocalDate intentionToProceedDeadline;
+    private final MediationOutcome mediationOutcome;
+    private final String failedMediationReason;
+    private LocalDateTime mediationSettlementReachedAt;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -110,7 +113,10 @@ public class Claim {
         ReviewOrder reviewOrder,
         DirectionOrder directionOrder,
         ChannelType channel,
-        LocalDate intentionToProceedDeadline
+        LocalDate intentionToProceedDeadline,
+        MediationOutcome mediationOutcome,
+        String failedMediationReason,
+        LocalDateTime mediationSettlementReachedAt
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -148,6 +154,9 @@ public class Claim {
         this.directionOrder = directionOrder;
         this.channel = channel;
         this.intentionToProceedDeadline = intentionToProceedDeadline;
+        this.mediationOutcome = mediationOutcome;
+        this.failedMediationReason = failedMediationReason;
+        this.mediationSettlementReachedAt = mediationSettlementReachedAt;
     }
 
     public Optional<Response> getResponse() {
@@ -227,11 +236,6 @@ public class Claim {
         return Optional.ofNullable(claimantResponseDeadline);
     }
 
-    @JsonIgnore
-    public Optional<ClaimState> getState() {
-        return Optional.ofNullable(state);
-    }
-
     public Optional<ReviewOrder> getReviewOrder() {
         return Optional.ofNullable(reviewOrder);
     }
@@ -242,6 +246,14 @@ public class Claim {
 
     public Optional<ChannelType> getChannel() {
         return Optional.ofNullable(channel);
+    }
+
+    public Optional<MediationOutcome> getMediationOutcome() {
+        return Optional.ofNullable(mediationOutcome);
+    }
+
+    public Optional<String> getFailedMediationReason() {
+        return Optional.ofNullable(failedMediationReason);
     }
 
     @Override

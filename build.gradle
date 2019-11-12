@@ -131,6 +131,13 @@ allprojects {
       ) {
         entry 'jackson-module-parameter-names'
       }
+      // solves CVE-2019-13990
+      dependencySet(
+        group: 'org.quartz-scheduler',
+        version: '2.3.2'
+      ) {
+        entry 'quartz'
+      }
     }
   }
 }
@@ -314,9 +321,8 @@ jacocoTestReport {
 project.tasks['sonarqube'].dependsOn test, apiTest
 check.dependsOn apiTest
 checkstyleMain.shouldRunAfter(compileJava)
-test.shouldRunAfter(checkstyleTest)
-apiTest.shouldRunAfter(checkstyleIntegrationTest)
-apiTest.shouldRunAfter(test)
+test.shouldRunAfter(checkstyleMain, checkstyleAat, checkstyleTest, checkstyleIntegrationTest)
+apiTest.shouldRunAfter(test, checkstyleMain, checkstyleAat, checkstyleTest, checkstyleIntegrationTest)
 
 def listFiles(String pattern) {
   return new FileNameFinder()

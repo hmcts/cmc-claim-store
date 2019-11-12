@@ -206,4 +206,12 @@ public class SampleCCDDefendant {
             .settlementReachedAt(LocalDateTime.now())
             .settlementPartyStatements(partyStatements);
     }
+
+    public static CCDRespondent.CCDRespondentBuilder withMediationAgreementDate() {
+        return withDefault().mediationSettlementReachedAt(LocalDateTime.now());
+    }
+
+    public static CCDRespondent.CCDRespondentBuilder withMediationFailureReason() {
+        return withDefault().mediationFailedReason("Defendant phone died while mediation call");
+    }
 }

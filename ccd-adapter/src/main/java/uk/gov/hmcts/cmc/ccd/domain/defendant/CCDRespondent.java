@@ -87,4 +87,7 @@ public class CCDRespondent {
     private CCDAddress preferredCourtAddress;
     private String preferredCourtReason;
 
+    private String mediationFailedReason;
+    private LocalDateTime mediationSettlementReachedAt;
+
 }
