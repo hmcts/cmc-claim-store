@@ -86,18 +86,9 @@ public class ClaimantResponseService {
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
 
         if (isFullDefenseDisputeAcceptation(response, claimantResponse)) {
-            try {
-                appInsights.trackEvent(AppInsightsEvent.CLAIM_STAYED, REFERENCE_NUMBER,
-                        updatedClaim.getReferenceNumber());
-                caseRepository.saveCaseEvent(
-                    authorization,
-                    updatedClaim,
-                    CaseEvent.STAY_CLAIM
-                );
-            } catch (Exception e) {
-                logger.error(String.format("Error whilst staying claim %s", claim.getReferenceNumber()), e);
-                throw e;
-            }
+            appInsights.trackEvent(AppInsightsEvent.CLAIM_STAYED, REFERENCE_NUMBER, updatedClaim.getReferenceNumber());
+
+            caseRepository.saveCaseEvent(authorization, updatedClaim, CaseEvent.STAY_CLAIM);
         }
 
         if (!DirectionsQuestionnaireUtils.isOnlineDQ(updatedClaim)
