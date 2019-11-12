@@ -44,7 +44,7 @@ public abstract class BaseIntegrationTest extends MockSpringTest {
     protected ClaimStore claimStore;
 
     @Autowired
-    protected GetClaimOperation getClaimOperation;
+    protected ClaimOperation claimOperation;
 
     public static class CleanDatabaseListener extends AbstractTestExecutionListener {
         @Override

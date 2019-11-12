@@ -63,7 +63,7 @@ public class BulkPrintRequestTest extends BaseSaveTest {
 
         Claim savedClaim = deserializeObjectFrom(result, Claim.class);
 
-        getClaimOperation.getClaim(savedClaim.getExternalId(), AUTHORISATION_TOKEN);
+        claimOperation.getClaimAfterPostOperations(savedClaim.getExternalId(), AUTHORISATION_TOKEN);
 
         verify(bulkPrintNotificationService, never())
             .notifyFailedBulkPrint(

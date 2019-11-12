@@ -5,6 +5,7 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -14,18 +15,18 @@ import uk.gov.hmcts.cmc.domain.models.metadata.CaseMetadata;
 import java.util.Optional;
 
 @Service
-public class GetClaimOperation {
+public class ClaimOperation {
 
     @Autowired
     private ClaimRepository claimRepository;
 
     @LogExecutionTime
     @Retryable(value = RuntimeException.class, maxAttempts = 25, backoff = @Backoff(delay = 500))
-    public Claim getClaim(String externalId, String userAuthentication) throws Exception {
+    public Claim getClaimAfterPostOperations(String externalId, String userAuthentication) throws Exception {
 
-        Optional<CaseMetadata> caseMetadata = Optional.of(retrieveCaseMetaData(externalId, userAuthentication));
+        Optional<CaseMetadata> caseMetadata = retrieveCaseMetaData(externalId, userAuthentication);
         if (!caseMetadata.filter(c -> c.getState() == ClaimState.OPEN).isPresent()) {
-            throw new RuntimeException("pin process not complete");
+            throw new RuntimeException("Post Claim operation processes not complete");
         }
 
         return retrieveClaim(externalId, userAuthentication);
@@ -38,12 +39,12 @@ public class GetClaimOperation {
     }
 
     public Claim retrieveClaim(String externalId, String userAuthentication) throws Exception {
-        return claimRepository.getClaimByExternalId(externalId).get();
+        return claimRepository.getClaimByExternalId(externalId)
+            .orElseThrow(() -> new NotFoundException("Claim not found for " + externalId));
     }
 
-    public CaseMetadata retrieveCaseMetaData(String externalId, String userAuthentication) throws Exception {
+    private Optional<CaseMetadata> retrieveCaseMetaData(String externalId, String userAuthentication) throws Exception {
         return claimRepository.getClaimByExternalId(externalId)
-            .map(CaseMetadata::fromClaim)
-            .get();
+            .map(CaseMetadata::fromClaim);
     }
 }
