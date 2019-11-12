@@ -198,7 +198,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.3.0'
   compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.4'
-  compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.0.4'
+  compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version:'0.0.4'
 
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
   compile group: 'org.apache.commons', name: 'commons-csv', version: '1.4'
@@ -340,9 +340,8 @@ jacocoTestReport {
 project.tasks['sonarqube'].dependsOn test, apiTest
 check.dependsOn apiTest
 checkstyleMain.shouldRunAfter(compileJava)
-test.shouldRunAfter(checkstyleTest)
-apiTest.shouldRunAfter(checkstyleIntegrationTest)
-apiTest.shouldRunAfter(test)
+test.shouldRunAfter(checkstyleMain, checkstyleAat, checkstyleTest, checkstyleIntegrationTest)
+apiTest.shouldRunAfter(test, checkstyleMain, checkstyleAat, checkstyleTest, checkstyleIntegrationTest)
 test.finalizedBy jacocoTestReport
 
 def listFiles(String pattern) {

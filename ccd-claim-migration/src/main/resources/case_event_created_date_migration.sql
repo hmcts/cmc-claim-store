@@ -6,7 +6,10 @@ select event.id ,
 event.created_date,
 json_extract_path_text(data.data :: JSON, 'submittedOn') as date
 from case_data data, case_event event where event.case_data_id = data.id and data.jurisdiction='CMC'
-and event.event_id ='SubmitPostPayment'
+and (
+  event.event_id ='IssueClaim' or
+  event.event_id ='CreateClaim'
+  )
 )
 update case_event event
 set
