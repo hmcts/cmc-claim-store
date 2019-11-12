@@ -84,13 +84,8 @@ public class MediationUnsuccessfulCallbackHandler extends CallbackHandler {
     private void notifyClaimant(Claim claim) {
         notificationService.sendMail(
             claim.getSubmitterEmail(),
-            isPilotCourt(claim)
-                ? notificationsProperties.getTemplates().getEmail().getClaimantReadyForDirections() :
-                notificationsProperties.getTemplates().getEmail().getClaimantReadyForTransfer(),
+            notificationsProperties.getTemplates().getEmail().getClaimantReadyForTransfer(),
             aggregateParams(claim),
-            isPilotCourt(claim)
-                ? NotificationReferenceBuilder.MediationUnsuccessful
-                    .referenceForDirections(claim.getReferenceNumber(), "claimant") :
                 NotificationReferenceBuilder.MediationUnsuccessful
                     .referenceForTransfer(claim.getReferenceNumber(), "claimant")
         );
@@ -99,22 +94,12 @@ public class MediationUnsuccessfulCallbackHandler extends CallbackHandler {
     private void notifyDefendant(Claim claim) {
         notificationService.sendMail(
             claim.getDefendantEmail(),
-            isPilotCourt(claim)
-                ? notificationsProperties.getTemplates().getEmail().getDefendantReadyForDirections() :
                 notificationsProperties.getTemplates().getEmail().getDefendantReadyForTransfer(),
             aggregateParams(claim),
-            isPilotCourt(claim)
-                ? NotificationReferenceBuilder.MediationUnsuccessful
-                    .referenceForDirections(claim.getReferenceNumber(), "defendant") :
                 NotificationReferenceBuilder.MediationUnsuccessful
                     .referenceForTransfer(claim.getReferenceNumber(), "defendant")
         );
     }
-
-    private boolean isPilotCourt(Claim claim) {
-        return PilotCourt.isPilotCourt(DirectionsQuestionnaireUtils.getPreferredCourt(claim));
-    }
-
     private Map<String, String> aggregateParams(Claim claim) {
         Map<String, String> parameters = new HashMap<>();
         parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());

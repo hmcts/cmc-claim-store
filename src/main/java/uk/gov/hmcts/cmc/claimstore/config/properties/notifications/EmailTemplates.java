@@ -140,12 +140,6 @@ public class EmailTemplates {
     private String claimantIntentionToProceedForOnlineDq;
 
     @NotEmpty
-    private String claimantReadyForDirections;
-
-    @NotEmpty
-    private String defendantReadyForDirections;
-
-    @NotEmpty
     private String claimantReadyForTransfer;
 
     @NotEmpty
