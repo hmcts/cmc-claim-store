@@ -67,10 +67,6 @@ allprojects {
     }
   }
 
-  jacoco {
-    toolVersion = "0.8.0"
-  }
-
   sourceCompatibility = 1.8
   compileJava {
     options.compilerArgs << '-parameters' << '-Xlint:deprecation'
@@ -337,12 +333,11 @@ jacocoTestReport {
   }
 }
 
-project.tasks['sonarqube'].dependsOn test, apiTest
+project.tasks['sonarqube'].dependsOn jacocoTestReport
 check.dependsOn apiTest
 checkstyleMain.shouldRunAfter(compileJava)
 test.shouldRunAfter(checkstyleMain, checkstyleAat, checkstyleTest, checkstyleIntegrationTest)
 apiTest.shouldRunAfter(test, checkstyleMain, checkstyleAat, checkstyleTest, checkstyleIntegrationTest)
-test.finalizedBy jacocoTestReport
 
 def listFiles(String pattern) {
   return new FileNameFinder()
@@ -354,8 +349,10 @@ def listFiles(String pattern) {
 sonarqube {
   properties {
     property "sonar.projectName", "CMC :: Claim Store"
+    property "sonar.projectKey", "uk.gov.hmcts.reform:cmc-claim-store"
     property "sonar.jacoco.reportPath", "${listFiles('**/test.exec')}"
     property "sonar.jacoco.itReportPath", "${listFiles('**/apiTest.exec')}"
+    property "sonar.coverage.jacoco.xmlReportPaths", jacocoTestReport.reports.xml.destination.path
     property "sonar.exclusions", "**/ccd/domain/**," +
       "**/cmc/domain/models/**," +
       "**/cmc/ccd/sample/data/**," +
