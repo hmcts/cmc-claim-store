@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
@@ -36,6 +37,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_DIRECTIONS;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LIFT_STAY;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_RESPONSE_ACCEPTED;
@@ -511,5 +513,58 @@ public class ClaimantResponseServiceTest {
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
 
         verify(eventProducer, never()).createClaimantResponseEvent(any(Claim.class), anyString());
+    }
+
+    @Test
+    public void shouldLiftStayedClaimWhenPartAdmission() {
+        ClaimantResponse claimantResponse = SampleClaimantResponse
+            .ClaimantResponseAcceptation
+            .builder()
+            .withFormaliseOption(FormaliseOption.SETTLEMENT)
+            .withAmountPaid(new BigDecimal(100))
+            .build();
+
+        Claim claim = SampleClaim.builder()
+            .withResponseDeadline(LocalDate.now().minusMonths(2))
+            .withResponse(
+                SampleResponse.PartAdmission.builder().buildWithPaymentOptionBySpecifiedDate()
+            )
+            .withRespondedAt(LocalDateTime.now().minusDays(34))
+            .withClaimantResponse(claimantResponse)
+            .withState(ClaimState.STAYED)
+            .build();
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+        when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION)))
+            .thenReturn(claim);
+        when(caseRepository.saveCaseEvent(eq(AUTHORISATION), eq(claim), eq(LIFT_STAY))).thenReturn(claim);
+
+        claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
+        verify(caseRepository, once()).saveCaseEvent(AUTHORISATION, claim, LIFT_STAY);
+    }
+
+    @Test
+    public void shouldNotLiftStayedClaimWhenFullDefence() {
+        ClaimantResponse claimantResponse = SampleClaimantResponse
+            .ClaimantResponseAcceptation
+            .builder()
+            .withFormaliseOption(FormaliseOption.SETTLEMENT)
+            .withAmountPaid(new BigDecimal(100))
+            .build();
+
+        Claim claim = SampleClaim.builder()
+            .withResponseDeadline(LocalDate.now().minusMonths(2))
+            .withResponse(SampleResponse.FullDefence.builder().withDefenceType(DefenceType.ALREADY_PAID).build())
+            .withRespondedAt(LocalDateTime.now().minusDays(34))
+            .withClaimantResponse(claimantResponse)
+            .withState(ClaimState.STAYED)
+            .build();
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+        when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION)))
+            .thenReturn(claim);
+
+        claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
+        verify(caseRepository, never()).saveCaseEvent(AUTHORISATION, claim, LIFT_STAY);
     }
 }

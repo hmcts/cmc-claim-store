@@ -258,7 +258,8 @@ public class ClaimDataTest {
     @Test
     public void shouldConvertFeesToPound() {
         ClaimData claimData = SampleClaimData.builder().withFeeAmount(BigInteger.valueOf(456712)).build();
-        assertThat(claimData.getFeesPaidInPounds()).isEqualTo(new BigDecimal("4567.12"));
+        assertThat(claimData.getFeesPaidInPounds()).isPresent();
+        assertThat(claimData.getFeesPaidInPounds().get()).isEqualTo(new BigDecimal("4567.12"));
     }
 
     @Test

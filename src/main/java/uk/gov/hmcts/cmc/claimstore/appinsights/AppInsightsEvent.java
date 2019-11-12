@@ -47,7 +47,8 @@ public enum AppInsightsEvent {
     COMPLICATED_FOR_ORDER_PILOT("Complicated for order pilot"),
     MEDIATION_REPORT_FAILURE("Mediation Report - failure"),
     MEDIATION_PILOT_ELIGIBLE("Mediation Pilot Eligible"),
-    MEDIATION_NON_PILOT_ELIGIBLE("Mediation Non Pilot Eligible");
+    MEDIATION_NON_PILOT_ELIGIBLE("Mediation Non Pilot Eligible"),
+    CLAIM_STAYED("Claim Stayed"),;
 
     private String displayName;
 
