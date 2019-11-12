@@ -24,10 +24,10 @@ public class ClaimOperation {
     @Retryable(value = RuntimeException.class, maxAttempts = 25, backoff = @Backoff(delay = 500))
     public Claim getClaimAfterPostOperations(String externalId, String userAuthentication) throws Exception {
 
-        Optional<CaseMetadata> caseMetadata = retrieveCaseMetaData(externalId, userAuthentication);
-        if (!caseMetadata.filter(c -> c.getState() == ClaimState.OPEN).isPresent()) {
-            throw new RuntimeException("Post Claim operation processes not complete");
-        }
+        retrieveCaseMetaData(externalId, userAuthentication)
+            .map(CaseMetadata::getState)
+            .filter(ClaimState.OPEN::equals)
+            .orElseThrow(() -> new RuntimeException("Post Claim operation processes not complete"));
 
         return retrieveClaim(externalId, userAuthentication);
     }
