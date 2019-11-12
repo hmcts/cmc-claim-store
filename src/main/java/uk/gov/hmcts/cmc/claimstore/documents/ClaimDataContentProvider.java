@@ -52,7 +52,7 @@ public class ClaimDataContentProvider {
         List<BigDecimal> totalAmountComponents = new ArrayList<>();
         AmountBreakDown amountBreakDown = (AmountBreakDown) claim.getClaimData().getAmount();
         totalAmountComponents.add(amountBreakDown.getTotalAmount());
-        totalAmountComponents.add(claim.getClaimData().getFeesPaidInPounds());
+        totalAmountComponents.add(claim.getClaimData().getFeesPaidInPounds().orElse(ZERO));
 
         InterestContent interestContent = null;
 
@@ -86,7 +86,7 @@ public class ClaimDataContentProvider {
             formatDate(claim.getIssuedOn()),
             split(claim.getClaimData().getReason()),
             formatMoney(amountBreakDown.getTotalAmount()),
-            formatMoney(claim.getClaimData().getFeesPaidInPounds()),
+            formatMoney(claim.getClaimData().getFeesPaidInPounds().orElse(ZERO)),
             interestContent,
             formatMoney(
                 totalAmountComponents.stream()

@@ -20,7 +20,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.staff.StatesPaidStaffNotifica
 
 public class StatesPaidEmailContentProviderTest {
     private static final String DEFENDANT_EMAIL = "defendant@mail.com";
-    private static final String DEFENDANT_MOBILE = "07980111222";
+    private static final String DEFENDANT_PHONE = "07980111222";
 
     private StatesPaidEmailContentProvider service;
 
@@ -37,8 +37,9 @@ public class StatesPaidEmailContentProviderTest {
         Claim claim = SampleClaim.builder()
             .withDefendantEmail(DEFENDANT_EMAIL)
             .withResponse(
-                SampleResponse.FullDefence.builder()
-                    .withDefendantDetails(SampleParty.builder().withMobilePhone(DEFENDANT_MOBILE).individual())
+                SampleResponse.FullDefence
+                    .builder()
+                    .withDefendantDetails(SampleParty.builder().withPhone(DEFENDANT_PHONE).individual())
                     .build())
             .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
             .build();
@@ -46,22 +47,22 @@ public class StatesPaidEmailContentProviderTest {
         EmailContent content = service.createContent(wrapInMap(claim));
         assertThat(content.getBody())
             .contains("Email: " + DEFENDANT_EMAIL)
-            .contains("Mobile number: " + DEFENDANT_MOBILE);
+            .contains("Phone number: " + DEFENDANT_PHONE);
     }
 
     @Test
-    public void shouldDisplayAppropriateMessageWhenMobileNumberIsNotGiven() {
+    public void shouldDisplayAppropriateMessageWhenPhoneNumberIsNotGiven() {
         Claim claim = SampleClaim.builder()
             .withResponse(
                 SampleResponse.FullDefence.builder()
-                    .withDefendantDetails(SampleParty.builder().withMobilePhone("").individual())
+                    .withDefendantDetails(SampleParty.builder().withPhone("").individual())
                     .build())
             .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
             .build();
 
         EmailContent content = service.createContent(wrapInMap(claim));
         assertThat(content.getBody())
-            .contains("Mobile number: not given");
+            .contains("Phone number: not given");
     }
 
     @Test
@@ -86,7 +87,7 @@ public class StatesPaidEmailContentProviderTest {
                     .builder()
                     .withDefenceType(DefenceType.ALREADY_PAID)
                     .withMediation(null)
-                    .withDefendantDetails(SampleParty.builder().withMobilePhone(DEFENDANT_MOBILE).individual())
+                    .withDefendantDetails(SampleParty.builder().withPhone(DEFENDANT_PHONE).individual())
                     .build())
             .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
             .build();
@@ -106,7 +107,7 @@ public class StatesPaidEmailContentProviderTest {
                     .builder()
                     .withDefenceType(DefenceType.ALREADY_PAID)
                     .withMediation(null)
-                    .withDefendantDetails(SampleParty.builder().withMobilePhone(DEFENDANT_MOBILE).individual())
+                    .withDefendantDetails(SampleParty.builder().withPhone(DEFENDANT_PHONE).individual())
                     .build()
             )
             .withClaimantResponse(SampleClaimantResponse.validDefaultRejection())
