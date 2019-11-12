@@ -253,7 +253,7 @@ public class CoreCaseDataServiceTest {
         when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(expectedClaim);
 
-        Claim returnedClaim = service.createNewCitizenCase(USER, providedClaim);
+        Claim returnedClaim = service.initiatePaymentForCitizenCase(USER, providedClaim);
 
         assertEquals(expectedClaim, returnedClaim);
     }

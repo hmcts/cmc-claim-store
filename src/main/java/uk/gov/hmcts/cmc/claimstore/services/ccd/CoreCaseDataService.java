@@ -187,7 +187,7 @@ public class CoreCaseDataService {
     }
 
     @LogExecutionTime
-    public Claim createNewCitizenCase(
+    public Claim initiatePaymentForCitizenCase(
         User user,
         Claim claim
     ) {

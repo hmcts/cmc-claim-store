@@ -100,7 +100,8 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
                 ccdCase.getFeeAccountNumber(), claimData.getFeeAccountNumber().orElse(null));
         }
 
-        if (!Objects.equals(claimData.getFeeAmountInPennies(), createBigInteger(ccdCase.getFeeAmountInPennies()))) {
+        if (!Objects.equals(claimData.getFeeAmountInPennies().orElse(null),
+            createBigInteger(ccdCase.getFeeAmountInPennies()))) {
             failWithMessage("Expected CCDClaim.feeAmountInPennies to be <%s> but was <%s>",
                 ccdCase.getFeeAmountInPennies(), claimData.getFeeAmountInPennies());
         }
@@ -198,7 +199,7 @@ public class ClaimAssert extends AbstractAssert<ClaimAssert, Claim> {
             }
         );
 
-        ofNullable(claimData.getPayment()).ifPresent(payment -> {
+        claimData.getPayment().ifPresent(payment -> {
                 if (!Objects.equals(payment.getId(), ccdCase.getPaymentId())) {
                     failWithMessage("Expected CCDCase.paymentId to be <%s> but was <%s>",
                         ccdCase.getPaymentId(), payment.getId());
