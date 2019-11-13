@@ -15,14 +15,14 @@ import uk.gov.hmcts.cmc.domain.models.metadata.CaseMetadata;
 import java.util.Optional;
 
 @Service
-public class ClaimOperation {
+public class PostClaimOperation {
 
     @Autowired
     private ClaimRepository claimRepository;
 
     @LogExecutionTime
     @Retryable(value = RuntimeException.class, maxAttempts = 25, backoff = @Backoff(delay = 500))
-    public Claim getClaimAfterPostOperations(String externalId, String userAuthentication) throws Exception {
+    public Claim getClaim(String externalId, String userAuthentication) throws Exception {
 
         retrieveCaseMetaData(externalId, userAuthentication)
             .map(CaseMetadata::getState)

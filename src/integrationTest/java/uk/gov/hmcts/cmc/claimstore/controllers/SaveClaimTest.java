@@ -66,7 +66,7 @@ public class SaveClaimTest extends BaseSaveTest {
             .extracting(Claim::getClaimData)
             .isEqualTo(claimData);
 
-        Claim updated = claimOperation.retrieveClaim(claimData.getExternalId().toString(), AUTHORISATION_TOKEN);
+        Claim updated = postClaimOperation.retrieveClaim(claimData.getExternalId().toString(), AUTHORISATION_TOKEN);
 
         assertThat(updated.getClaimSubmissionOperationIndicators())
             .isEqualTo(ClaimSubmissionOperationIndicators.builder()
@@ -113,7 +113,7 @@ public class SaveClaimTest extends BaseSaveTest {
 
         Claim claim = deserializeObjectFrom(result, Claim.class);
 
-        Claim updated = claimOperation.retrieveClaim(claim.getExternalId(), AUTHORISATION_TOKEN);
+        Claim updated = postClaimOperation.retrieveClaim(claim.getExternalId(), AUTHORISATION_TOKEN);
 
         assertThat(updated.getClaimSubmissionOperationIndicators().getClaimantNotification()).isEqualTo(YesNoOption.NO);
     }
@@ -133,7 +133,7 @@ public class SaveClaimTest extends BaseSaveTest {
 
         Claim claim = deserializeObjectFrom(result, Claim.class);
 
-        claimOperation.retrieveClaim(claim.getExternalId(), AUTHORISATION_TOKEN);
+        postClaimOperation.retrieveClaim(claim.getExternalId(), AUTHORISATION_TOKEN);
 
         verify(notificationClient, atLeast(3))
             .sendEmail(anyString(), anyString(), anyMap(), anyString());
@@ -167,7 +167,7 @@ public class SaveClaimTest extends BaseSaveTest {
 
         Claim savedClaim = deserializeObjectFrom(result, Claim.class);
 
-        claimOperation.retrieveClaim(savedClaim.getExternalId(), AUTHORISATION_TOKEN);
+        postClaimOperation.retrieveClaim(savedClaim.getExternalId(), AUTHORISATION_TOKEN);
 
         verify(emailService, atLeast(2))
             .sendEmail(eq("sender@example.com"), emailDataArgument.capture());

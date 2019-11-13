@@ -124,7 +124,7 @@ public class DownloadRepresentedClaimCopyWithDocumentManagementTest extends Base
 
         Claim claim = deserializeObjectFrom(result, Claim.class);
 
-        claimOperation.getClaimAfterPostOperations(claim.getExternalId(), AUTHORISATION_TOKEN);
+        postClaimOperation.getClaim(claim.getExternalId(), AUTHORISATION_TOKEN);
 
         makeRequest(claim.getExternalId())
             .andExpect(status().isOk())

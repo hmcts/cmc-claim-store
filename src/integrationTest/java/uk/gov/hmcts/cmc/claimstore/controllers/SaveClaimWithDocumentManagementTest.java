@@ -63,7 +63,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
 
         Claim claim = deserializeObjectFrom(result, Claim.class);
 
-        claimOperation.getClaimAfterPostOperations(claim.getExternalId(), AUTHORISATION_TOKEN);
+        postClaimOperation.getClaim(claim.getExternalId(), AUTHORISATION_TOKEN);
 
         final ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
         InMemoryMultipartFile sealedClaimForm = new InMemoryMultipartFile(
@@ -165,7 +165,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
             .andReturn();
 
         Claim claim = deserializeObjectFrom(result, Claim.class);
-        Claim resultWithDocument = claimOperation.getClaimAfterPostOperations(claim.getExternalId(), authorization);
+        Claim resultWithDocument = postClaimOperation.getClaim(claim.getExternalId(), authorization);
 
         Optional<ClaimDocumentCollection> claimDocumentCollection = resultWithDocument.getClaimDocumentCollection();
 
@@ -191,7 +191,7 @@ public class SaveClaimWithDocumentManagementTest extends BaseSaveTest {
 
         Claim claim = deserializeObjectFrom(result, Claim.class);
 
-        Claim updated = claimOperation.getClaimAfterPostOperations(claim.getExternalId(), AUTHORISATION_TOKEN);
+        Claim updated = postClaimOperation.getClaim(claim.getExternalId(), AUTHORISATION_TOKEN);
 
         assertThat(updated.getClaimSubmissionOperationIndicators())
             .isEqualTo(ClaimSubmissionOperationIndicators.builder().build());
