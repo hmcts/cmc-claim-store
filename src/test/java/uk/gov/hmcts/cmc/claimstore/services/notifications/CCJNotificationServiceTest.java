@@ -37,7 +37,7 @@ public class CCJNotificationServiceTest extends BaseNotificationServiceTest {
     @Before
     public void setup() {
         ccjNotificationService = new CCJNotificationService(
-            new NotificationService(notificationClient, appInsights, false),
+            new NotificationService(notificationClient, appInsights),
             properties
         );
 

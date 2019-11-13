@@ -38,7 +38,7 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
     @Before
     public void beforeEachTest() {
         service = new NotificationToDefendantService(
-            new NotificationService(notificationClient, appInsights, false),
+            new NotificationService(notificationClient, appInsights),
             properties
         );
 
