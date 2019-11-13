@@ -192,24 +192,19 @@ public class SaveSettlementAgreementTest extends BaseIntegrationTest {
         given(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
             .willThrow(new NotificationClientException(new RuntimeException("invalid claimant email1")))
             .willThrow(new NotificationClientException(new RuntimeException("invalid claimant email2")))
-            .willThrow(new NotificationClientException(new RuntimeException("invalid claimant email3")))
-            .willThrow(new NotificationClientException(new RuntimeException("invalid defendant email4")))
-            .willThrow(new NotificationClientException(new RuntimeException("invalid defendant email5")))
-            .willThrow(new NotificationClientException(new RuntimeException("invalid defendant email6")));
+            .willThrow(new NotificationClientException(new RuntimeException("invalid claimant email3")));
 
-        makeRequest(claim.getExternalId(), "countersign").andExpect(status().isCreated());
+        given(documentUploadClient.upload(anyString(), anyString(),
+            anyString(), anyList(), any(Classification.class), anyList()))
+            .willReturn(unsuccessfulDocumentManagementUploadResponse());
+
+        makeRequest(claim.getExternalId(), "countersign").andExpect(status().is5xxServerError());
         String referenceNumber = claim.getReferenceNumber();
 
-        String referenceForClaimant = referenceForClaimant(referenceNumber, DEFENDANT.name());
         verify(notificationClient, atLeast(3))
-            .sendEmail(anyString(), anyString(), anyMap(), eq(referenceForClaimant));
+            .sendEmail(anyString(), anyString(), anyMap(), anyString());
 
-        String referenceForDefendant = referenceForDefendant(referenceNumber, DEFENDANT.name());
-        verify(notificationClient, atLeast(3))
-            .sendEmail(anyString(), anyString(), anyMap(), eq(referenceForDefendant));
-
-        verify(appInsights).trackEvent(eq(NOTIFICATION_FAILURE), eq(REFERENCE_NUMBER), eq(referenceForClaimant));
-        verify(appInsights).trackEvent(eq(NOTIFICATION_FAILURE), eq(REFERENCE_NUMBER), eq(referenceForDefendant));
+        verify(appInsights).trackEvent(eq(NOTIFICATION_FAILURE), eq(REFERENCE_NUMBER), anyString());
     }
 
     private ResultActions makeRequest(String externalId, String action) throws Exception {

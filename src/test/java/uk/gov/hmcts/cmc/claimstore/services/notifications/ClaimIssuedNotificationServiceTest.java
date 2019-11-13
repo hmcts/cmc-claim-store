@@ -1,7 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.services.notifications;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters;
@@ -28,9 +30,12 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
     private final String reference = "claimant-issue-notification-" + claim.getReferenceNumber();
     private ClaimIssuedNotificationService service;
 
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
+
     @Before
     public void beforeEachTest() {
-        service = new ClaimIssuedNotificationService(notificationClient, properties, appInsights, false);
+        service = new ClaimIssuedNotificationService(notificationClient, properties, appInsights);
         when(properties.getFrontendBaseUrl()).thenReturn(FRONTEND_BASE_URL);
         when(properties.getRespondToClaimUrl()).thenReturn(RESPOND_TO_CLAIM_URL);
     }
@@ -137,6 +142,7 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
 
     @Test
     public void recoveryShouldNotLogPII() {
+        expectedException.expect(NotificationException.class);
         service.logNotificationFailure(
             new NotificationException("expected exception"),
             null,
@@ -149,24 +155,5 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
 
         assertWasLogged("Failure: failed to send notification (reference) due to expected exception");
         assertWasNotLogged("hidden@email.com");
-    }
-
-    @Test(expected = NotificationException.class)
-    public void recoveryThrowWhenAsyncEnabled() {
-        service = new ClaimIssuedNotificationService(notificationClient, properties, appInsights, true);
-        try {
-            service.logNotificationFailure(
-                new NotificationException("expected exception"),
-                null,
-                "hidden@email.com",
-                null,
-                null,
-                "reference",
-                null
-            );
-        } finally {
-            assertWasLogged("Failure: failed to send notification (reference) due to expected exception");
-            assertWasNotLogged("hidden@email.com");
-        }
     }
 }

@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import static java.lang.String.format;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -100,24 +101,15 @@ public class MakeOfferTest extends BaseIntegrationTest {
             .willThrow(new NotificationClientException(new RuntimeException("2nd email, 3rd attempt fails, stop")));
 
         makeOffer(DEFENDANT_AUTH_TOKEN, offer, MadeBy.DEFENDANT.name())
-            .andExpect(status().isCreated())
+            .andExpect(status().is5xxServerError())
             .andReturn();
 
-        verify(notificationClient, times(3))
-            .sendEmail(any(), any(), anyMap(), contains("claimant-offer-made-notification-"));
-        verify(notificationClient, times(3))
-            .sendEmail(any(), any(), anyMap(), contains("defendant-offer-made-notification-"));
+        verify(notificationClient, times(3)).sendEmail(any(), any(), anyMap(), anyString());
 
         verify(appInsights).trackEvent(
             eq(NOTIFICATION_FAILURE),
             eq(REFERENCE_NUMBER),
-            eq("claimant-offer-made-notification-" + claim.getReferenceNumber())
-        );
-
-        verify(appInsights).trackEvent(
-            eq(NOTIFICATION_FAILURE),
-            eq(REFERENCE_NUMBER),
-            eq("defendant-offer-made-notification-" + claim.getReferenceNumber())
+            anyString()
         );
     }
 
