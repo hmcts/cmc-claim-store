@@ -55,10 +55,13 @@ public enum CaseEvent {
     CLAIMANT_DIRECTIONS_QUESTIONNAIRE_UPLOAD("ClaimantDirectionsQuestionnaireUpload"),
     ORDER_REVIEW_REQUESTED("OrderReviewRequested"),
     WAITING_TRANSFER("WaitingTransfer"),
+    LIFT_STAY("LiftStay"),
     //inversion of control
     INITIATE_CLAIM_PAYMENT_CITIZEN("InitiateClaimPaymentCitizen"),
     RESUME_CLAIM_PAYMENT_CITIZEN("ResumeClaimPaymentCitizen"),
-    CREATE_LEGAL_REP_CLAIM("CreateLegalRepClaim");
+    CREATE_LEGAL_REP_CLAIM("CreateLegalRepClaim"),
+    STAY_CLAIM("StayClaim"),
+    CREATE_CITIZEN_CLAIM("CreateCitizenClaim");
 
     private String value;
 

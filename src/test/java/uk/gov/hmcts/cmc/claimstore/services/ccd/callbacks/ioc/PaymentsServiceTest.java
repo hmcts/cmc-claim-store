@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
@@ -32,6 +31,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SamplePayment.PAYMENT_REFERENCE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PaymentsServiceTest {
@@ -84,7 +84,7 @@ public class PaymentsServiceTest {
     public void shouldRetrieveAnExistingPayment() {
         when(paymentsClient.retrievePayment(
             BEARER_TOKEN,
-            claim.getClaimData().getPayment().getReference()
+            PAYMENT_REFERENCE
         )).thenReturn(paymentDto);
 
         Payment expectedPayment = Payment.builder()
@@ -110,7 +110,7 @@ public class PaymentsServiceTest {
             .build();
         when(paymentsClient.retrievePayment(
             BEARER_TOKEN,
-            claim.getClaimData().getPayment().getReference()
+            PAYMENT_REFERENCE
         )).thenReturn(retrievedPayment);
 
         Payment expectedPayment = Payment.builder()
@@ -138,7 +138,7 @@ public class PaymentsServiceTest {
             .build();
         when(paymentsClient.retrievePayment(
             BEARER_TOKEN,
-            claim.getClaimData().getPayment().getReference()
+            PAYMENT_REFERENCE
         )).thenReturn(retrievedPayment);
 
         Payment expectedPayment = Payment.builder()
@@ -167,7 +167,7 @@ public class PaymentsServiceTest {
 
     @Test
     public void shouldMakePaymentAndSetThePaymentAmount() {
-        FeeDto[] fees = new FeeDto[] {
+        FeeDto[] fees = new FeeDto[]{
             FeeDto.builder()
                 .ccdCaseNumber(String.valueOf(claim.getCcdCaseId()))
                 .calculatedAmount(feeOutcome.getFeeAmount())
@@ -183,7 +183,7 @@ public class PaymentsServiceTest {
                 .currency(CURRENCY)
                 .service(SERVICE)
                 .fees(fees)
-                .amount(new BigDecimal("51.91"))
+                .amount(feeOutcome.getFeeAmount())
                 .ccdCaseNumber(String.valueOf(claim.getCcdCaseId()))
                 .caseReference(claim.getExternalId())
                 .build();
@@ -199,46 +199,7 @@ public class PaymentsServiceTest {
             claim
         );
 
-        verify(paymentDto).setAmount(new BigDecimal("51.91"));
-    }
-
-    @Test
-    public void shouldMakePaymentAndSetThePaymentAmountWithNoInterest() {
-        ClaimData claimData = SampleClaimData.noInterest();
-        Claim claimWithNoInterest = SampleClaim.builder().withClaimData(claimData).build();
-        FeeDto[] fees = new FeeDto[] {
-            FeeDto.builder()
-                .ccdCaseNumber(String.valueOf(claimWithNoInterest.getCcdCaseId()))
-                .calculatedAmount(feeOutcome.getFeeAmount())
-                .code(feeOutcome.getCode())
-                .version(String.valueOf(feeOutcome.getVersion()))
-                .build()
-        };
-
-        CardPaymentRequest expectedPaymentRequest =
-            CardPaymentRequest.builder()
-                .siteId(SITE_ID)
-                .description(DESCRIPTION)
-                .currency(CURRENCY)
-                .service(SERVICE)
-                .fees(fees)
-                .amount(new BigDecimal("50.99"))
-                .ccdCaseNumber(String.valueOf(claimWithNoInterest.getCcdCaseId()))
-                .caseReference(claimWithNoInterest.getExternalId())
-                .build();
-
-        when(paymentsClient.createPayment(
-            BEARER_TOKEN,
-            expectedPaymentRequest,
-            format(RETURN_URL, claimWithNoInterest.getExternalId())
-        )).thenReturn(paymentDto);
-
-        paymentsService.createPayment(
-            BEARER_TOKEN,
-            claimWithNoInterest
-        );
-
-        verify(paymentDto).setAmount(new BigDecimal("50.99"));
+        verify(paymentDto).setAmount(BigDecimal.TEN);
     }
 
     @Test(expected = IllegalStateException.class)

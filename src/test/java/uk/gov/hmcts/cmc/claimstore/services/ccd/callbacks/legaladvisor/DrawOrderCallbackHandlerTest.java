@@ -169,7 +169,10 @@ public class DrawOrderCallbackHandlerTest {
 
         CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList()).toBuilder()
             .directionOrderData(CCDOrderGenerationData.builder().draftOrderDoc(DOCUMENT).build())
-            .directionOrder(CCDDirectionOrder.builder().hearingCourtAddress(SampleData.getCCDAddress()).build())
+            .directionOrder(CCDDirectionOrder.builder()
+                .hearingCourtName(SampleData.MANCHESTER_CIVIL_JUSTICE_CENTRE_CIVIL_AND_FAMILY_COURTS)
+                .hearingCourtAddress(SampleData.getHearingCourtAddress())
+                .build())
             .build();
 
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
@@ -223,7 +226,10 @@ public class DrawOrderCallbackHandlerTest {
 
         CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList()).toBuilder()
             .directionOrderData(CCDOrderGenerationData.builder().draftOrderDoc(DOCUMENT).build())
-            .directionOrder(CCDDirectionOrder.builder().hearingCourtAddress(SampleData.getCCDAddress()).build())
+            .directionOrder(CCDDirectionOrder.builder()
+                .hearingCourtName(SampleData.MANCHESTER_CIVIL_JUSTICE_CENTRE_CIVIL_AND_FAMILY_COURTS)
+                .hearingCourtAddress(SampleData.getHearingCourtAddress())
+                .build())
             .caseDocuments(ImmutableList.of(existingDocument))
             .build();
 
