@@ -4,23 +4,24 @@ import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.TimelineEvent;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleEvidence;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTimeline;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
-import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.service.notify.NotificationClientException;
 
 import static java.util.Arrays.asList;
@@ -36,21 +37,19 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NOTIFICATION_FAILURE;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
 @TestPropertySource(
     properties = {
-        "core_case_data.api.url=false",
-        "feature_toggles.async_event_operations_enabled=false"
+        "core_case_data.api.url=false"
     }
 )
+@ActiveProfiles("test")
 public class SaveClaimTest extends BaseSaveTest {
 
     private static final String REPRESENTATIVE_EMAIL_TEMPLATE = "f2b21b9c-fc4a-4589-807b-3156dbf5bf01";
-
-    @MockBean
-    protected SendLetterApi sendLetterApi;
 
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
@@ -66,6 +65,20 @@ public class SaveClaimTest extends BaseSaveTest {
         assertThat(deserializeObjectFrom(result, Claim.class))
             .extracting(Claim::getClaimData)
             .isEqualTo(claimData);
+
+        Claim updated = postClaimOperation.retrieveClaim(claimData.getExternalId().toString(), AUTHORISATION_TOKEN);
+
+        assertThat(updated.getClaimSubmissionOperationIndicators())
+            .isEqualTo(ClaimSubmissionOperationIndicators.builder()
+                .bulkPrint(YES)
+                .claimantNotification(YES)
+                .defendantNotification(YES)
+                .rpa(YES)
+                .sealedClaimUpload(YES)
+                .claimIssueReceiptUpload(YES)
+                .staffNotification(YES)
+                .build()
+            );
     }
 
     @Test
@@ -94,8 +107,15 @@ public class SaveClaimTest extends BaseSaveTest {
         doThrow(new RuntimeException("Sending failed"))
             .when(emailService).sendEmail(anyString(), any(EmailData.class));
 
-        makeIssueClaimRequest(SampleClaimData.submittedByClaimant(), AUTHORISATION_TOKEN)
-            .andExpect(status().isInternalServerError());
+        MvcResult result = makeIssueClaimRequest(SampleClaimData.submittedByClaimant(), AUTHORISATION_TOKEN)
+            .andExpect(status().isOk())
+            .andReturn();
+
+        Claim claim = deserializeObjectFrom(result, Claim.class);
+
+        Claim updated = postClaimOperation.retrieveClaim(claim.getExternalId(), AUTHORISATION_TOKEN);
+
+        assertThat(updated.getClaimSubmissionOperationIndicators().getClaimantNotification()).isEqualTo(YesNoOption.NO);
     }
 
     @Test
@@ -113,13 +133,15 @@ public class SaveClaimTest extends BaseSaveTest {
 
         Claim claim = deserializeObjectFrom(result, Claim.class);
 
+        postClaimOperation.retrieveClaim(claim.getExternalId(), AUTHORISATION_TOKEN);
+
         verify(notificationClient, atLeast(3))
             .sendEmail(anyString(), anyString(), anyMap(), anyString());
 
         verify(appInsights).trackEvent(
-            eq(NOTIFICATION_FAILURE),
+            eq(CLAIM_ISSUED_CITIZEN),
             eq(REFERENCE_NUMBER),
-            eq("claimant-issue-notification-" + claim.getReferenceNumber())
+            eq(claim.getReferenceNumber())
         );
     }
 
@@ -145,17 +167,19 @@ public class SaveClaimTest extends BaseSaveTest {
 
         Claim savedClaim = deserializeObjectFrom(result, Claim.class);
 
+        postClaimOperation.retrieveClaim(savedClaim.getExternalId(), AUTHORISATION_TOKEN);
+
         verify(emailService, atLeast(2))
             .sendEmail(eq("sender@example.com"), emailDataArgument.capture());
 
         EmailData emailData = emailDataArgument.getValue();
         assertThat(emailData.getTo()).isEqualTo("recipient@example.com");
-        assertThat(emailData.getSubject()).isEqualTo("Claim " + savedClaim.getReferenceNumber() + " issued");
-        assertThat(emailData.getMessage()).isEqualTo("Please find attached claim.");
+        assertThat(emailData.getSubject()).isEqualTo("J new claim " + savedClaim.getReferenceNumber());
+        assertThat(emailData.getMessage()).contains("Please find attached claim.");
         assertThat(emailData.getAttachments()).hasSize(2)
             .extracting(EmailAttachment::getFilename)
             .containsExactly(savedClaim.getReferenceNumber() + "-claim-form.pdf",
-                savedClaim.getReferenceNumber() + "-defendant-pin-letter.pdf");
+                savedClaim.getReferenceNumber() + "-json-claim.json");
     }
 
     @Test
