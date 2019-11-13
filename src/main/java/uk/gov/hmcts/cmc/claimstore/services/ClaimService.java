@@ -32,6 +32,7 @@ import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -195,19 +196,19 @@ public class ClaimService {
 
         Claim createdClaim = caseRepository.initiatePayment(user, claim);
 
+        Payment payment = createdClaim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
         return CreatePaymentResponse.builder()
-            .nextUrl(createdClaim.getClaimData().getPayment().getNextUrl())
+            .nextUrl(payment.getNextUrl())
             .build();
     }
 
     @LogExecutionTime
-    public CreatePaymentResponse resumePayment(
-        String authorisation,
-        ClaimData claimData) {
+    public CreatePaymentResponse resumePayment(String authorisation, ClaimData claimData) {
+
         Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), authorisation);
         Claim resumedClaim = caseRepository.saveCaseEvent(authorisation, claim, RESUME_CLAIM_PAYMENT_CITIZEN);
 
-        Payment payment = resumedClaim.getClaimData().getPayment();
+        Payment payment = resumedClaim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
 
         return CreatePaymentResponse.builder()
             .nextUrl(
@@ -278,7 +279,7 @@ public class ClaimService {
             .submitterId(submitterId)
             .externalId(externalId)
             .submitterEmail(submitterEmail)
-            .createdAt(nowInLocalZone())
+            .createdAt(LocalDateTimeFactory.nowInUTC())
             .claimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators.builder().build())
             .build();
 
@@ -416,7 +417,7 @@ public class ClaimService {
             .responseDeadline(responseDeadline)
             .externalId(externalId)
             .submitterEmail(submitterEmail)
-            .createdAt(nowInLocalZone())
+            .createdAt(LocalDateTimeFactory.nowInUTC())
             .features(features)
             .claimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators.builder().build())
             .build();

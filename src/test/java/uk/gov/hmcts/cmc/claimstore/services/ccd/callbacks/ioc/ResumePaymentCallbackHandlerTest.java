@@ -102,7 +102,7 @@ public class ResumePaymentCallbackHandlerTest {
 
         verify(caseMapper).to(claimArgumentCaptor.capture());
 
-        Payment payment = claimArgumentCaptor.getValue().getClaimData().getPayment();
+        Payment payment = claimArgumentCaptor.getValue().getClaimData().getPayment().orElse(null);
         assertThat(payment).isEqualTo(originalPayment);
     }
 
@@ -134,7 +134,7 @@ public class ResumePaymentCallbackHandlerTest {
 
         verify(caseMapper).to(claimArgumentCaptor.capture());
 
-        Payment payment = claimArgumentCaptor.getValue().getClaimData().getPayment();
+        Payment payment = claimArgumentCaptor.getValue().getClaimData().getPayment().orElse(null);
         assertThat(payment).isEqualTo(originalPayment);
     }
 
@@ -186,7 +186,7 @@ public class ResumePaymentCallbackHandlerTest {
         assertThat(toBeSaved.getIssuedOn()).isEqualTo(date);
         assertThat(toBeSaved.getResponseDeadline()).isEqualTo(date);
 
-        Payment payment = toBeSaved.getClaimData().getPayment();
+        Payment payment = toBeSaved.getClaimData().getPayment().orElse(null);
         assertThat(payment).isEqualTo(newPayment);
     }
 

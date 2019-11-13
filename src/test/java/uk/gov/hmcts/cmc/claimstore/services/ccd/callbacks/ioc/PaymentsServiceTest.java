@@ -31,6 +31,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SamplePayment.PAYMENT_REFERENCE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PaymentsServiceTest {
@@ -83,7 +84,7 @@ public class PaymentsServiceTest {
     public void shouldRetrieveAnExistingPayment() {
         when(paymentsClient.retrievePayment(
             BEARER_TOKEN,
-            claim.getClaimData().getPayment().getReference()
+            PAYMENT_REFERENCE
         )).thenReturn(paymentDto);
 
         Payment expectedPayment = Payment.builder()
@@ -109,7 +110,7 @@ public class PaymentsServiceTest {
             .build();
         when(paymentsClient.retrievePayment(
             BEARER_TOKEN,
-            claim.getClaimData().getPayment().getReference()
+            PAYMENT_REFERENCE
         )).thenReturn(retrievedPayment);
 
         Payment expectedPayment = Payment.builder()
@@ -137,7 +138,7 @@ public class PaymentsServiceTest {
             .build();
         when(paymentsClient.retrievePayment(
             BEARER_TOKEN,
-            claim.getClaimData().getPayment().getReference()
+            PAYMENT_REFERENCE
         )).thenReturn(retrievedPayment);
 
         Payment expectedPayment = Payment.builder()
@@ -166,7 +167,7 @@ public class PaymentsServiceTest {
 
     @Test
     public void shouldMakePaymentAndSetThePaymentAmount() {
-        FeeDto[] fees = new FeeDto[] {
+        FeeDto[] fees = new FeeDto[]{
             FeeDto.builder()
                 .ccdCaseNumber(String.valueOf(claim.getCcdCaseId()))
                 .calculatedAmount(feeOutcome.getFeeAmount())

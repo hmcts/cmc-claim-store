@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.tests.idam;
 
+import com.google.common.collect.ImmutableList;
 import feign.FeignException;
 import feign.Response;
 import net.jodah.failsafe.Failsafe;
@@ -158,7 +159,7 @@ public class IdamTestService {
     private CreateUserRequest createCitizenRequest(String username, String password) {
         return new CreateUserRequest(
             username,
-            new UserGroup("citizens"),
+            ImmutableList.of(new UserRole("citizen")),
             password
         );
     }
@@ -166,7 +167,9 @@ public class IdamTestService {
     private CreateUserRequest createSolicitorRequest(String username, String password) {
         return new CreateUserRequest(
             username,
-            new UserGroup("cmc-solicitor"),
+            ImmutableList.of(new UserRole("solicitor"),
+                new UserRole("caseworker-cmc-solicitor"),
+                new UserRole("caseworker-cmc")),
             password
         );
     }
