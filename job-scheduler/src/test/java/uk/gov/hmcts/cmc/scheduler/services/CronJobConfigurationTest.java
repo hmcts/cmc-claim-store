@@ -29,13 +29,13 @@ public class CronJobConfigurationTest {
     private CronJobConfiguration cronJobConfiguration;
 
     @Before
-    public void setup(){
+    public void setup() {
         cronJobConfiguration = new CronJobConfiguration(jobService);
         cronJobConfiguration.setBeanFactory(beanFactory);
     }
 
     @Test
-    public void shouldScheduleCronJobs(){
+    public void shouldScheduleCronJobs() {
         String cronExp = "cronExp";
         CronJob cronJob = new CronJob() {
             @Override
