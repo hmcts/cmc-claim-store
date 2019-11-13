@@ -5,6 +5,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.quartz.CronScheduleBuilder;
+import org.quartz.CronTrigger;
 import org.quartz.Job;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
@@ -122,6 +124,35 @@ public class JobServiceTest {
         verify(scheduler).rescheduleJob(any(TriggerKey.class), any(Trigger.class));
     }
 
+    @Test
+    public void shouldScheduleNewCronJob() throws SchedulerException {
+        String jobId = UUID.randomUUID().toString();
+        String group = "Reminders";
+        JobData jobData = getJobData(jobId, group);
+
+        String cronExpression = "0 * * * * ?";
+        JobKey jobKey = jobsService.scheduleJob(jobData, cronExpression);
+
+        assertThat(jobKey).isEqualTo(new JobKey(jobId, group));
+        JobDetail jobDetail = getJobDetails(jobData);
+        Trigger trigger = getCronTrigger(cronExpression, jobData);
+        verify(scheduler).scheduleJob(jobDetail, trigger);
+    }
+
+    @Test
+    public void shouldDeleteExisitingCronJob() throws SchedulerException {
+        String jobId = UUID.randomUUID().toString();
+        String group = "Reminders";
+        JobData jobData = getJobData(jobId, group);
+        String cronExpression = "0 * * * * ?";
+        JobKey key = getJobDetails(jobData).getKey();
+        when(scheduler.checkExists(key)).thenReturn(true);
+
+        JobKey jobKey = jobsService.scheduleJob(jobData, cronExpression);
+
+        verify(scheduler).deleteJob(key);
+    }
+
     private JobData getJobData(String jobId, String group) {
         Map<String, Object> data = new HashMap<>();
         data.put("caseId", "234324332432432");
@@ -145,6 +176,14 @@ public class JobServiceTest {
                 simpleSchedule()
                     .withMisfireHandlingInstructionNowWithExistingCount()
             )
+            .build();
+    }
+
+    private Trigger getCronTrigger(String cronExpression, JobData jobData) {
+        return newTrigger()
+            .withSchedule(CronScheduleBuilder.cronSchedule(cronExpression))
+            .withIdentity(jobData.getId(), jobData.getGroup())
+            .withDescription(jobData.getDescription())
             .build();
     }
 
