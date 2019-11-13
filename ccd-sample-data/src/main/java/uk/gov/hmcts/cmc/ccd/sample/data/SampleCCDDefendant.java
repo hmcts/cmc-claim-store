@@ -207,8 +207,8 @@ public class SampleCCDDefendant {
             .settlementPartyStatements(partyStatements);
     }
 
-    public static CCDRespondent.CCDRespondentBuilder withMediationAgreementDate() {
-        return withDefault().mediationSettlementReachedAt(LocalDateTime.now());
+    public static CCDRespondent.CCDRespondentBuilder withMediationAgreementDate(LocalDateTime localDatetime) {
+        return withDefault().mediationSettlementReachedAt(localDatetime);
     }
 
     public static CCDRespondent.CCDRespondentBuilder withMediationFailureReason() {

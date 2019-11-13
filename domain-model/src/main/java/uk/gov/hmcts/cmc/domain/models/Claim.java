@@ -256,6 +256,10 @@ public class Claim {
         return Optional.ofNullable(failedMediationReason);
     }
 
+    public Optional<LocalDateTime> getMediationSettlementReachedAt() {
+        return Optional.ofNullable(mediationSettlementReachedAt);
+    }
+
     @Override
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ourStyle());
