@@ -93,6 +93,7 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
             LocalDate deadline = deadlineCalculator
                 .calculateDirectionsQuestionnaireDeadlineCalculator(LocalDateTime.now());
             claim = claim.toBuilder().directionsQuestionnaireDeadline(deadline).build();
+        } else {
             notificationService.notifyParties(claim);
         }
 

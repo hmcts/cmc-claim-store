@@ -28,6 +28,7 @@ import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MEDIATION_FAILED;
 
@@ -43,6 +44,9 @@ public class MediationFailedCallbackHandlerTest {
     @Mock
     private CaseMapper caseMapper;
 
+    @Mock
+    private MediationFailedNotificationService mediationFailedNotificationService;
+
     private MediationFailedCallbackHandler mediationFailedCallbackHandler;
 
     private CallbackParams callbackParams;
@@ -56,7 +60,8 @@ public class MediationFailedCallbackHandlerTest {
         mediationFailedCallbackHandler = new MediationFailedCallbackHandler(
             caseDetailsConverter,
             deadlineCalculator,
-            caseMapper);
+            caseMapper,
+            mediationFailedNotificationService);
         CallbackRequest callbackRequest = CallbackRequest
             .builder()
             .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
@@ -112,6 +117,32 @@ public class MediationFailedCallbackHandlerTest {
         assertThat(response.getData()).containsEntry("state", "open");
         assertThat(response.getData()).containsEntry("directionsQuestionnaireDeadline", LocalDate.now().plusDays(8));
 
+    }
+
+    @Test
+    public void shouldSendNotificationsIfOnlineDQCase() {
+
+        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
+        Claim claim = claimSetForMediation.toBuilder()
+            .response(
+                SampleResponse
+                    .FullDefence
+                    .builder()
+                    .withDirectionsQuestionnaire(
+                        SampleDirectionsQuestionnaire.builder()
+                            .withHearingLocation(SampleHearingLocation.pilotHearingLocation)
+                            .build()
+                    ).build()
+            )
+            .features(Collections.singletonList("directionsQuestionnaire"))
+            .build();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
+
+        mediationFailedCallbackHandler.handle(callbackParams);
+
+        verify(mediationFailedNotificationService).notifyParties(any());
     }
 
     @Test
