@@ -81,8 +81,7 @@ public class CountersignSettlementAgreementActionsHandlerTest {
             .createContent(anyMap())).thenReturn(new EmailContent(SETTLEMENT_SIGNED_TO_STAFF_SUBJECT,
             SETTLEMENT_SIGNED_TO_STAFF_BODY));
 
-        NotificationService notificationService = new NotificationService(notificationClient, appInsights,
-            false);
+        NotificationService notificationService = new NotificationService(notificationClient, appInsights);
 
         handler = new CountersignSettlementAgreementActionsHandler(notificationService, notificationsProperties,
             staffEmailProperties, emailService, settlementCountersignedEmailContentProvider);
