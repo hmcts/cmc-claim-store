@@ -14,8 +14,8 @@ import uk.gov.hmcts.cmc.scheduler.model.CronJob;
 import uk.gov.hmcts.cmc.scheduler.model.JobData;
 import uk.gov.hmcts.cmc.scheduler.services.JobService;
 
-import javax.annotation.PostConstruct;
 import java.util.HashMap;
+import javax.annotation.PostConstruct;
 
 @Configuration
 @AllArgsConstructor
@@ -43,7 +43,7 @@ public class CronJobConfiguration implements BeanFactoryAware {
                 .data(new HashMap<>())
                 .build();
 
-            jobService.scheduleJob(jobData, cronJob.getCronExpression() );
+            jobService.scheduleJob(jobData, cronJob.getCronExpression());
         }
     }
 }
