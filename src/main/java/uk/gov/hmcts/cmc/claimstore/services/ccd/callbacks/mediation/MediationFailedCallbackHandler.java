@@ -53,13 +53,17 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
 
     private final CaseMapper caseMapper;
 
+    private final MediationFailedNotificationService notificationService;
+
     @Autowired
     public MediationFailedCallbackHandler(CaseDetailsConverter caseDetailsConverter,
                                           DirectionsQuestionnaireDeadlineCalculator deadlineCalculator,
-                                          CaseMapper caseMapper) {
+                                          CaseMapper caseMapper,
+                                          MediationFailedNotificationService notificationService) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.deadlineCalculator = deadlineCalculator;
         this.caseMapper = caseMapper;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -89,6 +93,7 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
             LocalDate deadline = deadlineCalculator
                 .calculateDirectionsQuestionnaireDeadlineCalculator(LocalDateTime.now());
             claim = claim.toBuilder().directionsQuestionnaireDeadline(deadline).build();
+            notificationService.notifyParties(claim);
         }
 
         Map<String, Object> dataMap = caseDetailsConverter.convertToMap(caseMapper.to(claim));
