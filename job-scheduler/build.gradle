@@ -1,4 +1,5 @@
 apply plugin: 'net.ltgt.apt'
+apply plugin: 'jacoco'
 
 def versions = [
   logback          : '1.2.3',
