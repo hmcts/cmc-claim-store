@@ -87,6 +87,7 @@ public class CaseMapperTest {
 
         //then
         assertThat(claim).isEqualTo(ccdCase);
+        assertEquals(MapperUtil.getMediationOutcome(ccdCase), claim.getMediationOutcome().orElse(null));
     }
 
     @Test
