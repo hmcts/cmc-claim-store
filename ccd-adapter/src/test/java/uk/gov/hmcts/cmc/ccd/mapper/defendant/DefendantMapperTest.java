@@ -23,6 +23,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static java.time.LocalDate.now;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -50,6 +51,8 @@ public class DefendantMapperTest {
     public void mapToShouldThrowExceptionWhenTheirDetailsIsNull() {
         mapper.to(null, SampleClaim.getDefault());
     }
+
+    private final LocalDateTime mediationSettledTime = LocalDateTime.of(2019, 11, 13, 8, 20, 30);
 
     @Test(expected = NullPointerException.class)
     public void mapToShouldThrowExceptionWhenClaimIsNull() {
@@ -303,6 +306,31 @@ public class DefendantMapperTest {
     }
 
     @Test
+    public void mapToCCDDefendantWithMediationFailure() {
+        //Given
+        final String failureReason = "Mediation Failed";
+        TheirDetails theirDetails = SampleTheirDetails.builder().organisationDetails();
+        Claim claimWithSettlement = SampleClaim
+            .getWithSettlement(SampleSettlement.builder()
+                .withPartyStatements(offerPartyStatement, acceptPartyStatement).build())
+            .toBuilder()
+            .failedMediationReason(failureReason)
+            .mediationSettlementReachedAt(mediationSettledTime)
+            .build();
+
+        //When
+        CCDCollectionElement<CCDRespondent> collectionElement = mapper.to(theirDetails, claimWithSettlement);
+        CCDRespondent ccdRespondent = collectionElement.getValue();
+
+        //Then
+        assertNotNull(ccdRespondent.getMediationFailedReason());
+        assertNotNull(ccdRespondent.getMediationSettlementReachedAt());
+        assertThat(ccdRespondent.getMediationFailedReason(), is(failureReason));
+        assertThat(ccdRespondent.getMediationSettlementReachedAt(), is(mediationSettledTime));
+
+    }
+
+    @Test
     public void mapFromCCDDefendantWithNoSettlementDetails() {
         //Given
         CCDRespondent ccdRespondent = SampleCCDDefendant.withResponseMoreTimeNeededOption().build();
@@ -330,5 +358,36 @@ public class DefendantMapperTest {
         assertNotNull(finalClaim.getSettlementReachedAt());
         assertNotNull(finalClaim.getSettlement());
         assertThat(finalClaim.getSettlement().get().getPartyStatements().size(), is(3));
+    }
+
+    @Test
+    public void mapFromCCDDefendantWithMediationFailureReason() {
+        //Given
+        CCDRespondent ccdRespondent = SampleCCDDefendant.withMediationFailureReason().build();
+        Claim.ClaimBuilder claimBuilder = Claim.builder();
+
+        //when
+        mapper.from(claimBuilder, CCDCollectionElement.<CCDRespondent>builder().value(ccdRespondent).build());
+        Claim finalClaim = claimBuilder.build();
+
+        // Then
+        assertEquals(finalClaim.getFailedMediationReason(), Optional.of("Defendant phone died while mediation call"));
+
+    }
+
+    @Test
+    public void mapFromCCDDefendantWithMediationSettlementReached() {
+        //Given
+        CCDRespondent ccdRespondent = SampleCCDDefendant.withMediationAgreementDate(mediationSettledTime).build();
+        Claim.ClaimBuilder claimBuilder = Claim.builder();
+
+        //when
+        mapper.from(claimBuilder, CCDCollectionElement.<CCDRespondent>builder().value(ccdRespondent).build());
+        Claim finalClaim = claimBuilder.build();
+
+        // Then
+        assertEquals(mediationSettledTime, finalClaim.getMediationSettlementReachedAt()
+            .orElseThrow(IllegalStateException::new));
+
     }
 }
