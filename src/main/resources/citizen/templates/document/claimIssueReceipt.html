@@ -536,7 +536,11 @@
       <tr class="no-border">
         <td></td>
         <td>
+          {% if claimant.partyType == 'on behalf of an organisation' %}
+          <strong>Organisation:</strong>
+          {% elseif claimant.partyType == 'on behalf of a company' %}
           <strong>Company:</strong>
+          {% endif %}
           {% if claimant.fullName is defined and claimant.fullName is not empty %}
           {{ claimant.fullName }}
           {% elseif claimant.businessName is defined and claimant.businessName is not empty %}
