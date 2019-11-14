@@ -18,13 +18,13 @@ public class IntentionToProceedJobTest {
     private IntentionToProceedJob intentionToProceedJob;
 
     @Before
-    public void setup(){
+    public void setup() {
         intentionToProceedJob = new IntentionToProceedJob();
         intentionToProceedJob.setIntentionToProceedService(intentionToProceedService);
     }
 
     @Test
-    public void executeShouldTriggerIntentionToProceed() throws Exception{
+    public void executeShouldTriggerIntentionToProceed() throws Exception {
         intentionToProceedJob.execute(null);
 
         verify(intentionToProceedService).scheduledTrigger();
