@@ -194,16 +194,18 @@ public class CaseMetadataControllerTest {
         assertEquals(dto.getIssuedOn(), metadata.getIssuedOn());
         assertEquals(dto.getResponseDeadline(), metadata.getResponseDeadline());
         assertEquals(dto.isMoreTimeRequested(), metadata.getMoreTimeRequested());
+        assertEquals(dto.getIntentionToProceedDeadline(), metadata.getIntentionToProceedDeadline());
 
         assertEquals(
             dto.getClaimDocument(SEALED_CLAIM).map(ClaimDocument::getDocumentManagementUrl).orElse(null),
             metadata.getSealedClaimDocument());
         assertEquals(dto.getMoneyReceivedOn().orElse(null), metadata.getMoneyReceivedOn());
 
-        if (dto.getClaimData().getPayment() == null) {
+        dto.getClaimData().getPayment()
+            .ifPresent(payment -> assertEquals(payment.getReference(), metadata.getPaymentReference()));
+
+        if (!dto.getClaimData().getPayment().isPresent()) {
             assertNull(metadata.getPaymentReference());
-        } else {
-            assertEquals(dto.getClaimData().getPayment().getReference(), metadata.getPaymentReference());
         }
     }
 }

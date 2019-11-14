@@ -32,6 +32,7 @@ import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -46,7 +47,6 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISS
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_LEGAL;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NUMBER_OF_RECONSIDERATION;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_MORE_TIME_REQUESTED;
-import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
 @Component
@@ -64,7 +64,6 @@ public class ClaimService {
     private final ClaimAuthorisationRule claimAuthorisationRule;
     private final ReviewOrderRule reviewOrderRule;
     private final String returnUrlPattern;
-    private final boolean asyncEventOperationEnabled;
 
     @SuppressWarnings("squid:S00107") //Constructor need all parameters
     @Autowired
@@ -80,7 +79,6 @@ public class ClaimService {
         PaidInFullRule paidInFullRule,
         ClaimAuthorisationRule claimAuthorisationRule,
         ReviewOrderRule reviewOrderRule,
-        @Value("${feature_toggles.async_event_operations_enabled:false}") boolean asyncEventOperationEnabled,
         @Value("${payments.returnUrlPattern}") String returnUrlPattern
     ) {
         this.claimRepository = claimRepository;
@@ -94,7 +92,6 @@ public class ClaimService {
         this.paidInFullRule = paidInFullRule;
         this.claimAuthorisationRule = claimAuthorisationRule;
         this.reviewOrderRule = reviewOrderRule;
-        this.asyncEventOperationEnabled = asyncEventOperationEnabled;
         this.returnUrlPattern = returnUrlPattern;
     }
 
@@ -195,19 +192,19 @@ public class ClaimService {
 
         Claim createdClaim = caseRepository.initiatePayment(user, claim);
 
+        Payment payment = createdClaim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
         return CreatePaymentResponse.builder()
-            .nextUrl(createdClaim.getClaimData().getPayment().getNextUrl())
+            .nextUrl(payment.getNextUrl())
             .build();
     }
 
     @LogExecutionTime
-    public CreatePaymentResponse resumePayment(
-        String authorisation,
-        ClaimData claimData) {
+    public CreatePaymentResponse resumePayment(String authorisation, ClaimData claimData) {
+
         Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), authorisation);
         Claim resumedClaim = caseRepository.saveCaseEvent(authorisation, claim, RESUME_CLAIM_PAYMENT_CITIZEN);
 
-        Payment payment = resumedClaim.getClaimData().getPayment();
+        Payment payment = resumedClaim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
 
         return CreatePaymentResponse.builder()
             .nextUrl(
@@ -278,7 +275,7 @@ public class ClaimService {
             .submitterId(submitterId)
             .externalId(externalId)
             .submitterEmail(submitterEmail)
-            .createdAt(nowInLocalZone())
+            .createdAt(LocalDateTimeFactory.nowInUTC())
             .claimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators.builder().build())
             .build();
 
@@ -416,27 +413,18 @@ public class ClaimService {
             .responseDeadline(responseDeadline)
             .externalId(externalId)
             .submitterEmail(submitterEmail)
-            .createdAt(nowInLocalZone())
+            .createdAt(LocalDateTimeFactory.nowInUTC())
             .features(features)
             .claimSubmissionOperationIndicators(ClaimSubmissionOperationIndicators.builder().build())
             .build();
     }
 
     private void createClaimEvent(String authorisation, User user, Claim savedClaim) {
-        if (asyncEventOperationEnabled) {
-            eventProducer.createClaimCreatedEvent(
-                savedClaim,
-                user.getUserDetails().getFullName(),
-                authorisation
-            );
-        } else {
-            eventProducer.createClaimIssuedEvent(
-                savedClaim,
-                "to-be-removed",
-                user.getUserDetails().getFullName(),
-                authorisation
-            );
-            caseRepository.updateClaimState(user.getAuthorisation(), savedClaim.getId(), OPEN);
-        }
+        eventProducer.createClaimCreatedEvent(
+            savedClaim,
+            user.getUserDetails().getFullName(),
+            authorisation
+        );
+
     }
 }

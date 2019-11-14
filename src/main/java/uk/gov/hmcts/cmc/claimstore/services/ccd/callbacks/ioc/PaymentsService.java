@@ -61,13 +61,11 @@ public class PaymentsService {
         logger.info("Retrieving payment amount for claim with external id {}",
             claim.getExternalId());
 
-        Payment claimPayment =
-            Optional.ofNullable(claim.getClaimData().getPayment())
-                .orElseThrow(IllegalStateException::new);
+        Payment claimPayment = claim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
 
-        return from(paymentsClient.retrievePayment(
-            authorisation,
-            claimPayment.getReference()));
+        return from(paymentsClient.retrievePayment(authorisation, claimPayment.getReference()),
+            claimPayment.getNextUrl()
+        );
     }
 
     public Payment createPayment(
@@ -105,11 +103,11 @@ public class PaymentsService {
         );
 
         payment.setAmount(feeOutcome.getFeeAmount());
-        return from(payment);
+        return from(payment, null);
     }
 
     private FeeDto[] buildFees(String ccdCaseId, FeeLookupResponseDto feeOutcome) {
-        return new FeeDto[] {
+        return new FeeDto[]{
             FeeDto.builder()
                 .ccdCaseNumber(ccdCaseId)
                 .calculatedAmount(feeOutcome.getFeeAmount())
@@ -137,13 +135,13 @@ public class PaymentsService {
             .build();
     }
 
-    private Payment from(PaymentDto paymentDto) {
+    private Payment from(PaymentDto paymentDto, String nextUrlCurrent) {
         String dateCreated = Optional.ofNullable(paymentDto.getDateCreated())
             .map(date -> date.toLocalDate().toString())
             .orElse(null);
         String nextUrl = Optional.ofNullable(paymentDto.getLinks().getNextUrl())
             .map(url -> url.getHref().toString())
-            .orElse(null);
+            .orElse(nextUrlCurrent);
         return Payment.builder()
             .amount(paymentDto.getAmount())
             .reference(paymentDto.getReference())
