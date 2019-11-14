@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.documents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
@@ -53,8 +52,6 @@ public class BulkPrintService implements PrintService {
     private final AppInsights appInsights;
     private final BulkPrintStaffNotificationService bulkPrintStaffNotificationService;
     private final PDFServiceClient pdfServiceClient;
-    @Value("${feature_toggles.async_event_operations_enabled:false}")
-    private boolean asyncEventProcessingEnabled;
 
     @Autowired
     public BulkPrintService(
@@ -107,9 +104,7 @@ public class BulkPrintService implements PrintService {
             claim
         );
         appInsights.trackEvent(BULK_PRINT_FAILED, REFERENCE_NUMBER, claim.getReferenceNumber());
-        if (asyncEventProcessingEnabled) {
-            throw exception;
-        }
+        throw exception;
     }
 
     @LogExecutionTime

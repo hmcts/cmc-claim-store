@@ -6,9 +6,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
+import uk.gov.hmcts.cmc.claimstore.BaseSaveTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -19,12 +20,8 @@ import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.email.EmailData;
-import uk.gov.hmcts.reform.sendletter.api.Letter;
-import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
-import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -40,14 +37,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @TestPropertySource(
     properties = {
-        "core_case_data.api.url=false",
-        "feature_toggles.async_event_operations_enabled=false"
+        "core_case_data.api.url=false"
     }
 )
-public class ResendStaffNotificationsTest extends BaseIntegrationTest {
-
-    @MockBean
-    protected SendLetterApi sendLetterApi;
+@ActiveProfiles("test")
+public class ResendStaffNotificationsTest extends BaseSaveTest {
 
     @MockBean
     protected DocumentManagementService documentManagementService;
@@ -64,7 +58,7 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
         given(userService.getUser(BEARER_TOKEN)).willReturn(user);
 
         given(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
-            .willReturn(new byte[]{1, 2, 3, 4});
+            .willReturn(new byte[] {1, 2, 3, 4});
     }
 
     @Test
@@ -114,18 +108,17 @@ public class ResendStaffNotificationsTest extends BaseIntegrationTest {
 
         GeneratePinResponse pinResponse = new GeneratePinResponse("pin-123", "333");
         given(userService.generatePin(anyString(), eq(BEARER_TOKEN))).willReturn(pinResponse);
-        given(sendLetterApi.sendLetter(anyString(), any(Letter.class)))
-            .willReturn(new SendLetterResponse(UUID.randomUUID()));
 
         makeRequest(claim.getReferenceNumber(), event)
-            .andExpect(status().isOk());
+            .andExpect(status().is5xxServerError());
 
-        verify(emailService, atLeast(2)).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
+        verify(emailService, atLeast(1)).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
 
         EmailData emailData = emailDataArgument.getValue();
         assertThat(emailData.getTo()).isEqualTo("recipient@example.com");
-        assertThat(emailData.getSubject()).isEqualTo("Claim " + claim.getReferenceNumber() + " issued");
-        assertThat(emailData.getMessage()).isEqualTo("Please find attached claim.");
+        assertThat(emailData.getSubject()).isEqualTo("Print for claim " + claim.getReferenceNumber() + " failed");
+        assertThat(emailData.getMessage())
+            .isEqualTo("The bulk print for this claim failed, please print and post the attached documents");
     }
 
     @Test

@@ -156,7 +156,7 @@ public class SaveCountyCourtJudgementTest extends BaseIntegrationTest {
             .willThrow(new NotificationClientException(new RuntimeException("invalid email2")))
             .willThrow(new NotificationClientException(new RuntimeException("invalid email3")));
 
-        makeRequest(claim.getExternalId(), COUNTY_COURT_JUDGMENT).andExpect(status().isOk());
+        makeRequest(claim.getExternalId(), COUNTY_COURT_JUDGMENT).andExpect(status().is5xxServerError());
 
         verify(notificationClient, atLeast(3))
             .sendEmail(anyString(), anyString(), anyMap(), contains("claimant-ccj-requested-notification-"));
