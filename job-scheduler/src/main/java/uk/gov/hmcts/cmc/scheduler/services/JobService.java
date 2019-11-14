@@ -79,7 +79,7 @@ public class JobService {
             }
 
             if (StringUtils.isBlank(cronExpression)) {
-                logger.warn(String.format("Trigger for %s not set up as schedule is missing", jobData.getJobClass()));
+                logger.warn("Trigger for {} not set up as schedule is missing", jobData.getJobClass());
                 return null;
             }
 
