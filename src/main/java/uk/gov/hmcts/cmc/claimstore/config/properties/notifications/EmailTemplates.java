@@ -143,7 +143,13 @@ public class EmailTemplates {
     private String claimantReadyForTransfer;
 
     @NotEmpty
+    private String claimantReadyForDirections;
+
+    @NotEmpty
     private String defendantReadyForTransfer;
+
+    @NotEmpty
+    private String defendantReadyForDirections;
 
     @NotEmpty
     private String claimantMediationFailureOfflineDQ;
