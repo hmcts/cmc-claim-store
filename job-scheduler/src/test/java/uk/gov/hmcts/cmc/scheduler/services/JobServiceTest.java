@@ -129,11 +129,13 @@ public class JobServiceTest {
         String jobId = UUID.randomUUID().toString();
         String group = "Reminders";
         JobData jobData = getJobData(jobId, group);
+        when(scheduler.checkExists(any(JobKey.class))).thenReturn(false);
 
         String cronExpression = "0 * * * * ?";
         JobKey jobKey = jobsService.scheduleJob(jobData, cronExpression);
 
         assertThat(jobKey).isEqualTo(new JobKey(jobId, group));
+
         JobDetail jobDetail = getJobDetails(jobData);
         Trigger trigger = getCronTrigger(cronExpression, jobData);
         verify(scheduler).scheduleJob(jobDetail, trigger);

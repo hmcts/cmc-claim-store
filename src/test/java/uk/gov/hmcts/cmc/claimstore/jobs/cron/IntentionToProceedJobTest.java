@@ -5,8 +5,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.quartz.JobExecutionException;
 import uk.gov.hmcts.cmc.claimstore.services.IntentionToProceedService;
 
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -28,5 +30,12 @@ public class IntentionToProceedJobTest {
         intentionToProceedJob.execute(null);
 
         verify(intentionToProceedService).scheduledTrigger();
+    }
+
+    @Test(expected = JobExecutionException.class)
+    public void shouldThrowJobExecutionException() throws Exception {
+        doThrow(new RuntimeException()).when(intentionToProceedService).scheduledTrigger();
+
+        intentionToProceedJob.execute(null);
     }
 }
