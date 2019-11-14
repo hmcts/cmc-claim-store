@@ -76,11 +76,12 @@ public class MediationUnsuccessfulCallbackHandler extends CallbackHandler {
         CallbackRequest callbackRequest = callbackParams.getRequest();
         Map<String, Object> caseData = callbackRequest.getCaseDetails().getData();
         Claim claim = caseDetailsConverter.extractClaim(CaseDetails.builder().data(caseData).build());
-        if(DirectionsQuestionnaireUtils.isOnlineDQ(claim)){
+        if (DirectionsQuestionnaireUtils.isOnlineDQ(claim)) {
             notifyClaimant(claim);
             notifyDefendant(claim);
         } else {
-
+            notifyClaimantOfflineJourney(claim);
+            notifyDefendantOfflineJourney(claim);
         }
 
         return SubmittedCallbackResponse.builder().build();
@@ -89,28 +90,20 @@ public class MediationUnsuccessfulCallbackHandler extends CallbackHandler {
     private void notifyClaimantOfflineJourney(Claim claim) {
         notificationService.sendMail(
             claim.getSubmitterEmail(),
-                notificationsProperties.getTemplates().getEmail().getClaimantMediationFailureOfflineDQ()
+            notificationsProperties.getTemplates().getEmail().getClaimantMediationFailureOfflineDQ(),
             aggregateParams(claim),
-            isPilotCourt(claim)
-                ? NotificationReferenceBuilder.MediationUnsuccessful
-                .referenceForDirections(claim.getReferenceNumber(), "claimant") :
-                NotificationReferenceBuilder.MediationUnsuccessful
-                    .referenceForTransfer(claim.getReferenceNumber(), "claimant")
+            NotificationReferenceBuilder.MediationUnsuccessful
+                .forMediationUnsuccessfulOfflineDQ(claim.getReferenceNumber(), "claimant")
         );
     }
 
     private void notifyDefendantOfflineJourney(Claim claim) {
         notificationService.sendMail(
-            claim.getDefendantEmail(),
-            isPilotCourt(claim)
-                ? notificationsProperties.getTemplates().getEmail().getDefendantReadyForDirections() :
-                notificationsProperties.getTemplates().getEmail().getDefendantReadyForTransfer(),
+            claim.getSubmitterEmail(),
+            notificationsProperties.getTemplates().getEmail().getClaimantMediationFailureOfflineDQ(),
             aggregateParams(claim),
-            isPilotCourt(claim)
-                ? NotificationReferenceBuilder.MediationUnsuccessful
-                .referenceForDirections(claim.getReferenceNumber(), "defendant") :
-                NotificationReferenceBuilder.MediationUnsuccessful
-                    .referenceForTransfer(claim.getReferenceNumber(), "defendant")
+            NotificationReferenceBuilder.MediationUnsuccessful
+                .forMediationUnsuccessfulOfflineDQ(claim.getReferenceNumber(), "defendant")
         );
     }
 
@@ -123,7 +116,7 @@ public class MediationUnsuccessfulCallbackHandler extends CallbackHandler {
             aggregateParams(claim),
             isPilotCourt(claim)
                 ? NotificationReferenceBuilder.MediationUnsuccessful
-                    .referenceForDirections(claim.getReferenceNumber(), "claimant") :
+                .referenceForDirections(claim.getReferenceNumber(), "claimant") :
                 NotificationReferenceBuilder.MediationUnsuccessful
                     .referenceForTransfer(claim.getReferenceNumber(), "claimant")
         );
@@ -138,7 +131,7 @@ public class MediationUnsuccessfulCallbackHandler extends CallbackHandler {
             aggregateParams(claim),
             isPilotCourt(claim)
                 ? NotificationReferenceBuilder.MediationUnsuccessful
-                    .referenceForDirections(claim.getReferenceNumber(), "defendant") :
+                .referenceForDirections(claim.getReferenceNumber(), "defendant") :
                 NotificationReferenceBuilder.MediationUnsuccessful
                     .referenceForTransfer(claim.getReferenceNumber(), "defendant")
         );
