@@ -192,7 +192,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'payments-client', version: '0.0.4'
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.3.0'
-  compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.4'
+  compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.5'
   compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version:'0.0.4'
 
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
