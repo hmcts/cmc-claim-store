@@ -32,6 +32,7 @@ public class IntentionToProceedDeadlineCalculatorTest {
         );
     }
 
+    @Test
     public void calculateIntentionToProceedDeadlineForWorkday() {
         LocalDate responseDate = LocalDate.of(2019, Month.OCTOBER, 15);
         when(workingDayIndicator.getNextWorkingDay(any())).then(returnsFirstArg());
