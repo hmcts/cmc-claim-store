@@ -28,6 +28,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
@@ -139,7 +140,20 @@ public class JobServiceTest {
     }
 
     @Test
-    public void shouldDeleteExisitingCronJob() throws SchedulerException {
+    public void shouldNotScheduleNewCronJobIfExpressionIsBlank() throws SchedulerException {
+        String jobId = UUID.randomUUID().toString();
+        String group = "Reminders";
+        JobData jobData = getJobData(jobId, group);
+
+        String cronExpression = "";
+        JobKey jobKey = jobsService.scheduleJob(jobData, cronExpression);
+
+        assertThat(jobKey).isNull();
+        verify(scheduler, never()).scheduleJob(any(), any());
+    }
+
+    @Test
+    public void shouldDeleteExistingCronJob() throws SchedulerException {
         String jobId = UUID.randomUUID().toString();
         String group = "Reminders";
         JobData jobData = getJobData(jobId, group);
