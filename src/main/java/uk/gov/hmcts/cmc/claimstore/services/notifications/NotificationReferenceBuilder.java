@@ -232,5 +232,9 @@ public class NotificationReferenceBuilder {
         public static String referenceForDirections(String claimReferenceNumber, String party) {
             return reference("mediation-unsuccessful-%s-directions", party, claimReferenceNumber);
         }
+
+        public static String forMediationUnsuccessfulOfflineDQ(String claimReferenceNumber, String party) {
+            return reference("mediation-unsuccessful-%s-transfer", party, claimReferenceNumber);
+        }
     }
 }

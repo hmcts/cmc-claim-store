@@ -176,6 +176,8 @@ notifications:
       claimantIntentionToProceedForOnlineDq: "200830e5-3bbf-4a43-864a-58ff4c2e1ff2"
       claimantReadyForTransfer: "50c8bdd3-f68d-44cc-b46f-72e9ed1f55a6"
       defendantReadyForTransfer: "487fdd65-131e-4547-a3ed-f632872fe957"
+      claimantMediationFailureOfflineDQ: "55d06073-0b81-4daf-a3b4-1698c7810189"
+      defendantMediationFailureOfflineDQ: "15a38762-2141-4a70-8cc9-22a27db985bc"
 
 staff-notifications:
   sender:
