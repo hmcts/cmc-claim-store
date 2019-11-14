@@ -45,7 +45,10 @@ public class ClaimDocumentCollectionMapperTest {
             .documentType(ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT)
             .build());
 
-        ClaimDocumentCollectionMapper mapper = new ClaimDocumentCollectionMapper(new ClaimDocumentMapper());
+        ClaimDocumentCollectionMapper mapper = new ClaimDocumentCollectionMapper(
+            new ClaimDocumentMapper(),
+            new ScannedDocumentMapper());
+
         mapper.to(collection, builder);
 
         CCDCase build = builder.build();

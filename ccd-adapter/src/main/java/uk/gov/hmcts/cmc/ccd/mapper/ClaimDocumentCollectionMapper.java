@@ -16,10 +16,13 @@ import java.util.stream.Collectors;
 public class ClaimDocumentCollectionMapper {
 
     private final ClaimDocumentMapper claimDocumentMapper;
+    private final ScannedDocumentMapper scannedDocumentMapper;
 
     @Autowired
-    public ClaimDocumentCollectionMapper(ClaimDocumentMapper claimDocumentMapper) {
+    public ClaimDocumentCollectionMapper(ClaimDocumentMapper claimDocumentMapper,
+                                         ScannedDocumentMapper scannedDocumentMapper) {
         this.claimDocumentMapper = claimDocumentMapper;
+        this.scannedDocumentMapper = scannedDocumentMapper;
     }
 
     public void to(ClaimDocumentCollection claimDocumentCollection, CCDCase.CCDCaseBuilder builder) {
@@ -37,6 +40,20 @@ public class ClaimDocumentCollectionMapper {
                 .filter(this::isNotCCJ)
                 .map(claimDocumentMapper::to)
                 .collect(Collectors.toList())
+        );
+
+        builder.scannedDocuments(claimDocumentCollection
+            .getScannedDocuments()
+            .stream()
+            .map(scannedDocumentMapper::to)
+            .collect(Collectors.toList())
+        );
+
+        builder.staffUploadedDocuments(claimDocumentCollection
+            .getStaffUploadedDocuments()
+            .stream()
+            .map(claimDocumentMapper::to)
+            .collect(Collectors.toList())
         );
     }
 
@@ -61,6 +78,16 @@ public class ClaimDocumentCollectionMapper {
             .stream()
             .map(claimDocumentMapper::from)
             .forEach(claimDocumentCollection::addClaimDocument);
+
+        ccdCase.getScannedDocuments()
+            .stream()
+            .map(scannedDocumentMapper::from)
+            .forEach(claimDocumentCollection::addScannedDocument);
+
+        ccdCase.getStaffUploadedDocuments()
+            .stream()
+            .map(claimDocumentMapper::from)
+            .forEach(claimDocumentCollection::addStaffUploadedDocument);
 
         builder.claimDocumentCollection(claimDocumentCollection);
     }
