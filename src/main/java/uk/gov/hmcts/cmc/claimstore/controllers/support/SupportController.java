@@ -248,7 +248,7 @@ public class SupportController {
 
     private void triggerAsyncOperation(String authorisation, Claim claim) {
         if (claim.getClaimData().isClaimantRepresented()) {
-            String submitterName = claim.getClaimData().getClaimant()
+            String submitterName = claim.getClaimData().getClaimants().get(0)
                 .getRepresentative().orElseThrow(IllegalArgumentException::new)
                 .getOrganisationName();
 

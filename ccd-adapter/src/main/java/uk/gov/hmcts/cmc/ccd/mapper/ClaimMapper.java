@@ -102,7 +102,7 @@ public class ClaimMapper {
         claimData.getFeeAmountInPennies()
             .map(BigInteger::toString)
             .ifPresent(builder::feeAmountInPennies);
-        
+
         builder
             .reason(claimData.getReason());
     }
@@ -117,7 +117,6 @@ public class ClaimMapper {
         List<Party> claimants = asStream(ccdCase.getApplicants())
             .map(claimantMapper::from)
             .collect(Collectors.toList());
-
         claimBuilder.claimData(
             new ClaimData(
                 UUID.fromString(ccdCase.getExternalId()),
