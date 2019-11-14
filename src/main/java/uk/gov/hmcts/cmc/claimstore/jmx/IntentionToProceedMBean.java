@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.IntentionToProceedService;
 
 import java.time.LocalDateTime;
@@ -24,13 +25,13 @@ public class IntentionToProceedMBean {
     }
 
     @ManagedOperation
-    public void checkClaimsPastIntentionToProceedDeadline() {
+    public void checkClaimsPastIntentionToProceedDeadline(LocalDateTime runDateTime, User user) {
         try {
 
             LocalDateTime now = LocalDateTime.now();
             logger.info(String.format("checkClaimsPastIntentionToProceedDeadline called for date: %s", now));
 
-            intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(now);
+            intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(runDateTime, user);
 
         } catch (Exception e) {
             logger.error("Error triggering stayClaim via jmx", e);
@@ -38,14 +39,14 @@ public class IntentionToProceedMBean {
     }
 
     @ManagedOperation(description = "DateTime to be provided in format 'yyyy-MM-dd HH:mm:ss'")
-    public void checkClaimsPastIntentionToProceedDeadline(String dateTime) {
+    public void checkClaimsPastIntentionToProceedDeadline(String dateTime, LocalDateTime runDateTime, User user ) {
         try {
 
             LocalDateTime localDateTime = LocalDateTime.parse(dateTime,
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             logger.info(String.format("checkClaimsPastIntentionToProceedDeadline called for date: %s", localDateTime));
 
-            intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(localDateTime);
+            intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(runDateTime, user);
 
         } catch (Exception e) {
             logger.error("Error triggering stayClaim via jmx", e);
