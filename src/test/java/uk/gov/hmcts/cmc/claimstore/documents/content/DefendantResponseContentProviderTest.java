@@ -73,7 +73,7 @@ public class DefendantResponseContentProviderTest {
     public void shouldProvideClaimantFullName() {
         Map<String, Object> content = provider.createContent(claim);
 
-        assertThat(((ClaimContent) content.get("claim")).getSignerName())
+        assertThat(((ClaimContent) content.get("claim")).getStatementOfTruth().getSignerName())
             .isEqualTo(claim.getClaimData().getClaimant().getName());
     }
 
