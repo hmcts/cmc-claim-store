@@ -103,7 +103,7 @@ public class CaseMapper {
             .directionOrder(directionOrderMapper.from(ccdCase.getDirectionOrder(), ccdCase.getDirectionOrderData()))
             .intentionToProceedDeadline(ccdCase.getIntentionToProceedDeadline())
             .reviewOrder(reviewOrderMapper.from(ccdCase.getReviewOrder()))
-            .paperResponse(MapperUtil.canContinueOnline.apply(ccdCase))
+            .paperResponse(MapperUtil.hasPaperResponse.apply(ccdCase))
             .mediationOutcome(getMediationOutcome(ccdCase));
 
         if (ccdCase.getFeatures() != null) {

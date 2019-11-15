@@ -74,12 +74,11 @@ public class MapperUtil {
         return Stream.of(objects).anyMatch(Objects::nonNull);
     }
 
-    public static Function<CCDCase, YesNoOption>
-        canContinueOnline = (ccdCase) ->
+    public static Function<CCDCase, YesNoOption> hasPaperResponse = (ccdCase) ->
         StreamUtil.asStream(ccdCase.getStaffUploadedDocuments())
             .map(CCDCollectionElement::getValue)
-            .anyMatch(filterStaffUploadedPaperResponseDoc) ||
-        StreamUtil.asStream(ccdCase.getScannedDocuments()).map(CCDCollectionElement::getValue)
+            .anyMatch(filterStaffUploadedPaperResponseDoc)
+            || StreamUtil.asStream(ccdCase.getScannedDocuments()).map(CCDCollectionElement::getValue)
             .anyMatch(filterCaseDocumentsPaperResponseDoc) ? YesNoOption.YES : YesNoOption.NO;
 
     private static String fetchDefendantName(Claim claim) {
