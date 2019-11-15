@@ -39,7 +39,7 @@ public class IntentionToProceedMBean {
     }
 
     @ManagedOperation(description = "DateTime to be provided in format 'yyyy-MM-dd HH:mm:ss'")
-    public void checkClaimsPastIntentionToProceedDeadline(String dateTime, LocalDateTime runDateTime, User user ) {
+    public void checkClaimsPastIntentionToProceedDeadline(String dateTime, LocalDateTime runDateTime, User user) {
         try {
 
             LocalDateTime localDateTime = LocalDateTime.parse(dateTime,

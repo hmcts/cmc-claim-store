@@ -18,7 +18,6 @@ import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
 
 import java.time.LocalDate;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
