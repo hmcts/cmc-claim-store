@@ -97,7 +97,7 @@ public class ClaimAssert extends CustomAssert<ClaimAssert, Claim> {
 
         compare("feeAmountInPennies",
             expected.getFeeAmountInPennies(), NumberUtils::createBigInteger,
-            Optional.ofNullable(data.getFeeAmountInPennies()));
+            data.getFeeAmountInPennies());
 
         compare("externalReferenceNumber",
             expected.getExternalReferenceNumber(),
@@ -177,7 +177,7 @@ public class ClaimAssert extends CustomAssert<ClaimAssert, Claim> {
             expected.getInterestEndDateType(), Enum::name,
             actualInterestDate.map(InterestDate::getEndDateType).map(Enum::name));
 
-        Optional<Payment> actualPayment = Optional.ofNullable(data.getPayment());
+        Optional<Payment> actualPayment = data.getPayment();
 
         compare("paymentId",
             expected.getPaymentId(),
