@@ -196,7 +196,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version:'0.0.4'
 
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
-  compile group: 'org.apache.commons', name: 'commons-csv', version: '1.4'
+  compile group: 'org.apache.commons', name: 'commons-csv', version: '1.7'
 
   compile group: 'org.jdbi', name: 'jdbi', version: '2.78'
 
