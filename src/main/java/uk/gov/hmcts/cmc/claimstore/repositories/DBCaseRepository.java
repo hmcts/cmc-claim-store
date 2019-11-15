@@ -30,7 +30,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service("caseRepository")
@@ -266,7 +269,29 @@ public class DBCaseRepository implements CaseRepository {
         ClaimDocumentType claimDocumentType
     ) {
         claimRepository.saveClaimDocuments(claimId, jsonMapper.toJson(claimDocumentCollection));
+        Claim claim = getClaimById(claimId);
+        String claimSubmissionOperationIndicators = jsonMapper.toJson(updateClaimSubmissionIndicatorByDocumentType(
+            claim.getClaimSubmissionOperationIndicators(),
+            claimDocumentType
+        ));
+
+        claimRepository.updateClaimSubmissionOperationStatus(claimId, claimSubmissionOperationIndicators);
         return getClaimById(claimId);
+    }
+
+    private ClaimSubmissionOperationIndicators updateClaimSubmissionIndicatorByDocumentType(
+        ClaimSubmissionOperationIndicators indicators,
+        ClaimDocumentType documentType
+    ) {
+        ClaimSubmissionOperationIndicators.ClaimSubmissionOperationIndicatorsBuilder updatedIndicator
+            = indicators.toBuilder();
+
+        if (documentType == SEALED_CLAIM) {
+            updatedIndicator.sealedClaimUpload(YES);
+        } else if (documentType == CLAIM_ISSUE_RECEIPT) {
+            updatedIndicator.claimIssueReceiptUpload(YES);
+        }
+        return updatedIndicator.build();
     }
 
     @Override

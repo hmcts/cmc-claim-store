@@ -134,7 +134,6 @@ public class ClaimServiceTest {
             new PaidInFullRule(),
             new ClaimAuthorisationRule(userService),
             new ReviewOrderRule(),
-            true,
             RETURN_URL);
     }
 
@@ -214,7 +213,6 @@ public class ClaimServiceTest {
             new PaidInFullRule(),
             new ClaimAuthorisationRule(userService),
             new ReviewOrderRule(),
-            true,
             RETURN_URL);
 
         ClaimData claimData = SampleClaimData.validDefaults();

@@ -201,10 +201,11 @@ public class CaseMetadataControllerTest {
             metadata.getSealedClaimDocument());
         assertEquals(dto.getMoneyReceivedOn().orElse(null), metadata.getMoneyReceivedOn());
 
-        if (dto.getClaimData().getPayment() == null) {
+        dto.getClaimData().getPayment()
+            .ifPresent(payment -> assertEquals(payment.getReference(), metadata.getPaymentReference()));
+
+        if (!dto.getClaimData().getPayment().isPresent()) {
             assertNull(metadata.getPaymentReference());
-        } else {
-            assertEquals(dto.getClaimData().getPayment().getReference(), metadata.getPaymentReference());
         }
     }
 }

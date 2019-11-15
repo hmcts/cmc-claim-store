@@ -13,5 +13,5 @@ public interface SupportRepository {
 
     Optional<Claim> getByClaimReferenceNumber(String claimReferenceNumber, String authorisation);
 
-    void linkDefendantToClaim(Claim claim, String defendantId);
+    void linkDefendantToClaim(Claim claim, String defendantId, String defendantEmail);
 }
