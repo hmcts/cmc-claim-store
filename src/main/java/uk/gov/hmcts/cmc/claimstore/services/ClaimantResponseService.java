@@ -91,8 +91,6 @@ public class ClaimantResponseService {
         claimantResponseRule.isValid(updatedClaim);
         formaliseResponseAcceptance(claimantResponse, response, updatedClaim, authorization);
 
-        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
-
         if (isFullDefenseDisputeAcceptation(response, claimantResponse)) {
             appInsights.trackEvent(AppInsightsEvent.CLAIM_STAYED, REFERENCE_NUMBER, updatedClaim.getReferenceNumber());
 
