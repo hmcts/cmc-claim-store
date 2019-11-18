@@ -140,6 +140,9 @@ public class EmailTemplates {
     private String claimantIntentionToProceedForOnlineDq;
 
     @NotEmpty
+    private  String claimantSettledAfterFullDefence;
+
+    @NotEmpty
     private String claimantReadyForTransfer;
 
     @NotEmpty

@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.events.operations;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
@@ -14,7 +13,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import java.util.Arrays;
 
 @Component
-@ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled", havingValue = "true")
 public class RpaOperationService {
 
     private final ClaimIssuedNotificationService notificationService;

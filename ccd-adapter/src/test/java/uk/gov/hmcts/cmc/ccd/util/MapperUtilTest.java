@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import static java.util.Collections.singletonList;
@@ -137,8 +138,11 @@ public class MapperUtilTest {
 
     @Test
     public void shouldMapMediationOutcomeSuccesFromCCDCase() {
+        final LocalDateTime mediationSettledTime = LocalDateTime.of(2019, 11, 13, 8, 20, 30);
+
         CCDCase ccdCase =
-            SampleData.getCCDCitizenCaseWithRespondent(SampleCCDDefendant.withMediationAgreementDate().build());
+            SampleData.getCCDCitizenCaseWithRespondent(
+                SampleCCDDefendant.withMediationAgreementDate(mediationSettledTime).build());
 
         assertThat(getMediationOutcome(ccdCase), Is.is(MediationOutcome.SUCCEEDED));
     }

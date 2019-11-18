@@ -5,5 +5,4 @@ respond_to_claim_url = "https://cmc-citizen-frontend-sandbox.service.core-comput
 ccd_enabled = "false"
 ccd_async_enabled = "false"
 dm_url = "http://dm-store-sandbox.service.core-compute-sandbox.internal"
-async_event_operations_enabled = "true"
 save_claim_state_enabled = "true"

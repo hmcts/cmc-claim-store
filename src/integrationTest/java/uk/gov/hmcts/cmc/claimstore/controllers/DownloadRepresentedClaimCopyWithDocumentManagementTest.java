@@ -113,8 +113,7 @@ public class DownloadRepresentedClaimCopyWithDocumentManagementTest extends Base
             .willReturn(null);
 
         ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
-        given(documentUploadClient
-            .upload(eq(AUTHORISATION_TOKEN), anyString(), anyString(), anyList(),
+        given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), anyString(), anyString(), anyList(),
                 any(Classification.class), anyList()))
             .willReturn(successfulDocumentManagementUploadResponse());
 
@@ -124,6 +123,9 @@ public class DownloadRepresentedClaimCopyWithDocumentManagementTest extends Base
             .andReturn();
 
         Claim claim = deserializeObjectFrom(result, Claim.class);
+
+        postClaimOperation.getClaim(claim.getExternalId(), AUTHORISATION_TOKEN);
+
         makeRequest(claim.getExternalId())
             .andExpect(status().isOk())
             .andExpect(content().bytes(PDF_BYTES));

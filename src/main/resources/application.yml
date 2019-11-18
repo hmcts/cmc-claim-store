@@ -174,6 +174,7 @@ notifications:
       reviewOrderEmailToDefendant: "d568fc1e-f1fc-441a-94da-6506df12cae6"
       claimantIntentionToProceedForPaperDq: "ecd5ccc3-9630-4c70-b225-c6132f02efe1"
       claimantIntentionToProceedForOnlineDq: "200830e5-3bbf-4a43-864a-58ff4c2e1ff2"
+      claimantSettledAfterFullDefence: "e486e5b8-73a3-4585-ae0e-74b3f1bced77"
       claimantReadyForTransfer: "50c8bdd3-f68d-44cc-b46f-72e9ed1f55a6"
       defendantReadyForTransfer: "487fdd65-131e-4547-a3ed-f632872fe957"
       claimantMediationFailureOfflineDQ: "55d06073-0b81-4daf-a3b4-1698c7810189"
@@ -187,7 +188,6 @@ feature_toggles:
   watermark_pdf: false
   reminderEmails: false
   save_claim_state_enabled: false
-  async_event_operations_enabled: false
   directions_questionnaire_enabled: false
 
 feign:

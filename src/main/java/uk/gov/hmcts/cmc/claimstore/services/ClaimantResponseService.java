@@ -30,6 +30,7 @@ import java.util.function.Predicate;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LIFT_STAY;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isSettlePreJudgment;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
@@ -80,8 +81,18 @@ public class ClaimantResponseService {
         }
 
         Claim updatedClaim = caseRepository.saveClaimantResponse(claim, claimantResponse, authorization);
+
         claimantResponseRule.isValid(updatedClaim);
         formaliseResponseAcceptance(claimantResponse, updatedClaim, authorization);
+
+        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+
+        if (isFullDefenseDisputeAcceptation(response, claimantResponse)) {
+            appInsights.trackEvent(AppInsightsEvent.CLAIM_STAYED, REFERENCE_NUMBER, updatedClaim.getReferenceNumber());
+
+            caseRepository.saveCaseEvent(authorization, updatedClaim, CaseEvent.STAY_CLAIM);
+        }
+
         if (!DirectionsQuestionnaireUtils.isOnlineDQ(updatedClaim)
             && isRejectResponseNoMediation(claimantResponse)) {
             updateDirectionsQuestionnaireDeadline(updatedClaim, authorization);
@@ -191,6 +202,11 @@ public class ClaimantResponseService {
         ResponseType responseType = response.getResponseType();
         return responseType == ResponseType.FULL_DEFENCE
             && ((FullDefenceResponse) response).getDefenceType() == DefenceType.ALREADY_PAID;
+    }
+
+    private boolean isFullDefenseDisputeAcceptation(Response response, ClaimantResponse claimantResponse) {
+        return claimantResponse.getType() == ACCEPTATION
+            && ResponseUtils.isFullDefenceDispute(response);
     }
 
     private boolean shouldFormaliseResponseAcceptance(Response response, ClaimantResponse claimantResponse) {
