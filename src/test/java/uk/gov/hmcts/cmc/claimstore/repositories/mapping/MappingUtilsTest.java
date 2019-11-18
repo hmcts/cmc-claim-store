@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.repositories.mapping;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.Timestamp;
@@ -52,7 +51,6 @@ public class MappingUtilsTest {
     }
 
     @Test
-    @Ignore
     public void toLocalDateTimeFromUtcReturnsLocalDateTime() {
         LocalDateTime dateTime = ZonedDateTime.of(2016, 12, 12, 10, 10, 0, 0, ZoneId.of("UTC")).toLocalDateTime();
         assertThat(toLocalDateTimeFromUTC(new Timestamp(dateTime.toInstant(ZoneOffset.UTC).toEpochMilli())))

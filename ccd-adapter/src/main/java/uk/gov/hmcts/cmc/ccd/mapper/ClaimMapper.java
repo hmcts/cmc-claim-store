@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.ccd.mapper;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.mapper.defendant.DefendantMapper;
-import uk.gov.hmcts.cmc.ccd.util.MapperUtil;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
@@ -103,7 +102,7 @@ public class ClaimMapper {
         claimData.getFeeAmountInPennies()
             .map(BigInteger::toString)
             .ifPresent(builder::feeAmountInPennies);
-        
+
         builder
             .reason(claimData.getReason());
     }
@@ -118,8 +117,6 @@ public class ClaimMapper {
         List<Party> claimants = asStream(ccdCase.getApplicants())
             .map(claimantMapper::from)
             .collect(Collectors.toList());
-        claimBuilder.failedMediationReason(MapperUtil.getMediationFailedReason(ccdCase.getRespondents()));
-        claimBuilder.mediationSettlementReachedAt(MapperUtil.getMediationSettlementReachedAt(ccdCase.getRespondents()));
         claimBuilder.claimData(
             new ClaimData(
                 UUID.fromString(ccdCase.getExternalId()),
