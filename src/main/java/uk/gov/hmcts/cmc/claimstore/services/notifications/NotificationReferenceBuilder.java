@@ -221,7 +221,7 @@ public class NotificationReferenceBuilder {
 
     public static class MediationSuccessful {
 
-        public static final String TEMPLATE = "to-%s-mediation-successful-";
+        public static final String TEMPLATE = "to-%s-mediation-successful";
 
         private MediationSuccessful() {
             // do not instantiate
