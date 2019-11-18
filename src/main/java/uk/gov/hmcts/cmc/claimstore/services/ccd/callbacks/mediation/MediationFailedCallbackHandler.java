@@ -22,6 +22,7 @@ import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -40,7 +41,6 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
     private static final List<CaseEvent> EVENTS = ImmutableList.of(MEDIATION_FAILED);
 
     private static final String STATE = "state";
-    private static final String DIRECTIONS_QUESTIONNAIRE_DEADLINE = "directionsQuestionnaireDeadline";
     private static final String OPEN_STATE = "open";
     private static final String READY_FOR_DIRECTIONS_STATE = "readyForDirections";
     private static final String READY_FOR_TRANSFER_STATE = "readyForTransfer";
@@ -69,7 +69,8 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
     @Override
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
-            CallbackType.ABOUT_TO_SUBMIT, this::assignCaseState
+            CallbackType.ABOUT_TO_SUBMIT, this::assignCaseState,
+            CallbackType.SUBMITTED, this::notifyPartiesOfOutcome
         );
     }
 
@@ -83,6 +84,14 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
         return ROLES;
     }
 
+    private CallbackResponse notifyPartiesOfOutcome(CallbackParams callbackParams) {
+        CallbackRequest callbackRequest = callbackParams.getRequest();
+
+        Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
+        notificationService.notifyParties(claim);
+        return SubmittedCallbackResponse.builder().build();
+    }
+
     private CallbackResponse assignCaseState(CallbackParams callbackParams) {
         logger.info("Mediation failure about-to-submit callback: state determination start");
         CallbackRequest callbackRequest = callbackParams.getRequest();
@@ -93,8 +102,6 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
             LocalDate deadline = deadlineCalculator
                 .calculateDirectionsQuestionnaireDeadlineCalculator(LocalDateTime.now());
             claim = claim.toBuilder().directionsQuestionnaireDeadline(deadline).build();
-        } else {
-            notificationService.notifyParties(claim);
         }
 
         Map<String, Object> dataMap = caseDetailsConverter.convertToMap(caseMapper.to(claim));

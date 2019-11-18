@@ -6,9 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
-import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
@@ -54,6 +52,7 @@ public class MediationFailedCallbackHandlerTest {
 
     private Claim claimSetForMediation =
         SampleClaim.getWithClaimantResponseRejectionForPartAdmissionAndMediation();
+    private CallbackRequest callbackRequest;
 
     @Before
     public void setUp() {
@@ -62,7 +61,7 @@ public class MediationFailedCallbackHandlerTest {
             deadlineCalculator,
             caseMapper,
             mediationFailedNotificationService);
-        CallbackRequest callbackRequest = CallbackRequest
+        callbackRequest = CallbackRequest
             .builder()
             .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
             .eventId(MEDIATION_FAILED.getValue())
@@ -77,22 +76,18 @@ public class MediationFailedCallbackHandlerTest {
 
     @Test(expected = IllegalStateException.class)
     public void throwsExceptionIfNotDefenseOrFullAdmit() {
-        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         Claim claim = SampleClaim.getClaimWithFullAdmission();
 
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
-        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
 
         mediationFailedCallbackHandler.handle(callbackParams);
     }
 
     @Test(expected = IllegalStateException.class)
     public void throwsExceptionIfClaimantResponseAcceptation() {
-        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         Claim claim = SampleClaim.getClaimFullDefenceStatesPaidWithAcceptation();
 
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
-        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
 
         mediationFailedCallbackHandler.handle(callbackParams);
     }
@@ -100,13 +95,11 @@ public class MediationFailedCallbackHandlerTest {
     @Test
     public void setsToOpenIfNotOnlineDQCase() {
 
-        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         Claim claim = claimSetForMediation.toBuilder()
             .claimData(SampleClaimData.submittedWithAmountMoreThanThousand())
             .build();
 
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
-        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
         when(deadlineCalculator.calculateDirectionsQuestionnaireDeadlineCalculator(any()))
             .thenReturn(LocalDate.now().plusDays(8));
 
@@ -115,14 +108,17 @@ public class MediationFailedCallbackHandlerTest {
                 .handle(callbackParams);
 
         assertThat(response.getData()).containsEntry("state", "open");
-        assertThat(response.getData()).containsEntry("directionsQuestionnaireDeadline", LocalDate.now().plusDays(8));
 
     }
 
     @Test
-    public void shouldSendNotificationsIfOnlineDQCase() {
+    public void shouldSendNotificationsIfOnlineDQCaseSubmitted() {
+        callbackParams = CallbackParams.builder()
+            .type(CallbackType.SUBMITTED)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
+            .build();
 
-        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         Claim claim = claimSetForMediation.toBuilder()
             .response(
                 SampleResponse
@@ -138,7 +134,6 @@ public class MediationFailedCallbackHandlerTest {
             .build();
 
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
-        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
 
         mediationFailedCallbackHandler.handle(callbackParams);
 
@@ -148,13 +143,11 @@ public class MediationFailedCallbackHandlerTest {
     @Test
     public void setsStateToReadyForTransferIfNotPilotCase() {
 
-        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         Claim claim = claimSetForMediation.toBuilder()
             .features(Collections.singletonList("directionsQuestionnaire"))
             .build();
 
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
-        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
 
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
             mediationFailedCallbackHandler
@@ -167,7 +160,6 @@ public class MediationFailedCallbackHandlerTest {
     @Test
     public void setsToReadyForDirectionsIfPilotCase() {
 
-        CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         Claim claim = claimSetForMediation.toBuilder()
             .response(
                 SampleResponse
@@ -183,7 +175,6 @@ public class MediationFailedCallbackHandlerTest {
             .build();
 
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
-        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
 
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
             mediationFailedCallbackHandler

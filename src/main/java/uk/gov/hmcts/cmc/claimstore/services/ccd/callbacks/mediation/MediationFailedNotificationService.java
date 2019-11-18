@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
+import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.HashMap;
@@ -30,9 +31,14 @@ public class MediationFailedNotificationService {
         this.notificationsProperties = notificationsProperties;
     }
 
-    public void notifyParties(Claim claim) {
-        notifyClaimant(claim);
-        notifyDefendant(claim);
+    protected void notifyParties(Claim claim) {
+        if (DirectionsQuestionnaireUtils.isOnlineDQ(claim)) {
+            notifyClaimant(claim);
+            notifyDefendant(claim);
+        } else {
+            notifyClaimantOfflineJourney(claim);
+            notifyDefendantOfflineJourney(claim);
+        }
     }
 
     private void notifyClaimant(Claim claim) {
@@ -52,6 +58,26 @@ public class MediationFailedNotificationService {
             aggregateParams(claim),
             NotificationReferenceBuilder.MediationUnsuccessful
                 .referenceForTransfer(claim.getReferenceNumber(), "defendant")
+        );
+    }
+
+    private void notifyClaimantOfflineJourney(Claim claim) {
+        notificationService.sendMail(
+            claim.getSubmitterEmail(),
+            notificationsProperties.getTemplates().getEmail().getClaimantMediationFailureOfflineDQ(),
+            aggregateParams(claim),
+            NotificationReferenceBuilder.MediationUnsuccessful
+                .forMediationUnsuccessfulOfflineDQ(claim.getReferenceNumber(), "claimant")
+        );
+    }
+
+    private void notifyDefendantOfflineJourney(Claim claim) {
+        notificationService.sendMail(
+            claim.getDefendantEmail(),
+            notificationsProperties.getTemplates().getEmail().getClaimantMediationFailureOfflineDQ(),
+            aggregateParams(claim),
+            NotificationReferenceBuilder.MediationUnsuccessful
+                .forMediationUnsuccessfulOfflineDQ(claim.getReferenceNumber(), "defendant")
         );
     }
 
