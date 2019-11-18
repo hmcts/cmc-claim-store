@@ -22,14 +22,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MEDIATION_FAILED;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MEDIATION_SUCCESSFUL;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @Service
 public class MediationSuccessCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
-    private static final List<CaseEvent> EVENTS = ImmutableList.of(MEDIATION_FAILED);
+    private static final List<CaseEvent> EVENTS = ImmutableList.of(MEDIATION_SUCCESSFUL);
 
     private final CaseDetailsConverter caseDetailsConverter;
 

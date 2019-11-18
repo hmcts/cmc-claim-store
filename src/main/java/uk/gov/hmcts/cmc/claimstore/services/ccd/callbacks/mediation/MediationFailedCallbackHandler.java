@@ -45,7 +45,6 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
     private static final List<CaseEvent> EVENTS = ImmutableList.of(MEDIATION_FAILED);
 
     private static final String STATE = "state";
-    private static final String DIRECTIONS_QUESTIONNAIRE_DEADLINE = "directionsQuestionnaireDeadline";
     private static final String OPEN_STATE = "open";
     private static final String READY_FOR_DIRECTIONS_STATE = "readyForDirections";
     private static final String READY_FOR_TRANSFER_STATE = "readyForTransfer";
