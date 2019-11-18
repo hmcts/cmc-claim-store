@@ -10,6 +10,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.Interest;
+import uk.gov.hmcts.cmc.domain.models.MediationOutcome;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
@@ -100,6 +101,7 @@ public final class SampleClaim {
     private DirectionOrder directionOrder;
     private ChannelType channel;
     private LocalDate intentionToProceedDeadline = NOW_IN_LOCAL_ZONE.toLocalDate().plusDays(33);
+    private MediationOutcome mediationOutcome;
 
     private SampleClaim() {
     }
@@ -216,7 +218,7 @@ public final class SampleClaim {
             .build();
     }
 
-    public static Claim getClaimWithFullDefenceWithMediation() {
+    public static Claim getClaimWithFullAdmission() {
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withResponse(SampleResponse.FullAdmission.builder()
@@ -311,14 +313,15 @@ public final class SampleClaim {
                 SampleResponse
                     .PartAdmission
                     .builder()
-                    .buildWithFreeMediation())
+                    .buildWithDirectionsQuestionnaire()
+            )
             .withRespondedAt(LocalDateTime.now())
             .withDefendantEmail(DEFENDANT_EMAIL)
             .withClaimantRespondedAt(LocalDateTime.now())
             .withClaimantResponse(SampleClaimantResponse
                 .ClaimantResponseRejection
                 .builder()
-                .buildRejectionWithFreeMediation())
+                .buildRejectionWithDirectionsQuestionnaire())
             .build();
     }
 
@@ -543,7 +546,10 @@ public final class SampleClaim {
             reviewOrder,
             directionOrder,
             channel,
-            intentionToProceedDeadline
+            intentionToProceedDeadline,
+            mediationOutcome,
+            null,
+            null
         );
     }
 
@@ -761,6 +767,11 @@ public final class SampleClaim {
         ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
     ) {
         this.claimSubmissionOperationIndicators = claimSubmissionOperationIndicators;
+        return this;
+    }
+
+    public SampleClaim withMediationOutcome(MediationOutcome mediationOutcome) {
+        this.mediationOutcome = mediationOutcome;
         return this;
     }
 }

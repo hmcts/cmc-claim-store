@@ -82,8 +82,8 @@ import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOU
 
 public class SampleData {
 
-    public static final String AMOUNT = "12398";
-    public static final String SUBMIT_MORE_DOCS_INSTRUCTION = "submit more docs";
+    private static final String AMOUNT = "12398";
+    private static final String SUBMIT_MORE_DOCS_INSTRUCTION = "submit more docs";
     public static final String MANCHESTER_CIVIL_JUSTICE_CENTRE_CIVIL_AND_FAMILY_COURTS
         = "Manchester Civil Justice Centre (Civil and Family Courts)";
 
@@ -228,6 +228,7 @@ public class SampleData {
             .instalmentAmount(AMOUNT)
             .paymentSchedule(CCDPaymentSchedule.EACH_WEEK)
             .completionDate(LocalDate.of(2018, 10, 12))
+            .paymentLength("1 year")
             .build();
     }
 
@@ -733,6 +734,21 @@ public class SampleData {
             .applicants(applicants)
             .respondents(respondents)
             .claimSubmissionOperationIndicators(claimIndicatorSupplier)
+            .state(OPEN.getValue())
+            .build();
+    }
+
+    public static CCDCase getCCDCitizenCaseWithRespondent(CCDRespondent respondent) {
+        List<CCDCollectionElement<CCDApplicant>> applicants
+            = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
+        List<CCDCollectionElement<CCDRespondent>> respondents
+            = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(respondent).build());
+
+        return ccdBuilderWithDefault()
+            .amountBreakDown(getAmountBreakDown())
+            .applicants(applicants)
+            .respondents(respondents)
+            .claimSubmissionOperationIndicators(defaultCCDClaimSubmissionOperationIndicators)
             .state(OPEN.getValue())
             .build();
     }

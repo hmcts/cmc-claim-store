@@ -1,26 +1,36 @@
 package uk.gov.hmcts.cmc.ccd.util;
 
+import org.hamcrest.core.Is;
 import org.junit.Test;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDDefendant;
+import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.MediationOutcome;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDClaimSubmissionOperationIndicators.CCDClaimSubmissionOperationIndicatorsWithPinSuccess;
+import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.getMediationOutcome;
+import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.toCaseName;
 
 public class MapperUtilTest {
 
     @Test
     public void caseNameNotNull() {
         Claim sampleClaim = SampleClaim.getDefault();
-        String caseName = MapperUtil.toCaseName.apply(sampleClaim);
+        String caseName = toCaseName.apply(sampleClaim);
         assertNotNull(caseName);
     }
 
@@ -39,7 +49,7 @@ public class MapperUtilTest {
             ).build()
         ).build();
 
-        String caseName = MapperUtil.toCaseName.apply(claimWithMultiClaimant);
+        String caseName = toCaseName.apply(claimWithMultiClaimant);
         assertNotNull(caseName);
         assertThat(caseName, is("Brexiter + others Vs Mrs. Theresa May"));
 
@@ -65,7 +75,7 @@ public class MapperUtilTest {
                         .individualDetails())).build()
         ).build();
 
-        String caseName = MapperUtil.toCaseName.apply(claimWithMultiDefendant);
+        String caseName = toCaseName.apply(claimWithMultiDefendant);
         assertNotNull(caseName);
         assertThat(caseName, is("Brexiter Vs Mrs. Theresa May + others"));
 
@@ -85,7 +95,7 @@ public class MapperUtilTest {
             ).build()
         ).build();
 
-        String caseName = MapperUtil.toCaseName.apply(claimWithMultiDefendant);
+        String caseName = toCaseName.apply(claimWithMultiDefendant);
         assertNotNull(caseName);
         assertThat(caseName, is("Euro Star Vs Mr. Boris Johnson"));
 
@@ -100,7 +110,7 @@ public class MapperUtilTest {
             ).build()
         ).build();
 
-        String caseName = MapperUtil.toCaseName.apply(claimWithMultiDefendant);
+        String caseName = toCaseName.apply(claimWithMultiDefendant);
         assertNotNull(caseName);
         assertThat(caseName, is("Euro Star Vs Boris Johnson"));
 
@@ -124,6 +134,33 @@ public class MapperUtilTest {
         String caseName = MapperUtil.toCaseName.apply(claimWithResponse);
         assertNotNull(caseName);
         assertThat(caseName, is("Versace Vs French Connection UK"));
+    }
+
+    @Test
+    public void shouldMapMediationOutcomeSuccesFromCCDCase() {
+        final LocalDateTime mediationSettledTime = LocalDateTime.of(2019, 11, 13, 8, 20, 30);
+
+        CCDCase ccdCase =
+            SampleData.getCCDCitizenCaseWithRespondent(
+                SampleCCDDefendant.withMediationAgreementDate(mediationSettledTime).build());
+
+        assertThat(getMediationOutcome(ccdCase), Is.is(MediationOutcome.SUCCEEDED));
+    }
+
+    @Test
+    public void shouldMapMediationOutcomeFailureFromCCDCase() {
+        CCDCase ccdCase =
+            SampleData.getCCDCitizenCaseWithRespondent(SampleCCDDefendant.withMediationFailureReason().build());
+
+        assertThat(getMediationOutcome(ccdCase), Is.is(MediationOutcome.FAILED));
+    }
+
+    @Test
+    public void shouldMapMediationOutcomeAsNullFromCCDCase() {
+        CCDCase ccdCase =
+            SampleData.getCCDCitizenCaseWithOperationIndicators(CCDClaimSubmissionOperationIndicatorsWithPinSuccess);
+
+        assertNull(getMediationOutcome(ccdCase));
     }
 
 }

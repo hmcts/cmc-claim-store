@@ -60,6 +60,19 @@ public class ClaimantResponseActionsHandlerTest {
     }
 
     @Test
+    public void sendNotificationToDefendantWhenClaimantHasSettledForFullDefense() {
+        //given
+        ClaimantResponse claimantResponse = ClaimantResponseRejection.validDefaultAcceptation();
+        Response response = SampleResponse.FullDefence.builder().withMediation(YES).build();
+        Claim claim = SampleClaim.builder().withResponse(response).withClaimantResponse(claimantResponse).build();
+        ClaimantResponseEvent event = new ClaimantResponseEvent(claim, authorisation);
+        //when
+        handler.sendNotificationToDefendant(event);
+        //then
+        verify(notificationService).notifyDefendantOfClaimantSettling(eq(claim));
+    }
+
+    @Test
     public void sendNotificationToDefendantWhenClaimantHasIntentionToProceedForPaperDq() {
         //given
         ClaimantResponse claimantResponse = ClaimantResponseRejection.builder().build();

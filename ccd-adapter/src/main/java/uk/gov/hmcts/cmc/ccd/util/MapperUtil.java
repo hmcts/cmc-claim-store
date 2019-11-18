@@ -1,12 +1,20 @@
 package uk.gov.hmcts.cmc.ccd.util;
 
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
+import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.MediationOutcome;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
+
+import static uk.gov.hmcts.cmc.domain.models.MediationOutcome.FAILED;
+import static uk.gov.hmcts.cmc.domain.models.MediationOutcome.SUCCEEDED;
 
 public class MapperUtil {
     private static final String OTHERS = " + others";
@@ -16,6 +24,20 @@ public class MapperUtil {
 
     private MapperUtil() {
         // Utility class, no instances
+    }
+
+    public static MediationOutcome getMediationOutcome(CCDCase ccdCase) {
+
+        CCDRespondent defendant = ccdCase.getRespondents()
+            .stream().findFirst().map(CCDCollectionElement::getValue).orElseThrow(IllegalStateException::new);
+
+        if (Optional.ofNullable(defendant.getMediationFailedReason()).isPresent()) {
+            return FAILED;
+        } else if (Optional.ofNullable(defendant.getMediationSettlementReachedAt()).isPresent()) {
+            return SUCCEEDED;
+        } else {
+            return null;
+        }
     }
 
     public static boolean isAnyNotNull(Object... objects) {

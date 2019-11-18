@@ -5,6 +5,7 @@ import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.ClaimContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
@@ -93,6 +94,26 @@ public class ClaimDataContentProviderTest {
         ClaimContent claimContent = provider.createContent(SampleClaim.getWithSubmissionInterestDate());
 
         assertThat(claimContent.getClaimTotalAmount()).isEqualTo("£80.99");
+    }
+
+    @Test
+    public void shouldProvideCompanyStatementOfSignerName() {
+        Claim claim = SampleClaim.builder()
+                .withClaimData(SampleClaimData.builder().withStatementOfTruth(StatementOfTruth.builder()
+                        .signerName("Jana").build()).build())
+                .build();
+        ClaimContent claimContent = provider.createContent(claim);
+        assertThat(claimContent.getStatementOfTruth().getSignerName()).containsSequence("Jana");
+    }
+
+    @Test
+    public void shouldProvideCompanyStatementOfTruthSignerRole() {
+        Claim claim = SampleClaim.builder()
+                .withClaimData(SampleClaimData.builder().withStatementOfTruth(StatementOfTruth.builder()
+                        .signerRole("Director").build()).build())
+                .build();
+        ClaimContent claimContent = provider.createContent(claim);
+        assertThat(claimContent.getStatementOfTruth().getSignerRole()).containsSequence("Director");
     }
 
     private void testReason(String inputReason, String... expectations) {

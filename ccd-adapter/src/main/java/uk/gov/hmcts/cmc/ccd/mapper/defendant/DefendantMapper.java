@@ -63,6 +63,8 @@ public class DefendantMapper {
         respondentBuilder.responseMoreTimeNeededOption(CCDYesNoOption.valueOf(claim.isMoreTimeRequested()));
         respondentBuilder.directionsQuestionnaireDeadline(claim.getDirectionsQuestionnaireDeadline());
         respondentBuilder.countyCourtJudgmentRequest(countyCourtJudgmentMapper.to(claim));
+        claim.getFailedMediationReason().ifPresent(respondentBuilder::mediationFailedReason);
+        claim.getMediationSettlementReachedAt().ifPresent(respondentBuilder::mediationSettlementReachedAt);
 
         claim.getSettlement().ifPresent(settlement ->
             respondentBuilder.settlementPartyStatements(
@@ -109,6 +111,10 @@ public class DefendantMapper {
         );
 
         builder.respondedAt(ccdRespondent.getResponseSubmittedOn());
+        Optional.ofNullable(ccdRespondent.getMediationFailedReason()).ifPresent(builder::failedMediationReason);
+        Optional.ofNullable(ccdRespondent.getMediationSettlementReachedAt())
+            .ifPresent(builder::mediationSettlementReachedAt);
+
         responseMapper.from(builder, respondentElement);
 
         claimantResponseMapper.from(ccdRespondent.getClaimantResponse(), builder);

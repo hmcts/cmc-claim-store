@@ -1,29 +1,26 @@
 package uk.gov.hmcts.cmc.ccd.assertion;
 
-import org.assertj.core.api.AbstractAssert;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDExpertReport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
 
-import java.util.Objects;
+import java.util.Optional;
 
-public class ExpertReportAssert extends AbstractAssert<ExpertReportAssert, ExpertReport> {
+public class ExpertReportAssert extends CustomAssert<ExpertReportAssert, ExpertReport> {
 
-    public ExpertReportAssert(ExpertReport actual) {
-        super(actual, ExpertReportAssert.class);
+    ExpertReportAssert(ExpertReport actual) {
+        super("ExpertReport", actual, ExpertReportAssert.class);
     }
 
-    public ExpertReportAssert isEqualTo(CCDExpertReport ccdExpertReportRow) {
+    public ExpertReportAssert isEqualTo(CCDExpertReport expected) {
         isNotNull();
 
-        if (!Objects.equals(actual.getExpertName(), ccdExpertReportRow.getExpertName())) {
-            failWithMessage("Expected ExpertReport.expertName to be <%s> but was <%s>",
-                ccdExpertReportRow.getExpertName(), actual.getExpertName());
-        }
+        compare("expertName",
+            expected.getExpertName(),
+            Optional.ofNullable(actual.getExpertName()));
 
-        if (!Objects.equals(actual.getExpertReportDate(), ccdExpertReportRow.getExpertReportDate())) {
-            failWithMessage("Expected ExpertReport.expertReportDate to be <%s> but was <%s>",
-                ccdExpertReportRow.getExpertReportDate(), actual.getExpertReportDate());
-        }
+        compare("expertReportDate",
+            expected.getExpertReportDate(),
+            Optional.ofNullable(actual.getExpertReportDate()));
 
         return this;
     }
