@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
@@ -22,14 +24,18 @@ import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MEDIATION_FAILED;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper.isResponsePartOrFullDefence;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
@@ -52,20 +58,26 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
     private final DirectionsQuestionnaireDeadlineCalculator deadlineCalculator;
 
     private final CaseMapper caseMapper;
+    private final AppInsights appInsights;
 
     @Autowired
-    public MediationFailedCallbackHandler(CaseDetailsConverter caseDetailsConverter,
-                                          DirectionsQuestionnaireDeadlineCalculator deadlineCalculator,
-                                          CaseMapper caseMapper) {
+    public MediationFailedCallbackHandler(
+        CaseDetailsConverter caseDetailsConverter,
+        DirectionsQuestionnaireDeadlineCalculator deadlineCalculator,
+        CaseMapper caseMapper,
+        AppInsights appInsights
+    ) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.deadlineCalculator = deadlineCalculator;
         this.caseMapper = caseMapper;
+        this.appInsights = appInsights;
     }
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
-            CallbackType.ABOUT_TO_SUBMIT, this::assignCaseState
+            CallbackType.ABOUT_TO_SUBMIT, this::assignCaseState,
+            CallbackType.SUBMITTED, this::raiseAppInsightEvent
         );
     }
 
@@ -123,5 +135,12 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
         } else {
             return READY_FOR_TRANSFER_STATE;
         }
+    }
+
+    private CallbackResponse raiseAppInsightEvent(CallbackParams callbackParams) {
+        CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
+        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
+        appInsights.trackEvent(AppInsightsEvent.MEDIATION_FAILED, REFERENCE_NUMBER, claim.getReferenceNumber());
+        return SubmittedCallbackResponse.builder().build();
     }
 }

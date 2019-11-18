@@ -40,6 +40,8 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LIFT_STAY;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BOTH_OPTED_IN_FOR_MEDIATION;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_OPTED_OUT_FOR_MEDIATION;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_RESPONSE_ACCEPTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.LA_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_NON_PILOT_ELIGIBLE;
@@ -48,6 +50,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NON_LA_CA
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
+import static uk.gov.hmcts.cmc.domain.utils.FeaturesUtils.MEDIATION_PILOT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClaimantResponseServiceTest {
@@ -298,8 +301,7 @@ public class ClaimantResponseServiceTest {
             .calculateDirectionsQuestionnaireDeadlineCalculator(any(LocalDateTime.class));
         verify(caseRepository).updateDirectionsQuestionnaireDeadline(any(Claim.class), eq(dqDeadline), anyString());
         verify(eventProducer).createClaimantResponseEvent(any(Claim.class), anyString());
-        verify(appInsights).trackEvent(eq(NON_LA_CASES),
-            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+        verify(appInsights).trackEvent(eq(NON_LA_CASES), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 
     @Test
@@ -342,6 +344,7 @@ public class ClaimantResponseServiceTest {
         final ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultRejection();
 
         final Claim claim = SampleClaim.builder()
+            .withFeatures(ImmutableList.of(MEDIATION_PILOT))
             .withResponseDeadline(LocalDate.now().minusMonths(2))
             .withResponse(SampleResponse.FullDefence.builder().build())
             .withRespondedAt(respondedAt)
@@ -363,6 +366,8 @@ public class ClaimantResponseServiceTest {
         verify(caseRepository).updateDirectionsQuestionnaireDeadline(any(Claim.class), eq(dqDeadline), anyString());
         verify(eventProducer).createClaimantResponseEvent(any(Claim.class), eq(AUTHORISATION));
         verify(appInsights).trackEvent(eq(NON_LA_CASES),
+            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+        verify(appInsights).trackEvent(eq(CLAIMANT_OPTED_OUT_FOR_MEDIATION),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 
@@ -420,6 +425,10 @@ public class ClaimantResponseServiceTest {
 
         verify(appInsights).trackEvent(eq(MEDIATION_PILOT_ELIGIBLE),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+
+        verify(appInsights).trackEvent(eq(BOTH_OPTED_IN_FOR_MEDIATION),
+            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+
     }
 
     @Test
