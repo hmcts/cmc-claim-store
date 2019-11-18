@@ -139,7 +139,6 @@ public class CountyCourtJudgmentMapperTest {
             .paidAmount("1000")
             .statementOfTruthSignerRole("PM")
             .statementOfTruthSignerName("Mrs May")
-            .repaymentPlanPaymentSchedule(CCDPaymentSchedule.EVERY_MONTH)
             .type(CCDCountyCourtJudgmentType.ADMISSIONS)
             .build();
         Claim.ClaimBuilder claimBuilder = Claim.builder();

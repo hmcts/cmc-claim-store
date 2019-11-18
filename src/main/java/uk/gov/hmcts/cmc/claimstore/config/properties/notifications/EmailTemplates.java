@@ -138,4 +138,7 @@ public class EmailTemplates {
 
     @NotEmpty
     private String claimantIntentionToProceedForOnlineDq;
+
+    @NotEmpty
+    private  String claimantSettledAfterFullDefence;
 }

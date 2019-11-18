@@ -38,6 +38,8 @@ public class ClaimantResponseActionsHandler {
     public void sendNotificationToDefendant(ClaimantResponseEvent event) {
         if (isFreeMediationConfirmed(event.getClaim())) {
             this.notificationService.notifyDefendantOfFreeMediationConfirmationByClaimant(event.getClaim());
+        } else if (hasClaimantSettledForFullDefense(event.getClaim())) {
+            this.notificationService.notifyDefendantOfClaimantSettling(event.getClaim());
         } else if (isRejectedStatesPaidOrPartAdmission(event.getClaim())) {
             this.notificationService.notifyDefendantOfClaimantResponse(event.getClaim());
         } else if (hasIntentionToProceedAndIsPaperDq(event.getClaim())) {
@@ -69,6 +71,13 @@ public class ClaimantResponseActionsHandler {
         return claimantResponse.getType() == ClaimantResponseType.REJECTION
             && isOptedForMediation(claimantResponse)
             && isOptedForMediation(response);
+    }
+
+    private boolean hasClaimantSettledForFullDefense(Claim claim) {
+        ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
+        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+        return claimantResponse.getType() == ClaimantResponseType.ACCEPTATION
+            && response.getResponseType() == ResponseType.FULL_DEFENCE;
     }
 
     @EventListener

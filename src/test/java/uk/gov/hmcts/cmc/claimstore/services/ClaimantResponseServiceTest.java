@@ -39,10 +39,12 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LIFT_STAY;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.STAY_CLAIM;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BOTH_OPTED_IN_FOR_MEDIATION;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_OPTED_OUT_FOR_MEDIATION;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_RESPONSE_ACCEPTED;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_STAYED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.LA_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_NON_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_PILOT_ELIGIBLE;
@@ -118,6 +120,31 @@ public class ClaimantResponseServiceTest {
             .formalise(any(), any(), anyString());
         verify(caseRepository, never()).saveCaseEvent(AUTHORISATION, claim, ASSIGNING_FOR_DIRECTIONS);
         verify(caseRepository, never()).saveCaseEvent(AUTHORISATION, claim, REFERRED_TO_MEDIATION);
+    }
+
+    @Test
+    public void saveCaseEventCaseStayedAfterFullDefenseDispute() {
+
+        ClaimantResponse claimantResponse = SampleClaimantResponse
+            .ClaimantResponseAcceptation
+            .builder()
+            .build();
+
+        Claim claim = SampleClaim.builder()
+            .withResponse(SampleResponse.FullDefence.builder().withDefenceType(DefenceType.DISPUTE).build())
+            .withRespondedAt(LocalDateTime.now())
+            .withClaimantResponse(claimantResponse)
+            .build();
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+        when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION)))
+            .thenReturn(claim);
+
+        claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
+
+        verify(appInsights).trackEvent(CLAIM_STAYED, REFERENCE_NUMBER, claim.getReferenceNumber());
+        verify(caseRepository).saveCaseEvent(AUTHORISATION, claim, STAY_CLAIM);
+
     }
 
     @Test

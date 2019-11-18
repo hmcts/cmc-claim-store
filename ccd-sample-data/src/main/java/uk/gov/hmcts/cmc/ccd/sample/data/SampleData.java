@@ -228,6 +228,7 @@ public class SampleData {
             .instalmentAmount(AMOUNT)
             .paymentSchedule(CCDPaymentSchedule.EACH_WEEK)
             .completionDate(LocalDate.of(2018, 10, 12))
+            .paymentLength("1 year")
             .build();
     }
 

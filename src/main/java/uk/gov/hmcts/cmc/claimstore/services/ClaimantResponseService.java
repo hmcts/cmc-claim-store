@@ -87,8 +87,18 @@ public class ClaimantResponseService {
         }
 
         Claim updatedClaim = caseRepository.saveClaimantResponse(claim, claimantResponse, authorization);
+
         claimantResponseRule.isValid(updatedClaim);
         formaliseResponseAcceptance(claimantResponse, response, updatedClaim, authorization);
+
+        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+
+        if (isFullDefenseDisputeAcceptation(response, claimantResponse)) {
+            appInsights.trackEvent(AppInsightsEvent.CLAIM_STAYED, REFERENCE_NUMBER, updatedClaim.getReferenceNumber());
+
+            caseRepository.saveCaseEvent(authorization, updatedClaim, CaseEvent.STAY_CLAIM);
+        }
+
         if (!DirectionsQuestionnaireUtils.isOnlineDQ(updatedClaim)
             && isRejectResponseNoMediation(claimantResponse)) {
             updateDirectionsQuestionnaireDeadline(updatedClaim, authorization);
@@ -197,6 +207,11 @@ public class ClaimantResponseService {
         return ResponseUtils.isPartAdmission(response)
             || ResponseUtils.isFullDefence(response)
             || ResponseUtils.isResponseStatesPaid(response);
+    }
+
+    private boolean isFullDefenseDisputeAcceptation(Response response, ClaimantResponse claimantResponse) {
+        return claimantResponse.getType() == ACCEPTATION
+            && ResponseUtils.isFullDefenceDispute(response);
     }
 
     private boolean shouldFormaliseResponseAcceptance(Response response, ClaimantResponse claimantResponse) {
