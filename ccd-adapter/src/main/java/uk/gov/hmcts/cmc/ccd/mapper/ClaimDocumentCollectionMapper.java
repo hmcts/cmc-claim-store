@@ -12,6 +12,8 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
+
 @Component
 public class ClaimDocumentCollectionMapper {
 
@@ -42,16 +44,14 @@ public class ClaimDocumentCollectionMapper {
                 .collect(Collectors.toList())
         );
 
-        builder.scannedDocuments(claimDocumentCollection
-            .getScannedDocuments()
-            .stream()
+        builder.scannedDocuments(asStream(claimDocumentCollection
+            .getScannedDocuments())
             .map(scannedDocumentMapper::to)
             .collect(Collectors.toList())
         );
 
-        builder.staffUploadedDocuments(claimDocumentCollection
-            .getStaffUploadedDocuments()
-            .stream()
+        builder.staffUploadedDocuments(asStream(claimDocumentCollection
+            .getStaffUploadedDocuments())
             .map(claimDocumentMapper::to)
             .collect(Collectors.toList())
         );
@@ -79,13 +79,11 @@ public class ClaimDocumentCollectionMapper {
             .map(claimDocumentMapper::from)
             .forEach(claimDocumentCollection::addClaimDocument);
 
-        ccdCase.getScannedDocuments()
-            .stream()
+        asStream(ccdCase.getScannedDocuments())
             .map(scannedDocumentMapper::from)
             .forEach(claimDocumentCollection::addScannedDocument);
 
-        ccdCase.getStaffUploadedDocuments()
-            .stream()
+        asStream(ccdCase.getStaffUploadedDocuments())
             .map(claimDocumentMapper::from)
             .forEach(claimDocumentCollection::addStaffUploadedDocument);
 
