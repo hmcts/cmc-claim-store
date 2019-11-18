@@ -6,8 +6,8 @@ import uk.gov.hmcts.cmc.scheduler.model.CronJob;
 import uk.gov.hmcts.cmc.scheduler.model.JobData;
 import uk.gov.hmcts.cmc.scheduler.services.JobService;
 
-import javax.annotation.PostConstruct;
 import java.util.HashMap;
+import javax.annotation.PostConstruct;
 
 @Configuration
 public class CronJobConfiguration {
