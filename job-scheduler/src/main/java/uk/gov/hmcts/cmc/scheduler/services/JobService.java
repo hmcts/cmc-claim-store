@@ -1,11 +1,17 @@
 package uk.gov.hmcts.cmc.scheduler.services;
 
+import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
+import org.quartz.CronScheduleBuilder;
+import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
+import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.quartz.TriggerKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.scheduler.exceptions.JobException;
@@ -21,6 +27,8 @@ import static org.quartz.TriggerKey.triggerKey;
 
 @Service
 public class JobService {
+
+    Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final Scheduler scheduler;
 
@@ -48,6 +56,40 @@ public class JobService {
                     )
                     .build()
             );
+
+            return JobKey.jobKey(jobData.getId(), jobData.getGroup());
+
+        } catch (SchedulerException exc) {
+            throw new JobException("Error while scheduling a job", exc);
+        }
+    }
+
+    public JobKey scheduleJob(JobData jobData, String cronExpression) {
+        try {
+
+            JobDetail jobDetail = newJob(jobData.getJobClass())
+                .withIdentity(jobData.getId(), jobData.getGroup())
+                .withDescription(jobData.getDescription())
+                .usingJobData(new JobDataMap(jobData.getData()))
+                .requestRecovery()
+                .build();
+
+            if (scheduler.checkExists(jobDetail.getKey())) {
+                scheduler.deleteJob(jobDetail.getKey());
+            }
+
+            if (StringUtils.isBlank(cronExpression)) {
+                logger.warn("Trigger for {} not set up as schedule is missing", jobData.getJobClass());
+                return null;
+            }
+
+            CronTrigger trigger = newTrigger()
+                .withSchedule(CronScheduleBuilder.cronSchedule(cronExpression))
+                .withIdentity(jobData.getId(), jobData.getGroup())
+                .withDescription(jobData.getDescription())
+                .build();
+
+            scheduler.scheduleJob(jobDetail, trigger);
 
             return JobKey.jobKey(jobData.getId(), jobData.getGroup());
 

@@ -1,75 +1,72 @@
 package uk.gov.hmcts.cmc.ccd.assertion;
 
-import org.assertj.core.api.AbstractAssert;
-import org.junit.Assert;
+import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentSchedule;
 import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
+import uk.gov.hmcts.cmc.domain.models.ccj.PaymentSchedule;
+import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 
-import java.util.Objects;
+import java.util.Optional;
 
-import static java.lang.String.format;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;
 
-public class CountyCourtJudgmentAssert extends AbstractAssert<CountyCourtJudgmentAssert, CountyCourtJudgment> {
+public class CountyCourtJudgmentAssert extends CustomAssert<CountyCourtJudgmentAssert, CountyCourtJudgment> {
 
-    public CountyCourtJudgmentAssert(CountyCourtJudgment actual) {
-        super(actual, CountyCourtJudgmentAssert.class);
+    CountyCourtJudgmentAssert(CountyCourtJudgment actual) {
+        super("CountyCourtJudgment", actual, CountyCourtJudgmentAssert.class);
     }
 
-    public CountyCourtJudgmentAssert isEqualTo(CCDCountyCourtJudgment ccdCountyCourtJudgment) {
+    public CountyCourtJudgmentAssert isEqualTo(CCDCountyCourtJudgment expected) {
         isNotNull();
 
-        actual.getDefendantDateOfBirth().ifPresent(dob -> {
-            if (!Objects.equals(dob, ccdCountyCourtJudgment.getDefendantDateOfBirth())) {
-                failWithMessage(
-                    "Expected CountyCourtJudgment.defendantDateOfBirth to be <%s> but was <%s>",
-                    ccdCountyCourtJudgment.getDefendantDateOfBirth(), actual.getDefendantDateOfBirth());
-            }
-        });
+        compare("defendantDateOfBirth",
+            expected.getDefendantDateOfBirth(),
+            actual.getDefendantDateOfBirth());
 
-        actual.getPayBySetDate().ifPresent(payBysetDate -> {
-            if (!Objects.equals(payBysetDate, ccdCountyCourtJudgment.getPayBySetDate())) {
-                failWithMessage("Expected CountyCourtJudgment.payBySetDate to be <%s> but was <%s>",
-                    ccdCountyCourtJudgment.getPayBySetDate(), actual.getPayBySetDate());
-            }
-        });
+        compare("payBySetDate",
+            expected.getPayBySetDate(),
+            actual.getPayBySetDate());
 
-        actual.getPaidAmount().ifPresent(paidAmount -> assertMoney(paidAmount)
-            .isEqualTo(
-                ccdCountyCourtJudgment.getPaidAmount(),
-                format("Expected CountyCourtJudgment.paidAmount to be <%s> but was <%s>",
-                    ccdCountyCourtJudgment.getPaidAmount(), actual.getPaidAmount()
-                )
-            )
-        );
+        compare("paidAmount",
+            expected.getPaidAmount(),
+            actual.getPaidAmount(),
+            (e, a) -> assertMoney(a).isEqualTo(e));
 
-        if (!Objects.equals(actual.getPaymentOption().name(), ccdCountyCourtJudgment.getPaymentOption().name())) {
-            failWithMessage("Expected CountyCourtJudgment.paymentOption to be <%s> but was <%s>",
-                ccdCountyCourtJudgment.getPaymentOption().name(), actual.getPaymentOption().name());
-        }
+        compare("paymentOption",
+            expected.getPaymentOption(), Enum::name,
+            Optional.ofNullable(actual.getPaymentOption()).map(Enum::name));
 
-        actual.getRepaymentPlan()
-            .ifPresent(repaymentPlan -> {
-                Assert.assertEquals(repaymentPlan.getCompletionDate(),
-                    ccdCountyCourtJudgment.getRepaymentPlanCompletionDate());
-                Assert.assertEquals(repaymentPlan.getFirstPaymentDate(),
-                    ccdCountyCourtJudgment.getRepaymentPlanFirstPaymentDate());
-                assertMoney(repaymentPlan.getInstalmentAmount())
-                    .isEqualTo(ccdCountyCourtJudgment.getRepaymentPlanInstalmentAmount());
-                assertMoney(repaymentPlan.getInstalmentAmount())
-                    .isEqualTo(ccdCountyCourtJudgment.getRepaymentPlanInstalmentAmount());
-                Assert.assertEquals(repaymentPlan.getPaymentLength(),
-                    ccdCountyCourtJudgment.getRepaymentPlanPaymentLength());
-                Assert.assertEquals(repaymentPlan.getPaymentSchedule().getDescription(),
-                    ccdCountyCourtJudgment.getRepaymentPlanPaymentSchedule().getDescription());
-            });
+        Optional<RepaymentPlan> actualRepaymentPlan = actual.getRepaymentPlan();
 
-        actual.getStatementOfTruth().ifPresent(statementOfTruth -> {
-            Assert.assertEquals(statementOfTruth.getSignerName(),
-                ccdCountyCourtJudgment.getStatementOfTruthSignerName());
-            Assert.assertEquals(statementOfTruth.getSignerRole(),
-                ccdCountyCourtJudgment.getStatementOfTruthSignerRole());
-        });
+        compare("repaymentPlanCompletionDate",
+            expected.getRepaymentPlanCompletionDate(),
+            actualRepaymentPlan.map(RepaymentPlan::getCompletionDate));
+
+        compare("repaymentPlanFirstPaymentDate",
+            expected.getRepaymentPlanFirstPaymentDate(),
+            actualRepaymentPlan.map(RepaymentPlan::getFirstPaymentDate));
+
+        compare("repaymentPlanInstalmentAmount",
+            expected.getRepaymentPlanInstalmentAmount(),
+            actualRepaymentPlan.map(RepaymentPlan::getInstalmentAmount),
+            (e, a) -> assertMoney(a).isEqualTo(e));
+
+        compare("repaymentPlanPaymentLength",
+            expected.getRepaymentPlanPaymentLength(),
+            actualRepaymentPlan.map(RepaymentPlan::getPaymentLength));
+
+        compare("repaymentPlanPaymentSchedule",
+            expected.getRepaymentPlanPaymentSchedule(), CCDPaymentSchedule::getDescription,
+            actualRepaymentPlan.map(RepaymentPlan::getPaymentSchedule).map(PaymentSchedule::getDescription));
+
+        compare("statementOfTruthSignerName",
+            expected.getStatementOfTruthSignerName(),
+            actual.getStatementOfTruth().map(StatementOfTruth::getSignerName));
+
+        compare("statementOfTruthSignerRole",
+            expected.getStatementOfTruthSignerRole(),
+            actual.getStatementOfTruth().map(StatementOfTruth::getSignerRole));
 
         return this;
     }
