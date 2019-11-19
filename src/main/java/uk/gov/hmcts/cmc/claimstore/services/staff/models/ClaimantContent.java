@@ -5,7 +5,7 @@ import uk.gov.hmcts.cmc.domain.models.Address;
 public class ClaimantContent extends PersonContent {
 
     public ClaimantContent(
-        String cliamantType,
+        String claimantType,
         String fullName,
         Address address,
         Address correspondenceAddress,
@@ -15,7 +15,7 @@ public class ClaimantContent extends PersonContent {
         String phoneNumber,
         String dateOfBirth
     ) {
-        super(cliamantType, fullName, address, correspondenceAddress, email, contactPerson,
+        super(claimantType, fullName, address, correspondenceAddress, email, contactPerson,
             businessName, phoneNumber, dateOfBirth);
     }
 }

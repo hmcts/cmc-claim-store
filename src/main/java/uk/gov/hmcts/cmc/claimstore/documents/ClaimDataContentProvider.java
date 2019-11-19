@@ -69,8 +69,6 @@ public class ClaimDataContentProvider {
         }
 
         Optional<StatementOfTruth> optionalStatementOfTruth = claim.getClaimData().getStatementOfTruth();
-        String signerName = optionalStatementOfTruth.map((StatementOfTruth::getSignerName)).orElse(null);
-        String signerRole = optionalStatementOfTruth.map((StatementOfTruth::getSignerRole)).orElse(null);
 
         List<TimelineEvent> events = claim.getClaimData().getTimeline().map(Timeline::getEvents).orElse(null);
 
@@ -95,11 +93,10 @@ public class ClaimDataContentProvider {
                     .filter(Objects::nonNull)
                     .reduce(ZERO, BigDecimal::add)
             ),
-            signerName,
-            signerRole,
             events,
             evidences,
-            mapToAmountRowContent(amountBreakDown.getRows())
+            mapToAmountRowContent(amountBreakDown.getRows()),
+            optionalStatementOfTruth.orElse(null)
         );
     }
 

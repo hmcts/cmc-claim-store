@@ -176,7 +176,7 @@ dependencies {
   compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
 
-  compile group: 'org.elasticsearch', name: 'elasticsearch', version: '7.2.1'
+  compile group: 'org.elasticsearch', name: 'elasticsearch', version: '7.4.2'
   compile group: 'org.postgresql', name: 'postgresql', version: '42.2.6'
 
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.14.2-RELEASE'
@@ -192,11 +192,11 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'payments-client', version: '0.0.4'
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.3.0'
-  compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.4'
+  compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.5'
   compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version:'0.0.4'
 
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
-  compile group: 'org.apache.commons', name: 'commons-csv', version: '1.4'
+  compile group: 'org.apache.commons', name: 'commons-csv', version: '1.7'
 
   compile group: 'org.jdbi', name: 'jdbi', version: '2.78'
 
@@ -225,7 +225,7 @@ dependencies {
 
   testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
   testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.4.0'
-  testCompile group: 'net.jodah', name: 'failsafe', version: '2.1.1'
+  testCompile group: 'net.jodah', name: 'failsafe', version: '2.3.1'
 
 }
 

@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.domain.models.sampledata;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertRequest;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.RequireSupport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.UnavailableDate;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.Witness;
@@ -16,8 +17,15 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleHearingLocation.de
 
 public class SampleDirectionsQuestionnaire {
 
+    private HearingLocation hearingLocation = defaultHearingLocation;
+
     public static SampleDirectionsQuestionnaire builder() {
         return new SampleDirectionsQuestionnaire();
+    }
+
+    public SampleDirectionsQuestionnaire withHearingLocation(HearingLocation hearingLocation) {
+        this.hearingLocation = hearingLocation;
+        return this;
     }
 
     public DirectionsQuestionnaire build() {
@@ -35,9 +43,9 @@ public class SampleDirectionsQuestionnaire {
                 .hearingLoop(YES)
                 .build()
             )
-            .hearingLocation(defaultHearingLocation)
             .expertRequired(YES)
             .permissionForExpert(YES)
+            .hearingLocation(hearingLocation)
             .expertRequest(ExpertRequest.builder()
                 .reasonForExpertAdvice("A valid reason")
                 .expertEvidenceToExamine("Evidence to examine")
