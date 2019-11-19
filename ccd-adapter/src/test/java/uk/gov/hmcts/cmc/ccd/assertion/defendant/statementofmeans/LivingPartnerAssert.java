@@ -1,29 +1,32 @@
 package uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans;
 
-import org.assertj.core.api.AbstractAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.CustomAssert;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDLivingPartner;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.LivingPartner;
 
-import java.util.Objects;
+import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-public class LivingPartnerAssert extends AbstractAssert<LivingPartnerAssert, LivingPartner> {
+public class LivingPartnerAssert extends CustomAssert<LivingPartnerAssert, LivingPartner> {
 
     public LivingPartnerAssert(LivingPartner actual) {
-        super(actual, LivingPartnerAssert.class);
+        super("LivingPartner", actual, LivingPartnerAssert.class);
     }
 
-    public LivingPartnerAssert isEqualTo(CCDLivingPartner livingPartner) {
+    public LivingPartnerAssert isEqualTo(CCDLivingPartner expected) {
         isNotNull();
 
-        if (!Objects.equals(actual.getDisability().name(), livingPartner.getDisability().name())) {
-            failWithMessage("Expected LivingPartner.disability to be <%s> but was <%s>",
-                livingPartner.getDisability().name(), actual.getDisability().name());
-        }
+        compare("disability",
+            expected.getDisability(), Enum::name,
+            Optional.ofNullable(actual.getDisability()).map(Enum::name));
 
-        assertThat(actual.isOver18()).isEqualTo(livingPartner.getOver18().toBoolean());
-        assertThat(actual.isPensioner()).isEqualTo(livingPartner.getPensioner().toBoolean());
+        compare("over18",
+            expected.getOver18(), CCDYesNoOption::toBoolean,
+            Optional.of(actual.isOver18()));
+
+        compare("pensioner",
+            expected.getPensioner(), CCDYesNoOption::toBoolean,
+            Optional.of(actual.isPensioner()));
 
         return this;
     }

@@ -17,6 +17,7 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.stream.JsonCollectors;
 
+import static java.math.BigDecimal.ZERO;
 import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractFromSubclass;
 import static uk.gov.hmcts.cmc.rpa.mapper.helper.Extractor.extractOptionalFromSubclass;
 
@@ -37,7 +38,7 @@ public class SealedClaimJsonMapper {
             .add("caseNumber", claim.getReferenceNumber())
             .add("issueDate", DateFormatter.format(claim.getIssuedOn()))
             .add("serviceDate", DateFormatter.format(claim.getServiceDate()))
-            .add("courtFee", claim.getClaimData().getFeesPaidInPounds())
+            .add("courtFee", claim.getClaimData().getFeesPaidInPounds().orElse(ZERO))
             .add("amountWithInterest", claim.getAmountWithInterestUntilIssueDate().orElse(null))
             .add("submitterEmail", claim.getSubmitterEmail())
             .add("claimants", mapClaimants(claim.getClaimData().getClaimants()))
@@ -52,7 +53,7 @@ public class SealedClaimJsonMapper {
                 .add("name", claimant.getName())
                 .add("address", mapAddress(claimant.getAddress()))
                 .add("correspondenceAddress", claimant.getCorrespondenceAddress().map(this::mapAddress).orElse(null))
-                .add("phoneNumber", claimant.getMobilePhone().orElse(null))
+                .add("phoneNumber", claimant.getPhone().orElse(null))
                 .add("dateOfBirth", extractFromSubclass(claimant, Individual.class, individual -> DateFormatter.format(individual.getDateOfBirth())))
                 .add("businessName", extractOptionalFromSubclass(claimant, SoleTrader.class, value -> value.getBusinessName().map(RPAMapperHelper::prependWithTradingAs)))
                 .add("contactPerson", extractOptionalFromSubclass(claimant, HasContactPerson.class, HasContactPerson::getContactPerson))

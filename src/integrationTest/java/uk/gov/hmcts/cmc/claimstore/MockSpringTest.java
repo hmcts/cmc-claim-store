@@ -14,7 +14,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
-import uk.gov.hmcts.cmc.claimstore.events.claim.PostClaimOrchestrationHandler;
 import uk.gov.hmcts.cmc.claimstore.processors.JsonMapper;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
@@ -34,6 +33,7 @@ import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentMetadataDownloadClientApi;
 import uk.gov.hmcts.reform.document.DocumentUploadClientApi;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
+import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.service.notify.NotificationClient;
 
 import java.io.UnsupportedEncodingException;
@@ -97,6 +97,9 @@ public abstract class MockSpringTest {
     protected CourtFinderApi courtFinderApi;
 
     @MockBean
+    protected SendLetterApi sendLetterApi;
+
+    @MockBean
     protected ServiceAuthorisationApi serviceAuthorisationApi;
 
     @MockBean
@@ -116,9 +119,6 @@ public abstract class MockSpringTest {
 
     @MockBean
     protected TelemetryClient telemetry;
-
-    @MockBean
-    private PostClaimOrchestrationHandler postClaimOrchestrationHandler;
 
     protected <T> T deserializeObjectFrom(MvcResult result, Class<T> targetClass) throws UnsupportedEncodingException {
         return jsonMapper.fromJson(result.getResponse().getContentAsString(), targetClass);

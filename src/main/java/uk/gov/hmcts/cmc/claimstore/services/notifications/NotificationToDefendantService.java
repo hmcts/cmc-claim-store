@@ -52,6 +52,18 @@ public class NotificationToDefendantService {
         );
     }
 
+    public void notifyDefendantOfClaimantSettling(Claim claim) {
+        Map<String, String> parameters = aggregateParams(claim);
+        parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
+        notificationService.sendMail(
+            claim.getDefendantEmail(),
+            notificationsProperties.getTemplates().getEmail()
+                    .getClaimantSettledAfterFullDefence(),
+            parameters,
+            referenceForDefendant(claim.getReferenceNumber())
+        );
+    }
+
     public void notifyDefendantWhenInterlocutoryJudgementRequested(Claim claim) {
         Map<String, String> parameters = aggregateParams(claim);
         parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());

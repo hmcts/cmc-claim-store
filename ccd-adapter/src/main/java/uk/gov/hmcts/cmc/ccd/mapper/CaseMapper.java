@@ -16,6 +16,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.mapper.ClaimSubmissionOperationIndicatorMapper.mapClaimSubmissionOperationIndicatorsToCCD;
 import static uk.gov.hmcts.cmc.ccd.mapper.ClaimSubmissionOperationIndicatorMapper.mapFromCCDClaimSubmissionOperationIndicators;
+import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.getMediationOutcome;
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.toCaseName;
 
 @Component
@@ -75,6 +76,7 @@ public class CaseMapper {
             .caseName(toCaseName.apply(claim))
             .claimSubmissionOperationIndicators(
                 mapClaimSubmissionOperationIndicatorsToCCD.apply(claim.getClaimSubmissionOperationIndicators()))
+            .intentionToProceedDeadline(claim.getIntentionToProceedDeadline())
             .build();
     }
 
@@ -98,7 +100,9 @@ public class CaseMapper {
             .claimSubmissionOperationIndicators(
                 mapFromCCDClaimSubmissionOperationIndicators.apply(ccdCase.getClaimSubmissionOperationIndicators()))
             .directionOrder(directionOrderMapper.from(ccdCase.getDirectionOrder(), ccdCase.getDirectionOrderData()))
-            .reviewOrder(reviewOrderMapper.from(ccdCase.getReviewOrder()));
+            .intentionToProceedDeadline(ccdCase.getIntentionToProceedDeadline())
+            .reviewOrder(reviewOrderMapper.from(ccdCase.getReviewOrder()))
+            .mediationOutcome(getMediationOutcome(ccdCase));
 
         if (ccdCase.getFeatures() != null) {
             builder.features(Arrays.asList(ccdCase.getFeatures().split(",")));

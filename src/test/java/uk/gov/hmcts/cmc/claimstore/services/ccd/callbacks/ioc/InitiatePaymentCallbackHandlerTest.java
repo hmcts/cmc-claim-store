@@ -117,7 +117,7 @@ public class InitiatePaymentCallbackHandlerTest {
         assertThat(toBeSaved.getResponseDeadline()).isEqualTo(date);
         assertThat(toBeSaved.getChannel()).isEqualTo(Optional.of(CITIZEN));
 
-        Payment payment = toBeSaved.getClaimData().getPayment();
+        Payment payment = toBeSaved.getClaimData().getPayment().orElse(null);
         assertThat(payment).isEqualTo(expectedPayment);
     }
 

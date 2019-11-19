@@ -88,10 +88,6 @@ variable "save_claim_state_enabled" {
   default = "false"
 }
 
-variable "async_event_operations_enabled" {
-  default = "false"
-}
-
 variable "directions_questionnaire_enabled" {
   default = "false"
 }
@@ -102,4 +98,8 @@ variable milo_csv_schedule  {
 
 variable "common_tags" {
   type = "map"
+}
+
+variable claim_stayed_schedule  {
+  default = ""
 }

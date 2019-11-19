@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd;
 
+import feign.FeignException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -8,9 +9,11 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseEventMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.IntentionToProceedDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -87,6 +90,7 @@ public class CoreCaseDataService {
     private final JobSchedulerService jobSchedulerService;
     private final CCDCreateCaseService ccdCreateCaseService;
     private final CaseDetailsConverter caseDetailsConverter;
+    private final IntentionToProceedDeadlineCalculator intentionToProceedDeadlineCalculator;
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     @Autowired
@@ -98,7 +102,8 @@ public class CoreCaseDataService {
         AuthTokenGenerator authTokenGenerator,
         JobSchedulerService jobSchedulerService,
         CCDCreateCaseService ccdCreateCaseService,
-        CaseDetailsConverter caseDetailsConverter
+        CaseDetailsConverter caseDetailsConverter,
+        IntentionToProceedDeadlineCalculator intentionToProceedDeadlineCalculator
     ) {
         this.caseMapper = caseMapper;
         this.userService = userService;
@@ -108,6 +113,7 @@ public class CoreCaseDataService {
         this.jobSchedulerService = jobSchedulerService;
         this.ccdCreateCaseService = ccdCreateCaseService;
         this.caseDetailsConverter = caseDetailsConverter;
+        this.intentionToProceedDeadlineCalculator = intentionToProceedDeadlineCalculator;
     }
 
     @LogExecutionTime
@@ -167,7 +173,8 @@ public class CoreCaseDataService {
             }
 
             return caseDetailsConverter.extractClaim(caseDetails);
-
+        } catch (FeignException.Conflict conflict) {
+            throw new ConflictException("Claim already exists in CCD with externalId " + claim.getExternalId());
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(
@@ -180,7 +187,7 @@ public class CoreCaseDataService {
     }
 
     @LogExecutionTime
-    public Claim createNewCitizenCase(
+    public Claim initiatePaymentForCitizenCase(
         User user,
         Claim claim
     ) {
@@ -416,10 +423,15 @@ public class CoreCaseDataService {
                 userDetails.isSolicitor() || userDetails.isCaseworker()
             );
 
+            LocalDateTime respondedAt = nowInUTC();
+            LocalDate intentionToProceedDeadline =
+                intentionToProceedDeadlineCalculator.calculateIntentionToProceedDeadline(respondedAt.toLocalDate());
+
             Claim updatedClaim = toClaimBuilder(startEventResponse)
                 .response(response)
                 .defendantEmail(defendantEmail)
-                .respondedAt(nowInUTC())
+                .respondedAt(respondedAt)
+                .intentionToProceedDeadline(intentionToProceedDeadline)
                 .build();
 
             CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);

@@ -28,7 +28,7 @@ public class IndividualMapper {
     public void to(Individual individual, CCDApplicant.CCDApplicantBuilder builder,
                    CCDParty.CCDPartyBuilder applicantPartyDetail) {
         applicantPartyDetail.type(CCDPartyType.INDIVIDUAL);
-        individual.getMobilePhone()
+        individual.getPhone()
             .ifPresent(telephoneNo -> applicantPartyDetail.telephoneNumber(telephoneMapper.to(telephoneNo)));
 
         individual.getCorrespondenceAddress()
@@ -53,7 +53,7 @@ public class IndividualMapper {
             .name(applicant.getPartyName())
             .address(addressMapper.from(partyDetails.getPrimaryAddress()))
             .correspondenceAddress(addressMapper.from(partyDetails.getCorrespondenceAddress()))
-            .mobilePhone(telephoneMapper.from(partyDetails.getTelephoneNumber()))
+            .phone(telephoneMapper.from(partyDetails.getTelephoneNumber()))
             .representative(representativeMapper.from(applicant))
             .dateOfBirth(partyDetails.getDateOfBirth())
             .build();

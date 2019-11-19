@@ -11,13 +11,15 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.Payment;
+import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
+import uk.gov.hmcts.cmc.domain.models.party.Party;
 
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
+import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
@@ -35,15 +37,16 @@ public class CaseMetadata {
     private final List<String> features;
     private final URI sealedClaimDocument;
     private final String submitterId;
-    private final String submitterPartyType;
+    private final List<String> submitterPartyTypes;
     private final String defendantId;
-    private final String defendantPartyType;
+    private final List<String> defendantPartyTypes;
     private final LocalDate responseDeadline;
     private final Boolean moreTimeRequested;
     private final DefendantResponseMetadata defendantResponse;
     private final LocalDate claimantResponseDeadline;
     private final ClaimantResponseMetadata claimantResponse;
     private final LocalDate directionsQuestionnaireDeadline;
+    private final LocalDate intentionToProceedDeadline;
     private final SettlementMetadata settlement;
     private final CountyCourtJudgmentMetadata countyCourtJudgment;
     private final RedeterminationMetadata redetermination;
@@ -58,7 +61,7 @@ public class CaseMetadata {
             .referenceNumber(claim.getReferenceNumber())
             .createdAt(claim.getCreatedAt())
             .issuedOn(claim.getIssuedOn())
-            .paymentReference(Optional.ofNullable(claim.getClaimData().getPayment())
+            .paymentReference(claim.getClaimData().getPayment()
                 .map(Payment::getReference)
                 .orElse(null))
             .features(claim.getFeatures())
@@ -66,20 +69,25 @@ public class CaseMetadata {
                 .map(ClaimDocument::getDocumentManagementUrl)
                 .orElse(null))
             .submitterId(claim.getSubmitterId())
-            .submitterPartyType(claim.getClaimData().getClaimant().getClass().getSimpleName())
+            .submitterPartyTypes(claim.getClaimData().getClaimants().stream()
+                .map(Party::getClass).map(Class::getSimpleName)
+                .collect(toList()))
             .defendantId(claim.getDefendantId())
-            .defendantPartyType(claim.getClaimData().getDefendant().getClass().getSimpleName())
+            .defendantPartyTypes(claim.getClaimData().getDefendants().stream()
+                .map(TheirDetails::getClass).map(Class::getSimpleName)
+                .collect(toList()))
             .responseDeadline(claim.getResponseDeadline())
             .moreTimeRequested(claim.isMoreTimeRequested())
             .defendantResponse(DefendantResponseMetadata.fromClaim(claim))
             .claimantResponseDeadline(claim.getClaimantResponseDeadline().orElse(null))
             .claimantResponse(ClaimantResponseMetadata.fromClaim(claim))
             .directionsQuestionnaireDeadline(claim.getDirectionsQuestionnaireDeadline())
+            .intentionToProceedDeadline(claim.getIntentionToProceedDeadline())
             .settlement(SettlementMetadata.fromClaim(claim))
             .countyCourtJudgment(CountyCourtJudgmentMetadata.fromClaim(claim))
             .redetermination(RedeterminationMetadata.fromClaim(claim))
             .moneyReceivedOn(claim.getMoneyReceivedOn().orElse(null))
-            .state(claim.getState().orElse(null))
+            .state(claim.getState())
             .claimSubmissionOperationIndicators(claim.getClaimSubmissionOperationIndicators())
             .build();
     }

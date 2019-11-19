@@ -16,9 +16,12 @@ public class ToStringStyleTest {
         Arrays.asList("Example1", "Example2")
     );
 
-    private String expectedOutput = "[\n"
-        + "  field1=Example\n"
-        + "  fieldList=[Example1, Example2]\n"
+    private String expectedOutput = "["
+        + System.lineSeparator()
+        + "  field1=Example"
+        + System.lineSeparator()
+        + "  fieldList=[Example1, Example2]"
+        + System.lineSeparator()
         + "]";
 
     @Test
