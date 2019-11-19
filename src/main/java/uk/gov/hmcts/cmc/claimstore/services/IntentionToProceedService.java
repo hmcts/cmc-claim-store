@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
@@ -21,8 +20,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
@@ -72,7 +73,6 @@ public class IntentionToProceedService {
         this.intentionToProceedDeadlineCalculator = intentionToProceedDeadlineCalculator;
     }
 
-    @Scheduled(cron = "#{'${claim_stayed.schedule}' ?: '-'}")
     public void scheduledTrigger() {
         LocalDateTime now = LocalDateTime.now();
         if (workingDayIndicator.isWorkingDay(now.toLocalDate())) {
@@ -83,7 +83,7 @@ public class IntentionToProceedService {
 
     public void checkClaimsPastIntentionToProceedDeadline(LocalDateTime runDateTime, User user) {
         LocalDate responseDate = intentionToProceedDeadlineCalculator.calculateResponseDate(runDateTime);
-        Collection<Claim> claims = caseSearchApi.getClaimsPastIntentionToProceed(user, responseDate);
+        Set<Claim> claims = new HashSet<>(caseSearchApi.getClaimsPastIntentionToProceed(user, responseDate));
         Collection<Claim> failedClaims = claims.stream()
             .map(claim -> updateClaim(user, claim))
             .filter(Objects::nonNull)

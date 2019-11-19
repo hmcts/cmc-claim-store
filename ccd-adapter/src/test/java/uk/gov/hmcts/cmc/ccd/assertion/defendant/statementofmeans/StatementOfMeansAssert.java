@@ -1,132 +1,80 @@
 package uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans;
 
-import org.assertj.core.api.AbstractAssert;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDBankAccount;
+import uk.gov.hmcts.cmc.ccd.assertion.CustomAssert;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDCourtOrder;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDebt;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpense;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDIncome;
-import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebt;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.BankAccount;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Debt;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.Income;
-import uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
-public class StatementOfMeansAssert extends AbstractAssert<StatementOfMeansAssert, StatementOfMeans> {
+public class StatementOfMeansAssert extends CustomAssert<StatementOfMeansAssert, StatementOfMeans> {
 
     public StatementOfMeansAssert(StatementOfMeans actual) {
-        super(actual, StatementOfMeansAssert.class);
+        super("StatementOfMeans", actual, StatementOfMeansAssert.class);
     }
 
-    public StatementOfMeansAssert isEqualTo(CCDStatementOfMeans ccdStatementOfMeans) {
+    public StatementOfMeansAssert isEqualTo(CCDStatementOfMeans expected) {
         isNotNull();
 
-        if (!Objects.equals(actual.getReason(), ccdStatementOfMeans.getReason())) {
-            failWithMessage("Expected StatementOfMeans.reason to be <%s> but was <%s>",
-                ccdStatementOfMeans.getReason(), actual.getReason());
-        }
+        compare("reason",
+            expected.getReason(),
+            Optional.ofNullable(actual.getReason()));
 
-        actual.getCourtOrders()
-            .forEach(courtOrder -> assertCourtOrder(courtOrder, ccdStatementOfMeans.getCourtOrders()));
-
-        actual.getBankAccounts()
-            .forEach(bankAccount -> assertBankAccount(bankAccount, ccdStatementOfMeans.getBankAccounts()));
-
-        actual.getDebts()
-            .forEach(debt -> assertDebt(debt, ccdStatementOfMeans.getDebts()));
-
-        actual.getIncomes()
-            .forEach(income -> assertIncome(income, ccdStatementOfMeans.getIncomes()));
-
-        actual.getExpenses()
-            .forEach(expense -> assertExpense(expense, ccdStatementOfMeans.getExpenses()));
-
-        actual.getPriorityDebts()
-            .forEach(priorityDebt -> assertPriorityDebt(priorityDebt, ccdStatementOfMeans.getPriorityDebts()));
-
-        actual.getPartner()
-            .ifPresent(livingPartner -> assertThat(livingPartner).isEqualTo(ccdStatementOfMeans.getLivingPartner()));
-
-        assertThat(actual.isCarer()).isEqualTo(ccdStatementOfMeans.getCarer().toBoolean());
-
-        actual.getDisability()
-            .ifPresent(disability -> assertThat(disability.name())
-                .isEqualTo(ccdStatementOfMeans.getDisabilityStatus().name()));
-
-        actual.getPartner().ifPresent(
-            livingPartner -> assertThat(livingPartner).isEqualTo(ccdStatementOfMeans.getLivingPartner())
+        compareCollections(
+            expected.getCourtOrders(), actual.getCourtOrders(),
+            CCDCourtOrder::getClaimNumber, CourtOrder::getClaimNumber,
+            (e, a) -> assertThat(a).isEqualTo(e)
         );
 
+        compareCollections(
+            expected.getBankAccounts(), actual.getBankAccounts(),
+            e -> e.getType().name(), a -> a.getType().name(),
+            (e, a) -> assertThat(a).isEqualTo(e)
+        );
+
+        compareCollections(
+            expected.getDebts(), actual.getDebts(),
+            CCDDebt::getDescription, Debt::getDescription,
+            (e, a) -> assertThat(a).isEqualTo(e)
+        );
+
+        compareCollections(
+            expected.getIncomes(), actual.getIncomes(),
+            e -> e.getType().name(), a -> a.getType().name(),
+            (e, a) -> assertThat(a).isEqualTo(e)
+        );
+
+        compareCollections(
+            expected.getExpenses(), actual.getExpenses(),
+            e -> e.getType().name(), a -> a.getType().name(),
+            (e, a) -> assertThat(a).isEqualTo(e)
+        );
+
+        compareCollections(
+            expected.getPriorityDebts(), actual.getPriorityDebts(),
+            e -> e.getType().name(), a -> a.getType().name(),
+            (e, a) -> assertThat(a).isEqualTo(e)
+        );
+
+        compare("partner",
+            expected.getLivingPartner(),
+            actual.getPartner(),
+            (e, a) -> assertThat(a).isEqualTo(e));
+
+        compare("carer",
+            expected.getCarer(), CCDYesNoOption::toBoolean,
+            Optional.of(actual.isCarer()));
+
+        compare("disability",
+            expected.getDisabilityStatus(), Enum::name,
+            actual.getDisability().map(Enum::name));
+
         return this;
-    }
-
-    private void assertPriorityDebt(
-        PriorityDebt priorityDebt,
-        List<CCDCollectionElement<CCDPriorityDebt>> ccdPriorityDebts
-    ) {
-        ccdPriorityDebts.stream()
-            .map(CCDCollectionElement::getValue)
-            .filter(ccdPriorityDebt -> priorityDebt.getType().name().equals(ccdPriorityDebt.getType().name()))
-            .findFirst()
-            .ifPresent(ccdPriorityDebt -> assertThat(priorityDebt).isEqualTo(ccdPriorityDebt));
-    }
-
-    private void assertExpense(Expense expense, List<CCDCollectionElement<CCDExpense>> ccdExpenses) {
-        ccdExpenses.stream()
-            .map(CCDCollectionElement::getValue)
-            .filter(ccdExpense -> expense.getType().name().equals(ccdExpense.getType().name()))
-            .findFirst()
-            .ifPresent(ccdExpense -> assertThat(expense).isEqualTo(ccdExpense));
-    }
-
-    private void assertIncome(Income income, List<CCDCollectionElement<CCDIncome>> ccdIncomes) {
-        ccdIncomes.stream()
-            .map(CCDCollectionElement::getValue)
-            .filter(ccdIncome -> income.getType().name().equals(ccdIncome.getType().name()))
-            .findFirst()
-            .ifPresent(ccdIncome -> assertThat(income).isEqualTo(ccdIncome));
-    }
-
-    private void assertDebt(Debt debt, List<CCDCollectionElement<CCDDebt>> ccdDebts) {
-        ccdDebts.stream()
-            .map(CCDCollectionElement::getValue)
-            .filter(ccdDebt -> debt.getDescription().equals(ccdDebt.getDescription()))
-            .findFirst()
-            .ifPresent(ccdDebt -> assertThat(debt).isEqualTo(ccdDebt));
-    }
-
-    private void assertBankAccount(
-        BankAccount bankAccount,
-        List<CCDCollectionElement<CCDBankAccount>> ccdBankAccounts
-    ) {
-        ccdBankAccounts.stream()
-            .map(CCDCollectionElement::getValue)
-            .filter(
-                ccdBankAccount -> bankAccount.getType().name().equals(ccdBankAccount.getType().name())
-            )
-            .findFirst()
-            .ifPresent(ccdBankAccount -> assertThat(bankAccount).isEqualTo(ccdBankAccount));
-    }
-
-    private void assertCourtOrder(
-        CourtOrder courtOrder,
-        List<CCDCollectionElement<CCDCourtOrder>> ccdCourtOrders
-    ) {
-        ccdCourtOrders.stream()
-            .map(CCDCollectionElement::getValue)
-            .filter(ccdCourtOrder -> courtOrder.getClaimNumber().equals(ccdCourtOrder.getClaimNumber()))
-            .findFirst()
-            .ifPresent(ccdCourtOrder -> assertThat(courtOrder).isEqualTo(ccdCourtOrder));
     }
 }

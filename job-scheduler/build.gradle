@@ -1,4 +1,5 @@
 apply plugin: 'net.ltgt.apt'
+apply plugin: 'jacoco'
 
 def versions = [
   logback          : '1.2.3',
@@ -12,6 +13,8 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   compile group: 'org.postgresql', name: 'postgresql', version: '42.2.6'
+  compile group: 'com.google.guava', name: 'guava', version: '20.0'
+
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.8'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.6'
 

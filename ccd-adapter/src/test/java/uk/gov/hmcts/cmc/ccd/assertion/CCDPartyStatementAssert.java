@@ -1,54 +1,58 @@
 package uk.gov.hmcts.cmc.ccd.assertion;
 
-import org.assertj.core.api.AbstractAssert;
+import com.google.common.collect.ImmutableMap;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDPartyStatement;
+import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 
-import java.util.Objects;
 import java.util.Optional;
 
-import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.isAnyNotNull;
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertThat;
 
-public class CCDPartyStatementAssert extends AbstractAssert<CCDPartyStatementAssert, CCDPartyStatement> {
+public class CCDPartyStatementAssert extends CustomAssert<CCDPartyStatementAssert, CCDPartyStatement> {
 
-    public CCDPartyStatementAssert(CCDPartyStatement actual) {
-        super(actual, CCDPartyStatementAssert.class);
+    CCDPartyStatementAssert(CCDPartyStatement actual) {
+        super("CCDPartyStatement", actual, CCDPartyStatementAssert.class);
     }
 
-    public CCDPartyStatementAssert isEqualTo(PartyStatement partyStatement) {
+    public CCDPartyStatementAssert isEqualTo(PartyStatement expected) {
         isNotNull();
 
-        if (null != actual.getMadeBy()
-            && !Objects.equals(actual.getMadeBy().name(), partyStatement.getMadeBy().name())) {
-            failWithMessage("Expected Party Statement.made by to be <%s> but was <%s>",
-                partyStatement.getMadeBy(), actual.getMadeBy().name());
+        compare("madeBy",
+            expected.getMadeBy(), Enum::name,
+            Optional.ofNullable(actual.getMadeBy()).map(Enum::name));
+
+        compare("type",
+            expected.getType(), Enum::name,
+            Optional.ofNullable(actual.getType()).map(Enum::name));
+
+        if (!actual.hasOffer()) {
+            if (expected.getOffer().isPresent()) {
+                failExpectedPresent("offer", expected.getOffer().get());
+            }
+            return this;
         }
 
-        if (null != actual.getType() && !Objects.equals(actual.getType().name(), partyStatement.getType().name())) {
-            failWithMessage("Expected Party Statement.type to be <%s> but was <%s>",
-                partyStatement.getType().name(), actual.getType().name());
+        if (!expected.getOffer().isPresent()) {
+            failExpectedAbsent("offer", ImmutableMap.of(
+                "content", actual.getOfferContent(),
+                "completionDate", actual.getOfferCompletionDate(),
+                "paymentIntention", actual.getPaymentIntention()
+            ));
         }
 
-        if (isAnyNotNull(actual.getOfferCompletionDate(), actual.getOfferContent(), actual.getPaymentIntention())) {
-            partyStatement.getOffer().ifPresent(offer -> {
-                if (!Objects.equals(offer.getCompletionDate(), actual.getOfferCompletionDate())) {
-                    failWithMessage("Expected Offer completion date to be <%t> but was <%t>",
-                        offer.getCompletionDate(), actual.getOfferCompletionDate());
-                }
+        compare("offerContent",
+            expected.getOffer().map(Offer::getContent).orElse(null),
+            Optional.ofNullable(actual.getOfferContent()));
 
-                if (!Objects.equals(offer.getContent(), actual.getOfferContent())) {
-                    failWithMessage("Expected Offer content to be <%s> but was <%s>",
-                        offer.getContent(), actual.getOfferContent());
-                }
+        compare("offerCompletionDate",
+            expected.getOffer().map(Offer::getCompletionDate).orElse(null),
+            Optional.ofNullable(actual.getOfferCompletionDate()));
 
-            });
-        }
-
-        Optional.ofNullable(actual.getPaymentIntention()).ifPresent(pymtIntention -> {
-            Assertions.assertThat(
-                partyStatement.getOffer().get().getPaymentIntention().get())
-                .isEqualTo(actual.getPaymentIntention());
-        });
+        compare("paymentIntention",
+            expected.getOffer().flatMap(Offer::getPaymentIntention).orElse(null),
+            Optional.ofNullable(actual.getPaymentIntention()),
+            (e, a) -> assertThat(e).isEqualTo(a));
 
         return this;
     }
