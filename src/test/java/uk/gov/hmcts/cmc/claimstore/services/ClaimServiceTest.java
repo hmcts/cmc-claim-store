@@ -76,7 +76,6 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.RESPONSE_DEADLINE;
-
 @RunWith(MockitoJUnitRunner.class)
 public class ClaimServiceTest {
     private static final String RETURN_URL = "http://returnUrl.test/%s/bla";
@@ -280,7 +279,7 @@ public class ClaimServiceTest {
     }
 
     @Test(expected = MoreTimeRequestedAfterDeadlineException.class)
-    public void requestMoreTimeForResponseThrowsMoreTimeRequestedAfterDeadlineWhenItsTooLateForMoreTimeRequest() {
+    public void requestMoreTimeThrowsMoreTimeRequestedAfterDeadlineExceptionWhenPastDeadline() {
 
         LocalDate responseDeadlineInThePast = now()
             .minusDays(10);
@@ -288,13 +287,19 @@ public class ClaimServiceTest {
 
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
             .thenReturn(Optional.of(claim));
+
+        when(responseDeadlineCalculator.calculatePostponedResponseDeadline(eq(claim.getIssuedOn())))
+                .thenReturn(responseDeadlineInThePast);
+
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), eq(USER))).thenReturn(Optional.of(claim));
+
         when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
 
         claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
     }
 
     @Test(expected = MoreTimeAlreadyRequestedException.class)
-    public void requestMoreTimeForResponseThrowsMoreTimeAlreadyRequestedExceptionWhenMoreTimeRequestForSecondTime() {
+    public void requestMoreTimeThrowsMoreTimeAlreadyRequestedExceptionWhenMoreTimeAlreadyRequested() {
         when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
 
         Claim claim = createClaimModel(RESPONSE_DEADLINE, true);

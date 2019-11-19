@@ -72,7 +72,7 @@ public class MediationSuccessfulCallbackHandler extends CallbackHandler {
         return ROLES;
     }
 
-    private CallbackResponse notifyParties(CallbackParams callbackParams) {
+    public CallbackResponse notifyParties(CallbackParams callbackParams) {
         logger.info("Mediation successful callback: notifying parties");
         CallbackRequest callbackRequest = callbackParams.getRequest();
         Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
