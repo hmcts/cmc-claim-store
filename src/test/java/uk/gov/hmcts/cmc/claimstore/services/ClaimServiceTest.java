@@ -279,21 +279,6 @@ public class ClaimServiceTest {
         claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
     }
 
-    @Test(expected = MoreTimeRequestedAfterDeadlineException.class)
-    public void requestMoreTimeForResponseThrowsMoreTimeRequestedAfterDeadlineWhenItsTooLateForMoreTimeRequest() {
-
-        LocalDate responseDeadlineInThePast = now().minusDays(10);
-        Claim claim = createClaimModel(responseDeadlineInThePast, false);
-
-        when(responseDeadlineCalculator.calculatePostponedResponseDeadline(eq(claim.getIssuedOn())))
-            .thenReturn(responseDeadlineInThePast);
-
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), eq(USER))).thenReturn(Optional.of(claim));
-        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
-
-        claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
-    }
-
     @Test(expected = MoreTimeAlreadyRequestedException.class)
     public void requestMoreTimeForResponseThrowsMoreTimeAlreadyRequestedExceptionWhenMoreTimeRequestForSecondTime() {
         when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
