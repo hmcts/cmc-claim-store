@@ -225,7 +225,7 @@ dependencies {
 
   testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
   testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.4.0'
-  testCompile group: 'net.jodah', name: 'failsafe', version: '2.1.1'
+  testCompile group: 'net.jodah', name: 'failsafe', version: '2.3.1'
 
 }
 
