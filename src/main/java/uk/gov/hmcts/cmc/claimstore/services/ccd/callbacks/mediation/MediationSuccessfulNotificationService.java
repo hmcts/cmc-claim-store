@@ -1,8 +1,10 @@
-package uk.gov.hmcts.cmc.claimstore.services.notifications;
+package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.mediation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.HashMap;

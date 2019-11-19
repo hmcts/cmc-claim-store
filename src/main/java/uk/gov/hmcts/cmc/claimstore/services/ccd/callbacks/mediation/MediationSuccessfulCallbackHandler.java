@@ -19,7 +19,6 @@ import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.util.Collections;
@@ -74,10 +73,9 @@ public class MediationSuccessfulCallbackHandler extends CallbackHandler {
     }
 
     private CallbackResponse notifyParties(CallbackParams callbackParams) {
-        logger.info("Mediation unsuccessful callback: notifying parties");
+        logger.info("Mediation successful callback: notifying parties");
         CallbackRequest callbackRequest = callbackParams.getRequest();
-        Map<String, Object> caseData = callbackRequest.getCaseDetails().getData();
-        Claim claim = caseDetailsConverter.extractClaim(CaseDetails.builder().data(caseData).build());
+        Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
         notifyClaimant(claim);
         notifyDefendant(claim);
         return SubmittedCallbackResponse.builder().build();
