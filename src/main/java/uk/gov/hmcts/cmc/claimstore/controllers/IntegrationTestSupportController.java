@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
@@ -78,12 +79,12 @@ public class IntegrationTestSupportController {
         supportRepository.linkDefendantToClaim(claim, defendantId, "defendant@example.com");
     }
 
-    @PutMapping("/claims/{claimReferenceNumber}/defendant/{defendantUsername}/{defendantPassword}")
+    @PutMapping("/claims/{claimReferenceNumber}/defendant")
     @ApiOperation("Link a claim to a defendant")
     public void linkDefendantToClaim(
         @PathVariable("claimReferenceNumber") String claimReferenceNumber,
-        @PathVariable("defendantUsername") String defendantUsername,
-        @PathVariable("defendantPassword") String defendantPassword
+        @RequestParam("defendantUsername") String defendantUsername,
+        @RequestParam("defendantPassword") String defendantPassword
     ) {
         logger.info("Linking claim to defendant");
         Claim claim = getClaim(claimReferenceNumber, null);
