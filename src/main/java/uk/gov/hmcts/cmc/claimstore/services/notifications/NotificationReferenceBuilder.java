@@ -227,7 +227,7 @@ public class NotificationReferenceBuilder {
             // do not instantiate
         }
 
-       public static String referenceForClaimant(String claimReferenceNumber, String otherParty) {
+        public static String referenceForClaimant(String claimReferenceNumber, String otherParty) {
             return reference(TEMPLATE, CLAIMANT, otherParty.toLowerCase(), claimReferenceNumber);
         }
 
