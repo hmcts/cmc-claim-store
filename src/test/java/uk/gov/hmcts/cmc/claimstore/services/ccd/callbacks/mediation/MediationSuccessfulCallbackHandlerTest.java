@@ -16,13 +16,11 @@ import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.util.Collections;
-import java.util.Arrays;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -58,7 +56,10 @@ public class MediationSuccessfulCallbackHandlerTest {
 
     private CallbackRequest callbackRequest;
 
-    private static final String MEDIATION_SUCCESSFUL = "MEDIATION_SUCCESSFUL";
+    private static final String MEDIATION_SUCCESSFUL_CLAIMANT = "MEDIATION_SUCCESSFUL_CLAIMANT";
+    private static final String MEDIATION_SUCCESSFUL_DEFENDANT = "MEDIATION_SUCCESSFUL_DEFENDANT";
+
+    private static final String MEDIATION_SUCCESSFUL = "SuccessfulMediation";
 
     @Before
     public void setUp() {
@@ -85,41 +86,11 @@ public class MediationSuccessfulCallbackHandlerTest {
         when(notificationTemplates.getEmail()).thenReturn(emailTemplates);
 
         when(emailTemplates.getClaimantMediationSuccess())
-                .thenReturn(MEDIATION_SUCCESSFUL);
+                .thenReturn(MEDIATION_SUCCESSFUL_CLAIMANT);
         when(emailTemplates.getDefendantMediationSuccess())
-                .thenReturn(MEDIATION_SUCCESSFUL);
+                .thenReturn(MEDIATION_SUCCESSFUL_DEFENDANT);
 
         when(notificationsProperties.getFrontendBaseUrl()).thenReturn("BASELINE_URL");
-    }
-
-    @Test
-    public void shouldSendNotificationToClaimantWhithRightTemplate() {
-        Claim claim = SampleClaim.builder()
-                .withResponse(SampleResponse.FullDefence.validDefaults())
-                .withClaimantResponse(SampleClaimantResponse.validRejectionWithDirectionsQuestionnaire())
-                .build().toBuilder().features(Arrays.asList("admissions", "directionsQuestionnaire")).build();
-
-        mediationSuccessfulCallbackHandler.notifyClaimant(claim);
-
-        verify(notificationService).sendMail(eq(claim.getSubmitterEmail()),
-                eq(MEDIATION_SUCCESSFUL),
-                any(),
-                eq("to-claimant-mediation-successful"));
-    }
-
-    @Test
-    public void shouldSendNotificationToDefendantWhithRightTemplate() {
-        Claim claim = SampleClaim.builder()
-                .withResponse(SampleResponse.FullDefence.validDefaults())
-                .withClaimantResponse(SampleClaimantResponse.validRejectionWithDirectionsQuestionnaire())
-                .build().toBuilder().features(Arrays.asList("admissions", "directionsQuestionnaire")).build();
-
-        mediationSuccessfulCallbackHandler.notifyParties(callbackParams);
-
-        verify(notificationService).sendMail(eq(claim.getDefendantEmail()),
-                eq(MEDIATION_SUCCESSFUL),
-                any(),
-                eq("to-defendant-mediation-successful"));
     }
 
     @Test
@@ -136,6 +107,14 @@ public class MediationSuccessfulCallbackHandlerTest {
 
         mediationSuccessfulCallbackHandler.handle(callbackParams);
 
-        verify(mediationSuccessfulCallbackHandler).notifyParties(any());
+        verify(notificationService).sendMail(eq(claim.getDefendantEmail()),
+                eq(MEDIATION_SUCCESSFUL_DEFENDANT),
+                any(),
+                eq("to-defendant-mediation-successful"));
+
+        verify(notificationService).sendMail(eq(claim.getSubmitterEmail()),
+                eq(MEDIATION_SUCCESSFUL_CLAIMANT),
+                any(),
+                eq("to-claimant-mediation-successful"));
     }
 }
