@@ -52,6 +52,13 @@ public class MapperUtil {
     private static Predicate<CCDScannedDocument> filterCaseDocumentsPaperResponseDoc = doc ->
         paperResponseScannedType.stream().anyMatch(type -> type.equalsIgnoreCase(doc.getSubtype()));
 
+    public static final Function<CCDCase, YesNoOption> hasPaperResponse = ccdCase ->
+        StreamUtil.asStream(ccdCase.getStaffUploadedDocuments())
+            .map(CCDCollectionElement::getValue)
+            .anyMatch(filterStaffUploadedPaperResponseDoc)
+            || StreamUtil.asStream(ccdCase.getScannedDocuments()).map(CCDCollectionElement::getValue)
+            .anyMatch(filterCaseDocumentsPaperResponseDoc) ? YesNoOption.YES : YesNoOption.NO;
+
     private MapperUtil() {
         // Utility class, no instances
     }
@@ -73,13 +80,6 @@ public class MapperUtil {
     public static boolean isAnyNotNull(Object... objects) {
         return Stream.of(objects).anyMatch(Objects::nonNull);
     }
-
-    public static Function<CCDCase, YesNoOption> hasPaperResponse = (ccdCase) ->
-        StreamUtil.asStream(ccdCase.getStaffUploadedDocuments())
-            .map(CCDCollectionElement::getValue)
-            .anyMatch(filterStaffUploadedPaperResponseDoc)
-            || StreamUtil.asStream(ccdCase.getScannedDocuments()).map(CCDCollectionElement::getValue)
-            .anyMatch(filterCaseDocumentsPaperResponseDoc) ? YesNoOption.YES : YesNoOption.NO;
 
     private static String fetchDefendantName(Claim claim) {
         StringBuilder defendantNameBuilder = new StringBuilder();
