@@ -112,7 +112,7 @@ public class ClaimDocumentCollectionMapperTest {
     }
 
     @Test
-    public void shouldMapFromStaffUploadedDocuments() {
+    public void shouldMapFromScannedDocuments() {
         CCDCase ccdCase = SampleData.withPaperResponseFromScannedDoc();
         Claim.ClaimBuilder builder = Claim.builder();
 
@@ -121,13 +121,13 @@ public class ClaimDocumentCollectionMapperTest {
         Claim build = builder.build();
         ClaimDocumentCollection caseDocuments = build.getClaimDocumentCollection()
             .orElseThrow(IllegalStateException::new);
-        Assert.notNull(caseDocuments.getScannedDocuments(), "Scanned document list cant be null");
+        Assert.notNull(caseDocuments.getScannedDocuments(), "Staff Uploaded document list cant be null");
         assertThat(caseDocuments.getScannedDocuments().size()).isEqualTo(1);
 
     }
 
     @Test
-    public void shouldMapFromScannedDocuments() {
+    public void shouldMapFromStaffUploadedDocuments() {
         CCDCase ccdCase = SampleData.withPaperResponseFromStaffUploadedDoc();
         Claim.ClaimBuilder builder = Claim.builder();
 
@@ -137,6 +137,6 @@ public class ClaimDocumentCollectionMapperTest {
         ClaimDocumentCollection caseDocuments = build.getClaimDocumentCollection()
             .orElseThrow(IllegalStateException::new);
         Assert.notNull(caseDocuments.getStaffUploadedDocuments(), "Scanned document list cant be null");
-        assertThat(caseDocuments.getScannedDocuments().size()).isEqualTo(1);
+        assertThat(caseDocuments.getStaffUploadedDocuments().size()).isEqualTo(1);
     }
 }
