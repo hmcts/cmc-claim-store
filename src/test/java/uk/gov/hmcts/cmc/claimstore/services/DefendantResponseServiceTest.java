@@ -28,7 +28,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DEFENDANT_OPTED_OUT_FOR_MEDIATION;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DEFENDANT_OPTED_OUT_FOR_MEDIATION_PILOT;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED_IMMEDIATELY;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED_INSTALMENTS;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED_SET_DATE;
@@ -102,7 +102,7 @@ public class DefendantResponseServiceTest {
         verify(appInsights, once()).trackEvent(eq(RESPONSE_FULL_DEFENCE_SUBMITTED),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
 
-        verify(appInsights, once()).trackEvent(eq(DEFENDANT_OPTED_OUT_FOR_MEDIATION),
+        verify(appInsights, once()).trackEvent(eq(DEFENDANT_OPTED_OUT_FOR_MEDIATION_PILOT),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
 
     }

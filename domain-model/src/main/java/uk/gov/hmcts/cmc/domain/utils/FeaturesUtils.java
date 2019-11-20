@@ -9,7 +9,7 @@ public class FeaturesUtils {
         // utility class, no instances
     }
 
-    public static boolean isMediationPilot(Claim claim) {
+    public static boolean hasMediationPilotFeature(Claim claim) {
         return claim.getFeatures() != null && claim.getFeatures().contains(MEDIATION_PILOT);
     }
 }

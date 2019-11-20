@@ -18,19 +18,18 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
-import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.function.Predicate;
 
+import static java.util.function.Predicate.isEqual;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LIFT_STAY;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BOTH_OPTED_IN_FOR_MEDIATION;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_OPTED_OUT_FOR_MEDIATION;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BOTH_OPTED_IN_FOR_MEDIATION_PILOT;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_OPTED_OUT_FOR_MEDIATION_PILOT;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_RESPONSE_ACCEPTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_NON_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_PILOT_ELIGIBLE;
@@ -39,6 +38,13 @@ import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseTy
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
+import static uk.gov.hmcts.cmc.domain.utils.FeaturesUtils.hasMediationPilotFeature;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.defendantOptedForMediation;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isFullDefence;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isFullDefenceDispute;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isPartAdmission;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponsePartAdmitPayImmediately;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseStatesPaid;
 
 @Service
 public class ClaimantResponseService {
@@ -128,7 +134,7 @@ public class ClaimantResponseService {
 
         if (shouldFormaliseResponseAcceptance(response, claimantResponse)) {
             return ((ResponseAcceptation) claimantResponse).getFormaliseOption()
-                .filter(Predicate.isEqual(FormaliseOption.SETTLEMENT))
+                .filter(isEqual(FormaliseOption.SETTLEMENT))
                 .isPresent();
         }
         return false;
@@ -137,7 +143,7 @@ public class ClaimantResponseService {
     private boolean isRejectResponseNoMediation(ClaimantResponse claimantResponse) {
         return ClaimantResponseType.REJECTION.equals(claimantResponse.getType())
             && ((ResponseRejection) claimantResponse).getFreeMediation()
-            .filter(Predicate.isEqual(YesNoOption.NO))
+            .filter(isEqual(YesNoOption.NO))
             .isPresent();
     }
 
@@ -183,38 +189,37 @@ public class ClaimantResponseService {
     }
 
     private void raiseAppInsightEventForMediation(Claim claim, Response response, ResponseRejection responseRejection) {
-        if (responseRejection.getFreeMediation().filter(Predicate.isEqual(NO)).isPresent()
-            && FeaturesUtils.isMediationPilot(claim)) {
-            appInsights.trackEvent(CLAIMANT_OPTED_OUT_FOR_MEDIATION, REFERENCE_NUMBER, claim.getReferenceNumber());
+        String referenceNumber = claim.getReferenceNumber();
+        boolean claimantNotOptedForMediation = responseRejection.getFreeMediation().filter(isEqual(NO)).isPresent();
+
+        if (claimantNotOptedForMediation && hasMediationPilotFeature(claim)) {
+            appInsights.trackEvent(CLAIMANT_OPTED_OUT_FOR_MEDIATION_PILOT, REFERENCE_NUMBER, referenceNumber);
         } else if (hasBothOptedForMediation(response, responseRejection)) {
-            if (FeaturesUtils.isMediationPilot(claim)) {
-                appInsights.trackEvent(MEDIATION_PILOT_ELIGIBLE, REFERENCE_NUMBER, claim.getReferenceNumber());
-                appInsights.trackEvent(BOTH_OPTED_IN_FOR_MEDIATION, REFERENCE_NUMBER, claim.getReferenceNumber());
+            if (hasMediationPilotFeature(claim)) {
+                appInsights.trackEvent(MEDIATION_PILOT_ELIGIBLE, REFERENCE_NUMBER, referenceNumber);
+                appInsights.trackEvent(BOTH_OPTED_IN_FOR_MEDIATION_PILOT, REFERENCE_NUMBER, referenceNumber);
             } else {
-                appInsights.trackEvent(MEDIATION_NON_PILOT_ELIGIBLE, REFERENCE_NUMBER, claim.getReferenceNumber());
+                appInsights.trackEvent(MEDIATION_NON_PILOT_ELIGIBLE, REFERENCE_NUMBER, referenceNumber);
             }
         }
     }
 
     private boolean hasBothOptedForMediation(Response response, ResponseRejection responseRejection) {
-        return responseRejection.getFreeMediation().filter(Predicate.isEqual(YES)).isPresent()
-            && ResponseUtils.isAMediation(response);
+        boolean claimantOptedForMediation = responseRejection.getFreeMediation().filter(isEqual(YES)).isPresent();
+        return claimantOptedForMediation && defendantOptedForMediation(response);
     }
 
     private boolean isPartAdmissionOrIsStatePaidOrIsFullDefence(Response response) {
-        return ResponseUtils.isPartAdmission(response)
-            || ResponseUtils.isFullDefence(response)
-            || ResponseUtils.isResponseStatesPaid(response);
+        return isPartAdmission(response) || isFullDefence(response) || isResponseStatesPaid(response);
     }
 
     private boolean isFullDefenseDisputeAcceptation(Response response, ClaimantResponse claimantResponse) {
-        return claimantResponse.getType() == ACCEPTATION
-            && ResponseUtils.isFullDefenceDispute(response);
+        return claimantResponse.getType() == ACCEPTATION && isFullDefenceDispute(response);
     }
 
     private boolean shouldFormaliseResponseAcceptance(Response response, ClaimantResponse claimantResponse) {
         return ACCEPTATION == claimantResponse.getType()
-            && !ResponseUtils.isResponseStatesPaid(response)
-            && !ResponseUtils.isResponsePartAdmitPayImmediately(response);
+            && !isResponseStatesPaid(response)
+            && !isResponsePartAdmitPayImmediately(response);
     }
 }

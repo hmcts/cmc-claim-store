@@ -74,7 +74,7 @@ public class ResponseUtils {
     }
 
     public static boolean isFullDefenceAndNoMediation(Response response) {
-        return isFullDefence(response) && isNoMediation(response);
+        return isFullDefence(response) && defendantNotOptedForMediation(response);
     }
 
     public static boolean isFullDefenceDispute(Response response) {
@@ -86,11 +86,11 @@ public class ResponseUtils {
         return response.getResponseType().equals(ResponseType.FULL_DEFENCE);
     }
 
-    public static boolean isNoMediation(Response response) {
+    public static boolean defendantNotOptedForMediation(Response response) {
         return response.getFreeMediation().filter(Predicate.isEqual(NO)).isPresent();
     }
 
-    public static boolean isAMediation(Response response) {
+    public static boolean defendantOptedForMediation(Response response) {
         return response.getFreeMediation().filter(Predicate.isEqual(YES)).isPresent();
     }
 }

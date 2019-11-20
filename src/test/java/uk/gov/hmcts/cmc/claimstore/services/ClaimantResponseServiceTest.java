@@ -41,8 +41,8 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LIFT_STAY;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.STAY_CLAIM;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BOTH_OPTED_IN_FOR_MEDIATION;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_OPTED_OUT_FOR_MEDIATION;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BOTH_OPTED_IN_FOR_MEDIATION_PILOT;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_OPTED_OUT_FOR_MEDIATION_PILOT;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_RESPONSE_ACCEPTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_STAYED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.LA_PILOT_ELIGIBLE;
@@ -394,7 +394,7 @@ public class ClaimantResponseServiceTest {
         verify(eventProducer).createClaimantResponseEvent(any(Claim.class), eq(AUTHORISATION));
         verify(appInsights).trackEvent(eq(NON_LA_CASES),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
-        verify(appInsights).trackEvent(eq(CLAIMANT_OPTED_OUT_FOR_MEDIATION),
+        verify(appInsights).trackEvent(eq(CLAIMANT_OPTED_OUT_FOR_MEDIATION_PILOT),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 
@@ -453,7 +453,7 @@ public class ClaimantResponseServiceTest {
         verify(appInsights).trackEvent(eq(MEDIATION_PILOT_ELIGIBLE),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
 
-        verify(appInsights).trackEvent(eq(BOTH_OPTED_IN_FOR_MEDIATION),
+        verify(appInsights).trackEvent(eq(BOTH_OPTED_IN_FOR_MEDIATION_PILOT),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
 
     }

@@ -71,7 +71,7 @@ public class MediationSuccessCallbackHandlerTest {
 
         mediationSuccessCallbackHandler.handle(callbackParams);
 
-        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.MEDIATION_SUCCESS),
+        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.MEDIATION_PILOT_SUCCESS),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 }

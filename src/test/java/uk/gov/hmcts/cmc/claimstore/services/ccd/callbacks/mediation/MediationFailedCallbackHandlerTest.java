@@ -182,7 +182,7 @@ public class MediationFailedCallbackHandlerTest {
 
         mediationFailedCallbackHandler.handle(callbackParams);
 
-        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.MEDIATION_FAILED),
+        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.MEDIATION_PILOT_FAILED),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 }
