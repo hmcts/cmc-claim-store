@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.Collections.emptyList;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
@@ -216,7 +215,7 @@ public class ClaimService {
     }
 
     @LogExecutionTime
-    public Claim saveCitizenClaim(
+    public Claim createCitizenClaim(
         String authorisation,
         ClaimData claimData,
         List<String> features
@@ -227,10 +226,7 @@ public class ClaimService {
             .features(features)
             .build();
 
-        return caseRepository.saveCaseEvent(
-            authorisation,
-            claim,
-            CREATE_CITIZEN_CLAIM);
+        return caseRepository.createCitizenClaim(authorisation, claim);
     }
 
     @LogExecutionTime

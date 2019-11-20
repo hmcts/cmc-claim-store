@@ -562,7 +562,7 @@ public class ClaimServiceTest {
             .saveCaseEvent(eq(AUTHORISATION), any(Claim.class), eq(CREATE_CITIZEN_CLAIM)))
             .thenReturn(claim);
 
-        Claim createdClaim = claimService.saveCitizenClaim(
+        Claim createdClaim = claimService.createCitizenClaim(
             AUTHORISATION,
             VALID_APP,
             singletonList("admissions"));

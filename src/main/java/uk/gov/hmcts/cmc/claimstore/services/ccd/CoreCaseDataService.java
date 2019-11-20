@@ -2,6 +2,8 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd;
 
 import feign.FeignException;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -47,6 +49,7 @@ import java.util.Optional;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_LEGAL_REP_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
@@ -81,6 +84,8 @@ public class CoreCaseDataService {
 
     private static final String CCD_PAYMENT_CREATE_FAILURE_MESSAGE
         = "Failed creating a payment in CCD store for claim with external id %s on event %s";
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final CaseMapper caseMapper;
     private final UserService userService;
@@ -1085,6 +1090,44 @@ public class CoreCaseDataService {
                     CCD_UPDATE_FAILURE_MESSAGE,
                     caseId,
                     ORDER_REVIEW_REQUESTED
+                ), exception
+            );
+        }
+    }
+
+    public Claim createCitizenClaim(String authorisation, Claim claim) {
+        try {
+            UserDetails userDetails = userService.getUserDetails(authorisation);
+
+            EventRequestData eventRequestData = eventRequest(CREATE_CITIZEN_CLAIM, userDetails.getId());
+
+            StartEventResponse startEventResponse = startUpdate(
+                authorisation,
+                eventRequestData,
+                claim.getId(),
+                userDetails.isSolicitor() || userDetails.isCaseworker()
+            );
+
+            CCDCase ccdCase = caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails());
+
+            CaseDataContent caseDataContent = caseDataContent(startEventResponse, ccdCase);
+
+            CaseDetails caseDetails = submitUpdate(authorisation,
+                eventRequestData,
+                caseDataContent,
+                claim.getId(),
+                userDetails.isSolicitor() || userDetails.isCaseworker()
+            );
+            return caseDetailsConverter.extractClaim(caseDetails);
+        } catch (FeignException.UnprocessableEntity unprocessableEntity) {
+            logger.warn("CreateCitizenClaim:: Ambiguous 422 from CCD, swallow this until fix for RDM-6411 is released");
+            return claim;
+        } catch (Exception exception) {
+            throw new CoreCaseDataStoreException(
+                String.format(
+                    CCD_UPDATE_FAILURE_MESSAGE,
+                    claim.getId(),
+                    CREATE_CITIZEN_CLAIM
                 ), exception
             );
         }
