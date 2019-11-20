@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseSearchApi;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
+import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
@@ -81,6 +82,7 @@ public class IntentionToProceedService {
         }
     }
 
+    @LogExecutionTime
     public void checkClaimsPastIntentionToProceedDeadline(LocalDateTime runDateTime, User user) {
         LocalDate responseDate = intentionToProceedDeadlineCalculator.calculateResponseDate(runDateTime);
         Set<Claim> claims = new HashSet<>(caseSearchApi.getClaimsPastIntentionToProceed(user, responseDate));
