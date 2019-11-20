@@ -37,6 +37,7 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 public class MediationSuccessfulCallbackHandler extends CallbackHandler {
 
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
+    private static final List<CaseEvent> MEDIATION_SUCCESSFUL = ImmutableList.of(CaseEvent.MEDIATION_SUCCESSFUL);
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -63,10 +64,7 @@ public class MediationSuccessfulCallbackHandler extends CallbackHandler {
     }
 
     @Override
-    public List<CaseEvent> handledEvents() {
-        return ImmutableList.of(MEDIATION_SUCCESSFUL);
-    }
-
+    public List<CaseEvent> handledEvents() { return MEDIATION_SUCCESSFUL; }
     @Override
     public List<Role> getSupportedRoles() {
         return ROLES;

@@ -94,7 +94,7 @@ public class MediationSuccessfulCallbackHandlerTest {
     }
 
     @Test
-    public void shouldSendNotificationToParties() {
+    public void shouldSendNotificationToDefendant() {
         Claim claim = claimSetForMediation.toBuilder()
                 .response(
                         SampleResponse
@@ -111,6 +111,21 @@ public class MediationSuccessfulCallbackHandlerTest {
                 eq(MEDIATION_SUCCESSFUL_DEFENDANT),
                 any(),
                 eq("to-defendant-mediation-successful"));
+    }
+
+    @Test
+    public void shouldSendNotificationToClaimant() {
+        Claim claim = claimSetForMediation.toBuilder()
+                .response(
+                        SampleResponse
+                                .FullDefence
+                                .builder()
+                                .withMediation(YesNoOption.YES).build()
+                ).build();
+
+        when(caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails())).thenReturn(claim);
+
+        mediationSuccessfulCallbackHandler.handle(callbackParams);
 
         verify(notificationService).sendMail(eq(claim.getSubmitterEmail()),
                 eq(MEDIATION_SUCCESSFUL_CLAIMANT),
