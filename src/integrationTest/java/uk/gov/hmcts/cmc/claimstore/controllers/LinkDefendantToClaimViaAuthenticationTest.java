@@ -2,7 +2,11 @@ package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUser;
@@ -26,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class LinkDefendantToClaimViaAuthenticationTest extends BaseIntegrationTest {
     static final String username = "defendant.email@htcms.net";
     static final String password = "password";
-    static final String urlFormat = "/testing-support/claims/%s/defendant/%s/%s";
+    static final String urlFormat = "/testing-support/claims/%s/defendant/";
 
     @Test
     public void shouldReturn200HttpStatusAndUpdatedClaimWhenLinkIsSuccessfullySet() throws Exception {
@@ -42,10 +46,17 @@ public class LinkDefendantToClaimViaAuthenticationTest extends BaseIntegrationTe
         );
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
-        String urlTemplate = String.format(urlFormat, claim.getReferenceNumber(), username, password);
+        String urlTemplate = String.format(urlFormat, claim.getReferenceNumber());
 
-        webClient
-            .perform(put(urlTemplate))
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("defendantUsername", username);
+        params.add("defendantPassword", password);
+
+        MockHttpServletRequestBuilder putRequest = put(urlTemplate).params(params)
+            .contentType(MediaType.APPLICATION_JSON)
+            .characterEncoding("utf-8");
+
+        webClient.perform(putRequest)
             .andExpect(status().isOk());
 
         assertThat(claimStore.getClaim(claim.getId()))
@@ -67,10 +78,18 @@ public class LinkDefendantToClaimViaAuthenticationTest extends BaseIntegrationTe
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
 
-        String urlTemplate = String.format(urlFormat, claim.getReferenceNumber(), username, password);
+        String urlTemplate = String.format(urlFormat, claim.getReferenceNumber());
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("defendantUsername", username);
+        params.add("defendantPassword", password);
+
+        MockHttpServletRequestBuilder putRequest = put(urlTemplate).params(params)
+            .contentType(MediaType.APPLICATION_JSON)
+            .characterEncoding("utf-8");
 
         webClient
-            .perform(put(urlTemplate))
+            .perform(putRequest)
             .andExpect(status().isUnauthorized());
 
         assertThat(claimStore.getClaim(claim.getId()))
@@ -92,10 +111,18 @@ public class LinkDefendantToClaimViaAuthenticationTest extends BaseIntegrationTe
             );
 
         String claimReference = "Non Existent Claim Reference";
-        String urlTemplate = String.format(urlFormat, claimReference, username, password);
+        String urlTemplate = String.format(urlFormat, claimReference);
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("defendantUsername", username);
+        params.add("defendantPassword", password);
+
+        MockHttpServletRequestBuilder putRequest = put(urlTemplate).params(params)
+            .contentType(MediaType.APPLICATION_JSON)
+            .characterEncoding("utf-8");
 
         webClient
-            .perform(put(urlTemplate))
+            .perform(putRequest)
             .andExpect(status().isNotFound());
 
     }
