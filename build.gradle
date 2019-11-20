@@ -54,6 +54,10 @@ allprojects {
     configDir = new File(rootDir, 'config/checkstyle')
   }
 
+  jacoco {
+    toolVersion = "0.8.5"
+  }
+
   // https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/configuration.html
   dependencyCheck {
     // Specifies if the build should be failed if a CVSS score above a specified level is identified.
