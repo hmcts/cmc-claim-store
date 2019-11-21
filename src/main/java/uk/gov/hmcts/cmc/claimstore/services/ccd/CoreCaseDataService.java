@@ -857,28 +857,7 @@ public class CoreCaseDataService {
 
     public Claim saveCaseEvent(String authorisation, Long caseId, CaseEvent caseEvent) {
         try {
-            UserDetails userDetails = userService.getUserDetails(authorisation);
-
-            EventRequestData eventRequestData = eventRequest(caseEvent, userDetails.getId());
-
-            StartEventResponse startEventResponse = startUpdate(
-                authorisation,
-                eventRequestData,
-                caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
-            );
-
-            CCDCase ccdCase = caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails());
-
-            CaseDataContent caseDataContent = caseDataContent(startEventResponse, ccdCase);
-
-            CaseDetails caseDetails = submitUpdate(authorisation,
-                eventRequestData,
-                caseDataContent,
-                caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
-            );
-            return caseDetailsConverter.extractClaim(caseDetails);
+            return sendCaseEvent(authorisation, caseEvent, caseId);
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(
@@ -1095,35 +1074,9 @@ public class CoreCaseDataService {
         }
     }
 
-    /***
-     * This method is temporary solution for RDM-6411. It swallows all exceptions of type UnprocessableEntity(422).
-     * This should not be used other than inversion of control flows.
-     * @return passed claim back when 422 is returned by CCD, otherwise the case details after this event.
-     */
     public Claim saveCaseEventIOC(String authorisation, Claim claim, CaseEvent caseEvent) {
         try {
-            UserDetails userDetails = userService.getUserDetails(authorisation);
-
-            EventRequestData eventRequestData = eventRequest(caseEvent, userDetails.getId());
-
-            StartEventResponse startEventResponse = startUpdate(
-                authorisation,
-                eventRequestData,
-                claim.getId(),
-                userDetails.isSolicitor() || userDetails.isCaseworker()
-            );
-
-            CCDCase ccdCase = caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails());
-
-            CaseDataContent caseDataContent = caseDataContent(startEventResponse, ccdCase);
-
-            CaseDetails caseDetails = submitUpdate(authorisation,
-                eventRequestData,
-                caseDataContent,
-                claim.getId(),
-                userDetails.isSolicitor() || userDetails.isCaseworker()
-            );
-            return caseDetailsConverter.extractClaim(caseDetails);
+            return sendCaseEvent(authorisation, caseEvent, claim.getId());
         } catch (FeignException.UnprocessableEntity unprocessableEntity) {
             logger.warn("Event {} Ambiguous 422 from CCD, swallow this until fix for RDM-6411 is released", caseEvent);
             return claim;
@@ -1136,5 +1089,30 @@ public class CoreCaseDataService {
                 ), exception
             );
         }
+    }
+
+    private Claim sendCaseEvent(String authorisation, CaseEvent caseEvent, Long caseId) {
+        UserDetails userDetails = userService.getUserDetails(authorisation);
+
+        EventRequestData eventRequestData = eventRequest(caseEvent, userDetails.getId());
+
+        StartEventResponse startEventResponse = startUpdate(
+            authorisation,
+            eventRequestData,
+            caseId,
+            userDetails.isSolicitor() || userDetails.isCaseworker()
+        );
+
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails());
+
+        CaseDataContent caseDataContent = caseDataContent(startEventResponse, ccdCase);
+
+        CaseDetails caseDetails = submitUpdate(authorisation,
+            eventRequestData,
+            caseDataContent,
+            caseId,
+            userDetails.isSolicitor() || userDetails.isCaseworker()
+        );
+        return caseDetailsConverter.extractClaim(caseDetails);
     }
 }
