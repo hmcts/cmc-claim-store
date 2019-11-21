@@ -520,7 +520,7 @@ public class ClaimServiceTest {
 
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
             .thenReturn(Optional.of(claim));
-        when(caseRepository.saveCaseEvent(AUTHORISATION, claim, RESUME_CLAIM_PAYMENT_CITIZEN))
+        when(caseRepository.saveCaseEventIOC(AUTHORISATION, claim, RESUME_CLAIM_PAYMENT_CITIZEN))
             .thenReturn(claim);
         CreatePaymentResponse response = claimService.resumePayment(AUTHORISATION, claimData);
 
@@ -546,7 +546,7 @@ public class ClaimServiceTest {
 
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
             .thenReturn(Optional.of(claim));
-        when(caseRepository.saveCaseEvent(AUTHORISATION, claim, RESUME_CLAIM_PAYMENT_CITIZEN))
+        when(caseRepository.saveCaseEventIOC(AUTHORISATION, claim, RESUME_CLAIM_PAYMENT_CITIZEN))
             .thenReturn(claim);
         CreatePaymentResponse response = claimService.resumePayment(AUTHORISATION, claimData);
 
@@ -559,7 +559,7 @@ public class ClaimServiceTest {
         when(caseRepository.getClaimByExternalId(VALID_APP.getExternalId().toString(), USER))
             .thenReturn(Optional.of(claim));
         when(caseRepository
-            .saveCaseEvent(eq(AUTHORISATION), any(Claim.class), eq(CREATE_CITIZEN_CLAIM)))
+            .saveCaseEventIOC(eq(AUTHORISATION), any(Claim.class), eq(CREATE_CITIZEN_CLAIM)))
             .thenReturn(claim);
 
         Claim createdClaim = claimService.createCitizenClaim(

@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.Collections.emptyList;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
@@ -201,7 +202,7 @@ public class ClaimService {
     public CreatePaymentResponse resumePayment(String authorisation, ClaimData claimData) {
 
         Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), authorisation);
-        Claim resumedClaim = caseRepository.saveCaseEvent(authorisation, claim, RESUME_CLAIM_PAYMENT_CITIZEN);
+        Claim resumedClaim = caseRepository.saveCaseEventIOC(authorisation, claim, RESUME_CLAIM_PAYMENT_CITIZEN);
 
         Payment payment = resumedClaim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
 
@@ -226,7 +227,7 @@ public class ClaimService {
             .features(features)
             .build();
 
-        return caseRepository.createCitizenClaim(authorisation, claim);
+        return caseRepository.saveCaseEventIOC(authorisation, claim, CREATE_CITIZEN_CLAIM);
     }
 
     @LogExecutionTime

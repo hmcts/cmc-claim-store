@@ -149,8 +149,8 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Claim createCitizenClaim(String authorisation, Claim claim) {
-        return coreCaseDataService.createCitizenClaim(authorisation, claim);
+    public Claim saveCaseEventIOC(String authorisation, Claim claim, CaseEvent caseEvent) {
+        return coreCaseDataService.saveCaseEventIOC(authorisation, claim, caseEvent);
     }
 
     @Override

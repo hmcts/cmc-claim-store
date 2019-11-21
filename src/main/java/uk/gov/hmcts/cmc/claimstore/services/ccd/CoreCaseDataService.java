@@ -1095,11 +1095,16 @@ public class CoreCaseDataService {
         }
     }
 
-    public Claim createCitizenClaim(String authorisation, Claim claim) {
+    /***
+     * This method is temporary solution for RDM-6411. It swallows all exceptions of type UnprocessableEntity(422).
+     * This should not be used other than inversion of control flows.
+     * @return passed claim back when 422 is returned by CCD, otherwise the case details after this event.
+     */
+    public Claim saveCaseEventIOC(String authorisation, Claim claim, CaseEvent caseEvent) {
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
 
-            EventRequestData eventRequestData = eventRequest(CREATE_CITIZEN_CLAIM, userDetails.getId());
+            EventRequestData eventRequestData = eventRequest(caseEvent, userDetails.getId());
 
             StartEventResponse startEventResponse = startUpdate(
                 authorisation,
@@ -1120,7 +1125,7 @@ public class CoreCaseDataService {
             );
             return caseDetailsConverter.extractClaim(caseDetails);
         } catch (FeignException.UnprocessableEntity unprocessableEntity) {
-            logger.warn("CreateCitizenClaim:: Ambiguous 422 from CCD, swallow this until fix for RDM-6411 is released");
+            logger.warn("Event {} Ambiguous 422 from CCD, swallow this until fix for RDM-6411 is released", caseEvent);
             return claim;
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
