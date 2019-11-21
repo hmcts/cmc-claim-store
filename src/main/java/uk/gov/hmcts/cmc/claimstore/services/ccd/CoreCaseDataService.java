@@ -49,7 +49,6 @@ import java.util.Optional;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CASE;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_LEGAL_REP_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DEFAULT_CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
@@ -1085,7 +1084,7 @@ public class CoreCaseDataService {
                 String.format(
                     CCD_UPDATE_FAILURE_MESSAGE,
                     claim.getId(),
-                    CREATE_CITIZEN_CLAIM
+                    caseEvent
                 ), exception
             );
         }
