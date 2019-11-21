@@ -112,7 +112,7 @@ milo:
   sender: ${MILO_CSV_SENDER:}
 
 claim_stayed:
-  schedule: "-"
+  schedule: ""
 
 dateCalculations:
   endOfBusinessDayHour: 16

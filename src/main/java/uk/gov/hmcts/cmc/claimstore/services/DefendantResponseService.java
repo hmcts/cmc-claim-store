@@ -14,7 +14,6 @@ import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
-import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
@@ -28,6 +27,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_INSTALMENTS;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_SET_DATE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_STATES_PAID;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.hasDefendantOptedForMediation;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseStatesPaid;
 
 @Service
@@ -82,7 +82,7 @@ public class DefendantResponseService {
 
         appInsights.trackEvent(getAppInsightsEventName(response), REFERENCE_NUMBER, referenceNumber);
 
-        if (ResponseUtils.defendantNotOptedForMediation(response) && FeaturesUtils.hasMediationPilotFeature(claim)) {
+        if (!hasDefendantOptedForMediation(response) && FeaturesUtils.hasMediationPilotFeature(claim)) {
             appInsights.trackEvent(DEFENDANT_OPTED_OUT_FOR_MEDIATION_PILOT, REFERENCE_NUMBER, referenceNumber);
         }
 

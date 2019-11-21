@@ -39,7 +39,7 @@ import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseTy
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.utils.FeaturesUtils.hasMediationPilotFeature;
-import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.defendantOptedForMediation;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.hasDefendantOptedForMediation;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isFullDefence;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isFullDefenceDispute;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isPartAdmission;
@@ -206,7 +206,7 @@ public class ClaimantResponseService {
 
     private boolean hasBothOptedForMediation(Response response, ResponseRejection responseRejection) {
         boolean claimantOptedForMediation = responseRejection.getFreeMediation().filter(isEqual(YES)).isPresent();
-        return claimantOptedForMediation && defendantOptedForMediation(response);
+        return claimantOptedForMediation && hasDefendantOptedForMediation(response);
     }
 
     private boolean isPartAdmissionOrIsStatePaidOrIsFullDefence(Response response) {
