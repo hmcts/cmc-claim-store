@@ -242,10 +242,11 @@ public class ClaimService {
     ) {
         String externalId = claimData.getExternalId().toString();
         User user = userService.getUser(authorisation);
-        caseRepository.getClaimByExternalId(externalId, user).ifPresent(claim -> {
-            throw new ConflictException(
-                String.format("Claim already exist with same external reference as %s", externalId));
-        });
+        caseRepository.getClaimByExternalId(externalId, user)
+                .ifPresent(claim -> {
+                    throw new ConflictException(
+                            String.format("Claim already exist with same external reference as %s", externalId));
+                });
 
         Claim claim = buildClaimFrom(user,
             submitterId,
@@ -294,9 +295,9 @@ public class ClaimService {
     public Claim requestMoreTimeForResponse(String externalId, String authorisation) {
         Claim claim = getClaimByExternalId(externalId, authorisation);
 
-        this.moreTimeRequestRule.assertMoreTimeCanBeRequested(claim);
-
         LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
+        
+        this.moreTimeRequestRule.assertMoreTimeCanBeRequested(claim);
 
         caseRepository.requestMoreTimeForResponse(authorisation, claim, newDeadline);
 
