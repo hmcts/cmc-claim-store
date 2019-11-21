@@ -616,9 +616,7 @@ public class CoreCaseDataServiceFailureTest {
 
         ClaimSubmissionOperationIndicators operationIndicators = ClaimSubmissionOperationIndicators.builder().build();
         Claim claim = SampleClaim.getDefault();
-
-        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
-
+        
         service.saveClaimSubmissionOperationIndicators(claim.getId(), operationIndicators, AUTHORISATION,
             PIN_GENERATION_OPERATIONS);
     }
