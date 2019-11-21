@@ -48,10 +48,11 @@ quartzProperties:
     scheduler:
       instanceId: AUTO
     jobStore:
-      isClustered: false
+      isClustered: true
       class: org.quartz.impl.jdbcjobstore.JobStoreTX
       driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
       dataSource: cmcDataSource
+      clusterCheckinInterval: 2000
     threadPool:
       class: org.quartz.simpl.SimpleThreadPool
       threadCount: 8
