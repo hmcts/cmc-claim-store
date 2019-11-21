@@ -202,7 +202,7 @@ public class ClaimService {
     public CreatePaymentResponse resumePayment(String authorisation, ClaimData claimData) {
 
         Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), authorisation);
-        Claim resumedClaim = caseRepository.saveCaseEventIOC(authorisation, claim, RESUME_CLAIM_PAYMENT_CITIZEN);
+        Claim resumedClaim = caseRepository.saveCaseEvent(authorisation, claim, RESUME_CLAIM_PAYMENT_CITIZEN);
 
         Payment payment = resumedClaim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
 
