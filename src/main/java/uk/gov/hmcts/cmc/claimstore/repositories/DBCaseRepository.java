@@ -262,6 +262,12 @@ public class DBCaseRepository implements CaseRepository {
     }
 
     @Override
+    public Claim saveCaseEventIOC(String authorisation, Claim claim, CaseEvent caseEvent) {
+        // No implementation required for claim-store repository
+        return null;
+    }
+
+    @Override
     public Claim saveClaimDocuments(
         String authorisation,
         Long claimId,

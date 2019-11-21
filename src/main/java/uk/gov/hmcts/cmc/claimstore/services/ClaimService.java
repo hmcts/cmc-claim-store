@@ -216,7 +216,7 @@ public class ClaimService {
     }
 
     @LogExecutionTime
-    public Claim saveCitizenClaim(
+    public Claim createCitizenClaim(
         String authorisation,
         ClaimData claimData,
         List<String> features
@@ -227,10 +227,7 @@ public class ClaimService {
             .features(features)
             .build();
 
-        return caseRepository.saveCaseEvent(
-            authorisation,
-            claim,
-            CREATE_CITIZEN_CLAIM);
+        return caseRepository.saveCaseEventIOC(authorisation, claim, CREATE_CITIZEN_CLAIM);
     }
 
     @LogExecutionTime
