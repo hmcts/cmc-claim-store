@@ -256,7 +256,7 @@ public class CoreCaseDataService {
                 authorisation,
                 eventRequestData,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
 
             Claim updatedClaim = toClaimBuilder(startEventResponse)
@@ -270,7 +270,7 @@ public class CoreCaseDataService {
                 eventRequestData,
                 caseDataContent,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
 
             jobSchedulerService.rescheduleEmailNotificationsForDefendantResponse(claim, newResponseDeadline);
@@ -301,7 +301,7 @@ public class CoreCaseDataService {
                 authorisation,
                 eventRequestData,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
 
             Claim updatedClaim = toClaimBuilder(startEventResponse)
@@ -315,7 +315,7 @@ public class CoreCaseDataService {
                 eventRequestData,
                 caseDataContent,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
 
         } catch (Exception exception) {
@@ -357,7 +357,7 @@ public class CoreCaseDataService {
                 authorisation,
                 eventRequestData,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
 
             Claim updatedClaim = toClaim(startEventResponse);
@@ -378,7 +378,7 @@ public class CoreCaseDataService {
                 eventRequestData,
                 caseDataContent,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
             return caseDetailsConverter.extractClaim(caseDetails);
         } catch (Exception exception) {
@@ -424,7 +424,7 @@ public class CoreCaseDataService {
                 authorisation,
                 eventRequestData,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
 
             LocalDateTime respondedAt = nowInUTC();
@@ -444,7 +444,7 @@ public class CoreCaseDataService {
                 eventRequestData,
                 caseDataContent,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
@@ -486,7 +486,7 @@ public class CoreCaseDataService {
                 authorisation,
                 eventRequestData,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
 
             Claim updatedClaim = toClaimBuilder(startEventResponse)
@@ -500,7 +500,7 @@ public class CoreCaseDataService {
                 eventRequestData,
                 caseDataContent,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
                 )
             );
         } catch (Exception exception) {
@@ -529,7 +529,7 @@ public class CoreCaseDataService {
                 authorisation,
                 eventRequestData,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
 
             Claim updatedClaim = toClaimBuilder(startEventResponse)
@@ -542,7 +542,7 @@ public class CoreCaseDataService {
                 eventRequestData,
                 caseDataContent,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
@@ -571,7 +571,7 @@ public class CoreCaseDataService {
                 authorisation,
                 eventRequestData,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
 
             Claim updatedClaim = toClaimBuilder(startEventResponse)
@@ -585,7 +585,7 @@ public class CoreCaseDataService {
                 eventRequestData,
                 caseDataContent,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
@@ -612,7 +612,7 @@ public class CoreCaseDataService {
                 authorisation,
                 eventRequestData,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
 
             Claim updatedClaim = toClaimBuilder(startEventResponse)
@@ -625,7 +625,7 @@ public class CoreCaseDataService {
                 eventRequestData,
                 caseDataContent,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
@@ -654,7 +654,7 @@ public class CoreCaseDataService {
                 authorisation,
                 eventRequestData,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
 
             Claim updatedClaim = toClaimBuilder(startEventResponse)
@@ -668,7 +668,7 @@ public class CoreCaseDataService {
                 eventRequestData,
                 caseDataContent,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
@@ -731,7 +731,7 @@ public class CoreCaseDataService {
                 authorisation,
                 eventRequestData,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
 
             CaseDataContent caseDataContent = CaseDataContent.builder()
@@ -745,7 +745,7 @@ public class CoreCaseDataService {
                 .build();
 
             return submitUpdate(authorisation, eventRequestData, caseDataContent, caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker());
+                isRepresented(userDetails));
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
                 String.format(
@@ -828,7 +828,7 @@ public class CoreCaseDataService {
                 authorisation,
                 eventRequestData,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
 
             Claim updatedClaim = toClaimBuilder(startEventResponse)
@@ -841,7 +841,7 @@ public class CoreCaseDataService {
                 eventRequestData,
                 caseDataContent,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
@@ -883,7 +883,7 @@ public class CoreCaseDataService {
                 authorisation,
                 eventRequestData,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
 
             Claim updatedClaim = toClaimBuilder(startEventResponse)
@@ -897,7 +897,7 @@ public class CoreCaseDataService {
                 eventRequestData,
                 caseDataContent,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
@@ -920,7 +920,7 @@ public class CoreCaseDataService {
                 authorisation,
                 eventRequestData,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
 
             Claim updatedClaim = toClaimBuilder(startEventResponse)
@@ -933,7 +933,7 @@ public class CoreCaseDataService {
                 eventRequestData,
                 caseDataContent,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
         } catch (Exception exception) {
             throw new CoreCaseDataStoreException(
@@ -944,6 +944,10 @@ public class CoreCaseDataService {
                 ), exception
             );
         }
+    }
+
+    private boolean isRepresented(UserDetails userDetails) {
+        return userDetails.isSolicitor() || userDetails.isCaseworker();
     }
 
     public Claim saveClaimSubmissionOperationIndicators(Long caseId,
@@ -959,7 +963,7 @@ public class CoreCaseDataService {
                 authorisation,
                 eventRequestData,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
 
             Claim updatedClaim = toClaimBuilder(startEventResponse)
@@ -972,7 +976,7 @@ public class CoreCaseDataService {
                 eventRequestData,
                 caseDataContent,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
 
             return caseDetailsConverter.extractClaim(caseDetails);
@@ -998,7 +1002,7 @@ public class CoreCaseDataService {
                 anonymousCaseWorker.getAuthorisation(),
                 eventRequestData,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
 
             CCDCase ccdCase = caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails());
@@ -1015,7 +1019,7 @@ public class CoreCaseDataService {
                 eventRequestData,
                 caseDataContent,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
 
             ccdCreateCaseService.grantAccessToCase(caseId.toString(), letterHolderId);
@@ -1046,7 +1050,7 @@ public class CoreCaseDataService {
                 authorisation,
                 eventRequestData,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
 
             Claim updatedClaim = toClaimBuilder(startEventResponse)
@@ -1059,7 +1063,7 @@ public class CoreCaseDataService {
                 eventRequestData,
                 caseDataContent,
                 caseId,
-                userDetails.isSolicitor() || userDetails.isCaseworker()
+                isRepresented(userDetails)
             );
             return caseDetailsConverter.extractClaim(caseDetails);
         } catch (Exception exception) {
@@ -1099,7 +1103,7 @@ public class CoreCaseDataService {
             authorisation,
             eventRequestData,
             caseId,
-            userDetails.isSolicitor() || userDetails.isCaseworker()
+            isRepresented(userDetails)
         );
 
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(startEventResponse.getCaseDetails());
@@ -1110,7 +1114,7 @@ public class CoreCaseDataService {
             eventRequestData,
             caseDataContent,
             caseId,
-            userDetails.isSolicitor() || userDetails.isCaseworker()
+            isRepresented(userDetails)
         );
         return caseDetailsConverter.extractClaim(caseDetails);
     }
