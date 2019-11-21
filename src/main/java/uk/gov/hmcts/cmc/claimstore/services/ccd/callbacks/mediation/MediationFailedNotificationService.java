@@ -74,7 +74,7 @@ public class MediationFailedNotificationService {
     private void notifyDefendantOfflineJourney(Claim claim) {
         notificationService.sendMail(
             claim.getDefendantEmail(),
-            notificationsProperties.getTemplates().getEmail().getClaimantMediationFailureOfflineDQ(),
+            notificationsProperties.getTemplates().getEmail().getDefendantMediationFailureOfflineDQ(),
             aggregateParams(claim),
             NotificationReferenceBuilder.MediationUnsuccessful
                 .forMediationUnsuccessfulOfflineDQ(claim.getReferenceNumber(), "defendant")
