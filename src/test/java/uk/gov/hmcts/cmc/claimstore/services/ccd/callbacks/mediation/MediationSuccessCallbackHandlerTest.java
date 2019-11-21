@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils.DQ_FLAG;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -43,19 +44,11 @@ public class MediationSuccessCallbackHandlerTest {
     private Claim claimSetForMediation =
         SampleClaim.getWithClaimantResponseRejectionForPartAdmissionAndMediation();
 
+    private CallbackParams callbackParams;
+
     @Before
     public void setUp() {
         mediationSuccessCallbackHandler = new MediationSuccessCallbackHandler(caseDetailsConverter, appInsights);
-    }
-
-    @Test
-    public void shouldRaiseAppInsight() {
-
-        Claim claim = claimSetForMediation.toBuilder()
-            .features(Collections.singletonList(FeaturesUtils.MEDIATION_PILOT))
-            .build();
-
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
 
         CallbackRequest callbackRequest = CallbackRequest
             .builder()
@@ -63,15 +56,38 @@ public class MediationSuccessCallbackHandlerTest {
             .eventId(CaseEvent.MEDIATION_SUCCESSFUL.getValue())
             .build();
 
-        CallbackParams callbackParams = CallbackParams.builder()
+        callbackParams = CallbackParams.builder()
             .type(CallbackType.SUBMITTED)
             .request(callbackRequest)
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
             .build();
+    }
 
+    @Test
+    public void shouldRaiseAppInsightWhenFeatureIsMediationPilot() {
+
+        Claim claim = claimSetForMediation.toBuilder()
+            .features(Collections.singletonList(FeaturesUtils.MEDIATION_PILOT))
+            .build();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         mediationSuccessCallbackHandler.handle(callbackParams);
 
         verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.MEDIATION_PILOT_SUCCESS),
+            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+    }
+
+    @Test
+    public void shouldRaiseAppInsightWhenFeatureIsNotMediationPilot() {
+
+        Claim claim = claimSetForMediation.toBuilder()
+            .features(Collections.singletonList(DQ_FLAG))
+            .build();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+        mediationSuccessCallbackHandler.handle(callbackParams);
+
+        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.NON_MEDIATION_PILOT_SUCCESS),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 }

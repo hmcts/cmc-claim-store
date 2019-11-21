@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
@@ -25,6 +26,7 @@ import java.util.Map;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MEDIATION_SUCCESSFUL;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_PILOT_SUCCESS;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NON_MEDIATION_PILOT_SUCCESS;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @Service
@@ -63,9 +65,16 @@ public class MediationSuccessCallbackHandler extends CallbackHandler {
     private CallbackResponse raiseAppInsightEvent(CallbackParams callbackParams) {
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
-        if (FeaturesUtils.hasMediationPilotFeature(claim)) {
-            appInsights.trackEvent(MEDIATION_PILOT_SUCCESS, REFERENCE_NUMBER, claim.getReferenceNumber());
-        }
+
+        appInsights
+            .trackEvent(getAppInsightEventBasedOnMediationPilot(claim), REFERENCE_NUMBER, claim.getReferenceNumber());
+
         return SubmittedCallbackResponse.builder().build();
+    }
+
+    private AppInsightsEvent getAppInsightEventBasedOnMediationPilot(Claim claim) {
+        return FeaturesUtils.hasMediationPilotFeature(claim)
+            ? MEDIATION_PILOT_SUCCESS
+            : NON_MEDIATION_PILOT_SUCCESS;
     }
 }
