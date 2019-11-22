@@ -19,9 +19,9 @@ import java.util.Objects;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper.admissionResponse;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.hasDefendantOptedForMediation;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isFullDefence;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isFullDefenceDisputeAndNoMediation;
-import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isNoMediation;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isPartAdmission;
 
 @Service
@@ -77,7 +77,7 @@ public class DefendantResponseNotificationService {
 
     private boolean isOnlineDqWithNoMediationAndHasEitherFullDefenceOrPartAdmission(Claim claim, Response response) {
         return DirectionsQuestionnaireUtils.isOnlineDQ(claim)
-            && isNoMediation(response)
+            && !hasDefendantOptedForMediation(response)
             && (isFullDefence(response) || isPartAdmission(response));
     }
 

@@ -81,12 +81,13 @@ public class MoreTimeRequestedCallbackHandlerTest {
 
     @Test
     public void shouldValidateRequestOnAboutToStartEvent() {
+        LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_START)
             .request(callbackRequest)
             .build();
         List<String> validationResults = ImmutableList.of("a", "b", "c");
-        when(moreTimeRequestRule.validateMoreTimeCanBeRequested(claim))
+        when(moreTimeRequestRule.validateMoreTimeCanBeRequested(claim, newDeadline))
             .thenReturn(validationResults);
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
             moreTimeRequestedCallbackHandler
@@ -101,8 +102,6 @@ public class MoreTimeRequestedCallbackHandlerTest {
             .type(CallbackType.ABOUT_TO_SUBMIT)
             .request(callbackRequest)
             .build();
-        when(moreTimeRequestRule.validateMoreTimeCanBeRequested(claim))
-            .thenReturn(Collections.emptyList());
         LocalDate deadline = LocalDate.parse("2019-12-11");
         when(responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn())).thenReturn(deadline);
 
@@ -118,12 +117,14 @@ public class MoreTimeRequestedCallbackHandlerTest {
 
     @Test
     public void shouldReturnErrorsOnAboutToSubmitEventIfRequestIsInvalid() {
+        LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
+
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_SUBMIT)
             .request(callbackRequest)
             .build();
         List<String> validationResults = ImmutableList.of("a", "b", "c");
-        when(moreTimeRequestRule.validateMoreTimeCanBeRequested(claim))
+        when(moreTimeRequestRule.validateMoreTimeCanBeRequested(claim, newDeadline))
             .thenReturn(validationResults);
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
             moreTimeRequestedCallbackHandler
