@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeAlreadyRequestedException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeRequestedAfterDeadlineException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -545,10 +544,10 @@ public class ClaimServiceTest {
         when(caseRepository.getClaimByExternalId(VALID_APP.getExternalId().toString(), USER))
             .thenReturn(Optional.of(claim));
         when(caseRepository
-            .saveCaseEvent(eq(AUTHORISATION), any(Claim.class), eq(CREATE_CITIZEN_CLAIM)))
+            .saveCaseEventIOC(eq(AUTHORISATION), any(Claim.class), eq(CREATE_CITIZEN_CLAIM)))
             .thenReturn(claim);
 
-        Claim createdClaim = claimService.saveCitizenClaim(
+        Claim createdClaim = claimService.createCitizenClaim(
             AUTHORISATION,
             VALID_APP,
             singletonList("admissions"));

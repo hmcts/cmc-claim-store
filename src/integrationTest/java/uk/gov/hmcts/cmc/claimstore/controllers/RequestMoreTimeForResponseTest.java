@@ -140,17 +140,6 @@ public class RequestMoreTimeForResponseTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldReturn409HttpStatusWhenItsTooLateToRequestForMoreTime() throws Exception {
-        LocalDate responseDeadlineInThePast = LocalDate.now().minusDays(10);
-
-        Claim claim = claimStore.saveClaim(SampleClaimData.builder().build(), "1", responseDeadlineInThePast);
-        caseRepository.linkDefendant(BEARER_TOKEN);
-
-        makeRequest(claim.getExternalId())
-            .andExpect(status().isConflict());
-    }
-
-    @Test
     public void shouldReturn409HttpStatusWhenUserIsTryingToRequestForMoreTimeAgain() throws Exception {
         caseRepository.linkDefendant(BEARER_TOKEN);
         claimRepository.requestMoreTime(claim.getExternalId(), LocalDate.now());
