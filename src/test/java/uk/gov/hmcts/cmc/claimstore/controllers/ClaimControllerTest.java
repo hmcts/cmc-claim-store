@@ -151,7 +151,7 @@ public class ClaimControllerTest {
         //given
         ClaimData claimData = SampleClaimData.builder().build();
         Claim expectedResponse = Claim.builder().claimData(claimData).build();
-        when(claimService.saveCitizenClaim(AUTHORISATION, claimData, FEATURES))
+        when(claimService.createCitizenClaim(AUTHORISATION, claimData, FEATURES))
             .thenReturn(expectedResponse);
 
         //when
