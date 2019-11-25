@@ -105,7 +105,7 @@ public class MediationFailedCallbackHandlerTest {
             .build();
 
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
-        when(deadlineCalculator.calculateDirectionsQuestionnaireDeadlineCalculator(any()))
+        when(deadlineCalculator.calculateDirectionsQuestionnaireDeadline(any()))
             .thenReturn(LocalDate.now().plusDays(8));
 
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
