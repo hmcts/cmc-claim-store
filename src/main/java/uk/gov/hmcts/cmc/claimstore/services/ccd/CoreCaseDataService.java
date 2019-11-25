@@ -1079,7 +1079,28 @@ public class CoreCaseDataService {
 
     public Claim saveCaseEventIOC(String authorisation, Claim claim, CaseEvent caseEvent) {
         try {
-            return sendCaseEvent(authorisation, caseEvent, claim.getId());
+            UserDetails userDetails = userService.getUserDetails(authorisation);
+
+            EventRequestData eventRequestData = eventRequest(caseEvent, userDetails.getId());
+
+            StartEventResponse startEventResponse = startUpdate(
+                authorisation,
+                eventRequestData,
+                claim.getId(),
+                isRepresented(userDetails)
+            );
+
+            CCDCase ccdCase = caseMapper.to(claim);
+
+            CaseDataContent caseDataContent = caseDataContent(startEventResponse, ccdCase);
+
+            CaseDetails caseDetails = submitUpdate(authorisation,
+                eventRequestData,
+                caseDataContent,
+                claim.getId(),
+                isRepresented(userDetails)
+            );
+            return caseDetailsConverter.extractClaim(caseDetails);
         } catch (FeignException.UnprocessableEntity unprocessableEntity) {
             logger.warn("Event {} Ambiguous 422 from CCD, swallow this until fix for RDM-6411 is released", caseEvent);
             return claim;
