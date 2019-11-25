@@ -1077,14 +1077,14 @@ public class CoreCaseDataService {
         }
     }
 
-    public Claim saveCaseEventIOC(String authorisation, Claim claim, CaseEvent caseEvent) {
+    public Claim saveCaseEventIOC(User user, Claim claim, CaseEvent caseEvent) {
         try {
-            UserDetails userDetails = userService.getUserDetails(authorisation);
+            UserDetails userDetails = user.getUserDetails();
 
             EventRequestData eventRequestData = eventRequest(caseEvent, userDetails.getId());
 
             StartEventResponse startEventResponse = startUpdate(
-                authorisation,
+                user.getAuthorisation(),
                 eventRequestData,
                 claim.getId(),
                 isRepresented(userDetails)
@@ -1094,7 +1094,7 @@ public class CoreCaseDataService {
 
             CaseDataContent caseDataContent = caseDataContent(startEventResponse, ccdCase);
 
-            CaseDetails caseDetails = submitUpdate(authorisation,
+            CaseDetails caseDetails = submitUpdate(user.getAuthorisation(),
                 eventRequestData,
                 caseDataContent,
                 claim.getId(),
