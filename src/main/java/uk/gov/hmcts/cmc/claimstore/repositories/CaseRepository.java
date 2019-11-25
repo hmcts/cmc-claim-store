@@ -76,7 +76,7 @@ public interface CaseRepository {
 
     Claim initiatePayment(User user, Claim claim);
 
-    Claim saveCaseEventIOC(String authorisation, Claim claim, CaseEvent caseEvent);
+    Claim saveCaseEventIOC(User user, Claim claim, CaseEvent caseEvent);
 
     Claim saveClaimDocuments(
         String authorisation,
