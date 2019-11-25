@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
@@ -36,9 +37,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_DIRECTIONS;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LIFT_STAY;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.STAY_CLAIM;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BOTH_OPTED_IN_FOR_MEDIATION_PILOT;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_OPTED_OUT_FOR_MEDIATION_PILOT;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_RESPONSE_ACCEPTED;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_STAYED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.LA_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_NON_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_PILOT_ELIGIBLE;
@@ -46,6 +52,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NON_LA_CA
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
+import static uk.gov.hmcts.cmc.domain.utils.FeaturesUtils.MEDIATION_PILOT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClaimantResponseServiceTest {
@@ -113,6 +120,31 @@ public class ClaimantResponseServiceTest {
             .formalise(any(), any(), anyString());
         verify(caseRepository, never()).saveCaseEvent(AUTHORISATION, claim, ASSIGNING_FOR_DIRECTIONS);
         verify(caseRepository, never()).saveCaseEvent(AUTHORISATION, claim, REFERRED_TO_MEDIATION);
+    }
+
+    @Test
+    public void saveCaseEventCaseStayedAfterFullDefenseDispute() {
+
+        ClaimantResponse claimantResponse = SampleClaimantResponse
+            .ClaimantResponseAcceptation
+            .builder()
+            .build();
+
+        Claim claim = SampleClaim.builder()
+            .withResponse(SampleResponse.FullDefence.builder().withDefenceType(DefenceType.DISPUTE).build())
+            .withRespondedAt(LocalDateTime.now())
+            .withClaimantResponse(claimantResponse)
+            .build();
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+        when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION)))
+            .thenReturn(claim);
+
+        claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
+
+        verify(appInsights).trackEvent(CLAIM_STAYED, REFERENCE_NUMBER, claim.getReferenceNumber());
+        verify(caseRepository).saveCaseEvent(AUTHORISATION, claim, STAY_CLAIM);
+
     }
 
     @Test
@@ -296,8 +328,7 @@ public class ClaimantResponseServiceTest {
             .calculateDirectionsQuestionnaireDeadlineCalculator(any(LocalDateTime.class));
         verify(caseRepository).updateDirectionsQuestionnaireDeadline(any(Claim.class), eq(dqDeadline), anyString());
         verify(eventProducer).createClaimantResponseEvent(any(Claim.class), anyString());
-        verify(appInsights).trackEvent(eq(NON_LA_CASES),
-            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+        verify(appInsights).trackEvent(eq(NON_LA_CASES), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 
     @Test
@@ -340,6 +371,7 @@ public class ClaimantResponseServiceTest {
         final ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultRejection();
 
         final Claim claim = SampleClaim.builder()
+            .withFeatures(ImmutableList.of(MEDIATION_PILOT))
             .withResponseDeadline(LocalDate.now().minusMonths(2))
             .withResponse(SampleResponse.FullDefence.builder().build())
             .withRespondedAt(respondedAt)
@@ -361,6 +393,8 @@ public class ClaimantResponseServiceTest {
         verify(caseRepository).updateDirectionsQuestionnaireDeadline(any(Claim.class), eq(dqDeadline), anyString());
         verify(eventProducer).createClaimantResponseEvent(any(Claim.class), eq(AUTHORISATION));
         verify(appInsights).trackEvent(eq(NON_LA_CASES),
+            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+        verify(appInsights).trackEvent(eq(CLAIMANT_OPTED_OUT_FOR_MEDIATION_PILOT),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 
@@ -418,6 +452,10 @@ public class ClaimantResponseServiceTest {
 
         verify(appInsights).trackEvent(eq(MEDIATION_PILOT_ELIGIBLE),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+
+        verify(appInsights).trackEvent(eq(BOTH_OPTED_IN_FOR_MEDIATION_PILOT),
+            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+
     }
 
     @Test
@@ -511,5 +549,58 @@ public class ClaimantResponseServiceTest {
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
 
         verify(eventProducer, never()).createClaimantResponseEvent(any(Claim.class), anyString());
+    }
+
+    @Test
+    public void shouldLiftStayedClaimWhenPartAdmission() {
+        ClaimantResponse claimantResponse = SampleClaimantResponse
+            .ClaimantResponseAcceptation
+            .builder()
+            .withFormaliseOption(FormaliseOption.SETTLEMENT)
+            .withAmountPaid(new BigDecimal(100))
+            .build();
+
+        Claim claim = SampleClaim.builder()
+            .withResponseDeadline(LocalDate.now().minusMonths(2))
+            .withResponse(
+                SampleResponse.PartAdmission.builder().buildWithPaymentOptionBySpecifiedDate()
+            )
+            .withRespondedAt(LocalDateTime.now().minusDays(34))
+            .withClaimantResponse(claimantResponse)
+            .withState(ClaimState.STAYED)
+            .build();
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+        when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION)))
+            .thenReturn(claim);
+        when(caseRepository.saveCaseEvent(eq(AUTHORISATION), eq(claim), eq(LIFT_STAY))).thenReturn(claim);
+
+        claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
+        verify(caseRepository, once()).saveCaseEvent(AUTHORISATION, claim, LIFT_STAY);
+    }
+
+    @Test
+    public void shouldNotLiftStayedClaimWhenFullDefence() {
+        ClaimantResponse claimantResponse = SampleClaimantResponse
+            .ClaimantResponseAcceptation
+            .builder()
+            .withFormaliseOption(FormaliseOption.SETTLEMENT)
+            .withAmountPaid(new BigDecimal(100))
+            .build();
+
+        Claim claim = SampleClaim.builder()
+            .withResponseDeadline(LocalDate.now().minusMonths(2))
+            .withResponse(SampleResponse.FullDefence.builder().withDefenceType(DefenceType.ALREADY_PAID).build())
+            .withRespondedAt(LocalDateTime.now().minusDays(34))
+            .withClaimantResponse(claimantResponse)
+            .withState(ClaimState.STAYED)
+            .build();
+
+        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
+        when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseAcceptation.class), eq(AUTHORISATION)))
+            .thenReturn(claim);
+
+        claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
+        verify(caseRepository, never()).saveCaseEvent(AUTHORISATION, claim, LIFT_STAY);
     }
 }

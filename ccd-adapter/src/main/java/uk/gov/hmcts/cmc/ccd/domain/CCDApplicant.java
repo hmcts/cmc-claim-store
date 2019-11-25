@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Value;
 
@@ -14,4 +15,13 @@ public class CCDApplicant {
     private String representativeOrganisationEmail;
     private String representativeOrganisationDxAddress;
     private CCDYesNoOption leadApplicantIndicator;
+
+    @JsonIgnore
+    public boolean hasRepresentative() {
+        return representativeOrganisationName != null
+            || representativeOrganisationPhone != null
+            || representativeOrganisationAddress != null
+            || representativeOrganisationEmail != null
+            || representativeOrganisationDxAddress != null;
+    }
 }

@@ -1,40 +1,34 @@
 package uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans;
 
-import org.assertj.core.api.AbstractAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.CustomAssert;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDPriorityDebt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.PriorityDebt;
 
-import java.util.Objects;
+import java.util.Optional;
 
-import static java.lang.String.format;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;
 
-public class PriorityDebtAssert extends AbstractAssert<PriorityDebtAssert, PriorityDebt> {
+public class PriorityDebtAssert extends CustomAssert<PriorityDebtAssert, PriorityDebt> {
 
     public PriorityDebtAssert(PriorityDebt actual) {
-        super(actual, PriorityDebtAssert.class);
+        super("PriorityDebt", actual, PriorityDebtAssert.class);
     }
 
-    public PriorityDebtAssert isEqualTo(CCDPriorityDebt ccdPriorityDebt) {
+    public PriorityDebtAssert isEqualTo(CCDPriorityDebt expected) {
         isNotNull();
 
-        if (!Objects.equals(actual.getType().name(), ccdPriorityDebt.getType().name())) {
-            failWithMessage("Expected PriorityDebt.type to be <%s> but was <%s>",
-                ccdPriorityDebt.getType(), actual.getType());
-        }
+        compare("type",
+            expected.getType(), Enum::name,
+            Optional.ofNullable(actual.getType()).map(Enum::name));
 
-        if (!Objects.equals(actual.getFrequency().name(), ccdPriorityDebt.getFrequency().name())) {
-            failWithMessage("Expected PriorityDebt.frequency to be <%s> but was <%s>",
-                ccdPriorityDebt.getFrequency().name(), actual.getFrequency().name());
-        }
+        compare("frequency",
+            expected.getFrequency(), Enum::name,
+            Optional.ofNullable(actual.getFrequency()).map(Enum::name));
 
-        assertMoney(actual.getAmount())
-            .isEqualTo(
-                ccdPriorityDebt.getAmount(),
-                format("Expected PriorityDebt.amount to be <%s> but was <%s>",
-                    ccdPriorityDebt.getAmount(), actual.getAmount()
-                )
-            );
+        compare("amount",
+            expected.getAmount(),
+            Optional.ofNullable(actual.getAmount()),
+            (e, a) -> assertMoney(a).isEqualTo(e));
 
         return this;
     }

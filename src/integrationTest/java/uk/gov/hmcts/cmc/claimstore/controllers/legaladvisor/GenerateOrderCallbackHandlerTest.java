@@ -95,7 +95,7 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
 
-        assertThat(responseData).hasSize(7);
+        assertThat(responseData).hasSize(9);
         assertThat(LocalDate.parse(responseData.get("docUploadDeadline").toString()))
             .isAfterOrEqualTo(LocalDate.now().plusDays(42));
         assertThat(LocalDate.parse(responseData.get("eyewitnessUploadDeadline").toString()))

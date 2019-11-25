@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.domain.defendant;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
@@ -87,4 +88,28 @@ public class CCDRespondent {
     private CCDAddress preferredCourtAddress;
     private String preferredCourtReason;
 
+    private String mediationFailedReason;
+    private LocalDateTime mediationSettlementReachedAt;
+
+    @JsonIgnore
+    public boolean hasRepresentative() {
+        return representativeOrganisationName != null
+            || representativeOrganisationAddress != null
+            || representativeOrganisationPhone != null
+            || representativeOrganisationEmail != null
+            || representativeOrganisationDxAddress != null;
+    }
+
+    @JsonIgnore
+    public boolean hasPaymentDeclaration() {
+        return paymentDeclarationExplanation != null
+            || paymentDeclarationPaidAmount != null
+            || paymentDeclarationPaidDate != null;
+    }
+
+    @JsonIgnore
+    public boolean hasStatementOfTruth() {
+        return responseDefendantSOTSignerName != null
+            || responseDefendantSOTSignerRole != null;
+    }
 }

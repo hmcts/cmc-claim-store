@@ -68,12 +68,12 @@ public class BulkPrintHandlerTest {
         verify(bulkPrintService).printPdf(
             claim,
             ImmutableList.of(
-                new PrintablePdf(
-                    legalOrder,
-                    claim.getReferenceNumber() + "-directions-order"),
                 new PrintableTemplate(
                     coverSheet,
-                    claim.getReferenceNumber() + "-directions-order-cover-sheet")
+                    claim.getReferenceNumber() + "-directions-order-cover-sheet"),
+                new PrintablePdf(
+                    legalOrder,
+                    claim.getReferenceNumber() + "-directions-order")
             ));
     }
 }

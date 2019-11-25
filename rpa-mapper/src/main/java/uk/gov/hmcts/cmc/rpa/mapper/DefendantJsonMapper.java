@@ -56,7 +56,7 @@ public class DefendantJsonMapper {
             .add("businessName", extractOptionalFromSubclass(defendantFromResponse, SoleTrader.class, value -> value.getBusinessName().map(RPAMapperHelper::prependWithTradingAs)))
             .add("contactPerson", extractOptionalFromSubclass(defendantFromResponse, HasContactPerson.class, HasContactPerson::getContactPerson))
             .add("dateOfBirth", extractFromSubclass(defendantFromResponse, Individual.class, individual -> DateFormatter.format(individual.getDateOfBirth())))
-            .add("phoneNumber", extractFromSubclass(defendantFromResponse, Party.class, party -> party.getMobilePhone().orElse(null)));
+            .add("phoneNumber", extractFromSubclass(defendantFromResponse, Party.class, party -> party.getPhone().orElse(null)));
 
         return jsonObjectBuilder.build();
     }

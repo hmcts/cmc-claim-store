@@ -1,45 +1,39 @@
 package uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans;
 
-import org.assertj.core.api.AbstractAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.CustomAssert;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDExpense;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Expense;
 
-import java.util.Objects;
+import java.util.Optional;
 
-import static java.lang.String.format;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;
 
-public class ExpenseAssert extends AbstractAssert<ExpenseAssert, Expense> {
+public class ExpenseAssert extends CustomAssert<ExpenseAssert, Expense> {
 
     public ExpenseAssert(Expense actual) {
-        super(actual, ExpenseAssert.class);
+        super("Expense", actual, ExpenseAssert.class);
     }
 
-    public ExpenseAssert isEqualTo(CCDExpense ccdExpense) {
+    public ExpenseAssert isEqualTo(CCDExpense expected) {
         isNotNull();
 
-        if (!Objects.equals(actual.getType().name(), ccdExpense.getType().name())) {
-            failWithMessage("Expected Expense.type to be <%s> but was <%s>",
-                ccdExpense.getType(), actual.getType());
-        }
+        compare("type",
+            expected.getType(), Enum::name,
+            Optional.ofNullable(actual.getType()).map(Enum::name));
 
-        if (!Objects.equals(actual.getFrequency().name(), ccdExpense.getFrequency().name())) {
-            failWithMessage("Expected Expense.frequency to be <%s> but was <%s>",
-                ccdExpense.getFrequency().name(), actual.getFrequency().name());
-        }
+        compare("frequency",
+            expected.getFrequency(), Enum::name,
+            Optional.ofNullable(actual.getFrequency()).map(Enum::name));
 
-        assertMoney(actual.getAmount())
-            .isEqualTo(
-                ccdExpense.getAmountPaid(),
-                format("Expected Expense.amount to be <%s> but was <%s>",
-                    ccdExpense.getAmountPaid(), actual.getAmount()
-                )
-            );
+        compare("amount",
+            expected.getAmountPaid(),
+            Optional.ofNullable(actual.getAmount()),
+            (e, a) -> assertMoney(a).isEqualTo(e));
 
-        if (!Objects.equals(actual.getOtherName().orElse(null), ccdExpense.getDescription())) {
-            failWithMessage("Expected Expense.description to be <%s> but was <%s>",
-                ccdExpense.getDescription(), actual.getOtherName());
-        }
+        compare("description",
+            expected.getDescription(),
+            actual.getOtherName());
+
         return this;
     }
 }

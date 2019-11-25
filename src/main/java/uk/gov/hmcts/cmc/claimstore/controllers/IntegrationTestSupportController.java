@@ -1,6 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -10,9 +12,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.support.SupportRepository;
+import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.time.LocalDate;
@@ -22,11 +27,19 @@ import java.time.LocalDate;
 @ConditionalOnProperty("claim-store.test-support.enabled")
 public class IntegrationTestSupportController {
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     private final SupportRepository supportRepository;
 
+    private final UserService userService;
+
     @Autowired
-    public IntegrationTestSupportController(SupportRepository supportRepository) {
+    public IntegrationTestSupportController(
+        SupportRepository supportRepository,
+        UserService userService
+    ) {
         this.supportRepository = supportRepository;
+        this.userService = userService;
     }
 
     @GetMapping("/trigger-server-error")
@@ -62,7 +75,23 @@ public class IntegrationTestSupportController {
     ) {
         Claim claim = getClaim(claimReferenceNumber, null);
 
-        supportRepository.linkDefendantToClaim(claim, defendantId);
+        //using default defendant@example.com as defendant email address just for performance testing
+        supportRepository.linkDefendantToClaim(claim, defendantId, "defendant@example.com");
+    }
+
+    @PutMapping("/claims/{claimReferenceNumber}/defendant")
+    @ApiOperation("Link a claim to a defendant")
+    public void linkDefendantToClaim(
+        @PathVariable("claimReferenceNumber") String claimReferenceNumber,
+        @RequestParam("defendantUsername") String defendantUsername,
+        @RequestParam("defendantPassword") String defendantPassword
+    ) {
+        logger.info("Linking claim to defendant");
+        Claim claim = getClaim(claimReferenceNumber, null);
+
+        User defendant = userService.authenticateUser(defendantUsername, defendantPassword);
+        String defendantId = defendant.getUserDetails().getId();
+        supportRepository.linkDefendantToClaim(claim, defendantId, defendant.getUserDetails().getEmail());
     }
 
     private Claim getClaim(String claimReferenceNumber, String authorisation) {

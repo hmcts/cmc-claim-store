@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd;
 
 import com.google.common.collect.Maps;
+import feign.FeignException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,6 +12,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.IntentionToProceedDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -60,6 +62,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CLAIMANT_RESPONSE_ACCEPTATION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CLAIMANT_RESPONSE_REJECTION;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCUTORY_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LINK_LETTER_HOLDER;
@@ -97,6 +100,8 @@ public class CoreCaseDataServiceTest {
     private JobSchedulerService jobSchedulerService;
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
+    @Mock
+    private IntentionToProceedDeadlineCalculator intentionToProceedDeadlineCalculator;
 
     private CoreCaseDataService service;
 
@@ -145,7 +150,8 @@ public class CoreCaseDataServiceTest {
             authTokenGenerator,
             jobSchedulerService,
             ccdCreateCaseService,
-            caseDetailsConverter
+            caseDetailsConverter,
+            intentionToProceedDeadlineCalculator
         );
     }
 
@@ -249,7 +255,7 @@ public class CoreCaseDataServiceTest {
         when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(expectedClaim);
 
-        Claim returnedClaim = service.createNewCitizenCase(USER, providedClaim);
+        Claim returnedClaim = service.initiatePaymentForCitizenCase(USER, providedClaim);
 
         assertEquals(expectedClaim, returnedClaim);
     }
@@ -636,5 +642,26 @@ public class CoreCaseDataServiceTest {
             anyString(), anyString(), eq(ORDER_REVIEW_REQUESTED.getValue()));
         verify(coreCaseDataApi).submitEventForCitizen(anyString(), anyString(), anyString(), anyString(),
             anyString(), anyString(), eq(true), any(CaseDataContent.class));
+    }
+
+    @Test
+    public void createClaimShouldSwallowUnprocessableEntityAndReturnClaim() {
+        Claim providedClaim = SampleClaim.getDefault();
+
+        when(coreCaseDataApi.submitEventForCitizen(
+            eq(AUTHORISATION),
+            eq(AUTH_TOKEN),
+            eq(USER_DETAILS.getId()),
+            eq(JURISDICTION_ID),
+            eq(CASE_TYPE_ID),
+            eq(SampleClaim.CLAIM_ID.toString()),
+            anyBoolean(),
+            any()
+        ))
+            .thenThrow(new FeignException.UnprocessableEntity("Status 422 from CCD", null));
+
+        Claim returnedClaim = service.saveCaseEventIOC(USER, providedClaim, CREATE_CITIZEN_CLAIM);
+
+        assertEquals(providedClaim, returnedClaim);
     }
 }
