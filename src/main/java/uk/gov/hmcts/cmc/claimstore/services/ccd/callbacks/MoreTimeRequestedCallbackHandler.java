@@ -89,8 +89,9 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
     private AboutToStartOrSubmitCallbackResponse requestMoreTimeOnPaper(CallbackParams callbackParams) {
         CallbackRequest callbackRequest = callbackParams.getRequest();
         Claim claim = convertCallbackToClaim(callbackRequest);
+        LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
 
-        List<String> validationResult = this.moreTimeRequestRule.validateMoreTimeCanBeRequested(claim);
+        List<String> validationResult = this.moreTimeRequestRule.validateMoreTimeCanBeRequested(claim, newDeadline);
         AboutToStartOrSubmitCallbackResponseBuilder builder = AboutToStartOrSubmitCallbackResponse
             .builder();
 
@@ -99,8 +100,6 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
                 .errors(validationResult)
                 .build();
         }
-
-        LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
 
         Map<String, Object> data = new HashMap<>(callbackRequest.getCaseDetails().getData());
         data.put("moreTimeRequested", CCDYesNoOption.YES);
@@ -114,8 +113,11 @@ public class MoreTimeRequestedCallbackHandler extends CallbackHandler {
     private AboutToStartOrSubmitCallbackResponse validateMoreTimeOnPaper(
         CallbackParams callbackParams) {
         Claim claim = convertCallbackToClaim(callbackParams.getRequest());
+        LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
 
-        List<String> validationResult = moreTimeRequestRule.validateMoreTimeCanBeRequested(claim);
+        List<String> validationResult
+                = moreTimeRequestRule.validateMoreTimeCanBeRequested(claim, newDeadline);
+
         return AboutToStartOrSubmitCallbackResponse
             .builder()
             .errors(validationResult)

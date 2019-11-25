@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CountyCourtJudgmentAlreadyRequestedException;
@@ -27,6 +28,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DEFENDANT_OPTED_OUT_FOR_MEDIATION_PILOT;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED_IMMEDIATELY;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED_INSTALMENTS;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED_SET_DATE;
@@ -41,6 +43,7 @@ import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
+import static uk.gov.hmcts.cmc.domain.utils.FeaturesUtils.MEDIATION_PILOT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefendantResponseServiceTest {
@@ -83,6 +86,10 @@ public class DefendantResponseServiceTest {
         when(userService.getUserDetails(AUTHORISATION)).thenReturn(
             SampleUserDetails.builder().withUserId(USER_ID).withMail(DEFENDANT_EMAIL).build());
 
+        Claim claim = SampleClaim.builder()
+            .withResponse(VALID_APP)
+            .withFeatures(ImmutableList.of(MEDIATION_PILOT))
+            .build();
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(claim);
 
         //when
@@ -91,7 +98,11 @@ public class DefendantResponseServiceTest {
         //then
         verify(eventProducer, once())
             .createDefendantResponseEvent(eq(claim), anyString());
+
         verify(appInsights, once()).trackEvent(eq(RESPONSE_FULL_DEFENCE_SUBMITTED),
+            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+
+        verify(appInsights, once()).trackEvent(eq(DEFENDANT_OPTED_OUT_FOR_MEDIATION_PILOT),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
 
     }
