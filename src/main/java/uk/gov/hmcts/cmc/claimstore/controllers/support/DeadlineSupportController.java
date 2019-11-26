@@ -45,9 +45,9 @@ public class DeadlineSupportController {
         .map(Response::getResponseType)
         .filter(ResponseType.FULL_ADMISSION::equals)
         .isPresent();
-    private static final Predicate<Claim> CLAIMANT_REJECTED = claim -> claim.getClaimantResponse()
+    private static final Predicate<Claim> CLAIMANT_ACCEPTED = claim -> claim.getClaimantResponse()
         .map(ClaimantResponse::getType)
-        .filter(ClaimantResponseType.REJECTION::equals)
+        .filter(ClaimantResponseType.ACCEPTATION::equals)
         .isPresent();
     private static final Predicate<Claim> CLAIMANT_MEDIATION = claim -> claim.getClaimantResponse()
         .filter(claimantResponse -> ClaimantResponseType.REJECTION.equals(claimantResponse.getType()))
@@ -156,7 +156,7 @@ public class DeadlineSupportController {
         }
 
         // if the claimant accepted the defence to this claim, it is forbidden to define a DQ deadline
-        if (CLAIMANT_REJECTED.negate().test(claim)) {
+        if (CLAIMANT_ACCEPTED.test(claim)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(format("Claim %s has an acceptation "
                 + "claimant response; cannot define a directions questionnaire deadline.", claim.getReferenceNumber()));
         }
