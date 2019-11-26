@@ -30,6 +30,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils.DQ_FLAG;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -142,7 +143,7 @@ public class MediationSuccessfulCallbackHandlerTest {
     }
 
     @Test
-    public void shouldRaiseAppInsight() {
+    public void shouldRaiseAppInsightWhenFeatureIsMediationPilot() {
 
         Claim claim = claimSetForMediation.toBuilder()
             .features(Collections.singletonList(FeaturesUtils.MEDIATION_PILOT))
@@ -153,6 +154,20 @@ public class MediationSuccessfulCallbackHandlerTest {
         mediationSuccessfulCallbackHandler.handle(callbackParams);
 
         verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.MEDIATION_PILOT_SUCCESS),
+            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+    }
+
+    @Test
+    public void shouldRaiseAppInsightWhenFeatureIsNotMediationPilot() {
+
+        Claim claim = claimSetForMediation.toBuilder()
+            .features(Collections.singletonList(DQ_FLAG))
+            .build();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+        mediationSuccessfulCallbackHandler.handle(callbackParams);
+
+        verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.NON_MEDIATION_PILOT_SUCCESS),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 }
