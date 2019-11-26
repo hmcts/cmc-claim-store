@@ -141,4 +141,10 @@ public class EmailTemplates {
 
     @NotEmpty
     private  String claimantSettledAfterFullDefence;
+
+    @NotEmpty
+    private  String claimantMediationSuccess;
+
+    @NotEmpty
+    private  String defendantMediationSuccess;
 }
