@@ -23,20 +23,22 @@ import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.Optional;
 import java.util.function.Predicate;
 
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
+import static uk.gov.hmcts.cmc.claimstore.utils.DateUtils.DATE_OF_5_0_0_RELEASE;
 
 @RestController
 @RequestMapping("/support/deadline")
 public class DeadlineSupportController {
-    private static final String CLAIM_DOES_NOT_EXIST = "Claim %s does not exist";
-
     private static final Predicate<Claim> CREATED_BEFORE_5_0_0 = claim -> claim.getCreatedAt()
-        .isBefore(LocalDateTime.of(2019, Month.SEPTEMBER, 9, 15, 12));
+        .isBefore(DATE_OF_5_0_0_RELEASE);
+    private static final Predicate<Claim> HAS_DQ_FEATURE = claim -> claim.getFeatures() != null
+        && claim.getFeatures().contains("directionsQuestionnaire");
+    private static final Predicate<Claim> HAS_DQ_DEADLINE = claim -> claim.getDirectionsQuestionnaireDeadline() != null;
+    private static final Predicate<Claim> UNANSWERED = claim -> !claim.getResponse().isPresent();
     private static final Predicate<Claim> DEFENDANT_MEDIATION = claim -> claim.getResponse()
         .flatMap(Response::getFreeMediation)
         .filter(YesNoOption.YES::equals)
@@ -87,7 +89,7 @@ public class DeadlineSupportController {
     ) {
         String authorisation = userService.authenticateAnonymousCaseWorker().getAuthorisation();
         Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
-            .orElseThrow(() -> new NotFoundException(format(CLAIM_DOES_NOT_EXIST, referenceNumber)));
+            .orElseThrow(() -> new NotFoundException(format("Claim %s does not exist", referenceNumber)));
 
         if ("dq".equals(deadlineType)) {
             return defineDQDeadline(claim, authorisation);
@@ -99,20 +101,19 @@ public class DeadlineSupportController {
 
     private ResponseEntity<String> defineDQDeadline(Claim claim, String authorisation) {
         // if there's already a DQ deadline - return 200
-        if (claim.getDirectionsQuestionnaireDeadline() != null) {
+        if (HAS_DQ_DEADLINE.test(claim)) {
             return ResponseEntity.ok(format("Claim %s already has a directions questionnaire deadline of %s.",
                 claim.getReferenceNumber(), claim.getDirectionsQuestionnaireDeadline()));
         }
 
         // if the claim has the online DQ feature it is forbidden to define a DQ deadline
-        if (claim.getFeatures() != null && claim.getFeatures().contains("directionsQuestionnaire")) {
+        if (HAS_DQ_FEATURE.test(claim)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(format("Claim %s has online DQs enabled; "
                 + "cannot define a directions questionnaire deadline", claim.getReferenceNumber()));
         }
 
         // if there's no response to this claim it is forbidden to define a DQ deadline
-        Optional<Response> optionalResponse = claim.getResponse();
-        if (!optionalResponse.isPresent()) {
+        if (UNANSWERED.test(claim)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(format("Claim %s does not have a response; "
                 + "cannot define a directions questionnaire deadline", claim.getReferenceNumber()));
         }
