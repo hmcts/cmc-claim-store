@@ -164,7 +164,7 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-json'
 
-  compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
+  compile group: 'org.flywaydb', name: 'flyway-core', version: '6.0.8'
 
   compile group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
   compile group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
