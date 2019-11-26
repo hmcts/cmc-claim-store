@@ -28,7 +28,9 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LIFT_STAY;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BOTH_OPTED_IN_FOR_MEDIATION_PILOT;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BOTH_OPTED_IN_FOR_NON_MEDIATION_PILOT;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_OPTED_OUT_FOR_MEDIATION_PILOT;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_OPTED_OUT_FOR_NON_MEDIATION_PILOT;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_RESPONSE_ACCEPTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_NON_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_PILOT_ELIGIBLE;
@@ -185,16 +187,23 @@ public class ClaimantResponseService {
         String referenceNumber = claim.getReferenceNumber();
         boolean claimantNotOptedForMediation = responseRejection.getFreeMediation().filter(isEqual(NO)).isPresent();
 
-        if (claimantNotOptedForMediation && hasMediationPilotFeature(claim)) {
-            appInsights.trackEvent(CLAIMANT_OPTED_OUT_FOR_MEDIATION_PILOT, REFERENCE_NUMBER, referenceNumber);
+        if (claimantNotOptedForMediation) {
+            appInsights.trackEvent(getAppInsightEventBasedOnMediationPilot(claim), REFERENCE_NUMBER, referenceNumber);
         } else if (hasBothOptedForMediation(response, responseRejection)) {
             if (hasMediationPilotFeature(claim)) {
                 appInsights.trackEvent(MEDIATION_PILOT_ELIGIBLE, REFERENCE_NUMBER, referenceNumber);
                 appInsights.trackEvent(BOTH_OPTED_IN_FOR_MEDIATION_PILOT, REFERENCE_NUMBER, referenceNumber);
             } else {
+                appInsights.trackEvent(BOTH_OPTED_IN_FOR_NON_MEDIATION_PILOT, REFERENCE_NUMBER, referenceNumber);
                 appInsights.trackEvent(MEDIATION_NON_PILOT_ELIGIBLE, REFERENCE_NUMBER, referenceNumber);
             }
         }
+    }
+
+    private AppInsightsEvent getAppInsightEventBasedOnMediationPilot(Claim claim) {
+        return hasMediationPilotFeature(claim)
+            ? CLAIMANT_OPTED_OUT_FOR_MEDIATION_PILOT
+            : CLAIMANT_OPTED_OUT_FOR_NON_MEDIATION_PILOT;
     }
 
     private boolean hasBothOptedForMediation(Response response, ResponseRejection responseRejection) {
