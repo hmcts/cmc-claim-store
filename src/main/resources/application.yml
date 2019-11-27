@@ -112,9 +112,10 @@ milo:
   recipient: ${MILO_CSV_RECIPIENT:}
   sender: ${MILO_CSV_SENDER:}
 
-stateTransition:
-  waitingTransfer: ""
-  stayClaim: ""
+schedule:
+  state-transition:
+    waiting-transfer: ""
+    stay-claim: ""
 
 dateCalculations:
   endOfBusinessDayHour: 16

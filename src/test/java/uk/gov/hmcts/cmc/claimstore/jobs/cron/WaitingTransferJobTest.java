@@ -15,16 +15,18 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ReadyForTransferJobTest {
+public class WaitingTransferJobTest {
 
     @Mock
     private ScheduledStateTransitionService scheduledStateTransitionService;
 
-    private ReadyForTransferJob intentionToProceedJob;
+    private WaitingTransferJob intentionToProceedJob;
+
+    private final String cronExpression = "0 * * * * *";
 
     @Before
     public void setup() {
-        intentionToProceedJob = new ReadyForTransferJob();
+        intentionToProceedJob = new WaitingTransferJob(cronExpression);
         intentionToProceedJob.setScheduledStateTransitionService(scheduledStateTransitionService);
     }
 

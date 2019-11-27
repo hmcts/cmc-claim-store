@@ -15,22 +15,24 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class IntentionToProceedJobTest {
+public class StayClaimJobTest {
 
     @Mock
     private ScheduledStateTransitionService scheduledStateTransitionService;
 
-    private IntentionToProceedJob intentionToProceedJob;
+    private StayClaimJob stayClaimJob;
+
+    private final String cronExpression = "0 * * * * *";
 
     @Before
     public void setup() {
-        intentionToProceedJob = new IntentionToProceedJob();
-        intentionToProceedJob.setScheduledStateTransitionService(scheduledStateTransitionService);
+        stayClaimJob = new StayClaimJob(cronExpression);
+        stayClaimJob.setScheduledStateTransitionService(scheduledStateTransitionService);
     }
 
     @Test
     public void executeShouldTriggerIntentionToProceed() throws Exception {
-        intentionToProceedJob.execute(null);
+        stayClaimJob.execute(null);
 
         verify(scheduledStateTransitionService).stateChangeTriggered(eq(StateTransition.STAY_CLAIM));
     }
@@ -39,6 +41,6 @@ public class IntentionToProceedJobTest {
     public void shouldThrowJobExecutionException() throws Exception {
         doThrow(new RuntimeException()).when(scheduledStateTransitionService).stateChangeTriggered(any());
 
-        intentionToProceedJob.execute(null);
+        stayClaimJob.execute(null);
     }
 }

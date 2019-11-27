@@ -6,3 +6,7 @@ capacity = "2"
 dm_url = "http://dm-store-ithc.service.core-compute-ithc.internal"
 save_claim_state_enabled = "true"
 doc_assembly_api_url = "http://dg-docassembly-ithc.service.core-compute-ithc.internal"
+schedule_state-transition_stay-claim = ""
+schedule_state-transition_waiting-transfer = ""
+
+

@@ -39,7 +39,12 @@ public class ScheduledStateTransitionContentProvider implements EmailContentProv
         );
     }
 
-    public Map<String, Object> createParameters(Collection<Claim> failedClaims, CaseEvent caseEvent) {
+    public EmailContent createContent(Collection<Claim> failedClaims, CaseEvent caseEvent) {
+        Map<String, Object> parameters = this.createParameters(failedClaims, caseEvent);
+        return this.createContent(parameters);
+    }
+
+    private Map<String, Object> createParameters(Collection<Claim> failedClaims, CaseEvent caseEvent) {
         return ImmutableMap.of(
             "noOfClaims", failedClaims.size(),
             "caseEvent", caseEvent,

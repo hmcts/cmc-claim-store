@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import com.google.common.base.CaseFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -40,7 +39,4 @@ public enum StateTransition {
     private AppInsightsEvent appInsightsEvent;
     private Function<LocalDate, QueryBuilder> query;
 
-    public String transitionName() {
-        return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, name());
-    }
 }

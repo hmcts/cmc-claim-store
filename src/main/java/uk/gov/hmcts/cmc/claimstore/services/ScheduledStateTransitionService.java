@@ -1,8 +1,10 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
+import com.google.common.base.CaseFormat;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
@@ -22,7 +24,6 @@ import java.time.Month;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -51,7 +52,7 @@ public class ScheduledStateTransitionService {
 
     private final StaffEmailProperties emailProperties;
 
-    private final ApplicationContext applicationContext;
+    private final Environment environment;
 
     public ScheduledStateTransitionService(
         WorkingDayIndicator workingDayIndicator,
@@ -62,7 +63,7 @@ public class ScheduledStateTransitionService {
         ScheduledStateTransitionContentProvider emailContentProvider,
         EmailService emailService,
         StaffEmailProperties emailProperties,
-        ApplicationContext applicationContext
+        Environment environment
     ) {
         this.workingDayIndicator = workingDayIndicator;
         this.caseSearchApi = caseSearchApi;
@@ -72,7 +73,7 @@ public class ScheduledStateTransitionService {
         this.emailContentProvider = emailContentProvider;
         this.emailService = emailService;
         this.emailProperties = emailProperties;
-        this.applicationContext = applicationContext;
+        this.environment = environment;
     }
 
     public void stateChangeTriggered(StateTransition stateTransition) {
@@ -84,8 +85,7 @@ public class ScheduledStateTransitionService {
     }
 
     public void transitionClaims(LocalDateTime runDateTime, User user, StateTransition stateTransition) {
-        StateTransitionCalculator stateTransitionCalculator = applicationContext.getBean(String.format("%sCalculator",
-            stateTransition.transitionName()), StateTransitionCalculator.class);
+        StateTransitionCalculator stateTransitionCalculator = getStateTransitionCalculator(stateTransition);
         LocalDate responseDate = stateTransitionCalculator.calculateDateFromDeadline(runDateTime);
 
         Set<Claim> claims = new HashSet<>(caseSearchApi.getClaims(user,
@@ -109,15 +109,14 @@ public class ScheduledStateTransitionService {
 
             return Optional.empty();
         } catch (Exception e) {
-            logger.error(String.format("Error whilst transitioning claim %s vis caseEvent %s", claim.getId(),
-                stateTransition.getCaseEvent().getValue()), e);
+            logger.error(String.format("Error whilst transitioning claim %s vis caseEvent %s",
+                claim.getReferenceNumber(), stateTransition.getCaseEvent().getValue()), e);
             return Optional.of(claim);
         }
     }
 
     private void sendFailedNotification(Collection<Claim> failedClaims, CaseEvent caseEvent) {
-        Map<String, Object> input = emailContentProvider.createParameters(failedClaims, caseEvent);
-        EmailContent emailContent = emailContentProvider.createContent(input);
+        EmailContent emailContent = emailContentProvider.createContent(failedClaims, caseEvent);
 
         EmailData emailData = new EmailData(
             emailProperties.getRecipient(),
@@ -127,5 +126,18 @@ public class ScheduledStateTransitionService {
         );
 
         emailService.sendEmail(emailProperties.getSender(), emailData);
+    }
+
+    private StateTransitionCalculator getStateTransitionCalculator(StateTransition stateTransition) {
+        String numberOfDaysPropertyKey = String.format("dateCalculations.%sDeadlineInDays",
+            CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, stateTransition.name()));
+
+        String numberOfDaysProperty = environment.getProperty(numberOfDaysPropertyKey);
+
+        if (StringUtils.isBlank(numberOfDaysProperty)) {
+            throw new IllegalArgumentException(String.format("Missing property %s", numberOfDaysPropertyKey));
+        }
+
+        return new StateTransitionCalculator(workingDayIndicator, Integer.parseInt(numberOfDaysProperty));
     }
 }

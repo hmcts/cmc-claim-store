@@ -12,7 +12,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -48,9 +47,7 @@ public class ScheduledStateTransitionContentProviderTest {
 
         CaseEvent caseEvent = CaseEvent.STAY_CLAIM;
 
-        final Map<String, Object> parameters = contentProvider.createParameters(claims, caseEvent);
-
-        EmailContent content = contentProvider.createContent(parameters);
+        EmailContent content = contentProvider.createContent(claims, caseEvent);
 
         String subject = String.format("Transitioning via %s failed for %s claims.\n"
                                        + "\n"
@@ -68,9 +65,7 @@ public class ScheduledStateTransitionContentProviderTest {
         final List<Claim> claims = Stream.generate(SampleClaim::getDefault).limit(3).collect(Collectors.toList());
         CaseEvent caseEvent = CaseEvent.STAY_CLAIM;
 
-        final Map<String, Object> parameters = contentProvider.createParameters(claims, caseEvent);
-
-        EmailContent content = contentProvider.createContent(parameters);
+        EmailContent content = contentProvider.createContent(claims, caseEvent);
 
         String subject = String.format("Claims failed to transition via %s", caseEvent);
 

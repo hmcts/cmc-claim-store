@@ -7,12 +7,10 @@ import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.services.ScheduledStateTransitionService;
 import uk.gov.hmcts.cmc.claimstore.services.StateTransition;
 import uk.gov.hmcts.cmc.scheduler.model.CronJob;
 
-@Component
 @Getter
 @DisallowConcurrentExecution
 public abstract class AbstractStateTransitionJob implements CronJob {
@@ -24,6 +22,7 @@ public abstract class AbstractStateTransitionJob implements CronJob {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
+            logger.info("State transition executed for {}", getStateTransition());
             scheduledStateTransitionService.stateChangeTriggered(getStateTransition());
         } catch (Exception e) {
             throw new JobExecutionException(e);

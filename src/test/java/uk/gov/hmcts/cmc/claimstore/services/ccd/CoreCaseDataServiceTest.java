@@ -13,8 +13,8 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
-import uk.gov.hmcts.cmc.claimstore.services.StateTransitionCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -99,7 +99,9 @@ public class CoreCaseDataServiceTest {
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
     @Mock
-    private StateTransitionCalculator intentionToProceedDeadlineCalculator;
+    private WorkingDayIndicator workingDayIndicator;
+
+    private final int intentionToProceedDeadlineDays = 33;
 
     private CoreCaseDataService service;
 
@@ -149,7 +151,8 @@ public class CoreCaseDataServiceTest {
             jobSchedulerService,
             ccdCreateCaseService,
             caseDetailsConverter,
-            intentionToProceedDeadlineCalculator
+            intentionToProceedDeadlineDays,
+            workingDayIndicator
         );
     }
 

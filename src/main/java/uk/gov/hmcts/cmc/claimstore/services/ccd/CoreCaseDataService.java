@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd;
 import feign.FeignException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.StateTransitionCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -90,7 +92,8 @@ public class CoreCaseDataService {
     private final JobSchedulerService jobSchedulerService;
     private final CCDCreateCaseService ccdCreateCaseService;
     private final CaseDetailsConverter caseDetailsConverter;
-    private final StateTransitionCalculator intentionToProceedDeadlineCalculator;
+    private final WorkingDayIndicator workingDayIndicator;
+    private final int intentionToProceedDeadlineDays;
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     @Autowired
@@ -103,7 +106,9 @@ public class CoreCaseDataService {
         JobSchedulerService jobSchedulerService,
         CCDCreateCaseService ccdCreateCaseService,
         CaseDetailsConverter caseDetailsConverter,
-        StateTransitionCalculator stayClaimCalculator
+        @Value("#{new Integer('${dateCalculations.waitingTransferDeadlineInDays}')}")
+            Integer intentionToProceedDeadlineDays,
+        WorkingDayIndicator workingDayIndicator
     ) {
         this.caseMapper = caseMapper;
         this.userService = userService;
@@ -113,7 +118,8 @@ public class CoreCaseDataService {
         this.jobSchedulerService = jobSchedulerService;
         this.ccdCreateCaseService = ccdCreateCaseService;
         this.caseDetailsConverter = caseDetailsConverter;
-        this.intentionToProceedDeadlineCalculator = stayClaimCalculator;
+        this.workingDayIndicator = workingDayIndicator;
+        this.intentionToProceedDeadlineDays = intentionToProceedDeadlineDays;
     }
 
     @LogExecutionTime
@@ -424,8 +430,8 @@ public class CoreCaseDataService {
             );
 
             LocalDateTime respondedAt = nowInUTC();
-            LocalDate intentionToProceedDeadline =
-                intentionToProceedDeadlineCalculator.calculateDeadlineFromDate(respondedAt.toLocalDate());
+            LocalDate intentionToProceedDeadline = new StateTransitionCalculator(workingDayIndicator,
+                intentionToProceedDeadlineDays).calculateDeadlineFromDate(respondedAt.toLocalDate());
 
             Claim updatedClaim = toClaimBuilder(startEventResponse)
                 .response(response)
