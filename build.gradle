@@ -94,7 +94,7 @@ allprojects {
     }
     dependencies {
       // CVE-2019-0232 - command line injections on windows - fixed on spring boot master but not released
-      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.22') {
+      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.29') {
         entry 'tomcat-embed-core'
         entry 'tomcat-embed-el'
         entry 'tomcat-embed-websocket'
@@ -221,7 +221,7 @@ dependencies {
 
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.14.0'
   testCompile group: 'org.mockito', name: 'mockito-core', version: '3.0.0'
-  testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.12.0'
+  testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.12.3'
 
   testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
   testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.4.0'
