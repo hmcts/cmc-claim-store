@@ -200,9 +200,9 @@ public class ClaimService {
 
     @LogExecutionTime
     public CreatePaymentResponse resumePayment(String authorisation, ClaimData claimData) {
-
-        Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), authorisation);
-        Claim resumedClaim = caseRepository.saveCaseEvent(authorisation, claim, RESUME_CLAIM_PAYMENT_CITIZEN);
+        User user = userService.getUser(authorisation);
+        Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), user);
+        Claim resumedClaim = caseRepository.saveCaseEventIOC(user, claim, RESUME_CLAIM_PAYMENT_CITIZEN);
 
         Payment payment = resumedClaim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
 
@@ -216,21 +216,19 @@ public class ClaimService {
     }
 
     @LogExecutionTime
-    public Claim saveCitizenClaim(
+    public Claim createCitizenClaim(
         String authorisation,
         ClaimData claimData,
         List<String> features
     ) {
-        Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), authorisation)
+        User user = userService.getUser(authorisation);
+        Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), user)
             .toBuilder()
             .claimData(claimData)
             .features(features)
             .build();
 
-        return caseRepository.saveCaseEvent(
-            authorisation,
-            claim,
-            CREATE_CITIZEN_CLAIM);
+        return caseRepository.saveCaseEventIOC(user, claim, CREATE_CITIZEN_CLAIM);
     }
 
     @LogExecutionTime
@@ -242,10 +240,11 @@ public class ClaimService {
     ) {
         String externalId = claimData.getExternalId().toString();
         User user = userService.getUser(authorisation);
-        caseRepository.getClaimByExternalId(externalId, user).ifPresent(claim -> {
-            throw new ConflictException(
-                String.format("Claim already exist with same external reference as %s", externalId));
-        });
+        caseRepository.getClaimByExternalId(externalId, user)
+            .ifPresent(claim -> {
+                throw new ConflictException(
+                    String.format("Claim already exist with same external reference as %s", externalId));
+            });
 
         Claim claim = buildClaimFrom(user,
             submitterId,
@@ -294,9 +293,9 @@ public class ClaimService {
     public Claim requestMoreTimeForResponse(String externalId, String authorisation) {
         Claim claim = getClaimByExternalId(externalId, authorisation);
 
-        this.moreTimeRequestRule.assertMoreTimeCanBeRequested(claim);
-
         LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn());
+
+        this.moreTimeRequestRule.assertMoreTimeCanBeRequested(claim);
 
         caseRepository.requestMoreTimeForResponse(authorisation, claim, newDeadline);
 

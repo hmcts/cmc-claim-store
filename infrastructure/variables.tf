@@ -101,9 +101,9 @@ variable "common_tags" {
 }
 
 variable schedule_state-transition_stay-claim  {
-  default = "0 0 16 * * 1-5"
+  default = "0 0 16 ? * MON-FRI *"
 }
 
 variable schedule_state-transition_waiting-transfer  {
-  default = "0 0 16 * * 1-5"
+  default = "0 0 16 ? * MON-FRI *"
 }

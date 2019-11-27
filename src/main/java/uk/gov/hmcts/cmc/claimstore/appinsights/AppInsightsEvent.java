@@ -49,7 +49,17 @@ public enum AppInsightsEvent {
     MEDIATION_PILOT_ELIGIBLE("Mediation Pilot Eligible"),
     MEDIATION_NON_PILOT_ELIGIBLE("Mediation Non Pilot Eligible"),
     CLAIM_STAYED("Claim Stayed"),
-    WAITING_TRANSFER("Claim ready for transfer");
+    WAITING_TRANSFER("Claim ready for transfer"),
+    DEFENDANT_OPTED_OUT_FOR_MEDIATION_PILOT("Mediation pilot - Defendant opted out"),
+    CLAIMANT_OPTED_OUT_FOR_MEDIATION_PILOT("Mediation pilot - Claimant opted out"),
+    BOTH_OPTED_IN_FOR_MEDIATION_PILOT("Mediation pilot - Both opted in"),
+    MEDIATION_PILOT_FAILED("Mediation pilot - Failed"),
+    MEDIATION_PILOT_SUCCESS("Mediation pilot - Success"),
+    DEFENDANT_OPTED_OUT_FOR_NON_MEDIATION_PILOT("Non-mediation pilot - Defendant opted out"),
+    CLAIMANT_OPTED_OUT_FOR_NON_MEDIATION_PILOT("Non-mediation pilot - Claimant opted out"),
+    BOTH_OPTED_IN_FOR_NON_MEDIATION_PILOT("Non-mediation pilot - Both opted in"),
+    NON_MEDIATION_PILOT_FAILED("Non-mediation pilot - Failed"),
+    NON_MEDIATION_PILOT_SUCCESS("Non-mediation pilot - Success");
 
     private String displayName;
 
