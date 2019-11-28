@@ -16,24 +16,37 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
-import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
-import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
-import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.function.Predicate;
 
+import static java.util.function.Predicate.isEqual;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LIFT_STAY;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BOTH_OPTED_IN_FOR_MEDIATION_PILOT;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BOTH_OPTED_IN_FOR_NON_MEDIATION_PILOT;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_OPTED_OUT_FOR_MEDIATION_PILOT;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_OPTED_OUT_FOR_NON_MEDIATION_PILOT;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_RESPONSE_ACCEPTED;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_NON_PILOT_ELIGIBLE;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isSettlePreJudgment;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.ACCEPTATION;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
+import static uk.gov.hmcts.cmc.domain.utils.FeaturesUtils.hasMediationPilotFeature;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.hasDefendantOptedForMediation;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isFullDefence;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isFullDefenceDispute;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isPartAdmission;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponsePartAdmitPayImmediately;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseStatesPaid;
 
 @Service
 public class ClaimantResponseService {
@@ -76,16 +89,15 @@ public class ClaimantResponseService {
         Claim claim = claimService.getClaimByExternalId(externalId, authorization);
         claimantResponseRule.assertCanBeRequested(claim, claimantId);
 
-        if (claim.getState().equals(ClaimState.STAYED) && isFullAdmissionOrPartAdmission(claim)) {
+        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+        if (claim.getState().equals(ClaimState.STAYED) && ResponseUtils.isAdmissionResponse(response)) {
             claim = caseRepository.saveCaseEvent(authorization, claim, LIFT_STAY);
         }
 
         Claim updatedClaim = caseRepository.saveClaimantResponse(claim, claimantResponse, authorization);
 
         claimantResponseRule.isValid(updatedClaim);
-        formaliseResponseAcceptance(claimantResponse, updatedClaim, authorization);
-
-        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+        formaliseResponseAcceptance(claimantResponse, response, updatedClaim, authorization);
 
         if (isFullDefenseDisputeAcceptation(response, claimantResponse)) {
             appInsights.trackEvent(AppInsightsEvent.CLAIM_STAYED, REFERENCE_NUMBER, updatedClaim.getReferenceNumber());
@@ -99,7 +111,7 @@ public class ClaimantResponseService {
             updatedClaim = claimService.getClaimByExternalId(externalId, authorization);
         }
 
-        if (!isSettlementAgreement(claim, claimantResponse)) {
+        if (!isSettlementAgreement(response, claimantResponse)) {
             eventProducer.createClaimantResponseEvent(updatedClaim, authorization);
         }
 
@@ -117,26 +129,14 @@ public class ClaimantResponseService {
             }
         }
 
-        AppInsightsEvent appInsightsEvent = getAppInsightsEvent(updatedClaim, claimantResponse);
-        appInsights.trackEvent(appInsightsEvent, "referenceNumber", claim.getReferenceNumber());
-
-        if (isRejectResponseWithMediation(claim, claimantResponse)) {
-            if (claim.getFeatures() != null && claim.getFeatures().contains("mediationPilot")) {
-                appInsights.trackEvent(AppInsightsEvent.MEDIATION_PILOT_ELIGIBLE,
-                    "referenceNumber", claim.getReferenceNumber());
-            } else {
-                appInsights.trackEvent(AppInsightsEvent.MEDIATION_NON_PILOT_ELIGIBLE,
-                    "referenceNumber", claim.getReferenceNumber());
-            }
-        }
+        raiseAppInsightEvents(updatedClaim, response, claimantResponse);
     }
 
-    private boolean isSettlementAgreement(Claim claim, ClaimantResponse claimantResponse) {
-        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+    private boolean isSettlementAgreement(Response response, ClaimantResponse claimantResponse) {
 
         if (shouldFormaliseResponseAcceptance(response, claimantResponse)) {
             return ((ResponseAcceptation) claimantResponse).getFormaliseOption()
-                .filter(Predicate.isEqual(FormaliseOption.SETTLEMENT))
+                .filter(isEqual(FormaliseOption.SETTLEMENT))
                 .isPresent();
         }
         return false;
@@ -145,7 +145,7 @@ public class ClaimantResponseService {
     private boolean isRejectResponseNoMediation(ClaimantResponse claimantResponse) {
         return ClaimantResponseType.REJECTION.equals(claimantResponse.getType())
             && ((ResponseRejection) claimantResponse).getFreeMediation()
-            .filter(Predicate.isEqual(YesNoOption.NO))
+            .filter(isEqual(YesNoOption.NO))
             .isPresent();
     }
 
@@ -155,9 +155,12 @@ public class ClaimantResponseService {
         caseRepository.updateDirectionsQuestionnaireDeadline(claim, deadline, authorization);
     }
 
-    private void formaliseResponseAcceptance(ClaimantResponse claimantResponse, Claim claim, String authorization) {
-        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
-
+    private void formaliseResponseAcceptance(
+        ClaimantResponse claimantResponse,
+        Response response,
+        Claim claim,
+        String authorization
+    ) {
         if (shouldFormaliseResponseAcceptance(response, claimantResponse)) {
             ResponseAcceptation responseAcceptation = (ResponseAcceptation) claimantResponse;
             if (responseAcceptation.getFormaliseOption().isPresent()) {
@@ -166,64 +169,66 @@ public class ClaimantResponseService {
         }
     }
 
-    private AppInsightsEvent getAppInsightsEvent(Claim claim, ClaimantResponse claimantResponse) {
+    private void raiseAppInsightEvents(Claim claim, Response response, ClaimantResponse claimantResponse) {
         if (claimantResponse instanceof ResponseAcceptation) {
-            return AppInsightsEvent.CLAIMANT_RESPONSE_ACCEPTED;
+            appInsights.trackEvent(CLAIMANT_RESPONSE_ACCEPTED, REFERENCE_NUMBER, claim.getReferenceNumber());
         } else if (claimantResponse instanceof ResponseRejection) {
-            return getEventNameForRejection(claim);
+            if (isPartAdmissionOrIsStatePaidOrIsFullDefence(response)) {
+                raiseAppInsightEventForDirectionQuestionnaire(claim);
+                raiseAppInsightEventForMediation(claim, response, (ResponseRejection) claimantResponse);
+            }
         } else {
             throw new IllegalStateException("Unknown response type");
         }
     }
 
-    private AppInsightsEvent getEventNameForRejection(Claim claim) {
-        return isPartAdmissionOrIsStatePaidOrIsFullDefence(claim) && DirectionsQuestionnaireUtils.isOnlineDQ(claim)
+    private void raiseAppInsightEventForDirectionQuestionnaire(Claim claim) {
+        AppInsightsEvent appInsightsEvent = DirectionsQuestionnaireUtils.isOnlineDQ(claim)
             ? AppInsightsEvent.LA_PILOT_ELIGIBLE
             : AppInsightsEvent.NON_LA_CASES;
+
+        appInsights.trackEvent(appInsightsEvent, REFERENCE_NUMBER, claim.getReferenceNumber());
     }
 
-    private boolean isFullAdmissionOrPartAdmission(Claim claim) {
-        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
-        ResponseType responseType = response.getResponseType();
+    private void raiseAppInsightEventForMediation(Claim claim, Response response, ResponseRejection responseRejection) {
+        String referenceNumber = claim.getReferenceNumber();
+        boolean claimantNotOptedForMediation = responseRejection.getFreeMediation().filter(isEqual(NO)).isPresent();
 
-        return responseType == ResponseType.FULL_ADMISSION
-            || responseType == ResponseType.PART_ADMISSION;
+        if (claimantNotOptedForMediation) {
+            appInsights.trackEvent(getAppInsightEventBasedOnMediationPilot(claim), REFERENCE_NUMBER, referenceNumber);
+        } else if (hasBothOptedForMediation(response, responseRejection)) {
+            if (hasMediationPilotFeature(claim)) {
+                appInsights.trackEvent(MEDIATION_PILOT_ELIGIBLE, REFERENCE_NUMBER, referenceNumber);
+                appInsights.trackEvent(BOTH_OPTED_IN_FOR_MEDIATION_PILOT, REFERENCE_NUMBER, referenceNumber);
+            } else {
+                appInsights.trackEvent(BOTH_OPTED_IN_FOR_NON_MEDIATION_PILOT, REFERENCE_NUMBER, referenceNumber);
+                appInsights.trackEvent(MEDIATION_NON_PILOT_ELIGIBLE, REFERENCE_NUMBER, referenceNumber);
+            }
+        }
     }
 
-    private boolean isPartAdmissionOrIsStatePaidOrIsFullDefence(Claim claim) {
-        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
-        ResponseType responseType = response.getResponseType();
-        return responseType == ResponseType.PART_ADMISSION
-            || isStatePaid(response)
-            || responseType == ResponseType.FULL_DEFENCE;
+    private AppInsightsEvent getAppInsightEventBasedOnMediationPilot(Claim claim) {
+        return hasMediationPilotFeature(claim)
+            ? CLAIMANT_OPTED_OUT_FOR_MEDIATION_PILOT
+            : CLAIMANT_OPTED_OUT_FOR_NON_MEDIATION_PILOT;
     }
 
-    private boolean isStatePaid(Response response) {
-        ResponseType responseType = response.getResponseType();
-        return responseType == ResponseType.FULL_DEFENCE
-            && ((FullDefenceResponse) response).getDefenceType() == DefenceType.ALREADY_PAID;
+    private boolean hasBothOptedForMediation(Response response, ResponseRejection responseRejection) {
+        boolean claimantOptedForMediation = responseRejection.getFreeMediation().filter(isEqual(YES)).isPresent();
+        return claimantOptedForMediation && hasDefendantOptedForMediation(response);
+    }
+
+    private boolean isPartAdmissionOrIsStatePaidOrIsFullDefence(Response response) {
+        return isPartAdmission(response) || isFullDefence(response) || isResponseStatesPaid(response);
     }
 
     private boolean isFullDefenseDisputeAcceptation(Response response, ClaimantResponse claimantResponse) {
-        return claimantResponse.getType() == ACCEPTATION
-            && ResponseUtils.isFullDefenceDispute(response);
+        return claimantResponse.getType() == ACCEPTATION && isFullDefenceDispute(response);
     }
 
     private boolean shouldFormaliseResponseAcceptance(Response response, ClaimantResponse claimantResponse) {
         return ACCEPTATION == claimantResponse.getType()
-            && !ResponseUtils.isResponseStatesPaid(response)
-            && !ResponseUtils.isResponsePartAdmitPayImmediately(response);
-    }
-
-    private boolean isRejectResponseWithMediation(Claim claim, ClaimantResponse claimantResponse) {
-        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
-
-        return ClaimantResponseType.REJECTION.equals(claimantResponse.getType())
-            && ((ResponseRejection) claimantResponse).getFreeMediation().filter(Predicate.isEqual(YesNoOption.YES))
-            .isPresent()
-            && response.getFreeMediation().filter(Predicate.isEqual(YesNoOption.YES)).isPresent()
-            && (ResponseUtils.isPartAdmission(response)
-            || ResponseUtils.isFullDefence(response)
-            || ResponseUtils.isResponseStatesPaid(response));
+            && !isResponseStatesPaid(response)
+            && !isResponsePartAdmitPayImmediately(response);
     }
 }

@@ -219,6 +219,24 @@ public class NotificationReferenceBuilder {
         }
     }
 
+    public static class MediationSuccessful {
+
+        public static final String TEMPLATE = "to-%s-mediation-successful";
+
+        private MediationSuccessful() {
+            // do not instantiate
+        }
+
+        public static String referenceForClaimant(String claimReferenceNumber, String otherParty) {
+            return reference(TEMPLATE, CLAIMANT, otherParty.toLowerCase(), claimReferenceNumber);
+        }
+
+        public static String referenceForDefendant(String claimReferenceNumber, String otherParty) {
+            return reference(TEMPLATE, DEFENDANT, otherParty.toLowerCase(), claimReferenceNumber);
+        }
+    }
+
+
     public static class MediationUnsuccessful {
         private MediationUnsuccessful() {
             // do not instantiate

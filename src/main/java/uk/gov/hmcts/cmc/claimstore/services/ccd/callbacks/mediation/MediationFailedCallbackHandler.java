@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
@@ -19,6 +21,7 @@ import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt;
+import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
@@ -30,7 +33,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.MEDIATION_FAILED;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_PILOT_FAILED;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NON_MEDIATION_PILOT_FAILED;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper.isResponsePartOrFullDefence;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
@@ -38,7 +43,7 @@ import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseTy
 @Service
 public class MediationFailedCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
-    private static final List<CaseEvent> EVENTS = ImmutableList.of(MEDIATION_FAILED);
+    private static final List<CaseEvent> EVENTS = ImmutableList.of(CaseEvent.MEDIATION_FAILED);
 
     private static final String STATE = "state";
     private static final String OPEN_STATE = "open";
@@ -52,6 +57,7 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
     private final DirectionsQuestionnaireDeadlineCalculator deadlineCalculator;
 
     private final CaseMapper caseMapper;
+    private final AppInsights appInsights;
 
     private final MediationFailedNotificationService notificationService;
 
@@ -59,11 +65,13 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
     public MediationFailedCallbackHandler(CaseDetailsConverter caseDetailsConverter,
                                           DirectionsQuestionnaireDeadlineCalculator deadlineCalculator,
                                           CaseMapper caseMapper,
+                                          AppInsights appInsights,
                                           MediationFailedNotificationService notificationService) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.deadlineCalculator = deadlineCalculator;
         this.caseMapper = caseMapper;
         this.notificationService = notificationService;
+        this.appInsights = appInsights;
     }
 
     @Override
@@ -88,6 +96,9 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
         CallbackRequest callbackRequest = callbackParams.getRequest();
 
         Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
+        appInsights
+            .trackEvent(getAppInsightEventBasedOnMediationPilot(claim), REFERENCE_NUMBER, claim.getReferenceNumber());
+
         notificationService.notifyParties(claim);
         return SubmittedCallbackResponse.builder().build();
     }
@@ -136,5 +147,11 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
         } else {
             return READY_FOR_TRANSFER_STATE;
         }
+    }
+
+    private AppInsightsEvent getAppInsightEventBasedOnMediationPilot(Claim claim) {
+        return FeaturesUtils.hasMediationPilotFeature(claim)
+            ? MEDIATION_PILOT_FAILED
+            : NON_MEDIATION_PILOT_FAILED;
     }
 }
