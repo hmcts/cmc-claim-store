@@ -77,7 +77,6 @@ public class ClaimDocumentCollectionMapperTest {
                     .value(buildCCDClaimDocumentCcdClaimDocument(t)).build())
                 .collect(Collectors.toList());
 
-
         final CCDCase ccdCase = CCDCase.builder()
             .staffUploadedDocuments(documents)
             .caseDocuments(documents)
@@ -93,7 +92,6 @@ public class ClaimDocumentCollectionMapperTest {
         final List<ClaimDocument> claimDocuments = claim.getClaimDocumentCollection().get().getClaimDocuments();
         assertThat(claimDocuments.size()).isEqualTo(documents.size() + staffDocuments.size());
     }
-
 
     private CCDDocument buildCCDDocument() {
         return CCDDocument.builder()
