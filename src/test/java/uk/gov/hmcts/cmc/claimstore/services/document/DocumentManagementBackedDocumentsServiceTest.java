@@ -230,7 +230,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
             .build();
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(AUTHORISATION)))
             .thenReturn(claim);
-        when( documentManagementService.downloadDocument(eq(AUTHORISATION),eq(claimDocument))).thenReturn(new byte[1]);
+        when(documentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument))).thenReturn(new byte[1]);
         documentManagementBackedDocumentsService.generateDocument(
             claim.getExternalId(),
             documentType,
@@ -252,7 +252,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
             .build();
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(AUTHORISATION)))
             .thenReturn(claim);
-        when( documentManagementService.downloadDocument(eq(AUTHORISATION),eq(claimDocument))).thenReturn(new byte[1]);
+        when(documentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument))).thenReturn(new byte[1]);
         documentManagementBackedDocumentsService.generateDocument(
             claim.getExternalId(),
             documentType,
@@ -274,7 +274,7 @@ public class DocumentManagementBackedDocumentsServiceTest {
             .build();
         when(claimService.getClaimByExternalId(eq(claim.getExternalId()), eq(AUTHORISATION)))
             .thenReturn(claim);
-        when( documentManagementService.downloadDocument(eq(AUTHORISATION),eq(claimDocument))).thenReturn(new byte[1]);
+        when(documentManagementService.downloadDocument(eq(AUTHORISATION), eq(claimDocument))).thenReturn(new byte[1]);
         documentManagementBackedDocumentsService.generateDocument(
             claim.getExternalId(),
             documentType,
