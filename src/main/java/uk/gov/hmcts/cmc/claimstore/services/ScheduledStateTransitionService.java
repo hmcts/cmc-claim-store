@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
 
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 
@@ -74,6 +75,13 @@ public class ScheduledStateTransitionService {
         this.emailService = emailService;
         this.emailProperties = emailProperties;
         this.environment = environment;
+    }
+
+    @PostConstruct
+    public void init() {
+        for (StateTransition stateTransition : StateTransition.values()) {
+            getStateTransitionDaysProperty(stateTransition);
+        }
     }
 
     public void stateChangeTriggered(StateTransition stateTransition) {
@@ -129,15 +137,20 @@ public class ScheduledStateTransitionService {
     }
 
     private StateTransitionCalculator getStateTransitionCalculator(StateTransition stateTransition) {
+        String numberOfDaysProperty = getStateTransitionDaysProperty(stateTransition);
+        return new StateTransitionCalculator(workingDayIndicator, Integer.parseInt(numberOfDaysProperty));
+    }
+
+    private String getStateTransitionDaysProperty(StateTransition stateTransition) {
         String numberOfDaysPropertyKey = String.format("dateCalculations.%sDeadlineInDays",
             CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, stateTransition.name()));
 
         String numberOfDaysProperty = environment.getProperty(numberOfDaysPropertyKey);
 
         if (StringUtils.isBlank(numberOfDaysProperty)) {
-            throw new IllegalArgumentException(String.format("Missing property %s", numberOfDaysPropertyKey));
+            throw new IllegalArgumentException(String.format("Could not resolve placeholder %s",
+                numberOfDaysPropertyKey));
         }
-
-        return new StateTransitionCalculator(workingDayIndicator, Integer.parseInt(numberOfDaysProperty));
+        return numberOfDaysProperty;
     }
 }

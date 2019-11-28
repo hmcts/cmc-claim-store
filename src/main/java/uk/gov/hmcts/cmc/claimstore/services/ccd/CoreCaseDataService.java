@@ -110,7 +110,7 @@ public class CoreCaseDataService {
         JobSchedulerService jobSchedulerService,
         CCDCreateCaseService ccdCreateCaseService,
         CaseDetailsConverter caseDetailsConverter,
-        @Value("#{new Integer('${dateCalculations.waitingTransferDeadlineInDays}')}")
+        @Value("#{new Integer('${dateCalculations.stayClaimDeadlineInDays}')}")
             Integer intentionToProceedDeadlineDays,
         WorkingDayIndicator workingDayIndicator
     ) {
