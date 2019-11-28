@@ -15,7 +15,8 @@ public enum ClaimDocumentType {
     DEFENDANT_PIN_LETTER,
     CLAIMANT_DIRECTIONS_QUESTIONNAIRE("claimantHearingRequirement"),
     REVIEW_ORDER,
-    COVER_SHEET;
+    COVER_SHEET,
+    MEDIATION_AGREEMENT;
 
     private List<String> values;
 
