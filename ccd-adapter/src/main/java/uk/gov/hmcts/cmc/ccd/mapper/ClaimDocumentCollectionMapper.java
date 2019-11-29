@@ -4,16 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
-import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
 
 @Component
 public class ClaimDocumentCollectionMapper {
@@ -41,6 +40,12 @@ public class ClaimDocumentCollectionMapper {
                 .map(claimDocumentMapper::to)
                 .collect(Collectors.toList())
         );
+
+        builder.staffUploadedDocuments(asStream(claimDocumentCollection
+            .getStaffUploadedDocuments())
+            .map(claimDocumentMapper::to)
+            .collect(Collectors.toList())
+        );
     }
 
     private boolean isNotPin(ClaimDocument claimDocument) {
@@ -60,20 +65,15 @@ public class ClaimDocumentCollectionMapper {
 
         ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
 
-        buildClaimDocumentCollection(claimDocumentCollection, ccdCase.getCaseDocuments());
-        buildClaimDocumentCollection(claimDocumentCollection, ccdCase.getStaffUploadedDocuments());
+        ccdCase.getCaseDocuments()
+            .stream()
+            .map(claimDocumentMapper::from)
+            .forEach(claimDocumentCollection::addClaimDocument);
+
+        asStream(ccdCase.getStaffUploadedDocuments())
+            .map(claimDocumentMapper::from)
+            .forEach(claimDocumentCollection::addStaffUploadedDocument);
 
         builder.claimDocumentCollection(claimDocumentCollection);
     }
-
-    private void buildClaimDocumentCollection(ClaimDocumentCollection claimDocumentCollection,
-                                              List<CCDCollectionElement<CCDClaimDocument>> documents) {
-        if (CollectionUtils.isEmpty(documents)) {
-            return;
-        }
-        documents.stream()
-            .map(claimDocumentMapper::from)
-            .forEach(claimDocumentCollection::addClaimDocument);
-    }
-
 }

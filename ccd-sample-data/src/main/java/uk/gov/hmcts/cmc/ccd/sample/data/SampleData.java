@@ -770,4 +770,16 @@ public class SampleData {
             .postCode("M60 9DJ")
             .build();
     }
+
+    public static CCDCase withPaperResponseFromStaffUploadedDoc() {
+        List<CCDCollectionElement<CCDApplicant>> applicants
+            = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
+
+        return ccdBuilderWithDefault()
+            .amountBreakDown(getAmountBreakDown())
+            .applicants(applicants)
+            .staffUploadedDocuments(SampleStaffUploadedDoc.staffUploadedDocs)
+            .state(OPEN.getValue())
+            .build();
+    }
 }

@@ -1,12 +1,11 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.Test;
+import org.springframework.util.Assert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
-import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
@@ -14,11 +13,13 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ClaimDocumentCollectionMapperTest {
+
+    private final ClaimDocumentCollectionMapper mapper = new ClaimDocumentCollectionMapper(
+        new ClaimDocumentMapper());
 
     @Test
     public void shouldFilterOutPinAndCCJDocuments() {
@@ -50,7 +51,6 @@ public class ClaimDocumentCollectionMapperTest {
             .documentType(ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT)
             .build());
 
-        ClaimDocumentCollectionMapper mapper = new ClaimDocumentCollectionMapper(new ClaimDocumentMapper());
         mapper.to(collection, builder);
 
         CCDCase build = builder.build();
@@ -59,52 +59,40 @@ public class ClaimDocumentCollectionMapperTest {
     }
 
     @Test
-    public void shouldMapCombinedDocumentsAndStaffUploadedDocumentsFromCCD() {
+    public void shouldMapToStaffUploadedDocuments() {
+        CCDCase.CCDCaseBuilder builder = CCDCase.builder();
+        ClaimDocumentCollection collection = new ClaimDocumentCollection();
 
-        final List<CCDCollectionElement<CCDClaimDocument>> documents =
-            ImmutableList.of(CCDClaimDocumentType.MEDIATION_AGREEMENT,
-                CCDClaimDocumentType.CLAIM_ISSUE_RECEIPT)
-                .stream()
-                .map(t -> CCDCollectionElement.<CCDClaimDocument>builder()
-                    .value(buildCCDClaimDocumentCcdClaimDocument(t)).build())
-                .collect(Collectors.toList());
+        collection.addClaimDocument(ClaimDocument.builder()
+            .documentManagementUrl(URI.create("someurl"))
+            .documentManagementBinaryUrl(URI.create("someBinaryUrl"))
+            .documentType(ClaimDocumentType.CCJ_REQUEST)
+            .build());
 
-        final List<CCDCollectionElement<CCDClaimDocument>> staffDocuments =
-            ImmutableList.of(CCDClaimDocumentType.MEDIATION_AGREEMENT,
-                CCDClaimDocumentType.CLAIM_ISSUE_RECEIPT)
-                .stream()
-                .map(t -> CCDCollectionElement.<CCDClaimDocument>builder()
-                    .value(buildCCDClaimDocumentCcdClaimDocument(t)).build())
-                .collect(Collectors.toList());
+        collection.addStaffUploadedDocument(ClaimDocument.builder()
+            .documentManagementUrl(URI.create("someurl"))
+            .documentManagementBinaryUrl(URI.create("someBinaryUrl"))
+            .documentType(ClaimDocumentType.CCJ_REQUEST)
+            .build());
+        mapper.to(collection, builder);
 
-        final CCDCase ccdCase = CCDCase.builder()
-            .staffUploadedDocuments(documents)
-            .caseDocuments(documents)
-            .build();
+        CCDCase build = builder.build();
+        List<CCDCollectionElement<CCDClaimDocument>> caseDocuments = build.getStaffUploadedDocuments();
+        assertThat(caseDocuments.size()).isEqualTo(1);
 
-        ClaimDocumentCollectionMapper mapper = new ClaimDocumentCollectionMapper(new ClaimDocumentMapper());
-        final Claim.ClaimBuilder builder = Claim.builder();
+    }
+
+    @Test
+    public void shouldMapFromStaffUploadedDocuments() {
+        CCDCase ccdCase = SampleData.withPaperResponseFromStaffUploadedDoc();
+        Claim.ClaimBuilder builder = Claim.builder();
+
         mapper.from(ccdCase, builder);
 
-        final Claim claim = builder.build();
-
-        assertThat(claim.getClaimDocumentCollection().isPresent());
-        final List<ClaimDocument> claimDocuments = claim.getClaimDocumentCollection().get().getClaimDocuments();
-        assertThat(claimDocuments.size()).isEqualTo(documents.size() + staffDocuments.size());
-    }
-
-    private CCDDocument buildCCDDocument() {
-        return CCDDocument.builder()
-            .documentUrl("someurl")
-            .documentBinaryUrl("someBinaryUrl")
-            .documentFileName("someFilename")
-            .build();
-    }
-
-    private CCDClaimDocument buildCCDClaimDocumentCcdClaimDocument(CCDClaimDocumentType documentType) {
-        return CCDClaimDocument.builder()
-            .documentLink(buildCCDDocument())
-            .documentType(documentType)
-            .build();
+        Claim build = builder.build();
+        ClaimDocumentCollection caseDocuments = build.getClaimDocumentCollection()
+            .orElseThrow(IllegalStateException::new);
+        Assert.notNull(caseDocuments.getStaffUploadedDocuments(), "Scanned document list cant be null");
+        assertThat(caseDocuments.getStaffUploadedDocuments().size()).isEqualTo(1);
     }
 }
