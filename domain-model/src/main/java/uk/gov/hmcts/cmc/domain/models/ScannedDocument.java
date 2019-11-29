@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Value;
 
@@ -8,6 +9,7 @@ import java.net.URI;
 import java.time.LocalDateTime;
 
 @Getter
+@EqualsAndHashCode(callSuper = true)
 @Value
 public class ScannedDocument extends CollectionId {
     private final String fileName;
@@ -36,7 +38,7 @@ public class ScannedDocument extends CollectionId {
         super(id);
         this.fileName = fileName;
         this.documentType = documentType;
-        this.controlNumber =  controlNumber;
+        this.controlNumber = controlNumber;
         this.exceptionRecordReference = exceptionRecordReference;
         this.subtype = subtype;
         this.scannedDate = scannedDate;
