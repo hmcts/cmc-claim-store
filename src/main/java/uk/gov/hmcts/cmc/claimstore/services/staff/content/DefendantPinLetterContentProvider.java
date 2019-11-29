@@ -19,7 +19,7 @@ import static java.math.BigDecimal.ZERO;
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatMoney;
-import static uk.gov.hmcts.cmc.claimstore.utils.PartyNameUtils.getPartyNameFor;
+import static uk.gov.hmcts.cmc.ccd.util.PartyNameUtils.getPartyNameFor;
 import static uk.gov.hmcts.cmc.claimstore.utils.Preconditions.requireNonBlank;
 
 @Component
