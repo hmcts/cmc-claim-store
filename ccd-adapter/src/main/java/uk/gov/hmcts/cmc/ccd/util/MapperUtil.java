@@ -14,6 +14,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static uk.gov.hmcts.cmc.ccd.util.PartyNameUtils.getPartyNameFor;
+import static uk.gov.hmcts.cmc.ccd.util.PartyNameUtils.getTheirDetailsNameFor;
 import static uk.gov.hmcts.cmc.domain.models.MediationOutcome.FAILED;
 import static uk.gov.hmcts.cmc.domain.models.MediationOutcome.SUCCEEDED;
 
@@ -50,7 +51,7 @@ public class MapperUtil {
 
         defendantNameBuilder.append(claim.getResponse().map(Response::getDefendant)
             .map(Party::getName)
-            .orElseGet(() -> getPartyNameFor(claim.getClaimData().getDefendants().get(0))));
+            .orElseGet(() -> getTheirDetailsNameFor(claim.getClaimData().getDefendants().get(0))));
 
         if (claim.getClaimData().getDefendants().size() > 1) {
             defendantNameBuilder.append(OTHERS);
