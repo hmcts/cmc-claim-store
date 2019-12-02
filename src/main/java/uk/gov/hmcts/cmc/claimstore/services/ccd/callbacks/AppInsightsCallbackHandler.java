@@ -23,12 +23,13 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.JUDGE_REVIEW_ORDER;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REVIEW_COMPLEX_CASE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.WAITING_TRANSFER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.JUDGE;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.LEGAL_ADVISOR;
 
 @Service
 public class AppInsightsCallbackHandler extends CallbackHandler {
-    private static final List<Role> ROLES = ImmutableList.of(LEGAL_ADVISOR, JUDGE);
+    private static final List<Role> ROLES = ImmutableList.of(LEGAL_ADVISOR, JUDGE, CITIZEN);
     private final AppInsights appInsights;
     private final CaseDetailsConverter caseDetailsConverter;
 
