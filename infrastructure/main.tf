@@ -109,8 +109,9 @@ module "database" {
   product = "${var.product}"
   location = "${var.location}"
   env = "${var.env}"
+  host_name = "${var.db_host}}"
   postgresql_user = "cmc"
-  database_name = "cmc"
+  postgresql_database = "${var.database-name}"
   postgresql_version = "10"
   sku_name = "GP_Gen5_2"
   sku_tier = "GeneralPurpose"
@@ -139,14 +140,6 @@ module "claim-store-api" {
     REFORM_TEAM = "${var.product}"
     REFORM_SERVICE_NAME = "${var.microservice}"
     REFORM_ENVIRONMENT = "${var.env}"
-
-    // db vars
-    CLAIM_STORE_DB_HOST = "${var.db_host}"
-    CLAIM_STORE_DB_PORT = "5432"
-    CLAIM_STORE_DB_USERNAME = "claimstore"
-    CLAIM_STORE_DB_PASSWORD = "${data.azurerm_key_vault_secret.db_password.value}"
-    CLAIM_STORE_DB_NAME = "${var.database-name}"
-    CLAIM_STORE_DB_CONNECTION_OPTIONS = "?ssl=true&sslmode=require"
 
     CMC_DB_HOST = "${module.database.host_name}"
     CMC_DB_PORT = "${module.database.postgresql_listen_port}"
