@@ -4,7 +4,6 @@ spring:
       paths: /mnt/secrets/cmc
       prefixed: false
       aliases:
-        claim-store-db-password: CLAIM_STORE_DB_PASSWORD
         cmc-db-password: CMC_DB_PASSWORD
         notify-api-key: GOV_NOTIFY_API_KEY
         citizen-oauth-client-secret: oauth2.client.secret
