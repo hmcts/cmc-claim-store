@@ -65,7 +65,7 @@ public class ClaimService {
     private final ReviewOrderRule reviewOrderRule;
     private final String returnUrlPattern;
 
-    @SuppressWarnings("squid:S00107") //Constructor need all parameters
+    @SuppressWarnings("squid:S00107")
     @Autowired
     public ClaimService(
         CaseRepository caseRepository,
