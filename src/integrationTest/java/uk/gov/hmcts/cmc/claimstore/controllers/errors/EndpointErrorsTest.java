@@ -29,6 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_EMAIL;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_ID;
 
@@ -176,7 +177,7 @@ public class EndpointErrorsTest extends MockSpringTest {
             .perform(post("/claims/" + CLAIMANT_ID)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
-                .header("Features", ImmutableList.of("admissions"))
+                .header("Features", ImmutableList.of(ADMISSIONS.getValue()))
                 .content(jsonMapper.toJson(SampleClaimData.validDefaults()))
             )
             .andExpect(status().isConflict());

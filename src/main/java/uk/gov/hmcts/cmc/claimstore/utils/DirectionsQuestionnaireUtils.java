@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.utils;
 
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimFeatures;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
@@ -25,19 +26,16 @@ import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.PART_ADMISSIO
 
 public class DirectionsQuestionnaireUtils {
 
-    public static final String DQ_FLAG = "directionsQuestionnaire";
-    public static final String LA_PILOT_FLAG = "LAPilotEligible";
-
     private DirectionsQuestionnaireUtils() {
         // utility class, no instances
     }
 
     public static boolean isOnlineDQ(Claim claim) {
-        return claim.getFeatures() != null && claim.getFeatures().contains(DQ_FLAG);
+        return claim.getFeatures() != null && claim.getFeatures().contains(ClaimFeatures.DQ_FLAG.getValue());
     }
 
     private static boolean isLegalAdvisorPilot(Claim claim) {
-        return claim.getFeatures() != null && claim.getFeatures().contains(LA_PILOT_FLAG);
+        return claim.getFeatures() != null && claim.getFeatures().contains(ClaimFeatures.LA_PILOT_FLAG.getValue());
     }
 
     public static Optional<CaseEvent> prepareCaseEvent(ResponseRejection responseRejection, Claim claim) {

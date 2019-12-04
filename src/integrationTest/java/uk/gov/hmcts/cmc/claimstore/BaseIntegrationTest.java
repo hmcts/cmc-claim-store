@@ -20,6 +20,7 @@ import javax.sql.DataSource;
 import static org.springframework.test.context.TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
 
 @DirtiesContext
 @TestExecutionListeners(listeners = {BaseIntegrationTest.CleanDatabaseListener.class}, mergeMode = MERGE_WITH_DEFAULTS)
@@ -60,7 +61,7 @@ public abstract class BaseIntegrationTest extends MockSpringTest {
             .perform(post("/claims/" + USER_ID)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, authorization)
-                .header("Features", ImmutableList.of("admissions"))
+                .header("Features", ImmutableList.of(ADMISSIONS.getValue()))
                 .content(jsonMapper.toJson(claimData))
             );
     }

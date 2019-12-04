@@ -38,6 +38,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEI
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
 import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.DEFAULT;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.CLAIMANT;
@@ -84,7 +85,7 @@ public final class SampleClaim {
     private String defendantEmail;
     private Settlement settlement = null;
     private LocalDateTime settlementReachedAt = null;
-    private List<String> features = Collections.singletonList("admissions");
+    private List<String> features = Collections.singletonList(ADMISSIONS.getValue());
     private LocalDateTime claimantRespondedAt;
     private ClaimantResponse claimantResponse;
     private LocalDate directionsQuestionnaireDeadline;

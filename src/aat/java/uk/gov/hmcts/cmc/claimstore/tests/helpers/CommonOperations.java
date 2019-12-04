@@ -23,6 +23,8 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
 import java.util.UUID;
 
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
+
 @Service
 public class CommonOperations {
 
@@ -72,7 +74,7 @@ public class CommonOperations {
             .given()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .header(HttpHeaders.AUTHORIZATION, userAuthentication)
-            .header("Features", ImmutableList.of("admissions", "issuedOn"))
+            .header("Features", ImmutableList.of(ADMISSIONS.getValue(), "issuedOn"))
             .body(jsonMapper.toJson(claimData))
             .when()
             .post("/claims/" + userId);

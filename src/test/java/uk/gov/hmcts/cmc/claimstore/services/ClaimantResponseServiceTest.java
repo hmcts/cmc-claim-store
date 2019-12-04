@@ -52,9 +52,10 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NON_LA_CASES;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.MEDIATION_PILOT;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
-import static uk.gov.hmcts.cmc.domain.utils.FeaturesUtils.MEDIATION_PILOT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClaimantResponseServiceTest {
@@ -340,7 +341,7 @@ public class ClaimantResponseServiceTest {
         final ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultRejection();
 
         final Claim claim = SampleClaim.builder()
-            .withFeatures(ImmutableList.of("directionsQuestionnaire"))
+            .withFeatures(ImmutableList.of(DQ_FLAG.getValue()))
             .withResponseDeadline(LocalDate.now().minusMonths(2))
             .withResponse(SampleResponse.PartAdmission.builder().build())
             .withRespondedAt(respondedAt)
@@ -373,7 +374,7 @@ public class ClaimantResponseServiceTest {
         final ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultRejection();
 
         final Claim claim = SampleClaim.builder()
-            .withFeatures(ImmutableList.of(MEDIATION_PILOT))
+            .withFeatures(ImmutableList.of(MEDIATION_PILOT.getValue()))
             .withResponseDeadline(LocalDate.now().minusMonths(2))
             .withResponse(SampleResponse.FullDefence.builder().build())
             .withRespondedAt(respondedAt)
