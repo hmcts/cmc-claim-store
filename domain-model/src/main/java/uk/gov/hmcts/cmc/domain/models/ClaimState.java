@@ -8,6 +8,7 @@ public enum ClaimState {
     CLOSED("closed"),
     SETTLED("settled"),
     READY_FOR_DIRECTIONS("readyForDirections"),
+    READY_FOR_JUDGE_DIRECTIONS("readyForJudgeDirections"),
     STAYED("stayed"),
     ORDER_FOR_JUDGE_REVIEW("orderForJudgeReview"),
     ORDER_FOR_LA_REVIEW("orderForLAReview"),

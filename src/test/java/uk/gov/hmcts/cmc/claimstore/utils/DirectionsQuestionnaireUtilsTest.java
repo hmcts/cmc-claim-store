@@ -21,9 +21,11 @@ import java.util.Collections;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_DIRECTIONS;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_JUDGE_DIRECTIONS;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.WAITING_TRANSFER;
+import static uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils.DQ_FLAG;
 import static uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils.LA_PILOT_FLAG;
 import static uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt.BIRMINGHAM;
 import static uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt.MANCHESTER;
@@ -119,7 +121,7 @@ public class DirectionsQuestionnaireUtilsTest {
             .build();
         CaseEvent caseEvent = DirectionsQuestionnaireUtils
             .prepareCaseEvent(CLAIMANT_REJECTION_PILOT, claim).get();
-        Assertions.assertThat(caseEvent).isEqualTo(ASSIGNING_FOR_DIRECTIONS);
+        Assertions.assertThat(caseEvent).isEqualTo(ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS);
     }
 
     @Test
@@ -192,13 +194,29 @@ public class DirectionsQuestionnaireUtilsTest {
             .build();
         CaseEvent caseEvent = DirectionsQuestionnaireUtils
             .prepareCaseEvent(CLAIMANT_REJECTION_NON_PILOT, claim).get();
-        Assertions.assertThat(caseEvent).isEqualTo(ASSIGNING_FOR_DIRECTIONS);
+        Assertions.assertThat(caseEvent).isEqualTo(ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS);
+    }
+
+    @Test
+    public void shouldAssignForJudgeDirectionsIfNoFreeMediationAndDefendantIsNotBusinessAndDefendantCourtIsPilot() {
+        Claim claim = SampleClaim.builder()
+            .withFeatures(ImmutableList.of(DQ_FLAG))
+            .withClaimantResponse(CLAIMANT_REJECTION_PILOT)
+            .withResponse(DEFENDANT_PART_ADMISSION_PILOT)
+            .withClaimData(SampleClaimData
+                .builder()
+                .withDefendant(IndividualDetails.builder().build())
+                .build())
+            .build();
+        CaseEvent caseEvent = DirectionsQuestionnaireUtils
+            .prepareCaseEvent(CLAIMANT_REJECTION_NON_PILOT, claim).get();
+        Assertions.assertThat(caseEvent).isEqualTo(ASSIGNING_FOR_JUDGE_DIRECTIONS);
     }
 
     @Test
     public void shouldWaitForTransferIfOnlineDqNoFreeMediationAndDefendantIsNotBusinessAndDefendantCourtIsNotPilot() {
         Claim claim = SampleClaim.builder()
-            .withFeatures(ImmutableList.of("directionsQuestionnaire"))
+            .withFeatures(ImmutableList.of(DQ_FLAG))
             .withClaimantResponse(CLAIMANT_REJECTION_PILOT)
             .withResponse(DEFENDANT_PART_ADMISSION_NON_PILOT)
             .withClaimData(SampleClaimData

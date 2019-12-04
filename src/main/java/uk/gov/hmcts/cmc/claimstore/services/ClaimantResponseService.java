@@ -105,8 +105,7 @@ public class ClaimantResponseService {
             caseRepository.saveCaseEvent(authorization, updatedClaim, CaseEvent.STAY_CLAIM);
         }
 
-        if (!DirectionsQuestionnaireUtils.isOnlineDQ(updatedClaim)
-            && isRejectResponseNoMediation(claimantResponse)) {
+        if (!DirectionsQuestionnaireUtils.isOnlineDQ(updatedClaim) && isRejectResponseNoMediation(claimantResponse)) {
             updateDirectionsQuestionnaireDeadline(updatedClaim, authorization);
             updatedClaim = claimService.getClaimByExternalId(externalId, authorization);
         }
