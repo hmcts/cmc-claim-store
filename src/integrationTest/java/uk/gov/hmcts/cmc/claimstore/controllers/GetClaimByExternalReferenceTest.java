@@ -15,8 +15,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class GetClaimByExternalReferenceTest extends BaseGetTest {
 
-    @Ignore("To be fixed as part of task ROC-6278")
     @Test
+    @Ignore("To be fixed as part of task ROC-6278")
     public void shouldReturn200HttpStatusWhenClaimFound() throws Exception {
 
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
