@@ -123,7 +123,6 @@ public class ClaimServiceTest {
         when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(VALID_DEFENDANT);
 
         claimService = new ClaimService(
-            claimRepository,
             caseRepository,
             userService,
             issueDateCalculator,
@@ -135,25 +134,6 @@ public class ClaimServiceTest {
             new ClaimAuthorisationRule(userService),
             new ReviewOrderRule(),
             RETURN_URL);
-    }
-
-    @Test
-    public void getClaimByIdShouldCallRepositoryWhenValidClaimIsReturned() {
-
-        Optional<Claim> result = Optional.of(claim);
-
-        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(result);
-
-        Claim actual = claimService.getClaimById(CLAIM_ID);
-        assertThat(actual).isEqualTo(claim);
-    }
-
-    @Test(expected = NotFoundException.class)
-    public void getClaimByIdShouldThrowNotFoundException() {
-
-        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(empty());
-
-        claimService.getClaimById(CLAIM_ID);
     }
 
     @Test
@@ -202,7 +182,6 @@ public class ClaimServiceTest {
         when(caseRepository.saveClaim(eq(USER), any())).thenReturn(claim);
 
         claimService = new ClaimService(
-            claimRepository,
             caseRepository,
             userService,
             issueDateCalculator,
