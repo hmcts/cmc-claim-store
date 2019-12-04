@@ -61,6 +61,8 @@ public class MediationFailedNotificationServiceTest {
 
         when(emailTemplates.getClaimantMediationFailureOfflineDQ())
             .thenReturn(OFFLINE_MEDIATION_FAILED);
+        when(emailTemplates.getDefendantMediationFailureOfflineDQ())
+            .thenReturn(OFFLINE_MEDIATION_FAILED);
 
         when(notificationsProperties.getFrontendBaseUrl()).thenReturn("BASELINE_URL");
     }
@@ -94,7 +96,6 @@ public class MediationFailedNotificationServiceTest {
             .build();
 
         mediationFailedNotificationService.notifyParties(claim);
-
         verify(notificationService).sendMail(eq(claim.getSubmitterEmail()),
             eq(OFFLINE_MEDIATION_FAILED),
             emailParamterCaptor.capture(),

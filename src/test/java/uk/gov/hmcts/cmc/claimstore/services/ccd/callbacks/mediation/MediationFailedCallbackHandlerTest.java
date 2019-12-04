@@ -72,7 +72,7 @@ public class MediationFailedCallbackHandlerTest {
             caseMapper,
             appInsights,
             mediationFailedNotificationService);
-        CallbackRequest callbackRequest = CallbackRequest
+        callbackRequest = CallbackRequest
             .builder()
             .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
             .eventId(CaseEvent.MEDIATION_FAILED.getValue())
