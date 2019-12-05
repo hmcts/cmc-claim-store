@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 import com.github.tomakehurst.wiremock.http.MimeType;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
