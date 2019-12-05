@@ -1,27 +1,20 @@
-package uk.gov.hmcts.cmc.claimstore.deprecated.controllers.ioc;
+package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
-import uk.gov.hmcts.cmc.claimstore.deprecated.BaseIntegrationTest;
+import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.PaymentsService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Payment;
-import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
-import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -34,36 +27,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.AWAITING_CITIZEN_PAYMENT;
-import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.INITIATED;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 
 @TestPropertySource(
     properties = {
         "document_management.url=false",
-        "payments.returnUrlPattern=http://returnUrl.test/blah/%s/test",
-        "payments.api.url=http://payments-api",
-        "fees.api.url=http://fees-api"
+        "core_case_data.api.url=http://core-case-data-api"
     }
 )
-public class ResumePaymentTest extends BaseIntegrationTest {
+public class CreateClaimCitizenTest extends BaseMockSpringTest {
     private static final Long CASE_ID = 42L;
-    private static final String NEXT_URL = "http://nexturl.test";
-    private static final String RETURN_URL = "http://returnUrl.test/blah/%s/test";
-    public static final String PAYMENT_REFERENCE = "reference";
-
-    @Autowired
-    private CaseDetailsConverter caseDetailsConverter;
-    @Autowired
-    private CaseMapper caseMapper;
-    @MockBean
-    private PaymentsService paymentsService;
 
     @Before
     public void before() {
@@ -79,35 +57,35 @@ public class ResumePaymentTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void shouldReturnReturnUrlIfPaymentIsSuccessful() throws Exception {
-        Claim claim = claimWithPaymentStatus(SUCCESS);
+    public void shouldReturnCreatedClaim() throws Exception {
+        UUID externalId = UUID.randomUUID();
+        ClaimData claimData = SampleClaimData.submittedByClaimant()
+            .toBuilder()
+            .externalId(externalId)
+            .payment(Payment.builder()
+                .amount(new BigDecimal("10.00"))
+                .reference("reference")
+                .status(SUCCESS)
+                .dateCreated("2017-12-03")
+                .nextUrl("http://nexturl.test")
+                .build())
+            .build();
+        Claim claim = SampleClaim.getDefault()
+            .toBuilder()
+            .externalId(externalId.toString())
+            .submitterId(SUBMITTER_ID)
+            .response(null)
+            .claimData(claimData)
+            .build();
         mockCcdCallsFor(claim);
 
-        MvcResult result = makeResumePaymentRequest(claim.getClaimData(), BEARER_TOKEN)
+        MvcResult result = makeRequest(claim.getClaimData(), BEARER_TOKEN)
             .andExpect(status().isOk())
             .andReturn();
-
-        verify(paymentsService, never()).createPayment(eq(BEARER_TOKEN), any(Claim.class));
-
-        assertThat(deserializeObjectFrom(result, CreatePaymentResponse.class))
-            .extracting(CreatePaymentResponse::getNextUrl)
-            .isEqualTo(String.format(RETURN_URL, claim.getExternalId()));
-    }
-
-    @Test
-    public void shouldReturnNextUrlIfPaymentIsNotSuccessful() throws Exception {
-        Claim claim = claimWithPaymentStatus(INITIATED);
-        mockCcdCallsFor(claim);
-
-        MvcResult result = makeResumePaymentRequest(claim.getClaimData(), BEARER_TOKEN)
-            .andExpect(status().isOk())
-            .andReturn();
-
-        verify(paymentsService, never()).createPayment(eq(BEARER_TOKEN), any(Claim.class));
-
-        assertThat(deserializeObjectFrom(result, CreatePaymentResponse.class))
-            .extracting(CreatePaymentResponse::getNextUrl)
-            .isEqualTo(NEXT_URL);
+        Claim returnedClaim = jsonMappingHelper.deserializeObjectFrom(result, Claim.class);
+        assertThat(returnedClaim.getExternalId()).isEqualTo(claim.getExternalId());
+        assertThat(returnedClaim.getSubmitterId()).isEqualTo(claim.getSubmitterId());
+        assertThat(returnedClaim.getClaimData()).isEqualTo(claimData);
     }
 
     private void mockCcdCallsFor(Claim claim) {
@@ -134,10 +112,10 @@ public class ResumePaymentTest extends BaseIntegrationTest {
             eq(JURISDICTION_ID),
             eq(CASE_TYPE_ID),
             eq(String.valueOf(CASE_ID)),
-            eq(RESUME_CLAIM_PAYMENT_CITIZEN.getValue())
+            eq(CREATE_CITIZEN_CLAIM.getValue())
             )
         ).willReturn(StartEventResponse.builder()
-            .eventId(RESUME_CLAIM_PAYMENT_CITIZEN.getValue())
+            .eventId(CREATE_CITIZEN_CLAIM.getValue())
             .caseDetails(caseDetails)
             .token("atoken")
             .build());
@@ -155,34 +133,12 @@ public class ResumePaymentTest extends BaseIntegrationTest {
         ).willReturn(caseDetails);
     }
 
-    private Claim claimWithPaymentStatus(PaymentStatus status) {
-        UUID externalId = UUID.randomUUID();
-
-        Payment payment = Payment.builder()
-            .amount(BigDecimal.TEN)
-            .reference(PAYMENT_REFERENCE)
-            .status(status)
-            .dateCreated("2017-12-03+01:00")
-            .nextUrl(NEXT_URL)
-            .build();
-        return SampleClaim.getDefault()
-            .toBuilder()
-            .externalId(externalId.toString())
-            .submitterId(SUBMITTER_ID)
-            .claimData(SampleClaimData.submittedByClaimant()
-                .toBuilder()
-                .externalId(externalId)
-                .payment(payment)
-                .build())
-            .build();
-    }
-
-    private ResultActions makeResumePaymentRequest(ClaimData claimData, String authorization) throws Exception {
+    private ResultActions makeRequest(ClaimData claimData, String authorization) throws Exception {
         return webClient
-            .perform(put("/claims/resume-citizen-payment")
+            .perform(put("/claims/create-citizen-claim")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, authorization)
-                .content(jsonMapper.toJson(claimData))
+                .content(jsonMappingHelper.toJson(claimData))
             );
     }
 }
