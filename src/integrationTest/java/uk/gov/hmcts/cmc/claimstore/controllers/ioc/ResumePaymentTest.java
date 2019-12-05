@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
@@ -14,9 +13,7 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.PaymentsService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Payment;
@@ -57,14 +54,7 @@ public class ResumePaymentTest extends BaseMockSpringTest {
     private static final Long CASE_ID = 42L;
     private static final String NEXT_URL = "http://nexturl.test";
     private static final String RETURN_URL = "http://returnUrl.test/blah/%s/test";
-    public static final String PAYMENT_REFERENCE = "reference";
-
-    @Autowired
-    private CaseDetailsConverter caseDetailsConverter;
-    @Autowired
-    private CaseMapper caseMapper;
-    @MockBean
-    private PaymentsService paymentsService;
+    private static final String PAYMENT_REFERENCE = "reference";
 
     @Before
     public void before() {

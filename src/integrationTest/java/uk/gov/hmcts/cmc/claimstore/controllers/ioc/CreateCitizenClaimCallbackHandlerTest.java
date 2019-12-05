@@ -11,15 +11,12 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
-import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.PaymentsService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -65,24 +62,13 @@ public class CreateCitizenClaimCallbackHandlerTest extends BaseMockSpringTest {
     private static final LocalDate ISSUE_DATE = now();
     private static final LocalDate RESPONSE_DEADLINE = ISSUE_DATE.plusDays(14);
 
-    @MockBean
-    private PaymentsService paymentsService;
-
-    @MockBean
-    protected ResponseDeadlineCalculator responseDeadlineCalculator;
-
-    @MockBean
-    protected IssueDateCalculator issueDateCalculator;
-
-    @MockBean
-    private EventProducer eventProducer;
-
-    @Autowired
-    private CaseDetailsConverter caseDetailsConverter;
-
     private Payment.PaymentBuilder paymentBuilder;
-
     private Payment payment;
+
+    @MockBean
+    private ResponseDeadlineCalculator responseDeadlineCalculator;
+    @MockBean
+    private IssueDateCalculator issueDateCalculator;
 
     @Before
     public void setUp() {

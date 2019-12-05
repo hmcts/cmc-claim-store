@@ -49,11 +49,6 @@ public class InitiatePaymentCallbackHandlerTest extends BaseMockSpringTest {
     private static final long CASE_ID = 42L;
     private static final String NEXT_URL = "http://nexturl.test";
 
-    @MockBean
-    private PaymentsService paymentsService;
-    @Autowired
-    private CaseDetailsConverter caseDetailsConverter;
-
     private Payment payment;
 
     @Before

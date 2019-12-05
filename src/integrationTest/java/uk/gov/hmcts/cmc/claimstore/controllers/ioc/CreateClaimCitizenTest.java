@@ -3,18 +3,15 @@ package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Payment;
@@ -45,11 +42,6 @@ import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 )
 public class CreateClaimCitizenTest extends BaseMockSpringTest {
     private static final Long CASE_ID = 42L;
-
-    @Autowired
-    private CaseDetailsConverter caseDetailsConverter;
-    @Autowired
-    private CaseMapper caseMapper;
 
     @Before
     public void before() {

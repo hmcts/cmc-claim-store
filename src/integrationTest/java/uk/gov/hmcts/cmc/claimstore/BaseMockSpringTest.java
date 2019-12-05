@@ -9,12 +9,19 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
+import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.helper.JsonMappingHelper;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.ReferenceNumberRepository;
+import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.PaymentsService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentManagementService;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
@@ -43,7 +50,13 @@ public abstract class BaseMockSpringTest {
     protected static final String JURISDICTION_ID = "CMC";
     protected static final String CASE_TYPE_ID = "MoneyClaimCase";
     protected static final boolean IGNORE_WARNING = true;
+    protected static final UserDetails USER_DETAILS = SampleUserDetails.builder()
+        .withUserId(USER_ID)
+        .withMail("submitter@example.com")
+        .build();
 
+    @Autowired
+    protected CaseMapper caseMapper;
     @Autowired
     protected CaseDetailsConverter caseDetailsConverter;
     @Autowired
@@ -73,6 +86,11 @@ public abstract class BaseMockSpringTest {
     protected ReferenceNumberRepository referenceNumberRepository;
     @MockBean
     protected CoreCaseDataApi coreCaseDataApi;
+    @MockBean
+    protected PaymentsService paymentsService;
+
+    @MockBean
+    protected EventProducer eventProducer;
 
     protected ImmutableMap<String, String> searchCriteria(String externalId) {
         return ImmutableMap.of(

@@ -2,14 +2,12 @@ package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
@@ -17,9 +15,7 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.PaymentsService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -60,16 +56,10 @@ public class ResumePaymentCallbackHandlerTest extends BaseMockSpringTest {
     private static final long CASE_ID = 42L;
 
     @MockBean
-    private PaymentsService paymentsService;
+    private ResponseDeadlineCalculator responseDeadlineCalculator;
     @MockBean
     private IssueDateCalculator issueDateCalculator;
-    @MockBean
-    private ResponseDeadlineCalculator responseDeadlineCalculator;
-    @Autowired
-    private CaseDetailsConverter caseDetailsConverter;
-    @Autowired
-    private CaseMapper caseMapper;
-
+    
     @Before
     public void setup() {
         UserDetails userDetails = SampleUserDetails.builder().withRoles("citizen").build();
