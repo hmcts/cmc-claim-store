@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.deprecated.controllers.ioc;
+package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 
 import com.github.tomakehurst.wiremock.http.MimeType;
 import org.junit.Before;
@@ -10,7 +10,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
-import uk.gov.hmcts.cmc.claimstore.deprecated.MockSpringTest;
+import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -44,7 +44,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleData.getAmountBreakDown;
-import static uk.gov.hmcts.cmc.claimstore.services.CallbackHandlerFactoryTest.BEARER_TOKEN;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.FAILED;
@@ -57,7 +56,8 @@ import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
         "payments.api.url=http://payments-api"
     }
 )
-public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
+public class CreateCitizenClaimCallbackHandlerTest extends BaseMockSpringTest {
+
     private static final String AUTHORISATION_TOKEN = "Bearer let me in";
     private static final long CASE_ID = 42L;
     private static final String NEXT_URL = "http://nexturl.test";
@@ -110,7 +110,7 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
         MvcResult mvcResult = makeRequestAndRespondWithSuccess(CallbackType.ABOUT_TO_SUBMIT.getValue())
             .andExpect(status().isOk())
             .andReturn();
-        Map<String, Object> responseData = deserializeObjectFrom(
+        Map<String, Object> responseData = jsonMappingHelper.deserializeObjectFrom(
             mvcResult,
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
@@ -137,7 +137,7 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        List<String> responseData = deserializeObjectFrom(
+        List<String> responseData = jsonMappingHelper.deserializeObjectFrom(
             mvcResult,
             AboutToStartOrSubmitCallbackResponse.class
         ).getErrors();
@@ -153,7 +153,7 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        SubmittedCallbackResponse response = deserializeObjectFrom(
+        SubmittedCallbackResponse response = jsonMappingHelper.deserializeObjectFrom(
             mvcResult,
             SubmittedCallbackResponse.class
         );
@@ -178,7 +178,7 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
         return webClient.perform(post("/cases/callbacks/" + callbackType)
             .header(HttpHeaders.CONTENT_TYPE, MimeType.JSON)
             .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
-            .content(jsonMapper.toJson(callbackRequest))
+            .content(jsonMappingHelper.toJson(callbackRequest))
         );
     }
 
@@ -199,7 +199,7 @@ public class CreateCitizenClaimCallbackHandlerTest extends MockSpringTest {
         return webClient.perform(post("/cases/callbacks/" + callbackType)
             .header(HttpHeaders.CONTENT_TYPE, MimeType.JSON)
             .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
-            .content(jsonMapper.toJson(callbackRequest))
+            .content(jsonMappingHelper.toJson(callbackRequest))
         );
     }
 }
