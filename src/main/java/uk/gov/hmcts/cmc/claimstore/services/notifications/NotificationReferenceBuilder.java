@@ -236,7 +236,6 @@ public class NotificationReferenceBuilder {
         }
     }
 
-
     public static class MediationUnsuccessful {
         private MediationUnsuccessful() {
             // do not instantiate
