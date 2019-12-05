@@ -8,6 +8,7 @@ import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.deprecated.MockSpringTest;
+import uk.gov.hmcts.cmc.claimstore.services.staff.DefendantResponseStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;

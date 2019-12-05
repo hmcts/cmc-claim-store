@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
-import uk.gov.hmcts.cmc.claimstore.controllers.base.BaseDownloadDocumentTest;
+import uk.gov.hmcts.cmc.claimstore.deprecated.controllers.base.BaseDownloadDocumentTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -17,6 +17,7 @@ import java.net.URI;
 import java.util.Optional;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -113,7 +114,7 @@ public class DownloadRepresentedClaimCopyWithDocumentManagementTest extends Base
 
         ClaimData claimData = SampleClaimData.submittedByLegalRepresentative();
         given(documentUploadClient.upload(eq(AUTHORISATION_TOKEN), anyString(), anyString(), anyList(),
-                any(Classification.class), anyList()))
+            any(Classification.class), anyList()))
             .willReturn(successfulDocumentManagementUploadResponse());
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_TOKEN);
