@@ -20,6 +20,10 @@ public class JsonMappingHelper {
         return jsonMapper.toJson(input);
     }
 
+    public <T> T fromJson(String value, TypeReference<T> typeReference) {
+        return jsonMapper.fromJson(value, typeReference);
+    }
+
     public <T> T deserializeObjectFrom(MvcResult result, Class<T> targetClass) throws UnsupportedEncodingException {
         return jsonMapper.fromJson(result.getResponse().getContentAsString(), targetClass);
     }
