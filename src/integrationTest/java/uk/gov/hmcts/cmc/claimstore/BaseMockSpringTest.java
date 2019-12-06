@@ -29,6 +29,7 @@ import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.docassembly.DocAssemblyApi;
+import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
@@ -90,9 +91,10 @@ public abstract class BaseMockSpringTest {
     protected CoreCaseDataApi coreCaseDataApi;
     @MockBean
     protected PaymentsService paymentsService;
-
     @MockBean
     protected EventProducer eventProducer;
+    @MockBean
+    protected PDFServiceClient pdfServiceClient;
 
     protected ImmutableMap<String, String> searchCriteria(String externalId) {
         return ImmutableMap.of(
