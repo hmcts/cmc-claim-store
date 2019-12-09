@@ -25,6 +25,7 @@ import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.PART_ADMISSIO
 public class DirectionsQuestionnaireUtils {
 
     public static final String DQ_FLAG = "directionsQuestionnaire";
+    public static final String LA_PILOT_FLAG = "LAPilotEligible";
 
     private DirectionsQuestionnaireUtils() {
         // utility class, no instances
@@ -34,18 +35,22 @@ public class DirectionsQuestionnaireUtils {
         return claim.getFeatures() != null && claim.getFeatures().contains(DQ_FLAG);
     }
 
+    private static boolean isLegalAdvisorPilot(Claim claim) {
+        return claim.getFeatures() != null && claim.getFeatures().contains(LA_PILOT_FLAG);
+    }
+
     public static Optional<CaseEvent> prepareCaseEvent(ResponseRejection responseRejection, Claim claim) {
         if (isOptedForMediation(responseRejection)) {
             return Optional.of(REFERRED_TO_MEDIATION);
         }
+        String preferredCourt = getPreferredCourt(claim);
+
+        if (isLegalAdvisorPilot(claim) && isPilotCourt(preferredCourt)) {
+            return Optional.of(ASSIGNING_FOR_DIRECTIONS);
+        }
 
         if (isOnlineDQ(claim)) {
-            String preferredCourt = getPreferredCourt(claim);
-            if (isPilotCourt(preferredCourt)) {
-                return Optional.of(ASSIGNING_FOR_DIRECTIONS);
-            } else {
-                return Optional.of(WAITING_TRANSFER);
-            }
+            return Optional.of(WAITING_TRANSFER);
         }
 
         return Optional.empty();
