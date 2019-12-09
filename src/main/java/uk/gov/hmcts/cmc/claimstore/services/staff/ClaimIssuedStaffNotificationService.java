@@ -59,7 +59,7 @@ public class ClaimIssuedStaffNotificationService {
             attachments);
     }
 
-    static Map<String, Object> wrapInMap(Claim claim) {
+    public static Map<String, Object> wrapInMap(Claim claim) {
         Map<String, Object> map = new HashMap<>();
         map.put("claimReferenceNumber", claim.getReferenceNumber());
         map.put("claimantRepresented", claim.getClaimData().isClaimantRepresented());
