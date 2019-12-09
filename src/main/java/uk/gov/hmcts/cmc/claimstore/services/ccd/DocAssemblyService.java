@@ -23,7 +23,7 @@ public class DocAssemblyService {
 
     private final AuthTokenGenerator authTokenGenerator;
     private final DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
-    private final DocAssemblyClient docAssemblyClient;
+    private final DocAssemblyClient     docAssemblyClient;
     private final UserService userService;
     private final String templateId;
 

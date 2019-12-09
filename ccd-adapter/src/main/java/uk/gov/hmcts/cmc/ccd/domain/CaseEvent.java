@@ -52,6 +52,7 @@ public enum CaseEvent {
     ASSIGNING_FOR_JUDGE_DIRECTIONS("AssigningForJudgeDirections"),
     REFERRED_TO_MEDIATION("ReferredToMediation"),
     DRAW_ORDER("DrawOrder"),
+    DRAW_JUDGES_ORDER("DrawJudgesOrder"),
     RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS("ResetClaimSubmissionOperationIndicators"),
     CLAIMANT_DIRECTIONS_QUESTIONNAIRE_UPLOAD("ClaimantDirectionsQuestionnaireUpload"),
     ORDER_REVIEW_REQUESTED("OrderReviewRequested"),
