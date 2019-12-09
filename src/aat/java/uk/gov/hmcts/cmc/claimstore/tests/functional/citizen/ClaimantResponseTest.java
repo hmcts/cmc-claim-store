@@ -8,11 +8,13 @@ import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.claimstore.tests.BaseTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse.ClaimantResponseAcceptation;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleRepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
 import static java.math.BigDecimal.TEN;
@@ -84,7 +86,7 @@ public class ClaimantResponseTest extends BaseTest {
         assertThat(claimantResponse.getFormaliseOption().orElseThrow(AssertionError::new)).isEqualTo(CCJ);
         CountyCourtJudgment countyCourtJudgment = claimWithClaimantResponse.getCountyCourtJudgment();
         assertThat(countyCourtJudgment).isNotNull();
-        assertThat(countyCourtJudgment.getPayBySetDate()).isNotEmpty();
+        assertThat(countyCourtJudgment.getPaymentOption()).isEqualTo(PaymentOption.BY_SPECIFIED_DATE);
     }
 
     @Test
@@ -156,7 +158,7 @@ public class ClaimantResponseTest extends BaseTest {
     @Test
     public void shouldSaveClaimantResponseRejection() {
         commonOperations.submitClaimantResponse(
-            SampleClaimantResponse.validDefaultRejection(),
+            SampleClaimantResponse.validRejectionWithDirectionsQuestionnaire(),
             claim.getExternalId(),
             claimant
         ).then()
