@@ -50,6 +50,9 @@ public class MediationFailedCallbackHandlerTest {
     private CaseMapper caseMapper;
 
     @Mock
+    private MediationFailedNotificationService mediationFailedNotificationService;
+
+    @Mock
     private AppInsights appInsights;
 
     private MediationFailedCallbackHandler mediationFailedCallbackHandler;
@@ -59,6 +62,7 @@ public class MediationFailedCallbackHandlerTest {
 
     private Claim claimSetForMediation =
         SampleClaim.getWithClaimantResponseRejectionForPartAdmissionAndMediation();
+    private CallbackRequest callbackRequest;
 
     @Before
     public void setUp() {
@@ -66,8 +70,9 @@ public class MediationFailedCallbackHandlerTest {
             caseDetailsConverter,
             deadlineCalculator,
             caseMapper,
-            appInsights);
-        CallbackRequest callbackRequest = CallbackRequest
+            appInsights,
+            mediationFailedNotificationService);
+        callbackRequest = CallbackRequest
             .builder()
             .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
             .eventId(CaseEvent.MEDIATION_FAILED.getValue())
@@ -115,6 +120,35 @@ public class MediationFailedCallbackHandlerTest {
 
         assertThat(response.getData()).containsEntry("state", "open");
 
+    }
+
+    @Test
+    public void shouldSendNotificationsIfOnlineDQCaseSubmitted() {
+        callbackParams = CallbackParams.builder()
+            .type(CallbackType.SUBMITTED)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, AUTHORISATION))
+            .build();
+
+        Claim claim = claimSetForMediation.toBuilder()
+            .response(
+                SampleResponse
+                    .FullDefence
+                    .builder()
+                    .withDirectionsQuestionnaire(
+                        SampleDirectionsQuestionnaire.builder()
+                            .withHearingLocation(SampleHearingLocation.pilotHearingLocation)
+                            .build()
+                    ).build()
+            )
+            .features(Collections.singletonList("directionsQuestionnaire"))
+            .build();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+
+        mediationFailedCallbackHandler.handle(callbackParams);
+
+        verify(mediationFailedNotificationService).notifyParties(any());
     }
 
     @Test
