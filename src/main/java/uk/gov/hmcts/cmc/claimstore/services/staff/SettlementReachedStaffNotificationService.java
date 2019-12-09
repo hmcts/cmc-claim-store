@@ -20,7 +20,7 @@ import static uk.gov.hmcts.cmc.email.EmailAttachment.pdf;
 @Service
 public class SettlementReachedStaffNotificationService {
 
-    static final String FILE_NAME_FORMAT = "%s-settlement-agreement.pdf";
+    public static final String FILE_NAME_FORMAT = "%s-settlement-agreement.pdf";
 
     private final EmailService emailService;
     private final StaffEmailProperties emailProperties;
