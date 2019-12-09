@@ -2,20 +2,16 @@ package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
-import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
+import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.PaymentsService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -43,16 +39,11 @@ import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
         "payments.api.url=http://payments-api"
     }
 )
-public class InitiatePaymentCallbackHandlerTest extends MockSpringTest {
+public class InitiatePaymentCallbackHandlerTest extends BaseMockSpringTest {
 
     private static final String AUTHORISATION_TOKEN = "Bearer let me in";
     private static final long CASE_ID = 42L;
     private static final String NEXT_URL = "http://nexturl.test";
-
-    @MockBean
-    private PaymentsService paymentsService;
-    @Autowired
-    private CaseDetailsConverter caseDetailsConverter;
 
     private Payment payment;
 
@@ -80,7 +71,7 @@ public class InitiatePaymentCallbackHandlerTest extends MockSpringTest {
         MvcResult mvcResult = makeRequest(CallbackType.ABOUT_TO_SUBMIT.getValue())
             .andExpect(status().isOk())
             .andReturn();
-        Map<String, Object> responseData = deserializeObjectFrom(
+        Map<String, Object> responseData = jsonMappingHelper.deserializeObjectFrom(
             mvcResult,
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
@@ -111,7 +102,7 @@ public class InitiatePaymentCallbackHandlerTest extends MockSpringTest {
             .perform(post("/cases/callbacks/" + callbackType)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
-                .content(jsonMapper.toJson(callbackRequest))
+                .content(jsonMappingHelper.toJson(callbackRequest))
             );
     }
 
