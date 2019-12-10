@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.deprecated.services.staff;
+package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.Before;
