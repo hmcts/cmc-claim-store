@@ -82,11 +82,14 @@ public class MapperUtilTest {
     }
 
     @Test
-    public void caseNameWhenClaimantIsNotIndividual() {
+    public void caseNameWhenClaimantIsSoleTrader() {
 
-        Claim claimWithMultiDefendant = Claim.builder().claimData(
+        Claim claimWithClaimantSoleTrader = Claim.builder().claimData(
             SampleClaimData.builder(
-                singletonList(SampleParty.builder().withName("Euro Star").soleTrader()),
+                singletonList(SampleParty.builder()
+                        .withName("Georgina Hammersmith")
+                        .withBusinessName("EuroStar")
+                        .soleTrader()),
                 singletonList(SampleTheirDetails.builder()
                     .withTitle("Mr.")
                     .withFirstName("Boris")
@@ -95,24 +98,57 @@ public class MapperUtilTest {
             ).build()
         ).build();
 
-        String caseName = toCaseName.apply(claimWithMultiDefendant);
+        String caseName = toCaseName.apply(claimWithClaimantSoleTrader);
         assertNotNull(caseName);
-        assertThat(caseName, is("Euro Star Vs Mr. Boris Johnson"));
+        assertThat(caseName, is("Georgina Hammersmith T/A EuroStar Vs Mr. Boris Johnson"));
 
     }
 
     @Test
-    public void caseNameWhenDefendantIsNotIndividual() {
-        Claim claimWithMultiDefendant = Claim.builder().claimData(
-            SampleClaimData.builder(
-                singletonList(SampleParty.builder().withName("Euro Star").soleTrader()),
-                singletonList(SampleTheirDetails.builder().withName("Boris Johnson").companyDetails())
-            ).build()
+    public void caseNameWhenDefendantIsSoleTrader() {
+        Claim claimWithDefendantSoleTrader = Claim.builder().claimData(
+                SampleClaimData.builder(
+                        singletonList(SampleParty.builder()
+                                .withTitle("Mrs.")
+                                .withName("Boi May")
+                                .individual()),
+                        singletonList(SampleTheirDetails.builder()
+                                .withTitle("Mr.")
+                                .withFirstName("Boris")
+                                .withLastName("Johnson")
+                                .withBusinessName("Uberflip")
+                                .soleTraderDetails()
+                        )
+                ).build()
         ).build();
 
-        String caseName = toCaseName.apply(claimWithMultiDefendant);
+        String caseName = toCaseName.apply(claimWithDefendantSoleTrader);
         assertNotNull(caseName);
-        assertThat(caseName, is("Euro Star Vs Boris Johnson"));
+        assertThat(caseName, is("Boi May Vs Mr. Boris Johnson T/A Uberflip"));
+
+    }
+
+    @Test
+    public void caseNameWhenBothAreSoleTrader() {
+
+        Claim claimWithBothAsSoleTrader = Claim.builder().claimData(
+                SampleClaimData.builder(
+                        singletonList(SampleParty.builder()
+                                .withName("Georgina Hammersmith")
+                                .withBusinessName("EuroStar")
+                                .soleTrader()),
+                        singletonList(SampleTheirDetails.builder()
+                                .withTitle("Mr.")
+                                .withFirstName("Boris")
+                                .withLastName("Johnson")
+                                .withBusinessName("Haberdashery")
+                                .soleTraderDetails())
+                ).build()
+        ).build();
+
+        String caseName = toCaseName.apply(claimWithBothAsSoleTrader);
+        assertNotNull(caseName);
+        assertThat(caseName, is("Georgina Hammersmith T/A EuroStar Vs Mr. Boris Johnson T/A Haberdashery"));
 
     }
 
@@ -120,7 +156,7 @@ public class MapperUtilTest {
     public void caseNameWithClaimantProvidedName() {
         Claim claimWithResponse = Claim.builder().claimData(
             SampleClaimData.builder(
-                singletonList(SampleParty.builder().withName("Versace").soleTrader()),
+                singletonList(SampleParty.builder().withName("Versace").withBusinessName("Versace").soleTrader()),
                 singletonList(SampleTheirDetails.builder().withName("FCUK").companyDetails())
             ).build()
         ).response(PartAdmissionResponse
@@ -133,7 +169,7 @@ public class MapperUtilTest {
 
         String caseName = MapperUtil.toCaseName.apply(claimWithResponse);
         assertNotNull(caseName);
-        assertThat(caseName, is("Versace Vs French Connection UK"));
+        assertThat(caseName, is("Versace T/A Versace Vs French Connection UK"));
     }
 
     @Test

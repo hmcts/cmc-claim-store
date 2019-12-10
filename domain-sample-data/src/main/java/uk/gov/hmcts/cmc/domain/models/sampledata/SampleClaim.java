@@ -15,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static java.math.BigDecimal.TEN;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
@@ -43,6 +45,7 @@ import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.CLAIMANT;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleHearingLocation.pilotHearingLocation;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.standardInterestBuilder;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
@@ -307,6 +310,8 @@ public final class SampleClaim {
     }
 
     public static Claim getWithClaimantResponseRejectionForPartAdmissionAndMediation() {
+        SampleClaimantResponse.ClaimantResponseRejection
+            .builder();
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withResponse(
@@ -318,10 +323,15 @@ public final class SampleClaim {
             .withRespondedAt(LocalDateTime.now())
             .withDefendantEmail(DEFENDANT_EMAIL)
             .withClaimantRespondedAt(LocalDateTime.now())
-            .withClaimantResponse(SampleClaimantResponse
-                .ClaimantResponseRejection
-                .builder()
-                .buildRejectionWithDirectionsQuestionnaire())
+            .withClaimantResponse(ResponseRejection.builder()
+                .amountPaid(TEN)
+                .freeMediation(YES)
+                .mediationPhoneNumber("07999999999")
+                .mediationContactPerson("Mediation Contact Person")
+                .reason("Some valid reason")
+                .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder()
+                    .withHearingLocation(pilotHearingLocation).build())
+                .build())
             .build();
     }
 
