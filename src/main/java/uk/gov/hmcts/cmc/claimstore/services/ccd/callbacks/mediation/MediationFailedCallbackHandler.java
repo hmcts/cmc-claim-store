@@ -109,7 +109,7 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
 
         Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
 
-        if (!DirectionsQuestionnaireUtils.isOnlineDQ(claim)) {
+        if (!FeaturesUtils.isOnlineDQ(claim)) {
             LocalDate deadline = deadlineCalculator
                 .calculateDirectionsQuestionnaireDeadlineCalculator(LocalDateTime.now());
             claim = claim.toBuilder().directionsQuestionnaireDeadline(deadline).build();
@@ -138,7 +138,7 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
             throw new IllegalStateException("Claimant response is not an Rejection");
         }
 
-        if (!DirectionsQuestionnaireUtils.isOnlineDQ(claim)) {
+        if (!FeaturesUtils.isOnlineDQ(claim)) {
             return OPEN_STATE;
         }
 

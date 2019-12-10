@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
+import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
 import java.time.LocalDate;
@@ -105,7 +106,7 @@ public class ClaimantResponseService {
             caseRepository.saveCaseEvent(authorization, updatedClaim, CaseEvent.STAY_CLAIM);
         }
 
-        if (!DirectionsQuestionnaireUtils.isOnlineDQ(updatedClaim) && isRejectResponseNoMediation(claimantResponse)) {
+        if (!FeaturesUtils.isOnlineDQ(updatedClaim) && isRejectResponseNoMediation(claimantResponse)) {
             updateDirectionsQuestionnaireDeadline(updatedClaim, authorization);
             updatedClaim = claimService.getClaimByExternalId(externalId, authorization);
         }
@@ -182,7 +183,7 @@ public class ClaimantResponseService {
     }
 
     private void raiseAppInsightEventForLegalAdvisorPilot(Claim claim) {
-        AppInsightsEvent appInsightsEvent = DirectionsQuestionnaireUtils.isLegalAdvisorPilot(claim)
+        AppInsightsEvent appInsightsEvent = FeaturesUtils.isLegalAdvisorPilot(claim)
             ? AppInsightsEvent.LA_PILOT_ELIGIBLE
             : AppInsightsEvent.NON_LA_CASES;
 

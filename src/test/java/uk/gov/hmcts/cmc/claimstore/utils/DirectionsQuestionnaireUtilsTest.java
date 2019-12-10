@@ -17,16 +17,12 @@ import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
-import java.util.Collections;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_JUDGE_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.WAITING_TRANSFER;
-import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.JUDGE_PILOT_FLAG;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.LA_PILOT_FLAG;
 import static uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt.BIRMINGHAM;
 import static uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt.MANCHESTER;
@@ -201,7 +197,7 @@ public class DirectionsQuestionnaireUtilsTest {
     @Test
     public void shouldAssignForJudgeDirectionsIfNoFreeMediationAndDefendantIsNotBusinessAndDefendantCourtIsPilot() {
         Claim claim = SampleClaim.builder()
-            .withFeatures(ImmutableList.of(DQ_FLAG.getValue()))
+            .withFeatures(ImmutableList.of(DQ_FLAG.getValue(), JUDGE_PILOT_FLAG.getValue()))
             .withClaimantResponse(CLAIMANT_REJECTION_PILOT)
             .withResponse(DEFENDANT_PART_ADMISSION_PILOT)
             .withClaimData(SampleClaimData
@@ -400,32 +396,5 @@ public class DirectionsQuestionnaireUtilsTest {
 
         DirectionsQuestionnaireUtils
             .getPreferredCourt(claim);
-    }
-
-    @Test
-    public void shouldReturnFalseWhereClaimFeaturesAreNull() {
-        assertFalse(DirectionsQuestionnaireUtils.isOnlineDQ(SampleClaim.builder().withFeatures(null).build()));
-    }
-
-    @Test
-    public void shouldReturnFalseWhereClaimFeaturesAreEmpty() {
-        assertFalse(DirectionsQuestionnaireUtils
-            .isOnlineDQ(SampleClaim.builder().withFeatures(Collections.emptyList()).build()));
-    }
-
-    @Test
-    public void shouldReturnFalseWhereClaimFeaturesDoesNotHasDirectionQuestionnaire() {
-        assertFalse(DirectionsQuestionnaireUtils
-            .isOnlineDQ(SampleClaim.builder().withFeatures(ImmutableList.of(ADMISSIONS.getValue())).build())
-        );
-    }
-
-    @Test
-    public void shouldReturnTrueWhereClaimFeaturesHasDirectionQuestionnaire() {
-        assertTrue(DirectionsQuestionnaireUtils
-            .isOnlineDQ(SampleClaim.builder()
-                .withFeatures(ImmutableList.of(DQ_FLAG.getValue()))
-                .build())
-        );
     }
 }

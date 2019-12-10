@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.utils;
 
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimFeatures;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
@@ -23,19 +22,14 @@ import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseTy
 import static uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt.isPilotCourt;
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_DEFENCE;
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.PART_ADMISSION;
+import static uk.gov.hmcts.cmc.domain.utils.FeaturesUtils.isJudgePilot;
+import static uk.gov.hmcts.cmc.domain.utils.FeaturesUtils.isLegalAdvisorPilot;
+import static uk.gov.hmcts.cmc.domain.utils.FeaturesUtils.isOnlineDQ;
 
 public class DirectionsQuestionnaireUtils {
 
     private DirectionsQuestionnaireUtils() {
         // utility class, no instances
-    }
-
-    public static boolean isOnlineDQ(Claim claim) {
-        return claim.getFeatures() != null && claim.getFeatures().contains(ClaimFeatures.DQ_FLAG.getValue());
-    }
-
-    public static boolean isLegalAdvisorPilot(Claim claim) {
-        return claim.getFeatures() != null && claim.getFeatures().contains(ClaimFeatures.LA_PILOT_FLAG.getValue());
     }
 
     public static Optional<CaseEvent> prepareCaseEvent(ResponseRejection responseRejection, Claim claim) {
@@ -48,12 +42,12 @@ public class DirectionsQuestionnaireUtils {
             return Optional.of(ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS);
         }
 
+        if (isJudgePilot(claim) && isPilotCourt(preferredCourt)) {
+            return Optional.of(ASSIGNING_FOR_JUDGE_DIRECTIONS);
+        }
+
         if (isOnlineDQ(claim)) {
-            if (isPilotCourt(preferredCourt)) {
-                return Optional.of(ASSIGNING_FOR_JUDGE_DIRECTIONS);
-            } else {
-                return Optional.of(WAITING_TRANSFER);
-            }
+            return Optional.of(WAITING_TRANSFER);
         }
 
         return Optional.empty();

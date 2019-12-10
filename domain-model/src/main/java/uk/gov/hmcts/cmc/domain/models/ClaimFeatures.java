@@ -6,6 +6,7 @@ public enum ClaimFeatures {
     ADMISSIONS("admissions"),
     DQ_FLAG("directionsQuestionnaire"),
     LA_PILOT_FLAG("LAPilotEligible"),
+    JUDGE_PILOT_FLAG("judgePilotEligible"),
     MEDIATION_PILOT("mediationPilot");
 
     private final String state;
