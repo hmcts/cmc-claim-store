@@ -20,7 +20,6 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -57,7 +56,7 @@ public class ClaimantResponseService {
     private final ClaimantResponseRule claimantResponseRule;
     private final EventProducer eventProducer;
     private final FormaliseResponseAcceptanceService formaliseResponseAcceptanceService;
-    private final DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
+    private final DirectionsQuestionnaireService directionsQuestionnaireService;
     @Value("${feature_toggles.directions_questionnaire_enabled:false}")
     boolean directionsQuestionnaireEnabled;
 
@@ -69,7 +68,7 @@ public class ClaimantResponseService {
         ClaimantResponseRule claimantResponseRule,
         EventProducer eventProducer,
         FormaliseResponseAcceptanceService formaliseResponseAcceptanceService,
-        DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator
+        DirectionsQuestionnaireService directionsQuestionnaireService
     ) {
         this.claimService = claimService;
         this.appInsights = appInsights;
@@ -77,7 +76,7 @@ public class ClaimantResponseService {
         this.claimantResponseRule = claimantResponseRule;
         this.eventProducer = eventProducer;
         this.formaliseResponseAcceptanceService = formaliseResponseAcceptanceService;
-        this.directionsQuestionnaireDeadlineCalculator = directionsQuestionnaireDeadlineCalculator;
+        this.directionsQuestionnaireService = directionsQuestionnaireService;
     }
 
     public void save(
@@ -105,9 +104,9 @@ public class ClaimantResponseService {
             caseRepository.saveCaseEvent(authorization, updatedClaim, CaseEvent.STAY_CLAIM);
         }
 
-        if (!DirectionsQuestionnaireUtils.isOnlineDQ(updatedClaim)
-            && isRejectResponseNoMediation(claimantResponse)) {
-            updateDirectionsQuestionnaireDeadline(updatedClaim, authorization);
+        if (!DirectionsQuestionnaireUtils.isOnlineDQ(updatedClaim) && isRejectResponseNoMediation(claimantResponse)) {
+            directionsQuestionnaireService.updateDirectionsQuestionnaireDeadline(
+                updatedClaim, LocalDateTime.now(), authorization);
             updatedClaim = claimService.getClaimByExternalId(externalId, authorization);
         }
 
@@ -149,12 +148,6 @@ public class ClaimantResponseService {
             .isPresent();
     }
 
-    private void updateDirectionsQuestionnaireDeadline(Claim claim, String authorization) {
-        LocalDate deadline = directionsQuestionnaireDeadlineCalculator
-            .calculateDirectionsQuestionnaireDeadlineCalculator(LocalDateTime.now());
-        caseRepository.updateDirectionsQuestionnaireDeadline(claim, deadline, authorization);
-    }
-
     private void formaliseResponseAcceptance(
         ClaimantResponse claimantResponse,
         Response response,
@@ -174,7 +167,7 @@ public class ClaimantResponseService {
             appInsights.trackEvent(CLAIMANT_RESPONSE_ACCEPTED, REFERENCE_NUMBER, claim.getReferenceNumber());
         } else if (claimantResponse instanceof ResponseRejection) {
             if (isPartAdmissionOrIsStatePaidOrIsFullDefence(response)) {
-                raiseAppInsightEventForDirectionQuestionnaire(claim);
+                raiseAppInsightEventForLegalAdvisorPilot(claim);
                 raiseAppInsightEventForMediation(claim, response, (ResponseRejection) claimantResponse);
             }
         } else {
@@ -182,8 +175,8 @@ public class ClaimantResponseService {
         }
     }
 
-    private void raiseAppInsightEventForDirectionQuestionnaire(Claim claim) {
-        AppInsightsEvent appInsightsEvent = DirectionsQuestionnaireUtils.isOnlineDQ(claim)
+    private void raiseAppInsightEventForLegalAdvisorPilot(Claim claim) {
+        AppInsightsEvent appInsightsEvent = DirectionsQuestionnaireUtils.isLegalAdvisorPilot(claim)
             ? AppInsightsEvent.LA_PILOT_ELIGIBLE
             : AppInsightsEvent.NON_LA_CASES;
 
