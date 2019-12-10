@@ -3,18 +3,15 @@ package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
-import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
+import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Payment;
@@ -43,13 +40,8 @@ import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
         "core_case_data.api.url=http://core-case-data-api"
     }
 )
-public class CreateClaimCitizenTest extends BaseIntegrationTest {
+public class CreateClaimCitizenTest extends BaseMockSpringTest {
     private static final Long CASE_ID = 42L;
-
-    @Autowired
-    private CaseDetailsConverter caseDetailsConverter;
-    @Autowired
-    private CaseMapper caseMapper;
 
     @Before
     public void before() {
@@ -90,7 +82,7 @@ public class CreateClaimCitizenTest extends BaseIntegrationTest {
         MvcResult result = makeRequest(claim.getClaimData(), BEARER_TOKEN)
             .andExpect(status().isOk())
             .andReturn();
-        Claim returnedClaim = deserializeObjectFrom(result, Claim.class);
+        Claim returnedClaim = jsonMappingHelper.deserializeObjectFrom(result, Claim.class);
         assertThat(returnedClaim.getExternalId()).isEqualTo(claim.getExternalId());
         assertThat(returnedClaim.getSubmitterId()).isEqualTo(claim.getSubmitterId());
         assertThat(returnedClaim.getClaimData()).isEqualTo(claimData);
@@ -146,7 +138,7 @@ public class CreateClaimCitizenTest extends BaseIntegrationTest {
             .perform(put("/claims/create-citizen-claim")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, authorization)
-                .content(jsonMapper.toJson(claimData))
+                .content(jsonMappingHelper.toJson(claimData))
             );
     }
 }

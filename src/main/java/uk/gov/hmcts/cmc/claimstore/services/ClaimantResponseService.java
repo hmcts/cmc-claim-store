@@ -173,7 +173,7 @@ public class ClaimantResponseService {
             appInsights.trackEvent(CLAIMANT_RESPONSE_ACCEPTED, REFERENCE_NUMBER, claim.getReferenceNumber());
         } else if (claimantResponse instanceof ResponseRejection) {
             if (isPartAdmissionOrIsStatePaidOrIsFullDefence(response)) {
-                raiseAppInsightEventForDirectionQuestionnaire(claim);
+                raiseAppInsightEventForLegalAdvisorPilot(claim);
                 raiseAppInsightEventForMediation(claim, response, (ResponseRejection) claimantResponse);
             }
         } else {
@@ -181,8 +181,8 @@ public class ClaimantResponseService {
         }
     }
 
-    private void raiseAppInsightEventForDirectionQuestionnaire(Claim claim) {
-        AppInsightsEvent appInsightsEvent = DirectionsQuestionnaireUtils.isOnlineDQ(claim)
+    private void raiseAppInsightEventForLegalAdvisorPilot(Claim claim) {
+        AppInsightsEvent appInsightsEvent = DirectionsQuestionnaireUtils.isLegalAdvisorPilot(claim)
             ? AppInsightsEvent.LA_PILOT_ELIGIBLE
             : AppInsightsEvent.NON_LA_CASES;
 

@@ -179,6 +179,10 @@ notifications:
       claimantSettledAfterFullDefence: "e486e5b8-73a3-4585-ae0e-74b3f1bced77"
       claimantMediationSuccess: "64fa3dbe-1a56-4166-9f70-9291dbf9af00"
       defendantMediationSuccess: "f1a542ca-7758-4e08-bc5e-b9a040bf6460"
+      claimantReadyForTransfer: "50c8bdd3-f68d-44cc-b46f-72e9ed1f55a6"
+      defendantReadyForTransfer: "487fdd65-131e-4547-a3ed-f632872fe957"
+      claimantMediationFailureOfflineDQ: "55d06073-0b81-4daf-a3b4-1698c7810189"
+      defendantMediationFailureOfflineDQ: "15a38762-2141-4a70-8cc9-22a27db985bc"
 
 staff-notifications:
   sender:

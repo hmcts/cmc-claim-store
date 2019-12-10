@@ -25,7 +25,6 @@ import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 
 import java.time.LocalDate;
@@ -60,16 +59,18 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
     private final CaseMapper caseMapper;
     private final AppInsights appInsights;
 
+    private final MediationFailedNotificationService notificationService;
+
     @Autowired
-    public MediationFailedCallbackHandler(
-        CaseDetailsConverter caseDetailsConverter,
-        DirectionsQuestionnaireDeadlineCalculator deadlineCalculator,
-        CaseMapper caseMapper,
-        AppInsights appInsights
-    ) {
+    public MediationFailedCallbackHandler(CaseDetailsConverter caseDetailsConverter,
+                                          DirectionsQuestionnaireDeadlineCalculator deadlineCalculator,
+                                          CaseMapper caseMapper,
+                                          AppInsights appInsights,
+                                          MediationFailedNotificationService notificationService) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.deadlineCalculator = deadlineCalculator;
         this.caseMapper = caseMapper;
+        this.notificationService = notificationService;
         this.appInsights = appInsights;
     }
 
@@ -77,7 +78,7 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
             CallbackType.ABOUT_TO_SUBMIT, this::assignCaseState,
-            CallbackType.SUBMITTED, this::raiseAppInsightEvent
+            CallbackType.SUBMITTED, this::notifyPartiesOfOutcome
         );
     }
 
@@ -89,6 +90,17 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
     @Override
     public List<Role> getSupportedRoles() {
         return ROLES;
+    }
+
+    private CallbackResponse notifyPartiesOfOutcome(CallbackParams callbackParams) {
+        CallbackRequest callbackRequest = callbackParams.getRequest();
+
+        Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
+        appInsights
+            .trackEvent(getAppInsightEventBasedOnMediationPilot(claim), REFERENCE_NUMBER, claim.getReferenceNumber());
+
+        notificationService.notifyParties(claim);
+        return SubmittedCallbackResponse.builder().build();
     }
 
     private CallbackResponse assignCaseState(CallbackParams callbackParams) {
@@ -135,16 +147,6 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
         } else {
             return READY_FOR_TRANSFER_STATE;
         }
-    }
-
-    private CallbackResponse raiseAppInsightEvent(CallbackParams callbackParams) {
-        CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
-        Claim claim = caseDetailsConverter.extractClaim(caseDetails);
-
-        appInsights
-            .trackEvent(getAppInsightEventBasedOnMediationPilot(claim), REFERENCE_NUMBER, claim.getReferenceNumber());
-
-        return SubmittedCallbackResponse.builder().build();
     }
 
     private AppInsightsEvent getAppInsightEventBasedOnMediationPilot(Claim claim) {

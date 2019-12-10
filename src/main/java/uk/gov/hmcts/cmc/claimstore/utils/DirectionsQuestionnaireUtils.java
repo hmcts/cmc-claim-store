@@ -34,7 +34,7 @@ public class DirectionsQuestionnaireUtils {
         return claim.getFeatures() != null && claim.getFeatures().contains(ClaimFeatures.DQ_FLAG.getValue());
     }
 
-    private static boolean isLegalAdvisorPilot(Claim claim) {
+    public static boolean isLegalAdvisorPilot(Claim claim) {
         return claim.getFeatures() != null && claim.getFeatures().contains(ClaimFeatures.LA_PILOT_FLAG.getValue());
     }
 
