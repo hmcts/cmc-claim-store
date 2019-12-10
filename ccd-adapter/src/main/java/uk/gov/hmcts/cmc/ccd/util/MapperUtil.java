@@ -13,6 +13,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import static uk.gov.hmcts.cmc.ccd.util.PartyNameUtils.getPartyNameFor;
+import static uk.gov.hmcts.cmc.ccd.util.PartyNameUtils.getTheirDetailsNameFor;
 import static uk.gov.hmcts.cmc.domain.models.MediationOutcome.FAILED;
 import static uk.gov.hmcts.cmc.domain.models.MediationOutcome.SUCCEEDED;
 
@@ -20,7 +22,7 @@ public class MapperUtil {
     private static final String OTHERS = " + others";
 
     public static final Function<Claim, String> toCaseName = claim ->
-        fetchClaimantName(claim) + " Vs " + fetchDefendantName(claim);
+            fetchClaimantName(claim) + " Vs " + fetchDefendantName(claim);
 
     private MapperUtil() {
         // Utility class, no instances
@@ -49,7 +51,7 @@ public class MapperUtil {
 
         defendantNameBuilder.append(claim.getResponse().map(Response::getDefendant)
             .map(Party::getName)
-            .orElseGet(() -> claim.getClaimData().getDefendants().get(0).getName()));
+            .orElseGet(() -> getTheirDetailsNameFor(claim.getClaimData().getDefendants().get(0))));
 
         if (claim.getClaimData().getDefendants().size() > 1) {
             defendantNameBuilder.append(OTHERS);
@@ -62,7 +64,8 @@ public class MapperUtil {
     private static String fetchClaimantName(Claim claim) {
         StringBuilder claimantNameBuilder = new StringBuilder();
 
-        claimantNameBuilder.append(claim.getClaimData().getClaimants().get(0).getName());
+        claimantNameBuilder.append(getPartyNameFor(claim.getClaimData().getClaimants().get(0)));
+
         if (claim.getClaimData().getClaimants().size() > 1) {
             claimantNameBuilder.append(OTHERS);
         }
