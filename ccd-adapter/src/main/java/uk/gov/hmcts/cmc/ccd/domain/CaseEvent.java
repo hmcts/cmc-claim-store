@@ -62,6 +62,7 @@ public enum CaseEvent {
     CREATE_LEGAL_REP_CLAIM("CreateLegalRepClaim"),
     STAY_CLAIM("StayClaim"),
     CREATE_CITIZEN_CLAIM("CreateCitizenClaim"),
+    REVIEWED_PAPER_RESPONSE("ReviewedPaperResponse"),
     MEDIATION_FAILED("FailedMediation"),
     MEDIATION_SUCCESSFUL("SuccessfulMediation");
 

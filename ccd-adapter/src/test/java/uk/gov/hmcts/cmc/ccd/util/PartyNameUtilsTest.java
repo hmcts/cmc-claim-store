@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.util;
 
 import org.junit.Test;
-import uk.gov.hmcts.cmc.ccd.util.PartyNameUtils;
 import uk.gov.hmcts.cmc.domain.models.party.Individual;
 import uk.gov.hmcts.cmc.domain.models.party.SoleTrader;
 
