@@ -560,6 +560,7 @@ public final class SampleClaim {
             intentionToProceedDeadline,
             mediationOutcome,
             null,
+            null,
             null
         );
     }
