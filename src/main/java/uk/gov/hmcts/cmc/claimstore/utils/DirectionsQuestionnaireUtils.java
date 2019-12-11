@@ -12,7 +12,8 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.util.Optional;
 
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_DIRECTIONS;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_JUDGE_DIRECTIONS;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.WAITING_TRANSFER;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isOptedForMediation;
@@ -21,22 +22,14 @@ import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseTy
 import static uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt.isPilotCourt;
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_DEFENCE;
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.PART_ADMISSION;
+import static uk.gov.hmcts.cmc.domain.utils.FeaturesUtils.isJudgePilot;
+import static uk.gov.hmcts.cmc.domain.utils.FeaturesUtils.isLegalAdvisorPilot;
+import static uk.gov.hmcts.cmc.domain.utils.FeaturesUtils.isOnlineDQ;
 
 public class DirectionsQuestionnaireUtils {
 
-    public static final String DQ_FLAG = "directionsQuestionnaire";
-    public static final String LA_PILOT_FLAG = "LAPilotEligible";
-
     private DirectionsQuestionnaireUtils() {
         // utility class, no instances
-    }
-
-    public static boolean isOnlineDQ(Claim claim) {
-        return claim.getFeatures() != null && claim.getFeatures().contains(DQ_FLAG);
-    }
-
-    public static boolean isLegalAdvisorPilot(Claim claim) {
-        return claim.getFeatures() != null && claim.getFeatures().contains(LA_PILOT_FLAG);
     }
 
     public static Optional<CaseEvent> prepareCaseEvent(ResponseRejection responseRejection, Claim claim) {
@@ -46,7 +39,11 @@ public class DirectionsQuestionnaireUtils {
         String preferredCourt = getPreferredCourt(claim);
 
         if (isLegalAdvisorPilot(claim) && isPilotCourt(preferredCourt)) {
-            return Optional.of(ASSIGNING_FOR_DIRECTIONS);
+            return Optional.of(ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS);
+        }
+
+        if (isJudgePilot(claim) && isPilotCourt(preferredCourt)) {
+            return Optional.of(ASSIGNING_FOR_JUDGE_DIRECTIONS);
         }
 
         if (isOnlineDQ(claim)) {

@@ -74,6 +74,7 @@ public class Claim {
     private final MediationOutcome mediationOutcome;
     private final String failedMediationReason;
     private LocalDateTime mediationSettlementReachedAt;
+    private final LocalDateTime dateReferredForDirections;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -116,7 +117,8 @@ public class Claim {
         LocalDate intentionToProceedDeadline,
         MediationOutcome mediationOutcome,
         String failedMediationReason,
-        LocalDateTime mediationSettlementReachedAt
+        LocalDateTime mediationSettlementReachedAt,
+        LocalDateTime dateReferredForDirections
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -157,6 +159,7 @@ public class Claim {
         this.mediationOutcome = mediationOutcome;
         this.failedMediationReason = failedMediationReason;
         this.mediationSettlementReachedAt = mediationSettlementReachedAt;
+        this.dateReferredForDirections = dateReferredForDirections;
     }
 
     public Optional<Response> getResponse() {
@@ -258,6 +261,10 @@ public class Claim {
 
     public Optional<LocalDateTime> getMediationSettlementReachedAt() {
         return Optional.ofNullable(mediationSettlementReachedAt);
+    }
+
+    public Optional<LocalDateTime> getDateReferredForDirections() {
+        return Optional.ofNullable(dateReferredForDirections);
     }
 
     @Override

@@ -76,6 +76,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.OTH
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOtherDirectionHeaderType.UPLOAD;
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDClaimSubmissionOperationIndicators.defaultCCDClaimSubmissionOperationIndicators;
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDTelephone.withDefaultPhoneNumber;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE_THAN_THOUSAND_POUNDS;
 import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOUSAND_POUNDS_OR_LESS;
@@ -101,7 +102,7 @@ public class SampleData {
             .submitterId("123")
             .previousServiceCaseReference("ref no")
             .externalId(UUID.randomUUID().toString())
-            .features("admissions")
+            .features(ADMISSIONS.getValue())
             .amountType(BREAK_DOWN)
             .housingDisrepairCostOfRepairDamages(MORE_THAN_THOUSAND_POUNDS.name())
             .housingDisrepairOtherDamages(THOUSAND_POUNDS_OR_LESS.name())
@@ -511,7 +512,7 @@ public class SampleData {
             .submitterId("123")
             .previousServiceCaseReference("ref no")
             .externalId(UUID.randomUUID().toString())
-            .features("admissions")
+            .features(ADMISSIONS.getValue())
             .amountType(RANGE)
             .amountLowerValue("5000")
             .amountHigherValue("50000")

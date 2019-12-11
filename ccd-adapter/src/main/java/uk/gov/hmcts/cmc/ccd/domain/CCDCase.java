@@ -75,4 +75,5 @@ public class CCDCase {
     private CCDReviewOrder reviewOrder;
     private CCDChannelType channel;
     private LocalDate intentionToProceedDeadline;
+    private LocalDateTime dateReferredForDirections;
 }

@@ -39,6 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_ISSUED_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
 @TestPropertySource(
@@ -85,7 +86,7 @@ public class SaveClaimTest extends BaseSaveTest {
     public void shouldReturnFeaturesStored() throws Exception {
         ClaimData claimData = SampleClaimData.submittedByClaimant();
 
-        ImmutableList<String> features = ImmutableList.of("admissions", "offers");
+        ImmutableList<String> features = ImmutableList.of(ADMISSIONS.getValue(), "offers");
 
         MvcResult result = webClient
             .perform(MockMvcRequestBuilders.post("/claims/" + USER_ID)
