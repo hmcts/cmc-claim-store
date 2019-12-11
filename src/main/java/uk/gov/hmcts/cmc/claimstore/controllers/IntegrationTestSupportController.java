@@ -10,10 +10,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.cmc.claimstore.controllers.dto.AuthenticationDetails;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.support.SupportRepository;
@@ -83,13 +84,13 @@ public class IntegrationTestSupportController {
     @ApiOperation("Link a claim to a defendant")
     public void linkDefendantToClaim(
         @PathVariable("claimReferenceNumber") String claimReferenceNumber,
-        @RequestParam("defendantUsername") String defendantUsername,
-        @RequestParam("defendantPassword") String defendantPassword
+        @RequestBody AuthenticationDetails authenticationDetails
     ) {
         logger.info("Linking claim to defendant");
         Claim claim = getClaim(claimReferenceNumber, null);
 
-        User defendant = userService.authenticateUser(defendantUsername, defendantPassword);
+        User defendant = userService.authenticateUser(authenticationDetails.getUsername(),
+            authenticationDetails.getPassword());
         String defendantId = defendant.getUserDetails().getId();
         supportRepository.linkDefendantToClaim(claim, defendantId, defendant.getUserDetails().getEmail());
     }
