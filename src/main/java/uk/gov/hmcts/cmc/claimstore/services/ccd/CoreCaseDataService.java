@@ -492,7 +492,7 @@ public class CoreCaseDataService {
             Claim updatedClaim = toClaimBuilder(startEventResponse)
                 .claimantResponse(response)
                 .claimantRespondedAt(nowInUTC())
-                .directionOrderRequiredFrom(nowInUTC())
+                .dateReferredForDirections(nowInUTC())
                 .build();
 
             CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);

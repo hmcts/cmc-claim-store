@@ -59,7 +59,7 @@ public class CaseMapper {
             .map(CCDChannelType::valueOf)
             .ifPresent(builder::channel);
 
-        claim.getDirectionOrderRequiredFrom().ifPresent(builder::directionOrderRequiredFrom);
+        claim.getDateReferredForDirections().ifPresent(builder::dateReferredForDirections);
 
         return builder
             .id(claim.getId())
@@ -104,7 +104,7 @@ public class CaseMapper {
             .directionOrder(directionOrderMapper.from(ccdCase.getDirectionOrder(), ccdCase.getDirectionOrderData()))
             .intentionToProceedDeadline(ccdCase.getIntentionToProceedDeadline())
             .reviewOrder(reviewOrderMapper.from(ccdCase.getReviewOrder()))
-            .directionOrderRequiredFrom(ccdCase.getDirectionOrderRequiredFrom())
+            .dateReferredForDirections(ccdCase.getDateReferredForDirections())
             .mediationOutcome(getMediationOutcome(ccdCase));
 
         if (ccdCase.getFeatures() != null) {
