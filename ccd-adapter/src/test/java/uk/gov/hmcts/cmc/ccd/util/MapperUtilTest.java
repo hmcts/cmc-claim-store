@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.MediationOutcome;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
@@ -18,11 +19,13 @@ import java.util.Arrays;
 
 import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDClaimSubmissionOperationIndicators.CCDClaimSubmissionOperationIndicatorsWithPinSuccess;
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.getMediationOutcome;
+import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.hasPaperResponse;
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.toCaseName;
 
 public class MapperUtilTest {
@@ -197,6 +200,36 @@ public class MapperUtilTest {
             SampleData.getCCDCitizenCaseWithOperationIndicators(CCDClaimSubmissionOperationIndicatorsWithPinSuccess);
 
         assertNull(getMediationOutcome(ccdCase));
+    }
+
+    @Test
+    public void canContinueOnlineIfNoPaperResponse() {
+        CCDCase ccdCase =
+            SampleData.getCCDCitizenCaseWithOperationIndicators(CCDClaimSubmissionOperationIndicatorsWithPinSuccess);
+
+        YesNoOption result = hasPaperResponse.apply(ccdCase);
+        assertEquals(YesNoOption.NO, result);
+
+    }
+
+    @Test
+    public void cantContinueOnlineIfStaffUploadedDocumentPresent() {
+        CCDCase ccdCase =
+            SampleData.withPaperResponseFromStaffUploadedDoc();
+
+        YesNoOption result = hasPaperResponse.apply(ccdCase);
+        assertEquals(YesNoOption.YES, result);
+
+    }
+
+    @Test
+    public void cantContinueOnlineIfScannedDocumentHasResponse() {
+        CCDCase ccdCase =
+            SampleData.withPaperResponseFromScannedDoc();
+
+        YesNoOption result = hasPaperResponse.apply(ccdCase);
+        assertEquals(YesNoOption.YES, result);
+
     }
 
 }
