@@ -111,7 +111,7 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
 
         if (!FeaturesUtils.isOnlineDQ(claim)) {
             LocalDate deadline = deadlineCalculator
-                .calculateDirectionsQuestionnaireDeadlineCalculator(LocalDateTime.now());
+                .calculateDirectionsQuestionnaireDeadline(LocalDateTime.now());
             claim = claim.toBuilder().directionsQuestionnaireDeadline(deadline).build();
         }
 
