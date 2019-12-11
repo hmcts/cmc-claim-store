@@ -1,12 +1,11 @@
 package uk.gov.hmcts.cmc.claimstore.deprecated.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.hmcts.cmc.claimstore.deprecated.BaseIntegrationTest;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUser;
@@ -14,6 +13,9 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDet
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -48,11 +50,14 @@ public class LinkDefendantToClaimViaAuthenticationTest extends BaseIntegrationTe
         Claim claim = claimStore.saveClaim(SampleClaimData.builder().build());
         String urlTemplate = String.format(urlFormat, claim.getReferenceNumber());
 
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("defendantUsername", username);
-        params.add("defendantPassword", password);
+        Map<String, String> params = new HashMap<>();
+        params.put("username", username);
+        params.put("password", password);
 
-        MockHttpServletRequestBuilder putRequest = put(urlTemplate).params(params)
+        ObjectMapper objectMapper = new ObjectMapper();
+        String content = objectMapper.writeValueAsString(params);
+
+        MockHttpServletRequestBuilder putRequest = put(urlTemplate).content(content)
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding("utf-8");
 
@@ -80,11 +85,14 @@ public class LinkDefendantToClaimViaAuthenticationTest extends BaseIntegrationTe
 
         String urlTemplate = String.format(urlFormat, claim.getReferenceNumber());
 
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("defendantUsername", username);
-        params.add("defendantPassword", password);
+        Map<String, String> params = new HashMap<>();
+        params.put("username", username);
+        params.put("password", password);
 
-        MockHttpServletRequestBuilder putRequest = put(urlTemplate).params(params)
+        ObjectMapper objectMapper = new ObjectMapper();
+        String content = objectMapper.writeValueAsString(params);
+
+        MockHttpServletRequestBuilder putRequest = put(urlTemplate).content(content)
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding("utf-8");
 
@@ -113,11 +121,14 @@ public class LinkDefendantToClaimViaAuthenticationTest extends BaseIntegrationTe
         String claimReference = "Non Existent Claim Reference";
         String urlTemplate = String.format(urlFormat, claimReference);
 
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("defendantUsername", username);
-        params.add("defendantPassword", password);
+        Map<String, String> params = new HashMap<>();
+        params.put("username", username);
+        params.put("password", password);
 
-        MockHttpServletRequestBuilder putRequest = put(urlTemplate).params(params)
+        ObjectMapper objectMapper = new ObjectMapper();
+        String content = objectMapper.writeValueAsString(params);
+
+        MockHttpServletRequestBuilder putRequest = put(urlTemplate).content(content)
             .contentType(MediaType.APPLICATION_JSON)
             .characterEncoding("utf-8");
 
