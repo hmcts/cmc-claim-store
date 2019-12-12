@@ -8,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -95,7 +94,6 @@ public class SupportController {
     private final DocumentsService documentsService;
     private final PostClaimOrchestrationHandler postClaimOrchestrationHandler;
     private final MediationReportService mediationReportService;
-    private final boolean directionsQuestionnaireEnabled;
     private final ClaimSubmissionOperationIndicatorRule claimSubmissionOperationIndicatorRule;
     private final IntentionToProceedService intentionToProceedService;
 
@@ -112,7 +110,6 @@ public class SupportController {
             PaidInFullStaffNotificationHandler paidInFullStaffNotificationHandler,
             DocumentsService documentsService,
             @Autowired(required = false) PostClaimOrchestrationHandler postClaimOrchestrationHandler,
-            @Value("${feature_toggles.directions_questionnaire_enabled:false}") boolean directionsQuestionnaireEnabled,
             MediationReportService mediationReportService,
             ClaimSubmissionOperationIndicatorRule claimSubmissionOperationIndicatorRule,
             IntentionToProceedService intentionToProceedService
@@ -129,7 +126,6 @@ public class SupportController {
         this.documentsService = documentsService;
         this.postClaimOrchestrationHandler = postClaimOrchestrationHandler;
         this.mediationReportService = mediationReportService;
-        this.directionsQuestionnaireEnabled = directionsQuestionnaireEnabled;
         this.claimSubmissionOperationIndicatorRule = claimSubmissionOperationIndicatorRule;
         this.intentionToProceedService = intentionToProceedService;
     }
@@ -329,10 +325,6 @@ public class SupportController {
 
     private void resendStaffNotificationForIntentToProceed(Claim claim, String authorization) {
         ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalArgumentException::new);
-
-        if (!directionsQuestionnaireEnabled) {
-            throw new IllegalArgumentException("Direction Question Flag is mandatory for `intent-to-proceed` event");
-        }
 
         if (claimantResponse.getType() != REJECTION) {
             throw new IllegalArgumentException("Rejected Claimant Response is mandatory for `intent-to-proceed` event");
