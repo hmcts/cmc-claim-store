@@ -21,6 +21,7 @@ import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
@@ -105,6 +106,7 @@ public final class SampleClaim {
     private DirectionOrder directionOrder;
     private ChannelType channel;
     private LocalDate intentionToProceedDeadline = NOW_IN_LOCAL_ZONE.toLocalDate().plusDays(33);
+    private YesNoOption offlineJourney = NO;
     private MediationOutcome mediationOutcome;
 
     private SampleClaim() {
@@ -561,8 +563,9 @@ public final class SampleClaim {
             mediationOutcome,
             null,
             null,
+            offlineJourney,
             null
-        );
+            );
     }
 
     public SampleClaim withSubmitterId(String userId) {

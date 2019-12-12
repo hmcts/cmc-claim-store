@@ -46,9 +46,7 @@ public class DirectionsQuestionnaireUtils {
             }
 
             return Optional.of(WAITING_TRANSFER);
-
         } else {
-
             return Optional.empty();
         }
     }
