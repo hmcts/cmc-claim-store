@@ -108,7 +108,7 @@ public class DirectionsQuestionnaireUtilsTest {
     @Test
     public void shouldAssignForDirectionsIfNoFreeMediationAndDefendantIsBusinessAndClaimantCourtIsPilot() {
         Claim claim = SampleClaim.builder()
-            .withFeatures(ImmutableList.of(LA_PILOT_FLAG.getValue()))
+            .withFeatures(ImmutableList.of(LA_PILOT_FLAG.getValue(), DQ_FLAG.getValue()))
             .withClaimantResponse(CLAIMANT_REJECTION_PILOT)
             .withResponse(DEFENDANT_FULL_DEFENCE_NON_PILOT)
             .withClaimData(SampleClaimData
@@ -181,7 +181,7 @@ public class DirectionsQuestionnaireUtilsTest {
     @Test
     public void shouldAssignForDirectionsIfNoFreeMediationAndDefendantIsNotBusinessAndDefendantCourtIsPilot() {
         Claim claim = SampleClaim.builder()
-            .withFeatures(ImmutableList.of(LA_PILOT_FLAG.getValue()))
+            .withFeatures(ImmutableList.of(LA_PILOT_FLAG.getValue(), DQ_FLAG.getValue()))
             .withClaimantResponse(CLAIMANT_REJECTION_NON_PILOT)
             .withResponse(DEFENDANT_PART_ADMISSION_PILOT)
             .withClaimData(SampleClaimData
