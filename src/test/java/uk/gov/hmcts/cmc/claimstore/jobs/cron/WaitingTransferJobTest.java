@@ -26,7 +26,8 @@ public class WaitingTransferJobTest {
 
     @Before
     public void setup() {
-        intentionToProceedJob = new WaitingTransferJob(cronExpression);
+        intentionToProceedJob = new WaitingTransferJob();
+        intentionToProceedJob.setCronExpression(cronExpression);
         intentionToProceedJob.setScheduledStateTransitionService(scheduledStateTransitionService);
     }
 

@@ -26,7 +26,8 @@ public class StayClaimJobTest {
 
     @Before
     public void setup() {
-        stayClaimJob = new StayClaimJob(cronExpression);
+        stayClaimJob = new StayClaimJob();
+        stayClaimJob.setCronExpression(cronExpression);
         stayClaimJob.setScheduledStateTransitionService(scheduledStateTransitionService);
     }
 

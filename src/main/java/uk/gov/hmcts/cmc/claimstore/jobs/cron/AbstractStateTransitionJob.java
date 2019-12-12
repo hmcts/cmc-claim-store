@@ -35,4 +35,6 @@ public abstract class AbstractStateTransitionJob implements CronJob {
     }
 
     protected abstract StateTransition getStateTransition();
+
+    protected abstract void setCronExpression(String cronExpression);
 }
