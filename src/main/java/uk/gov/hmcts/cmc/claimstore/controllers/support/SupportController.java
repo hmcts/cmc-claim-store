@@ -95,7 +95,6 @@ public class SupportController {
     private final DocumentsService documentsService;
     private final PostClaimOrchestrationHandler postClaimOrchestrationHandler;
     private final MediationReportService mediationReportService;
-    private final boolean directionsQuestionnaireEnabled;
     private final ClaimSubmissionOperationIndicatorRule claimSubmissionOperationIndicatorRule;
     private final IntentionToProceedService intentionToProceedService;
 
@@ -112,7 +111,6 @@ public class SupportController {
             PaidInFullStaffNotificationHandler paidInFullStaffNotificationHandler,
             DocumentsService documentsService,
             @Autowired(required = false) PostClaimOrchestrationHandler postClaimOrchestrationHandler,
-            @Value("${feature_toggles.directions_questionnaire_enabled:false}") boolean directionsQuestionnaireEnabled,
             MediationReportService mediationReportService,
             ClaimSubmissionOperationIndicatorRule claimSubmissionOperationIndicatorRule,
             IntentionToProceedService intentionToProceedService
@@ -129,7 +127,6 @@ public class SupportController {
         this.documentsService = documentsService;
         this.postClaimOrchestrationHandler = postClaimOrchestrationHandler;
         this.mediationReportService = mediationReportService;
-        this.directionsQuestionnaireEnabled = directionsQuestionnaireEnabled;
         this.claimSubmissionOperationIndicatorRule = claimSubmissionOperationIndicatorRule;
         this.intentionToProceedService = intentionToProceedService;
     }
@@ -329,10 +326,6 @@ public class SupportController {
 
     private void resendStaffNotificationForIntentToProceed(Claim claim, String authorization) {
         ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalArgumentException::new);
-
-        if (!directionsQuestionnaireEnabled) {
-            throw new IllegalArgumentException("Direction Question Flag is mandatory for `intent-to-proceed` event");
-        }
 
         if (claimantResponse.getType() != REJECTION) {
             throw new IllegalArgumentException("Rejected Claimant Response is mandatory for `intent-to-proceed` event");

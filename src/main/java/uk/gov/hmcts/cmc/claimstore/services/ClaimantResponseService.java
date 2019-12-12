@@ -57,8 +57,6 @@ public class ClaimantResponseService {
     private final EventProducer eventProducer;
     private final FormaliseResponseAcceptanceService formaliseResponseAcceptanceService;
     private final DirectionsQuestionnaireService directionsQuestionnaireService;
-    @Value("${feature_toggles.directions_questionnaire_enabled:false}")
-    boolean directionsQuestionnaireEnabled;
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     public ClaimantResponseService(
@@ -104,7 +102,7 @@ public class ClaimantResponseService {
             caseRepository.saveCaseEvent(authorization, updatedClaim, CaseEvent.STAY_CLAIM);
         }
 
-        if (DirectionsQuestionnaireUtils.isOnlineDQ(updatedClaim) && isRejectResponseNoMediation(claimantResponse)) {
+        if (!DirectionsQuestionnaireUtils.isOnlineDQ(updatedClaim) && isRejectResponseNoMediation(claimantResponse)) {
             directionsQuestionnaireService.updateDirectionsQuestionnaireDeadline(
                 updatedClaim, LocalDateTime.now(), authorization);
             updatedClaim = claimService.getClaimByExternalId(externalId, authorization);
@@ -118,7 +116,7 @@ public class ClaimantResponseService {
             caseRepository.saveCaseEvent(authorization, updatedClaim, SETTLED_PRE_JUDGMENT);
         }
 
-        if (DirectionsQuestionnaireUtils.isOnlineDQ(updatedClaim) && claimantResponse.getType() == REJECTION) {
+        if (claimantResponse.getType() == REJECTION) {
             Optional<CaseEvent> caseEvent = DirectionsQuestionnaireUtils.prepareCaseEvent(
                 (ResponseRejection) claimantResponse,
                 updatedClaim
