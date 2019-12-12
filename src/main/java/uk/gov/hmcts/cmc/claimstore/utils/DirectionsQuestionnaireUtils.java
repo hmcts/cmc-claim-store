@@ -43,13 +43,13 @@ public class DirectionsQuestionnaireUtils {
         if (isOptedForMediation(responseRejection)) {
             return Optional.of(REFERRED_TO_MEDIATION);
         }
-        String preferredCourt = getPreferredCourt(claim);
-
-        if (isLegalAdvisorPilot(claim) && isPilotCourt(preferredCourt)) {
-            return Optional.of(ASSIGNING_FOR_DIRECTIONS);
-        }
 
         if (isOnlineDQ(claim)) {
+            String preferredCourt = getPreferredCourt(claim);
+
+            if (isLegalAdvisorPilot(claim) && isPilotCourt(preferredCourt)) {
+                return Optional.of(ASSIGNING_FOR_DIRECTIONS);
+            }
             return Optional.of(WAITING_TRANSFER);
         }
 
