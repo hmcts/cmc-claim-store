@@ -54,7 +54,6 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils.DQ_
 import static uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils.LA_PILOT_FLAG;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
-import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.domain.utils.FeaturesUtils.MEDIATION_PILOT;
 
@@ -151,29 +150,6 @@ public class ClaimantResponseServiceTest {
     }
 
     @Test
-    public void saveResponseRejectionWithDirectionsQuestionnaireButDQDisabled() {
-        ClaimantResponse claimantResponse = ResponseRejection.builder()
-            .directionsQuestionnaire(DirectionsQuestionnaire.builder()
-                .build())
-            .build();
-
-        Claim claim = SampleClaim.builder()
-            .withResponseDeadline(LocalDate.now().minusMonths(2))
-            .withResponse(SampleResponse.FullAdmission.validDefaults())
-            .withRespondedAt(LocalDateTime.now().minusDays(32))
-            .withClaimantResponse(claimantResponse)
-            .build();
-
-        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
-        when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseRejection.class), eq(AUTHORISATION)))
-            .thenReturn(claim);
-
-        claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
-
-        verify(caseRepository, never()).saveCaseEvent(AUTHORISATION, claim, ASSIGNING_FOR_DIRECTIONS);
-    }
-
-    @Test
     public void saveResponseRejectionWithDirectionsQuestionnaire() {
 
         ClaimantResponse claimantResponse = ResponseRejection.builder()
@@ -196,31 +172,6 @@ public class ClaimantResponseServiceTest {
         claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
 
         verify(caseRepository).saveCaseEvent(AUTHORISATION, claim, REFERRED_TO_MEDIATION);
-    }
-
-    @Test
-    public void saveResponseRejectionWithDirectionsQuestionnaire2() {
-
-        ClaimantResponse claimantResponse = ResponseRejection.builder()
-            .freeMediation(NO)
-            .directionsQuestionnaire(DirectionsQuestionnaire.builder()
-                .build())
-            .build();
-
-        Claim claim = SampleClaim.builder()
-            .withResponseDeadline(LocalDate.now().minusMonths(2))
-            .withResponse(SampleResponse.FullAdmission.validDefaults())
-            .withRespondedAt(LocalDateTime.now().minusDays(32))
-            .withClaimantResponse(claimantResponse)
-            .build();
-
-        when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), eq(AUTHORISATION))).thenReturn(claim);
-        when(caseRepository.saveClaimantResponse(any(Claim.class), any(ResponseRejection.class), eq(AUTHORISATION)))
-            .thenReturn(claim);
-
-        claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
-
-        verify(caseRepository, once()).saveCaseEvent(AUTHORISATION, claim, ASSIGNING_FOR_DIRECTIONS);
     }
 
     @Test
@@ -365,7 +316,7 @@ public class ClaimantResponseServiceTest {
         final Claim claim = SampleClaim.builder()
             .withFeatures(ImmutableList.of(LA_PILOT_FLAG, DQ_FLAG))
             .withResponseDeadline(LocalDate.now().minusMonths(2))
-            .withResponse(SampleResponse.PartAdmission.builder().build())
+            .withResponse(SampleResponse.PartAdmission.builder().buildWithDirectionsQuestionnaire())
             .withRespondedAt(respondedAt)
             .withClaimantResponse(claimantResponse)
             .build();
