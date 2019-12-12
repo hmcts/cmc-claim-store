@@ -104,7 +104,7 @@ public class ClaimantResponseService {
             caseRepository.saveCaseEvent(authorization, updatedClaim, CaseEvent.STAY_CLAIM);
         }
 
-        if (!DirectionsQuestionnaireUtils.isOnlineDQ(updatedClaim) && isRejectResponseNoMediation(claimantResponse)) {
+        if (DirectionsQuestionnaireUtils.isOnlineDQ(updatedClaim) && isRejectResponseNoMediation(claimantResponse)) {
             directionsQuestionnaireService.updateDirectionsQuestionnaireDeadline(
                 updatedClaim, LocalDateTime.now(), authorization);
             updatedClaim = claimService.getClaimByExternalId(externalId, authorization);
@@ -118,7 +118,7 @@ public class ClaimantResponseService {
             caseRepository.saveCaseEvent(authorization, updatedClaim, SETTLED_PRE_JUDGMENT);
         }
 
-        if (directionsQuestionnaireEnabled && claimantResponse.getType() == REJECTION) {
+        if (DirectionsQuestionnaireUtils.isOnlineDQ(updatedClaim) && claimantResponse.getType() == REJECTION) {
             Optional<CaseEvent> caseEvent = DirectionsQuestionnaireUtils.prepareCaseEvent(
                 (ResponseRejection) claimantResponse,
                 updatedClaim
