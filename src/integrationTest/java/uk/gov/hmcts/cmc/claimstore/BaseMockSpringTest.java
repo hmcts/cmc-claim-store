@@ -6,9 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
@@ -27,6 +29,9 @@ import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.docassembly.DocAssemblyApi;
+import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -86,15 +91,23 @@ public abstract class BaseMockSpringTest {
     protected CoreCaseDataApi coreCaseDataApi;
     @MockBean
     protected PaymentsService paymentsService;
-
     @MockBean
     protected EventProducer eventProducer;
+    @MockBean
+    protected PDFServiceClient pdfServiceClient;
 
     protected ImmutableMap<String, String> searchCriteria(String externalId) {
         return ImmutableMap.of(
             "page", "1",
             "sortDirection", "desc",
             "case.externalId", externalId
+        );
+    }
+
+    protected ResultActions makeGetRequest(String urlTemplate) throws Exception {
+        return webClient.perform(
+            get(urlTemplate)
+                .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
         );
     }
 }
