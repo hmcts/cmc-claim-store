@@ -1,7 +1,8 @@
-package uk.gov.hmcts.cmc.claimstore.deprecated.services.staff;
+package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,7 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource("/environment.properties")
+@Ignore
 public class PaidInFullStaffNotificationServiceWithEmailServiceRetryTest {
 
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
