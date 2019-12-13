@@ -102,6 +102,7 @@ cmc-citizen-frontend:
         - https://www-${SERVICE_FQDN}/receiver
 
 ccd:
+  enabled: true
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP}
