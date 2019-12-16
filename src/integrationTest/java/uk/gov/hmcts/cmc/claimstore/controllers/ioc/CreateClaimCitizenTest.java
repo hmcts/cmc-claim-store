@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 
@@ -42,6 +44,9 @@ import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 )
 public class CreateClaimCitizenTest extends BaseMockSpringTest {
     private static final Long CASE_ID = 42L;
+
+    @MockBean
+    protected EmailService emailService;
 
     @Before
     public void before() {
