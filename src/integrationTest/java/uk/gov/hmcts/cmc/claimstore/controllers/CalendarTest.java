@@ -1,9 +1,9 @@
-package uk.gov.hmcts.cmc.claimstore.deprecated.controllers;
+package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Test;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.cmc.claimstore.deprecated.BaseGetTest;
+import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.domain.models.NextWorkingDay;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.toDate;
 
-public class CalendarTest extends BaseGetTest {
+public class CalendarTest extends BaseMockSpringTest {
 
     @Test
     public void shouldReturnNextWorkingDay() throws Exception {
@@ -19,7 +19,7 @@ public class CalendarTest extends BaseGetTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        NextWorkingDay obj = deserializeObjectFrom(result, NextWorkingDay.class);
+        NextWorkingDay obj = jsonMappingHelper.deserializeObjectFrom(result, NextWorkingDay.class);
         assertThat(obj.getDate()).isEqualTo(toDate("2019-06-26"));
     }
 
