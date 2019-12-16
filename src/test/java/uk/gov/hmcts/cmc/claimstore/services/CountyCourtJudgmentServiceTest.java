@@ -110,6 +110,7 @@ public class CountyCourtJudgmentServiceTest {
         Claim claim = SampleClaim
             .builder()
             .withResponseDeadline(LocalDate.now().minusMonths(2))
+            .withResponse(SampleResponse.FullAdmission.builder().buildWithPaymentOptionImmediately())
             .withState(ClaimState.STAYED)
             .build();
 
