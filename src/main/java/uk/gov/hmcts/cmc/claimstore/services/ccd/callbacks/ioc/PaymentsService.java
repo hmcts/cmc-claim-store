@@ -95,7 +95,7 @@ public class PaymentsService {
 
         logger.info("Creating payment in pay hub for claim with external id {}",
             claim.getExternalId());
-
+        logger.info("Next URL: {}" , format(returnUrlPattern, claim.getExternalId()));
         PaymentDto payment = paymentsClient.createPayment(
             authorisation,
             paymentRequest,
