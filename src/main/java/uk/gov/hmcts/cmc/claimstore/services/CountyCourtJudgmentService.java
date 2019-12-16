@@ -16,6 +16,8 @@ import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
+import java.util.Optional;
+
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LIFT_STAY;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED_AFTER_SETTLEMENT_BREACH;
@@ -66,9 +68,9 @@ public class CountyCourtJudgmentService {
 
         countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, countyCourtJudgment.getCcjType());
 
-        if (claim.getResponse().isPresent()) {
-            Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
-            if (claim.getState().equals(ClaimState.STAYED) && ResponseUtils.isAdmissionResponse(response)) {
+        Optional<Response> response = claim.getResponse();
+        if (response.isPresent()) {
+            if (claim.getState().equals(ClaimState.STAYED) && ResponseUtils.isAdmissionResponse(response.get())) {
                 claim = caseRepository.saveCaseEvent(authorisation, claim, LIFT_STAY);
             }
         }
