@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -74,6 +75,7 @@ public class Claim {
     private final MediationOutcome mediationOutcome;
     private final String failedMediationReason;
     private LocalDateTime mediationSettlementReachedAt;
+    private final YesNoOption paperResponse;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -116,7 +118,8 @@ public class Claim {
         LocalDate intentionToProceedDeadline,
         MediationOutcome mediationOutcome,
         String failedMediationReason,
-        LocalDateTime mediationSettlementReachedAt
+        LocalDateTime mediationSettlementReachedAt,
+        YesNoOption paperResponse
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -157,6 +160,7 @@ public class Claim {
         this.mediationOutcome = mediationOutcome;
         this.failedMediationReason = failedMediationReason;
         this.mediationSettlementReachedAt = mediationSettlementReachedAt;
+        this.paperResponse = paperResponse;
     }
 
     public Optional<Response> getResponse() {

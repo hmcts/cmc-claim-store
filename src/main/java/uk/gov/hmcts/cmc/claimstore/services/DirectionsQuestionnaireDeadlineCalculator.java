@@ -21,15 +21,15 @@ public class DirectionsQuestionnaireDeadlineCalculator {
         WorkingDayIndicator workingDayIndicator,
         @Value("${dateCalculations.serviceDays}") long serviceDays,
         @Value("${dateCalculations.responseDays}") long timeForResponseInDays,
-        @Value("${dateCalculations.endOfBusinessDayHour}") int endOfBusinessDayHour) {
-
+        @Value("${dateCalculations.endOfBusinessDayHour}") int endOfBusinessDayHour
+    ) {
         this.workingDayIndicator = workingDayIndicator;
         this.serviceDays = serviceDays;
         this.timeForResponseInDays = timeForResponseInDays;
         this.endOfBusinessDayHour = endOfBusinessDayHour;
     }
 
-    public LocalDate calculateDirectionsQuestionnaireDeadlineCalculator(LocalDateTime respondedAt) {
+    public LocalDate calculateDirectionsQuestionnaireDeadline(LocalDateTime respondedAt) {
         LocalDate date = respondedAt.toLocalDate().plusDays(serviceDays + timeForResponseInDays);
 
         if (isTooLateForToday(respondedAt.getHour())) {

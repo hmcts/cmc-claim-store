@@ -139,7 +139,6 @@ public class SupportControllerTest {
             paidInFullStaffNotificationHandler,
             documentsService,
             postClaimOrchestrationHandler,
-            false,
             mediationReportService,
             new ClaimSubmissionOperationIndicatorRule(),
             scheduledStateTransitionService
@@ -184,7 +183,7 @@ public class SupportControllerTest {
             moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
             ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
             claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
-            postClaimOrchestrationHandler, true, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
+            postClaimOrchestrationHandler, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
             scheduledStateTransitionService
         );
 
@@ -193,30 +192,6 @@ public class SupportControllerTest {
 
         verify(claimantResponseStaffNotificationHandler)
             .notifyStaffWithClaimantsIntentionToProceed(new ClaimantResponseEvent(sampleClaim, AUTHORISATION));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowForIntentToProceedIfDQFeatureToggledIsOff() {
-        ClaimantResponse claimantResponse = ClaimantResponseRejection.builder()
-            .buildRejectionWithDirectionsQuestionnaire();
-
-        sampleClaim = SampleClaim.builder()
-            .withClaimData(SampleClaimData.submittedByClaimant())
-            .withResponse(PartAdmission.builder().buildWithFreeMediation())
-            .withClaimantResponse(claimantResponse)
-            .build();
-
-        controller = new SupportController(claimService, userService, documentGenerator,
-            moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
-            ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
-            claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
-            postClaimOrchestrationHandler, false, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
-            scheduledStateTransitionService
-        );
-
-        when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE))).thenReturn(Optional.of(sampleClaim));
-
-        controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "intent-to-proceed");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -231,7 +206,7 @@ public class SupportControllerTest {
             moreTimeRequestedStaffNotificationHandler, defendantResponseStaffNotificationHandler,
             ccjStaffNotificationHandler, agreementCountersignedStaffNotificationHandler,
             claimantResponseStaffNotificationHandler, paidInFullStaffNotificationHandler, documentsService,
-            postClaimOrchestrationHandler, true, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
+            postClaimOrchestrationHandler, mediationReportService, new ClaimSubmissionOperationIndicatorRule(),
             scheduledStateTransitionService
         );
 
