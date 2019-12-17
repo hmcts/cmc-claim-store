@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
@@ -19,6 +20,7 @@ import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 
@@ -53,6 +55,9 @@ public class ResumePaymentTest extends BaseMockSpringTest {
     private static final String NEXT_URL = "http://nexturl.test";
     private static final String RETURN_URL = "http://returnUrl.test/blah/%s/test";
     private static final String PAYMENT_REFERENCE = "reference";
+
+    @MockBean
+    protected EmailService emailService;
 
     @Before
     public void before() {
