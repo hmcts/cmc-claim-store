@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
+import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.util.HashMap;
@@ -32,14 +34,16 @@ public class BulkPrintStaffNotificationServiceTest extends BaseMockSpringTest {
 
     @Autowired
     private BulkPrintStaffNotificationService service;
+    @Autowired
+    private StaffEmailProperties emailProperties;
 
     @Captor
     private ArgumentCaptor<String> senderArgument;
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
 
-    @Autowired
-    private StaffEmailProperties emailProperties;
+    @MockBean
+    protected EmailService emailService;
 
     private PrintableTemplate defendantLetterDocument;
     private PrintableTemplate sealedClaimDocument;
