@@ -16,7 +16,6 @@ import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDExpertReport;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
@@ -137,7 +136,8 @@ public class GenerateOrderCallbackHandlerTest {
                         .build())
                     .build()
             ));
-        ccdCase.setDirectionOrderData(SampleData.getCCDOrderGenerationData());
+
+        ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
 
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_START)
@@ -185,7 +185,8 @@ public class GenerateOrderCallbackHandlerTest {
                         .build())
                     .build()
             ));
-        ccdCase.setDirectionOrderData(SampleData.getCCDOrderGenerationData());
+
+        ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
 
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_START)
@@ -214,10 +215,6 @@ public class GenerateOrderCallbackHandlerTest {
 
     @Test
     public void shouldPrepopulateFieldsOnAboutToStartEventIfOtherDirectionHeaderIsNull() {
-        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData().toBuilder()
-            .hearingCourt(null)
-            .build();
-
         ccdCase.setRespondents(
             ImmutableList.of(
                 CCDCollectionElement.<CCDRespondent>builder()
@@ -229,7 +226,8 @@ public class GenerateOrderCallbackHandlerTest {
                         .build())
                     .build()
             ));
-        ccdCase.setDirectionOrderData(ccdOrderGenerationData);
+
+        ccdCase = SampleData.addCCDOrderGenerationData(ccdCase).toBuilder().hearingCourt(null).build();
 
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_START)
@@ -331,7 +329,7 @@ public class GenerateOrderCallbackHandlerTest {
     @Test
     public void shouldGenerateDocumentOnMidEvent() {
         CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
-        ccdCase.setDirectionOrderData(SampleData.getCCDOrderGenerationData());
+        ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
 
         CallbackRequest callbackRequest = CallbackRequest
@@ -362,11 +360,9 @@ public class GenerateOrderCallbackHandlerTest {
 
     @Test(expected = IllegalStateException.class)
     public void shouldThrowIfClaimantResponseIsNotPresent() {
-        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData().toBuilder()
+        ccdCase = SampleData.addCCDOrderGenerationData(ccdCase).toBuilder()
             .otherDirections(null)
             .build();
-
-        ccdCase.setDirectionOrderData(ccdOrderGenerationData);
 
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_START)

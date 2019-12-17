@@ -4,7 +4,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 
 import java.util.List;
 
@@ -15,13 +14,12 @@ public class GenerateOrderRuleTest {
     @Test
     public void shouldReturnValidationMessageWhenExpertPermissionIsNotProvided() {
         CCDCase ccdCase = CCDCase.builder()
-            .directionOrderData(CCDOrderGenerationData.builder()
-                .expertReportPermissionPartyAskedByClaimant(CCDYesNoOption.YES)
-                .expertReportPermissionPartyAskedByDefendant(CCDYesNoOption.YES)
-                .expertReportPermissionPartyGivenToClaimant(null)
-                .expertReportPermissionPartyGivenToDefendant(null)
-                .build())
+            .expertReportPermissionPartyAskedByClaimant(CCDYesNoOption.YES)
+            .expertReportPermissionPartyAskedByDefendant(CCDYesNoOption.YES)
+            .expertReportPermissionPartyGivenToClaimant(null)
+            .expertReportPermissionPartyGivenToDefendant(null)
             .build();
+
         List<String> validations = generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase);
 
         Assertions.assertThat(validations).isNotEmpty()
@@ -33,13 +31,12 @@ public class GenerateOrderRuleTest {
     @Test
     public void shouldNotReturnValidationMessageWhenExpertPermissionIsProvided() {
         CCDCase ccdCase = CCDCase.builder()
-            .directionOrderData(CCDOrderGenerationData.builder()
-                .expertReportPermissionPartyAskedByClaimant(CCDYesNoOption.YES)
-                .expertReportPermissionPartyAskedByDefendant(CCDYesNoOption.YES)
-                .expertReportPermissionPartyGivenToClaimant(CCDYesNoOption.YES)
-                .expertReportPermissionPartyGivenToDefendant(CCDYesNoOption.NO)
-                .build())
+            .expertReportPermissionPartyAskedByClaimant(CCDYesNoOption.YES)
+            .expertReportPermissionPartyAskedByDefendant(CCDYesNoOption.YES)
+            .expertReportPermissionPartyGivenToClaimant(CCDYesNoOption.YES)
+            .expertReportPermissionPartyGivenToDefendant(CCDYesNoOption.NO)
             .build();
+
         List<String> validations = generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase);
 
         Assertions.assertThat(validations).isEmpty();
@@ -48,12 +45,10 @@ public class GenerateOrderRuleTest {
     @Test
     public void shouldNotReturnValidationMessageWhenUserHasNotAskedFprPermission() {
         CCDCase ccdCase = CCDCase.builder()
-            .directionOrderData(CCDOrderGenerationData.builder()
-                .expertReportPermissionPartyAskedByClaimant(CCDYesNoOption.NO)
-                .expertReportPermissionPartyAskedByDefendant(CCDYesNoOption.NO)
-                .expertReportPermissionPartyGivenToClaimant(null)
-                .expertReportPermissionPartyGivenToDefendant(null)
-                .build())
+            .expertReportPermissionPartyAskedByClaimant(CCDYesNoOption.NO)
+            .expertReportPermissionPartyAskedByDefendant(CCDYesNoOption.NO)
+            .expertReportPermissionPartyGivenToClaimant(null)
+            .expertReportPermissionPartyGivenToDefendant(null)
             .build();
         List<String> validations = generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase);
 

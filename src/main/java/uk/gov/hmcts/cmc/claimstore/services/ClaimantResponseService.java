@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
@@ -58,8 +57,6 @@ public class ClaimantResponseService {
     private final EventProducer eventProducer;
     private final FormaliseResponseAcceptanceService formaliseResponseAcceptanceService;
     private final DirectionsQuestionnaireService directionsQuestionnaireService;
-    @Value("${feature_toggles.directions_questionnaire_enabled:false}")
-    boolean directionsQuestionnaireEnabled;
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     public ClaimantResponseService(
@@ -119,7 +116,7 @@ public class ClaimantResponseService {
             caseRepository.saveCaseEvent(authorization, updatedClaim, SETTLED_PRE_JUDGMENT);
         }
 
-        if (directionsQuestionnaireEnabled && claimantResponse.getType() == REJECTION) {
+        if (claimantResponse.getType() == REJECTION) {
             Optional<CaseEvent> caseEvent = DirectionsQuestionnaireUtils.prepareCaseEvent(
                 (ResponseRejection) claimantResponse,
                 updatedClaim
