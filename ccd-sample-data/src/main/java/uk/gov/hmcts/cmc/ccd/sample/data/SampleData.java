@@ -40,7 +40,6 @@ import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import java.math.BigDecimal;
@@ -567,8 +566,8 @@ public class SampleData {
             .build();
     }
 
-    public static CCDOrderGenerationData getCCDOrderGenerationData() {
-        return CCDOrderGenerationData.builder()
+    public static CCDCase addCCDOrderGenerationData(CCDCase ccdCase) {
+        return ccdCase.toBuilder()
             .directionList(ImmutableList.of(
                 DOCUMENTS, EYEWITNESS))
             .otherDirections(ImmutableList.of(

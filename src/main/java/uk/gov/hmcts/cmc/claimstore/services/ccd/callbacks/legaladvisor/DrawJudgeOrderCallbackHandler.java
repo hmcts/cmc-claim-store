@@ -18,7 +18,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDResponseSubjectType;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalculator;
@@ -186,7 +185,7 @@ public class DrawJudgeOrderCallbackHandler extends CallbackHandler {
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         notifyParties(claim);
         String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
-        return printOrder(authorisation, claim, ccdCase.getDirectionOrderData());
+        return printOrder(authorisation, claim, ccdCase);
     }
 
     private void notifyParties(Claim claim) {
@@ -194,8 +193,8 @@ public class DrawJudgeOrderCallbackHandler extends CallbackHandler {
         orderDrawnNotificationService.notifyDefendant(claim);
     }
 
-    private CallbackResponse printOrder(String authorisation, Claim claim, CCDOrderGenerationData orderGenerationData) {
-        CCDDocument draftOrderDoc = orderGenerationData.getDraftOrderDoc();
+    private CallbackResponse printOrder(String authorisation, Claim claim, CCDCase ccdCase) {
+        CCDDocument draftOrderDoc = ccdCase.getDraftOrderDoc();
         legalOrderService.print(authorisation, claim, draftOrderDoc);
         return SubmittedCallbackResponse.builder().build();
     }
@@ -204,11 +203,10 @@ public class DrawJudgeOrderCallbackHandler extends CallbackHandler {
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
 
-        CCDDocument draftOrderDoc = Optional.ofNullable(ccdCase.getDirectionOrderData())
-            .map(CCDOrderGenerationData::getDraftOrderDoc)
+        CCDDocument draftOrderDoc = Optional.ofNullable(ccdCase.getDraftOrderDoc())
             .orElseThrow(() -> new CallbackException("Draft order not present"));
 
-        HearingCourt hearingCourt = Optional.ofNullable(ccdCase.getDirectionOrderData().getHearingCourt())
+        HearingCourt hearingCourt = Optional.ofNullable(ccdCase.getHearingCourt())
             .map(hearingCourtDetailsFinder::findHearingCourtAddress)
             .orElseGet(() -> HearingCourt.builder().build());
 

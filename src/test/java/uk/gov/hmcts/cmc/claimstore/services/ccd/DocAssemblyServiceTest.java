@@ -66,7 +66,7 @@ public class DocAssemblyServiceTest {
     @Test
     public void shouldCreateOrderOnDocAssembly() {
         CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
-        ccdCase.setDirectionOrderData(SampleData.getCCDOrderGenerationData());
+        ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
 
         when(docAssemblyTemplateBodyMapper.from(eq(ccdCase), eq(JUDGE)))
             .thenReturn(DocAssemblyTemplateBody.builder().build());

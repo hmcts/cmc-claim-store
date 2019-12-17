@@ -564,6 +564,7 @@ public final class SampleClaim {
             null,
             null,
             offlineJourney,
+            null,
             null
             );
     }
