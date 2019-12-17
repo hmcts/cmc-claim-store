@@ -4,6 +4,7 @@ import feign.FeignException;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,6 +47,9 @@ public class InitiatePaymentTest extends BaseMockSpringTest {
     protected ResponseDeadlineCalculator responseDeadlineCalculator;
     @Autowired
     protected IssueDateCalculator issueDateCalculator;
+
+    @MockBean
+    protected EmailService emailService;
 
     @Before
     public void setup() {
