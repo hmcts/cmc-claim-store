@@ -111,15 +111,20 @@ public class DrawJudgeOrderCallbackHandlerTest {
 
     @Before
     public void setUp() {
+        OrderCreator orderCreator = new OrderCreator(legalOrderGenerationDeadlinesCalculator, caseDetailsConverter,
+            docAssemblyService, generateOrderRule);
+
+        OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
+            caseDetailsConverter, legalOrderService, hearingCourtDetailsFinder);
+
         drawJudgeOrderCallbackHandler = new DrawJudgeOrderCallbackHandler(
             clock,
             orderDrawnNotificationService,
             caseDetailsConverter,
             legalOrderService,
             hearingCourtDetailsFinder,
-            docAssemblyService,
-            legalOrderGenerationDeadlinesCalculator,
-            generateOrderRule
+            orderCreator,
+            orderPostProcessor
         );
 
         Claim claim =
