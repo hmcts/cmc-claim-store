@@ -48,10 +48,11 @@ quartzProperties:
     scheduler:
       instanceId: AUTO
     jobStore:
-      isClustered: false
+      isClustered: true
       class: org.quartz.impl.jdbcjobstore.JobStoreTX
       driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
       dataSource: cmcDataSource
+      clusterCheckinInterval: 2000
     threadPool:
       class: org.quartz.simpl.SimpleThreadPool
       threadCount: 8
@@ -76,7 +77,7 @@ fees:
     jurisdiction2: "county court"
 
 payments:
-  returnUrlPattern: "${FRONTEND_BASE_URL:}/claim/pay/%s/receiver"
+  returnUrlPattern: "${FRONTEND_BASE_URL:}/claim/%s/finish-payment"
   api:
     url: ${PAY_URL:}
     service: "CMC"
@@ -111,6 +112,9 @@ milo:
   recipient: ${MILO_CSV_RECIPIENT:}
   sender: ${MILO_CSV_SENDER:}
 
+claim_stayed:
+  schedule: ""
+
 dateCalculations:
   endOfBusinessDayHour: 16
   serviceDays: 5
@@ -121,6 +125,7 @@ dateCalculations:
   offerMadeTimeForResponseInDays: 14
   lastResponseReminderDay: 1
   firstResponseReminderDay: 5
+  intentionToProceedDeadlineInDays: 33
 
 notifications:
   govNotifyApiKey: ${GOV_NOTIFY_API_KEY:}
@@ -170,6 +175,13 @@ notifications:
       reviewOrderEmailToDefendant: "d568fc1e-f1fc-441a-94da-6506df12cae6"
       claimantIntentionToProceedForPaperDq: "ecd5ccc3-9630-4c70-b225-c6132f02efe1"
       claimantIntentionToProceedForOnlineDq: "200830e5-3bbf-4a43-864a-58ff4c2e1ff2"
+      claimantSettledAfterFullDefence: "e486e5b8-73a3-4585-ae0e-74b3f1bced77"
+      claimantMediationSuccess: "64fa3dbe-1a56-4166-9f70-9291dbf9af00"
+      defendantMediationSuccess: "f1a542ca-7758-4e08-bc5e-b9a040bf6460"
+      claimantReadyForTransfer: "50c8bdd3-f68d-44cc-b46f-72e9ed1f55a6"
+      defendantReadyForTransfer: "487fdd65-131e-4547-a3ed-f632872fe957"
+      claimantMediationFailureOfflineDQ: "55d06073-0b81-4daf-a3b4-1698c7810189"
+      defendantMediationFailureOfflineDQ: "15a38762-2141-4a70-8cc9-22a27db985bc"
 
 staff-notifications:
   sender:
@@ -179,8 +191,6 @@ feature_toggles:
   watermark_pdf: false
   reminderEmails: false
   save_claim_state_enabled: false
-  async_event_operations_enabled: false
-  directions_questionnaire_enabled: false
 
 feign:
   httpclient:

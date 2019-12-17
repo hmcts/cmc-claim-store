@@ -14,6 +14,7 @@ import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.RE
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.FormaliseOption.SETTLEMENT;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleHearingLocation.pilotHearingLocation;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention.bySetDate;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention.instalments;
 
@@ -187,11 +188,12 @@ public abstract class SampleClaimantResponse<T extends SampleClaimantResponse<T>
         public ClaimantResponse buildRejectionWithDirectionsQuestionnaire() {
             return ResponseRejection.builder()
                 .amountPaid(TEN)
-                .freeMediation(YES)
+                .freeMediation(NO)
                 .mediationPhoneNumber("07999999999")
                 .mediationContactPerson("Mediation Contact Person")
                 .reason("Some valid reason")
-                .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder().build())
+                .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder()
+                    .withHearingLocation(pilotHearingLocation).build())
                 .build();
         }
     }

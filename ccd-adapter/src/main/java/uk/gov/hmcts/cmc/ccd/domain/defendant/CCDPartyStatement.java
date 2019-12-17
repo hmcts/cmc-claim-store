@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.domain.defendant;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentIntention;
@@ -16,4 +17,11 @@ public class CCDPartyStatement {
     private String offerContent;
     private LocalDate offerCompletionDate;
     private CCDPaymentIntention paymentIntention;
+
+    @JsonIgnore
+    public boolean hasOffer() {
+        return offerContent != null
+            || offerCompletionDate != null
+            || paymentIntention != null;
+    }
 }

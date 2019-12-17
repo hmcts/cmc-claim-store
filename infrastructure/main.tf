@@ -196,6 +196,9 @@ module "claim-store-api" {
     MILO_CSV_RECIPIENT = "${data.azurerm_key_vault_secret.milo_recipient.value}"
     MILO_CSV_SCHEDULE = "${var.milo_csv_schedule}"
 
+    // Intention to proceed
+    CLAIM_STAYED_SCHEDULE = "${var.claim_stayed_schedule}"
+
     // robot notifications
     RPA_NOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"
     RPA_NOTIFICATIONS_SEALEDCLAIMRECIPIENT = "${data.azurerm_key_vault_secret.rpa_email_sealed_claim.value}"
@@ -207,8 +210,6 @@ module "claim-store-api" {
     // feature toggles
     CLAIM_STORE_TEST_SUPPORT_ENABLED = "${var.env == "prod" ? "false" : "true"}"
     FEATURE_TOGGLES_SAVE_CLAIM_STATE_ENABLED = "${var.save_claim_state_enabled}"
-    FEATURE_TOGGLES_ASYNC_EVENT_OPERATIONS_ENABLED = "${var.async_event_operations_enabled}"
-    FEATURE_TOGGLES_DIRECTIONS_QUESTIONNAIRE_ENABLED = "${var.directions_questionnaire_enabled}"
     //thread pool configs
     ASYNC_MAX_THREADPOOL_SIZE = 50
 

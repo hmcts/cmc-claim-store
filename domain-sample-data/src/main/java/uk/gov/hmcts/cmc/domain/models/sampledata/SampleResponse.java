@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention
 import uk.gov.hmcts.cmc.domain.models.sampledata.statementofmeans.SampleStatementOfMeans;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 public abstract class SampleResponse<T extends SampleResponse<T>> {
 
@@ -27,6 +28,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
 
     protected YesNoOption freeMediationOption = YesNoOption.YES;
     protected YesNoOption moreTimeNeededOption = YesNoOption.YES;
+    protected YesNoOption paperResponse = YesNoOption.NO;
     protected StatementOfTruth statementOfTruth;
     protected Party defendantDetails = SampleParty.builder()
         .withCollectionId(COLLECTION_ID)
@@ -145,6 +147,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .timeline(SampleDefendantTimeline.validDefaults())
                 .evidence(SampleDefendantEvidence.validDefaults())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder().build())
                 .build();
         }
 
@@ -237,6 +240,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         private String mediationPhoneNumber = MEDIATION_PHONE_NUMBER;
         private String mediationContactPerson = MEDIATION_CONTACT_PERSON;
         private DirectionsQuestionnaire directionsQuestionnaire = SampleDirectionsQuestionnaire.builder().build();
+        private LocalDate intentionToProceedDeadline = LocalDate.now().plusDays(10);
 
         public static FullDefence builder() {
             return new FullDefence();

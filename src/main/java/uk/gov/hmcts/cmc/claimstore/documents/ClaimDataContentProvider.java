@@ -52,7 +52,7 @@ public class ClaimDataContentProvider {
         List<BigDecimal> totalAmountComponents = new ArrayList<>();
         AmountBreakDown amountBreakDown = (AmountBreakDown) claim.getClaimData().getAmount();
         totalAmountComponents.add(amountBreakDown.getTotalAmount());
-        totalAmountComponents.add(claim.getClaimData().getFeesPaidInPounds());
+        totalAmountComponents.add(claim.getClaimData().getFeesPaidInPounds().orElse(ZERO));
 
         InterestContent interestContent = null;
 
@@ -69,8 +69,6 @@ public class ClaimDataContentProvider {
         }
 
         Optional<StatementOfTruth> optionalStatementOfTruth = claim.getClaimData().getStatementOfTruth();
-        String signerName = optionalStatementOfTruth.map((StatementOfTruth::getSignerName)).orElse(null);
-        String signerRole = optionalStatementOfTruth.map((StatementOfTruth::getSignerRole)).orElse(null);
 
         List<TimelineEvent> events = claim.getClaimData().getTimeline().map(Timeline::getEvents).orElse(null);
 
@@ -88,18 +86,17 @@ public class ClaimDataContentProvider {
             formatDate(claim.getIssuedOn()),
             split(claim.getClaimData().getReason()),
             formatMoney(amountBreakDown.getTotalAmount()),
-            formatMoney(claim.getClaimData().getFeesPaidInPounds()),
+            formatMoney(claim.getClaimData().getFeesPaidInPounds().orElse(ZERO)),
             interestContent,
             formatMoney(
                 totalAmountComponents.stream()
                     .filter(Objects::nonNull)
                     .reduce(ZERO, BigDecimal::add)
             ),
-            signerName,
-            signerRole,
             events,
             evidences,
-            mapToAmountRowContent(amountBreakDown.getRows())
+            mapToAmountRowContent(amountBreakDown.getRows()),
+            optionalStatementOfTruth.orElse(null)
         );
     }
 

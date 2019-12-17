@@ -18,7 +18,7 @@ public enum PaymentStatus {
 
     public static PaymentStatus fromValue(String value) {
         return Arrays.stream(PaymentStatus.values())
-            .filter(val -> val.name().equalsIgnoreCase(value))
+            .filter(val -> val.status.equalsIgnoreCase(value))
             .findFirst()
             .orElseThrow(IllegalArgumentException::new);
     }

@@ -82,7 +82,10 @@ import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.THOU
 
 public class SampleData {
 
-    public static final String AMOUNT = "12398";
+    private static final String AMOUNT = "12398";
+    private static final String SUBMIT_MORE_DOCS_INSTRUCTION = "submit more docs";
+    public static final String MANCHESTER_CIVIL_JUSTICE_CENTRE_CIVIL_AND_FAMILY_COURTS
+        = "Manchester Civil Justice Centre (Civil and Family Courts)";
 
     //Utility class
     private SampleData() {
@@ -225,6 +228,7 @@ public class SampleData {
             .instalmentAmount(AMOUNT)
             .paymentSchedule(CCDPaymentSchedule.EACH_WEEK)
             .completionDate(LocalDate.of(2018, 10, 12))
+            .paymentLength("1 year")
             .build();
     }
 
@@ -384,7 +388,10 @@ public class SampleData {
             .claimantProvidedRepresentativeOrganisationPhone("my@email.com")
             .claimantProvidedRepresentativeOrganisationDxAddress("dx123")
             .claimantResponse(CCDResponseRejection.builder()
-                .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder().build())
+                .directionsQuestionnaire(CCDDirectionsQuestionnaire.builder()
+                    .expertRequired(YES)
+                    .expertReports(null)
+                    .build())
                 .build())
             .directionsQuestionnaire(CCDDirectionsQuestionnaire
                 .builder()
@@ -415,6 +422,9 @@ public class SampleData {
                 .directionsQuestionnaire(CCDDirectionsQuestionnaire
                     .builder()
                     .hearingLocation("Claimant Court")
+                    .expertRequired(YES)
+                    .permissionForExpert(YES)
+                    .expertEvidenceToExamine("Expert evidence required to examine")
                     .exceptionalCircumstancesReason("As a claimant I like this court more").build())
                 .build())
             .directionsQuestionnaire(CCDDirectionsQuestionnaire
@@ -617,6 +627,14 @@ public class SampleData {
                         .build()))
             .eyewitnessUploadForParty(CCDDirectionPartyType.DEFENDANT)
             .estimatedHearingDuration(CCDHearingDurationType.FOUR_HOURS)
+            .expertReportPermissionPartyAskedByClaimant(YES)
+            .expertReportPermissionPartyAskedByDefendant(YES)
+            .expertReportPermissionPartyGivenToClaimant(YES)
+            .expertReportPermissionPartyGivenToDefendant(YES)
+            .expertReportInstructionClaimant(ImmutableList.of(CCDCollectionElement.<String>builder()
+                .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()))
+            .expertReportInstructionDefendant(ImmutableList.of(CCDCollectionElement.<String>builder()
+                .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()))
             .build();
     }
 
@@ -720,6 +738,21 @@ public class SampleData {
             .build();
     }
 
+    public static CCDCase getCCDCitizenCaseWithRespondent(CCDRespondent respondent) {
+        List<CCDCollectionElement<CCDApplicant>> applicants
+            = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
+        List<CCDCollectionElement<CCDRespondent>> respondents
+            = singletonList(CCDCollectionElement.<CCDRespondent>builder().value(respondent).build());
+
+        return ccdBuilderWithDefault()
+            .amountBreakDown(getAmountBreakDown())
+            .applicants(applicants)
+            .respondents(respondents)
+            .claimSubmissionOperationIndicators(defaultCCDClaimSubmissionOperationIndicators)
+            .state(OPEN.getValue())
+            .build();
+    }
+
     public static CCDAddress getAddress() {
         return CCDAddress.builder()
             .addressLine1("52")
@@ -727,6 +760,38 @@ public class SampleData {
             .addressLine3("Salford")
             .postTown("Manchester")
             .postCode("DF1 3LJ")
+            .build();
+    }
+
+    public static CCDAddress getHearingCourtAddress() {
+        return CCDAddress.builder()
+            .addressLine1("1 Bridge Street West")
+            .postTown("Manchester")
+            .postCode("M60 9DJ")
+            .build();
+    }
+
+    public static CCDCase withPaperResponseFromStaffUploadedDoc() {
+        List<CCDCollectionElement<CCDApplicant>> applicants
+            = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
+
+        return ccdBuilderWithDefault()
+            .amountBreakDown(getAmountBreakDown())
+            .applicants(applicants)
+            .staffUploadedDocuments(SampleStaffUploadedDoc.staffUploadedDocs)
+            .state(OPEN.getValue())
+            .build();
+    }
+
+    public static CCDCase withPaperResponseFromScannedDoc() {
+        List<CCDCollectionElement<CCDApplicant>> applicants
+            = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
+
+        return ccdBuilderWithDefault()
+            .amountBreakDown(getAmountBreakDown())
+            .applicants(applicants)
+            .scannedDocuments(SampleStaffUploadedDoc.scannedDocsPaperResponse)
+            .state(OPEN.getValue())
             .build();
     }
 }

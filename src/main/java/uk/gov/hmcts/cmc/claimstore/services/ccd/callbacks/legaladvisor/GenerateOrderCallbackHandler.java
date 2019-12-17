@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
@@ -18,31 +19,30 @@ import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestion
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDResponseSubjectType;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalculator;
-import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.DocAssemblyTemplateBodyMapper;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules.GenerateOrderRule;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
-import uk.gov.hmcts.reform.docassembly.DocAssemblyClient;
-import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyRequest;
 import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
-import uk.gov.hmcts.reform.docassembly.domain.OutputType;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ACTION_REVIEW_COMMENTS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.GENERATE_ORDER;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOTH;
@@ -50,10 +50,14 @@ import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.DOC
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYEWITNESS;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DRAFTED_BY_LEGAL_ADVISOR;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.LEGAL_ADVISOR;
 
 @Service
 @ConditionalOnProperty(prefix = "doc_assembly", name = "url")
 public class GenerateOrderCallbackHandler extends CallbackHandler {
+    private static final List<Role> ROLES = Collections.singletonList(LEGAL_ADVISOR);
+    private static final List<CaseEvent> EVENTS = ImmutableList.of(GENERATE_ORDER, ACTION_REVIEW_COMMENTS);
+
     private static final String DOC_UPLOAD_DEADLINE = "docUploadDeadline";
     private static final String EYEWITNESS_UPLOAD_DEADLINE = "eyewitnessUploadDeadline";
     private static final String DOC_UPLOAD_FOR_PARTY = "docUploadForParty";
@@ -65,6 +69,8 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
     private static final String PREFERRED_COURT_OBJECTING_REASON = "preferredCourtObjectingReason";
     private static final String DIRECTION_LIST = "directionList";
     private static final String PREFERRED_DQ_COURT = "preferredDQCourt";
+    private static final String EXPERT_PERMISSION_BY_CLAIMANT = "expertReportPermissionPartyAskedByClaimant";
+    private static final String EXPERT_PERMISSION_BY_DEFENDANT = "expertReportPermissionPartyAskedByDefendant";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -72,30 +78,24 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
     private String templateId;
 
     private final LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator;
-    private final DocAssemblyClient docAssemblyClient;
-    private final AuthTokenGenerator authTokenGenerator;
-    private final UserService userService;
-    private final DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper;
     private final CaseDetailsConverter caseDetailsConverter;
+    private final DocAssemblyService docAssemblyService;
     private final AppInsights appInsights;
+    private final GenerateOrderRule generateOrderRule;
 
     @Autowired
     public GenerateOrderCallbackHandler(
-        UserService userService,
         LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator,
-        DocAssemblyClient docAssemblyClient,
-        AuthTokenGenerator authTokenGenerator,
-        DocAssemblyTemplateBodyMapper docAssemblyTemplateBodyMapper,
         CaseDetailsConverter caseDetailsConverter,
-        AppInsights appInsights
+        DocAssemblyService docAssemblyService,
+        AppInsights appInsights,
+        GenerateOrderRule generateOrderRule
     ) {
-        this.docAssemblyClient = docAssemblyClient;
-        this.authTokenGenerator = authTokenGenerator;
-        this.userService = userService;
         this.legalOrderGenerationDeadlinesCalculator = legalOrderGenerationDeadlinesCalculator;
-        this.docAssemblyTemplateBodyMapper = docAssemblyTemplateBodyMapper;
         this.caseDetailsConverter = caseDetailsConverter;
+        this.docAssemblyService = docAssemblyService;
         this.appInsights = appInsights;
+        this.generateOrderRule = generateOrderRule;
     }
 
     @Override
@@ -108,33 +108,32 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
 
     @Override
     public List<CaseEvent> handledEvents() {
-        return ImmutableList.of(GENERATE_ORDER, ACTION_REVIEW_COMMENTS);
+        return EVENTS;
     }
 
     @Override
-    public List<String> getSupportedRoles() {
-        return ImmutableList.of("caseworker-cmc-legaladvisor");
+    public List<Role> getSupportedRoles() {
+        return ROLES;
     }
 
     private CallbackResponse prepopulateOrder(CallbackParams callbackParams) {
-        logger.info("Generate order callback: prepopulating order fields");
+        logger.info("Generate order callback: pre populating order fields");
         CallbackRequest callbackRequest = callbackParams.getRequest();
 
-        LocalDate deadline = legalOrderGenerationDeadlinesCalculator.calculateOrderGenerationDeadlines();
         Map<String, Object> data = new HashMap<>();
-        data.put(DIRECTION_LIST, ImmutableList.of(
-            DOCUMENTS.name(),
-            EYEWITNESS.name()
-        ));
+        data.put(DIRECTION_LIST, ImmutableList.of(DOCUMENTS.name(), EYEWITNESS.name()));
+
         Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
-
         addCourtData(claim, ccdCase, data);
+
+        LocalDate deadline = legalOrderGenerationDeadlinesCalculator.calculateOrderGenerationDeadlines();
         data.put(DOC_UPLOAD_DEADLINE, deadline);
         data.put(EYEWITNESS_UPLOAD_DEADLINE, deadline);
         data.put(DOC_UPLOAD_FOR_PARTY, BOTH.name());
         data.put(EYEWITNESS_UPLOAD_FOR_PARTY, BOTH.name());
         data.put(PAPER_DETERMINATION, NO.name());
+
         return AboutToStartOrSubmitCallbackResponse
             .builder()
             .data(data)
@@ -146,24 +145,13 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
 
-        String authorisation = callbackParams.getParams()
-            .get(CallbackParams.Params.BEARER_TOKEN).toString();
+        List<String> validations = generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase);
+        if (!validations.isEmpty()) {
+            return AboutToStartOrSubmitCallbackResponse.builder().errors(validations).build();
+        }
 
-        logger.info("Generate order callback: creating request for doc assembly");
-        DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
-            .templateId(templateId)
-            .outputType(OutputType.PDF)
-            .formPayload(docAssemblyTemplateBodyMapper.from(ccdCase, userService.getUserDetails(authorisation)))
-            .build();
-
-        logger.info("Generate order callback: sending request to doc assembly");
-
-        DocAssemblyResponse docAssemblyResponse = docAssemblyClient.generateOrder(
-            authorisation,
-            authTokenGenerator.generate(),
-            docAssemblyRequest
-        );
-
+        String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
+        DocAssemblyResponse docAssemblyResponse = docAssemblyService.createOrder(ccdCase, authorisation);
         logger.info("Generate order callback: received response from doc assembly");
 
         appInsights.trackEvent(DRAFTED_BY_LEGAL_ADVISOR, REFERENCE_NUMBER, ccdCase.getPreviousServiceCaseReference());
@@ -184,9 +172,7 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
             .map(r -> (CCDResponseRejection) r)
             .orElseThrow(() -> new IllegalStateException("Claimant Response not present"));
 
-        CCDDirectionsQuestionnaire claimantDQ =
-            claimantResponse.getDirectionsQuestionnaire();
-
+        CCDDirectionsQuestionnaire claimantDQ = claimantResponse.getDirectionsQuestionnaire();
         CCDDirectionsQuestionnaire defendantDQ = respondent.getDirectionsQuestionnaire();
 
         String newRequestedCourt = null;
@@ -208,5 +194,33 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
         data.put(PREFERRED_COURT_OBJECTING_PARTY, preferredCourtObjectingParty);
         data.put(PREFERRED_COURT_OBJECTING_REASON, preferredCourtObjectingReason);
         data.put(PREFERRED_DQ_COURT, DirectionsQuestionnaireUtils.getPreferredCourt(claim));
+
+        if (Optional.ofNullable(claimantDQ).isPresent()) {
+            data.put(EXPERT_PERMISSION_BY_CLAIMANT, hasRequestedExpertPermission(claimantDQ));
+        }
+
+        if (Optional.ofNullable(defendantDQ).isPresent()) {
+            data.put(EXPERT_PERMISSION_BY_DEFENDANT, hasRequestedExpertPermission(defendantDQ));
+        }
+    }
+
+    private CCDYesNoOption hasRequestedExpertPermission(CCDDirectionsQuestionnaire directionsQuestionnaire) {
+        return directionsQuestionnaire.getExpertRequired() != null
+            && directionsQuestionnaire.getExpertRequired().toBoolean()
+            && (hasRequestedForPermissionWithProvidedEvidence(directionsQuestionnaire)
+            || hasProvidedExpertReports(directionsQuestionnaire))
+            ? YES
+            : NO;
+    }
+
+    private boolean hasProvidedExpertReports(CCDDirectionsQuestionnaire directionsQuestionnaire) {
+        return directionsQuestionnaire.getExpertReports() != null
+            && !directionsQuestionnaire.getExpertReports().isEmpty();
+    }
+
+    private boolean hasRequestedForPermissionWithProvidedEvidence(CCDDirectionsQuestionnaire directionsQuestionnaire) {
+        return directionsQuestionnaire.getPermissionForExpert() != null
+            && directionsQuestionnaire.getPermissionForExpert().toBoolean()
+            && StringUtils.isNotBlank(directionsQuestionnaire.getExpertEvidenceToExamine());
     }
 }

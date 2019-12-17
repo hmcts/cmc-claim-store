@@ -27,7 +27,7 @@ public class SoleTraderMapper {
                    CCDParty.CCDPartyBuilder applicantPartyDetail) {
         applicantPartyDetail.type(CCDPartyType.SOLE_TRADER);
         soleTrader.getTitle().ifPresent(applicantPartyDetail::title);
-        soleTrader.getMobilePhone()
+        soleTrader.getPhone()
             .ifPresent(telephoneNo -> applicantPartyDetail.telephoneNumber(telephoneMapper.to(telephoneNo)));
         soleTrader.getBusinessName().ifPresent(applicantPartyDetail::businessName);
         soleTrader.getCorrespondenceAddress()
@@ -48,7 +48,7 @@ public class SoleTraderMapper {
             .name(applicant.getPartyName())
             .address(addressMapper.from(partyDetail.getPrimaryAddress()))
             .correspondenceAddress(addressMapper.from(partyDetail.getCorrespondenceAddress()))
-            .mobilePhone(telephoneMapper.from(partyDetail.getTelephoneNumber()))
+            .phone(telephoneMapper.from(partyDetail.getTelephoneNumber()))
             .representative(representativeMapper.from(applicant))
             .title(partyDetail.getTitle())
             .businessName(partyDetail.getBusinessName())

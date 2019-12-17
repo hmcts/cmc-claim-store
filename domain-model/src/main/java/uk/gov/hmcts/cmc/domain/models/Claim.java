@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -70,6 +71,11 @@ public class Claim {
     private final ReviewOrder reviewOrder;
     private final DirectionOrder directionOrder;
     private final ChannelType channel;
+    private final LocalDate intentionToProceedDeadline;
+    private final MediationOutcome mediationOutcome;
+    private final String failedMediationReason;
+    private LocalDateTime mediationSettlementReachedAt;
+    private final YesNoOption paperResponse;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -108,7 +114,12 @@ public class Claim {
         Long ccdCaseId,
         ReviewOrder reviewOrder,
         DirectionOrder directionOrder,
-        ChannelType channel
+        ChannelType channel,
+        LocalDate intentionToProceedDeadline,
+        MediationOutcome mediationOutcome,
+        String failedMediationReason,
+        LocalDateTime mediationSettlementReachedAt,
+        YesNoOption paperResponse
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -145,6 +156,11 @@ public class Claim {
         this.reviewOrder = reviewOrder;
         this.directionOrder = directionOrder;
         this.channel = channel;
+        this.intentionToProceedDeadline = intentionToProceedDeadline;
+        this.mediationOutcome = mediationOutcome;
+        this.failedMediationReason = failedMediationReason;
+        this.mediationSettlementReachedAt = mediationSettlementReachedAt;
+        this.paperResponse = paperResponse;
     }
 
     public Optional<Response> getResponse() {
@@ -224,11 +240,6 @@ public class Claim {
         return Optional.ofNullable(claimantResponseDeadline);
     }
 
-    @JsonIgnore
-    public Optional<ClaimState> getState() {
-        return Optional.ofNullable(state);
-    }
-
     public Optional<ReviewOrder> getReviewOrder() {
         return Optional.ofNullable(reviewOrder);
     }
@@ -239,6 +250,18 @@ public class Claim {
 
     public Optional<ChannelType> getChannel() {
         return Optional.ofNullable(channel);
+    }
+
+    public Optional<MediationOutcome> getMediationOutcome() {
+        return Optional.ofNullable(mediationOutcome);
+    }
+
+    public Optional<String> getFailedMediationReason() {
+        return Optional.ofNullable(failedMediationReason);
+    }
+
+    public Optional<LocalDateTime> getMediationSettlementReachedAt() {
+        return Optional.ofNullable(mediationSettlementReachedAt);
     }
 
     @Override

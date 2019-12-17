@@ -64,6 +64,8 @@ public class CCDCase {
     private String features;
     private CCDYesNoOption migratedFromClaimStore;
     private List<CCDCollectionElement<CCDClaimDocument>> caseDocuments;
+    private List<CCDCollectionElement<CCDScannedDocument>> scannedDocuments;
+    private List<CCDCollectionElement<CCDClaimDocument>> staffUploadedDocuments;
     private String caseName;
     private CCDClaimSubmissionOperationIndicators claimSubmissionOperationIndicators;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -74,4 +76,5 @@ public class CCDCase {
     private CCDDirectionOrder directionOrder;
     private CCDReviewOrder reviewOrder;
     private CCDChannelType channel;
+    private LocalDate intentionToProceedDeadline;
 }

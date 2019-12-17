@@ -72,11 +72,11 @@ public interface CaseRepository {
 
     void saveReDetermination(String authorisation, Claim claim, ReDetermination reDetermination);
 
-    void saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent);
+    Claim saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent);
 
     Claim initiatePayment(User user, Claim claim);
 
-    Claim resumePayment(User authorisation, Claim claim);
+    Claim saveCaseEventIOC(User user, Claim claim, CaseEvent caseEvent);
 
     Claim saveClaimDocuments(
         String authorisation,

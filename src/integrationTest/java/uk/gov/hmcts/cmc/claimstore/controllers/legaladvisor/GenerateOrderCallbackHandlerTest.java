@@ -5,21 +5,21 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
+import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Address;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -36,6 +36,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType.ABOUT_TO_START;
+import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType.MID;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCaseDataStoreSubmitResponseWithDQ;
 
 @TestPropertySource(
@@ -44,7 +46,10 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
         "doc_assembly.url=http://doc-assembly-api"
     }
 )
-public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
+public class GenerateOrderCallbackHandlerTest extends BaseMockSpringTest {
+
+    @MockBean
+    protected EmailService emailService;
 
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder()
         .withForename("legal")
@@ -54,9 +59,6 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
 
     private static final String AUTHORISATION_TOKEN = "Bearer let me in";
     private static final String DOCUMENT_URL = "http://bla.test";
-
-    @Autowired
-    protected CaseDetailsConverter caseDetailsConverter;
 
     @Before
     public void setUp() {
@@ -84,16 +86,16 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
 
     @Test
     public void shouldPrepopulateFieldsOnAboutToStartEvent() throws Exception {
-        MvcResult mvcResult = makeRequestGenerateOrder(CallbackType.ABOUT_TO_START.getValue())
+        MvcResult mvcResult = makeRequestGenerateOrder(ABOUT_TO_START.getValue())
             .andExpect(status().isOk())
             .andReturn();
 
-        Map<String, Object> responseData = deserializeObjectFrom(
+        Map<String, Object> responseData = jsonMappingHelper.deserializeObjectFrom(
             mvcResult,
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
 
-        assertThat(responseData).hasSize(7);
+        assertThat(responseData).hasSize(9);
         assertThat(LocalDate.parse(responseData.get("docUploadDeadline").toString()))
             .isAfterOrEqualTo(LocalDate.now().plusDays(42));
         assertThat(LocalDate.parse(responseData.get("eyewitnessUploadDeadline").toString()))
@@ -112,11 +114,11 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
 
     @Test
     public void shouldGenerateDocumentOnMidEvent() throws Exception {
-        MvcResult mvcResult = makeRequest(CallbackType.MID.getValue())
+        MvcResult mvcResult = makeRequest(MID.getValue())
             .andExpect(status().isOk())
             .andReturn();
 
-        Map<String, Object> responseData = deserializeObjectFrom(
+        Map<String, Object> responseData = jsonMappingHelper.deserializeObjectFrom(
             mvcResult,
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
@@ -132,6 +134,22 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
             .andReturn();
         assertThat(mvcResult.getResolvedException())
             .isInstanceOfAny(CallbackException.class);
+    }
+
+    @Test
+    public void shouldReturnErrorForUnsupportedRole() throws Exception {
+        UserDetails userDetails = SampleUserDetails.builder()
+            .withRoles("caseworker-cmc")
+            .build();
+
+        given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
+
+        MvcResult mvcResult = makeRequest(ABOUT_TO_START.getValue())
+            .andExpect(status().isForbidden())
+            .andReturn();
+
+        assertThat(mvcResult.getResolvedException())
+            .isInstanceOfAny(ForbiddenActionException.class);
     }
 
     private ResultActions makeRequest(String callbackType) throws Exception {
@@ -184,7 +202,7 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
             .perform(post("/cases/callbacks/" + callbackType)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
-                .content(jsonMapper.toJson(callbackRequest))
+                .content(jsonMappingHelper.toJson(callbackRequest))
             );
     }
 
@@ -201,7 +219,7 @@ public class GenerateOrderCallbackHandlerTest extends MockSpringTest {
             .perform(post("/cases/callbacks/" + callbackType)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
-                .content(jsonMapper.toJson(callbackRequest))
+                .content(jsonMappingHelper.toJson(callbackRequest))
             );
     }
 }
