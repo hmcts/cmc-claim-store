@@ -277,7 +277,7 @@ public class Claim {
     public Optional<String> getPreferredDQCourt() {
         return Optional.ofNullable(preferredDQCourt);
     }
-    
+
     @Override
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ourStyle());
