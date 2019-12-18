@@ -1,37 +1,33 @@
-package uk.gov.hmcts.cmc.claimstore.deprecated.services.staff;
+package uk.gov.hmcts.cmc.claimstore.services.staff;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
-import uk.gov.hmcts.cmc.claimstore.deprecated.MockSpringTest;
-import uk.gov.hmcts.cmc.claimstore.services.staff.SettlementReachedStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
-import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
-import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
-import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
+import uk.gov.hmcts.cmc.email.EmailService;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
+import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 
-public class SettlementReachedStaffNotificationServiceTest extends MockSpringTest {
-
+public class StatesPaidStaffNotificationServiceTest extends BaseMockSpringTest {
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
-
-    @Autowired
-    private SettlementReachedStaffNotificationService service;
+    private Claim claimWithFullDefenceResponse;
 
     @Captor
     private ArgumentCaptor<String> senderArgument;
@@ -41,32 +37,24 @@ public class SettlementReachedStaffNotificationServiceTest extends MockSpringTes
     @Autowired
     private StaffEmailProperties emailProperties;
 
-    private Claim claim;
+    @Autowired
+    private StatesPaidStaffNotificationService service;
+
+    @MockBean
+    protected EmailService emailService;
 
     @Before
-    public void setup() {
-        Settlement settlement = new Settlement();
-        settlement.makeOffer(SampleOffer.builder().build(), MadeBy.DEFENDANT, null);
-        settlement.accept(MadeBy.CLAIMANT, null);
+    public void beforeEachTest() {
+        claimWithFullDefenceResponse = SampleClaim.getClaimFullDefenceStatesPaidWithAcceptation();
 
-        claim = SampleClaim
-            .builder()
-            .withSettlementReachedAt(LocalDateTime.now())
-            .withResponse(SampleResponse.validDefaults())
-            .withSettlement(settlement)
-            .build();
         when(pdfServiceClient.generateFromHtml(any(byte[].class), anyMap()))
             .thenReturn(PDF_CONTENT);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowNullPointerWhenGivenNullClaim() {
-        service.notifySettlementReached(null);
-    }
-
     @Test
     public void shouldSendEmailToExpectedRecipient() {
-        service.notifySettlementReached(claim);
+
+        service.notifyStaffClaimantResponseStatesPaidSubmittedFor(claimWithFullDefenceResponse);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
@@ -74,22 +62,30 @@ public class SettlementReachedStaffNotificationServiceTest extends MockSpringTes
     }
 
     @Test
-    public void shouldSendEmailWithExpectedContent() {
-        service.notifySettlementReached(claim);
+    public void shouldSendEmailWithExpectedContentStatesPaidByFullDefence() {
+
+        service.notifyStaffClaimantResponseStatesPaidSubmittedFor(claimWithFullDefenceResponse);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
+        String subject = String.format("Civil Money Claim States Paid Claimant Response: %s v %s %s",
+            claimWithFullDefenceResponse.getClaimData().getClaimant().getName(),
+            claimWithFullDefenceResponse.getClaimData().getDefendant().getName(),
+            claimWithFullDefenceResponse.getReferenceNumber()
+        );
+
         assertThat(emailDataArgument.getValue()
-            .getSubject()).startsWith("Offer accepted");
+            .getSubject()).isEqualTo(subject);
         assertThat(emailDataArgument.getValue()
             .getMessage()).startsWith(
-            "The claimant has accepted the defendant’s offer to settle their claim"
+            "The defendant has submitted a States Paid defence."
         );
     }
 
     @Test
     public void shouldSendEmailWithExpectedPDFAttachments() throws IOException {
-        service.notifySettlementReached(claim);
+
+        service.notifyStaffClaimantResponseStatesPaidSubmittedFor(claimWithFullDefenceResponse);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
@@ -97,12 +93,14 @@ public class SettlementReachedStaffNotificationServiceTest extends MockSpringTes
             .getAttachments()
             .get(0);
 
-        String expectedFileName = String.format(
-            SettlementReachedStaffNotificationService.FILE_NAME_FORMAT,
-            claim.getReferenceNumber()
-        );
+        String expectedFileName = buildResponseFileBaseName(claimWithFullDefenceResponse.getReferenceNumber())
+            + EXTENSION;
 
         assertThat(emailAttachment.getContentType()).isEqualTo("application/pdf");
         assertThat(emailAttachment.getFilename()).isEqualTo(expectedFileName);
+
+        byte[] pdfContent = IOUtils.toByteArray(emailAttachment.getData()
+            .getInputStream());
+        assertThat(pdfContent).isEqualTo(PDF_CONTENT);
     }
 }

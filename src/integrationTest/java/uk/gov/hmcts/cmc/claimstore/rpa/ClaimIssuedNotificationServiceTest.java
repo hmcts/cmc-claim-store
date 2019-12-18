@@ -1,19 +1,20 @@
-package uk.gov.hmcts.cmc.claimstore.deprecated.rpa;
+package uk.gov.hmcts.cmc.claimstore.rpa;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import uk.gov.hmcts.cmc.claimstore.deprecated.MockSpringTest;
+import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
-import uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.rpa.config.EmailProperties;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
+import uk.gov.hmcts.cmc.email.EmailService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +29,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedCla
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
-public class ClaimIssuedNotificationServiceTest extends MockSpringTest {
+public class ClaimIssuedNotificationServiceTest extends BaseMockSpringTest {
 
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 
@@ -36,6 +37,9 @@ public class ClaimIssuedNotificationServiceTest extends MockSpringTest {
     private ClaimIssuedNotificationService service;
     @Autowired
     private EmailProperties emailProperties;
+
+    @MockBean
+    protected EmailService emailService;
 
     @Captor
     private ArgumentCaptor<String> senderArgument;
