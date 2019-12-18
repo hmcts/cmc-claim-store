@@ -88,10 +88,6 @@ variable "save_claim_state_enabled" {
   default = "false"
 }
 
-variable "directions_questionnaire_enabled" {
-  default = "false"
-}
-
 variable milo_csv_schedule  {
   default = "-"
 }

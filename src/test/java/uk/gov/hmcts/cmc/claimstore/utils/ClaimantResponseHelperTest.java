@@ -13,6 +13,8 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isOptedFo
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isReferredToJudge;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isSettlePreJudgment;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleHearingLocation.pilotHearingLocation;
 
 public class ClaimantResponseHelperTest {
 
@@ -52,8 +54,17 @@ public class ClaimantResponseHelperTest {
 
     @Test
     public void shouldReturnTrueWhenOptedForMediation() {
-        ClaimantResponse claimantResponse = SampleClaimantResponse.ClaimantResponseRejection.builder()
-            .buildRejectionWithDirectionsQuestionnaire();
+        SampleClaimantResponse.ClaimantResponseRejection.builder();
+        ClaimantResponse claimantResponse = ResponseRejection.builder()
+            .amountPaid(TEN)
+            .freeMediation(YES)
+            .mediationPhoneNumber("07999999999")
+            .mediationContactPerson("Mediation Contact Person")
+            .reason("Some valid reason")
+            .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder()
+                .withHearingLocation(pilotHearingLocation).build())
+            .build();
+
         assertThat(isOptedForMediation(claimantResponse)).isTrue();
     }
 
