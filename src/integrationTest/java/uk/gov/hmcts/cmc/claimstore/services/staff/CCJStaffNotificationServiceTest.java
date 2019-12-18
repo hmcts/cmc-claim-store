@@ -1,14 +1,14 @@
-package uk.gov.hmcts.cmc.claimstore.deprecated.services.staff;
+package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
-import uk.gov.hmcts.cmc.claimstore.deprecated.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
-import uk.gov.hmcts.cmc.claimstore.services.staff.CCJStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
@@ -20,6 +20,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
+import uk.gov.hmcts.cmc.email.EmailService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -36,20 +37,22 @@ import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.ADMISSIONS;
 import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.DEFAULT;
 import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.DETERMINATION;
 
-public class CCJStaffNotificationServiceTest extends MockSpringTest {
+public class CCJStaffNotificationServiceTest extends BaseMockSpringTest {
 
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 
     @Autowired
     private CCJStaffNotificationService service;
+    @Autowired
+    private StaffEmailProperties emailProperties;
 
     @Captor
     private ArgumentCaptor<String> senderArgument;
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
 
-    @Autowired
-    private StaffEmailProperties emailProperties;
+    @MockBean
+    protected EmailService emailService;
 
     private Claim claim;
 
