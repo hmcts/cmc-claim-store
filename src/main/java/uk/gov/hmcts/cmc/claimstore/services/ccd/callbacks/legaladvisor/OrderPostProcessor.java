@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor;
 
 import com.google.common.collect.ImmutableList;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
@@ -32,6 +33,7 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service
+@ConditionalOnProperty(prefix = "doc_assembly", name = "url")
 public class OrderPostProcessor {
     private final Clock clock;
     private final OrderDrawnNotificationService orderDrawnNotificationService;
