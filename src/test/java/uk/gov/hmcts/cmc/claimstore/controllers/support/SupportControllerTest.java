@@ -260,23 +260,6 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldNotResendClaimantResponseNotificationsIfReferToJudge() {
-        sampleClaim = SampleClaim.builder()
-            .withResponse(PartAdmission.builder().buildWithPaymentOptionImmediately())
-            .withClaimantResponse(
-                ClaimantResponseAcceptation.builder()
-                    .buildAcceptationReferToJudgeWithCourtDetermination()
-            )
-            .build();
-
-        when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(sampleClaim));
-
-        controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claimant-response");
-
-        verify(claimantResponseStaffNotificationHandler, never()).onClaimantResponse(any());
-    }
-
-    @Test
     public void shouldNotResendClaimantResponseNotificationsWhenSettlementAgreementReached() {
         sampleClaim = SampleClaim.builder()
             .withResponse(
