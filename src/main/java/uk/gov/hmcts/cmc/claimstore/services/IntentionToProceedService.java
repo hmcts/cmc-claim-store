@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -86,7 +87,7 @@ public class IntentionToProceedService {
     public void checkClaimsPastIntentionToProceedDeadline(LocalDateTime runDateTime, User user) {
         LocalDate responseDate = intentionToProceedDeadlineCalculator.calculateResponseDate(runDateTime);
         Set<Claim> claims = new HashSet<>(caseSearchApi.getClaimsPastIntentionToProceed(user, responseDate));
-        Collection<Claim> failedClaims = claims.stream()
+        List<Claim> failedClaims = claims.stream()
             .map(claim -> updateClaim(user, claim))
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
@@ -98,15 +99,16 @@ public class IntentionToProceedService {
 
     private Claim updateClaim(User user, Claim claim) {
         try {
-            appInsights.trackEvent(AppInsightsEvent.CLAIM_STAYED, REFERENCE_NUMBER, claim.getReferenceNumber());
             caseRepository.saveCaseEvent(
                 user.getAuthorisation(),
                 claim,
                 CaseEvent.STAY_CLAIM
             );
+            appInsights.trackEvent(AppInsightsEvent.CLAIM_STAYED, REFERENCE_NUMBER, claim.getReferenceNumber());
             return null;
         } catch (Exception e) {
-            logger.error(String.format("Error whilst staying claim %s", claim.getId()), e);
+            logger.error("Error whilst staying claim " + claim.getReferenceNumber(), e);
+            appInsights.trackException(e);
             return claim;
         }
     }

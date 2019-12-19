@@ -545,9 +545,9 @@ public class SupportControllerTest {
         final String auth = "auth";
         final UserDetails userDetails = new UserDetails("id", null, null, null, null);
         final User user = new User(null, userDetails);
-        when(userService.getUser(auth)).thenReturn(user);
+        when(userService.authenticateAnonymousCaseWorker()).thenReturn(user);
 
-        controller.checkClaimsPastIntentionToProceedDeadline(auth, localDateTime);
+        controller.checkClaimsPastIntentionToProceedDeadline(localDateTime);
 
         verify(intentionToProceedService).checkClaimsPastIntentionToProceedDeadline(localDateTime, user);
     }
@@ -557,9 +557,9 @@ public class SupportControllerTest {
         final String auth = "auth";
         final UserDetails userDetails = new UserDetails("id", null, null, null, null);
         final User user = new User(null, userDetails);
-        when(userService.getUser(auth)).thenReturn(user);
+        when(userService.authenticateAnonymousCaseWorker()).thenReturn(user);
 
-        controller.checkClaimsPastIntentionToProceedDeadline(auth, null);
+        controller.checkClaimsPastIntentionToProceedDeadline(null);
 
         verify(intentionToProceedService).checkClaimsPastIntentionToProceedDeadline(notNull(), eq(user));
     }

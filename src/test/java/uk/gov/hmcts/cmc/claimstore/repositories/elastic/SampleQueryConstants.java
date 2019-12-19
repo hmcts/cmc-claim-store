@@ -64,7 +64,7 @@ public interface SampleQueryConstants {
         + "      {\n"
         + "        \"range\" : {\n"
         + "          \"data.submittedOn\" : {\n"
-        + "            \"from\" : \"2019-09-09T03:12:00.000Z\",\n"
+        + "            \"from\" : \"2019-09-09T15:12:00.000Z\",\n"
         + "            \"to\" : null,\n"
         + "            \"include_lower\" : true,\n"
         + "            \"include_upper\" : true,\n"

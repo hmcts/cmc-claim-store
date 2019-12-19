@@ -3,8 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.repositories;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
@@ -18,7 +16,6 @@ import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
 
 import java.time.LocalDate;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -42,9 +39,6 @@ public class CCDElasticSearchRepositoryTest {
     @Mock
     private CaseDetailsConverter ccdCaseDetailsConverter;
 
-    @Captor
-    private ArgumentCaptor<String> queryStringCaptor;
-
     private CCDElasticSearchRepository ccdElasticSearchRepository;
 
     @Before
@@ -63,27 +57,25 @@ public class CCDElasticSearchRepositoryTest {
     @Test
     public void mediationSearchQueriesElastic() {
         ccdElasticSearchRepository.getMediationClaims(AUTHORISATION,
-            LocalDate.of(2019, 07, 07));
+            LocalDate.of(2019, 7, 7));
         verify(userService, times(1)).getUser(anyString());
         verify(coreCaseDataApi).searchCases(
-            eq(AUTHORISATION),
-            eq(SERVICE_AUTH),
-            eq(CASE_TYPE_ID),
-            queryStringCaptor.capture());
-        assertEquals(SampleQueryConstants.mediationQuery, queryStringCaptor.getValue());
+            AUTHORISATION,
+            SERVICE_AUTH,
+            CASE_TYPE_ID,
+            SampleQueryConstants.mediationQuery);
     }
 
     @Test
     public void casesPastIntentionToProceedQueriesElastic() {
         User user = new User(AUTHORISATION, null);
         ccdElasticSearchRepository.getClaimsPastIntentionToProceed(user,
-            LocalDate.of(2019, 07, 07));
+            LocalDate.of(2019, 7, 7));
         verify(coreCaseDataApi).searchCases(
-            eq(AUTHORISATION),
-            eq(SERVICE_AUTH),
-            eq(CASE_TYPE_ID),
-            queryStringCaptor.capture());
-        assertEquals(SampleQueryConstants.stayableCaseQuery, queryStringCaptor.getValue());
+            AUTHORISATION,
+            SERVICE_AUTH,
+            CASE_TYPE_ID,
+            SampleQueryConstants.stayableCaseQuery);
     }
 
 }

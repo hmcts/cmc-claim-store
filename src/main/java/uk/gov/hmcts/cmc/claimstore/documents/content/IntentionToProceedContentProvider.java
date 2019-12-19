@@ -10,8 +10,8 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.Validate.notEmpty;
 
 @Component
@@ -38,8 +38,7 @@ public class IntentionToProceedContentProvider implements EmailContentProvider<M
     public Map<String, Object> createParameters(Collection<Claim> failedClaims) {
         return ImmutableMap.of(
             "noOfClaims", failedClaims.size(),
-            "claimIds", failedClaims.stream().map(c -> c.getId().toString())
-                .collect(Collectors.joining("\n"))
+            "claimReferences", failedClaims.stream().map(Claim::getReferenceNumber).collect(joining("\n"))
         );
     }
 
