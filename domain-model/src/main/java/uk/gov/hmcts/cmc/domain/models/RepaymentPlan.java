@@ -7,6 +7,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.DateNotInThePast;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
 import uk.gov.hmcts.cmc.domain.models.ccj.PaymentSchedule;
+import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -25,7 +26,7 @@ public class RepaymentPlan {
     private final BigDecimal instalmentAmount;
 
     @NotNull
-    @DateNotInThePast
+    @DateNotInThePast(groups = PaymentIntention.Proposing.class)
     private final LocalDate firstPaymentDate;
 
     @NotNull
