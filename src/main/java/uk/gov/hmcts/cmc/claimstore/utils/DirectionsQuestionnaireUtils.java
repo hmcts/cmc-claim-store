@@ -18,6 +18,9 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.WAITING_TRANSFER;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isOptedForMediation;
 import static uk.gov.hmcts.cmc.claimstore.utils.TheirDetailsHelper.isDefendantBusiness;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_JUDGE_DIRECTIONS;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_LEGAL_ADVISOR_DIRECTIONS;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_TRANSFER;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
 import static uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt.isPilotCourt;
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_DEFENCE;
@@ -49,6 +52,19 @@ public class DirectionsQuestionnaireUtils {
         } else {
             return Optional.empty();
         }
+    }
+
+    public static String getDirectionsCaseState(Claim claim) {
+        if (isPilotCourt(getPreferredCourt(claim))) {
+            if (isLegalAdvisorPilot(claim)) {
+                return READY_FOR_LEGAL_ADVISOR_DIRECTIONS.getValue();
+            }
+            if (isJudgePilot(claim)) {
+                return READY_FOR_JUDGE_DIRECTIONS.getValue();
+            }
+        }
+
+        return READY_FOR_TRANSFER.getValue();
     }
 
     public static String getPreferredCourt(Claim claim) {
