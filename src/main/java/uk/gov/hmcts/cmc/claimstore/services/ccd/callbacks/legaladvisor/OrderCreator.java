@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
@@ -38,6 +39,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.DOC
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYEWITNESS;
 
 @Service
+@ConditionalOnProperty(prefix = "doc_assembly", name = "url")
 public class OrderCreator {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final String DOC_UPLOAD_DEADLINE = "docUploadDeadline";
