@@ -500,9 +500,27 @@ public class TotalAmountCalculatorTest {
     }
 
     @Test
+    public void calculateInterestForClaimShouldStopAtSettlementReachedDate() {
+        assertThat(TotalAmountCalculator.calculateInterestForClaim(claimWithSettlement()))
+            .isEqualTo(Optional.of(format(new BigDecimal("0.01"))));
+    }
+
+    @Test
+    public void totalTillTodayShouldStopAtSettlementReachedDate() {
+        assertThat(TotalAmountCalculator.totalTillToday(claimWithSettlement()))
+                .isEqualTo(Optional.of(format(new BigDecimal("61.00"))));
+    }
+
+    @Test
+    public void amountWithInterestShouldStopAtSettlementReachedDate() {
+        assertThat(TotalAmountCalculator.amountWithInterest(claimWithSettlement()))
+                .isEqualTo(Optional.of(format(new BigDecimal("41.00"))));
+    }
+
+    @Test
     public void calculateInterestForClaimShouldStopAtCCJRequestDate() {
         assertThat(TotalAmountCalculator.calculateInterestForClaim(claimWithCCJ()))
-            .isEqualTo(Optional.of(format(new BigDecimal("0.01"))));
+                .isEqualTo(Optional.of(format(new BigDecimal("0.01"))));
     }
 
     @Test
@@ -564,6 +582,21 @@ public class TotalAmountCalculatorTest {
             .withIssuedOn(LocalDate.now().minusDays(1))
             .withCountyCourtJudgmentRequestedAt(LocalDateTime.now().minusDays(2))
             .build();
+    }
+
+    private static Claim claimWithSettlement() {
+        return SampleClaim.builder()
+                .withClaimData(
+                        SampleClaimData.builder()
+                                .withAmount(SampleAmountBreakdown.builder().build())
+                                .withFeeAmount(TWENTY_POUNDS_IN_PENNIES)
+                                .withInterest(standardInterestBuilder().withInterestDate((SampleInterestDate.builder()
+                                        .withDate(LocalDate.now().minusDays(3)).build())).build())
+                                .build()
+                )
+                .withIssuedOn(LocalDate.now().minusDays(1))
+                .withSettlementReachedAt(LocalDateTime.now().minusDays(2))
+                .build();
     }
 
     private static BigDecimal format(BigDecimal value) {

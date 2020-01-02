@@ -36,7 +36,7 @@ public class TotalAmountCalculator {
     }
 
     public static Optional<BigDecimal> amountWithInterest(Claim claim) {
-        LocalDate date = getDateApplicable(claim);
+        LocalDate date = getToDate(claim);
 
         return Optional.ofNullable(calculateTotalAmount(claim, date, false));
     }
@@ -46,7 +46,7 @@ public class TotalAmountCalculator {
     }
 
     public static Optional<BigDecimal> totalTillToday(Claim claim) {
-        LocalDate date = getDateApplicable(claim);
+        LocalDate date = getToDate(claim);
 
         return Optional.ofNullable(calculateTotalAmount(claim, date, true));
 
@@ -192,6 +192,8 @@ public class TotalAmountCalculator {
     private static LocalDate getToDate(Claim claim) {
         if (claim.getCountyCourtJudgmentRequestedAt() != null) {
             return claim.getCountyCourtJudgmentRequestedAt().toLocalDate();
+        } else if(claim.getSettlementReachedAt() != null) {
+            return claim.getSettlementReachedAt().toLocalDate();
         } else {
             return LocalDate.now().isAfter(claim.getIssuedOn()) ? LocalDate.now() : claim.getIssuedOn();
         }
@@ -212,9 +214,5 @@ public class TotalAmountCalculator {
             throw new IllegalArgumentException("Expected non-negative number");
         }
     }
-
-    private static LocalDate getDateApplicable(Claim claim) {
-        return claim.getCountyCourtJudgmentRequestedAt() == null ? LocalDate.now()
-            : claim.getCountyCourtJudgmentRequestedAt().toLocalDate();
-    }
 }
+
