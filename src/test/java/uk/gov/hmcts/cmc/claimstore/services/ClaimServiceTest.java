@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeAlreadyRequestedException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeRequestedAfterDeadlineException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -123,7 +122,6 @@ public class ClaimServiceTest {
         when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(VALID_DEFENDANT);
 
         claimService = new ClaimService(
-            claimRepository,
             caseRepository,
             userService,
             issueDateCalculator,
@@ -135,25 +133,6 @@ public class ClaimServiceTest {
             new ClaimAuthorisationRule(userService),
             new ReviewOrderRule(),
             RETURN_URL);
-    }
-
-    @Test
-    public void getClaimByIdShouldCallRepositoryWhenValidClaimIsReturned() {
-
-        Optional<Claim> result = Optional.of(claim);
-
-        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(result);
-
-        Claim actual = claimService.getClaimById(CLAIM_ID);
-        assertThat(actual).isEqualTo(claim);
-    }
-
-    @Test(expected = NotFoundException.class)
-    public void getClaimByIdShouldThrowNotFoundException() {
-
-        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(empty());
-
-        claimService.getClaimById(CLAIM_ID);
     }
 
     @Test
@@ -202,7 +181,6 @@ public class ClaimServiceTest {
         when(caseRepository.saveClaim(eq(USER), any())).thenReturn(claim);
 
         claimService = new ClaimService(
-            claimRepository,
             caseRepository,
             userService,
             issueDateCalculator,
@@ -275,20 +253,6 @@ public class ClaimServiceTest {
     @Test(expected = NotFoundException.class)
     public void requestMoreTimeToRespondShouldThrowNotFoundExceptionWhenClaimNotFound() {
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any())).thenReturn(empty());
-
-        claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
-    }
-
-    @Test(expected = MoreTimeRequestedAfterDeadlineException.class)
-    public void requestMoreTimeForResponseThrowsMoreTimeRequestedAfterDeadlineWhenItsTooLateForMoreTimeRequest() {
-
-        LocalDate responseDeadlineInThePast = now()
-            .minusDays(10);
-        Claim claim = createClaimModel(responseDeadlineInThePast, false);
-
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
-            .thenReturn(Optional.of(claim));
-        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
 
         claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
     }
@@ -520,7 +484,7 @@ public class ClaimServiceTest {
 
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
             .thenReturn(Optional.of(claim));
-        when(caseRepository.saveCaseEvent(AUTHORISATION, claim, RESUME_CLAIM_PAYMENT_CITIZEN))
+        when(caseRepository.saveCaseEventIOC(USER, claim, RESUME_CLAIM_PAYMENT_CITIZEN))
             .thenReturn(claim);
         CreatePaymentResponse response = claimService.resumePayment(AUTHORISATION, claimData);
 
@@ -546,7 +510,7 @@ public class ClaimServiceTest {
 
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
             .thenReturn(Optional.of(claim));
-        when(caseRepository.saveCaseEvent(AUTHORISATION, claim, RESUME_CLAIM_PAYMENT_CITIZEN))
+        when(caseRepository.saveCaseEventIOC(USER, claim, RESUME_CLAIM_PAYMENT_CITIZEN))
             .thenReturn(claim);
         CreatePaymentResponse response = claimService.resumePayment(AUTHORISATION, claimData);
 
@@ -559,10 +523,10 @@ public class ClaimServiceTest {
         when(caseRepository.getClaimByExternalId(VALID_APP.getExternalId().toString(), USER))
             .thenReturn(Optional.of(claim));
         when(caseRepository
-            .saveCaseEvent(eq(AUTHORISATION), any(Claim.class), eq(CREATE_CITIZEN_CLAIM)))
+            .saveCaseEventIOC(eq(USER), any(Claim.class), eq(CREATE_CITIZEN_CLAIM)))
             .thenReturn(claim);
 
-        Claim createdClaim = claimService.saveCitizenClaim(
+        Claim createdClaim = claimService.createCitizenClaim(
             AUTHORISATION,
             VALID_APP,
             singletonList("admissions"));

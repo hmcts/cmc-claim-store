@@ -139,7 +139,7 @@ public class ClaimController {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
         @RequestHeader(value = "Features", required = false) List<String> features
     ) {
-        return claimService.saveCitizenClaim(
+        return claimService.createCitizenClaim(
             authorisation,
             claimData,
             features);

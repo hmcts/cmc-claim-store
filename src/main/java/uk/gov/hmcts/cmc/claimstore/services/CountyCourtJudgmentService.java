@@ -6,12 +6,19 @@ import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.CountyCourtJudgmentRule;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
+import java.util.Optional;
+
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LIFT_STAY;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED_AFTER_SETTLEMENT_BREACH;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CCJ_REQUESTED_BY_ADMISSION;
@@ -26,6 +33,7 @@ public class CountyCourtJudgmentService {
     private final CountyCourtJudgmentRule countyCourtJudgmentRule;
     private final UserService userService;
     private final AppInsights appInsights;
+    private final CaseRepository caseRepository;
 
     @Autowired
     public CountyCourtJudgmentService(
@@ -34,7 +42,8 @@ public class CountyCourtJudgmentService {
         EventProducer eventProducer,
         CountyCourtJudgmentRule countyCourtJudgmentRule,
         UserService userService,
-        AppInsights appInsights
+        AppInsights appInsights,
+        CaseRepository caseRepository
     ) {
         this.claimService = claimService;
         this.authorisationService = authorisationService;
@@ -42,6 +51,7 @@ public class CountyCourtJudgmentService {
         this.countyCourtJudgmentRule = countyCourtJudgmentRule;
         this.userService = userService;
         this.appInsights = appInsights;
+        this.caseRepository = caseRepository;
     }
 
     public Claim save(
@@ -57,6 +67,12 @@ public class CountyCourtJudgmentService {
         authorisationService.assertIsSubmitterOnClaim(claim, userDetails.getId());
 
         countyCourtJudgmentRule.assertCountyCourtJudgementCanBeRequested(claim, countyCourtJudgment.getCcjType());
+
+        Optional<Response> response = claim.getResponse();
+        if (claim.getState().equals(ClaimState.STAYED)
+            && response.filter(ResponseUtils::isAdmissionResponse).isPresent()) {
+            claim = caseRepository.saveCaseEvent(authorisation, claim, LIFT_STAY);
+        }
 
         claimService.saveCountyCourtJudgment(authorisation, claim, countyCourtJudgment);
 
