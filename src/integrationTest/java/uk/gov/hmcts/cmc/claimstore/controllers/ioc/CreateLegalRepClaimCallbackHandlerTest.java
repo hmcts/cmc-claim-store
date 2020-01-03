@@ -1,15 +1,17 @@
-package uk.gov.hmcts.cmc.claimstore.deprecated.controllers;
+package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.cmc.claimstore.deprecated.MockSpringTest;
+import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -31,10 +33,13 @@ import static uk.gov.hmcts.cmc.claimstore.utils.ResourceLoader.successfulCoreCas
         "core_case_data.api.url=http://core-case-data-api"
     }
 )
-public class CreateLegalRepClaimCallbackHandlerTest extends MockSpringTest {
+public class CreateLegalRepClaimCallbackHandlerTest extends BaseMockSpringTest {
 
     private static final String AUTHORISATION_TOKEN = "Bearer let me in";
     public static final String REFERENCE_NO = "000LR001";
+
+    @MockBean
+    protected EmailService emailService;
 
     @Before
     public void setUp() {
@@ -50,7 +55,7 @@ public class CreateLegalRepClaimCallbackHandlerTest extends MockSpringTest {
         MvcResult mvcResult = makeRequest(CallbackType.ABOUT_TO_SUBMIT.getValue())
             .andExpect(status().isOk())
             .andReturn();
-        Map<String, Object> responseData = deserializeObjectFrom(
+        Map<String, Object> responseData = jsonMappingHelper.deserializeObjectFrom(
             mvcResult,
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
@@ -78,7 +83,7 @@ public class CreateLegalRepClaimCallbackHandlerTest extends MockSpringTest {
             .perform(post("/cases/callbacks/" + callbackType)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
-                .content(jsonMapper.toJson(callbackRequest))
+                .content(jsonMappingHelper.toJson(callbackRequest))
             );
     }
 }

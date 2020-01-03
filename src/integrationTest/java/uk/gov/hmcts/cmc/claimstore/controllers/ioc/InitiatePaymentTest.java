@@ -1,19 +1,24 @@
-package uk.gov.hmcts.cmc.claimstore.deprecated.controllers.ioc;
+package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 
 import feign.FeignException;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
-import uk.gov.hmcts.cmc.claimstore.deprecated.BaseSaveTest;
-import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
+import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,10 +41,20 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimState.AWAITING_CITIZEN_PAYMENT
         "fees.api.url=http://fees-api"
     }
 )
-public class InitiatePaymentTest extends BaseSaveTest {
+public class InitiatePaymentTest extends BaseMockSpringTest {
 
     @Autowired
-    private CaseDetailsConverter caseDetailsConverter;
+    protected ResponseDeadlineCalculator responseDeadlineCalculator;
+    @Autowired
+    protected IssueDateCalculator issueDateCalculator;
+
+    @MockBean
+    protected EmailService emailService;
+
+    @Before
+    public void setup() {
+        given(userService.getUser(AUTHORISATION_TOKEN)).willReturn(new User(AUTHORISATION_TOKEN, USER_DETAILS));
+    }
 
     @Test
     public void shouldReturnNewlyCreatedClaim() throws Exception {
@@ -98,7 +113,7 @@ public class InitiatePaymentTest extends BaseSaveTest {
                 any()
             );
 
-        assertThat(deserializeObjectFrom(result, CreatePaymentResponse.class))
+        assertThat(jsonMappingHelper.deserializeObjectFrom(result, CreatePaymentResponse.class))
             .extracting(CreatePaymentResponse::getNextUrl)
             .isEqualTo("http://nexturl.test");
     }
@@ -169,7 +184,7 @@ public class InitiatePaymentTest extends BaseSaveTest {
             .perform(post("/claims/initiate-citizen-payment")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, authorization)
-                .content(jsonMapper.toJson(claimData))
+                .content(jsonMappingHelper.toJson(claimData))
             );
     }
 }

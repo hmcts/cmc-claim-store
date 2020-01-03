@@ -43,7 +43,7 @@ public class DirectionsQuestionnaireDeadlineCalculatorTest {
         LocalDateTime input = SAMPLE_WEDNESDAY.atTime(BEFORE_EOB);
         LocalDate expected = input.plusDays(SERVICE_DAYS + DAYS_FOR_RESPONSE).toLocalDate();
 
-        LocalDate actual = calculator.calculateDirectionsQuestionnaireDeadlineCalculator(input);
+        LocalDate actual = calculator.calculateDirectionsQuestionnaireDeadline(input);
         assertThat(actual).isTheSame(expected);
     }
 
@@ -52,7 +52,7 @@ public class DirectionsQuestionnaireDeadlineCalculatorTest {
         LocalDateTime input = SAMPLE_WEDNESDAY.atTime(AFTER_EOB);
         LocalDate expected = input.plusDays(SERVICE_DAYS + DAYS_FOR_RESPONSE + 1).toLocalDate();
 
-        LocalDate actual = calculator.calculateDirectionsQuestionnaireDeadlineCalculator(input);
+        LocalDate actual = calculator.calculateDirectionsQuestionnaireDeadline(input);
         assertThat(actual).isTheSame(expected);
     }
 
@@ -64,7 +64,7 @@ public class DirectionsQuestionnaireDeadlineCalculatorTest {
         when(workingDayIndicator.isWorkingDay(any(LocalDate.class))).thenReturn(false, false, false, true);
         LocalDate expected = usualResult.plusDays(3);
 
-        LocalDate actual = calculator.calculateDirectionsQuestionnaireDeadlineCalculator(input);
+        LocalDate actual = calculator.calculateDirectionsQuestionnaireDeadline(input);
         assertThat(actual).isTheSame(expected);
     }
 }
