@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ForbiddenActionException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeAlreadyRequestedException;
-import uk.gov.hmcts.cmc.claimstore.exceptions.MoreTimeRequestedAfterDeadlineException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
@@ -60,6 +59,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CREATE_CITIZEN_CLAIM;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NUMBER_OF_RECONSIDERATION;
@@ -111,8 +111,6 @@ public class ClaimServiceTest {
     @Mock
     private ResponseDeadlineCalculator responseDeadlineCalculator;
     @Mock
-    private DirectionsQuestionnaireDeadlineCalculator directionsQuestionnaireDeadlineCalculator;
-    @Mock
     private EventProducer eventProducer;
     @Mock
     private AppInsights appInsights;
@@ -124,7 +122,6 @@ public class ClaimServiceTest {
         when(userService.getUserDetails(eq(AUTHORISATION))).thenReturn(VALID_DEFENDANT);
 
         claimService = new ClaimService(
-            claimRepository,
             caseRepository,
             userService,
             issueDateCalculator,
@@ -135,27 +132,7 @@ public class ClaimServiceTest {
             new PaidInFullRule(),
             new ClaimAuthorisationRule(userService),
             new ReviewOrderRule(),
-            false,
             RETURN_URL);
-    }
-
-    @Test
-    public void getClaimByIdShouldCallRepositoryWhenValidClaimIsReturned() {
-
-        Optional<Claim> result = Optional.of(claim);
-
-        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(result);
-
-        Claim actual = claimService.getClaimById(CLAIM_ID);
-        assertThat(actual).isEqualTo(claim);
-    }
-
-    @Test(expected = NotFoundException.class)
-    public void getClaimByIdShouldThrowNotFoundException() {
-
-        when(claimRepository.getById(eq(CLAIM_ID))).thenReturn(empty());
-
-        claimService.getClaimById(CLAIM_ID);
     }
 
     @Test
@@ -196,22 +173,39 @@ public class ClaimServiceTest {
 
     @Test
     public void saveClaimShouldFinishSuccessfully() {
-
-        ClaimData claimData = SampleClaimData.validDefaults();
+        //given
 
         when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
         when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(ISSUE_DATE);
         when(responseDeadlineCalculator.calculateResponseDeadline(eq(ISSUE_DATE))).thenReturn(RESPONSE_DEADLINE);
         when(caseRepository.saveClaim(eq(USER), any())).thenReturn(claim);
 
+        claimService = new ClaimService(
+            caseRepository,
+            userService,
+            issueDateCalculator,
+            responseDeadlineCalculator,
+            new MoreTimeRequestRule(new ClaimDeadlineService()),
+            eventProducer,
+            appInsights,
+            new PaidInFullRule(),
+            new ClaimAuthorisationRule(userService),
+            new ReviewOrderRule(),
+            RETURN_URL);
+
+        ClaimData claimData = SampleClaimData.validDefaults();
+
+        //when
         Claim createdClaim = claimService
             .saveClaim(USER_ID, claimData, AUTHORISATION, singletonList("admissions"));
 
-        assertThat(createdClaim.getClaimData()).isEqualTo(claim.getClaimData());
+        //verify
+        ClaimData outputClaimData = claim.getClaimData();
+        assertThat(createdClaim.getClaimData()).isEqualTo(outputClaimData);
 
+        verify(userService, never()).generatePin(eq(outputClaimData.getDefendant().getName()), eq(AUTHORISATION));
         verify(caseRepository, once()).saveClaim(any(User.class), any(Claim.class));
-        verify(eventProducer, once()).createClaimIssuedEvent(eq(createdClaim), eq(null),
-            anyString(), eq(AUTHORISATION));
+        verify(eventProducer, once()).createClaimCreatedEvent(eq(createdClaim), anyString(), eq(AUTHORISATION));
     }
 
     @Test
@@ -229,7 +223,7 @@ public class ClaimServiceTest {
 
         verify(caseRepository, once()).saveRepresentedClaim(
             eq(USER), claimArgumentCaptor.capture());
-        verify(eventProducer, once()).createRepresentedClaimCreatedEvent(eq(createdLegalRepClaim),
+        verify(eventProducer, once()).createClaimCreatedEvent(eq(createdLegalRepClaim),
             anyString(), eq(AUTHORISATION));
 
         Claim argumentCaptorValue = claimArgumentCaptor.getValue();
@@ -237,45 +231,6 @@ public class ClaimServiceTest {
         assertThat(argumentCaptorValue.getExternalId()).isEqualTo(claimData.getExternalId().toString());
         assertThat(argumentCaptorValue.getSubmitterId()).isEqualTo(USER_ID);
         assertThat(argumentCaptorValue.getSubmitterEmail()).isEqualTo(USER.getUserDetails().getEmail());
-    }
-
-    @Test
-    public void saveClaimShouldFinishWithoutPinGenerationSuccessfully() {
-        //given
-
-        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
-        when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(ISSUE_DATE);
-        when(responseDeadlineCalculator.calculateResponseDeadline(eq(ISSUE_DATE))).thenReturn(RESPONSE_DEADLINE);
-        when(caseRepository.saveClaim(eq(USER), any())).thenReturn(claim);
-
-        claimService = new ClaimService(
-            claimRepository,
-            caseRepository,
-            userService,
-            issueDateCalculator,
-            responseDeadlineCalculator,
-            new MoreTimeRequestRule(new ClaimDeadlineService()),
-            eventProducer,
-            appInsights,
-            new PaidInFullRule(),
-            new ClaimAuthorisationRule(userService),
-            new ReviewOrderRule(),
-            true,
-            RETURN_URL);
-
-        ClaimData claimData = SampleClaimData.validDefaults();
-
-        //when
-        Claim createdClaim = claimService
-            .saveClaim(USER_ID, claimData, AUTHORISATION, singletonList("admissions"));
-
-        //verify
-        ClaimData outputClaimData = claim.getClaimData();
-        assertThat(createdClaim.getClaimData()).isEqualTo(outputClaimData);
-
-        verify(userService, never()).generatePin(eq(outputClaimData.getDefendant().getName()), eq(AUTHORISATION));
-        verify(caseRepository, once()).saveClaim(any(User.class), any(Claim.class));
-        verify(eventProducer, once()).createClaimCreatedEvent(eq(createdClaim), anyString(), eq(AUTHORISATION));
     }
 
     @Test
@@ -298,20 +253,6 @@ public class ClaimServiceTest {
     @Test(expected = NotFoundException.class)
     public void requestMoreTimeToRespondShouldThrowNotFoundExceptionWhenClaimNotFound() {
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any())).thenReturn(empty());
-
-        claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
-    }
-
-    @Test(expected = MoreTimeRequestedAfterDeadlineException.class)
-    public void requestMoreTimeForResponseThrowsMoreTimeRequestedAfterDeadlineWhenItsTooLateForMoreTimeRequest() {
-
-        LocalDate responseDeadlineInThePast = now()
-            .minusDays(10);
-        Claim claim = createClaimModel(responseDeadlineInThePast, false);
-
-        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
-            .thenReturn(Optional.of(claim));
-        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
 
         claimService.requestMoreTimeForResponse(EXTERNAL_ID, AUTHORISATION);
     }
@@ -522,13 +463,12 @@ public class ClaimServiceTest {
         when(caseRepository.initiatePayment(eq(USER), any(Claim.class)))
             .thenReturn(claim);
 
-        CreatePaymentResponse response = claimService.initiatePayment(AUTHORISATION, "submitterId", VALID_APP);
+        CreatePaymentResponse response = claimService.initiatePayment(AUTHORISATION, VALID_APP);
 
         CreatePaymentResponse expectedResponse = CreatePaymentResponse.builder()
             .nextUrl("http://nexturl.test")
             .build();
         assertThat(response).isEqualTo(expectedResponse);
-
     }
 
     @Test
@@ -544,7 +484,7 @@ public class ClaimServiceTest {
 
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
             .thenReturn(Optional.of(claim));
-        when(caseRepository.saveCaseEvent(AUTHORISATION, claim, RESUME_CLAIM_PAYMENT_CITIZEN))
+        when(caseRepository.saveCaseEventIOC(USER, claim, RESUME_CLAIM_PAYMENT_CITIZEN))
             .thenReturn(claim);
         CreatePaymentResponse response = claimService.resumePayment(AUTHORISATION, claimData);
 
@@ -570,11 +510,28 @@ public class ClaimServiceTest {
 
         when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
             .thenReturn(Optional.of(claim));
-        when(caseRepository.saveCaseEvent(AUTHORISATION, claim, RESUME_CLAIM_PAYMENT_CITIZEN))
+        when(caseRepository.saveCaseEventIOC(USER, claim, RESUME_CLAIM_PAYMENT_CITIZEN))
             .thenReturn(claim);
         CreatePaymentResponse response = claimService.resumePayment(AUTHORISATION, claimData);
 
         assertThat(response.getNextUrl()).isEqualTo("http://payment.nexturl.test");
+    }
+
+    @Test
+    public void saveCitizenClaimShouldFinishSuccessfully() {
+        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
+        when(caseRepository.getClaimByExternalId(VALID_APP.getExternalId().toString(), USER))
+            .thenReturn(Optional.of(claim));
+        when(caseRepository
+            .saveCaseEventIOC(eq(USER), any(Claim.class), eq(CREATE_CITIZEN_CLAIM)))
+            .thenReturn(claim);
+
+        Claim createdClaim = claimService.createCitizenClaim(
+            AUTHORISATION,
+            VALID_APP,
+            singletonList("admissions"));
+
+        assertThat(createdClaim).isEqualTo(claim);
     }
 
     @Test

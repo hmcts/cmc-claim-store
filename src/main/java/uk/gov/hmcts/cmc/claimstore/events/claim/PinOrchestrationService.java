@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.events.claim;
 
 import com.google.common.collect.ImmutableList;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -19,7 +18,6 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedCla
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 
 @Service
-@ConditionalOnProperty(prefix = "feature_toggles", name = "async_event_operations_enabled", havingValue = "true")
 public class PinOrchestrationService {
     private final ClaimIssuedNotificationService claimIssuedNotificationService;
     private final NotificationsProperties notificationsProperties;

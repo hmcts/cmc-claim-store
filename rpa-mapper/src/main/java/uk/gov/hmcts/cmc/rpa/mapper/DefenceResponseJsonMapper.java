@@ -114,14 +114,7 @@ public class DefenceResponseJsonMapper {
     }
 
     private boolean isMediationSelected(Response response) {
-        if (FullDefenceResponse.class.isInstance(response)
-            && ((FullDefenceResponse) response).getDefenceType().equals(DefenceType.DISPUTE)) {
-            YesNoOption yesNoOption = response.getFreeMediation().orElse(YesNoOption.NO);
-            if (yesNoOption.equals(YesNoOption.YES)) {
-                return true;
-            }
-        }
-        return false;
+        return response.getFreeMediation().orElse(YesNoOption.NO) == YesNoOption.YES;
     }
 
     private boolean areHearingRequirementsRequested(Claim claim, Response response) {

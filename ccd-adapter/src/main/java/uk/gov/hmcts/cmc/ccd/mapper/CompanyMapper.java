@@ -29,8 +29,8 @@ public class CompanyMapper {
                    CCDParty.CCDPartyBuilder applicantPartyDetail) {
 
         applicantPartyDetail.type(CCDPartyType.COMPANY);
-        company.getMobilePhone()
-            .ifPresent(mobileNo -> applicantPartyDetail.telephoneNumber(telephoneMapper.to(mobileNo)));
+        company.getPhone()
+            .ifPresent(phoneNo -> applicantPartyDetail.telephoneNumber(telephoneMapper.to(phoneNo)));
         company.getContactPerson().ifPresent(applicantPartyDetail::contactPerson);
 
         company.getCorrespondenceAddress()
@@ -55,7 +55,7 @@ public class CompanyMapper {
             .name(applicant.getPartyName())
             .address(addressMapper.from(partyDetail.getPrimaryAddress()))
             .correspondenceAddress(addressMapper.from(partyDetail.getCorrespondenceAddress()))
-            .mobilePhone(telephoneMapper.from(partyDetail.getTelephoneNumber()))
+            .phone(telephoneMapper.from(partyDetail.getTelephoneNumber()))
             .representative(representativeMapper.from(applicant))
             .contactPerson(partyDetail.getContactPerson())
             .build();

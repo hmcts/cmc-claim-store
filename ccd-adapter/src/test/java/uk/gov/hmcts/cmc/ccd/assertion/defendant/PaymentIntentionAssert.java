@@ -1,62 +1,51 @@
 package uk.gov.hmcts.cmc.ccd.assertion.defendant;
 
-import org.assertj.core.api.AbstractAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.CustomAssert;
 import uk.gov.hmcts.cmc.ccd.domain.CCDPaymentIntention;
+import uk.gov.hmcts.cmc.domain.models.RepaymentPlan;
 import uk.gov.hmcts.cmc.domain.models.response.PaymentIntention;
 
-import java.util.Objects;
+import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;
 
-public class PaymentIntentionAssert extends AbstractAssert<PaymentIntentionAssert, PaymentIntention> {
+public class PaymentIntentionAssert extends CustomAssert<PaymentIntentionAssert, PaymentIntention> {
 
     public PaymentIntentionAssert(PaymentIntention actual) {
-        super(actual, PaymentIntentionAssert.class);
+        super("PaymentIntention", actual, PaymentIntentionAssert.class);
     }
 
-    public PaymentIntentionAssert isEqualTo(CCDPaymentIntention paymentIntention) {
+    public PaymentIntentionAssert isEqualTo(CCDPaymentIntention expected) {
         isNotNull();
 
-        if (!Objects.equals(actual.getPaymentOption().name(), paymentIntention.getPaymentOption().name())) {
-            failWithMessage("Expected PaymentIntention.paymentOption to be <%s> but was <%s>",
-                paymentIntention.getPaymentOption().name(), actual.getPaymentOption().name());
-        }
+        compare("paymentOption",
+            expected.getPaymentOption(), Enum::name,
+            Optional.ofNullable(actual.getPaymentOption()).map(Enum::name));
 
-        actual.getRepaymentPlan().ifPresent(repaymentPlan -> {
-                String message = String.format("Expected PaymentIntention.instalmentAmount to be <%s> but was <%s>",
-                    paymentIntention.getInstalmentAmount(), repaymentPlan.getInstalmentAmount());
-                assertMoney(repaymentPlan.getInstalmentAmount())
-                    .isEqualTo(paymentIntention.getInstalmentAmount(), message);
+        compare("instalmentAmount",
+            expected.getInstalmentAmount(),
+            actual.getRepaymentPlan().map(RepaymentPlan::getInstalmentAmount),
+            (e, a) -> assertMoney(a).isEqualTo(e));
 
-                if (!Objects.equals(repaymentPlan.getFirstPaymentDate(), paymentIntention.getFirstPaymentDate())) {
-                    failWithMessage("Expected PaymentIntention.firstPaymentDate to be <%s> but was <%s>",
-                        paymentIntention.getFirstPaymentDate(), repaymentPlan.getFirstPaymentDate());
-                }
+        compare("firstPaymentDate",
+            expected.getFirstPaymentDate(),
+            actual.getRepaymentPlan().map(RepaymentPlan::getFirstPaymentDate));
 
-                if (!Objects.equals(repaymentPlan.getPaymentSchedule().name(),
-                    paymentIntention.getPaymentSchedule().name())) {
-                    failWithMessage("Expected PaymentIntention.paymentSchedule to be <%s> but was <%s>",
-                        paymentIntention.getPaymentSchedule().name(), repaymentPlan.getPaymentSchedule().name());
-                }
+        compare("paymentSchedule",
+            expected.getPaymentSchedule(), Enum::name,
+            actual.getRepaymentPlan().map(RepaymentPlan::getPaymentSchedule).map(Enum::name));
 
-                if (!Objects.equals(repaymentPlan.getPaymentLength(), paymentIntention.getPaymentLength())) {
-                    failWithMessage("Expected PaymentIntention.PaymentLength to be <%s> but was <%s>",
-                        paymentIntention.getPaymentLength(), repaymentPlan.getPaymentLength());
-                }
+        compare("paymentLength",
+            expected.getPaymentLength(),
+            actual.getRepaymentPlan().map(RepaymentPlan::getPaymentLength));
 
-                if (!Objects.equals(repaymentPlan.getCompletionDate(), paymentIntention.getCompletionDate())) {
-                    failWithMessage("Expected PaymentIntention.paymentSchedule to be <%s> but was <%s>",
-                        paymentIntention.getCompletionDate(), repaymentPlan.getCompletionDate());
-                }
-            }
-        );
+        compare("completionDate",
+            expected.getCompletionDate(),
+            actual.getRepaymentPlan().map(RepaymentPlan::getCompletionDate));
 
-        actual.getPaymentDate().ifPresent(paymentDate -> {
-            if (!Objects.equals(paymentDate, paymentIntention.getPaymentDate())) {
-                failWithMessage("Expected PaymentIntention.paymentDate to be <%s> but was <%s>",
-                    paymentIntention.getPaymentDate(), paymentDate);
-            }
-        });
+        compare("paymentDate",
+            expected.getPaymentDate(),
+            actual.getPaymentDate());
 
         return this;
     }

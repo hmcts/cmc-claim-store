@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd;
 
 import com.google.common.collect.Maps;
+import feign.FeignException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,9 +10,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CoreCaseDataStoreException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.IntentionToProceedDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.ReferenceNumberService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
@@ -20,6 +23,7 @@ import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
@@ -37,6 +41,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 
 import java.net.URI;
@@ -53,6 +58,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DIRECTIONS_QUESTIONNAIRE_DEADLINE;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCUTORY_JUDGMENT;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.PIN_GENERATION_OPERATIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_CLAIMANT;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
@@ -82,6 +88,8 @@ public class CoreCaseDataServiceFailureTest {
     private JobSchedulerService jobSchedulerService;
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
+    @Mock
+    private IntentionToProceedDeadlineCalculator intentionToProceedDeadlineCalculator;
 
     private CoreCaseDataService service;
 
@@ -125,7 +133,8 @@ public class CoreCaseDataServiceFailureTest {
             authTokenGenerator,
             jobSchedulerService,
             ccdCreateCaseService,
-            caseDetailsConverter
+            caseDetailsConverter,
+            intentionToProceedDeadlineCalculator
         );
     }
 
@@ -147,12 +156,40 @@ public class CoreCaseDataServiceFailureTest {
         );
     }
 
+    @Test(expected = ConflictException.class)
+    public void createNewCaseBubblesUpConflictException() {
+        Claim providedClaim = SampleClaim.getDefaultForLegal();
+        User solicitorUser = new User(AUTHORISATION, SampleUserDetails.builder().withRoles("solicitor").build());
+        when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
+
+        when(ccdCreateCaseService.startCreate(
+            eq(AUTHORISATION),
+            any(EventRequestData.class),
+            eq(solicitorUser.isRepresented())
+        ))
+            .thenReturn(StartEventResponse.builder()
+                .caseDetails(CaseDetails.builder().build())
+                .eventId("eventId")
+                .token("token")
+                .build());
+
+        when(ccdCreateCaseService.submitCreate(
+            eq(AUTHORISATION),
+            any(EventRequestData.class),
+            any(CaseDataContent.class),
+            eq(solicitorUser.isRepresented())
+        ))
+            .thenThrow(new FeignException.Conflict("Status 409 while creating the case", null));
+
+        service.createRepresentedClaim(solicitorUser, providedClaim);
+    }
+
     @Test(expected = CoreCaseDataStoreException.class)
     public void submitInitiatePaymentFailure() {
         Claim providedClaim = SampleClaim.getDefault();
         when(caseMapper.to(providedClaim)).thenReturn(CCDCase.builder().id(SampleClaim.CLAIM_ID).build());
 
-        service.createNewCitizenCase(USER, providedClaim);
+        service.initiatePaymentForCitizenCase(USER, providedClaim);
 
         verify(coreCaseDataApi).submitForCitizen(
             eq(AUTHORISATION),
@@ -572,6 +609,16 @@ public class CoreCaseDataServiceFailureTest {
 
         String newLetterHolderId = "letter_holder_id";
         service.linkLetterHolder(claim.getId(), newLetterHolderId);
+    }
+
+    @Test(expected = CoreCaseDataStoreException.class)
+    public void updateClaimSubmissionOperationIndicator() {
+
+        ClaimSubmissionOperationIndicators operationIndicators = ClaimSubmissionOperationIndicators.builder().build();
+        Claim claim = SampleClaim.getDefault();
+        
+        service.saveClaimSubmissionOperationIndicators(claim.getId(), operationIndicators, AUTHORISATION,
+            PIN_GENERATION_OPERATIONS);
     }
 
 }

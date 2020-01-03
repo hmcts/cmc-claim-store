@@ -16,7 +16,9 @@ public enum ClaimState {
     APPROVED("approved"),
     READY_FOR_TRANSFER("readyForTransfer"),
     RECONSIDERATION_REQUESTED("reconsiderationRequested"),
-    AWAITING_CITIZEN_PAYMENT("awaitingCitizenPayment");
+    REFERRED_MEDIATION("referredMediation"),
+    AWAITING_CITIZEN_PAYMENT("awaitingCitizenPayment"),
+    PROCEEDS_IN_CASE_MAN("proceedsInCaseman");
 
     private final String state;
 
