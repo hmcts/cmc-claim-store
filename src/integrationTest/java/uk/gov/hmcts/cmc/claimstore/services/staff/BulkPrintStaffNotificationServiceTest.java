@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.deprecated.services.staff;
+package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Before;
@@ -6,16 +6,17 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
-import uk.gov.hmcts.cmc.claimstore.deprecated.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
-import uk.gov.hmcts.cmc.claimstore.services.staff.BulkPrintStaffNotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
+import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.util.HashMap;
@@ -27,20 +28,22 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
 
-public class BulkPrintStaffNotificationServiceTest extends MockSpringTest {
+public class BulkPrintStaffNotificationServiceTest extends BaseMockSpringTest {
 
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 
     @Autowired
     private BulkPrintStaffNotificationService service;
+    @Autowired
+    private StaffEmailProperties emailProperties;
 
     @Captor
     private ArgumentCaptor<String> senderArgument;
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
 
-    @Autowired
-    private StaffEmailProperties emailProperties;
+    @MockBean
+    protected EmailService emailService;
 
     private PrintableTemplate defendantLetterDocument;
     private PrintableTemplate sealedClaimDocument;
