@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.claimstore.events.ccj.InterlocutoryJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.events.ccj.ReDeterminationEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimCreatedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimIssuedEvent;
+import uk.gov.hmcts.cmc.claimstore.events.claim.ResendPinEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.ClaimantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claimantresponse.RejectOrganisationPaymentPlanEvent;
 import uk.gov.hmcts.cmc.claimstore.events.offer.AgreementCountersignedEvent;
@@ -124,5 +125,9 @@ public class EventProducer {
 
     public void createReviewOrderEvent(String authorisation, Claim claim) {
         publisher.publishEvent(new ReviewOrderEvent(authorisation, claim));
+    }
+
+    public void createResendPinEvent(Claim claim, String authorisation) {
+        publisher.publishEvent(new ResendPinEvent(claim, authorisation));
     }
 }
