@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
@@ -67,7 +66,6 @@ public class MediationReportService {
         }
     }
 
-    @Scheduled(cron = "#{'${milo.schedule}' ?: '-'}")
     public void automatedMediationReport() {
         sendMediationReport(
             userService.authenticateAnonymousCaseWorker().getAuthorisation(),

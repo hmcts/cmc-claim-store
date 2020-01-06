@@ -98,6 +98,10 @@ public class JobService {
         }
     }
 
+    public void clearJobs() throws SchedulerException {
+        scheduler.clear();
+    }
+
     public JobKey rescheduleJob(JobData jobData, ZonedDateTime startDateTime) {
         try {
 

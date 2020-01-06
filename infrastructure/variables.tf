@@ -89,7 +89,7 @@ variable "save_claim_state_enabled" {
 }
 
 variable milo_csv_schedule  {
-  default = "-"
+  default = ""
 }
 
 variable "common_tags" {

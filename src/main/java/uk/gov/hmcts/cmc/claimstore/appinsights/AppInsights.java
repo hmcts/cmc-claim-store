@@ -26,12 +26,12 @@ public class AppInsights {
         telemetry.trackEvent(appInsightsEvent.toString(), singletonMap(referenceType, value), null);
     }
 
-    public void trackException(Exception exception) {
-        telemetry.trackException(exception);
-    }
-
     public void trackEvent(AppInsightsEvent appInsightsEvent, Map<String, String> properties) {
         telemetry.trackEvent(appInsightsEvent.toString(), properties, Collections.emptyMap());
+    }
+
+    public void trackException(Exception exception) {
+        telemetry.trackException(exception);
     }
 
 }
