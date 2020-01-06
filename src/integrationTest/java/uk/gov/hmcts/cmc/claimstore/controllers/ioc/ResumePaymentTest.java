@@ -3,20 +3,16 @@ package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
-import uk.gov.hmcts.cmc.claimstore.BaseIntegrationTest;
+import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.PaymentsService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.Payment;
@@ -24,6 +20,7 @@ import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
+import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 
@@ -52,17 +49,15 @@ import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
         "fees.api.url=http://fees-api"
     }
 )
-public class ResumePaymentTest extends BaseIntegrationTest {
+public class ResumePaymentTest extends BaseMockSpringTest {
+
     private static final Long CASE_ID = 42L;
     private static final String NEXT_URL = "http://nexturl.test";
     private static final String RETURN_URL = "http://returnUrl.test/blah/%s/test";
+    private static final String PAYMENT_REFERENCE = "reference";
 
-    @Autowired
-    private CaseDetailsConverter caseDetailsConverter;
-    @Autowired
-    private CaseMapper caseMapper;
     @MockBean
-    private PaymentsService paymentsService;
+    protected EmailService emailService;
 
     @Before
     public void before() {
@@ -88,7 +83,7 @@ public class ResumePaymentTest extends BaseIntegrationTest {
 
         verify(paymentsService, never()).createPayment(eq(BEARER_TOKEN), any(Claim.class));
 
-        assertThat(deserializeObjectFrom(result, CreatePaymentResponse.class))
+        assertThat(jsonMappingHelper.deserializeObjectFrom(result, CreatePaymentResponse.class))
             .extracting(CreatePaymentResponse::getNextUrl)
             .isEqualTo(String.format(RETURN_URL, claim.getExternalId()));
     }
@@ -104,9 +99,9 @@ public class ResumePaymentTest extends BaseIntegrationTest {
 
         verify(paymentsService, never()).createPayment(eq(BEARER_TOKEN), any(Claim.class));
 
-        assertThat(deserializeObjectFrom(result, CreatePaymentResponse.class))
+        assertThat(jsonMappingHelper.deserializeObjectFrom(result, CreatePaymentResponse.class))
             .extracting(CreatePaymentResponse::getNextUrl)
-            .isEqualTo(claim.getClaimData().getPayment().getNextUrl());
+            .isEqualTo(NEXT_URL);
     }
 
     private void mockCcdCallsFor(Claim claim) {
@@ -159,7 +154,7 @@ public class ResumePaymentTest extends BaseIntegrationTest {
 
         Payment payment = Payment.builder()
             .amount(BigDecimal.TEN)
-            .reference("reference")
+            .reference(PAYMENT_REFERENCE)
             .status(status)
             .dateCreated("2017-12-03+01:00")
             .nextUrl(NEXT_URL)
@@ -181,7 +176,7 @@ public class ResumePaymentTest extends BaseIntegrationTest {
             .perform(put("/claims/resume-citizen-payment")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, authorization)
-                .content(jsonMapper.toJson(claimData))
+                .content(jsonMappingHelper.toJson(claimData))
             );
     }
 }

@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
@@ -25,6 +24,7 @@ import uk.gov.service.notify.NotificationClientException;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.math.BigDecimal.ZERO;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_TYPE;
@@ -46,19 +46,16 @@ public class ClaimIssuedNotificationService {
     private final NotificationClient notificationClient;
     private final NotificationsProperties notificationsProperties;
     private final AppInsights appInsights;
-    private final boolean asyncEventOperationEnabled;
 
     @Autowired
     public ClaimIssuedNotificationService(
         NotificationClient notificationClient,
         NotificationsProperties notificationsProperties,
-        AppInsights appInsights,
-        @Value("${feature_toggles.async_event_operations_enabled:false}") boolean asyncEventOperationEnabled
+        AppInsights appInsights
     ) {
         this.notificationClient = notificationClient;
         this.notificationsProperties = notificationsProperties;
         this.appInsights = appInsights;
-        this.asyncEventOperationEnabled = asyncEventOperationEnabled;
     }
 
     @LogExecutionTime
@@ -98,9 +95,7 @@ public class ClaimIssuedNotificationService {
         logger.info(errorMessage, exception);
         appInsights.trackEvent(AppInsightsEvent.NOTIFICATION_FAILURE, REFERENCE_NUMBER, reference);
 
-        if (asyncEventOperationEnabled) {
-            throw exception;
-        }
+        throw exception;
     }
 
     private Map<String, String> aggregateParams(Claim claim, String pin,
@@ -121,7 +116,7 @@ public class ClaimIssuedNotificationService {
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
         parameters.put(RESPOND_TO_CLAIM_URL, notificationsProperties.getRespondToClaimUrl());
         parameters.put(EXTERNAL_ID, claim.getExternalId());
-        parameters.put(FEES_PAID, claim.getClaimData().getFeesPaidInPounds().toString());
+        parameters.put(FEES_PAID, claim.getClaimData().getFeesPaidInPounds().orElse(ZERO).toString());
         parameters.put(NEW_FEATURES, claim.getFeatures() == null || claim.getFeatures().isEmpty() ? "false" : "true");
         Optional.ofNullable(pin).ifPresent(p -> parameters.put(PIN, p));
         return parameters.build();

@@ -67,6 +67,10 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             null, // Not implemented to save review order in claim store database,
             null,
             null,
+            null,
+            null,
+            null,
+            null,
             null
         );
     }

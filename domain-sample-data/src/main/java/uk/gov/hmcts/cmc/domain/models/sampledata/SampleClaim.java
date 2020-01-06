@@ -10,14 +10,18 @@ import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.Interest;
+import uk.gov.hmcts.cmc.domain.models.MediationOutcome;
+import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleOffer;
 import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
@@ -31,6 +35,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static java.math.BigDecimal.TEN;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
@@ -41,6 +46,7 @@ import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.CLAIMANT;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleHearingLocation.pilotHearingLocation;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.standardInterestBuilder;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
@@ -99,6 +105,8 @@ public final class SampleClaim {
     private DirectionOrder directionOrder;
     private ChannelType channel;
     private LocalDate intentionToProceedDeadline = NOW_IN_LOCAL_ZONE.toLocalDate().plusDays(33);
+    private YesNoOption offlineJourney = NO;
+    private MediationOutcome mediationOutcome;
 
     private SampleClaim() {
     }
@@ -162,6 +170,25 @@ public final class SampleClaim {
             .build();
     }
 
+    public static Claim withFullClaimDataAndFailedPayment() {
+        return builder()
+            .withClaimData(SampleClaimData.builder()
+                .withExternalId(RAND_UUID)
+                .withInterest(new SampleInterest()
+                    .withType(Interest.InterestType.BREAKDOWN)
+                    .withInterestBreakdown(SampleInterestBreakdown.validDefaults())
+                    .withRate(BigDecimal.valueOf(8))
+                    .withReason("Need flat rate")
+                    .build())
+                .withPayment(SamplePayment.builder()
+                    .status(PaymentStatus.FAILED)
+                    .build())
+                .build())
+            .withReferenceNumber(null)
+            .withResponseDeadline(null)
+            .build();
+    }
+
     public static Claim getClaimWithFullDefenceNoMediation() {
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
@@ -196,7 +223,7 @@ public final class SampleClaim {
             .build();
     }
 
-    public static Claim getClaimWithFullDefenceWithMediation() {
+    public static Claim getClaimWithFullAdmission() {
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withResponse(SampleResponse.FullAdmission.builder()
@@ -285,20 +312,28 @@ public final class SampleClaim {
     }
 
     public static Claim getWithClaimantResponseRejectionForPartAdmissionAndMediation() {
+        SampleClaimantResponse.ClaimantResponseRejection
+            .builder();
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withResponse(
                 SampleResponse
                     .PartAdmission
                     .builder()
-                    .buildWithFreeMediation())
+                    .buildWithDirectionsQuestionnaire()
+            )
             .withRespondedAt(LocalDateTime.now())
             .withDefendantEmail(DEFENDANT_EMAIL)
             .withClaimantRespondedAt(LocalDateTime.now())
-            .withClaimantResponse(SampleClaimantResponse
-                .ClaimantResponseRejection
-                .builder()
-                .buildRejectionWithFreeMediation())
+            .withClaimantResponse(ResponseRejection.builder()
+                .amountPaid(TEN)
+                .freeMediation(YES)
+                .mediationPhoneNumber("07999999999")
+                .mediationContactPerson("Mediation Contact Person")
+                .reason("Some valid reason")
+                .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder()
+                    .withHearingLocation(pilotHearingLocation).build())
+                .build())
             .build();
     }
 
@@ -523,8 +558,12 @@ public final class SampleClaim {
             reviewOrder,
             directionOrder,
             channel,
-            intentionToProceedDeadline
-        );
+            intentionToProceedDeadline,
+            mediationOutcome,
+            null,
+            null,
+            offlineJourney
+            );
     }
 
     public SampleClaim withSubmitterId(String userId) {
@@ -741,6 +780,11 @@ public final class SampleClaim {
         ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
     ) {
         this.claimSubmissionOperationIndicators = claimSubmissionOperationIndicators;
+        return this;
+    }
+
+    public SampleClaim withMediationOutcome(MediationOutcome mediationOutcome) {
+        this.mediationOutcome = mediationOutcome;
         return this;
     }
 }

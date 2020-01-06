@@ -130,8 +130,8 @@ public class ClaimantResponseMapperTest {
         Claim claim = claimBuilder.build();
 
         assertThat(claim.getClaimantResponse()).isPresent();
-        assertThat((ResponseAcceptation) claim.getClaimantResponse().orElseThrow(AssertionError::new))
-            .isEqualTo(ccdResponse);
+        ResponseAcceptation claimantResponse = (ResponseAcceptation) claim.getClaimantResponse().get();
+        assertThat(claimantResponse).isEqualTo(ccdResponse);
         assertThat(claim.getClaimantRespondedAt()).isPresent();
     }
 

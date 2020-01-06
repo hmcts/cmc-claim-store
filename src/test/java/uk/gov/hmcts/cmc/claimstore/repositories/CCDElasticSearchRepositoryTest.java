@@ -73,4 +73,17 @@ public class CCDElasticSearchRepositoryTest {
         assertEquals(SampleQueryConstants.mediationQuery, queryStringCaptor.getValue());
     }
 
+    @Test
+    public void casesPastIntentionToProceedQueriesElastic() {
+        User user = new User(AUTHORISATION, null);
+        ccdElasticSearchRepository.getClaimsPastIntentionToProceed(user,
+            LocalDate.of(2019, 07, 07));
+        verify(coreCaseDataApi).searchCases(
+            eq(AUTHORISATION),
+            eq(SERVICE_AUTH),
+            eq(CASE_TYPE_ID),
+            queryStringCaptor.capture());
+        assertEquals(SampleQueryConstants.stayableCaseQuery, queryStringCaptor.getValue());
+    }
+
 }
