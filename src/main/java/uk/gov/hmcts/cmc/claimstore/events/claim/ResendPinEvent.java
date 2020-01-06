@@ -7,6 +7,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 public class ResendPinEvent {
     protected final Claim claim;
+    //May not need authorisation
     protected final String authorisation;
 
     public ResendPinEvent(Claim claim, String authorisation) {
