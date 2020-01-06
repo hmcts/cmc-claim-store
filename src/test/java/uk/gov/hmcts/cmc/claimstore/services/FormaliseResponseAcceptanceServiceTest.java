@@ -519,7 +519,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .getOffer()
             .orElseThrow(IllegalStateException::new);
 
-        assertThat(offer.getContent()).contains("John Rambo will repay £81.90, in instalments of £100.99 every week."
+        assertThat(offer.getContent()).contains("John Rambo will repay £81.91, in instalments of £100.99 every week."
             + " The first instalment will be paid by 10 October 2100.");
 
         PaymentIntention paymentIntentionWithinOffer = offer
@@ -559,7 +559,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .getOffer()
             .orElseThrow(IllegalStateException::new);
 
-        assertThat(offer.getContent()).startsWith("John Rambo will pay £81.90");
+        assertThat(offer.getContent()).startsWith("John Rambo will pay £81.91");
 
         PaymentIntention paymentIntentionWithinOffer = offer
             .getPaymentIntention()
