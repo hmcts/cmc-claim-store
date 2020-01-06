@@ -4,20 +4,14 @@ import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.events.claim.PostClaimOrchestrationHandler;
-import uk.gov.hmcts.cmc.claimstore.services.staff.PaidInFullStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
-import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -34,17 +28,11 @@ import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@AutoConfigureMockMvc
-@TestPropertySource("/environment.properties")
 @Ignore
-public class PaidInFullStaffNotificationServiceWithEmailServiceRetryTest {
+public class PaidInFullStaffNotificationServiceWithEmailServiceRetryTest extends BaseMockSpringTest {
 
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 
-    @MockBean
-    private PDFServiceClient pdfServiceClient;
     @MockBean
     private JavaMailSenderImpl javaMailSender;
     @MockBean

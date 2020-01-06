@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Payment;
+import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -59,7 +60,9 @@ public class ResumePaymentCallbackHandlerTest extends BaseMockSpringTest {
     private ResponseDeadlineCalculator responseDeadlineCalculator;
     @MockBean
     private IssueDateCalculator issueDateCalculator;
-    
+    @MockBean
+    protected EmailService emailService;
+
     @Before
     public void setup() {
         UserDetails userDetails = SampleUserDetails.builder().withRoles("citizen").build();
