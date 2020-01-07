@@ -518,6 +518,49 @@ public class ClaimServiceTest {
     }
 
     @Test
+    public void resumePaymentShouldUpdateClaimDataBeingPassed() {
+        when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
+        ClaimData claimData = SampleClaimData.builder()
+            .withExternalId(UUID.fromString(EXTERNAL_ID))
+            .withFeeAccountNumber("OLD_ACCOUNT")
+            .withPayment(
+                SamplePayment.builder()
+                    .status(PaymentStatus.INITIATED)
+                    .nextUrl("http://payment.nexturl.test")
+                    .build()
+            )
+            .build();
+
+        ClaimData claimDataToBeUpdated = SampleClaimData.builder()
+            .withExternalId(UUID.fromString(EXTERNAL_ID))
+            .withFeeAccountNumber("NEW_ACCOUNT")
+            .withPayment(
+                SamplePayment.builder()
+                    .status(PaymentStatus.INITIATED)
+                    .nextUrl("http://payment.nexturl.test")
+                    .build()
+            )
+            .build();
+        Claim claim = SampleClaim.builder()
+            .withExternalId(EXTERNAL_ID)
+            .withClaimData(claimData)
+            .build();
+
+        when(caseRepository.getClaimByExternalId(eq(EXTERNAL_ID), any()))
+            .thenReturn(Optional.of(claim));
+        when(caseRepository.saveCaseEventIOC(eq(USER), any(), eq(RESUME_CLAIM_PAYMENT_CITIZEN)))
+            .thenReturn(claim);
+
+        claimService.resumePayment(AUTHORISATION, claimDataToBeUpdated);
+
+        verify(caseRepository, once()).saveCaseEventIOC(any(), claimArgumentCaptor.capture(), any());
+
+        Claim argumentCaptorValue = claimArgumentCaptor.getValue();
+
+        assertThat(argumentCaptorValue.getClaimData().getFeeAccountNumber().orElse("")).isEqualTo("NEW_ACCOUNT");
+    }
+
+    @Test
     public void saveCitizenClaimShouldFinishSuccessfully() {
         when(userService.getUser(eq(AUTHORISATION))).thenReturn(USER);
         when(caseRepository.getClaimByExternalId(VALID_APP.getExternalId().toString(), USER))
