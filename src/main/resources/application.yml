@@ -188,6 +188,10 @@ staff-notifications:
   sender:
   recipient:
 
+live-support:
+  sender:
+  recipient:
+
 feature_toggles:
   watermark_pdf: false
   reminderEmails: false
