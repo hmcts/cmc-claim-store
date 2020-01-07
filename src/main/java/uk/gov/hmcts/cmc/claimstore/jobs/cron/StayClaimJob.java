@@ -4,13 +4,14 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.services.StateTransition;
+import uk.gov.hmcts.cmc.claimstore.services.statetransition.StateTransition;
+import uk.gov.hmcts.cmc.claimstore.services.statetransition.StateTransitions;
 
 @Getter
 @Component
 public class StayClaimJob extends AbstractStateTransitionJob {
 
-    private final StateTransition stateTransition = StateTransition.STAY_CLAIM;
+    private final StateTransition stateTransition = StateTransitions.STAY_CLAIM;
 
     private String cronExpression;
 

@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services;
 
 import groovy.lang.IntRange;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,18 +11,24 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.env.Environment;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
+import org.testcontainers.shaded.com.google.common.collect.ImmutableSet;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.content.ScheduledStateTransitionContentProvider;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
+import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseSearchApi;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
+import uk.gov.hmcts.cmc.claimstore.services.statetransition.StateTransition;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.email.EmailService;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.client.CaseEventsApi;
+import uk.gov.hmcts.reform.ccd.client.model.CaseEventDetail;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -68,14 +75,36 @@ public class ScheduledStateTransitionServiceTest {
     private StaffEmailProperties emailProperties;
 
     @Mock
-    private StateTransitionCalculator stateTransitionCalculator;
+    private CaseEventsApi caseEventsApi;
 
     @Mock
     private Environment environment;
 
+    @Mock
+    private AuthTokenGenerator authTokenGenerator;
+
+    @Mock
+    private StateTransition stateTransition;
+
+    private final User user = new User("", new UserDetails(null, null, null, null, null));
+
+    private final CaseEvent caseEvent = CaseEvent.values()[0];
+
+    private final AppInsightsEvent appInsightsEvent = AppInsightsEvent.values()[0];
+
+    private final LocalDateTime dateTime = LocalDateTime.now();
+
+    private final Integer deadline = 10;
+
     @Before
     public void setUp() {
-        when(environment.getProperty(any(String.class))).thenReturn("10");
+        when(stateTransition.name()).thenReturn("STATE_TRANSITION");
+        when(stateTransition.getQuery()).thenReturn(localDate -> QueryBuilders.termQuery("date", localDate));
+        when(stateTransition.getCaseEvent()).thenReturn(caseEvent);
+        when(stateTransition.getAppInsightsEvent()).thenReturn(appInsightsEvent);
+
+        when(environment.getProperty(any(String.class))).thenReturn(deadline.toString());
+
         scheduledStateTransitionService = new ScheduledStateTransitionService(
             workingDayIndicator,
             caseSearchApi,
@@ -85,21 +114,21 @@ public class ScheduledStateTransitionServiceTest {
             emailContentProvider,
             emailService,
             emailProperties,
-            environment
+            environment,
+            caseEventsApi,
+            authTokenGenerator
         );
     }
 
     @Test
     public void shouldCreateQueryUsingDateFromIntentionToProceedDeadlineCalculator() {
         LocalDateTime tuesdayAfter4pm = LocalDateTime.of(2019, Month.OCTOBER, 15, 16, 0, 0);
-        Integer deadline = 10;
-        LocalDate returnDate = tuesdayAfter4pm.toLocalDate().minusDays(deadline);
         when(workingDayIndicator.getPreviousWorkingDay(any())).thenReturn(tuesdayAfter4pm.toLocalDate());
-        User user = new User("", null);
 
-        scheduledStateTransitionService.transitionClaims(tuesdayAfter4pm, user, StateTransition.values()[0]);
+        scheduledStateTransitionService.transitionClaims(tuesdayAfter4pm, user, stateTransition);
 
-        QueryBuilder expected = StateTransition.values()[0].getQuery().apply(returnDate);
+        LocalDate returnDate = tuesdayAfter4pm.toLocalDate().minusDays(deadline);
+        QueryBuilder expected = stateTransition.getQuery().apply(returnDate);
         verify(caseSearchApi, once()).getClaims(eq(user), eq(expected));
     }
 
@@ -107,14 +136,12 @@ public class ScheduledStateTransitionServiceTest {
     public void claimStayingSuccessShouldNotSendNotificationEmail() {
         List<Claim> claims =
             new IntRange(1, 3).stream()
-                .map(id -> Claim.builder().id(id.longValue()).build())
+                .map(id -> Claim.builder().id(id.longValue()).ccdCaseId(id.longValue()).build())
                 .collect(Collectors.toList());
-
         when(caseSearchApi.getClaims(any(), any())).thenReturn(claims);
         when(workingDayIndicator.getPreviousWorkingDay(any())).thenReturn(LocalDate.now());
 
-        scheduledStateTransitionService.transitionClaims(LocalDateTime.now(),
-            new User(null, null), StateTransition.values()[0]);
+        scheduledStateTransitionService.transitionClaims(LocalDateTime.now(), user, stateTransition);
 
         verify(emailService, never()).sendEmail(any(), any());
     }
@@ -123,33 +150,27 @@ public class ScheduledStateTransitionServiceTest {
     public void claimStayingFailuresShouldSendNotificationEmail() {
         List<Claim> claims =
             new IntRange(1, 3).stream()
-                .map(id -> Claim.builder().id(id.longValue()).build())
+                .map(id -> Claim.builder().id(id.longValue()).ccdCaseId(id.longValue()).build())
                 .collect(Collectors.toList());
-
         when(caseRepository.saveCaseEvent(any(), any(), any())).thenThrow(RuntimeException.class);
         when(caseSearchApi.getClaims(any(), any())).thenReturn(claims);
-
-        when(emailContentProvider.createContent(any(), eq(CaseEvent.STAY_CLAIM)))
-            .thenReturn(new EmailContent("", ""));
+        when(emailContentProvider.createContent(any(), eq(caseEvent))).thenReturn(new EmailContent("", ""));
         when(workingDayIndicator.getPreviousWorkingDay(any())).thenReturn(LocalDate.now());
 
-        scheduledStateTransitionService.transitionClaims(LocalDateTime.now(), new User(null, null),
-            StateTransition.values()[0]);
+        scheduledStateTransitionService.transitionClaims(LocalDateTime.now(), user, stateTransition);
 
         verify(emailService, once()).sendEmail(any(), any());
-
-        verify(emailContentProvider, once()).createContent(any(), eq(CaseEvent.STAY_CLAIM));
+        verify(emailContentProvider, once()).createContent(any(), eq(caseEvent));
     }
 
     @Test
     public void stateTransitionScheduleTriggerShouldRunOnWorkday() {
         when(workingDayIndicator.isWorkingDay(any())).thenReturn(true);
+        when(workingDayIndicator.getPreviousWorkingDay(any())).thenReturn(LocalDate.now());
         ScheduledStateTransitionService scheduledStateTransitionServiceSpy =
             Mockito.spy(scheduledStateTransitionService);
 
-        when(workingDayIndicator.getPreviousWorkingDay(any())).thenReturn(LocalDate.now());
-
-        scheduledStateTransitionServiceSpy.stateChangeTriggered(StateTransition.values()[0]);
+        scheduledStateTransitionServiceSpy.stateChangeTriggered(stateTransition);
 
         verify(scheduledStateTransitionServiceSpy).transitionClaims(any(), any(), any());
     }
@@ -160,39 +181,103 @@ public class ScheduledStateTransitionServiceTest {
         ScheduledStateTransitionService scheduledStateTransitionServiceSpy =
             Mockito.spy(scheduledStateTransitionService);
 
-        scheduledStateTransitionServiceSpy.stateChangeTriggered(StateTransition.values()[0]);
+        scheduledStateTransitionServiceSpy.stateChangeTriggered(stateTransition);
 
         verify(scheduledStateTransitionServiceSpy, never()).transitionClaims(any(), any(), any());
     }
 
     @Test
     public void saveCaseEventShouldBeTriggeredForFoundCases() {
-        LocalDateTime dateTime = LocalDateTime.now();
+        Claim sampleClaim1 = SampleClaim.builder().withClaimId(1L).withCcdCaseId(1L).build();
+        Claim sampleClaim2 = SampleClaim.builder().withClaimId(2L).withCcdCaseId(2L).build();
+        when(caseSearchApi.getClaims(any(), any())).thenReturn(ImmutableList.of(sampleClaim1, sampleClaim2));
         when(workingDayIndicator.getPreviousWorkingDay(any())).thenReturn(dateTime.toLocalDate());
 
-        Claim sampleClaim1 = SampleClaim.builder().withClaimId(1L).build();
-        Claim sampleClaim2 = SampleClaim.builder().withClaimId(2L).build();
-        when(caseSearchApi.getClaims(any(), any()))
-            .thenReturn(ImmutableList.of(sampleClaim1, sampleClaim2));
+        scheduledStateTransitionService.transitionClaims(dateTime, user, stateTransition);
 
-        scheduledStateTransitionService.transitionClaims(dateTime, new User(null, null),
-            StateTransition.values()[0]);
-
-        verify(caseRepository, times(2)).saveCaseEvent(any(), any(), eq(CaseEvent.STAY_CLAIM));
+        verify(caseRepository, times(2)).saveCaseEvent(any(), any(), eq(caseEvent));
     }
 
     @Test
     public void appInsightsEventShouldBeRaisedForFoundCases() {
-        LocalDateTime dateTime = LocalDateTime.now();
+        Claim sampleClaim1 = SampleClaim.builder().withClaimId(1L).withCcdCaseId(1L).build();
+        Claim sampleClaim2 = SampleClaim.builder().withClaimId(2L).withCcdCaseId(2L).build();
+        when(caseSearchApi.getClaims(any(), any())).thenReturn(ImmutableList.of(sampleClaim1, sampleClaim2));
         when(workingDayIndicator.getPreviousWorkingDay(any())).thenReturn(dateTime.toLocalDate());
 
-        Claim sampleClaim1 = SampleClaim.builder().withClaimId(1L).build();
-        Claim sampleClaim2 = SampleClaim.builder().withClaimId(2L).build();
-        when(caseSearchApi.getClaims(any(), any())).thenReturn(ImmutableList.of(sampleClaim1, sampleClaim2));
+        scheduledStateTransitionService.transitionClaims(dateTime, user, stateTransition);
 
-        scheduledStateTransitionService.transitionClaims(dateTime, new User(null, null), StateTransition.values()[0]);
-
-        verify(appInsights, times(2)).trackEvent(eq(AppInsightsEvent.CLAIM_STAYED), eq(REFERENCE_NUMBER), any());
+        verify(appInsights, times(2)).trackEvent(eq(appInsightsEvent), eq(REFERENCE_NUMBER), any());
     }
 
+    @Test
+    public void triggerEventsShouldTransitionEventIfLastEvent() {
+        Claim sampleClaim1 = SampleClaim.builder().withClaimId(1L).withCcdCaseId(1L).build();
+        when(caseSearchApi.getClaims(any(), any())).thenReturn(ImmutableList.of(sampleClaim1));
+        when(stateTransition.getTriggerEvents()).thenReturn(ImmutableSet.of(caseEvent));
+        when(workingDayIndicator.getPreviousWorkingDay(any())).thenReturn(dateTime.toLocalDate());
+
+        ImmutableList<CaseEventDetail> caseEventDetails = ImmutableList.of(
+            buildCaseEventDetail(caseEvent, LocalDateTime.now())
+        );
+        when(caseEventsApi.findEventDetailsForCase(any(), any(), any(), any(), any(), any()))
+            .thenReturn(caseEventDetails);
+
+        scheduledStateTransitionService.transitionClaims(dateTime, user, stateTransition);
+
+        verify(caseRepository, once()).saveCaseEvent(any(), any(), eq(caseEvent));
+
+    }
+
+    @Test
+    public void triggerEventsShouldNotTransitionEventIfNotLastEvent() {
+
+        Claim sampleClaim1 = SampleClaim.builder().withClaimId(1L).withCcdCaseId(1L).build();
+        when(caseSearchApi.getClaims(any(), any())).thenReturn(ImmutableList.of(sampleClaim1));
+        when(stateTransition.getTriggerEvents()).thenReturn(ImmutableSet.of(caseEvent));
+        when(workingDayIndicator.getPreviousWorkingDay(any())).thenReturn(dateTime.toLocalDate());
+
+        ImmutableList<CaseEventDetail> caseEventDetails = ImmutableList.of(
+            buildCaseEventDetail(CaseEvent.values()[1], LocalDateTime.now())
+        );
+        when(caseEventsApi.findEventDetailsForCase(any(), any(), any(), any(), any(), any()))
+            .thenReturn(caseEventDetails);
+
+        scheduledStateTransitionService.transitionClaims(dateTime, user, stateTransition);
+
+        verify(caseRepository, never()).saveCaseEvent(any(), any(), eq(caseEvent));
+
+    }
+
+    @Test
+    public void triggerEventsShouldTransitionEventIfIgnoredEventLastEvent() {
+        CaseEvent ignoreEvent = CaseEvent.values()[1];
+
+        Claim sampleClaim1 = SampleClaim.builder().withClaimId(1L).withCcdCaseId(1L).build();
+        when(caseSearchApi.getClaims(any(), any())).thenReturn(ImmutableList.of(sampleClaim1));
+        when(stateTransition.getTriggerEvents()).thenReturn(ImmutableSet.of(caseEvent));
+        when(stateTransition.getIgnoredEvents()).thenReturn(ImmutableSet.of(ignoreEvent));
+        when(workingDayIndicator.getPreviousWorkingDay(any())).thenReturn(dateTime.toLocalDate());
+
+        LocalDateTime now = LocalDateTime.now();
+        ImmutableList<CaseEventDetail> caseEventDetails =
+            ImmutableList.of(
+                buildCaseEventDetail(ignoreEvent, now.plusDays(1)),
+                buildCaseEventDetail(caseEvent, now)
+            );
+        when(caseEventsApi.findEventDetailsForCase(any(), any(), any(), any(), any(), any()))
+            .thenReturn(caseEventDetails);
+
+        scheduledStateTransitionService.transitionClaims(dateTime, user, stateTransition);
+
+        verify(caseRepository, once()).saveCaseEvent(any(), any(), eq(caseEvent));
+
+    }
+
+    private CaseEventDetail buildCaseEventDetail(CaseEvent value, LocalDateTime createdDate) {
+        return CaseEventDetail.builder()
+            .eventName(value.getValue())
+            .createdDate(createdDate)
+            .build();
+    }
 }

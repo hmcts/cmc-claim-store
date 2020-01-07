@@ -586,6 +586,11 @@ public final class SampleClaim {
         return this;
     }
 
+    public SampleClaim withCcdCaseId(Long ccdCaseId) {
+        this.ccdCaseId = ccdCaseId;
+        return this;
+    }
+
     public SampleClaim withReferenceNumber(String referenceNumber) {
         this.referenceNumber = referenceNumber;
         return this;

@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.quartz.JobExecutionException;
 import uk.gov.hmcts.cmc.claimstore.services.ScheduledStateTransitionService;
-import uk.gov.hmcts.cmc.claimstore.services.StateTransition;
+import uk.gov.hmcts.cmc.claimstore.services.statetransition.StateTransitions;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -35,7 +35,7 @@ public class WaitingTransferJobTest {
     public void executeShouldTriggerReadyForTransfer() throws Exception {
         intentionToProceedJob.execute(null);
 
-        verify(scheduledStateTransitionService).stateChangeTriggered(eq(StateTransition.WAITING_TRANSFER));
+        verify(scheduledStateTransitionService).stateChangeTriggered(eq(StateTransitions.WAITING_TRANSFER));
     }
 
     @Test(expected = JobExecutionException.class)

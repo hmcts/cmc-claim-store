@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.quartz.JobExecutionException;
 import uk.gov.hmcts.cmc.claimstore.services.ScheduledStateTransitionService;
-import uk.gov.hmcts.cmc.claimstore.services.StateTransition;
+import uk.gov.hmcts.cmc.claimstore.services.statetransition.StateTransitions;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -35,7 +35,7 @@ public class StayClaimJobTest {
     public void executeShouldTriggerIntentionToProceed() throws Exception {
         stayClaimJob.execute(null);
 
-        verify(scheduledStateTransitionService).stateChangeTriggered(eq(StateTransition.STAY_CLAIM));
+        verify(scheduledStateTransitionService).stateChangeTriggered(eq(StateTransitions.STAY_CLAIM));
     }
 
     @Test(expected = JobExecutionException.class)

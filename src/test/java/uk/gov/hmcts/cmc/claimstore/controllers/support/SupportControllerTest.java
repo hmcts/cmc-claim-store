@@ -29,10 +29,10 @@ import uk.gov.hmcts.cmc.claimstore.rules.ClaimSubmissionOperationIndicatorRule;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.MediationReportService;
 import uk.gov.hmcts.cmc.claimstore.services.ScheduledStateTransitionService;
-import uk.gov.hmcts.cmc.claimstore.services.StateTransition;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.statetransition.StateTransitions;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
@@ -548,11 +548,10 @@ public class SupportControllerTest {
         final User user = new User(null, userDetails);
         when(userService.getUser(auth)).thenReturn(user);
 
-        controller.transitionClaimState(auth, StateTransition.STAY_CLAIM,
-            localDateTime);
+        controller.transitionClaimState(auth, StateTransitions.STAY_CLAIM, localDateTime);
 
         verify(scheduledStateTransitionService).transitionClaims(localDateTime, user,
-            StateTransition.STAY_CLAIM);
+            StateTransitions.STAY_CLAIM);
     }
 
     @Test
@@ -562,10 +561,10 @@ public class SupportControllerTest {
         final User user = new User(null, userDetails);
         when(userService.getUser(auth)).thenReturn(user);
 
-        controller.transitionClaimState(auth, StateTransition.STAY_CLAIM, null);
+        controller.transitionClaimState(auth, StateTransitions.STAY_CLAIM, null);
 
         verify(scheduledStateTransitionService).transitionClaims(notNull(), eq(user),
-            eq(StateTransition.STAY_CLAIM));
+            eq(StateTransitions.STAY_CLAIM));
     }
 
 }

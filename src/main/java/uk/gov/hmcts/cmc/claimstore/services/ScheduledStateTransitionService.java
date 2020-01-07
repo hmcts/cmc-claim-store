@@ -14,16 +14,21 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseSearchApi;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
+import uk.gov.hmcts.cmc.claimstore.services.statetransition.StateTransition;
+import uk.gov.hmcts.cmc.claimstore.services.statetransition.StateTransitions;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.client.CaseEventsApi;
+import uk.gov.hmcts.reform.ccd.client.model.CaseEventDetail;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,7 +38,8 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMB
 
 @Service
 public class ScheduledStateTransitionService {
-    public static final LocalDateTime DATE_OF_5_POINT_0_RELEASE = LocalDateTime.of(2019, Month.SEPTEMBER, 9, 3, 12, 0);
+    public static final String JURISDICTION_ID = "CMC";
+    public static final String CASE_TYPE_ID = "MoneyClaimCase";
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -55,6 +61,10 @@ public class ScheduledStateTransitionService {
 
     private final Environment environment;
 
+    private final CaseEventsApi caseEventsApi;
+
+    private final AuthTokenGenerator authTokenGenerator;
+
     public ScheduledStateTransitionService(
         WorkingDayIndicator workingDayIndicator,
         CaseSearchApi caseSearchApi,
@@ -64,7 +74,9 @@ public class ScheduledStateTransitionService {
         ScheduledStateTransitionContentProvider emailContentProvider,
         EmailService emailService,
         StaffEmailProperties emailProperties,
-        Environment environment
+        Environment environment,
+        CaseEventsApi caseEventsApi,
+        AuthTokenGenerator authTokenGenerator
     ) {
         this.workingDayIndicator = workingDayIndicator;
         this.caseSearchApi = caseSearchApi;
@@ -75,11 +87,13 @@ public class ScheduledStateTransitionService {
         this.emailService = emailService;
         this.emailProperties = emailProperties;
         this.environment = environment;
+        this.caseEventsApi = caseEventsApi;
+        this.authTokenGenerator = authTokenGenerator;
     }
 
     @PostConstruct
     public void init() {
-        for (StateTransition stateTransition : StateTransition.values()) {
+        for (StateTransition stateTransition : StateTransitions.values()) {
             getStateTransitionDaysProperty(stateTransition);
         }
     }
@@ -99,6 +113,10 @@ public class ScheduledStateTransitionService {
         Set<Claim> claims = new HashSet<>(caseSearchApi.getClaims(user,
             stateTransition.getQuery().apply(responseDate)));
 
+        if (!stateTransition.getTriggerEvents().isEmpty()) {
+            claims = filterClaimsByEvents(user, stateTransition, claims);
+        }
+
         Collection<Claim> failedClaims = claims.stream()
             .map(claim -> updateClaim(user, claim, stateTransition))
             .filter(Optional::isPresent)
@@ -108,6 +126,40 @@ public class ScheduledStateTransitionService {
         if (!failedClaims.isEmpty()) {
             sendFailedNotification(failedClaims, stateTransition.getCaseEvent());
         }
+    }
+
+    private Set<Claim> filterClaimsByEvents(User user, StateTransition stateTransition, Set<Claim> claims) {
+        Set<Claim> filteredClaims = claims.stream()
+            .parallel()
+            .filter(claim -> {
+
+                String serviceAuthorization = authTokenGenerator.generate();
+
+                List<CaseEventDetail> caseEventDetails = caseEventsApi.findEventDetailsForCase(user.getAuthorisation(),
+                    serviceAuthorization, user.getUserDetails().getId(),
+                    ScheduledStateTransitionService.JURISDICTION_ID,
+                    ScheduledStateTransitionService.CASE_TYPE_ID, claim.getCcdCaseId().toString());
+
+                List<CaseEventDetail> sortedEvents = caseEventDetails.stream()
+                    .sorted((e1, e2) -> e2.getCreatedDate().compareTo(e1.getCreatedDate()))
+                    .collect(Collectors.toList());
+
+                for (CaseEventDetail caseEventDetail : sortedEvents) {
+                    CaseEvent event = CaseEvent.fromValue(caseEventDetail.getEventName());
+
+                    //Some events do not affect the state transition
+                    if (stateTransition.getIgnoredEvents().contains(event)) {
+                        continue;
+                    }
+
+                    return stateTransition.getTriggerEvents().contains(event);
+                }
+                return false;
+
+            })
+            .collect(Collectors.toSet());
+
+        return filteredClaims;
     }
 
     private Optional<Claim> updateClaim(User user, Claim claim, StateTransition stateTransition) {
