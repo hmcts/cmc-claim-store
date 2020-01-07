@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
@@ -10,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -35,6 +37,9 @@ public class CreateLegalRepClaimCallbackHandlerTest extends BaseMockSpringTest {
 
     private static final String AUTHORISATION_TOKEN = "Bearer let me in";
     public static final String REFERENCE_NO = "000LR001";
+
+    @MockBean
+    protected EmailService emailService;
 
     @Before
     public void setUp() {
