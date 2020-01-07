@@ -8,11 +8,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.CitizenServiceDocumentsService;
-import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.claim.GeneratedDocuments;
-import uk.gov.hmcts.cmc.claimstore.exceptions.ConflictException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
@@ -20,6 +19,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
@@ -35,8 +35,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
-import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 
 public class ResendNewPinCallbackHandler extends CallbackHandler {
 
@@ -57,6 +55,10 @@ public class ResendNewPinCallbackHandler extends CallbackHandler {
 
     private EventProducer eventProducer;
 
+    private ClaimIssuedNotificationService claimIssuedNotificationService;
+
+    private NotificationsProperties notificationsProperties;
+
 
     @Autowired
     public ResendNewPinCallbackHandler(
@@ -65,7 +67,9 @@ public class ResendNewPinCallbackHandler extends CallbackHandler {
         CitizenServiceDocumentsService citizenServiceDocumentsService,
         PDFServiceClient pdfServiceClient,
         CaseMapper caseMapper,
-        EventProducer eventProducer
+        EventProducer eventProducer,
+        ClaimIssuedNotificationService claimIssuedNotificationService,
+        NotificationsProperties notificationsProperties
     ) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.userService = userService;
@@ -73,6 +77,8 @@ public class ResendNewPinCallbackHandler extends CallbackHandler {
         this.pdfServiceClient = pdfServiceClient;
         this.caseMapper = caseMapper;
         this.eventProducer = eventProducer;
+        this.claimIssuedNotificationService = claimIssuedNotificationService;
+        this.notificationsProperties = notificationsProperties;
     }
 
     @Override
@@ -97,7 +103,6 @@ public class ResendNewPinCallbackHandler extends CallbackHandler {
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
 
         if (getDefendantLinkStatus(claim).isLinked()) {
-//            throw new ConflictException("Claim has already been linked to defendant - cannot send notification");
             logger.info("Claim {} has already been linked to defendant - cannot send notification", claim.getExternalId());
 
             return AboutToStartOrSubmitCallbackResponse.builder()
@@ -105,35 +110,32 @@ public class ResendNewPinCallbackHandler extends CallbackHandler {
                 .build();
         }
 
-        GeneratedDocuments generatedPinDocument = getDefendantPinLetterDoc(claim, authorisation);
-        Claim updatedClaim = generatedPinDocument.getClaim();
-
-        //Not sure if we can trigger event here or it should be done as SubmittedCallBackResponse
-        eventProducer.createResendPinEvent(claim, authorisation);
-
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetailsConverter.convertToMap(caseMapper.to(updatedClaim)))
-            .build();
-    }
-
-
-    private GeneratedDocuments getDefendantPinLetterDoc(Claim claim, String authorisation) {
         Optional<GeneratePinResponse> pinResponse = getPinResponse(claim.getClaimData(), authorisation);
 
         String pin = pinResponse
             .map(GeneratePinResponse::getPin)
             .orElseThrow(() -> new IllegalArgumentException("Pin generation failed"));
 
-        Document defendantPinLetterDoc = citizenServiceDocumentsService.pinLetterDocument(claim, pin);
+        String letterHolderId = pinResponse
+            .map(GeneratePinResponse::getUserId)
+            .orElseThrow(() -> new IllegalArgumentException("Pin generation failed"));
 
-        PDF defendantPinLetter = new PDF(buildDefendantLetterFileBaseName(claim.getReferenceNumber()),
-            pdfServiceClient.generateFromHtml(defendantPinLetterDoc.template.getBytes(), defendantPinLetterDoc.values),
-            DEFENDANT_PIN_LETTER);
+        claim.getClaimData().getDefendant().getEmail().ifPresent(defendantEmail ->
+            claimIssuedNotificationService.sendMail(
+                claim,
+                defendantEmail,
+                pin,
+                notificationsProperties.getTemplates().getEmail().getDefendantClaimIssued(),
+                "defendant-issue-notification-" + claim.getReferenceNumber(),
+                claim.getClaimData().getDefendant().getName()
+            ));
 
-        return GeneratedDocuments.builder()
-            .defendantPinLetter(defendantPinLetter)
-            .defendantPinLetterDoc(defendantPinLetterDoc)
-            .pin(pin)
+        Claim updatedClaim = claim.toBuilder()
+            .letterHolderId(letterHolderId)
+            .build();
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetailsConverter.convertToMap(caseMapper.to(updatedClaim)))
             .build();
     }
 
