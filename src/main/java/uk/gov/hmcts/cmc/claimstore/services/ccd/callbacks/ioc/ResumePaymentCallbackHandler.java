@@ -78,7 +78,7 @@ public class ResumePaymentCallbackHandler extends CallbackHandler {
         return ROLES;
     }
 
-    private CallbackResponse resumePayment(CallbackParams callbackParams)  {
+    private CallbackResponse resumePayment(CallbackParams callbackParams) {
         CaseDetails caseDetails = callbackParams.getRequest().getCaseDetails();
         String authorisation = callbackParams.getParams()
             .get(CallbackParams.Params.BEARER_TOKEN).toString();

@@ -21,6 +21,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -159,6 +160,7 @@ public class ResumePaymentCallbackHandlerTest {
         Payment newPayment = Payment.builder()
             .reference("reference2")
             .status(SUCCESS)
+            .amount(BigDecimal.TEN)
             .dateCreated("2017-02-03T10:15:30+01:00")
             .nextUrl(NEXT_URL)
             .build();
