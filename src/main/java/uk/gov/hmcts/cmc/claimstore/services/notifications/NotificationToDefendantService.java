@@ -58,7 +58,7 @@ public class NotificationToDefendantService {
         notificationService.sendMail(
             claim.getDefendantEmail(),
             notificationsProperties.getTemplates().getEmail()
-                .getClaimantSettledAfterFullDefense(),
+                    .getClaimantSettledAfterFullDefense(),
             parameters,
             referenceForDefendant(claim.getReferenceNumber())
         );

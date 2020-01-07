@@ -81,11 +81,6 @@ public class ResponseUtils {
             .getDefenceType().equals(DefenceType.DISPUTE);
     }
 
-    public static boolean isFullDefenceDispute(Response response) {
-        return isFullDefence(response) && ((FullDefenceResponse) response)
-            .getDefenceType().equals(DefenceType.DISPUTE);
-    }
-
     public static boolean isFullDefence(Response response) {
         return response.getResponseType().equals(ResponseType.FULL_DEFENCE);
     }
