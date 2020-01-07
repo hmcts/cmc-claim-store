@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.services;
+package uk.gov.hmcts.cmc.claimstore.services.statetransition;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -6,12 +6,11 @@ import org.testcontainers.shaded.com.google.common.collect.ImmutableSet;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.repositories.elastic.SampleQueryConstants;
-import uk.gov.hmcts.cmc.claimstore.services.statetransition.StateTransitions;
 
 import java.time.LocalDate;
 import java.util.Collections;
 
-public class StateTransitionTest {
+public class StateTransitionsTest {
 
     @Test
     public void stayClaimCaseEventShouldBeStayClaim() {
@@ -38,7 +37,12 @@ public class StateTransitionTest {
 
     @Test
     public void stayClaimCheckIgnoredEvents() {
-        Assert.assertEquals(ImmutableSet.of(), StateTransitions.STAY_CLAIM.getIgnoredEvents());
+        ImmutableSet<CaseEvent> ignoredEvents = ImmutableSet.of(CaseEvent.LINK_LETTER_HOLDER,
+            CaseEvent.SENDING_CLAIMANT_NOTIFICATION, CaseEvent.PIN_GENERATION_OPERATIONS, CaseEvent.SENDING_RPA,
+            CaseEvent.SEALED_CLAIM_UPLOAD, CaseEvent.REVIEW_ORDER_UPLOAD, CaseEvent.CLAIM_ISSUE_RECEIPT_UPLOAD,
+            CaseEvent.SUPPORT_UPDATE, CaseEvent.ATTACH_SCANNED_DOCS, CaseEvent.REVIEWED_PAPER_RESPONSE,
+            CaseEvent.RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS, CaseEvent.UPDATE_CLAIM, CaseEvent.LINK_SEALED_CLAIM);
+        Assert.assertEquals(ignoredEvents, StateTransitions.STAY_CLAIM.getIgnoredEvents());
     }
 
     @Test

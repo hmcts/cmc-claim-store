@@ -31,8 +31,11 @@ public enum StateTransitions implements StateTransition {
         }),
         ImmutableSet.of(CaseEvent.DISPUTE, CaseEvent.ALREADY_PAID,  CaseEvent.FULL_ADMISSION,
             CaseEvent.PART_ADMISSION),
-        //TODO - Get ignorable events
-        ImmutableSet.of()
+        ImmutableSet.of(CaseEvent.LINK_LETTER_HOLDER, CaseEvent.SENDING_CLAIMANT_NOTIFICATION,
+            CaseEvent.PIN_GENERATION_OPERATIONS, CaseEvent.SENDING_RPA, CaseEvent.SEALED_CLAIM_UPLOAD,
+            CaseEvent.REVIEW_ORDER_UPLOAD, CaseEvent.CLAIM_ISSUE_RECEIPT_UPLOAD, CaseEvent.SUPPORT_UPDATE,
+            CaseEvent.ATTACH_SCANNED_DOCS, CaseEvent.REVIEWED_PAPER_RESPONSE,
+            CaseEvent.RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS, CaseEvent.UPDATE_CLAIM, CaseEvent.LINK_SEALED_CLAIM)
     ),
 
     WAITING_TRANSFER(CaseEvent.WAITING_TRANSFER,
