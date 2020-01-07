@@ -192,7 +192,7 @@ public class TotalAmountCalculator {
     private static LocalDate getToDate(Claim claim) {
         if (claim.getCountyCourtJudgmentRequestedAt() != null) {
             return claim.getCountyCourtJudgmentRequestedAt().toLocalDate();
-        } else if(claim.getSettlementReachedAt() != null) {
+        } else if (claim.getSettlementReachedAt() != null) {
             return claim.getSettlementReachedAt().toLocalDate();
         } else {
             return LocalDate.now().isAfter(claim.getIssuedOn()) ? LocalDate.now() : claim.getIssuedOn();
