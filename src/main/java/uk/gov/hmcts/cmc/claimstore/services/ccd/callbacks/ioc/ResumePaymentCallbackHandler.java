@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Payment;
+import uk.gov.hmcts.cmc.domain.utils.MonetaryConversions;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -130,6 +131,7 @@ public class ResumePaymentCallbackHandler extends CallbackHandler {
         return updatedClaim.toBuilder()
             .claimData(updatedClaim.getClaimData().toBuilder()
                 .payment(newPayment)
+                .feeAmountInPennies(MonetaryConversions.poundsToPennies(newPayment.getAmount()))
                 .build())
             .build();
 
