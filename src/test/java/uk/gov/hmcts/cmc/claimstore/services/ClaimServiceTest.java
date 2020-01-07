@@ -33,9 +33,11 @@ import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.amount.AmountBreakDown;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleAmountBreakdown;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SamplePayment;
@@ -523,6 +525,7 @@ public class ClaimServiceTest {
         ClaimData claimData = SampleClaimData.builder()
             .withExternalId(UUID.fromString(EXTERNAL_ID))
             .withFeeAccountNumber("OLD_ACCOUNT")
+            .withAmount(SampleAmountBreakdown.builder().build())
             .withPayment(
                 SamplePayment.builder()
                     .status(PaymentStatus.INITIATED)
@@ -534,6 +537,7 @@ public class ClaimServiceTest {
         ClaimData claimDataToBeUpdated = SampleClaimData.builder()
             .withExternalId(UUID.fromString(EXTERNAL_ID))
             .withFeeAccountNumber("NEW_ACCOUNT")
+            .withAmount(SampleAmountBreakdown.withThousandAsAmount().build())
             .withPayment(
                 SamplePayment.builder()
                     .status(PaymentStatus.INITIATED)
@@ -558,6 +562,9 @@ public class ClaimServiceTest {
         Claim argumentCaptorValue = claimArgumentCaptor.getValue();
 
         assertThat(argumentCaptorValue.getClaimData().getFeeAccountNumber().orElse("")).isEqualTo("NEW_ACCOUNT");
+        AmountBreakDown finalAmount = (AmountBreakDown)argumentCaptorValue.getClaimData().getAmount();
+        assertThat(finalAmount.getTotalAmount()).isEqualTo("1000.99");
+        assertThat(argumentCaptorValue.getClaimData()).isEqualTo(claimDataToBeUpdated);
     }
 
     @Test
