@@ -31,7 +31,7 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
     private static final String FREE_MEDIATION_CONFIRMATION_TEMPLATE = "freeMediationConfirmationTemplateId";
     private static final String CLAIMANT_INTENTION_TO_PROCEED_FOR_PAPER_DQ = "claimantIntentionToProceedForPaperDq";
     private static final String CLAIMANT_INTENTION_TO_PROCEED_FOR_ONLINE_DQ = "claimantIntentionToProceedForOnlineDq";
-    private static final String CLAIMANT_SETTLED_FOR_FULL_DEFENSE = "claimantSettledAfterFullDefense";
+    private static final String CLAIMANT_SETTLED_FOR_FULL_DEFENCE = "claimantSettledAfterFullDefense";
 
     private NotificationToDefendantService service;
     private Claim claim;
@@ -137,11 +137,11 @@ public class NotificationToDefendantServiceTest extends BaseNotificationServiceT
 
     @Test
     public void shouldSendEmailToDefendantUsingClaimantSettledAfterFullDefenseTemplate() throws Exception {
-        when(emailTemplates.getClaimantSettledAfterFullDefense()).thenReturn(CLAIMANT_SETTLED_FOR_FULL_DEFENSE);
+        when(emailTemplates.getClaimantSettledAfterFullDefence()).thenReturn(CLAIMANT_SETTLED_FOR_FULL_DEFENCE);
         service.notifyDefendantOfClaimantSettling(claim);
 
         verify(notificationClient).sendEmail(
-            eq(CLAIMANT_SETTLED_FOR_FULL_DEFENSE),
+            eq(CLAIMANT_SETTLED_FOR_FULL_DEFENCE),
             eq(DEFENDANT_EMAIL),
             anyMap(),
             eq(REFERENCE)
