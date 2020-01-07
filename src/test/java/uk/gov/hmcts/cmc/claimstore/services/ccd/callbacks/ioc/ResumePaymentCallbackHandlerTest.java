@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Payment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
@@ -26,6 +27,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.data.MapEntry.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -34,6 +36,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.INITIATED;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.PENDING;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
+import static uk.gov.hmcts.cmc.domain.utils.MonetaryConversions.poundsToPennies;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ResumePaymentCallbackHandlerTest {
@@ -180,7 +183,10 @@ public class ResumePaymentCallbackHandlerTest {
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
 
-        handler.handle(callbackParams);
+        AboutToStartOrSubmitCallbackResponse response =
+            (AboutToStartOrSubmitCallbackResponse) handler.handle(callbackParams);
+
+        assertThat(response.getData()).contains(entry("feeAmountInPennies", poundsToPennies(newPayment.getAmount())));
 
         verify(caseMapper).to(claimArgumentCaptor.capture());
 
