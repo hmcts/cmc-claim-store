@@ -357,6 +357,7 @@ sonarqube {
       "**/CCDEventProducer.java," +
       "**/GeneratedDocuments.java," +
       "**/DBCaseRepository.java," +
+      "**/MapperUtil.java," +
       "**/CCDCaseApi.java"
   }
 }
