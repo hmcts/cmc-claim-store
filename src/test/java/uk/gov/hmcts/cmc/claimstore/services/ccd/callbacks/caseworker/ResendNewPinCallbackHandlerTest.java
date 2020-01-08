@@ -59,6 +59,7 @@ public class ResendNewPinCallbackHandlerTest {
     private CallbackParams callbackParams;
     private static final String AUTHORISATION = "Bearer: aaaa";
     private static final String DEFENDANT_EMAIL_TEMPLATE = "Defendant Email PrintableTemplate";
+    private static final String PIN = "PIN";
 
     private CallbackRequest callbackRequest;
 
@@ -108,7 +109,7 @@ public class ResendNewPinCallbackHandlerTest {
         when(emailTemplates.getDefendantClaimIssued()).thenReturn(DEFENDANT_EMAIL_TEMPLATE);
 
         String letterHolderId = "333";
-        GeneratePinResponse pinResponse = new GeneratePinResponse("PIN", letterHolderId);
+        GeneratePinResponse pinResponse = new GeneratePinResponse(PIN, letterHolderId);
         when(userService.generatePin(anyString(), eq(AUTHORISATION))).thenReturn(pinResponse);
 
         resendNewPinCallbackHandler.handle(callbackParams);
@@ -116,10 +117,10 @@ public class ResendNewPinCallbackHandlerTest {
         verify(claimIssuedNotificationService).sendMail(
             eq(sampleClaim),
             eq(sampleClaim.getClaimData().getDefendant().getEmail().orElse(null)),
-            eq("PIN"),
+            eq(PIN),
             eq(DEFENDANT_EMAIL_TEMPLATE),
             eq("defendant-issue-notification-" + sampleClaim.getReferenceNumber()),
-            eq("Dr. John Smith")
+            eq(sampleClaim.getClaimData().getDefendant().getName())
         );
     }
 }
