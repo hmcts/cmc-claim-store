@@ -95,7 +95,8 @@ public class ResendNewPinCallbackHandlerTest {
         AboutToStartOrSubmitCallbackResponse response
             = (AboutToStartOrSubmitCallbackResponse) resendNewPinCallbackHandler.handle(callbackParams);
 
-        assertThat(response.getErrors()).contains("Claim has already been linked to defendant - cannot send notification");
+        assertThat(response.getErrors())
+            .contains("Claim has already been linked to defendant - cannot send notification");
     }
 
     @Test
@@ -109,7 +110,6 @@ public class ResendNewPinCallbackHandlerTest {
         String letterHolderId = "333";
         GeneratePinResponse pinResponse = new GeneratePinResponse("PIN", letterHolderId);
         when(userService.generatePin(anyString(), eq(AUTHORISATION))).thenReturn(pinResponse);
-
 
         resendNewPinCallbackHandler.handle(callbackParams);
 

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.caseworker;
 
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
@@ -50,7 +49,6 @@ public class ResendNewPinCallbackHandler extends CallbackHandler {
 
     private NotificationsProperties notificationsProperties;
 
-
     @Autowired
     public ResendNewPinCallbackHandler(
         CaseDetailsConverter caseDetailsConverter,
@@ -88,7 +86,8 @@ public class ResendNewPinCallbackHandler extends CallbackHandler {
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
 
         if (getDefendantLinkStatus(claim).isLinked()) {
-            logger.info("Claim {} has already been linked to defendant - cannot send notification", claim.getExternalId());
+            logger.info("Claim {} has already been linked to defendant - cannot send notification",
+                claim.getExternalId());
 
             return AboutToStartOrSubmitCallbackResponse.builder()
                 .errors(ImmutableList.of("Claim has already been linked to defendant - cannot send notification"))
