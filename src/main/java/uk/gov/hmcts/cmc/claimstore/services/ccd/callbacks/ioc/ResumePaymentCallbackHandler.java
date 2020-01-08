@@ -30,7 +30,6 @@ import java.util.Map;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.RESUME_CLAIM_PAYMENT_CITIZEN;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CITIZEN;
-import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.INITIATED;
 import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 
@@ -104,7 +103,7 @@ public class ResumePaymentCallbackHandler extends CallbackHandler {
             originalPayment.getStatus().toString(),
             claim.getExternalId());
 
-        if (originalPayment.getStatus().equals(INITIATED) || originalPayment.getStatus().equals(SUCCESS)) {
+        if (originalPayment.getStatus().equals(SUCCESS)) {
             return claim.toBuilder()
                 .claimData(claim.getClaimData().toBuilder()
                     .payment(originalPayment)
