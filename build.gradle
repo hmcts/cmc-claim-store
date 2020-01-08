@@ -359,7 +359,9 @@ sonarqube {
       "**/CCDEventProducer.java," +
       "**/GeneratedDocuments.java," +
       "**/DBCaseRepository.java," +
-      "**/CCDCaseApi.java"
+      "**/CCDCaseApi.java," +
+      "**/ClaimService.java," +
+      "**/ResumePaymentCallbackHandler.java"
   }
 }
 
