@@ -197,7 +197,11 @@ public class ClaimService {
     @LogExecutionTime
     public CreatePaymentResponse resumePayment(String authorisation, ClaimData claimData) {
         User user = userService.getUser(authorisation);
-        Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), user);
+        Claim claim = getClaimByExternalId(claimData.getExternalId().toString(), user)
+            .toBuilder()
+            .claimData(claimData)
+            .build();
+
         Claim resumedClaim = caseRepository.saveCaseEventIOC(user, claim, RESUME_CLAIM_PAYMENT_CITIZEN);
 
         Payment payment = resumedClaim.getClaimData().getPayment().orElseThrow(IllegalStateException::new);
