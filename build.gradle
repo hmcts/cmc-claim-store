@@ -46,6 +46,10 @@ allprojects {
   group 'uk.gov.hmcts.cmc'
   version '1.1.0'
 
+  jacoco {
+    toolVersion = "0.8.4"
+  }
+
   checkstyle {
     maxWarnings = 0
 
@@ -306,19 +310,14 @@ compileIntegrationTestJava {
 
 jacocoTestReport {
   executionData(test, apiTest)
-
   reports {
-    xml {
-      enabled true
-    }
-
-    html {
-      enabled true
-    }
+    xml.enabled = true
+    csv.enabled = false
+    xml.destination = file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
   }
 }
 
-project.tasks['sonarqube'].dependsOn test, apiTest
+project.tasks['sonarqube'].dependsOn test, apiTest, jacocoTestReport
 check.dependsOn apiTest
 checkstyleMain.shouldRunAfter(compileJava)
 test.shouldRunAfter(checkstyleMain, checkstyleAat, checkstyleTest, checkstyleIntegrationTest)
@@ -334,8 +333,7 @@ def listFiles(String pattern) {
 sonarqube {
   properties {
     property "sonar.projectName", "CMC :: Claim Store"
-    property "sonar.jacoco.reportPath", "${listFiles('**/test.exec')}"
-    property "sonar.jacoco.itReportPath", "${listFiles('**/apiTest.exec')}"
+    property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
     property "sonar.exclusions", "**/ccd/domain/**," +
       "**/cmc/domain/models/**," +
       "**/cmc/ccd/sample/data/**," +
@@ -359,9 +357,7 @@ sonarqube {
       "**/CCDEventProducer.java," +
       "**/GeneratedDocuments.java," +
       "**/DBCaseRepository.java," +
-      "**/CCDCaseApi.java," +
-      "**/ClaimService.java," +
-      "**/ResumePaymentCallbackHandler.java"
+      "**/CCDCaseApi.java"
   }
 }
 
