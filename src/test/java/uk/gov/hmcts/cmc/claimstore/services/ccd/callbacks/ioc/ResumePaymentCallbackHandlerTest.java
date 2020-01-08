@@ -96,7 +96,7 @@ public class ResumePaymentCallbackHandlerTest {
     }
 
     @Test
-    public void shouldUpdateExistingPaymentIfPaymentIsSuccessful() {
+    public void shouldUseExistingPaymentIfPaymentIsSuccessful() {
         Payment originalPayment = Payment.builder()
             .reference("reference")
             .status(SUCCESS)
@@ -124,7 +124,7 @@ public class ResumePaymentCallbackHandlerTest {
     }
 
     @Test
-    public void shouldUpdateExistingPaymentIfPaymentIsInitiated() {
+    public void shouldCreateNewPaymentIfPaymentIsInitiated() {
         Payment originalPayment = Payment.builder()
             .reference("reference")
             .status(INITIATED)
@@ -137,6 +137,19 @@ public class ResumePaymentCallbackHandlerTest {
             any(Claim.class)))
             .thenReturn(originalPayment);
 
+        Payment newPayment = Payment.builder()
+            .reference("reference2")
+            .status(SUCCESS)
+            .amount(BigDecimal.TEN)
+            .dateCreated("2017-02-03T10:15:30+01:00")
+            .nextUrl(NEXT_URL)
+            .build();
+
+        when(paymentsService.createPayment(
+            eq(BEARER_TOKEN),
+            any(Claim.class)))
+            .thenReturn(newPayment);
+
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_SUBMIT)
             .request(callbackRequest)
@@ -148,11 +161,11 @@ public class ResumePaymentCallbackHandlerTest {
         verify(caseMapper).to(claimArgumentCaptor.capture());
 
         Payment payment = claimArgumentCaptor.getValue().getClaimData().getPayment().orElse(null);
-        assertThat(payment).isEqualTo(originalPayment);
+        assertThat(payment).isEqualTo(newPayment);
     }
 
     @Test
-    public void shouldCreatePaymentIfPaymentIsNotInitiatedOrSuccessful() {
+    public void shouldCreatePaymentIfPaymentIsPending() {
         Payment originalPayment = Payment.builder()
             .reference("reference")
             .status(PENDING)
