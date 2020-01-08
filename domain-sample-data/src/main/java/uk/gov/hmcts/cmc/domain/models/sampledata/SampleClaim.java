@@ -128,6 +128,16 @@ public final class SampleClaim {
             .build();
     }
 
+    public static Claim getDefaultWithoutResponse() {
+        return builder()
+            .withClaimData(
+                SampleClaimData.submittedByClaimantBuilder()
+                    .withExternalId(RAND_UUID)
+                    .build())
+            .withDefendantId(null)
+            .build();
+    }
+
     public static Claim getWithClaimSubmissionOperationIndicators() {
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimantBuilder().withExternalId(RAND_UUID).build())

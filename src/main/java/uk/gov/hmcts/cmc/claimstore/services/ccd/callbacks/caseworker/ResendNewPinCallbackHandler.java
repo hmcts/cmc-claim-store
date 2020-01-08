@@ -6,12 +6,10 @@ import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
-import uk.gov.hmcts.cmc.claimstore.documents.CitizenServiceDocumentsService;
-import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
-import uk.gov.hmcts.cmc.claimstore.events.claim.GeneratedDocuments;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
@@ -26,8 +24,6 @@ import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
-import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
-import uk.gov.hmcts.reform.sendletter.api.Document;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,6 +32,7 @@ import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
+@Service
 public class ResendNewPinCallbackHandler extends CallbackHandler {
 
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
@@ -47,13 +44,7 @@ public class ResendNewPinCallbackHandler extends CallbackHandler {
 
     private UserService userService;
 
-    private CitizenServiceDocumentsService citizenServiceDocumentsService;
-
-    private PDFServiceClient pdfServiceClient;
-
     private CaseMapper caseMapper;
-
-    private EventProducer eventProducer;
 
     private ClaimIssuedNotificationService claimIssuedNotificationService;
 
@@ -64,19 +55,13 @@ public class ResendNewPinCallbackHandler extends CallbackHandler {
     public ResendNewPinCallbackHandler(
         CaseDetailsConverter caseDetailsConverter,
         UserService userService,
-        CitizenServiceDocumentsService citizenServiceDocumentsService,
-        PDFServiceClient pdfServiceClient,
         CaseMapper caseMapper,
-        EventProducer eventProducer,
         ClaimIssuedNotificationService claimIssuedNotificationService,
         NotificationsProperties notificationsProperties
     ) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.userService = userService;
-        this.citizenServiceDocumentsService = citizenServiceDocumentsService;
-        this.pdfServiceClient = pdfServiceClient;
         this.caseMapper = caseMapper;
-        this.eventProducer = eventProducer;
         this.claimIssuedNotificationService = claimIssuedNotificationService;
         this.notificationsProperties = notificationsProperties;
     }
@@ -144,7 +129,7 @@ public class ResendNewPinCallbackHandler extends CallbackHandler {
     }
 
     private DefendantLinkStatus getDefendantLinkStatus(Claim claim) {
-        if (claim.getDefendantId() != null) {
+        if (claim.getDefendantId() == null) {
             return new DefendantLinkStatus(false);
         }
         return new DefendantLinkStatus(true);
