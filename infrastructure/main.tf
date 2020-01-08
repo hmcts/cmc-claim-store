@@ -44,7 +44,7 @@ data "azurerm_key_vault_secret" "staff_email" {
 }
 
 data "azurerm_key_vault_secret" "live_support_email" {
-  name = "live_support_email"
+  name = "live-support-email"
   vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
 }
 
