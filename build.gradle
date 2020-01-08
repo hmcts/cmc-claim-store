@@ -317,7 +317,7 @@ jacocoTestReport {
   }
 }
 
-project.tasks['sonarqube'].dependsOn test, apiTest, jacocoTestReport
+project.tasks['sonarqube'].dependsOn jacocoTestReport
 check.dependsOn apiTest
 checkstyleMain.shouldRunAfter(compileJava)
 test.shouldRunAfter(checkstyleMain, checkstyleAat, checkstyleTest, checkstyleIntegrationTest)
