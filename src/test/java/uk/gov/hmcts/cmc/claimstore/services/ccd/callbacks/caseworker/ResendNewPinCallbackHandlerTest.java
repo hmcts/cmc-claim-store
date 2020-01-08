@@ -101,7 +101,7 @@ public class ResendNewPinCallbackHandlerTest {
     }
 
     @Test
-    public void shouldReturnNewPinAndNewLetterHolderID() {
+    public void shouldSendNewPinNotificationToDefendant() {
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(sampleClaim);
 
         when(notificationsProperties.getTemplates()).thenReturn(templates);
