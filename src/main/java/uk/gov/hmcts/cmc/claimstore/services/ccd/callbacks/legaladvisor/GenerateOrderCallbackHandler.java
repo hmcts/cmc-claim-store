@@ -36,20 +36,6 @@ public class GenerateOrderCallbackHandler extends CallbackHandler {
     private static final List<Role> ROLES = Collections.singletonList(LEGAL_ADVISOR);
     private static final List<CaseEvent> EVENTS = ImmutableList.of(GENERATE_ORDER, ACTION_REVIEW_COMMENTS);
 
-    private static final String DOC_UPLOAD_DEADLINE = "docUploadDeadline";
-    private static final String EYEWITNESS_UPLOAD_DEADLINE = "eyewitnessUploadDeadline";
-    private static final String DOC_UPLOAD_FOR_PARTY = "docUploadForParty";
-    private static final String EYEWITNESS_UPLOAD_FOR_PARTY = "eyewitnessUploadForParty";
-    private static final String PAPER_DETERMINATION = "paperDetermination";
-    private static final String DRAFT_ORDER_DOC = "draftOrderDoc";
-    private static final String NEW_REQUESTED_COURT = "newRequestedCourt";
-    private static final String PREFERRED_COURT_OBJECTING_PARTY = "preferredCourtObjectingParty";
-    private static final String PREFERRED_COURT_OBJECTING_REASON = "preferredCourtObjectingReason";
-    private static final String DIRECTION_LIST = "directionList";
-    private static final String PREFERRED_DQ_COURT = "preferredDQCourt";
-    private static final String EXPERT_PERMISSION_BY_CLAIMANT = "expertReportPermissionPartyAskedByClaimant";
-    private static final String EXPERT_PERMISSION_BY_DEFENDANT = "expertReportPermissionPartyAskedByDefendant";
-
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final OrderCreator orderCreator;
 

@@ -117,15 +117,7 @@ public class DrawJudgeOrderCallbackHandlerTest {
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
             caseDetailsConverter, legalOrderService, hearingCourtDetailsFinder);
 
-        drawJudgeOrderCallbackHandler = new DrawJudgeOrderCallbackHandler(
-            clock,
-            orderDrawnNotificationService,
-            caseDetailsConverter,
-            legalOrderService,
-            hearingCourtDetailsFinder,
-            orderCreator,
-            orderPostProcessor
-        );
+        drawJudgeOrderCallbackHandler = new DrawJudgeOrderCallbackHandler(orderCreator, orderPostProcessor);
 
         Claim claim =
             SampleClaim.builder()
