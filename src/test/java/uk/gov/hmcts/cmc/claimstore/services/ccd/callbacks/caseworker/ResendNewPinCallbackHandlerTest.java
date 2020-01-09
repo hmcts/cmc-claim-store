@@ -19,6 +19,7 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificatio
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -63,7 +64,8 @@ public class ResendNewPinCallbackHandlerTest {
 
     private CallbackRequest callbackRequest;
 
-    private Claim sampleClaim = SampleClaim.getDefaultWithoutResponse();
+    private Claim sampleClaimWithDefendantEmail = SampleClaim.getDefaultWithoutResponse(SampleTheirDetails.DEFENDANT_EMAIL);
+    private Claim sampleClaimWithoutDefendantEmail = SampleClaim.getDefaultWithoutResponse(null);
     private Claim sampleLinkedClaim = SampleClaim.getClaimWithFullDefenceAlreadyPaid();
 
     @Before
@@ -101,8 +103,19 @@ public class ResendNewPinCallbackHandlerTest {
     }
 
     @Test
+    public void shouldReturnErrorWhenDefendantHasNoEmailAddressInClaim() {
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(sampleClaimWithoutDefendantEmail);
+
+        AboutToStartOrSubmitCallbackResponse response
+            = (AboutToStartOrSubmitCallbackResponse) resendNewPinCallbackHandler.handle(callbackParams);
+
+        assertThat(response.getErrors())
+            .contains("Claim doesn't have defendant email address - cannot send notification");
+    }
+
+    @Test
     public void shouldSendNewPinNotificationToDefendant() {
-        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(sampleClaim);
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(sampleClaimWithDefendantEmail);
 
         when(notificationsProperties.getTemplates()).thenReturn(templates);
         when(templates.getEmail()).thenReturn(emailTemplates);
@@ -115,12 +128,12 @@ public class ResendNewPinCallbackHandlerTest {
         resendNewPinCallbackHandler.handle(callbackParams);
 
         verify(claimIssuedNotificationService).sendMail(
-            eq(sampleClaim),
-            eq(sampleClaim.getClaimData().getDefendant().getEmail().orElse(null)),
+            eq(sampleClaimWithDefendantEmail),
+            eq(sampleClaimWithDefendantEmail.getClaimData().getDefendant().getEmail().orElse(null)),
             eq(PIN),
             eq(DEFENDANT_EMAIL_TEMPLATE),
-            eq("defendant-issue-notification-" + sampleClaim.getReferenceNumber()),
-            eq(sampleClaim.getClaimData().getDefendant().getName())
+            eq("defendant-issue-notification-" + sampleClaimWithDefendantEmail.getReferenceNumber()),
+            eq(sampleClaimWithDefendantEmail.getClaimData().getDefendant().getName())
         );
     }
 }
