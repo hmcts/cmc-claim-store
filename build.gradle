@@ -47,7 +47,8 @@ allprojects {
   version '1.1.0'
 
   jacoco {
-    toolVersion = "0.8.4"
+    toolVersion = '0.8.5' // jacocoMavenPluginVersion
+    reportsDir = file("$buildDir/reports/jacoco")
   }
 
   checkstyle {
@@ -306,11 +307,6 @@ task smoke(type: Test) {
 
 compileIntegrationTestJava {
   options.compilerArgs << '-Xlint:deprecation'
-}
-
-jacoco {
-  toolVersion = '0.8.5' // jacocoMavenPluginVersion
-  reportsDir = file("$buildDir/reports/jacoco")
 }
 
 jacocoTestReport {
