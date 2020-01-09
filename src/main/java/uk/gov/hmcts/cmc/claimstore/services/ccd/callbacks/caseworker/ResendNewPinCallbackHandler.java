@@ -94,6 +94,15 @@ public class ResendNewPinCallbackHandler extends CallbackHandler {
                 .build();
         }
 
+        if (!claim.getClaimData().getDefendant().getEmail().isPresent()) {
+            logger.info("Claim {} doesn't have defendant email address - cannot send notification",
+                claim.getExternalId());
+
+            return AboutToStartOrSubmitCallbackResponse.builder()
+                .errors(ImmutableList.of("Claim doesn't have defendant email address - cannot send notification"))
+                .build();
+        }
+
         GeneratePinResponse pinResponse = getPinResponse(claim.getClaimData(), authorisation)
             .orElseThrow(() -> new IllegalArgumentException("Pin generation failed"));
 
