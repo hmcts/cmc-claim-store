@@ -64,7 +64,8 @@ public class ResendNewPinCallbackHandlerTest {
 
     private CallbackRequest callbackRequest;
 
-    private Claim sampleClaimWithDefendantEmail = SampleClaim.getDefaultWithoutResponse(SampleTheirDetails.DEFENDANT_EMAIL);
+    private Claim sampleClaimWithDefendantEmail =
+        SampleClaim.getDefaultWithoutResponse(SampleTheirDetails.DEFENDANT_EMAIL);
     private Claim sampleClaimWithoutDefendantEmail = SampleClaim.getDefaultWithoutResponse(null);
     private Claim sampleLinkedClaim = SampleClaim.getClaimWithFullDefenceAlreadyPaid();
 
