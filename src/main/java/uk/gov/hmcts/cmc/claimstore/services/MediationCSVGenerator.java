@@ -42,7 +42,7 @@ public class MediationCSVGenerator {
         .caseType("CASE_TYPE")
         .amount("AMOUNT")
         .partyType("PARTY_TYPE")
-        .partyName("PARTY_NAME")
+        .partyName("COMPANY_NAME")
         .contactName("CONTACT_NAME")
         .contactNumber("CONTACT_NUMBER")
         .checkList("CHECK_LIST")

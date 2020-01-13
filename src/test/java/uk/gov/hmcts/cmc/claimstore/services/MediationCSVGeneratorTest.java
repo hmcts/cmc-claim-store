@@ -28,10 +28,10 @@ public class MediationCSVGeneratorTest {
 
     private MediationCSVGenerator mediationCSVGenerator;
 
-    private static final String CARRIAGE_RETURN = "\r\n";
+    private static final String CRLF = "\r\n";
 
     private static final String REPORT_HEADER = "SITE_ID,CASE_TYPE,CHECK_LIST,PARTY_STATUS,CASE_NUMBER,AMOUNT,"
-        + "PARTY_TYPE,PARTY_NAME,CONTACT_NAME,CONTACT_NUMBER,CONTACT_EMAIL,PILOT" + CARRIAGE_RETURN;
+        + "PARTY_TYPE,COMPANY_NAME,CONTACT_NAME,CONTACT_NUMBER,CONTACT_EMAIL,PILOT" + CRLF;
 
     @Mock
     private CaseSearchApi caseSearchApi;
@@ -53,9 +53,9 @@ public class MediationCSVGeneratorTest {
 
         String expected = REPORT_HEADER
             + "5,1,4,5,000CM001,40.99,1,John Rambo,Mediation Contact Person,07999999999,claimant@mail.com,Yes"
-            + CARRIAGE_RETURN
+            + CRLF
             + "5,1,4,5,000CM001,40.99,2,Dr. John Smith,Mediation Contact Person,07999999999,j.smith@example.com,Yes"
-            + CARRIAGE_RETURN;
+            + CRLF;
         mediationCSVGenerator.createMediationCSV();
         String mediationCSV = mediationCSVGenerator.getCsvData();
         assertThat(mediationCSV).isEqualTo(expected);
@@ -71,13 +71,13 @@ public class MediationCSVGeneratorTest {
 
         String expected = REPORT_HEADER
             + "5,1,4,5,000CM001,40.99,1,John Rambo,Mediation Contact Person,07999999999,claimant@mail.com,Yes"
-            + CARRIAGE_RETURN
+            + CRLF
             + "5,1,4,5,000CM001,40.99,2,Dr. John Smith,Mediation Contact Person,07999999999,j.smith@example.com,Yes"
-            + CARRIAGE_RETURN
+            + CRLF
             + "5,1,4,5,000CM001,1000.99,1,John Rambo,Mediation Contact Person,07999999999,claimant@mail.com,No"
-            + CARRIAGE_RETURN
+            + CRLF
             + "5,1,4,5,000CM001,1000.99,2,Dr. John Smith,Mediation Contact Person,07999999999,j.smith@example.com,No"
-            + CARRIAGE_RETURN;
+            + CRLF;
         mediationCSVGenerator.createMediationCSV();
         String mediationCSV = mediationCSVGenerator.getCsvData();
         assertThat(mediationCSV).isEqualTo(expected);
@@ -86,7 +86,7 @@ public class MediationCSVGeneratorTest {
     @Test
     public void shouldCreateMediationCSVEvenWhenNoClaimsWithMediation() {
         String expected = REPORT_HEADER + "null,null,null,null,null,null,null,null,null,null,null,null"
-            + CARRIAGE_RETURN;
+            + CRLF;
         mediationCSVGenerator.createMediationCSV();
         String mediationCSV = mediationCSVGenerator.getCsvData();
         assertThat(mediationCSV).isEqualTo(expected);
