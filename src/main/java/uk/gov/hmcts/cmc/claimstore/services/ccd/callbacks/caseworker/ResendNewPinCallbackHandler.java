@@ -85,7 +85,7 @@ public class ResendNewPinCallbackHandler extends CallbackHandler {
         Claim claim = caseDetailsConverter.extractClaim(callbackParams.getRequest().getCaseDetails());
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
 
-        if (getDefendantLinkStatus(claim).isLinked()) {
+        if (claim.getDefendantId() != null) {
             logger.info("Claim {} has already been linked to defendant - cannot send notification",
                 claim.getReferenceNumber());
 
@@ -127,12 +127,5 @@ public class ResendNewPinCallbackHandler extends CallbackHandler {
 
     private Optional<GeneratePinResponse> getPinResponse(ClaimData claimData, String authorisation) {
         return Optional.of(userService.generatePin(claimData.getDefendant().getName(), authorisation));
-    }
-
-    private DefendantLinkStatus getDefendantLinkStatus(Claim claim) {
-        if (claim.getDefendantId() == null) {
-            return new DefendantLinkStatus(false);
-        }
-        return new DefendantLinkStatus(true);
     }
 }
