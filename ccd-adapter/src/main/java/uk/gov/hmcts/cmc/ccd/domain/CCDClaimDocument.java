@@ -14,6 +14,7 @@ public class CCDClaimDocument {
     private CCDClaimDocumentType documentType;
     private LocalDateTime authoredDatetime;
     private LocalDateTime createdDatetime;
+    private LocalDateTime receivedDatetime;
     private String createdBy;
     private long size;
 }

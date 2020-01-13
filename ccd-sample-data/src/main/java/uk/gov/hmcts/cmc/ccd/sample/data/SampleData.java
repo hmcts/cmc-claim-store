@@ -782,4 +782,16 @@ public class SampleData {
             .state(OPEN.getValue())
             .build();
     }
+
+    public static CCDCase withPaperResponseFromScannedDoc() {
+        List<CCDCollectionElement<CCDApplicant>> applicants
+            = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
+
+        return ccdBuilderWithDefault()
+            .amountBreakDown(getAmountBreakDown())
+            .applicants(applicants)
+            .scannedDocuments(SampleStaffUploadedDoc.scannedDocsPaperResponse)
+            .state(OPEN.getValue())
+            .build();
+    }
 }

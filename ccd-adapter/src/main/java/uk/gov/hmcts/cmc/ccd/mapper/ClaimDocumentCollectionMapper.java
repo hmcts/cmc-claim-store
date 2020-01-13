@@ -18,10 +18,13 @@ import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
 public class ClaimDocumentCollectionMapper {
 
     private final ClaimDocumentMapper claimDocumentMapper;
+    private final ScannedDocumentMapper scannedDocumentMapper;
 
     @Autowired
-    public ClaimDocumentCollectionMapper(ClaimDocumentMapper claimDocumentMapper) {
+    public ClaimDocumentCollectionMapper(ClaimDocumentMapper claimDocumentMapper,
+                                         ScannedDocumentMapper scannedDocumentMapper) {
         this.claimDocumentMapper = claimDocumentMapper;
+        this.scannedDocumentMapper = scannedDocumentMapper;
     }
 
     public void to(ClaimDocumentCollection claimDocumentCollection, CCDCase.CCDCaseBuilder builder) {
@@ -39,6 +42,12 @@ public class ClaimDocumentCollectionMapper {
                 .filter(this::isNotCCJ)
                 .map(claimDocumentMapper::to)
                 .collect(Collectors.toList())
+        );
+
+        builder.scannedDocuments(asStream(claimDocumentCollection
+            .getScannedDocuments())
+            .map(scannedDocumentMapper::to)
+            .collect(Collectors.toList())
         );
 
         builder.staffUploadedDocuments(asStream(claimDocumentCollection
@@ -69,6 +78,10 @@ public class ClaimDocumentCollectionMapper {
             .stream()
             .map(claimDocumentMapper::from)
             .forEach(claimDocumentCollection::addClaimDocument);
+
+        asStream(ccdCase.getScannedDocuments())
+            .map(scannedDocumentMapper::from)
+            .forEach(claimDocumentCollection::addScannedDocument);
 
         asStream(ccdCase.getStaffUploadedDocuments())
             .map(claimDocumentMapper::from)

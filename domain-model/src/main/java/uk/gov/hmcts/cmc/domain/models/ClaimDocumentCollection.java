@@ -12,10 +12,16 @@ public class ClaimDocumentCollection {
 
     private final List<ClaimDocument> claimDocuments = new ArrayList<ClaimDocument>();
 
+    private final List<ScannedDocument> scannedDocuments = new ArrayList<>();
+
     private final List<ClaimDocument> staffUploadedDocuments = new ArrayList<>();
 
     public void addClaimDocument(ClaimDocument claimDocument) {
         claimDocuments.add(claimDocument);
+    }
+
+    public void addScannedDocument(ScannedDocument scannedDocument) {
+        scannedDocuments.add(scannedDocument);
     }
 
     public void addStaffUploadedDocument(ClaimDocument claimDocument) {
