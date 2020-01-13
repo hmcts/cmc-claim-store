@@ -103,8 +103,8 @@ public class ResendNewPinCallbackHandler extends CallbackHandler {
                 .build();
         }
 
-        GeneratePinResponse pinResponse = getPinResponse(claim.getClaimData(), authorisation)
-            .orElseThrow(() -> new IllegalArgumentException("Pin generation failed"));
+        GeneratePinResponse pinResponse =
+            userService.generatePin(claim.getClaimData().getDefendant().getName(), authorisation);
 
         claim.getClaimData().getDefendant().getEmail().ifPresent(defendantEmail ->
             claimIssuedNotificationService.sendMail(
@@ -123,9 +123,5 @@ public class ResendNewPinCallbackHandler extends CallbackHandler {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetailsConverter.convertToMap(caseMapper.to(updatedClaim)))
             .build();
-    }
-
-    private Optional<GeneratePinResponse> getPinResponse(ClaimData claimData, String authorisation) {
-        return Optional.of(userService.generatePin(claimData.getDefendant().getName(), authorisation));
     }
 }
