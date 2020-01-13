@@ -87,7 +87,7 @@ public class ResendNewPinCallbackHandler extends CallbackHandler {
 
         if (getDefendantLinkStatus(claim).isLinked()) {
             logger.info("Claim {} has already been linked to defendant - cannot send notification",
-                claim.getExternalId());
+                claim.getReferenceNumber());
 
             return AboutToStartOrSubmitCallbackResponse.builder()
                 .errors(ImmutableList.of("Claim has already been linked to defendant - cannot send notification"))
@@ -96,7 +96,7 @@ public class ResendNewPinCallbackHandler extends CallbackHandler {
 
         if (!claim.getClaimData().getDefendant().getEmail().isPresent()) {
             logger.info("Claim {} doesn't have defendant email address - cannot send notification",
-                claim.getExternalId());
+                claim.getReferenceNumber());
 
             return AboutToStartOrSubmitCallbackResponse.builder()
                 .errors(ImmutableList.of("Claim doesn't have defendant email address - cannot send notification"))
