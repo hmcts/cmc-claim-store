@@ -34,7 +34,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ResendNewPinCallbackHandlerTest {
+public class ResetAndSendNewPinCallbackHandlerTest {
     @Mock
     private CaseDetailsConverter caseDetailsConverter;
 
@@ -56,7 +56,7 @@ public class ResendNewPinCallbackHandlerTest {
     @Mock
     private EmailTemplates emailTemplates;
 
-    private ResendNewPinCallbackHandler resendNewPinCallbackHandler;
+    private ResetAndSendNewPinCallbackHandler resetAndSendNewPinCallbackHandler;
     private CallbackParams callbackParams;
     private static final String AUTHORISATION = "Bearer: aaaa";
     private static final String DEFENDANT_EMAIL_TEMPLATE = "Defendant Email PrintableTemplate";
@@ -71,7 +71,7 @@ public class ResendNewPinCallbackHandlerTest {
 
     @Before
     public void setUp() throws Exception {
-        resendNewPinCallbackHandler = new ResendNewPinCallbackHandler(
+        resetAndSendNewPinCallbackHandler = new ResetAndSendNewPinCallbackHandler(
             caseDetailsConverter,
             userService,
             caseMapper,
@@ -82,7 +82,7 @@ public class ResendNewPinCallbackHandlerTest {
         callbackRequest = CallbackRequest
             .builder()
             .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
-            .eventId(CaseEvent.RESEND_PIN.getValue())
+            .eventId(CaseEvent.RESET_PIN.getValue())
             .build();
 
         callbackParams = CallbackParams.builder()
@@ -97,7 +97,7 @@ public class ResendNewPinCallbackHandlerTest {
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(sampleLinkedClaim);
 
         AboutToStartOrSubmitCallbackResponse response
-            = (AboutToStartOrSubmitCallbackResponse) resendNewPinCallbackHandler.handle(callbackParams);
+            = (AboutToStartOrSubmitCallbackResponse) resetAndSendNewPinCallbackHandler.handle(callbackParams);
 
         assertThat(response.getErrors())
             .contains("Claim has already been linked to defendant - cannot send notification");
@@ -108,7 +108,7 @@ public class ResendNewPinCallbackHandlerTest {
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(sampleClaimWithoutDefendantEmail);
 
         AboutToStartOrSubmitCallbackResponse response
-            = (AboutToStartOrSubmitCallbackResponse) resendNewPinCallbackHandler.handle(callbackParams);
+            = (AboutToStartOrSubmitCallbackResponse) resetAndSendNewPinCallbackHandler.handle(callbackParams);
 
         assertThat(response.getErrors())
             .contains("Claim doesn't have defendant email address - cannot send notification");
@@ -126,7 +126,7 @@ public class ResendNewPinCallbackHandlerTest {
         GeneratePinResponse pinResponse = new GeneratePinResponse(PIN, letterHolderId);
         when(userService.generatePin(anyString(), eq(AUTHORISATION))).thenReturn(pinResponse);
 
-        resendNewPinCallbackHandler.handle(callbackParams);
+        resetAndSendNewPinCallbackHandler.handle(callbackParams);
 
         verify(claimIssuedNotificationService).sendMail(
             eq(sampleClaimWithDefendantEmail),

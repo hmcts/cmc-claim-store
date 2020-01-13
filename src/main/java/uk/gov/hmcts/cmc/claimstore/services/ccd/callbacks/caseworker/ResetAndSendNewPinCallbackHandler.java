@@ -19,23 +19,20 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.hmcts.cmc.domain.models.ClaimData;
-import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
 @Service
-public class ResendNewPinCallbackHandler extends CallbackHandler {
+public class ResetAndSendNewPinCallbackHandler extends CallbackHandler {
 
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
-    private static final List<CaseEvent> EVENTS = ImmutableList.of(CaseEvent.RESEND_PIN);
+    private static final List<CaseEvent> EVENTS = ImmutableList.of(CaseEvent.RESET_PIN);
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -50,7 +47,7 @@ public class ResendNewPinCallbackHandler extends CallbackHandler {
     private NotificationsProperties notificationsProperties;
 
     @Autowired
-    public ResendNewPinCallbackHandler(
+    public ResetAndSendNewPinCallbackHandler(
         CaseDetailsConverter caseDetailsConverter,
         UserService userService,
         CaseMapper caseMapper,
