@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure@add-all-flag-to-delete")
+@Library("Infrastructure")
 
 def product = "cmc"
 def component = "claim-store"
