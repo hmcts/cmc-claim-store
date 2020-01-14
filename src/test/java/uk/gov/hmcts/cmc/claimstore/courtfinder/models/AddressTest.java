@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.courtfinder.models;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
