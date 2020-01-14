@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.claimstore.utils.DateUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
+import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
@@ -57,6 +58,22 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
                 .must(QueryBuilders.rangeQuery("data.respondents.value.claimantResponse.submittedOn")
                     .from(DateUtils.startOfDay(mediationAgreedDate), true)
                     .to(DateUtils.endOfDay(mediationAgreedDate), true)), 1000
+        );
+
+        return searchClaimsWith(user, mediationQuery);
+
+    }
+
+    public List<Claim> getClaimsWithDefaultCCJ(User user, LocalDate ccjRequestedDate) {
+
+        Query mediationQuery = new Query(
+            QueryBuilders.boolQuery()
+                .must(QueryBuilders.termQuery(
+                    "data.respondents.value.countyCourtJudgmentRequest.type",
+                    CountyCourtJudgmentType.DEFAULT.name()))
+                .must(QueryBuilders.rangeQuery("data.respondents.value.countyCourtJudgmentRequest.requestedDate")
+                    .from(DateUtils.startOfDay(ccjRequestedDate), true)
+                    .to(DateUtils.endOfDay(ccjRequestedDate), true)), 1000
         );
 
         return searchClaimsWith(user, mediationQuery);

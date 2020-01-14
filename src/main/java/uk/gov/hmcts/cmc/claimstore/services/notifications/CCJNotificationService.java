@@ -32,6 +32,16 @@ public class CCJNotificationService {
         this.notificationsProperties = notificationsProperties;
     }
 
+    public void notifyClaimantAboutCCJReminder(Claim claim) {
+        Map<String, String> parameters = aggregateParams(claim);
+        notificationService.sendMail(
+            claim.getSubmitterEmail(),
+            notificationsProperties.getTemplates().getEmail().getClaimantCCJReminder(),
+            parameters,
+            NotificationReferenceBuilder.CCJRequested.referenceForClaimant(claim.getReferenceNumber())
+        );
+    }
+
     public void notifyClaimantForCCJRequest(Claim claim) {
         Map<String, String> parameters = aggregateParams(claim);
         notificationService.sendMail(
