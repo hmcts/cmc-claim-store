@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure@bug/ROC-7192_auto-stay-traceability")
+@Library("Infrastructure@add-all-flag-to-delete")
 
 def product = "cmc"
 def component = "claim-store"
