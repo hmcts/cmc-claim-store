@@ -222,8 +222,8 @@ public class SupportControllerTest {
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
 
         assertThrows(ConflictException.class,
-           () -> controller.resendStaffNotifications(CLAIM_REFERENCE, RESPONSE_SUBMITTED),
-           "Claim " + CLAIM_REFERENCE + " does not have associated response");
+            () -> controller.resendStaffNotifications(CLAIM_REFERENCE, RESPONSE_SUBMITTED),
+            "Claim " + CLAIM_REFERENCE + " does not have associated response");
     }
 
     @Test
@@ -307,7 +307,8 @@ public class SupportControllerTest {
             Optional.of(SampleClaim.builder().withClaimantResponse(null).build()));
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
 
-        assertThrows(IllegalArgumentException.class, () -> controller.resendStaffNotifications(CLAIM_REFERENCE, "claimant-response"));
+        assertThrows(IllegalArgumentException.class,
+            () -> controller.resendStaffNotifications(CLAIM_REFERENCE, "claimant-response"));
     }
 
     @Test
@@ -326,7 +327,8 @@ public class SupportControllerTest {
             Optional.of(SampleClaim.builder().withMoneyReceivedOn(null).build()));
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
 
-        assertThrows(IllegalArgumentException.class, () -> controller.resendStaffNotifications(CLAIM_REFERENCE, "paid-in-full"));
+        assertThrows(IllegalArgumentException.class,
+            () -> controller.resendStaffNotifications(CLAIM_REFERENCE, "paid-in-full"));
 
         verify(paidInFullStaffNotificationHandler, never()).onPaidInFullEvent(any(PaidInFullEvent.class));
     }
@@ -357,7 +359,8 @@ public class SupportControllerTest {
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
 
-        assertThrows(ServerErrorException.class, () -> controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SEALED_CLAIM));
+        assertThrows(ServerErrorException.class,
+            () -> controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SEALED_CLAIM));
     }
 
     @Test
@@ -386,7 +389,8 @@ public class SupportControllerTest {
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
 
-        assertThrows(ServerErrorException.class, () -> controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, CLAIM_ISSUE_RECEIPT));
+        assertThrows(ServerErrorException.class,
+            () -> controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, CLAIM_ISSUE_RECEIPT));
     }
 
     @Test
@@ -416,7 +420,8 @@ public class SupportControllerTest {
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
 
-        assertThrows(ServerErrorException.class, () -> controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, DEFENDANT_RESPONSE_RECEIPT));
+        assertThrows(ServerErrorException.class,
+            () -> controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, DEFENDANT_RESPONSE_RECEIPT));
     }
 
     @Test
@@ -445,7 +450,8 @@ public class SupportControllerTest {
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
 
-        assertThrows(ServerErrorException.class, () -> controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SETTLEMENT_AGREEMENT));
+        assertThrows(ServerErrorException.class,
+            () -> controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SETTLEMENT_AGREEMENT));
     }
 
     @Test
@@ -529,7 +535,8 @@ public class SupportControllerTest {
             claimSubmissionOperationIndicators,
             AUTHORISATION),
             "Invalid input. The following indicator(s)[claimantNotification, "
-                + "defendantNotification, bulkPrint, rpa, staffNotification, sealedClaimUpload, claimIssueReceiptUpload] "
+                + "defendantNotification, bulkPrint, rpa, staffNotification, "
+                + "sealedClaimUpload, claimIssueReceiptUpload] "
                 + "cannot be set to Yes"
         );
     }
@@ -563,8 +570,7 @@ public class SupportControllerTest {
                 ClaimSubmissionOperationIndicators
                     .builder().build(),
                 ""),
-            "Authorisation is required"
-            );
+            "Authorisation is required");
     }
 
     @Test
