@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -103,7 +104,7 @@ public class ScheduledStateTransitionServiceTest {
         when(stateTransition.getCaseEvent()).thenReturn(caseEvent);
         when(stateTransition.getAppInsightsEvent()).thenReturn(appInsightsEvent);
 
-        when(environment.getProperty(any(String.class))).thenReturn(deadline.toString());
+        when(environment.getProperty(anyString())).thenReturn(deadline.toString());
 
         scheduledStateTransitionService = new ScheduledStateTransitionService(
             workingDayIndicator,

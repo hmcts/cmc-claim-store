@@ -21,14 +21,13 @@ public enum StateTransitions implements StateTransition {
 
     STAY_CLAIM(CaseEvent.STAY_CLAIM,
         AppInsightsEvent.CLAIM_STAYED,
-        (responseDate -> {
-            return QueryBuilders.boolQuery()
+        (responseDate -> QueryBuilders.boolQuery()
                 .must(QueryBuilders.termQuery("state", ClaimState.OPEN.getValue()))
                 .must(QueryBuilders.rangeQuery("data.respondents.value.responseSubmittedOn").lte(responseDate))
                 .mustNot(QueryBuilders.existsQuery("data.respondents.value.paidInFullDate"))
                 .mustNot(QueryBuilders.existsQuery("data.respondents.value.claimantResponse.submittedOn"))
-                .must(QueryBuilders.rangeQuery("data.submittedOn").gte(DateUtils.DATE_OF_5_0_0_RELEASE));
-        }),
+                .must(QueryBuilders.rangeQuery("data.submittedOn").gte(DateUtils.DATE_OF_5_0_0_RELEASE))
+        ),
         ImmutableSet.of(CaseEvent.DISPUTE, CaseEvent.ALREADY_PAID,  CaseEvent.FULL_ADMISSION,
             CaseEvent.PART_ADMISSION),
         ImmutableSet.of(CaseEvent.LINK_LETTER_HOLDER, CaseEvent.SENDING_CLAIMANT_NOTIFICATION,
@@ -40,12 +39,17 @@ public enum StateTransitions implements StateTransition {
 
     WAITING_TRANSFER(CaseEvent.WAITING_TRANSFER,
         AppInsightsEvent.WAITING_TRANSFER,
-        (responseDate -> {
-            return QueryBuilders.boolQuery()
+        (responseDate -> QueryBuilders.boolQuery()
                 .must(QueryBuilders.termQuery("state", ClaimState.ORDER_DRAWN.getValue()))
-                .must(QueryBuilders.rangeQuery("data.directionOrder.createdOn").lte(responseDate));
-        })
+                .must(QueryBuilders.rangeQuery("data.directionOrder.createdOn").lte(responseDate))
+        )
     );
+
+    private CaseEvent caseEvent;
+    private AppInsightsEvent appInsightsEvent;
+    private Function<LocalDate, QueryBuilder> query;
+    private Set<CaseEvent> triggerEvents;
+    private Set<CaseEvent> ignoredEvents;
 
     StateTransitions(CaseEvent caseEvent, AppInsightsEvent appInsightsEvent, Function<LocalDate, QueryBuilder> query) {
         this.caseEvent = caseEvent;
@@ -54,11 +58,4 @@ public enum StateTransitions implements StateTransition {
         this.triggerEvents = Collections.emptySet();
         this.ignoredEvents = Collections.emptySet();
     }
-
-    private CaseEvent caseEvent;
-    private AppInsightsEvent appInsightsEvent;
-    private Function<LocalDate, QueryBuilder> query;
-    private Set<CaseEvent> triggerEvents;
-    private Set<CaseEvent> ignoredEvents;
-
 }

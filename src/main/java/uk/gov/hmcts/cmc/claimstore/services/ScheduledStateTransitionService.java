@@ -25,8 +25,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseEventDetail;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -93,9 +95,8 @@ public class ScheduledStateTransitionService {
 
     @PostConstruct
     public void init() {
-        for (StateTransition stateTransition : StateTransitions.values()) {
-            getStateTransitionDaysProperty(stateTransition);
-        }
+        Arrays.stream(StateTransitions.values())
+            .forEach(this::getStateTransitionDaysProperty);
     }
 
     public void stateChangeTriggered(StateTransition stateTransition) {
@@ -129,37 +130,32 @@ public class ScheduledStateTransitionService {
     }
 
     private Set<Claim> filterClaimsByEvents(User user, StateTransition stateTransition, Set<Claim> claims) {
-        Set<Claim> filteredClaims = claims.stream()
-            .parallel()
-            .filter(claim -> {
-
-                String serviceAuthorization = authTokenGenerator.generate();
-
-                List<CaseEventDetail> caseEventDetails = caseEventsApi.findEventDetailsForCase(user.getAuthorisation(),
-                    serviceAuthorization, user.getUserDetails().getId(),
-                    ScheduledStateTransitionService.JURISDICTION_ID,
-                    ScheduledStateTransitionService.CASE_TYPE_ID, claim.getCcdCaseId().toString());
-
-                List<CaseEventDetail> sortedEvents = caseEventDetails.stream()
-                    .sorted((e1, e2) -> e2.getCreatedDate().compareTo(e1.getCreatedDate()))
-                    .collect(Collectors.toList());
-
-                for (CaseEventDetail caseEventDetail : sortedEvents) {
-                    CaseEvent event = CaseEvent.fromValue(caseEventDetail.getEventName());
-
-                    //Some events do not affect the state transition
-                    if (stateTransition.getIgnoredEvents().contains(event)) {
-                        continue;
-                    }
-
-                    return stateTransition.getTriggerEvents().contains(event);
-                }
-                return false;
-
-            })
+        return claims.parallelStream()
+            .filter(claim -> filterClaims(user, stateTransition, claim))
             .collect(Collectors.toSet());
+    }
 
-        return filteredClaims;
+    private boolean filterClaims(User user, StateTransition stateTransition, Claim claim) {
+        String serviceAuthorization = authTokenGenerator.generate();
+
+        List<CaseEventDetail> caseEventDetails = caseEventsApi.findEventDetailsForCase(user.getAuthorisation(),
+            serviceAuthorization, user.getUserDetails().getId(),
+            ScheduledStateTransitionService.JURISDICTION_ID,
+            ScheduledStateTransitionService.CASE_TYPE_ID, claim.getCcdCaseId().toString());
+
+        caseEventDetails.sort(Comparator.comparing(CaseEventDetail::getCreatedDate).reversed());
+
+        for (CaseEventDetail caseEventDetail : caseEventDetails) {
+            CaseEvent event = CaseEvent.fromValue(caseEventDetail.getEventName());
+
+            //Some events do not affect the state transition
+            if (stateTransition.getIgnoredEvents().contains(event)) {
+                continue;
+            }
+
+            return stateTransition.getTriggerEvents().contains(event);
+        }
+        return false;
     }
 
     private Optional<Claim> updateClaim(User user, Claim claim, StateTransition stateTransition) {
