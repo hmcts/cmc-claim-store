@@ -30,12 +30,12 @@ public class NotifyClaimantDefaultCCJJob implements CronJob {
 
     private UserService userService;
 
-    @Value("${dateCalculations.claimantCcjReminderDays:3}")
+    @Value("${dateCalculations.claimantCcjReminderDays:10}")
     private long claimantCCJReminderDays;
 
     private CCJNotificationService ccjNotificationService;
 
-    @Value("${ccjClaimantNotify.schedule}")
+    @Value("${ccjClaimantNotify.schedule:0 0 0 1 1 ? 2099}")
     private String cronExpression;
 
     @Autowired
@@ -50,7 +50,6 @@ public class NotifyClaimantDefaultCCJJob implements CronJob {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
-            claimantCCJReminderDays = 0;
             User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
             List<Claim> claimsWithCCJ = caseSearchApi.getClaimsWithDefaultCCJ(anonymousCaseWorker,
                 LocalDate.now().minusDays(claimantCCJReminderDays));
