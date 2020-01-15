@@ -33,7 +33,9 @@ def versions = [
   springfoxSwagger  : '2.9.2',
   reformJavaLogging : '5.0.1',
   restAssuredVersion: '4.0.0',
-  jackson           : '2.10.0'
+  jackson           : '2.10.0',
+  junit             : '5.5.2',
+  junitPlatform     : '1.5.2',
 ]
 
 allprojects {
@@ -226,8 +228,12 @@ dependencies {
   testCompile group: 'org.junit.jupiter', name:'junit-jupiter-api', version: '5.5.2'
   testCompile group: 'org.junit.jupiter', name:'junit-jupiter-engine', version: '5.5.2'
   testCompile group: 'org.junit.vintage', name:'junit-vintage-engine', version: '5.5.2'
+  testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: versions.junit
+  testCompile group: 'org.junit.platform', name: 'junit-platform-commons', version: versions.junitPlatform
+  testCompile group: 'org.junit.platform', name: 'junit-platform-engine', version: versions.junitPlatform
   testCompile group: 'org.assertj', name: 'assertj-core', version: '3.14.0'
   testCompile group: 'org.mockito', name: 'mockito-core', version: '3.0.0'
+  testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.2.4'
   testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.12.3'
 
   testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
@@ -263,6 +269,10 @@ sourceSets {
 dependencies {
   integrationTestCompile(sourceSets.test.output)
   integrationTestCompile(project(':email-client').sourceSets.main.output)
+}
+
+test {
+  useJUnitPlatform()
 }
 
 task apiTest(type: Test) {
