@@ -2,8 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.legaladvisor;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -12,12 +10,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtDetailsFinder;
-import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
-import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
-import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 
-import java.time.Clock;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -28,34 +21,17 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.JUDGE;
 @Service
 @ConditionalOnProperty(prefix = "doc_assembly", name = "url")
 public class DrawJudgeOrderCallbackHandler extends CallbackHandler {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     private static final List<Role> ROLES = ImmutableList.of(JUDGE);
     private static final List<CaseEvent> EVENTS = Collections.singletonList(DRAW_JUDGES_ORDER);
 
-    private final Clock clock;
-    private final OrderDrawnNotificationService orderDrawnNotificationService;
-    private final CaseDetailsConverter caseDetailsConverter;
-    private final LegalOrderService legalOrderService;
-    private final HearingCourtDetailsFinder hearingCourtDetailsFinder;
     private final OrderCreator orderCreator;
     private final OrderPostProcessor orderPostProcessor;
 
     @Autowired
     public DrawJudgeOrderCallbackHandler(
-        Clock clock,
-        OrderDrawnNotificationService orderDrawnNotificationService,
-        CaseDetailsConverter caseDetailsConverter,
-        LegalOrderService legalOrderService,
-        HearingCourtDetailsFinder hearingCourtDetailsFinder,
         OrderCreator orderCreator,
         OrderPostProcessor orderPostProcessor
     ) {
-        this.clock = clock;
-        this.orderDrawnNotificationService = orderDrawnNotificationService;
-        this.caseDetailsConverter = caseDetailsConverter;
-        this.legalOrderService = legalOrderService;
-        this.hearingCourtDetailsFinder = hearingCourtDetailsFinder;
         this.orderCreator = orderCreator;
         this.orderPostProcessor = orderPostProcessor;
     }
