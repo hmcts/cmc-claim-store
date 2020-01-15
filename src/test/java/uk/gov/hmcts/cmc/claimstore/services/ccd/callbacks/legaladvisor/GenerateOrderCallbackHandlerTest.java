@@ -50,6 +50,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.GENERATE_ORDER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DRAFTED_BY_LEGAL_ADVISOR;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GenerateOrderCallbackHandlerTest {
@@ -88,6 +89,7 @@ public class GenerateOrderCallbackHandlerTest {
         ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         Claim claim =
             SampleClaim.builder()
+                .withFeatures(ImmutableList.of(DQ_FLAG.getValue()))
                 .withResponse(
                     FullDefenceResponse.builder()
                         .directionsQuestionnaire(DirectionsQuestionnaire.builder()
