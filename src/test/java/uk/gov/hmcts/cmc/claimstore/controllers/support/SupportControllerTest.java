@@ -69,7 +69,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEM
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
 @ExtendWith(MockitoExtension.class)
-public class SupportControllerTest {
+class SupportControllerTest {
 
     private static final String AUTHORISATION = "Bearer: aaa";
     private static final String CLAIM_REFERENCE = "000CM001";
@@ -121,7 +121,7 @@ public class SupportControllerTest {
     private Claim sampleClaim;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         controller = new SupportController(
             claimService,
             userService,
@@ -142,7 +142,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldResendStaffNotifications() {
+    void shouldResendStaffNotifications() {
         sampleClaim = SampleClaim.builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withDefendantId(null)
@@ -164,7 +164,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldResendStaffNotificationsForIntentToProceed() {
+    void shouldResendStaffNotificationsForIntentToProceed() {
         ClaimantResponse claimantResponse = ClaimantResponseRejection.builder()
             .buildRejectionWithDirectionsQuestionnaire();
 
@@ -192,7 +192,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldThrowForIntentToProceedIfClaimantResponseIsNotRejection() {
+    void shouldThrowForIntentToProceedIfClaimantResponseIsNotRejection() {
         sampleClaim = SampleClaim.builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withResponse(PartAdmission.builder().buildWithFreeMediation())
@@ -215,7 +215,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldThrowExceptionIfDefendantResponseSubmittedWhenNoDefendantResponse() {
+    void shouldThrowExceptionIfDefendantResponseSubmittedWhenNoDefendantResponse() {
 
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE))
             .thenReturn(Optional.of(SampleClaim.withNoResponse()));
@@ -227,7 +227,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldResendClaimantResponseNotifications() {
+    void shouldResendClaimantResponseNotifications() {
         sampleClaim = SampleClaim.builder()
             .withResponse(PartAdmission.builder().buildWithPaymentOptionImmediately())
             .withClaimantResponse(SampleClaimantResponse.validDefaultRejection())
@@ -242,7 +242,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldResendClaimantResponseNotificationsIfReferToJudgeAndIsBusiness() {
+    void shouldResendClaimantResponseNotificationsIfReferToJudgeAndIsBusiness() {
         PaymentIntention paymentIntention = SamplePaymentIntention.immediately();
         Party company = SampleParty.builder().withCorrespondenceAddress(null).company();
         sampleClaim = SampleClaim.builder()
@@ -264,7 +264,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldNotResendClaimantResponseNotificationsIfReferToJudge() {
+    void shouldNotResendClaimantResponseNotificationsIfReferToJudge() {
         sampleClaim = SampleClaim.builder()
             .withResponse(PartAdmission.builder().buildWithPaymentOptionImmediately())
             .withClaimantResponse(
@@ -282,7 +282,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldNotResendClaimantResponseNotificationsWhenSettlementAgreementReached() {
+    void shouldNotResendClaimantResponseNotificationsWhenSettlementAgreementReached() {
         sampleClaim = SampleClaim.builder()
             .withResponse(
                 SampleResponse.FullDefence.builder().build()
@@ -302,7 +302,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenClaimHasNoClaimantResponse() {
+    void shouldThrowExceptionWhenClaimHasNoClaimantResponse() {
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(
             Optional.of(SampleClaim.builder().withClaimantResponse(null).build()));
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
@@ -312,7 +312,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldResendStaffNotificationForPaidInFull() {
+    void shouldResendStaffNotificationForPaidInFull() {
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(
             Optional.of(SampleClaim.builder().withMoneyReceivedOn(LocalDate.now()).build()));
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
@@ -322,7 +322,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenClaimHasNoMoneyReceivedOnDate() {
+    void shouldThrowExceptionWhenClaimHasNoMoneyReceivedOnDate() {
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(
             Optional.of(SampleClaim.builder().withMoneyReceivedOn(null).build()));
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
@@ -334,7 +334,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldUploadSealedClaimDocumentWhenAbsent() {
+    void shouldUploadSealedClaimDocumentWhenAbsent() {
         Claim claim = SampleClaim.getCitizenClaim();
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE))
             .thenReturn(Optional.of(claim))
@@ -346,7 +346,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldNotUploadSealedClaimDocumentWhenAlreadyExists() {
+    void shouldNotUploadSealedClaimDocumentWhenAlreadyExists() {
         Claim claim = SampleClaim.getWithSealedClaimDocument();
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
         controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SEALED_CLAIM);
@@ -354,7 +354,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldThrowServerExceptionWhenSealedClaimUploadFailed() {
+    void shouldThrowServerExceptionWhenSealedClaimUploadFailed() {
         Claim claim = SampleClaim.getCitizenClaim();
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
@@ -364,7 +364,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldUploadClaimIssueReceiptDocumentWhenAbsent() {
+    void shouldUploadClaimIssueReceiptDocumentWhenAbsent() {
         Claim claim = SampleClaim.getCitizenClaim();
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE))
             .thenReturn(Optional.of(claim))
@@ -376,7 +376,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldNotUploadClaimIssueReceiptDocumentWhenAlreadyExists() {
+    void shouldNotUploadClaimIssueReceiptDocumentWhenAlreadyExists() {
         Claim claim = SampleClaim.getWithClaimIssueReceiptDocument();
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
         controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, CLAIM_ISSUE_RECEIPT);
@@ -384,7 +384,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldThrowServerExceptionWhenClaimIssueReceiptUploadFailed() {
+    void shouldThrowServerExceptionWhenClaimIssueReceiptUploadFailed() {
         Claim claim = SampleClaim.getCitizenClaim();
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
@@ -394,7 +394,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldUploadDefendantResponseReceiptDocumentWhenAbsent() {
+    void shouldUploadDefendantResponseReceiptDocumentWhenAbsent() {
         Claim claim = SampleClaim.getCitizenClaim();
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE))
             .thenReturn(Optional.of(claim))
@@ -406,7 +406,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldNotUploadDefendantResponseReceiptDocumentWhenAlreadyExists() {
+    void shouldNotUploadDefendantResponseReceiptDocumentWhenAlreadyExists() {
         Claim claim = SampleClaim.getWithDefendantResponseReceiptDocument();
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
         controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, DEFENDANT_RESPONSE_RECEIPT);
@@ -415,7 +415,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldThrowServerExceptionWhenDefendantResponseReceiptUploadFailed() {
+    void shouldThrowServerExceptionWhenDefendantResponseReceiptUploadFailed() {
         Claim claim = SampleClaim.getCitizenClaim();
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
@@ -425,7 +425,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldUploadSettlementAgreementDocumentWhenAbsent() {
+    void shouldUploadSettlementAgreementDocumentWhenAbsent() {
         Claim claim = SampleClaim.getCitizenClaim();
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE))
             .thenReturn(Optional.of(claim))
@@ -437,7 +437,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldNotUploadSettlementAgreementDocumentWhenAlreadyExists() {
+    void shouldNotUploadSettlementAgreementDocumentWhenAlreadyExists() {
         Claim claim = SampleClaim.getWithSettlementAgreementDocument();
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
         controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, SETTLEMENT_AGREEMENT);
@@ -445,7 +445,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldThrowServerExceptionWhenSettlementAgreementUploadFailed() {
+    void shouldThrowServerExceptionWhenSettlementAgreementUploadFailed() {
         Claim claim = SampleClaim.getCitizenClaim();
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.of(claim));
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
@@ -455,7 +455,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldThrowNotFoundExceptionWhenClaimIsNotFound() {
+    void shouldThrowNotFoundExceptionWhenClaimIsNotFound() {
         when(claimService.getClaimByReferenceAnonymous(CLAIM_REFERENCE)).thenReturn(Optional.empty());
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
 
@@ -465,7 +465,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldRecoverCitizenClaimIssueOperations() {
+    void shouldRecoverCitizenClaimIssueOperations() {
         Claim claim = SampleClaim.getDefault();
         when(claimService.getClaimByReference(CLAIM_REFERENCE, AUTHORISATION)).thenReturn(Optional.of(claim));
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
@@ -475,7 +475,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldRecoverRepresentativeClaimIssueOperations() {
+    void shouldRecoverRepresentativeClaimIssueOperations() {
         Claim claim = SampleClaim.getDefaultForLegal();
         when(claimService.getClaimByReference(CLAIM_REFERENCE, AUTHORISATION)).thenReturn(Optional.of(claim));
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
@@ -485,7 +485,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldSendAppInsightIfMediationReportFails() {
+    void shouldSendAppInsightIfMediationReportFails() {
         LocalDate mediationSearchDate = LocalDate.of(2019, 07, 07);
         doNothing().when(mediationReportService).sendMediationReport(eq(AUTHORISATION), any());
         controller.sendMediation(AUTHORISATION, new MediationRequest(mediationSearchDate, "Holly@cow.com"));
@@ -494,7 +494,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldPerformResetOperationForCitizenClaim() {
+    void shouldPerformResetOperationForCitizenClaim() {
         Claim claim = SampleClaim.getWithClaimSubmissionOperationIndicators();
         ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators = ClaimSubmissionOperationIndicators
             .builder().build();
@@ -516,7 +516,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldThrowExceptionForResetOperationForCitizenClaim() {
+    void shouldThrowExceptionForResetOperationForCitizenClaim() {
         Claim claim = SampleClaim.getDefault();
         final ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators = ClaimSubmissionOperationIndicators
             .builder()
@@ -532,8 +532,8 @@ public class SupportControllerTest {
             .thenReturn(Optional.of(claim));
         assertThrows(BadRequestException.class,
             () -> controller.resetOperation(CLAIM_REFERENCE,
-            claimSubmissionOperationIndicators,
-            AUTHORISATION),
+                claimSubmissionOperationIndicators,
+                AUTHORISATION),
             "Invalid input. The following indicator(s)[claimantNotification, "
                 + "defendantNotification, bulkPrint, rpa, staffNotification, "
                 + "sealedClaimUpload, claimIssueReceiptUpload] "
@@ -542,7 +542,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldPerformResetOperationForRepresentedClaim() {
+    void shouldPerformResetOperationForRepresentedClaim() {
         Claim claim = SampleClaim.getDefaultForLegal();
         ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators = ClaimSubmissionOperationIndicators
             .builder().build();
@@ -564,7 +564,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldThrowBadRequestExceptionWhenResetClaimSubmissionIndicator() {
+    void shouldThrowBadRequestExceptionWhenResetClaimSubmissionIndicator() {
         assertThrows(BadRequestException.class,
             () -> controller.resetOperation(CLAIM_REFERENCE,
                 ClaimSubmissionOperationIndicators
@@ -574,7 +574,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldPerformIntentionToProceedCheckWithDatetime() {
+    void shouldPerformIntentionToProceedCheckWithDatetime() {
         final LocalDateTime localDateTime = LocalDateTime.of(2019, 1, 1, 1, 1, 1);
         final String auth = "auth";
         final UserDetails userDetails = new UserDetails("id", null, null, null, null);
@@ -587,7 +587,7 @@ public class SupportControllerTest {
     }
 
     @Test
-    public void shouldPerformIntentionToProceedCheckWithNullDatetime() {
+    void shouldPerformIntentionToProceedCheckWithNullDatetime() {
         final String auth = "auth";
         final UserDetails userDetails = new UserDetails("id", null, null, null, null);
         final User user = new User(null, userDetails);
