@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 
 import java.util.Optional;
 
@@ -68,6 +69,10 @@ public class DirectionsQuestionnaireUtils {
     }
 
     public static String getPreferredCourt(Claim claim) {
+        if (!FeaturesUtils.isOnlineDQ(claim)) {
+            return null;
+        }
+
         if (isDefendantBusiness(claim.getClaimData().getDefendant())) {
             ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
             return getClaimantHearingCourt(claimantResponse);
