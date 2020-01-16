@@ -6,10 +6,10 @@ import java.util.Arrays;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class AddressTest {
+class AddressTest {
 
     @Test
-    public void shouldStripAddressFromSpecialChars() {
+    void shouldStripAddressFromSpecialChars() {
         Address address = Address.builder()
             .addressLines(Arrays.asList("aaa\r", "bbb\r"))
             .postcode("EC2Y3DD")
