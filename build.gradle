@@ -25,7 +25,7 @@ dependencyUpdates.resolutionStrategy = {
 }
 
 def springBootVersion = '2.1.9.RELEASE'
-def springCloudVersion = 'Greenwich.SR2'
+def springCloudVersion = 'Hoxton.SR1'
 
 def versions = [
   logback           : '1.2.3',
