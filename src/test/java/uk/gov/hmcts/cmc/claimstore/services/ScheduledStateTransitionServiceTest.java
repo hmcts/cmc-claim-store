@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseEventDetail;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -218,9 +219,9 @@ public class ScheduledStateTransitionServiceTest {
         when(stateTransition.getTriggerEvents()).thenReturn(ImmutableSet.of(caseEvent));
         when(workingDayIndicator.getPreviousWorkingDay(any())).thenReturn(dateTime.toLocalDate());
 
-        ImmutableList<CaseEventDetail> caseEventDetails = ImmutableList.of(
+        List<CaseEventDetail> caseEventDetails = new ArrayList(ImmutableList.of(
             buildCaseEventDetail(caseEvent, LocalDateTime.now())
-        );
+        ));
         when(caseEventsApi.findEventDetailsForCase(any(), any(), any(), any(), any(), any()))
             .thenReturn(caseEventDetails);
 
@@ -238,9 +239,9 @@ public class ScheduledStateTransitionServiceTest {
         when(stateTransition.getTriggerEvents()).thenReturn(ImmutableSet.of(caseEvent));
         when(workingDayIndicator.getPreviousWorkingDay(any())).thenReturn(dateTime.toLocalDate());
 
-        ImmutableList<CaseEventDetail> caseEventDetails = ImmutableList.of(
+        List<CaseEventDetail> caseEventDetails = new ArrayList(ImmutableList.of(
             buildCaseEventDetail(CaseEvent.values()[1], LocalDateTime.now())
-        );
+        ));
         when(caseEventsApi.findEventDetailsForCase(any(), any(), any(), any(), any(), any()))
             .thenReturn(caseEventDetails);
 
@@ -261,11 +262,11 @@ public class ScheduledStateTransitionServiceTest {
         when(workingDayIndicator.getPreviousWorkingDay(any())).thenReturn(dateTime.toLocalDate());
 
         LocalDateTime now = LocalDateTime.now();
-        ImmutableList<CaseEventDetail> caseEventDetails =
-            ImmutableList.of(
+        List<CaseEventDetail> caseEventDetails =
+            new ArrayList(ImmutableList.of(
                 buildCaseEventDetail(ignoreEvent, now.plusDays(1)),
                 buildCaseEventDetail(caseEvent, now)
-            );
+            ));
         when(caseEventsApi.findEventDetailsForCase(any(), any(), any(), any(), any(), any()))
             .thenReturn(caseEventDetails);
 
