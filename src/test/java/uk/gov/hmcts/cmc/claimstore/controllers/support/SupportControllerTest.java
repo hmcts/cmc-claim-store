@@ -191,7 +191,8 @@ class SupportControllerTest {
                     intentionToProceedService
                 );
 
-                when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE))).thenReturn(Optional.of(sampleClaim));
+                when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE)))
+                    .thenReturn(Optional.of(sampleClaim));
                 when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
 
                 controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "intent-to-proceed");
@@ -272,13 +273,15 @@ class SupportControllerTest {
                 when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
 
                 controller.recoverClaimIssueOperations(CLAIM_REFERENCE);
-                verify(postClaimOrchestrationHandler).representativeIssueHandler(any(RepresentedClaimCreatedEvent.class));
+                verify(postClaimOrchestrationHandler)
+                    .representativeIssueHandler(any(RepresentedClaimCreatedEvent.class));
             }
 
             @Test
             void shouldPerformResetOperationForRepresentedClaim() {
                 Claim claim = SampleClaim.getDefaultForLegal();
-                ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators = ClaimSubmissionOperationIndicators
+                ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
+                    = ClaimSubmissionOperationIndicators
                     .builder().build();
                 when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE)))
                     .thenReturn(Optional.of(claim));
@@ -294,13 +297,15 @@ class SupportControllerTest {
                     eq(AUTHORISATION),
                     eq(claim),
                     eq(claimSubmissionOperationIndicators));
-                verify(postClaimOrchestrationHandler).representativeIssueHandler(any(RepresentedClaimCreatedEvent.class));
+                verify(postClaimOrchestrationHandler)
+                    .representativeIssueHandler(any(RepresentedClaimCreatedEvent.class));
             }
 
             @Test
             void shouldPerformResetOperationForCitizenClaim() {
                 Claim claim = SampleClaim.getWithClaimSubmissionOperationIndicators();
-                ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators = ClaimSubmissionOperationIndicators
+                ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
+                    = ClaimSubmissionOperationIndicators
                     .builder().build();
                 when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE)))
                     .thenReturn(Optional.of(claim));
@@ -399,7 +404,8 @@ class SupportControllerTest {
                 when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
 
                 controller.uploadDocumentToDocumentManagement(CLAIM_REFERENCE, DEFENDANT_RESPONSE_RECEIPT);
-                verify(documentsService).generateDocument(claim.getExternalId(), DEFENDANT_RESPONSE_RECEIPT, AUTHORISATION);
+                verify(documentsService)
+                    .generateDocument(claim.getExternalId(), DEFENDANT_RESPONSE_RECEIPT, AUTHORISATION);
             }
 
             @Test
@@ -514,9 +520,11 @@ class SupportControllerTest {
 
             @Test
             void shouldPerformIntentionToProceedCheckWithDatetime() {
-                final LocalDateTime localDateTime = LocalDateTime.of(2019, 1, 1, 1, 1, 1);
+                final LocalDateTime localDateTime
+                    = LocalDateTime.of(2019, 1, 1, 1, 1, 1);
                 final String auth = "auth";
-                final UserDetails userDetails = new UserDetails("id", null, null, null, null);
+                final UserDetails userDetails
+                    = new UserDetails("id", null, null, null, null);
                 final User user = new User(null, userDetails);
                 when(userService.getUser(auth)).thenReturn(user);
 
@@ -528,7 +536,8 @@ class SupportControllerTest {
             @Test
             void shouldPerformIntentionToProceedCheckWithNullDatetime() {
                 final String auth = "auth";
-                final UserDetails userDetails = new UserDetails("id", null, null, null, null);
+                final UserDetails userDetails
+                    = new UserDetails("id", null, null, null, null);
                 final User user = new User(null, userDetails);
                 when(userService.getUser(auth)).thenReturn(user);
 
@@ -553,11 +562,14 @@ class SupportControllerTest {
                     intentionToProceedService
                 );
 
-                when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE))).thenReturn(Optional.of(sampleClaim));
+                when(claimService.getClaimByReferenceAnonymous(eq(CLAIM_REFERENCE)))
+                    .thenReturn(Optional.of(sampleClaim));
                 when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
 
                 assertThrows(IllegalArgumentException.class,
-                    () -> controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "intent-to-proceed"));
+                    () -> controller.resendStaffNotifications(
+                        sampleClaim.getReferenceNumber(),
+                        "intent-to-proceed"));
             }
 
             @Test
@@ -625,7 +637,9 @@ class SupportControllerTest {
             void shouldSendAppInsightIfMediationReportFails() {
                 LocalDate mediationSearchDate = LocalDate.of(2019, 07, 07);
                 doNothing().when(mediationReportService).sendMediationReport(eq(AUTHORISATION), any());
-                controller.sendMediation(AUTHORISATION, new MediationRequest(mediationSearchDate, "Holly@cow.com"));
+                controller.sendMediation(
+                    AUTHORISATION,
+                    new MediationRequest(mediationSearchDate, "Holly@cow.com"));
                 verify(mediationReportService, times(1))
                     .sendMediationReport(eq(AUTHORISATION), eq(mediationSearchDate));
             }
