@@ -1,15 +1,16 @@
-package uk.gov.hmcts.cmc.claimstore.deprecated.services.staff;
+package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
-import uk.gov.hmcts.cmc.claimstore.deprecated.MockSpringTest;
-import uk.gov.hmcts.cmc.claimstore.services.staff.PaidInFullStaffNotificationService;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.email.EmailData;
+import uk.gov.hmcts.cmc.email.EmailService;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -21,7 +22,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class PaidInFullStaffNotificationServiceTest extends MockSpringTest {
+public class PaidInFullStaffNotificationServiceTest extends BaseMockSpringTest {
 
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 
@@ -30,6 +31,9 @@ public class PaidInFullStaffNotificationServiceTest extends MockSpringTest {
 
     @Autowired
     private PaidInFullStaffNotificationService service;
+
+    @MockBean
+    protected EmailService emailService;
 
     @Before
     public void beforeEachTest() {
