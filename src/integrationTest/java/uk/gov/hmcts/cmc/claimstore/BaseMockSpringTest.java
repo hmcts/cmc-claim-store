@@ -26,10 +26,13 @@ import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDet
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.docassembly.DocAssemblyApi;
 import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
+import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
+import uk.gov.service.notify.NotificationClient;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
@@ -57,7 +60,7 @@ public abstract class BaseMockSpringTest {
         .withUserId(USER_ID)
         .withMail("submitter@example.com")
         .build();
-
+    
     @Autowired
     protected CaseMapper caseMapper;
     @Autowired
@@ -95,6 +98,12 @@ public abstract class BaseMockSpringTest {
     protected PDFServiceClient pdfServiceClient;
     @MockBean
     protected TelemetryClient telemetry;
+    @MockBean
+    protected SendLetterApi sendLetterApi;
+    @MockBean
+    protected EmailService emailService;
+    @MockBean
+    protected NotificationClient notificationClient;
 
     protected ImmutableMap<String, String> searchCriteria(String externalId) {
         return ImmutableMap.of(
