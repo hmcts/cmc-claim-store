@@ -1,20 +1,30 @@
 package uk.gov.hmcts.cmc.ccd.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
+import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder(toBuilder = true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CCDCase {
 
     private Long id;
@@ -71,10 +81,52 @@ public class CCDCase {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String state;
 
-    @JsonUnwrapped
-    private CCDOrderGenerationData directionOrderData;
+    private LocalDate docUploadDeadline;
+
+    private CCDDirectionPartyType docUploadForParty;
+
+    private LocalDate eyewitnessUploadDeadline;
+
+    private CCDDirectionPartyType eyewitnessUploadForParty;
+
+    @Builder.Default
+    private List<CCDOrderDirectionType> directionList = Collections.emptyList();
+
+    @Builder.Default
+    private List<CCDCollectionElement<CCDOrderDirection>> otherDirections = Collections.emptyList();
+
+    @Builder.Default
+    private List<CCDCollectionElement<String>> extraDocUploadList = Collections.emptyList();
+
+    private CCDYesNoOption paperDetermination;
+
+    private String newRequestedCourt;
+
+    private String preferredDQCourt;
+
+    private String preferredCourtObjectingParty;
+    private String preferredCourtObjectingReason;
+
+    private CCDHearingCourtType hearingCourt;
+
+    private CCDHearingDurationType estimatedHearingDuration;
+
+    private CCDDocument draftOrderDoc;
+
+    private CCDYesNoOption expertReportPermissionPartyAskedByClaimant;
+    private CCDYesNoOption expertReportPermissionPartyAskedByDefendant;
+    private CCDYesNoOption expertReportPermissionPartyGivenToClaimant;
+    private CCDYesNoOption expertReportPermissionPartyGivenToDefendant;
+
+    @Builder.Default
+    private List<CCDCollectionElement<String>> expertReportInstructionClaimant = Collections.emptyList();
+
+    @Builder.Default
+    private List<CCDCollectionElement<String>> expertReportInstructionDefendant = Collections.emptyList();
+
     private CCDDirectionOrder directionOrder;
     private CCDReviewOrder reviewOrder;
     private CCDChannelType channel;
     private LocalDate intentionToProceedDeadline;
+    private LocalDateTime dateReferredForDirections;
 }

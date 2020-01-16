@@ -5,7 +5,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.cmc.claimstore.deprecated.BaseSaveTest;
-import uk.gov.hmcts.cmc.claimstore.services.staff.BulkPrintStaffNotificationService;
+import uk.gov.hmcts.cmc.claimstore.services.livesupport.BulkPrintNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class DummyBulkPrintRequestTest extends BaseSaveTest {
 
     @MockBean
-    private BulkPrintStaffNotificationService bulkPrintNotificationService;
+    private BulkPrintNotificationService bulkPrintNotificationService;
 
     @Test
     public void shouldNotSendNotificationWhenEverythingIsOk() throws Exception {

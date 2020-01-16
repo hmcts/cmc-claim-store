@@ -25,7 +25,8 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NOTIFICATION_FAILURE;
-import static uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils.DQ_FLAG;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefendantResponseNotificationServiceTest extends BaseNotificationServiceTest {
@@ -100,7 +101,7 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
     @Test
     public void shouldNotifyDefendantForFullDefenceWithOnlineDqAndNoMediation() throws Exception {
         Claim claim = SampleClaim.getClaimWithFullDefenceNoMediation().toBuilder()
-            .features(ImmutableList.of(DQ_FLAG, "admissions"))
+            .features(ImmutableList.of(DQ_FLAG.getValue(), ADMISSIONS.getValue()))
             .build();
 
         service.notifyDefendant(claim, USER_EMAIL, reference);
@@ -116,7 +117,7 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
     @Test
     public void shouldNotifyClaimantForFullDefenceWithOnlineDqAndNoMediation() throws Exception {
         Claim claim = SampleClaim.getClaimWithFullDefenceNoMediation().toBuilder()
-            .features(ImmutableList.of(DQ_FLAG, "admissions"))
+            .features(ImmutableList.of(DQ_FLAG.getValue(), ADMISSIONS.getValue()))
             .build();
 
         service.notifyClaimant(claim, reference);
@@ -132,7 +133,7 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
     @Test
     public void shouldNotifyDefendantForPartAdmissionWithOnlineDqAndNoMediation() throws Exception {
         Claim claim = SampleClaim.getClaimWithPartAdmissionAndNoMediation().toBuilder()
-            .features(ImmutableList.of(DQ_FLAG, "admissions"))
+            .features(ImmutableList.of(DQ_FLAG.getValue(), ADMISSIONS.getValue()))
             .build();
 
         service.notifyDefendant(claim, USER_EMAIL, reference);
@@ -148,7 +149,7 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
     @Test
     public void shouldNotifyClaimantForPartAdmissionWithOnlineDqAndNoMediation() throws Exception {
         Claim claim = SampleClaim.getClaimWithPartAdmissionAndNoMediation().toBuilder()
-            .features(ImmutableList.of(DQ_FLAG, "admissions"))
+            .features(ImmutableList.of(DQ_FLAG.getValue(), ADMISSIONS.getValue()))
             .build();
 
         service.notifyClaimant(claim, reference);

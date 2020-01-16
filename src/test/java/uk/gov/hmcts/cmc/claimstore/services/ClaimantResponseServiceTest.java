@@ -35,7 +35,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_DIRECTIONS;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LIFT_STAY;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.STAY_CLAIM;
@@ -50,12 +50,12 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.LA_PILOT_
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_NON_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NON_LA_CASES;
-import static uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils.DQ_FLAG;
-import static uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils.LA_PILOT_FLAG;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.LA_PILOT_FLAG;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.MEDIATION_PILOT;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
-import static uk.gov.hmcts.cmc.domain.utils.FeaturesUtils.MEDIATION_PILOT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClaimantResponseServiceTest {
@@ -120,7 +120,7 @@ public class ClaimantResponseServiceTest {
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
         verify(formaliseResponseAcceptanceService, times(0))
             .formalise(any(), any(), anyString());
-        verify(caseRepository, never()).saveCaseEvent(AUTHORISATION, claim, ASSIGNING_FOR_DIRECTIONS);
+        verify(caseRepository, never()).saveCaseEvent(AUTHORISATION, claim, ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS);
         verify(caseRepository, never()).saveCaseEvent(AUTHORISATION, claim, REFERRED_TO_MEDIATION);
     }
 
@@ -314,7 +314,7 @@ public class ClaimantResponseServiceTest {
             .buildRejectionWithDirectionsQuestionnaire();
 
         final Claim claim = SampleClaim.builder()
-            .withFeatures(ImmutableList.of(LA_PILOT_FLAG, DQ_FLAG))
+            .withFeatures(ImmutableList.of(DQ_FLAG.getValue(), LA_PILOT_FLAG.getValue()))
             .withResponseDeadline(LocalDate.now().minusMonths(2))
             .withResponse(SampleResponse.PartAdmission.builder().buildWithDirectionsQuestionnaire())
             .withRespondedAt(respondedAt)
@@ -344,7 +344,7 @@ public class ClaimantResponseServiceTest {
         final ClaimantResponse claimantResponse = SampleClaimantResponse.validDefaultRejection();
 
         final Claim claim = SampleClaim.builder()
-            .withFeatures(ImmutableList.of(MEDIATION_PILOT))
+            .withFeatures(ImmutableList.of(MEDIATION_PILOT.getValue()))
             .withResponseDeadline(LocalDate.now().minusMonths(2))
             .withResponse(SampleResponse.FullDefence.builder().build())
             .withRespondedAt(respondedAt)
@@ -378,7 +378,7 @@ public class ClaimantResponseServiceTest {
             .buildRejectionWithDirectionsQuestionnaire();
 
         final Claim claim = SampleClaim.builder()
-            .withFeatures(ImmutableList.of(LA_PILOT_FLAG, DQ_FLAG))
+            .withFeatures(ImmutableList.of(LA_PILOT_FLAG.getValue(), DQ_FLAG.getValue()))
             .withResponseDeadline(LocalDate.now().minusMonths(2))
             .withResponse(SampleResponse.FullDefence.builder().build())
             .withRespondedAt(respondedAt)
