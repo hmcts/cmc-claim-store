@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore;
 
 import com.google.common.collect.ImmutableMap;
+import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -92,6 +93,8 @@ public abstract class BaseMockSpringTest {
     protected EventProducer eventProducer;
     @MockBean
     protected PDFServiceClient pdfServiceClient;
+    @MockBean
+    protected TelemetryClient telemetry;
 
     protected ImmutableMap<String, String> searchCriteria(String externalId) {
         return ImmutableMap.of(
