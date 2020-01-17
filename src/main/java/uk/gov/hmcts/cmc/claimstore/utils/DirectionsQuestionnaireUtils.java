@@ -1,6 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.utils;
 
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
@@ -15,6 +17,7 @@ import java.util.Optional;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFERRED_TO_MEDIATION;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.WAITING_TRANSFER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isOptedForMediation;
 import static uk.gov.hmcts.cmc.claimstore.utils.TheirDetailsHelper.isDefendantBusiness;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
@@ -50,6 +53,7 @@ public class DirectionsQuestionnaireUtils {
             if (isLegalAdvisorPilot(claim) && isPilotCourt(preferredCourt)) {
                 return Optional.of(ASSIGNING_FOR_DIRECTIONS);
             }
+            appInsights.trackEvent(AppInsightsEvent.READY_FOR_TRANSFER, REFERENCE_NUMBER, ccdCase.getPreviousServiceCaseReference());
             return Optional.of(WAITING_TRANSFER);
         }
 

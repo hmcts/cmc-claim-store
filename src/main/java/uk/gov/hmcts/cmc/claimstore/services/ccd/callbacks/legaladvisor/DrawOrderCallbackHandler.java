@@ -12,6 +12,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
@@ -41,6 +43,7 @@ import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType.ORDER_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DRAW_ORDER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.JUDGE;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.LEGAL_ADVISOR;
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams.Params.BEARER_TOKEN;
@@ -60,6 +63,8 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
     private final LegalOrderService legalOrderService;
     private final HearingCourtDetailsFinder hearingCourtDetailsFinder;
     private final DocAssemblyService docAssemblyService;
+    private final AppInsights appInsights;
+
 
     @Autowired
     public DrawOrderCallbackHandler(
@@ -68,7 +73,8 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
         CaseDetailsConverter caseDetailsConverter,
         LegalOrderService legalOrderService,
         HearingCourtDetailsFinder hearingCourtDetailsFinder,
-        DocAssemblyService docAssemblyService
+        DocAssemblyService docAssemblyService,
+        AppInsights appInsights
     ) {
         this.clock = clock;
         this.orderDrawnNotificationService = orderDrawnNotificationService;
@@ -76,6 +82,7 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
         this.legalOrderService = legalOrderService;
         this.hearingCourtDetailsFinder = hearingCourtDetailsFinder;
         this.docAssemblyService = docAssemblyService;
+        this.appInsights = appInsights;
     }
 
     @Override
@@ -102,6 +109,7 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         DocAssemblyResponse docAssemblyResponse = docAssemblyService.createOrder(ccdCase, authorisation);
+        appInsights.trackEvent(AppInsightsEvent.DRAW_ORDER, REFERENCE_NUMBER, ccdCase.getPreviousServiceCaseReference());
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()
