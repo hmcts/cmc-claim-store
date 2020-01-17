@@ -55,19 +55,6 @@ public class EndpointErrorsTest extends MockSpringTest {
     private MockMvc webClient;
 
     @Test
-    public void searchByExternalIdShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
-        String externalId = "efa77f92-6fb6-45d6-8620-8662176786f1";
-
-        given(caseRepository.getClaimByExternalId(externalId, USER)).willThrow(UNEXPECTED_ERROR);
-
-        webClient
-            .perform(get("/claims/" + externalId)
-                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN)
-            )
-            .andExpect(status().isInternalServerError());
-    }
-
-    @Test
     public void searchBySubmitterIdShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
         String submitterId = "1";
 
@@ -132,18 +119,6 @@ public class EndpointErrorsTest extends MockSpringTest {
 
         webClient
             .perform(get("/claims/" + referenceNumber + "/defendant-link-status"))
-            .andExpect(status().isInternalServerError());
-    }
-
-    @Test
-    public void requestForMoreTimeShouldReturn500HttpStatusWhenFailedToRetrieveClaim() throws Exception {
-        String externalId = "84f1dda3-e205-4277-96a6-1f23b6f1766d";
-
-        given(caseRepository.getClaimByExternalId(externalId, any())).willThrow(UNEXPECTED_ERROR);
-
-        webClient
-            .perform(post("/claims/" + externalId + "/request-more-time")
-                .header(HttpHeaders.AUTHORIZATION, BEARER_TOKEN))
             .andExpect(status().isInternalServerError());
     }
 
