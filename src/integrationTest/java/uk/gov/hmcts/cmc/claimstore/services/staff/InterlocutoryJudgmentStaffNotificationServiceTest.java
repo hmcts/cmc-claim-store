@@ -1,18 +1,19 @@
-package uk.gov.hmcts.cmc.claimstore.deprecated.services.staff;
+package uk.gov.hmcts.cmc.claimstore.services.staff;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
-import uk.gov.hmcts.cmc.claimstore.deprecated.MockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
-import uk.gov.hmcts.cmc.claimstore.services.staff.InterlocutoryJudgmentStaffNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
+import uk.gov.hmcts.cmc.email.EmailService;
 
 import java.util.List;
 
@@ -25,20 +26,22 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimantR
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedClaimFileBaseName;
 
-public class InterlocutoryJudgmentStaffNotificationServiceTest extends MockSpringTest {
+public class InterlocutoryJudgmentStaffNotificationServiceTest extends BaseMockSpringTest {
 
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 
     @Autowired
     private InterlocutoryJudgmentStaffNotificationService service;
+    @Autowired
+    private StaffEmailProperties emailProperties;
+
+    @MockBean
+    protected EmailService emailService;
 
     @Captor
     private ArgumentCaptor<String> senderArgument;
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
-
-    @Autowired
-    private StaffEmailProperties emailProperties;
 
     private Claim claim;
 

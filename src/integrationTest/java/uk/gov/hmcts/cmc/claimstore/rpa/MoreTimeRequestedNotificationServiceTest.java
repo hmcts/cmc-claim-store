@@ -1,19 +1,20 @@
-package uk.gov.hmcts.cmc.claimstore.deprecated.rpa;
+package uk.gov.hmcts.cmc.claimstore.rpa;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import uk.gov.hmcts.cmc.claimstore.deprecated.MockSpringTest;
+import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.events.response.MoreTimeRequestedEvent;
-import uk.gov.hmcts.cmc.claimstore.rpa.MoreTimeRequestedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.rpa.config.EmailProperties;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
+import uk.gov.hmcts.cmc.email.EmailService;
 
 import java.time.LocalDateTime;
 
@@ -22,7 +23,7 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssuedNotificationService.JSON_EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildJsonMoreTimeRequestedFileBaseName;
 
-public class MoreTimeRequestedNotificationServiceTest extends MockSpringTest {
+public class MoreTimeRequestedNotificationServiceTest extends BaseMockSpringTest {
 
     @Autowired
     private MoreTimeRequestedNotificationService service;
@@ -34,6 +35,9 @@ public class MoreTimeRequestedNotificationServiceTest extends MockSpringTest {
 
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
+
+    @MockBean
+    protected EmailService emailService;
 
     private Claim claim;
 
