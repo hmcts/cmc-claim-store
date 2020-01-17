@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.INTERLOCUTORY_JUDGMENT;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.DecisionType.CLAIMANT;
@@ -145,7 +145,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .orElseThrow(IllegalStateException::new))
             .isEqualTo(respondentPayingBySetDate);
 
-        verifyZeroInteractions(settlementAgreementService);
+        verifyNoInteractions(settlementAgreementService);
     }
 
     @Test
@@ -176,7 +176,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .getRepaymentPlan().orElseThrow(IllegalAccessError::new))
             .isEqualTo(repaymentPlanOfDefendant);
 
-        verifyZeroInteractions(settlementAgreementService);
+        verifyNoInteractions(settlementAgreementService);
     }
 
     @Test
@@ -211,7 +211,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .orElseThrow(IllegalStateException::new))
             .isEqualTo(appliedPaymentDate);
 
-        verifyZeroInteractions(settlementAgreementService);
+        verifyNoInteractions(settlementAgreementService);
     }
 
     @Test
@@ -248,7 +248,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .orElseThrow(IllegalStateException::new))
             .isEqualTo(appliedPaymentDate);
 
-        verifyZeroInteractions(settlementAgreementService);
+        verifyNoInteractions(settlementAgreementService);
     }
 
     @Test
@@ -282,7 +282,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .getValue()
             .getPayBySetDate().isPresent()).isFalse();
 
-        verifyZeroInteractions(settlementAgreementService);
+        verifyNoInteractions(settlementAgreementService);
     }
 
     @Test
@@ -317,7 +317,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .orElseThrow(IllegalStateException::new))
             .isEqualTo(appliedPlan);
 
-        verifyZeroInteractions(settlementAgreementService);
+        verifyNoInteractions(settlementAgreementService);
     }
 
     @Test
@@ -349,7 +349,7 @@ public class FormaliseResponseAcceptanceServiceTest {
             .orElseThrow(IllegalStateException::new))
             .isEqualTo(repaymentPlan);
 
-        verifyZeroInteractions(settlementAgreementService);
+        verifyNoInteractions(settlementAgreementService);
     }
 
     @Test
@@ -383,7 +383,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         assertThat(paymentIntentionWithinOffer).isEqualTo(paymentIntentionOfDefendant);
 
-        verifyZeroInteractions(countyCourtJudgmentService);
+        verifyNoInteractions(countyCourtJudgmentService);
     }
 
     @Test
@@ -417,7 +417,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         assertThat(paymentIntentionWithinOffer).isEqualTo(paymentIntentionOfDefendant);
 
-        verifyZeroInteractions(countyCourtJudgmentService);
+        verifyNoInteractions(countyCourtJudgmentService);
     }
 
     @Test
@@ -454,7 +454,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         assertThat(paymentIntentionWithinOffer).isEqualTo(paymentIntention);
 
-        verifyZeroInteractions(countyCourtJudgmentService);
+        verifyNoInteractions(countyCourtJudgmentService);
     }
 
     @Test
@@ -492,7 +492,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         assertThat(paymentIntentionWithinOffer).isEqualTo(paymentIntention);
 
-        verifyZeroInteractions(countyCourtJudgmentService);
+        verifyNoInteractions(countyCourtJudgmentService);
     }
 
     @Test
@@ -529,7 +529,7 @@ public class FormaliseResponseAcceptanceServiceTest {
         assertThat(paymentIntentionWithinOffer)
             .isEqualTo(fullAdmissionResponseWithInstalments.getPaymentIntention());
 
-        verifyZeroInteractions(countyCourtJudgmentService);
+        verifyNoInteractions(countyCourtJudgmentService);
     }
 
     @Test
@@ -567,7 +567,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         assertThat(paymentIntentionWithinOffer).isEqualTo(fullAdmissionResponseBySetDate.getPaymentIntention());
 
-        verifyZeroInteractions(countyCourtJudgmentService);
+        verifyNoInteractions(countyCourtJudgmentService);
     }
 
     @Test
@@ -582,8 +582,8 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         verify(eventProducer, once()).createInterlocutoryJudgmentEvent(eq(claim));
         verify(caseRepository, once()).saveCaseEvent(anyString(), eq(claim), eq(INTERLOCUTORY_JUDGMENT));
-        verifyZeroInteractions(countyCourtJudgmentService);
-        verifyZeroInteractions(settlementAgreementService);
+        verifyNoInteractions(countyCourtJudgmentService);
+        verifyNoInteractions(settlementAgreementService);
     }
 
     private PartAdmissionResponse getPartAdmissionResponsePayByInstalments() {
