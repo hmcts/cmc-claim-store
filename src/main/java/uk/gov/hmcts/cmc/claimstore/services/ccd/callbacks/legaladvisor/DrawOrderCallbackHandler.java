@@ -109,7 +109,6 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         DocAssemblyResponse docAssemblyResponse = docAssemblyService.createOrder(ccdCase, authorisation);
-        appInsights.trackEvent(AppInsightsEvent.DRAW_ORDER, REFERENCE_NUMBER, ccdCase.getPreviousServiceCaseReference());
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()
@@ -126,6 +125,9 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         notifyParties(claim);
         String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
+
+        appInsights.trackEvent(AppInsightsEvent.LA_DRAW_ORDER, REFERENCE_NUMBER, ccdCase.getPreviousServiceCaseReference());
+
         return printOrder(authorisation, claim, ccdCase.getDirectionOrderData());
     }
 

@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.utils;
 
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
@@ -53,7 +52,6 @@ public class DirectionsQuestionnaireUtils {
             if (isLegalAdvisorPilot(claim) && isPilotCourt(preferredCourt)) {
                 return Optional.of(ASSIGNING_FOR_DIRECTIONS);
             }
-            appInsights.trackEvent(AppInsightsEvent.READY_FOR_TRANSFER, REFERENCE_NUMBER, ccdCase.getPreviousServiceCaseReference());
             return Optional.of(WAITING_TRANSFER);
         }
 

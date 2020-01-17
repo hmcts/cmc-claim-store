@@ -30,8 +30,8 @@ public enum AppInsightsEvent {
     BULK_PRINT_FAILED("Bulk print failed"),
     SCHEDULER_JOB_FAILED("Scheduler job failed"),
     CLAIMANT_RESPONSE_REJECTED("Claimant response - rejected"),
-    LA_PILOT_ELIGIBLE("Both parties online DQ"),
-    NON_LA_CASES("Both parties offline DQ"),
+    BOTH_PARTIES_ONLINE_DQ("Both parties online DQ"),
+    BOTH_PARTIES_OFFLINE_DQ("Both parties offline DQ"),
     CLAIMANT_RESPONSE_ACCEPTED("Claimant response - accepted"),
     CCD_ASYNC_FAILURE("CCD Async handling - failure"),
     REDETERMINATION_REQUESTED("CCJ - Requested by re-determination "),
@@ -59,9 +59,9 @@ public enum AppInsightsEvent {
     BOTH_OPTED_IN_FOR_NON_MEDIATION_PILOT("Non-mediation pilot - Both opted in"),
     NON_MEDIATION_PILOT_FAILED("Non-mediation pilot - Failed"),
     NON_MEDIATION_PILOT_SUCCESS("Non-mediation pilot - Success"),
-    READY_FOR_DIRECTIONS("Ready for directions"),
-    READY_FOR_TRANSFER("Non LA pilot eligible"),
-    DRAW_ORDER("Judge draws LA order");
+    LA_PILOT_ELIGIBLE("LA pilot eligible"),
+    NON_LA_PILOT_ELIGIBLE("Non LA pilot eligible"),
+    LA_DRAW_ORDER("LA draw order");
 
 
     private String displayName;

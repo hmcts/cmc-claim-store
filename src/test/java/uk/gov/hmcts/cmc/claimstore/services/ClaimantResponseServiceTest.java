@@ -46,10 +46,10 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_OPTED_OUT_FOR_NON_MEDIATION_PILOT;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_RESPONSE_ACCEPTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_STAYED;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.LA_PILOT_ELIGIBLE;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BOTH_PARTIES_ONLINE_DQ;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_NON_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_PILOT_ELIGIBLE;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NON_LA_CASES;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BOTH_PARTIES_OFFLINE_DQ;
 import static uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils.DQ_FLAG;
 import static uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils.LA_PILOT_FLAG;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
@@ -116,7 +116,7 @@ public class ClaimantResponseServiceTest {
 
         inOrder.verify(caseRepository, once()).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
         inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class), anyString());
-        inOrder.verify(appInsights, once()).trackEvent(eq(NON_LA_CASES),
+        inOrder.verify(appInsights, once()).trackEvent(eq(BOTH_PARTIES_OFFLINE_DQ),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
         verify(formaliseResponseAcceptanceService, times(0))
             .formalise(any(), any(), anyString());
@@ -303,7 +303,7 @@ public class ClaimantResponseServiceTest {
         verify(directionsQuestionnaireService)
             .updateDirectionsQuestionnaireDeadline(any(Claim.class), any(LocalDateTime.class), eq(AUTHORISATION));
         verify(eventProducer).createClaimantResponseEvent(any(Claim.class), anyString());
-        verify(appInsights).trackEvent(eq(NON_LA_CASES), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+        verify(appInsights).trackEvent(eq(BOTH_PARTIES_OFFLINE_DQ), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 
     @Test
@@ -333,7 +333,7 @@ public class ClaimantResponseServiceTest {
         verify(caseRepository, never())
             .updateDirectionsQuestionnaireDeadline(any(Claim.class), any(LocalDate.class), anyString());
         verify(eventProducer).createClaimantResponseEvent(any(Claim.class), eq(AUTHORISATION));
-        verify(appInsights).trackEvent(eq(LA_PILOT_ELIGIBLE), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+        verify(appInsights).trackEvent(eq(BOTH_PARTIES_ONLINE_DQ), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 
     @Test
@@ -364,7 +364,7 @@ public class ClaimantResponseServiceTest {
         verify(directionsQuestionnaireService)
             .updateDirectionsQuestionnaireDeadline(any(Claim.class), any(LocalDateTime.class), eq(AUTHORISATION));
         verify(eventProducer).createClaimantResponseEvent(any(Claim.class), eq(AUTHORISATION));
-        verify(appInsights).trackEvent(eq(NON_LA_CASES),
+        verify(appInsights).trackEvent(eq(BOTH_PARTIES_OFFLINE_DQ),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
         verify(appInsights).trackEvent(eq(CLAIMANT_OPTED_OUT_FOR_MEDIATION_PILOT),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
@@ -397,7 +397,7 @@ public class ClaimantResponseServiceTest {
         verify(caseRepository, never())
             .updateDirectionsQuestionnaireDeadline(any(Claim.class), any(LocalDate.class), anyString());
         verify(eventProducer).createClaimantResponseEvent(any(Claim.class), eq(AUTHORISATION));
-        verify(appInsights).trackEvent(eq(LA_PILOT_ELIGIBLE),
+        verify(appInsights).trackEvent(eq(BOTH_PARTIES_ONLINE_DQ),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
         verify(appInsights).trackEvent(eq(CLAIMANT_OPTED_OUT_FOR_NON_MEDIATION_PILOT),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));

@@ -31,6 +31,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BOTH_OPTE
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_OPTED_OUT_FOR_MEDIATION_PILOT;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_OPTED_OUT_FOR_NON_MEDIATION_PILOT;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_RESPONSE_ACCEPTED;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.LA_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_NON_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isSettlePreJudgment;
@@ -121,6 +122,9 @@ public class ClaimantResponseService {
                 updatedClaim
             );
             if (caseEvent.isPresent()) {
+                //raise app insights event based on event in separate method
+                //I don't think we need to do anything here
+
                 caseRepository.saveCaseEvent(authorization, updatedClaim, caseEvent.get());
             }
         }
@@ -174,8 +178,8 @@ public class ClaimantResponseService {
 
     private void raiseAppInsightEventForLegalAdvisorPilot(Claim claim) {
         AppInsightsEvent appInsightsEvent = DirectionsQuestionnaireUtils.isLegalAdvisorPilot(claim)
-            ? AppInsightsEvent.LA_PILOT_ELIGIBLE
-            : AppInsightsEvent.NON_LA_CASES;
+            ? AppInsightsEvent.BOTH_PARTIES_ONLINE_DQ
+            : AppInsightsEvent.BOTH_PARTIES_OFFLINE_DQ;
 
         appInsights.trackEvent(appInsightsEvent, REFERENCE_NUMBER, claim.getReferenceNumber());
     }
