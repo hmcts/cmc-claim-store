@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import com.google.common.base.CaseFormat;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;

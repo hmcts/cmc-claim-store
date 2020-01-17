@@ -1,12 +1,14 @@
-package uk.gov.hmcts.cmc.claimstore.deprecated.controllers;
+package uk.gov.hmcts.cmc.claimstore.controllers;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import uk.gov.hmcts.cmc.claimstore.deprecated.BaseSaveTest;
+import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.domain.models.InterestAmount;
+import uk.gov.hmcts.cmc.email.EmailService;
 
 import java.math.BigDecimal;
 
@@ -14,7 +16,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class CalculateInterestAmountTest extends BaseSaveTest {
+public class CalculateInterestAmountTest extends BaseMockSpringTest {
+
+    @MockBean
+    protected EmailService emailService;
 
     @Test
     public void shouldCalculatedAmount() throws Exception {
@@ -22,7 +27,7 @@ public class CalculateInterestAmountTest extends BaseSaveTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        InterestAmount obj = deserializeObjectFrom(result, InterestAmount.class);
+        InterestAmount obj = jsonMappingHelper.deserializeObjectFrom(result, InterestAmount.class);
         assertThat(obj.getAmount()).isEqualTo(BigDecimal.valueOf(39.45));
     }
 
