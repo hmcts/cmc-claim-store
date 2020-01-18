@@ -120,7 +120,7 @@ module "database" {
 }
 
 module "claim-store-api" {
-  source = "git@github.com:hmcts/cnp-module-webapp?ref=cmc-features "
+  source = "git@github.com:hmcts/cnp-module-webapp?ref=master"
   product = "${var.product}-${var.microservice}"
   location = "${var.location}"
   env = "${var.env}"
