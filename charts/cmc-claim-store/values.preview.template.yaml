@@ -116,15 +116,19 @@ ccd:
       CCD Admin:
         - https://admin-web-${SERVICE_FQDN}/oauth2redirect
   apiGateway:
+    enabled: true
     s2sKey: ${API_GATEWAY_S2S_KEY}
     idamClientSecret:
       value: ${API_GATEWAY_IDAM_SECRET}
   userProfileApi:
+    enabled: true
     authorisedServices: ccd_admin,ccd_data,ccd_definition,cmc_claim_store
   dataStoreApi:
+    enabled: true
     s2sKey: ${DATA_STORE_S2S_KEY}
     s2sAuthorisedServices: cmc_claim_store,ccd_gw
   definitionStoreApi:
+    enabled: true
     s2sKey: ${DEFINITION_STORE_S2S_KEY}
     s2sAuthorisedServices: ccd_admin,ccd_data,cmc_claim_store,ccd_gw
   caseManagementWeb:
