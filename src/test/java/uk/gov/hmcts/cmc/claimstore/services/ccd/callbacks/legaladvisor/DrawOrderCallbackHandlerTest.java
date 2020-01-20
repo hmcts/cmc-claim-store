@@ -16,6 +16,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
@@ -44,6 +46,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.DRAW_ORDER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -91,6 +94,8 @@ public class DrawOrderCallbackHandlerTest {
     private CallbackRequest callbackRequest;
 
     private DrawOrderCallbackHandler drawOrderCallbackHandler;
+    @Mock
+    private AppInsights appInsights;
 
     @Before
     public void setUp() {
@@ -100,7 +105,9 @@ public class DrawOrderCallbackHandlerTest {
             caseDetailsConverter,
             legalOrderService,
             hearingCourtDetailsFinder,
-            docAssemblyService);
+            docAssemblyService,
+            appInsights
+        );
 
         when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
@@ -236,10 +243,12 @@ public class DrawOrderCallbackHandlerTest {
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
 
         Claim claim = SampleClaim.builder().build();
+        System.out.println(claim);
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
 
         drawOrderCallbackHandler.handle(callbackParams);
 
+        verify(appInsights).trackEvent(AppInsightsEvent.DRAW_ORDER, REFERENCE_NUMBER, ccdCase.getPreviousServiceCaseReference());
         verify(orderDrawnNotificationService).notifyDefendant(claim);
         verify(orderDrawnNotificationService).notifyClaimant(claim);
         verify(legalOrderService).print(

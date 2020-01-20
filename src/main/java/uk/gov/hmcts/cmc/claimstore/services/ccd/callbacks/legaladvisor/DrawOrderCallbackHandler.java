@@ -126,7 +126,7 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
         notifyParties(claim);
         String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
 
-        appInsights.trackEvent(AppInsightsEvent.LA_DRAW_ORDER, REFERENCE_NUMBER, ccdCase.getPreviousServiceCaseReference());
+        appInsights.trackEvent(AppInsightsEvent.DRAW_ORDER, REFERENCE_NUMBER, ccdCase.getPreviousServiceCaseReference());
 
         return printOrder(authorisation, claim, ccdCase.getDirectionOrderData());
     }
