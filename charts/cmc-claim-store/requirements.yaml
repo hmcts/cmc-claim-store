@@ -16,7 +16,7 @@ dependencies:
       - cmc-citizen-frontend-pod
 
   - name: ccd
-    version: ~3.3.1
+    version: ~4.1.0
     repository: '@hmctspublic'
     condition: cmc-claim-store.ccd.enabled
     tags:
