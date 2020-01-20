@@ -44,7 +44,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimIssueReceiptFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
@@ -267,7 +267,7 @@ public class DocumentUploadHandlerTest {
                 SampleClaim.getWithClaimantResponse(
                     SampleClaimantResponse.validDefaultAcceptation()), AUTHORISATION));
 
-        verifyZeroInteractions(claimantDirectionsQuestionnairePdfService);
+        verifyNoInteractions(claimantDirectionsQuestionnairePdfService);
     }
 
     @Test
@@ -277,7 +277,7 @@ public class DocumentUploadHandlerTest {
                 SampleClaim.getWithClaimantResponse(
                     SampleClaimantResponse.validDefaultRejection()), AUTHORISATION));
 
-        verifyZeroInteractions(claimantDirectionsQuestionnairePdfService);
+        verifyNoInteractions(claimantDirectionsQuestionnairePdfService);
     }
 
     @Test
