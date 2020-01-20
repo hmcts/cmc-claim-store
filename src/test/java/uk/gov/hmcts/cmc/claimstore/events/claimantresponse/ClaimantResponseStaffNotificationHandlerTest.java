@@ -14,7 +14,7 @@ import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -64,7 +64,7 @@ public class ClaimantResponseStaffNotificationHandlerTest {
         ClaimantResponseEvent event = new ClaimantResponseEvent(SampleClaim.builder().build(), authorisation);
         handler.onClaimantResponse(event);
 
-        verifyZeroInteractions(statesPaidStaffNotificationService, claimantRejectionStaffNotificationService);
+        verifyNoInteractions(statesPaidStaffNotificationService, claimantRejectionStaffNotificationService);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -73,7 +73,7 @@ public class ClaimantResponseStaffNotificationHandlerTest {
 
         handler.notifyStaffWithClaimantsIntentionToProceed(event);
 
-        verifyZeroInteractions(statesPaidStaffNotificationService, claimantRejectionStaffNotificationService);
+        verifyNoInteractions(statesPaidStaffNotificationService, claimantRejectionStaffNotificationService);
     }
 
     public void shouldNotifyStaffWhenClaimantIntendsToProceed() {
