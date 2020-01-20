@@ -239,6 +239,10 @@ public class DocAssemblyTemplateBodyMapperTest {
                                 .build()))
                     .build()
             ))
+                .directionDeadline(workingDayIndicator.getNextWorkingDay(
+                        LocalDate.parse("2019-04-24").plusDays(19)))
+                .changeOrderDeadline(workingDayIndicator.getNextWorkingDay(
+                        LocalDate.parse("2019-04-24").plusDays(12)))
             .expertReportPermissionPartyAskedByClaimant(true)
             .expertReportPermissionPartyAskedByDefendant(true)
             .expertReportPermissionPartyGivenToClaimant(true)
