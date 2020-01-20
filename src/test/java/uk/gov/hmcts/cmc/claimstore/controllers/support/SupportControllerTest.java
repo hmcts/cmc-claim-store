@@ -522,7 +522,6 @@ class SupportControllerTest {
             void shouldPerformIntentionToProceedCheckWithDatetime() {
                 final LocalDateTime localDateTime
                     = LocalDateTime.of(2019, 1, 1, 1, 1, 1);
-                final String auth = "auth";
                 final UserDetails userDetails
                     = new UserDetails("id", null, null, null, null);
                 final User user = new User(null, userDetails);
@@ -535,7 +534,6 @@ class SupportControllerTest {
 
             @Test
             void shouldPerformIntentionToProceedCheckWithNullDatetime() {
-                final String auth = "auth";
                 final UserDetails userDetails
                     = new UserDetails("id", null, null, null, null);
                 final User user = new User(null, userDetails);
@@ -635,7 +633,7 @@ class SupportControllerTest {
         class ApplicationInsightsTests {
             @Test
             void shouldSendAppInsightIfMediationReportFails() {
-                LocalDate mediationSearchDate = LocalDate.of(2019, 07, 07);
+                LocalDate mediationSearchDate = LocalDate.of(2019, 7, 7);
                 doNothing().when(mediationReportService).sendMediationReport(eq(AUTHORISATION), any());
                 controller.sendMediation(
                     AUTHORISATION,
