@@ -35,7 +35,7 @@ import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
@@ -225,7 +225,7 @@ public class PostClaimOrchestrationHandlerTest {
         postClaimOrchestrationHandler.citizenIssueHandler(event);
 
         //then
-        verifyZeroInteractions(pinOrchestrationService);
+        verifyNoInteractions(pinOrchestrationService);
         verify(citizenServiceDocumentsService).sealedClaimDocument(eq(claimWithPinOperationSucceededIndicator));
         verify(pdfServiceClient).generateFromHtml(any(), anyMap());
         verify(claimIssueReceiptService).createPdf(eq(claimWithPinOperationSucceededIndicator));
@@ -253,10 +253,10 @@ public class PostClaimOrchestrationHandlerTest {
         postClaimOrchestrationHandler.citizenIssueHandler(event);
 
         //then
-        verifyZeroInteractions(pinOrchestrationService);
-        verifyZeroInteractions(claimantOperationService);
-        verifyZeroInteractions(rpaOperationService);
-        verifyZeroInteractions(uploadOperationService);
+        verifyNoInteractions(pinOrchestrationService);
+        verifyNoInteractions(claimantOperationService);
+        verifyNoInteractions(rpaOperationService);
+        verifyNoInteractions(uploadOperationService);
 
     }
 
@@ -294,7 +294,7 @@ public class PostClaimOrchestrationHandlerTest {
         verify(rpaOperationService).notify(eq(claimWithUploadSealedClaimSuccess), eq(AUTHORISATION), any());
         verify(uploadOperationService).uploadDocument(eq(claimWithUploadSealedClaimSuccess),
             eq(AUTHORISATION), any());
-        verifyZeroInteractions(pinOrchestrationService);
+        verifyNoInteractions(pinOrchestrationService);
 
     }
 
@@ -329,8 +329,8 @@ public class PostClaimOrchestrationHandlerTest {
         verify(claimantOperationService).notifyCitizen(eq(claimWithClaimReceiptUploadSuccess),
             any(), eq(AUTHORISATION));
         verify(rpaOperationService).notify(eq(claimWithClaimReceiptUploadSuccess), eq(AUTHORISATION), any());
-        verifyZeroInteractions(uploadOperationService);
-        verifyZeroInteractions(pinOrchestrationService);
+        verifyNoInteractions(uploadOperationService);
+        verifyNoInteractions(pinOrchestrationService);
 
     }
 
@@ -359,9 +359,9 @@ public class PostClaimOrchestrationHandlerTest {
         verify(pdfServiceClient).generateFromHtml(any(), anyMap());
         verify(claimIssueReceiptService).createPdf(eq(claimWithRpaSuccess));
         verify(claimantOperationService).notifyCitizen(eq(claimWithRpaSuccess), any(), eq(AUTHORISATION));
-        verifyZeroInteractions(rpaOperationService);
-        verifyZeroInteractions(uploadOperationService);
-        verifyZeroInteractions(pinOrchestrationService);
+        verifyNoInteractions(rpaOperationService);
+        verifyNoInteractions(uploadOperationService);
+        verifyNoInteractions(pinOrchestrationService);
 
     }
 
