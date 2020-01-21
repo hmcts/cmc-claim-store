@@ -75,7 +75,7 @@ class SupportControllerTest {
 
     private static final String AUTHORISATION = "Bearer: aaa";
     private static final String CLAIM_REFERENCE = "000CM001";
-    private static final String RESPONSE_SUBMITTED = "response-submitted";
+    private static final String RESPONSE_SUBMITTED = "response";
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder().build();
     private static final User USER = new User(AUTHORISATION, USER_DETAILS);
 
@@ -167,7 +167,7 @@ class SupportControllerTest {
                 when(claimService.linkLetterHolder(sampleClaim, letterHolderId, AUTHORISATION)).thenReturn(sampleClaim);
                 when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
 
-                controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claim-issued");
+                controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claim");
 
                 verify(documentGenerator).generateForNonRepresentedClaim(any());
             }
