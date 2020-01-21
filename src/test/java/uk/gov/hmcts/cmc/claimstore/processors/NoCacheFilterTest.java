@@ -38,7 +38,7 @@ class NoCacheFilterTest {
     void shouldAddHeaders() throws ServletException, IOException {
         filter.doFilterInternal(request, response, chain);
         assertAll(
-            () -> verify(response).addHeader("pragma", "no-cache"),
+            () -> verify(response).addHeader("Pragma", "no-cache"),
             () -> verify(response).addHeader("Cache-Control", "no-store"),
             () -> verifyNoInteractions(request)
         );

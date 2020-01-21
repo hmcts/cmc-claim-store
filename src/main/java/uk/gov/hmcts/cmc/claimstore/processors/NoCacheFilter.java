@@ -18,7 +18,7 @@ public class NoCacheFilter extends OncePerRequestFilter {
         FilterChain filterChain
     ) throws ServletException, IOException {
         response.addHeader("Cache-Control", "no-store");
-        response.addHeader("pragma", "no-cache");
+        response.addHeader("Pragma", "no-cache");
         filterChain.doFilter(request, response);
     }
 }
