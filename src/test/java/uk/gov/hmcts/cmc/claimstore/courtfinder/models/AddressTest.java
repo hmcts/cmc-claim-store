@@ -1,15 +1,15 @@
 package uk.gov.hmcts.cmc.claimstore.courtfinder.models;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class AddressTest {
+class AddressTest {
 
     @Test
-    public void shouldStripAddressFromSpecialChars() {
+    void shouldStripAddressFromSpecialChars() {
         Address address = Address.builder()
             .addressLines(Arrays.asList("aaa\r", "bbb\r"))
             .postcode("EC2Y3DD")
