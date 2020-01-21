@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class NoCacheFilterTest {
@@ -40,7 +40,7 @@ class NoCacheFilterTest {
         assertAll(
             () -> verify(response).addHeader("pragma", "no-cache"),
             () -> verify(response).addHeader("Cache-Control", "no-store"),
-            () -> verifyZeroInteractions(request)
+            () -> verifyNoInteractions(request)
         );
     }
 }
