@@ -19,11 +19,11 @@ variable "idam_api_url" {
 }
 
 variable "frontend_url" {
-  default = "https://cmc-citizen-frontend-saat.service.core-compute-saat.internal"
+  default = "https://cmc-citizen-frontend-aat.service.core-compute-aat.internal"
 }
 
 variable "respond_to_claim_url" {
-  default = "https://cmc-citizen-frontend-saat.service.core-compute-saat.internal/first-contact/start"
+  default = "https://cmc-citizen-frontend-aat.service.core-compute-aat.internal/first-contact/start"
 }
 
 variable "database-name" {

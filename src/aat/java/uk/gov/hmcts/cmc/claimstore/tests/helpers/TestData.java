@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.tests.helpers;
 
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.tests.AATConfiguration;
