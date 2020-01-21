@@ -90,7 +90,10 @@ public class BulkPrintService implements PrintService {
             )
         );
 
-        logger.info("Letter created for defendant first contact pack is {}", sendLetterResponse.letterId);
+        logger.info("Defendant first contact pack letter {} created for claim reference {}",
+            sendLetterResponse.letterId,
+            claim.getReferenceNumber()
+        );
     }
 
     @Recover
@@ -131,7 +134,10 @@ public class BulkPrintService implements PrintService {
             )
         );
 
-        logger.info("Letter created for direction order pack is {}", sendLetterResponse.letterId);
+        logger.info("Direction order pack letter {} created for claim reference {}",
+            sendLetterResponse.letterId,
+            claim.getReferenceNumber()
+        );
     }
 
     private String readDocuments(Document document) {
