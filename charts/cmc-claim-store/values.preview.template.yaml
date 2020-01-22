@@ -62,6 +62,8 @@ cmc-citizen-frontend:
       enabled: true
       primaryIngressHost: ${SERVICE_FQDN}
       prefix: www
+    secrets:
+      disabled: false
     environment:
       LOG_LEVEL: DEBUG
       FEATURE_TOGGLES_API_URL: http://${SERVICE_NAME}-ftr-tgl-api
