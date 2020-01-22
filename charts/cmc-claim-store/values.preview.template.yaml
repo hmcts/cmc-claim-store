@@ -124,3 +124,14 @@ ccd:
     enabled: true
     environment:
       NODE_TLS_REJECT_UNAUTHORIZED: 0
+  ccd-admin-web:
+    nodejs:
+      ingressClass: traefik-no-proxy
+      ingressHost: ccd-admin-web-${SERVICE_FQDN}
+      secrets:
+        IDAM_ADMIN_WEB_SERVICE_KEY: ${ADMIN_S2S_KEY}
+        IDAM_OAUTH2_AW_CLIENT_SECRET: ${ADMIN_WEB_IDAM_SECRET}
+      environment:
+        NODE_TLS_REJECT_UNAUTHORIZED: 0
+
+
