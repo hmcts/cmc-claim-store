@@ -7,10 +7,10 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplate
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.services.FreeMediationDecisionDateCalculator;
-import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
+import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
 
 import java.time.LocalDate;
@@ -76,7 +76,7 @@ public class DefendantResponseNotificationService {
     }
 
     private boolean isOnlineDqWithNoMediationAndHasEitherFullDefenceOrPartAdmission(Claim claim, Response response) {
-        return DirectionsQuestionnaireUtils.isOnlineDQ(claim)
+        return FeaturesUtils.isOnlineDQ(claim)
             && !hasDefendantOptedForMediation(response)
             && (isFullDefence(response) || isPartAdmission(response));
     }

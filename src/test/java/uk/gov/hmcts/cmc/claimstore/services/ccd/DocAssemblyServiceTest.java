@@ -31,13 +31,14 @@ public class DocAssemblyServiceTest {
     private static final String BEARER_TOKEN = "Bearer let me in";
     private static final String SERVICE_TOKEN = "Bearer service let me in";
     private static final String DOC_URL = "http://success.test";
-    public static final String TEST_TEMPLATE_ID = "testTemplateId";
+    public static final String LEGAL_ADVISOR_TEMPLATE_ID = "legalAdvisorTemplateId";
     private static final UserDetails JUDGE = new UserDetails(
         "1",
         "email",
         "Judge",
         "McJudge",
         Collections.emptyList());
+    private static final String JUDGE_TEMPLATE_ID = "JudgeTemplateId";
 
     @Mock
     private DocAssemblyClient docAssemblyClient;
@@ -56,7 +57,8 @@ public class DocAssemblyServiceTest {
             docAssemblyTemplateBodyMapper,
             docAssemblyClient,
             userService,
-            TEST_TEMPLATE_ID);
+            LEGAL_ADVISOR_TEMPLATE_ID,
+            JUDGE_TEMPLATE_ID);
 
         when(userService.getUserDetails(eq(BEARER_TOKEN))).thenReturn(JUDGE);
     }
@@ -64,7 +66,7 @@ public class DocAssemblyServiceTest {
     @Test
     public void shouldCreateOrderOnDocAssembly() {
         CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
-        ccdCase.setDirectionOrderData(SampleData.getCCDOrderGenerationData());
+        ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
 
         when(docAssemblyTemplateBodyMapper.from(eq(ccdCase), eq(JUDGE)))
             .thenReturn(DocAssemblyTemplateBody.builder().build());
@@ -72,7 +74,7 @@ public class DocAssemblyServiceTest {
         when(authTokenGenerator.generate()).thenReturn(SERVICE_TOKEN);
 
         DocAssemblyRequest docAssemblyRequest = DocAssemblyRequest.builder()
-            .templateId(TEST_TEMPLATE_ID)
+            .templateId(LEGAL_ADVISOR_TEMPLATE_ID)
             .outputType(OutputType.PDF)
             .formPayload(docAssemblyTemplateBodyMapper.from(ccdCase, JUDGE))
             .build();
