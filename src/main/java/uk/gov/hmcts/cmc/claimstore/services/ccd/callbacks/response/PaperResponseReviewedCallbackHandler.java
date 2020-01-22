@@ -183,8 +183,7 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
             .collect(Collectors.toList());
     }
 
-    private List<ScannedDocument> getBulkScannedDocTimeRequestedForEvent(CallbackRequest callbackRequest){
-
+    private List<ScannedDocument> getBulkScannedDocMoreTimeRequestedForEvent(CallbackRequest callbackRequest){
         return getBulkScannedDocs.apply(convertCallbackToClaimBeforeChange(callbackRequest))
             .stream().distinct().filter(getBulkScannedDocs.apply(convertCallbackToClaim(callbackRequest))::contains)
             .filter(isScannedDocumentMoreTimeRequested)
@@ -208,7 +207,7 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
     private boolean verifyNoDuplicateMoreTimeRequested(CallbackRequest request){
 
         return !getStaffUploadedMoreTimeRequestedForEvent(request).isEmpty()
-            && !getBulkScannedDocTimeRequestedForEvent(request).isEmpty();
+            && !getBulkScannedDocMoreTimeRequestedForEvent(request).isEmpty();
     }
 
     private Optional<AboutToStartOrSubmitCallbackResponse> updateMoreTimeRequestedResponse(CallbackRequest request){
@@ -216,7 +215,7 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
         Claim claimByEvent = convertCallbackToClaim(request);
 
         if(getStaffUploadedMoreTimeRequestedForEvent(request).isEmpty() &&
-            getBulkScannedDocTimeRequestedForEvent(request).isEmpty()){
+            getBulkScannedDocMoreTimeRequestedForEvent(request).isEmpty()){
             return Optional.empty();
         }
 
