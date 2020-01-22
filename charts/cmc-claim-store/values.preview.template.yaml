@@ -62,8 +62,6 @@ cmc-citizen-frontend:
       enabled: true
       primaryIngressHost: ${SERVICE_FQDN}
       prefix: www
-    secrets:
-      disabled: false
     environment:
       LOG_LEVEL: DEBUG
       FEATURE_TOGGLES_API_URL: http://${SERVICE_NAME}-ftr-tgl-api
@@ -133,7 +131,6 @@ ccd:
       secrets:
         IDAM_ADMIN_WEB_SERVICE_KEY: ${ADMIN_S2S_KEY}
         IDAM_OAUTH2_AW_CLIENT_SECRET: ${ADMIN_WEB_IDAM_SECRET}
-        disabled: false
       environment:
         NODE_TLS_REJECT_UNAUTHORIZED: 0
 
