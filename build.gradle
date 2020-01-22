@@ -258,7 +258,7 @@ sourceSets {
   aat {
     java {
       compileClasspath += main.output
-      runtimeClasspath += main.output
+      runtimeClasspath += main.output + integrationTest.output
       srcDir('src/aat/java')
     }
     resources {

@@ -17,7 +17,8 @@ import uk.gov.hmcts.cmc.email.EmailService;
 @SpringBootTest
 @TestPropertySource("/environment.properties")
 @ActiveProfiles({
-    "aat"
+    "aat",
+    "mocked-database-tests"
 })
 public abstract class BaseTest {
 
