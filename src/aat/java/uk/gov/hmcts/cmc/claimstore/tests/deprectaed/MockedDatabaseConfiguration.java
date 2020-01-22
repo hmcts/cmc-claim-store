@@ -1,4 +1,4 @@
-package uk.gov.hmcts.cmc.claimstore.deprecated;
+package uk.gov.hmcts.cmc.claimstore.tests.deprectaed;
 
 import org.flywaydb.core.Flyway;
 import org.mockito.Answers;
