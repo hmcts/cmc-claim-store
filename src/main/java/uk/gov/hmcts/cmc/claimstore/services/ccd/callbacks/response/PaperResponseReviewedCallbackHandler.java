@@ -57,11 +57,13 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
         "N225",
         "N180");
 
-    private static Function<Claim, List<ClaimDocument>> getStaffUploadedDocs = claim -> claim.getClaimDocumentCollection()
+    private static Function<Claim, List<ClaimDocument>> getStaffUploadedDocs = claim ->
+        claim.getClaimDocumentCollection()
         .map(ClaimDocumentCollection::getStaffUploadedDocuments)
         .orElse(Collections.emptyList());
 
-    private static Function<Claim, List<ScannedDocument>> getBulkScannedDocs = claim -> claim.getClaimDocumentCollection()
+    private static Function<Claim, List<ScannedDocument>> getBulkScannedDocs = claim ->
+        claim.getClaimDocumentCollection()
         .map(ClaimDocumentCollection::getScannedDocuments)
         .orElse(Collections.emptyList());
 
@@ -113,25 +115,25 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
 
     private AboutToStartOrSubmitCallbackResponse updateResponseDeadline(CallbackParams callbackParams) {
         CallbackRequest callbackRequest = callbackParams.getRequest();
-        Claim claim = convertCallbackToClaim(callbackRequest);
+        Claim claim = toClaimAfterEvent(callbackRequest);
 
-        if(verifyNoDuplicateMoreTimeRequested(callbackRequest)){
+        if (verifyNoDuplicateMoreTimeRequested(callbackRequest)) {
             return AboutToStartOrSubmitCallbackResponse.builder()
-                .errors(Collections.singletonList("More Time cannot be requested now."))
+                .errors(Collections.singletonList("Requesting More Time to respond can be done only once."))
                 .build();
         }
 
         Optional<AboutToStartOrSubmitCallbackResponse> isPaperResponseMoreTimeRequested =
             updateMoreTimeRequestedResponse(callbackRequest);
 
-        if(isPaperResponseMoreTimeRequested.isPresent()){
-            return isPaperResponseMoreTimeRequested.get();
+        if (isPaperResponseMoreTimeRequested.isPresent()) {
+            return isPaperResponseMoreTimeRequested.orElseThrow(IllegalArgumentException::new);
         }
 
         try {
             LocalDateTime responseTime = getReceivedTimeForStaffUploadedPaperResponseDoc(claim)
                 .map(ClaimDocument::getReceivedDateTime)
-                .orElse(getScanedTimeForScannedPaperResponseDoc(claim)
+                .orElseGet(() -> getScanedTimeForScannedPaperResponseDoc(claim)
                     .map(ScannedDocument::getDeliveryDate)
                     .orElseThrow(IllegalArgumentException::new)
                 );
@@ -145,20 +147,19 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
                 .data(data)
                 .build();
 
-        }catch (Exception gene){
+        } catch (Exception gene) {
             return AboutToStartOrSubmitCallbackResponse.builder()
                 .errors(Collections.singletonList("Unable to determine the response time."))
                 .build();
         }
-
     }
 
     private AboutToStartOrSubmitCallbackResponse verifyResponsePossible(
         CallbackParams callbackParams) {
-        Claim claim = convertCallbackToClaim(callbackParams.getRequest());
+        Claim claim = toClaimAfterEvent(callbackParams.getRequest());
         List<String> validationErrors = new ArrayList<>();
 
-        if(claim.getResponse().isPresent() || claim.getRespondedAt() != null){
+        if (claim.getResponse().isPresent() || claim.getRespondedAt() != null) {
             validationErrors.add(MoreTimeRequestRule.ALREADY_RESPONDED_ERROR);
         }
 
@@ -168,64 +169,77 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
             .build();
     }
 
-    private Claim convertCallbackToClaim(CallbackRequest callbackRequest) {
+    private Claim toClaimAfterEvent(CallbackRequest callbackRequest) {
         return caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
     }
 
-    private Claim convertCallbackToClaimBeforeChange(CallbackRequest callbackRequest) {
-        return caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
+    private Claim toClaimBeforeEvent(CallbackRequest callbackRequest) {
+        return caseDetailsConverter.extractClaim(callbackRequest.getCaseDetailsBefore());
     }
 
-    private List<ClaimDocument> getStaffUploadedMoreTimeRequestedForEvent(CallbackRequest callbackRequest){
-        return getStaffUploadedDocs.apply(convertCallbackToClaimBeforeChange(callbackRequest))
-            .stream().distinct().filter(getStaffUploadedDocs.apply(convertCallbackToClaim(callbackRequest))::contains)
+    private List<ClaimDocument> getMoreTimeRequestedStaffUploadedDocs(Claim claim) {
+        return getStaffUploadedDocs.apply(claim)
+            .stream()
             .filter(isClaimDocumentMoreTimeRequested)
             .collect(Collectors.toList());
     }
 
-    private List<ScannedDocument> getBulkScannedDocMoreTimeRequestedForEvent(CallbackRequest callbackRequest){
-        return getBulkScannedDocs.apply(convertCallbackToClaimBeforeChange(callbackRequest))
-            .stream().distinct().filter(getBulkScannedDocs.apply(convertCallbackToClaim(callbackRequest))::contains)
+    private List<ScannedDocument> getMoreTimeRequestedBulkScanDocs(Claim claim) {
+        return getBulkScannedDocs.apply(claim)
+            .stream()
             .filter(isScannedDocumentMoreTimeRequested)
             .collect(Collectors.toList());
     }
 
-    private Optional<ClaimDocument> getReceivedTimeForStaffUploadedPaperResponseDoc(Claim claim){
+    private List<ClaimDocument> getStaffUploadedMoreTimeRequestedForEvent(CallbackRequest callbackRequest) {
+        return getStaffUploadedDocs.apply(toClaimAfterEvent(callbackRequest))
+            .stream().filter(doc -> !getStaffUploadedDocs.apply(toClaimBeforeEvent(callbackRequest)).contains(doc))
+            .filter(isClaimDocumentMoreTimeRequested)
+            .collect(Collectors.toList());
+    }
+
+    private List<ScannedDocument> getBulkScannedDocMoreTimeRequestedForEvent(CallbackRequest callbackRequest) {
+        return getBulkScannedDocs.apply(toClaimAfterEvent(callbackRequest))
+            .stream().filter(doc -> !getBulkScannedDocs.apply(toClaimBeforeEvent(callbackRequest)).contains(doc))
+            .filter(isScannedDocumentMoreTimeRequested)
+            .collect(Collectors.toList());
+    }
+
+    private Optional<ClaimDocument> getReceivedTimeForStaffUploadedPaperResponseDoc(Claim claim) {
         return getStaffUploadedDocs.apply(claim)
             .stream()
             .filter(filterClaimDocumentPaperResponseDoc)
             .findFirst();
     }
 
-    private Optional<ScannedDocument> getScanedTimeForScannedPaperResponseDoc(Claim claim){
+    private Optional<ScannedDocument> getScanedTimeForScannedPaperResponseDoc(Claim claim) {
         return getBulkScannedDocs.apply(claim)
             .stream()
             .filter(filterScannedDocumentPaperResponseDoc)
             .findFirst();
     }
 
-    private boolean verifyNoDuplicateMoreTimeRequested(CallbackRequest request){
+    private boolean verifyNoDuplicateMoreTimeRequested(CallbackRequest request) {
 
-        return !getStaffUploadedMoreTimeRequestedForEvent(request).isEmpty()
-            && !getBulkScannedDocMoreTimeRequestedForEvent(request).isEmpty();
+        return getMoreTimeRequestedStaffUploadedDocs(toClaimAfterEvent(request)).size()
+            + getMoreTimeRequestedBulkScanDocs(toClaimAfterEvent(request)).size() > 1;
     }
 
-    private Optional<AboutToStartOrSubmitCallbackResponse> updateMoreTimeRequestedResponse(CallbackRequest request){
+    private Optional<AboutToStartOrSubmitCallbackResponse> updateMoreTimeRequestedResponse(CallbackRequest request) {
+        Claim claimByEvent = toClaimAfterEvent(request);
 
-        Claim claimByEvent = convertCallbackToClaim(request);
-
-        if(getStaffUploadedMoreTimeRequestedForEvent(request).isEmpty() &&
-            getBulkScannedDocMoreTimeRequestedForEvent(request).isEmpty()){
+        if (getStaffUploadedMoreTimeRequestedForEvent(request).isEmpty()
+            && getBulkScannedDocMoreTimeRequestedForEvent(request).isEmpty()) {
             return Optional.empty();
         }
 
-        LocalDate newDeadline = responseDeadlineCalculator.calculatePostponedResponseDeadline(claimByEvent.getIssuedOn());
+        LocalDate newDeadline =
+            responseDeadlineCalculator.calculatePostponedResponseDeadline(claimByEvent.getIssuedOn());
 
-        List<String> validationResult = this.moreTimeRequestRule.validateMoreTimeCanBeRequested(claimByEvent, newDeadline);
-        AboutToStartOrSubmitCallbackResponseBuilder builder = AboutToStartOrSubmitCallbackResponse
-            .builder();
+        List<String> validationResult = moreTimeRequestRule.validateMoreTimeCanBeRequested(claimByEvent, newDeadline);
+        AboutToStartOrSubmitCallbackResponseBuilder builder = AboutToStartOrSubmitCallbackResponse.builder();
 
-        if (validationResult.isEmpty()) {
+        if (!validationResult.isEmpty()) {
             return Optional.of(AboutToStartOrSubmitCallbackResponse
                 .builder()
                 .errors(validationResult)
