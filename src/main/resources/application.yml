@@ -98,6 +98,7 @@ bankHolidays:
 doc_assembly:
   url: ${DOC_ASSEMBLY_URL:false}
   templateId: "CV-CMC-GOR-ENG-0004.docx"
+  judgeTemplateId: "CV-CMC-GOR-ENG-00219.docx"
 
 nonworking-days:
   datafile: ${NONWORKINGDAYS_DATAFILE:/data/non-working_days.dat}
@@ -179,6 +180,10 @@ notifications:
       defendantMediationFailureOfflineDQ: "15a38762-2141-4a70-8cc9-22a27db985bc"
 
 staff-notifications:
+  sender:
+  recipient:
+
+live-support:
   sender:
   recipient:
 
