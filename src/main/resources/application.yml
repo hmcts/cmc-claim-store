@@ -32,11 +32,10 @@ spring:
   jackson:
     default-property-inclusion: non_null
   datasource:
-    cmc:
-      driverClassName: org.postgresql.Driver
-      username: ${CMC_DB_USERNAME:-}
-      password: ${CMC_DB_PASSWORD:-}
-      url: jdbc:postgresql://${CMC_DB_HOST:}:${CMC_DB_PORT:}/${CMC_DB_NAME:cmc}${CMC_DB_CONNECTION_OPTIONS:}
+    driverClassName: org.postgresql.Driver
+    username: ${CMC_DB_USERNAME:-}
+    password: ${CMC_DB_PASSWORD:-}
+    url: jdbc:postgresql://${CMC_DB_HOST:}:${CMC_DB_PORT:}/${CMC_DB_NAME:cmc}${CMC_DB_CONNECTION_OPTIONS:}
 
 quartzProperties:
   org.quartz:
@@ -46,7 +45,7 @@ quartzProperties:
       isClustered: true
       class: org.quartz.impl.jdbcjobstore.JobStoreTX
       driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
-      dataSource: cmcDataSource
+      dataSource: dataSource
       clusterCheckinInterval: 2000
     threadPool:
       class: org.quartz.simpl.SimpleThreadPool
@@ -201,8 +200,8 @@ claim-store:
     enabled: true
 
 oauth2:
- client:
-  id: 'cmc_citizen'
+  client:
+    id: 'cmc_citizen'
 ---
 spring:
   profiles: 'aat'

@@ -2,7 +2,6 @@ package uk.gov.hmcts.cmc.claimstore.config;
 
 import org.flywaydb.core.Flyway;
 import org.skife.jdbi.v2.DBI;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -22,21 +21,21 @@ import javax.sql.DataSource;
 public class CmcDBConfiguration {
     @Bean
     @Primary
-    @ConfigurationProperties("spring.datasource.cmc")
-    public DataSourceProperties cmcDataSourceProperties() {
+    @ConfigurationProperties("spring.datasource")
+    public DataSourceProperties dataSourceProperties() {
         return new DataSourceProperties();
     }
 
     @Primary
-    @Bean("cmcDataSource")
-    @ConfigurationProperties("spring.datasource.cmc")
-    public DataSource cmcDataSource() {
-        return cmcDataSourceProperties().initializeDataSourceBuilder().build();
+    @Bean
+    @ConfigurationProperties("spring.datasource")
+    public DataSource dataSource() {
+        return dataSourceProperties().initializeDataSourceBuilder().build();
     }
 
-    @Bean("cmcTransactionAwareDataSourceProxy")
+    @Bean
     public TransactionAwareDataSourceProxy transactionAwareDataSourceProxy(
-        @Qualifier("cmcDataSource") DataSource dataSource
+        DataSource dataSource
     ) {
         TransactionAwareDataSourceProxy dataSourceProxy = new TransactionAwareDataSourceProxy(dataSource);
 
@@ -52,31 +51,30 @@ public class CmcDBConfiguration {
             .migrate();
     }
 
-    @Bean("cmcTransactionManager")
+    @Bean
     public PlatformTransactionManager transactionManager(
-        @Qualifier("cmcTransactionAwareDataSourceProxy")
-            TransactionAwareDataSourceProxy cmcTransactionAwareDataSourceProxy
+        TransactionAwareDataSourceProxy transactionAwareDataSourceProxy
     ) {
-        return new DataSourceTransactionManager(cmcTransactionAwareDataSourceProxy);
+        return new DataSourceTransactionManager(transactionAwareDataSourceProxy);
     }
 
-    @Bean("cmcDbi")
-    public DBI dbi(@Qualifier("cmcTransactionAwareDataSourceProxy")
-                       TransactionAwareDataSourceProxy cmcTransactionAwareDataSourceProxy
+    @Bean
+    public DBI dbi(
+        TransactionAwareDataSourceProxy transactionAwareDataSourceProxy
     ) {
-        DBI dbi = new DBI(cmcTransactionAwareDataSourceProxy);
+        DBI dbi = new DBI(transactionAwareDataSourceProxy);
         dbi.registerContainerFactory(new OptionalContainerFactory());
 
         return dbi;
     }
 
     @Bean
-    public UserRolesRepository userRolesRepository(@Qualifier("cmcDbi") DBI dbi) {
+    public UserRolesRepository userRolesRepository(DBI dbi) {
         return dbi.onDemand(UserRolesRepository.class);
     }
 
     @Bean
-    public ReferenceNumberRepository referenceNumberRepository(@Qualifier("cmcDbi") DBI dbi) {
+    public ReferenceNumberRepository referenceNumberRepository(DBI dbi) {
         return dbi.onDemand(ReferenceNumberRepository.class);
     }
 }
