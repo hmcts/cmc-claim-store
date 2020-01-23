@@ -189,8 +189,9 @@ public class CaseMapperTest {
                 .createdOn(LocalDateTime.now())
                 .hearingCourtAddress(SampleData.getCCDAddress())
                 .build())
-            .directionOrderData(SampleData.getCCDOrderGenerationData())
             .build();
+
+        ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
 
         //when
         Claim claim = ccdCaseMapper.from(ccdCase);
