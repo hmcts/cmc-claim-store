@@ -16,6 +16,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.defendant.IntentionToProceedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -58,17 +59,21 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
 
     private final MediationFailedNotificationService notificationService;
 
+    private final IntentionToProceedNotificationService intentionToProceedNotificationService;
+
     @Autowired
     public MediationFailedCallbackHandler(CaseDetailsConverter caseDetailsConverter,
                                           DirectionsQuestionnaireDeadlineCalculator deadlineCalculator,
                                           CaseMapper caseMapper,
                                           AppInsights appInsights,
-                                          MediationFailedNotificationService notificationService) {
+                                          MediationFailedNotificationService notificationService,
+                                          IntentionToProceedNotificationService intentionToProceedNotificationService) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.deadlineCalculator = deadlineCalculator;
         this.caseMapper = caseMapper;
         this.notificationService = notificationService;
         this.appInsights = appInsights;
+        this.intentionToProceedNotificationService = intentionToProceedNotificationService;
     }
 
     @Override
@@ -97,6 +102,8 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
             .trackEvent(getAppInsightEventBasedOnMediationPilot(claim), REFERENCE_NUMBER, claim.getReferenceNumber());
 
         notificationService.notifyParties(claim);
+
+        intentionToProceedNotificationService.notifyCaseworkers(claim);
         return SubmittedCallbackResponse.builder().build();
     }
 

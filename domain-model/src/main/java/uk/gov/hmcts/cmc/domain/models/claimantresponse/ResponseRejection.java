@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
+import uk.gov.hmcts.cmc.domain.models.response.DirectionsQuestionnaireEnabled;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.math.BigDecimal;
@@ -17,7 +18,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @Getter
 @EqualsAndHashCode(callSuper = true)
-public class ResponseRejection extends ClaimantResponse {
+public class ResponseRejection extends ClaimantResponse implements DirectionsQuestionnaireEnabled {
 
     private final YesNoOption freeMediation;
 

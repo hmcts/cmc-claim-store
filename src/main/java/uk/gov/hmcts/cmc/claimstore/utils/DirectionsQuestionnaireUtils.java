@@ -6,8 +6,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.HearingLocation;
-import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
-import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.DirectionsQuestionnaireEnabled;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 
@@ -24,8 +23,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_LEGAL_ADVISOR_
 import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_TRANSFER;
 import static uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType.REJECTION;
 import static uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt.isPilotCourt;
-import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_DEFENCE;
-import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.PART_ADMISSION;
+import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_ADMISSION;
 import static uk.gov.hmcts.cmc.domain.utils.FeaturesUtils.isJudgePilot;
 import static uk.gov.hmcts.cmc.domain.utils.FeaturesUtils.isLegalAdvisorPilot;
 import static uk.gov.hmcts.cmc.domain.utils.FeaturesUtils.isOnlineDQ;
@@ -83,19 +81,14 @@ public class DirectionsQuestionnaireUtils {
     }
 
     private static String getDefendantHearingCourt(Response defendantResponse) {
-        if (defendantResponse.getResponseType() == FULL_DEFENCE) {
-            return ((FullDefenceResponse) defendantResponse).getDirectionsQuestionnaire()
-                .flatMap(DirectionsQuestionnaire::getHearingLocation)
-                .map(HearingLocation::getCourtName)
-                .orElseThrow(IllegalStateException::new);
-        } else if (defendantResponse.getResponseType() == PART_ADMISSION) {
-            return ((PartAdmissionResponse) defendantResponse).getDirectionsQuestionnaire()
-                .flatMap(DirectionsQuestionnaire::getHearingLocation)
-                .map(HearingLocation::getCourtName)
-                .orElseThrow(IllegalStateException::new);
-        } else {
+        if (defendantResponse.getResponseType() == FULL_ADMISSION) {
             throw new IllegalStateException("No preferred court as defendant response is full admission");
         }
+
+        return ((DirectionsQuestionnaireEnabled) defendantResponse).getDirectionsQuestionnaire()
+            .flatMap(DirectionsQuestionnaire::getHearingLocation)
+            .map(HearingLocation::getCourtName)
+            .orElseThrow(IllegalStateException::new);
     }
 
     private static String getClaimantHearingCourt(ClaimantResponse claimantResponse) {

@@ -24,7 +24,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @ValidAdmission
 @EqualsAndHashCode(callSuper = true)
-public class PartAdmissionResponse extends Response {
+public class PartAdmissionResponse extends Response implements DirectionsQuestionnaireEnabled {
 
     @NotNull
     @Money

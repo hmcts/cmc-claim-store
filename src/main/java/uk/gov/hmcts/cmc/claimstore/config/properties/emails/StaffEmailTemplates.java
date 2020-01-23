@@ -118,4 +118,12 @@ public class StaffEmailTemplates {
     public String getIntentionToProceedEmailBody() {
         return readString("/staff/templates/email/intentionToProceed/body.txt");
     }
+
+    public String getIntentionToProceedDeadlineEmailSubject() {
+        return readString("/staff/templates/email/intentionToProceedDeadline/subject.txt");
+    }
+
+    public String getIntentionToProceedDeadlineEmailBody() {
+        return readString("/staff/templates/email/intentionToProceedDeadline/body.txt");
+    }
 }

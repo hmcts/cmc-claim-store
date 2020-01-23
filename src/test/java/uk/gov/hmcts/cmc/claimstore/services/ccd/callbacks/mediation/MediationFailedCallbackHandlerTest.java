@@ -12,8 +12,10 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.services.DirectionsQuestionnaireDeadlineCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.defendant.IntentionToProceedNotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimFeatures;
@@ -62,6 +64,9 @@ public class MediationFailedCallbackHandlerTest {
     @Mock
     private AppInsights appInsights;
 
+    @Mock
+    private IntentionToProceedNotificationService intentionToProceedNotificationService;
+
     private MediationFailedCallbackHandler mediationFailedCallbackHandler;
 
     private CallbackParams callbackParams;
@@ -78,7 +83,8 @@ public class MediationFailedCallbackHandlerTest {
             deadlineCalculator,
             caseMapper,
             appInsights,
-            mediationFailedNotificationService);
+            mediationFailedNotificationService,
+            intentionToProceedNotificationService);
         callbackRequest = CallbackRequest
             .builder()
             .caseDetails(CaseDetails.builder().data(Collections.emptyMap()).build())
@@ -272,4 +278,27 @@ public class MediationFailedCallbackHandlerTest {
 
         mediationFailedCallbackHandler.handle(callbackParams);
     }
+
+    @Test
+    public void shouldHandleDisputesAllEvent() {
+        assert mediationFailedCallbackHandler.handledEvents().contains(CaseEvent.MEDIATION_FAILED);
+    }
+
+    @Test
+    public void shouldBeForCaseworkerRole() {
+        assert mediationFailedCallbackHandler.getSupportedRoles().contains(Role.CASEWORKER);
+    }
+
+    @Test
+    public void shouldCallNotifyCaseworkersOnSubmittedCallback() {
+        Claim claim = claimSetForMediation.toBuilder()
+            .features(Collections.emptyList())
+            .build();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+        handleSubmittedCallback();
+
+        verify(intentionToProceedNotificationService, once()).notifyCaseworkers(any());
+    }
+
 }

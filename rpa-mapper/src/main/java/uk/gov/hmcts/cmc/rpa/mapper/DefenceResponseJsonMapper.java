@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
+import uk.gov.hmcts.cmc.domain.models.response.DirectionsQuestionnaireEnabled;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.FullDefenceResponse;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
@@ -124,11 +125,8 @@ public class DefenceResponseJsonMapper {
 
         switch (response.getResponseType()) {
             case FULL_DEFENCE:
-                FullDefenceResponse fullDefenceResponse = (FullDefenceResponse)response;
-                return fullDefenceResponse.getDirectionsQuestionnaire().isPresent();
             case PART_ADMISSION:
-                PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse)response;
-                return partAdmissionResponse.getDirectionsQuestionnaire().isPresent();
+                return ((DirectionsQuestionnaireEnabled)response).getDirectionsQuestionnaire().isPresent();
             case FULL_ADMISSION:
             default:
                 return false;

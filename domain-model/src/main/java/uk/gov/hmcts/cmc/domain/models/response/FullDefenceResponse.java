@@ -18,7 +18,7 @@ import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_DEFENCE;
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 @EqualsAndHashCode(callSuper = true)
-public class FullDefenceResponse extends Response {
+public class FullDefenceResponse extends Response implements DirectionsQuestionnaireEnabled {
 
     @NotNull
     private final DefenceType defenceType;

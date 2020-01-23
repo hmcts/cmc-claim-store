@@ -1,0 +1,5 @@
+{{claimantName}} has said that they intend to proceed with their claim against {{defendantName}}.
+
+Both parties need to submit their hearing requirements before 4pm on {{dqDeadline}}.
+
+This email has been sent out from the HMCTS Civil Money Claims online court.
