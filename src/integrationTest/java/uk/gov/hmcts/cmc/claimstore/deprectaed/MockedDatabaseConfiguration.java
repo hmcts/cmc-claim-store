@@ -16,6 +16,7 @@ import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
 import uk.gov.hmcts.cmc.claimstore.repositories.ClaimRepository;
 import uk.gov.hmcts.cmc.claimstore.repositories.TestingSupportRepository;
+import uk.gov.hmcts.cmc.scheduler.services.JobService;
 
 import javax.sql.DataSource;
 
@@ -61,6 +62,9 @@ class MockedDatabaseConfiguration {
 
     @MockBean
     private Scheduler scheduler;
+
+    @MockBean
+    private JobService jobService;
 
     @MockBean(name = "transactionAwareDataSourceProxy")
     private TransactionAwareDataSourceProxy transactionAwareDataSourceProxy;
