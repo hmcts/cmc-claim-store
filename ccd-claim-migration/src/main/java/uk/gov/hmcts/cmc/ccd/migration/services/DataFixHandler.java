@@ -174,26 +174,25 @@ public class DataFixHandler {
         CaseDetails details,
         CaseEventDetails lastEventDetails
     ) {
-        logger.info(new StringBuilder("CSV")
-            .append(",")
-            .append(bucketType)
-            .append(",")
-            .append(ccdCase.getPreviousServiceCaseReference())
-            .append(",")
-            .append(ccdCase.getId())
-            .append(",")
-            .append(details.getLastModified())
-            .append(",")
-            .append(lastEventDetails.getEventName())
-            .append(",")
-            .append(lastEventDetails.getCreatedDate())
-            .append(",")
-            .append(lastEventDetails.getUserFirstName())
-            .append(" ")
-            .append(lastEventDetails.getUserLastName())
-            .append(",")
-            .append(hasProgressed)
-            .toString()
+        logger.info("CSV" +
+            "," +
+            bucketType +
+            "," +
+            ccdCase.getPreviousServiceCaseReference() +
+            "," +
+            ccdCase.getId() +
+            "," +
+            details.getLastModified() +
+            "," +
+            lastEventDetails.getEventName() +
+            "," +
+            lastEventDetails.getCreatedDate() +
+            "," +
+            lastEventDetails.getUserFirstName() +
+            " " +
+            lastEventDetails.getUserLastName() +
+            "," +
+            hasProgressed
         );
     }
 
