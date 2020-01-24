@@ -99,8 +99,6 @@ public class CountyCourtJudgmentRule {
 
             switch (paymentIntention.getPaymentOption()) {
                 case IMMEDIATELY:
-                    return nowInLocalZone().toLocalDate().isAfter(
-                        paymentIntention.getPaymentDate().orElse(nowInLocalZone().toLocalDate()));
                 case BY_SPECIFIED_DATE:
                     return nowInLocalZone().toLocalDate().isAfter(
                         paymentIntention.getPaymentDate().orElse(nowInLocalZone().toLocalDate()));
