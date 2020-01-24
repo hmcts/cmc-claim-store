@@ -16,7 +16,7 @@ public class DefendantTimelineTest {
     @Test
     public void shouldPassValidationForValidDefendantTimeline() {
         DefendantTimeline timeline = new DefendantTimeline(
-            asList(TimelineEvent.builder().eventDate("Last Year").description("description").build()), "comments"
+            Collections.singletonList(TimelineEvent.builder().eventDate("Last Year").description("description").build()), "comments"
         );
 
         Set<String> response = validate(timeline);
@@ -59,7 +59,7 @@ public class DefendantTimelineTest {
     @Test
     public void shouldPassValidationForNullComment() {
         DefendantTimeline timeline = new DefendantTimeline(
-            asList(TimelineEvent.builder().eventDate("Last Year").description("description").build()), null
+            Collections.singletonList(TimelineEvent.builder().eventDate("Last Year").description("description").build()), null
         );
 
         Set<String> response = validate(timeline);
@@ -71,7 +71,7 @@ public class DefendantTimelineTest {
     @Test
     public void shouldPassValidationForEmptyComment() {
         DefendantTimeline timeline = new DefendantTimeline(
-            asList(TimelineEvent.builder().eventDate("Last Year").description("description").build()), ""
+            Collections.singletonList(TimelineEvent.builder().eventDate("Last Year").description("description").build()), ""
         );
 
         Set<String> response = validate(timeline);
@@ -83,7 +83,7 @@ public class DefendantTimelineTest {
     @Test
     public void shouldPFailValidationForTooLongComment() {
         DefendantTimeline timeline = new DefendantTimeline(
-            asList(TimelineEvent.builder().eventDate("Last Year")
+            Collections.singletonList(TimelineEvent.builder().eventDate("Last Year")
                 .description("description").build()), repeat("a", 99001)
         );
 

@@ -9,6 +9,7 @@ import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.UnavailableDate;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.Witness;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -29,10 +30,10 @@ public class SampleDirectionsQuestionnaire {
     }
 
     public DirectionsQuestionnaire build() {
-        List<UnavailableDate> unavailableDates = asList(
+        List<UnavailableDate> unavailableDates = Collections.singletonList(
             new UnavailableDate("1", LocalDate.of(2050, 1, 1)));
 
-        List<ExpertReport> expertReportRowsData = asList(
+        List<ExpertReport> expertReportRowsData = Collections.singletonList(
             new ExpertReport("1", "expert1", LocalDate.of(2040, 1, 1)));
 
         return DirectionsQuestionnaire.builder()

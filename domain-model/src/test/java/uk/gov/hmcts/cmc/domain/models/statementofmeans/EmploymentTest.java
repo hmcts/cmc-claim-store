@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,7 +50,7 @@ public class EmploymentTest {
             .build();
 
         Employment employment = Employment.builder()
-            .employers(Arrays.asList(employer))
+            .employers(Collections.singletonList(employer))
             .selfEmployment(selfEmployment)
             .build();
 
@@ -86,7 +87,7 @@ public class EmploymentTest {
             .build();
 
         Employment employment = Employment.builder()
-            .employers(Arrays.asList(employer))
+            .employers(Collections.singletonList(employer))
             .selfEmployment(selfEmployment)
             .build();
 

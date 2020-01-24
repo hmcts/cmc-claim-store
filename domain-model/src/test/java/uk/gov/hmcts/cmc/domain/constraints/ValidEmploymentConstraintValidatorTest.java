@@ -12,6 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Unemployed;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Unemployment;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import javax.validation.ConstraintValidatorContext;
 
 import static java.util.Arrays.asList;
@@ -69,7 +70,7 @@ public class ValidEmploymentConstraintValidatorTest {
     @Test
     public void shouldBeValidWhenOnlyEmployersIsPopulated() {
         Employment model = Employment.builder()
-            .employers(asList(Employer.builder().jobTitle("job").name("company").build()))
+            .employers(Collections.singletonList(Employer.builder().jobTitle("job").name("company").build()))
             .build();
 
         assertThat(validator.isValid(model, validatorContext)).isTrue();
@@ -79,7 +80,7 @@ public class ValidEmploymentConstraintValidatorTest {
     public void shouldBeValidWhenEmployersAndSelfEmployedArePopulated() {
         Employment model = Employment.builder()
             .selfEmployment(new SelfEmployment("job", BigDecimal.TEN, null))
-            .employers(asList(Employer.builder().jobTitle("job").name("company").build()))
+            .employers(Collections.singletonList(Employer.builder().jobTitle("job").name("company").build()))
             .build();
 
         assertThat(validator.isValid(model, validatorContext)).isTrue();
@@ -89,7 +90,7 @@ public class ValidEmploymentConstraintValidatorTest {
     public void shouldBeInvalidWhenAllFieldsPopulated() {
         Employment model = Employment.builder()
             .selfEmployment(new SelfEmployment("job", BigDecimal.TEN, null))
-            .employers(asList(Employer.builder().jobTitle("job").name("company").build()))
+            .employers(Collections.singletonList(Employer.builder().jobTitle("job").name("company").build()))
             .unemployment(Unemployment.builder().retired(true).build())
             .build();
 

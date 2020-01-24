@@ -6,6 +6,7 @@ import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestion
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDExpertReport;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -20,13 +21,13 @@ public class SampleCCDDirectionsQuestionnaire {
 
     public CCDDirectionsQuestionnaire build() {
 
-        List<CCDCollectionElement<LocalDate>> unavailableDates = asList(
+        List<CCDCollectionElement<LocalDate>> unavailableDates = Collections.singletonList(
             CCDCollectionElement.<LocalDate>builder()
                 .value(LocalDate.of(2050, 1, 1))
-            .build()
+                .build()
         );
 
-        List<CCDCollectionElement<CCDExpertReport>> expertReportRow = asList(
+        List<CCDCollectionElement<CCDExpertReport>> expertReportRow = Collections.singletonList(
             CCDCollectionElement.<CCDExpertReport>builder()
                 .value(CCDExpertReport
                     .builder()
