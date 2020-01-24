@@ -49,7 +49,7 @@ public class EmailServiceTest {
     }
 
     @Test
-    public void testSendEmailSuccess() throws MessagingException {
+    public void testSendEmailSuccess() {
         EmailData emailData = SampleEmailData.getDefault();
         doNothing().when(javaMailSender).send(any(MimeMessage.class));
         emailService.sendEmail("no-reply@example.com", emailData);
@@ -57,7 +57,7 @@ public class EmailServiceTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void testSendEmailThrowsMailException() throws MessagingException {
+    public void testSendEmailThrowsMailException() {
         EmailData emailData = SampleEmailData.getDefault();
         doThrow(mock(MailException.class)).when(javaMailSender).send(any(MimeMessage.class));
         emailService.sendEmail("no-reply@example.com", emailData);

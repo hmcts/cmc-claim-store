@@ -37,7 +37,7 @@ public class TemplateServiceTest {
     }
 
     @Test(expected = TemplateException.class)
-    public void shouldThrowTemplateExceptionWhenPebbleExceptionIsThrown() throws Exception {
+    public void shouldThrowTemplateExceptionWhenPebbleExceptionIsThrown() {
         service = new TemplateService(pebble);
 
         service.evaluate("block {{", emptyMap());

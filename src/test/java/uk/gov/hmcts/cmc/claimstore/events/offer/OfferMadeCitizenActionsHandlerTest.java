@@ -62,7 +62,7 @@ public class OfferMadeCitizenActionsHandlerTest {
     }
 
     @Test
-    public void shouldSendNotificationsToClaimant() throws NotificationClientException {
+    public void shouldSendNotificationsToClaimant() {
 
         handler.sendClaimantNotification(event);
 
@@ -75,7 +75,7 @@ public class OfferMadeCitizenActionsHandlerTest {
     }
 
     @Test
-    public void shouldSendNotificationsToDefendant() throws NotificationClientException {
+    public void shouldSendNotificationsToDefendant() {
 
         handler.sendDefendantNotification(event);
 

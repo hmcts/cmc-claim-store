@@ -55,7 +55,7 @@ public class MoreTimeRequestedStaffNotificationHandlerTest {
     }
 
     @Test
-    public void sendNotificationsSendsNotificationsToStaff() throws NotificationClientException {
+    public void sendNotificationsSendsNotificationsToStaff() {
 
         MoreTimeRequestedEvent event = SampleMoreTimeRequestedEvent.getDefault();
 

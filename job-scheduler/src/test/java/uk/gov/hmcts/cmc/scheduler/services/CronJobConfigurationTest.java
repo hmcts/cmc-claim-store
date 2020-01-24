@@ -34,7 +34,7 @@ public class CronJobConfigurationTest {
             }
 
             @Override
-            public void execute(JobExecutionContext context) throws JobExecutionException {
+            public void execute(JobExecutionContext context) {
 
             }
         };

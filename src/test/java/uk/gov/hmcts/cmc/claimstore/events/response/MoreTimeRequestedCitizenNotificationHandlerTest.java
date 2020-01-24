@@ -50,7 +50,7 @@ public class MoreTimeRequestedCitizenNotificationHandlerTest {
     }
 
     @Test
-    public void sendNotificationsSendsNotificationsToDefendant() throws NotificationClientException {
+    public void sendNotificationsSendsNotificationsToDefendant() {
 
         MoreTimeRequestedEvent event = SampleMoreTimeRequestedEvent.getDefault();
 

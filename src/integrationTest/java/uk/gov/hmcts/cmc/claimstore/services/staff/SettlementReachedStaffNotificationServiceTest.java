@@ -91,7 +91,7 @@ public class SettlementReachedStaffNotificationServiceTest extends BaseMockSprin
     }
 
     @Test
-    public void shouldSendEmailWithExpectedPDFAttachments() throws IOException {
+    public void shouldSendEmailWithExpectedPDFAttachments() {
         service.notifySettlementReached(claim);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());

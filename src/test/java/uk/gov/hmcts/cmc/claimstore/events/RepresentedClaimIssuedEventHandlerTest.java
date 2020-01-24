@@ -48,7 +48,7 @@ public class RepresentedClaimIssuedEventHandlerTest {
     }
 
     @Test
-    public void sendNotificationsSendsNotificationsToRepresentative() throws NotificationClientException {
+    public void sendNotificationsSendsNotificationsToRepresentative() {
 
         RepresentedClaimIssuedEvent representedClaimIssuedEvent
             = new RepresentedClaimIssuedEvent(CLAIM, SUBMITTER_NAME, AUTHORISATION);

@@ -18,7 +18,7 @@ public class NotificationEmailJob implements Job {
     private ResponseNeededNotificationService responseNeededNotificationService;
 
     @Override
-    public void execute(JobExecutionContext context) throws JobExecutionException {
+    public void execute(JobExecutionContext context) {
         JobDetail jobDetail = context.getJobDetail();
         responseNeededNotificationService.sendMail(jobDetail);
         logger.debug("Completed job work for id {}", jobDetail.getKey().getName());
