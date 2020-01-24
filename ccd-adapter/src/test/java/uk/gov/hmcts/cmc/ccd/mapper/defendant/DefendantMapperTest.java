@@ -14,8 +14,11 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDDefendant;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
+import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
 import uk.gov.hmcts.cmc.domain.models.otherparty.TheirDetails;
+import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
@@ -23,6 +26,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.offers.SampleSettlement;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static java.time.LocalDate.now;
@@ -138,7 +142,8 @@ public class DefendantMapperTest {
             respondent.getResponseSubmittedOn(), claim.getRespondedAt());
 
         assertEquals("The Response mapper is not called / mapped when response is available",
-            respondent.getResponseType().name(), claim.getResponse().get().getResponseType().name());
+            respondent.getResponseType().name(), claim.getResponse().map(Response::getResponseType)
+                .map(ResponseType::name).orElse(null));
     }
 
     @Test
@@ -357,7 +362,8 @@ public class DefendantMapperTest {
         // Then
         assertNotNull(finalClaim.getSettlementReachedAt());
         assertNotNull(finalClaim.getSettlement());
-        assertThat(finalClaim.getSettlement().get().getPartyStatements().size(), is(3));
+        assertThat(finalClaim.getSettlement().map(Settlement::getPartyStatements).map(List::size).orElse(0),
+            is(3));
     }
 
     @Test

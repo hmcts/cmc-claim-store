@@ -16,6 +16,8 @@ import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_JUDGE_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS;
@@ -116,8 +118,8 @@ public class DirectionsQuestionnaireUtilsTest {
                 .withDefendant(CompanyDetails.builder().build())
                 .build())
             .build();
-        CaseEvent caseEvent = DirectionsQuestionnaireUtils.prepareCaseEvent(CLAIMANT_REJECTION_PILOT, claim).get();
-        assertThat(caseEvent).isEqualTo(ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS);
+        Optional<CaseEvent> caseEvent = DirectionsQuestionnaireUtils.prepareCaseEvent(CLAIMANT_REJECTION_PILOT, claim);
+        assertThat(caseEvent).contains(ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS);
     }
 
     @Test
@@ -158,8 +160,9 @@ public class DirectionsQuestionnaireUtilsTest {
                 .withDefendant(CompanyDetails.builder().build())
                 .build())
             .build();
-        CaseEvent caseEvent = DirectionsQuestionnaireUtils.prepareCaseEvent(CLAIMANT_REJECTION_NON_PILOT, claim).get();
-        assertThat(caseEvent).isEqualTo(WAITING_TRANSFER);
+        Optional<CaseEvent> caseEvent =
+            DirectionsQuestionnaireUtils.prepareCaseEvent(CLAIMANT_REJECTION_NON_PILOT, claim);
+        assertThat(caseEvent).contains(WAITING_TRANSFER);
     }
 
     @Test
@@ -186,8 +189,9 @@ public class DirectionsQuestionnaireUtilsTest {
                 .withDefendant(IndividualDetails.builder().build())
                 .build())
             .build();
-        CaseEvent caseEvent = DirectionsQuestionnaireUtils.prepareCaseEvent(CLAIMANT_REJECTION_NON_PILOT, claim).get();
-        assertThat(caseEvent).isEqualTo(ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS);
+        Optional<CaseEvent> caseEvent =
+            DirectionsQuestionnaireUtils.prepareCaseEvent(CLAIMANT_REJECTION_NON_PILOT, claim);
+        assertThat(caseEvent).contains(ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS);
     }
 
     @Test
@@ -201,8 +205,9 @@ public class DirectionsQuestionnaireUtilsTest {
                 .withDefendant(IndividualDetails.builder().build())
                 .build())
             .build();
-        CaseEvent caseEvent = DirectionsQuestionnaireUtils.prepareCaseEvent(CLAIMANT_REJECTION_NON_PILOT, claim).get();
-        assertThat(caseEvent).isEqualTo(ASSIGNING_FOR_JUDGE_DIRECTIONS);
+        Optional<CaseEvent> caseEvent =
+            DirectionsQuestionnaireUtils.prepareCaseEvent(CLAIMANT_REJECTION_NON_PILOT, claim);
+        assertThat(caseEvent).contains(ASSIGNING_FOR_JUDGE_DIRECTIONS);
     }
 
     @Test
@@ -216,8 +221,9 @@ public class DirectionsQuestionnaireUtilsTest {
                 .withDefendant(IndividualDetails.builder().build())
                 .build())
             .build();
-        CaseEvent caseEvent = DirectionsQuestionnaireUtils.prepareCaseEvent(CLAIMANT_REJECTION_NON_PILOT, claim).get();
-        assertThat(caseEvent).isEqualTo(WAITING_TRANSFER);
+        Optional<CaseEvent> caseEvent =
+            DirectionsQuestionnaireUtils.prepareCaseEvent(CLAIMANT_REJECTION_NON_PILOT, claim);
+        assertThat(caseEvent).contains(WAITING_TRANSFER);
     }
 
     @Test
@@ -255,8 +261,8 @@ public class DirectionsQuestionnaireUtilsTest {
                 .build())
             .build();
 
-        CaseEvent caseEvent = DirectionsQuestionnaireUtils.prepareCaseEvent(responseRejection, claim).get();
-        assertThat(caseEvent).isEqualTo(REFERRED_TO_MEDIATION);
+        Optional<CaseEvent> caseEvent = DirectionsQuestionnaireUtils.prepareCaseEvent(responseRejection, claim);
+        assertThat(caseEvent).contains(REFERRED_TO_MEDIATION);
     }
 
     @Test
@@ -281,8 +287,8 @@ public class DirectionsQuestionnaireUtilsTest {
                 .build())
             .build();
 
-        CaseEvent caseEvent = DirectionsQuestionnaireUtils.prepareCaseEvent(responseRejection, claim).get();
-        assertThat(caseEvent).isEqualTo(REFERRED_TO_MEDIATION);
+        Optional<CaseEvent> caseEvent = DirectionsQuestionnaireUtils.prepareCaseEvent(responseRejection, claim);
+        assertThat(caseEvent).contains(REFERRED_TO_MEDIATION);
     }
 
     @Test(expected = IllegalStateException.class)

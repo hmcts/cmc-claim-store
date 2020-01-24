@@ -122,8 +122,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         LocalDate respondentPayingBySetDate = ((PartAdmissionResponse) partAdmissionsResponsePayBySetDate)
             .getPaymentIntention()
-            .get()
-            .getPaymentDate()
+            .flatMap(PaymentIntention::getPaymentDate)
             .orElseThrow(IllegalStateException::new);
 
         Claim claim = SampleClaim.getWithResponse(partAdmissionsResponsePayBySetDate);
@@ -154,8 +153,7 @@ public class FormaliseResponseAcceptanceServiceTest {
 
         RepaymentPlan repaymentPlanOfDefendant = ((PartAdmissionResponse) admissionResponsePayByInstalments)
             .getPaymentIntention()
-            .get()
-            .getRepaymentPlan()
+            .flatMap(PaymentIntention::getRepaymentPlan)
             .orElseThrow(IllegalStateException::new);
 
         Claim claim = SampleClaim.getWithResponse(admissionResponsePayByInstalments);
