@@ -29,8 +29,7 @@ public class ReferenceNumberServiceTest {
         String CITIZEN_REFERENCE = "000MC001";
         when(referenceNumberRepository.getReferenceNumberForCitizen()).thenReturn(CITIZEN_REFERENCE);
 
-        boolean claimRepresented = false;
-        String referenceNumber = referenceNumberService.getReferenceNumber(claimRepresented);
+        String referenceNumber = referenceNumberService.getReferenceNumber(false);
 
         assertThat(referenceNumber).isNotNull().isEqualTo(CITIZEN_REFERENCE);
     }
@@ -41,8 +40,7 @@ public class ReferenceNumberServiceTest {
         String LEGAL_REFERENCE = "000LR001";
         when(referenceNumberRepository.getReferenceNumberForLegal()).thenReturn(LEGAL_REFERENCE);
 
-        boolean claimRepresented = true;
-        String referenceNumber = referenceNumberService.getReferenceNumber(claimRepresented);
+        String referenceNumber = referenceNumberService.getReferenceNumber(true);
 
         assertThat(referenceNumber).isNotNull().isEqualTo(LEGAL_REFERENCE);
     }

@@ -25,6 +25,7 @@ public class PartAdmissionResponseContentProviderTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaim() {
+        //noinspection ConstantConditions
         provider.createContent(null);
     }
 

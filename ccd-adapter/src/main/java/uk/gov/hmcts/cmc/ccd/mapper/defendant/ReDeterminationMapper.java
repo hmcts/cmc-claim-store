@@ -25,8 +25,8 @@ public class ReDeterminationMapper {
 
     public void from(Claim.ClaimBuilder builder, CCDRespondent respondent) {
         if (StringUtils.isBlank(respondent.getRedeterminationExplanation())
-            && respondent.getRedeterminationMadeBy() == null
-            && respondent.getRedeterminationRequestedDate() == null
+            || respondent.getRedeterminationMadeBy() == null
+            || respondent.getRedeterminationRequestedDate() == null
         ) {
             return;
         }

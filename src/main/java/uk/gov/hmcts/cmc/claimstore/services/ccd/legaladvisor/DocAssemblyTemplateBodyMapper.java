@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -67,9 +68,7 @@ public class DocAssemblyTemplateBodyMapper {
             .docUploadForParty(ccdCase.getDocUploadForParty())
             .extraDocUploadList(ccdCase.getExtraDocUploadList())
             .eyewitnessUploadForParty(ccdCase.getEyewitnessUploadForParty())
-            .paperDetermination(ccdCase.getPaperDetermination() != null
-                ? ccdCase.getPaperDetermination().toBoolean()
-                : null)
+            .paperDetermination(Objects.equals(ccdCase.getPaperDetermination(), CCDYesNoOption.YES))
             .hearingCourtName(hearingCourt.getName())
             .hearingCourtAddress(hearingCourt.getAddress())
             .estimatedHearingDuration(ccdCase.getEstimatedHearingDuration())
