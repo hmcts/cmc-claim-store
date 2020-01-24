@@ -67,7 +67,7 @@ public class DocumentUploadHandlerTest {
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 
     @Rule
-    public ExpectedException exceptionRule = ExpectedException.none();
+    public final ExpectedException exceptionRule = ExpectedException.none();
     @Mock
     private DefendantResponseReceiptService defendantResponseReceiptService;
     @Mock

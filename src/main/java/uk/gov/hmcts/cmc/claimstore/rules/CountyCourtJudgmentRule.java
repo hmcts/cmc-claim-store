@@ -16,7 +16,7 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInLocalZone;
 @Service
 public class CountyCourtJudgmentRule {
 
-    private ClaimDeadlineService claimDeadlineService;
+    private final ClaimDeadlineService claimDeadlineService;
     private static final String CLAIM_OBJECT_CANNOT_BE_NULL = "claim object can not be null";
     private static final String COUNTY_COURT_JUDGMENT_FOR_CLAIM = "County Court Judgment for the claim ";
 

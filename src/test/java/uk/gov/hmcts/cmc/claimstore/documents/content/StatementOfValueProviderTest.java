@@ -26,7 +26,7 @@ import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE
 @RunWith(MockitoJUnitRunner.class)
 public class StatementOfValueProviderTest {
 
-    private StatementOfValueProvider statementOfValueProvider = new StatementOfValueProvider();
+    private final StatementOfValueProvider statementOfValueProvider = new StatementOfValueProvider();
 
     @Test
     public void shouldCreateContentWithAmountRange() throws Exception {

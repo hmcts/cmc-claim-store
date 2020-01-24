@@ -20,7 +20,7 @@ public class BankAccount extends CollectionId {
         ISA("ISA"),
         OTHER("Other");
 
-        String description;
+        final String description;
 
         BankAccountType(String description) {
             this.description = description;

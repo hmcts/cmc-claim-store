@@ -50,7 +50,7 @@ public class CreateLegalRepClaimCallbackHandlerTest {
     private CallbackRequest callbackRequest;
     private CreateLegalRepClaimCallbackHandler createLegalRepClaimCallbackHandler;
 
-    private CaseDetails caseDetails = CaseDetails.builder().id(3L).data(Collections.emptyMap()).build();
+    private final CaseDetails caseDetails = CaseDetails.builder().id(3L).data(Collections.emptyMap()).build();
 
     @Before
     public void setUp() {

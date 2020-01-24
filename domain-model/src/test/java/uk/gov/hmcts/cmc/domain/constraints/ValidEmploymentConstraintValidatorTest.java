@@ -27,7 +27,7 @@ public class ValidEmploymentConstraintValidatorTest {
     @Mock
     private ConstraintValidatorContext validatorContext;
 
-    private ValidEmploymentConstraintValidator validator = new ValidEmploymentConstraintValidator();
+    private final ValidEmploymentConstraintValidator validator = new ValidEmploymentConstraintValidator();
 
     @Before
     public void setUp() {

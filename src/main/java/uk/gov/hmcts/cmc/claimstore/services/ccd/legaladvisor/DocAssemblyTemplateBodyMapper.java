@@ -20,7 +20,7 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 public class DocAssemblyTemplateBodyMapper {
 
     public static final long DIRECTION_DEADLINE_NO_OF_DAYS = 19L;
-    private Clock clock;
+    private final Clock clock;
     private final HearingCourtDetailsFinder hearingCourtDetailsFinder;
     private final WorkingDayIndicator workingDayIndicator;
 

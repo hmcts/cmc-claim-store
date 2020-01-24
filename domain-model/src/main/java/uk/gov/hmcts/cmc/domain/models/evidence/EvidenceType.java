@@ -9,7 +9,7 @@ public enum EvidenceType {
     STATEMENT_OF_ACCOUNT("Statements of account"),
     OTHER("Other");
 
-    String description;
+    final String description;
 
     EvidenceType(String description) {
         this.description = description;

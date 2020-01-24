@@ -32,7 +32,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMB
 @Service
 public class IntentionToProceedService {
 
-    Logger logger = LoggerFactory.getLogger(this.getClass());
+    final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final WorkingDayIndicator workingDayIndicator;
 

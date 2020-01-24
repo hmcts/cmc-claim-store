@@ -16,7 +16,7 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse.PartAdmis
 
 public class PartAdmissionResponseContentProviderTest {
 
-    private PartAdmissionResponseContentProvider provider =
+    private final PartAdmissionResponseContentProvider provider =
         new PartAdmissionResponseContentProvider(
             new PaymentIntentionContentProvider(),
             new StatementOfMeansContentProvider(),

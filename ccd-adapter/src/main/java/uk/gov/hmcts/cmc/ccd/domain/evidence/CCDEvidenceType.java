@@ -9,7 +9,7 @@ public enum CCDEvidenceType {
     STATEMENT_OF_ACCOUNT("Statements of account"),
     OTHER("Other");
 
-    String description;
+    final String description;
 
     CCDEvidenceType(String description) {
         this.description = description;

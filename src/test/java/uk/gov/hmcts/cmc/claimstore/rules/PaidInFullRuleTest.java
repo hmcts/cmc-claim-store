@@ -13,7 +13,7 @@ import static java.time.LocalDate.now;
 @RunWith(MockitoJUnitRunner.class)
 public class PaidInFullRuleTest {
 
-    private PaidInFullRule paidInFullRule = new PaidInFullRule();
+    private final PaidInFullRule paidInFullRule = new PaidInFullRule();
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowExceptionWhenClaimIsNull() {

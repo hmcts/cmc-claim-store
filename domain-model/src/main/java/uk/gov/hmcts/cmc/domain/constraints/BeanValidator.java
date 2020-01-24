@@ -14,7 +14,7 @@ public class BeanValidator {
         // Utility class
     }
 
-    private static ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+    private static final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 
     public static <T> Set<String> validate(T bean) {
         return getMessages(factory.getValidator().validate(bean));

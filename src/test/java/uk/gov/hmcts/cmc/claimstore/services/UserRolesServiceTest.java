@@ -39,7 +39,7 @@ public class UserRolesServiceTest {
     private UserService userService;
 
     private UserRolesService userRolesService;
-    private UserRole authorizedUserRole = new UserRole(USER_ID, CONSENT_GIVEN_ROLE);
+    private final UserRole authorizedUserRole = new UserRole(USER_ID, CONSENT_GIVEN_ROLE);
 
     @Before
     public void setup() {

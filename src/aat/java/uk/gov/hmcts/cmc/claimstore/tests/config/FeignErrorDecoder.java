@@ -6,7 +6,7 @@ import uk.gov.hmcts.cmc.claimstore.tests.exception.ForbiddenException;
 
 public class FeignErrorDecoder implements ErrorDecoder {
 
-    private ErrorDecoder delegate = new ErrorDecoder.Default();
+    private final ErrorDecoder delegate = new ErrorDecoder.Default();
 
     @Override
     public Exception decode(String methodKey, Response response) {
