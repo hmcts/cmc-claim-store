@@ -289,9 +289,7 @@ public class DataFixHandler {
             .stream()
             .map(CCDCollectionElement::getValue)
             .filter(respondent -> respondent.getResponseDeadline().isBefore(LocalDate.of(2019, 06, 05)))
-            .filter(respondent -> respondent.getResponseDeadline().isAfter(LocalDate.of(2019, 05, 29)))
-            .findAny()
-            .isPresent();
+            .anyMatch(respondent -> respondent.getResponseDeadline().isAfter(LocalDate.of(2019, 05, 29)));
 
     }
 }
