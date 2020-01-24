@@ -10,7 +10,7 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.Printable;
-import uk.gov.hmcts.cmc.claimstore.services.staff.BulkPrintStaffNotificationService;
+import uk.gov.hmcts.cmc.claimstore.services.livesupport.BulkPrintNotificationService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -50,21 +50,21 @@ public class BulkPrintService implements PrintService {
     private final SendLetterApi sendLetterApi;
     private final AuthTokenGenerator authTokenGenerator;
     private final AppInsights appInsights;
-    private final BulkPrintStaffNotificationService bulkPrintStaffNotificationService;
+    private final BulkPrintNotificationService bulkPrintNotificationService;
     private final PDFServiceClient pdfServiceClient;
 
     @Autowired
     public BulkPrintService(
         SendLetterApi sendLetterApi,
         AuthTokenGenerator authTokenGenerator,
-        BulkPrintStaffNotificationService bulkPrintStaffNotificationService,
+        BulkPrintNotificationService bulkPrintNotificationService,
         AppInsights appInsights,
         PDFServiceClient pdfServiceClient
     ) {
         this.sendLetterApi = sendLetterApi;
         this.authTokenGenerator = authTokenGenerator;
         this.appInsights = appInsights;
-        this.bulkPrintStaffNotificationService = bulkPrintStaffNotificationService;
+        this.bulkPrintNotificationService = bulkPrintNotificationService;
         this.pdfServiceClient = pdfServiceClient;
     }
 
@@ -90,7 +90,10 @@ public class BulkPrintService implements PrintService {
             )
         );
 
-        logger.info("Letter created for defendant first contact pack is {}", sendLetterResponse.letterId);
+        logger.info("Defendant first contact pack letter {} created for claim reference {}",
+            sendLetterResponse.letterId,
+            claim.getReferenceNumber()
+        );
     }
 
     @Recover
@@ -99,7 +102,7 @@ public class BulkPrintService implements PrintService {
         Claim claim,
         List<Printable> documents
     ) {
-        bulkPrintStaffNotificationService.notifyFailedBulkPrint(
+        bulkPrintNotificationService.notifyFailedBulkPrint(
             documents,
             claim
         );
@@ -131,7 +134,10 @@ public class BulkPrintService implements PrintService {
             )
         );
 
-        logger.info("Letter created for direction order pack is {}", sendLetterResponse.letterId);
+        logger.info("Direction order pack letter {} created for claim reference {}",
+            sendLetterResponse.letterId,
+            claim.getReferenceNumber()
+        );
     }
 
     private String readDocuments(Document document) {

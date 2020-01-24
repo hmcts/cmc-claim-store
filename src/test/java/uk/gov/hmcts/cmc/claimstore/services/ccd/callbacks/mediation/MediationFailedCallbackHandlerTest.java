@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.mediation;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,12 +16,12 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimFeatures;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleHearingLocation;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
-import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -34,8 +35,14 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
-import static uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils.DQ_FLAG;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.JUDGE_PILOT_FLAG;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.LA_PILOT_FLAG;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.OPEN;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_JUDGE_DIRECTIONS;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_LEGAL_ADVISOR_DIRECTIONS;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.READY_FOR_TRANSFER;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MediationFailedCallbackHandlerTest {
@@ -118,7 +125,7 @@ public class MediationFailedCallbackHandlerTest {
             mediationFailedCallbackHandler
                 .handle(callbackParams);
 
-        assertThat(response.getData()).containsEntry("state", "open");
+        assertThat(response.getData()).containsEntry("state", OPEN.getValue());
 
     }
 
@@ -155,7 +162,7 @@ public class MediationFailedCallbackHandlerTest {
     public void setsStateToReadyForTransferIfNotPilotCase() {
 
         Claim claim = claimSetForMediation.toBuilder()
-            .features(Collections.singletonList("directionsQuestionnaire"))
+            .features(Collections.singletonList(DQ_FLAG.getValue()))
             .build();
 
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
@@ -164,7 +171,7 @@ public class MediationFailedCallbackHandlerTest {
             mediationFailedCallbackHandler
                 .handle(callbackParams);
 
-        assertThat(response.getData()).containsEntry("state", "readyForTransfer");
+        assertThat(response.getData()).containsEntry("state", READY_FOR_TRANSFER.getValue());
 
     }
 
@@ -182,7 +189,7 @@ public class MediationFailedCallbackHandlerTest {
                             .build()
                     ).build()
             )
-            .features(Collections.singletonList("directionsQuestionnaire"))
+            .features(ImmutableList.of(DQ_FLAG.getValue(), LA_PILOT_FLAG.getValue()))
             .build();
 
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
@@ -191,14 +198,40 @@ public class MediationFailedCallbackHandlerTest {
             mediationFailedCallbackHandler
                 .handle(callbackParams);
 
-        assertThat(response.getData()).containsEntry("state", "readyForDirections");
+        assertThat(response.getData()).containsEntry("state", READY_FOR_LEGAL_ADVISOR_DIRECTIONS.getValue());
+    }
+
+    @Test
+    public void setsToReadyForJudgeDirectionsIfJudgePilotCase() {
+
+        Claim claim = claimSetForMediation.toBuilder()
+            .response(
+                SampleResponse
+                    .FullDefence
+                    .builder()
+                    .withDirectionsQuestionnaire(
+                        SampleDirectionsQuestionnaire.builder()
+                            .withHearingLocation(SampleHearingLocation.pilotHearingLocation)
+                            .build()
+                    ).build()
+            )
+            .features(ImmutableList.of(DQ_FLAG.getValue(), JUDGE_PILOT_FLAG.getValue()))
+            .build();
+
+        when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
+
+        AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
+            mediationFailedCallbackHandler
+                .handle(callbackParams);
+
+        assertThat(response.getData()).containsEntry("state", READY_FOR_JUDGE_DIRECTIONS.getValue());
     }
 
     @Test
     public void shouldRaiseAppInsightWhenFeatureIsMediationPilot() {
 
         Claim claim = claimSetForMediation.toBuilder()
-            .features(Collections.singletonList(FeaturesUtils.MEDIATION_PILOT))
+            .features(Collections.singletonList(ClaimFeatures.MEDIATION_PILOT.getValue()))
             .build();
 
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
@@ -213,7 +246,7 @@ public class MediationFailedCallbackHandlerTest {
     public void shouldRaiseAppInsightWhenFeatureIsNotMediationPilot() {
 
         Claim claim = claimSetForMediation.toBuilder()
-            .features(Collections.singletonList(DQ_FLAG))
+            .features(Collections.singletonList(DQ_FLAG.getValue()))
             .build();
 
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);

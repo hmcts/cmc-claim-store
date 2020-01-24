@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.ResponseAlreadySubmittedException;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimFeatures;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
@@ -39,13 +40,11 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_INSTALMENTS;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_SET_DATE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_STATES_PAID;
-import static uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils.DQ_FLAG;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.DEFENDANT_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.EXTERNAL_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
-import static uk.gov.hmcts.cmc.domain.utils.FeaturesUtils.MEDIATION_PILOT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefendantResponseServiceTest {
@@ -90,7 +89,7 @@ public class DefendantResponseServiceTest {
 
         Claim claim = SampleClaim.builder()
             .withResponse(VALID_APP)
-            .withFeatures(ImmutableList.of(MEDIATION_PILOT))
+            .withFeatures(ImmutableList.of(ClaimFeatures.MEDIATION_PILOT.getValue()))
             .build();
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(claim);
 
@@ -120,7 +119,7 @@ public class DefendantResponseServiceTest {
 
         Claim claim = SampleClaim.builder()
             .withResponse(VALID_APP)
-            .withFeatures(ImmutableList.of(DQ_FLAG))
+            .withFeatures(ImmutableList.of(ClaimFeatures.DQ_FLAG.getValue()))
             .build();
         when(claimService.getClaimByExternalId(eq(EXTERNAL_ID), anyString())).thenReturn(claim);
 
