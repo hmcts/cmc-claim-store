@@ -112,6 +112,7 @@ public class GenerateOrderCallbackHandlerTest extends BaseMockSpringTest {
         assertThat(responseData.get("otherDirectionHeaders")).isNull();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void shouldGenerateDocumentOnMidEvent() throws Exception {
         MvcResult mvcResult = makeRequest(MID.getValue())

@@ -119,7 +119,7 @@ public class StatementOfMeansTest {
     public void shouldBeValidForEmptyBankAccount() {
         //given
         StatementOfMeans statementOfMeans = newSampleOfStatementOfMeansBuilder()
-                .bankAccounts(Collections.EMPTY_LIST)
+                .bankAccounts(Collections.emptyList())
                 .build();
         //when
         Set<String> errors = validate(statementOfMeans);
