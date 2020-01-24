@@ -4,7 +4,7 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public class ResourceReader {
 
@@ -15,7 +15,7 @@ public class ResourceReader {
     public static String readString(String resourcePath) {
         return new String(
             readBytes(resourcePath),
-            Charset.forName("UTF-8")
+            StandardCharsets.UTF_8
         );
     }
 
