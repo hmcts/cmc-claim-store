@@ -388,7 +388,8 @@ public class FormaliseResponseAcceptanceServiceTest {
     public void formaliseSettlementWithDefendantPaymentIntentionByInstalments() {
         PartAdmissionResponse partAdmissionResponsePayByInstalments = getPartAdmissionResponsePayByInstalments();
 
-        PaymentIntention paymentIntentionOfDefendant = partAdmissionResponsePayByInstalments.getPaymentIntention().orElseThrow(IllegalStateException::new);
+        PaymentIntention paymentIntentionOfDefendant = partAdmissionResponsePayByInstalments.getPaymentIntention()
+            .orElseThrow(IllegalStateException::new);
 
         Claim claim = SampleClaim.getWithResponse(partAdmissionResponsePayByInstalments);
 

@@ -12,7 +12,6 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
-import static java.util.Arrays.asList;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleHearingLocation.defaultHearingLocation;
 

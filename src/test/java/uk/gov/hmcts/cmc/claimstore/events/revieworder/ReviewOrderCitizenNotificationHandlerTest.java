@@ -60,7 +60,7 @@ public class ReviewOrderCitizenNotificationHandlerTest extends BaseNotificationS
         handler.onReviewOrderEvent(event);
 
         verify(notificationService, once()).sendMail(
-            eq(getDefendantEmail(claim).get()),
+            eq(getDefendantEmail(claim).orElse(null)),
             eq(NOTIFY_TO_DEFENDANT),
             anyMap(),
             eq(referenceForDefendant(event.getClaim().getReferenceNumber()))

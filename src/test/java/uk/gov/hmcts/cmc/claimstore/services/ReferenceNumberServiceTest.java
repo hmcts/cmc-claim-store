@@ -25,23 +25,21 @@ public class ReferenceNumberServiceTest {
 
     @Test
     public void shouldGetReferenceNumberForCitizen() {
-
-        String CITIZEN_REFERENCE = "000MC001";
-        when(referenceNumberRepository.getReferenceNumberForCitizen()).thenReturn(CITIZEN_REFERENCE);
+        String citizenReference = "000MC001";
+        when(referenceNumberRepository.getReferenceNumberForCitizen()).thenReturn(citizenReference);
 
         String referenceNumber = referenceNumberService.getReferenceNumber(false);
 
-        assertThat(referenceNumber).isNotNull().isEqualTo(CITIZEN_REFERENCE);
+        assertThat(referenceNumber).isNotNull().isEqualTo(citizenReference);
     }
 
     @Test
     public void shouldGetReferenceNumberForLegalRepresentative() {
-
-        String LEGAL_REFERENCE = "000LR001";
-        when(referenceNumberRepository.getReferenceNumberForLegal()).thenReturn(LEGAL_REFERENCE);
+        String legalReference = "000LR001";
+        when(referenceNumberRepository.getReferenceNumberForLegal()).thenReturn(legalReference);
 
         String referenceNumber = referenceNumberService.getReferenceNumber(true);
 
-        assertThat(referenceNumber).isNotNull().isEqualTo(LEGAL_REFERENCE);
+        assertThat(referenceNumber).isNotNull().isEqualTo(legalReference);
     }
 }

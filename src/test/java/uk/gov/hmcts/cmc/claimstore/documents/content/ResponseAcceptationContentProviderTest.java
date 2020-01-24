@@ -17,7 +17,8 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIn
 
 public class ResponseAcceptationContentProviderTest {
 
-    private final PaymentIntentionContentProvider paymentIntentionContentProvider = new PaymentIntentionContentProvider();
+    private final PaymentIntentionContentProvider paymentIntentionContentProvider =
+        new PaymentIntentionContentProvider();
 
     private final ResponseAcceptation responseAcceptation = ResponseAcceptation.builder()
         .courtDetermination(CourtDetermination.builder()

@@ -6,8 +6,6 @@ import uk.gov.hmcts.cmc.domain.models.response.DefendantTimeline;
 import java.util.Collections;
 import java.util.List;
 
-import static java.util.Arrays.asList;
-
 public class SampleDefendantTimeline {
 
     private List<TimelineEvent> events = Collections.singletonList(SampleTimelineEvent.builder()

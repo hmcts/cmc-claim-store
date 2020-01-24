@@ -11,7 +11,6 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Collections;
-import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import static java.util.Collections.singletonMap;

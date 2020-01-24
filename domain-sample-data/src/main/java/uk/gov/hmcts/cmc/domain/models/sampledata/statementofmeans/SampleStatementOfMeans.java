@@ -19,8 +19,6 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.StatementOfMeans;
 import java.math.BigDecimal;
 import java.util.Collections;
 
-import static java.util.Arrays.asList;
-
 public class SampleStatementOfMeans {
 
     public static final BigDecimal AMOUNT = new BigDecimal("10.99");

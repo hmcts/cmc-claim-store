@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.domain.models.statementofmeans;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;

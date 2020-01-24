@@ -6,8 +6,6 @@ import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
 import java.util.Collections;
 import java.util.List;
 
-import static java.util.Arrays.asList;
-
 public class SampleDefendantEvidence {
 
     private List<EvidenceRow> rows = Collections.singletonList(SampleEvidenceRow.builder().build());

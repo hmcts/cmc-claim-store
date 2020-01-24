@@ -15,7 +15,6 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import javax.validation.ConstraintValidatorContext;
 
-import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;

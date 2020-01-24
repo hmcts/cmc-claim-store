@@ -9,7 +9,6 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
-import static java.util.Arrays.asList;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 
