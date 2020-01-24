@@ -69,11 +69,10 @@ public class IntentionToProceedServiceTest {
 
     private final int intentionToProceedAdjustment = 33;
 
-    private IntentionToProceedDeadlineCalculator intentionToProceedDeadlineCalculator;
-
     @Before
     public void setUp() {
-        intentionToProceedDeadlineCalculator = new IntentionToProceedDeadlineCalculator(
+        IntentionToProceedDeadlineCalculator intentionToProceedDeadlineCalculator =
+            new IntentionToProceedDeadlineCalculator(
             workingDayIndicator,
             intentionToProceedAdjustment
         );

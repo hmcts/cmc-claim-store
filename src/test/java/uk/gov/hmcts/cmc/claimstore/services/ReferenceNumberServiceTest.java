@@ -13,9 +13,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class ReferenceNumberServiceTest {
 
-    private static String CITIZEN_REFERENCE = "000MC001";
-    private static String LEGAL_REFERENCE = "000LR001";
-
     private ReferenceNumberService referenceNumberService;
 
     @Mock
@@ -29,6 +26,7 @@ public class ReferenceNumberServiceTest {
     @Test
     public void shouldGetReferenceNumberForCitizen() {
 
+        String CITIZEN_REFERENCE = "000MC001";
         when(referenceNumberRepository.getReferenceNumberForCitizen()).thenReturn(CITIZEN_REFERENCE);
 
         Boolean claimRepresented = false;
@@ -40,6 +38,7 @@ public class ReferenceNumberServiceTest {
     @Test
     public void shouldGetReferenceNumberForLegalRepresentative() {
 
+        String LEGAL_REFERENCE = "000LR001";
         when(referenceNumberRepository.getReferenceNumberForLegal()).thenReturn(LEGAL_REFERENCE);
 
         Boolean claimRepresented = true;
