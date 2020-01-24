@@ -46,7 +46,7 @@ public class CmcDBConfiguration {
     private void migrateFlyway(DataSource dataSource) {
         Flyway.configure()
             .dataSource(dataSource)
-            .locations("cmc/db/migration")
+            .locations("db/migration")
             .load()
             .migrate();
     }
