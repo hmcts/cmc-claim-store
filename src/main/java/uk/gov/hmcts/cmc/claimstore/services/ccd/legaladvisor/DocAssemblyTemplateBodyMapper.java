@@ -20,6 +20,7 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 public class DocAssemblyTemplateBodyMapper {
 
     public static final long DIRECTION_DEADLINE_NO_OF_DAYS = 19L;
+    public static final long CHANGE_ORDER_DEADLINE_NO_OF_DAYS = 12L;
     private Clock clock;
     private final HearingCourtDetailsFinder hearingCourtDetailsFinder;
     private final WorkingDayIndicator workingDayIndicator;
@@ -89,6 +90,8 @@ public class DocAssemblyTemplateBodyMapper {
                 .collect(Collectors.toList()))
             .directionDeadline(workingDayIndicator.getNextWorkingDay(
                 currentDate.plusDays(DIRECTION_DEADLINE_NO_OF_DAYS)))
+            .changeOrderDeadline(workingDayIndicator.getNextWorkingDay(
+                currentDate.plusDays(CHANGE_ORDER_DEADLINE_NO_OF_DAYS)))
             .expertReportInstructionClaimant(ccdCase.getExpertReportInstructionClaimant())
             .expertReportInstructionDefendant(ccdCase.getExpertReportInstructionDefendant())
             .expertReportPermissionPartyAskedByClaimant(fromEnum(ccdCase
