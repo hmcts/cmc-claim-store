@@ -29,7 +29,7 @@ public class ToStringStyleTest {
         assertThat(toStringStyleExample.toString()).isEqualTo(expectedOutput);
     }
 
-    class ToStringStyleExample {
+    static class ToStringStyleExample {
         private final String field1;
         private final List<String> fieldList;
 
