@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import javax.validation.constraints.NotNull;
 
 @EqualsAndHashCode
 @Builder
@@ -40,6 +41,7 @@ public class MediationRow implements Iterable<String> {
         );
     }
 
+    @SuppressWarnings("NullableProblems")
     @Override
     public Iterator<String> iterator() {
         return toList().iterator();

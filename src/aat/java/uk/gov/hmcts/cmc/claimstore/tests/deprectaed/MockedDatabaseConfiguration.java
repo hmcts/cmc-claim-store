@@ -21,7 +21,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @Profile("mocked-database-tests")
-@SuppressWarnings("unused")
+@SuppressWarnings( {"unused", "NullableProblems"})
 class MockedDatabaseConfiguration {
 
     private static final PlatformTransactionManager NO_OP_TRANSACTION_MANAGER = new PlatformTransactionManager() {
@@ -30,6 +30,7 @@ class MockedDatabaseConfiguration {
             return null;
         }
 
+        @SuppressWarnings("NullableProblems")
         @Override
         public void commit(TransactionStatus status) throws TransactionException {
             // NO-OP
