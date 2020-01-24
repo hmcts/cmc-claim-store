@@ -51,7 +51,7 @@ import uk.gov.hmcts.cmc.claimstore.services.MediationReportService;
 import uk.gov.hmcts.cmc.claimstore.services.ScheduledStateTransitionService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.document.DocumentsService;
-import uk.gov.hmcts.cmc.claimstore.services.statetransition.StateTransition;
+import uk.gov.hmcts.cmc.claimstore.services.statetransition.StateTransitions;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
@@ -273,7 +273,7 @@ public class SupportController {
     @ApiOperation("Trigger scheduled state transition")
     public void transitionClaimState(
             @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation,
-            @RequestParam StateTransition stateTransition,
+            @RequestParam StateTransitions stateTransition,
             @RequestParam(required = false)
             @ApiParam("Optional. If supplied check will run as if triggered at this timestamp. Format is "
                     + "yyyy-MM-ddThh:mm:ss")
