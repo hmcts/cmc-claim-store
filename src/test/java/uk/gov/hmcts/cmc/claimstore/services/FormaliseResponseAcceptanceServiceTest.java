@@ -149,9 +149,9 @@ public class FormaliseResponseAcceptanceServiceTest {
 
     @Test
     public void formaliseCCJWithDefendantPaymentIntentionByInstalmentsAccepted() {
-        Response admissionResponsePayByInstalments = getPartAdmissionResponsePayByInstalments();
+        PartAdmissionResponse admissionResponsePayByInstalments = getPartAdmissionResponsePayByInstalments();
 
-        RepaymentPlan repaymentPlanOfDefendant = ((PartAdmissionResponse) admissionResponsePayByInstalments)
+        RepaymentPlan repaymentPlanOfDefendant = admissionResponsePayByInstalments
             .getPaymentIntention()
             .flatMap(PaymentIntention::getRepaymentPlan)
             .orElseThrow(IllegalStateException::new);
@@ -320,9 +320,9 @@ public class FormaliseResponseAcceptanceServiceTest {
 
     @Test
     public void formaliseCCJWithFullAdmissionAndDefendantsPaymentIntention() {
-        Response fullAdmissionResponseWithInstalments = SampleResponse.FullAdmission.builder().build();
+        FullAdmissionResponse fullAdmissionResponseWithInstalments = SampleResponse.FullAdmission.builder().build();
 
-        RepaymentPlan repaymentPlan = ((FullAdmissionResponse) fullAdmissionResponseWithInstalments)
+        RepaymentPlan repaymentPlan = fullAdmissionResponseWithInstalments
             .getPaymentIntention()
             .getRepaymentPlan()
             .orElseThrow(IllegalStateException::new);
@@ -386,10 +386,9 @@ public class FormaliseResponseAcceptanceServiceTest {
 
     @Test
     public void formaliseSettlementWithDefendantPaymentIntentionByInstalments() {
-        Response partAdmissionResponsePayByInstalments = getPartAdmissionResponsePayByInstalments();
+        PartAdmissionResponse partAdmissionResponsePayByInstalments = getPartAdmissionResponsePayByInstalments();
 
-        PaymentIntention paymentIntentionOfDefendant = ((PartAdmissionResponse)
-            partAdmissionResponsePayByInstalments).getPaymentIntention().orElseThrow(IllegalStateException::new);
+        PaymentIntention paymentIntentionOfDefendant = partAdmissionResponsePayByInstalments.getPaymentIntention().orElseThrow(IllegalStateException::new);
 
         Claim claim = SampleClaim.getWithResponse(partAdmissionResponsePayByInstalments);
 
