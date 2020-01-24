@@ -145,7 +145,7 @@ public class ClaimantResponseService {
             .filter(isEqual(YesNoOption.NO))
             .isPresent();
     }
-    
+
     private void formaliseResponseAcceptance(
         ClaimantResponse claimantResponse,
         Response response,

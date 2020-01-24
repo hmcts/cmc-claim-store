@@ -25,7 +25,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class CCDCase {
 
     private Long id;
