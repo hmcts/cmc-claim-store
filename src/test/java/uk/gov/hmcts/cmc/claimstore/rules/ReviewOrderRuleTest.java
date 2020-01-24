@@ -24,7 +24,7 @@ public class ReviewOrderRuleTest {
         reviewOrderRule.assertReviewOrder(claim);
     }
 
-    @Test(expected = Test.None.class)
+    @Test()
     public void shouldAllowForValidReviewOrder() {
         Claim claim = SampleClaim.getDefault();
         reviewOrderRule.assertReviewOrder(claim);
