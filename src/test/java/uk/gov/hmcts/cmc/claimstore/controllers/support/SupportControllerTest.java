@@ -635,7 +635,7 @@ class SupportControllerTest {
         class ApplicationInsightsTests {
             @Test
             void shouldSendAppInsightIfMediationReportFails() {
-                LocalDate mediationSearchDate = LocalDate.of(2019, 07, 07);
+                LocalDate mediationSearchDate = LocalDate.of(2019, 7, 7);
                 doNothing().when(mediationReportService).sendMediationReport(eq(AUTHORISATION), any());
                 controller.sendMediation(
                     AUTHORISATION,

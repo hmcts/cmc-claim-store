@@ -22,8 +22,8 @@ public class CCDCaseUtil {
         return ccdCase.getRespondents()
             .stream()
             .map(CCDCollectionElement::getValue)
-            .filter(respondent -> respondent.getResponseDeadline().isBefore(LocalDate.of(2019, 06, 05)))
-            .anyMatch(respondent -> respondent.getResponseDeadline().isAfter(LocalDate.of(2019, 05, 29)));
+            .filter(respondent -> respondent.getResponseDeadline().isBefore(LocalDate.of(2019, 6, 5)))
+            .anyMatch(respondent -> respondent.getResponseDeadline().isAfter(LocalDate.of(2019, 5, 29)));
 
     }
 }
