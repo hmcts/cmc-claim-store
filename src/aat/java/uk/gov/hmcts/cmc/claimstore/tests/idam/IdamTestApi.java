@@ -12,11 +12,11 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 public interface IdamTestApi {
 
     @RequestMapping(method = RequestMethod.POST, value = "/accounts")
-    ResponseEntity createUser(CreateUserRequest createUserRequest);
+    ResponseEntity<Void> createUser(CreateUserRequest createUserRequest);
 
     @RequestMapping(method = GET, value = "/accounts/pin/{letterHolderId}")
     ResponseEntity<String> getPinByLetterHolderId(@PathVariable("letterHolderId") String letterHolderId);
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/accounts/{email}")
-    ResponseEntity deleteUser(@PathVariable("email") String email);
+    ResponseEntity<Void> deleteUser(@PathVariable("email") String email);
 }
