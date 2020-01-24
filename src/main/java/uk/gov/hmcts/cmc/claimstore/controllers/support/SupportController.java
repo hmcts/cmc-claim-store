@@ -143,29 +143,31 @@ public class SupportController {
         Claim claim = claimService.getClaimByReferenceAnonymous(referenceNumber)
             .orElseThrow(claimNotFoundException(referenceNumber));
 
-        switch (event) {
-            case "claim":
+        SupportNotificationCategory category = SupportNotificationCategory.fromValue(event);
+
+        switch (category) {
+            case CLAIM:
                 resendStaffNotificationsOnClaimIssued(claim, authorisation);
                 break;
-            case "more-time":
+            case MORE_TIME:
                 resendStaffNotificationOnMoreTimeRequested(claim);
                 break;
-            case "response":
+            case RESPONSE:
                 resendStaffNotificationOnDefendantResponseSubmitted(claim, authorisation);
                 break;
-            case "ccj":
+            case CCJ:
                 resendStaffNotificationCCJRequestSubmitted(claim, authorisation);
                 break;
-            case "settlement":
+            case SETTLEMENT:
                 resendStaffNotificationOnAgreementCountersigned(claim, authorisation);
                 break;
-            case "claimant-response":
+            case CLAIMANT_RESPONSE:
                 resendStaffNotificationClaimantResponse(claim, authorisation);
                 break;
-            case "intent-to-proceed":
+            case INTENT_TO_PROCEED:
                 resendStaffNotificationForIntentToProceed(claim, authorisation);
                 break;
-            case "paid-in-full":
+            case PAID_IN_FULL:
                 resendStaffNotificationForPaidInFull(claim);
                 break;
             default:
