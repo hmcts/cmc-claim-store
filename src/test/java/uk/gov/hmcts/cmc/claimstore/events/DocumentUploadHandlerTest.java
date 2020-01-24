@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -300,7 +301,7 @@ public class DocumentUploadHandlerTest {
     private void assertCommon(ClaimDocumentType claimDocumentType) {
         verify(documentService, times(1))
             .uploadToDocumentManagement(argumentCaptor.capture(), anyString(), any(Claim.class));
-        assertTrue(argumentCaptor.getValue().getClaimDocumentType() == claimDocumentType);
+        assertSame(argumentCaptor.getValue().getClaimDocumentType(), claimDocumentType);
     }
 
     @Test
