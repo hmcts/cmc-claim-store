@@ -33,7 +33,7 @@ public class CaseEventController {
         this.claimService = claimService;
     }
 
-    @GetMapping(path = "/caseEvents/{claimID}/{user}")
+    @GetMapping(path = "/{claimID}/{user}")
     @ApiOperation("Fetch case events for given reference number")
     public List<CaseEventDetail> getClaimEventsByID(
         @PathVariable("claimID") String claimID,
