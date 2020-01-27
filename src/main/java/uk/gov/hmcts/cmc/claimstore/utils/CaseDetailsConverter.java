@@ -54,6 +54,7 @@ public class CaseDetailsConverter {
         Map<String, Object> tempData = new HashMap<>(caseDetails.getData());
         tempData.put("id", caseDetails.getId());
         tempData.put("state", caseDetails.getState());
+        tempData.put("last_modified", caseDetails.getLastModified());
 
         return extractCCDCase(tempData);
     }

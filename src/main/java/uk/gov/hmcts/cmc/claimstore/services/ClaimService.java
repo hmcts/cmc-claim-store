@@ -32,6 +32,9 @@ import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.client.CaseEventsApi;
+import uk.gov.hmcts.reform.ccd.client.model.CaseEventDetail;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -64,6 +67,12 @@ public class ClaimService {
     private final ClaimAuthorisationRule claimAuthorisationRule;
     private final ReviewOrderRule reviewOrderRule;
     private final String returnUrlPattern;
+    private final AuthTokenGenerator authTokenGenerator;
+    private final CaseEventsApi caseEventsApi;
+
+
+    public static final String JURISDICTION_ID = "CMC";
+    public static final String CASE_TYPE_ID = "MoneyClaimCase";
 
     @SuppressWarnings("squid:S00107")
     @Autowired
@@ -78,6 +87,8 @@ public class ClaimService {
         PaidInFullRule paidInFullRule,
         ClaimAuthorisationRule claimAuthorisationRule,
         ReviewOrderRule reviewOrderRule,
+        AuthTokenGenerator authTokenGenerator,
+        CaseEventsApi caseEventsApi,
         @Value("${payments.returnUrlPattern}") String returnUrlPattern
     ) {
         this.userService = userService;
@@ -91,6 +102,8 @@ public class ClaimService {
         this.claimAuthorisationRule = claimAuthorisationRule;
         this.reviewOrderRule = reviewOrderRule;
         this.returnUrlPattern = returnUrlPattern;
+        this.authTokenGenerator = authTokenGenerator;
+        this.caseEventsApi = caseEventsApi;
     }
 
     public List<Claim> getClaimBySubmitterId(String submitterId, String authorisation) {
@@ -425,5 +438,17 @@ public class ClaimService {
             authorisation
         );
 
+    }
+
+    public List<CaseEventDetail> getClaimEventsByID(String claimID, User user) {
+        String serviceAuthorization = authTokenGenerator.generate();
+        List<CaseEventDetail> caseEventDetails = caseEventsApi.findEventDetailsForCase(
+                user.getAuthorisation(),
+                serviceAuthorization,
+                user.getUserDetails().getId(),
+                JURISDICTION_ID,
+                CASE_TYPE_ID,
+                claimID);
+        return caseEventDetails;
     }
 }
