@@ -10,10 +10,14 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
+import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
+import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
@@ -31,6 +35,8 @@ import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -45,6 +51,14 @@ public class PaperResponseReviewedCallbackHandlerTest {
     private CaseDetailsConverter caseDetailsConverter;
     @Mock
     private CaseMapper caseMapper;
+    @Mock
+    private NotificationService notificationService;
+    @Mock
+    private NotificationsProperties notificationsProperties;
+    @Mock
+    private EmailTemplates emailTemplates;
+    @Mock
+    private NotificationTemplates notificationTemplates;
 
     private CallbackRequest callbackRequest;
 
@@ -63,7 +77,9 @@ public class PaperResponseReviewedCallbackHandlerTest {
         handlerToTest = new PaperResponseReviewedCallbackHandler(caseDetailsConverter,
             caseMapper,
             responseDeadlineCalculator,
-            moreTimeRequestRule);
+            moreTimeRequestRule,
+            notificationService,
+            notificationsProperties);
         callbackRequest = CallbackRequest.builder().eventId(CaseEvent.MORE_TIME_REQUESTED_PAPER.getValue())
                 .caseDetails(CaseDetails
                     .builder()
@@ -71,6 +87,11 @@ public class PaperResponseReviewedCallbackHandlerTest {
                     .data(Collections.emptyMap())
                     .build())
                 .build();
+
+        when(notificationsProperties.getTemplates()).thenReturn(notificationTemplates);
+        when(notificationTemplates.getEmail()).thenReturn(emailTemplates);
+        when(emailTemplates.getClaimantPaperResponseReceived())
+            .thenReturn("TEMPLATE");
     }
 
     @Test
@@ -262,5 +283,8 @@ public class PaperResponseReviewedCallbackHandlerTest {
 
         verify(caseMapper).to(claimArgumentCaptor.capture());
         assertThat(claimArgumentCaptor.getValue().getRespondedAt().equals(docReceivedTime));
+
+        verify(notificationService).sendMail(eq("claimant@mail.com"), eq("TEMPLATE"), anyMap(),
+            eq("paper-response-submitted-claimant-000CM001"));
     }
 }

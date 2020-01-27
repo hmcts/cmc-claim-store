@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
+import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
@@ -13,6 +14,8 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder;
+import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
@@ -28,6 +31,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,6 +40,10 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIMANT_NAME;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.CLAIM_REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.DEFENDANT_NAME;
+import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters.FRONTEND_BASE_URL;
 
 @Service
 public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
@@ -53,19 +61,17 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
 
     private static List<String> paperResponseScannedType = Arrays.asList("N9a",
         "N9b",
-        "N11",
-        "N225",
-        "N180");
+        "N11");
 
     private static Function<Claim, List<ClaimDocument>> getStaffUploadedDocs = claim ->
         claim.getClaimDocumentCollection()
-        .map(ClaimDocumentCollection::getStaffUploadedDocuments)
-        .orElse(Collections.emptyList());
+            .map(ClaimDocumentCollection::getStaffUploadedDocuments)
+            .orElse(Collections.emptyList());
 
     private static Function<Claim, List<ScannedDocument>> getBulkScannedDocs = claim ->
         claim.getClaimDocumentCollection()
-        .map(ClaimDocumentCollection::getScannedDocuments)
-        .orElse(Collections.emptyList());
+            .map(ClaimDocumentCollection::getScannedDocuments)
+            .orElse(Collections.emptyList());
 
     private static Predicate<ClaimDocument> filterClaimDocumentPaperResponseDoc = doc ->
         paperResponseStaffUploadedType.stream()
@@ -82,17 +88,24 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
 
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
     private final MoreTimeRequestRule moreTimeRequestRule;
+    private final NotificationService notificationService;
+    private final NotificationsProperties notificationsProperties;
 
     @Autowired
     public PaperResponseReviewedCallbackHandler(
         CaseDetailsConverter caseDetailsConverter,
         CaseMapper caseMapper,
         ResponseDeadlineCalculator responseDeadlineCalculator,
-        MoreTimeRequestRule moreTimeRequestRule) {
+        MoreTimeRequestRule moreTimeRequestRule,
+        NotificationService notificationService,
+        NotificationsProperties notificationsProperties
+    ) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.caseMapper = caseMapper;
         this.responseDeadlineCalculator = responseDeadlineCalculator;
         this.moreTimeRequestRule = moreTimeRequestRule;
+        this.notificationService = notificationService;
+        this.notificationsProperties = notificationsProperties;
     }
 
     @Override
@@ -142,6 +155,8 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
                 caseMapper.to(
                     claim.toBuilder().respondedAt(responseTime).build()
                 ));
+
+            notifyClaimant(claim);
 
             return AboutToStartOrSubmitCallbackResponse.builder()
                 .data(data)
@@ -253,5 +268,24 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
         return Optional.of(builder
             .data(data)
             .build());
+    }
+
+    private void notifyClaimant(Claim claim) {
+        notificationService.sendMail(
+            claim.getSubmitterEmail(),
+            notificationsProperties.getTemplates().getEmail().getClaimantPaperResponseReceived(),
+            aggregateParams(claim),
+            NotificationReferenceBuilder.PaperResponse
+                .notifyClaimantPaperResponseSubmitted(claim.getReferenceNumber(), "claimant")
+        );
+    }
+
+    private Map<String, String> aggregateParams(Claim claim) {
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put(CLAIMANT_NAME, claim.getClaimData().getClaimant().getName());
+        parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
+        parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
+        parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
+        return parameters;
     }
 }
