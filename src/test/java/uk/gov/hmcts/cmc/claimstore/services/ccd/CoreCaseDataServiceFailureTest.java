@@ -46,6 +46,7 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 
 import java.net.URI;
 import java.time.LocalDate;
+import java.util.UUID;
 
 import static java.time.LocalDate.now;
 import static org.junit.Assert.assertNotNull;
@@ -616,9 +617,24 @@ public class CoreCaseDataServiceFailureTest {
 
         ClaimSubmissionOperationIndicators operationIndicators = ClaimSubmissionOperationIndicators.builder().build();
         Claim claim = SampleClaim.getDefault();
-        
+
         service.saveClaimSubmissionOperationIndicators(claim.getId(), operationIndicators, AUTHORISATION,
             PIN_GENERATION_OPERATIONS);
+    }
+
+    @Test(expected = CoreCaseDataStoreException.class)
+    public void saveBulkPrintLetterIdToClaimSEventFailure() {
+        Claim claim = SampleClaim.getDefault();
+
+        when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(CCDCase.builder().build());
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
+        when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
+
+        service.saveBulkPrintLetterIdToClaim(
+            AUTHORISATION,
+            UUID.randomUUID(),
+            CaseEvent.UPDATE_BULK_PRINT_LETTER_ID,
+            claim.getId());
     }
 
 }
