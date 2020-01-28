@@ -16,10 +16,10 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimFeatures;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
-import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
@@ -30,8 +30,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
-import static uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils.DQ_FLAG;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.MEDIATION_PILOT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MediationSuccessfulCallbackHandlerTest {
@@ -146,7 +146,7 @@ public class MediationSuccessfulCallbackHandlerTest {
     public void shouldRaiseAppInsightWhenFeatureIsMediationPilot() {
 
         Claim claim = claimSetForMediation.toBuilder()
-            .features(Collections.singletonList(FeaturesUtils.MEDIATION_PILOT))
+            .features(Collections.singletonList(MEDIATION_PILOT.getValue()))
             .build();
 
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
@@ -161,7 +161,7 @@ public class MediationSuccessfulCallbackHandlerTest {
     public void shouldRaiseAppInsightWhenFeatureIsNotMediationPilot() {
 
         Claim claim = claimSetForMediation.toBuilder()
-            .features(Collections.singletonList(DQ_FLAG))
+            .features(Collections.singletonList(ClaimFeatures.DQ_FLAG.getValue()))
             .build();
 
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
