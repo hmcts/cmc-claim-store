@@ -189,8 +189,8 @@ staff-notifications:
   recipient:
 
 live-support:
-  sender:
-  recipient:
+  sender: "${LIVE_SUPPORT_SENDER:}"
+  recipient: "${LIVE_SUPPORT_RECEIVER:}"
 
 feature_toggles:
   watermark_pdf: false

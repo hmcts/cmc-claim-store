@@ -73,6 +73,7 @@ public class ClaimService {
 
     public static final String JURISDICTION_ID = "CMC";
     public static final String CASE_TYPE_ID = "MoneyClaimCase";
+    private static final String CLAIM_DOES_NOT_EXIST = "Claim %s does not exist";
 
     @SuppressWarnings("squid:S00107")
     @Autowired
@@ -440,15 +441,18 @@ public class ClaimService {
 
     }
 
-    public List<CaseEventDetail> getClaimEventsByID(String claimID, User user) {
+    public List<CaseEventDetail> getClaimEventsByID(String claimID, String userID) {
         String serviceAuthorization = authTokenGenerator.generate();
+        String userAuthorization = userService.getUser(serviceAuthorization).getAuthorisation();
+        System.out.println(userAuthorization + "and" + serviceAuthorization);
+        Claim claim = getClaimByReference(claimID, serviceAuthorization).orElseThrow(() -> new NotFoundException(String.format(CLAIM_DOES_NOT_EXIST, claimID)));
         List<CaseEventDetail> caseEventDetails = caseEventsApi.findEventDetailsForCase(
-                user.getAuthorisation(),
+                userAuthorization,
                 serviceAuthorization,
-                user.getUserDetails().getId(),
+                userID,
                 JURISDICTION_ID,
                 CASE_TYPE_ID,
-                claimID);
+                claim.getCcdCaseId().toString());
         return caseEventDetails;
     }
 }
