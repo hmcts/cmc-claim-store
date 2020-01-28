@@ -73,7 +73,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseMockSpringTest
 
         givenSearchByReferenceNumberReturns(nonExistingCaseReference, Collections.emptyList());
 
-        makeRequest(nonExistingCaseReference, "claim-issued").andExpect(status().isNotFound());
+        makeRequest(nonExistingCaseReference, "claim").andExpect(status().isNotFound());
 
         verify(emailService, never()).sendEmail(any(), any());
     }
@@ -91,7 +91,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseMockSpringTest
     public void shouldRespond409AndNotProceedForClaimIssuedEventWhenClaimIsLinkedToDefendant() throws Exception {
         givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetailsWithDefendant());
 
-        makeRequest(CASE_REFERENCE, "claim-issued").andExpect(status().isConflict());
+        makeRequest(CASE_REFERENCE, "claim").andExpect(status().isConflict());
 
         verify(emailService, never()).sendEmail(any(), any());
     }
@@ -130,7 +130,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseMockSpringTest
             )
         ).willReturn(successfulCoreCaseDataStoreSubmitRepresentativeResponse());
 
-        makeRequest(CASE_REFERENCE, "claim-issued").andExpect(status().isOk());
+        makeRequest(CASE_REFERENCE, "claim").andExpect(status().isOk());
 
         verify(emailService, times(2)).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
 
@@ -167,7 +167,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseMockSpringTest
     public void shouldRespond409AndNotProceedForMoreTimeRequestedEventWhenMoreTimeNotRequested() throws Exception {
         givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetails());
 
-        makeRequest(CASE_REFERENCE, "more-time-requested").andExpect(status().isConflict());
+        makeRequest(CASE_REFERENCE, "more-time").andExpect(status().isConflict());
 
         verify(notificationClient, never()).sendEmail(any(), any(), any(), any());
     }
@@ -176,7 +176,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseMockSpringTest
     public void shouldRespond200AndSendNotificationsForMoreTimeRequestedEvent() throws Exception {
         givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetailsWithDefendant());
 
-        makeRequest(CASE_REFERENCE, "more-time-requested").andExpect(status().isOk());
+        makeRequest(CASE_REFERENCE, "more-time").andExpect(status().isOk());
 
         verify(notificationClient).sendEmail(eq("staff-more-time-requested-template"),
             eq("recipient@example.com"),
@@ -188,7 +188,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseMockSpringTest
     public void shouldRespond409AndNotProceedForResponseSubmittedEventWhenResponseNotSubmitted() throws Exception {
         givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetails());
 
-        makeRequest(CASE_REFERENCE, "response-submitted").andExpect(status().isConflict());
+        makeRequest(CASE_REFERENCE, "response").andExpect(status().isConflict());
 
         verify(emailService, never()).sendEmail(any(), any());
     }
@@ -197,7 +197,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseMockSpringTest
     public void shouldRespond200AndSendNotificationsForResponseSubmittedEvent() throws Exception {
         givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetailsWithDefResponse());
 
-        makeRequest(CASE_REFERENCE, "response-submitted").andExpect(status().isOk());
+        makeRequest(CASE_REFERENCE, "response").andExpect(status().isOk());
 
         verify(emailService).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
 
@@ -218,7 +218,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseMockSpringTest
     public void shouldRespond200AndSendNotificationsForCCJRequestedEvent() throws Exception {
         givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetailsWithCCJ());
 
-        makeRequest(CASE_REFERENCE, "ccj-request-submitted").andExpect(status().isOk());
+        makeRequest(CASE_REFERENCE, "ccj").andExpect(status().isOk());
 
         verify(emailService).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
     }
@@ -228,7 +228,7 @@ public class ResendStaffNotificationsCoreCaseDataTest extends BaseMockSpringTest
     public void shouldRespond200AndSendNotificationsForOfferAcceptedEvent() throws Exception {
         givenSearchByReferenceNumberReturns(CASE_REFERENCE, listOfCaseDetailsWithOfferCounterSigned());
 
-        makeRequest(CASE_REFERENCE, "offer-accepted").andExpect(status().isOk());
+        makeRequest(CASE_REFERENCE, "settlement").andExpect(status().isOk());
 
         verify(emailService).sendEmail(eq("sender@example.com"), emailDataArgument.capture());
     }
