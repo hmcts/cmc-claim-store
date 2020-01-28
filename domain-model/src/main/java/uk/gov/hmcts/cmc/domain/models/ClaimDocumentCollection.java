@@ -5,6 +5,7 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Getter
 public class ClaimDocumentCollection {
@@ -28,7 +29,7 @@ public class ClaimDocumentCollection {
     }
 
     public Optional<ClaimDocument> getDocument(ClaimDocumentType claimDocumentType) {
-        return claimDocuments.stream()
+        return Stream.concat(claimDocuments.stream(), staffUploadedDocuments.stream())
             .filter(claimDocument -> claimDocument.getDocumentType().equals(claimDocumentType))
             .findFirst();
     }

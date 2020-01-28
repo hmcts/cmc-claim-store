@@ -17,16 +17,16 @@ import javax.sql.DataSource;
 public class EtlDbConfiguration {
     @Bean
     @Primary
-    @ConfigurationProperties("spring.datasource.claimstore")
-    public DataSourceProperties claimStoreDataSourceProperties() {
+    @ConfigurationProperties("spring.datasource")
+    public DataSourceProperties dataSourceProperties() {
         return new DataSourceProperties();
     }
 
     @Bean
     @Primary
-    @ConfigurationProperties("spring.datasource.claimstore")
-    public DataSource claimStoreDataSource() {
-        return claimStoreDataSourceProperties().initializeDataSourceBuilder().build();
+    @ConfigurationProperties("spring.datasource")
+    public DataSource dataSource() {
+        return dataSourceProperties().initializeDataSourceBuilder().build();
     }
 
     @Bean
