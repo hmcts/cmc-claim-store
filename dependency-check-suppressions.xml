@@ -89,6 +89,7 @@
    ]]></notes>
         <gav regex="true">^org\.springframework:spring-context-support:.*$</gav>
         <cve>CVE-2018-1199</cve>
+        <cve>CVE-2020-5398</cve>
     </suppress>
     <suppress>
         <notes><![CDATA[
