@@ -496,7 +496,7 @@ public class CoreCaseDataService {
                 .claimantResponse(response)
                 .claimantRespondedAt(nowInUTC())
                 .dateReferredForDirections(nowInUTC())
-                .preferredDQCourt(DirectionsQuestionnaireUtils.getPreferredCourt(existingClaim))
+                .preferredDQCourt(getPreferredCourt(existingClaim))
                 .build();
 
             CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);
@@ -516,6 +516,14 @@ public class CoreCaseDataService {
                     caseEvent
                 ), exception
             );
+        }
+    }
+
+    private String getPreferredCourt(Claim existingClaim) {
+        try {
+            return DirectionsQuestionnaireUtils.getPreferredCourt(existingClaim);
+        } catch (Exception e) {
+            return null;
         }
     }
 
