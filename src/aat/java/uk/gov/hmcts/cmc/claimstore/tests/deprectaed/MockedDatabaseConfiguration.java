@@ -51,11 +51,8 @@ class MockedDatabaseConfiguration {
     @MockBean
     private TestingSupportRepository testingSupportRepository;
 
-    @MockBean(name = "claimStoreDataSource", answer = Answers.RETURNS_MOCKS)
+    @MockBean(name = "dataSource", answer = Answers.RETURNS_MOCKS)
     private DataSource dataSource;
-
-    @MockBean(name = "cmcDataSource", answer = Answers.RETURNS_MOCKS)
-    private DataSource cmcDataSource;
 
     @MockBean
     private SpringBeanJobFactory springBeanJobFactory;
@@ -66,11 +63,11 @@ class MockedDatabaseConfiguration {
     @MockBean
     private Scheduler scheduler;
 
-    @MockBean(name = "cmcTransactionAwareDataSourceProxy")
+    @MockBean(name = "transactionAwareDataSourceProxy")
     private TransactionAwareDataSourceProxy transactionAwareDataSourceProxy;
 
-    @MockBean(name = "cmcTransactionManager")
-    private PlatformTransactionManager cmcTransactionManager;
+    @MockBean(name = "transactionManager")
+    private PlatformTransactionManager transactionManager;
 
     @Bean
     protected PlatformTransactionManager transactionManager() {
