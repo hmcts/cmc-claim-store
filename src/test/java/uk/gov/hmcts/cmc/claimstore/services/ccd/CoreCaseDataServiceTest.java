@@ -46,6 +46,7 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.UUID;
 
 import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -53,6 +54,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
@@ -71,6 +73,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.PIN_GENERATION_OPERATIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_CLAIMANT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.TEST_SUPPORT_UPDATE;
+import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.UPDATE_BULK_PRINT_LETTER_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.getWithClaimantResponse;
@@ -640,6 +643,25 @@ public class CoreCaseDataServiceTest {
 
         verify(coreCaseDataApi).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
             anyString(), anyString(), eq(ORDER_REVIEW_REQUESTED.getValue()));
+        verify(coreCaseDataApi).submitEventForCitizen(anyString(), anyString(), anyString(), anyString(),
+            anyString(), anyString(), eq(true), any(CaseDataContent.class));
+    }
+
+    @Test
+    public void saveBulkPrintLetterIdToClaimShouldBeSuccessful() {
+        Claim claim = SampleClaim.getDefault();
+
+        when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
+        when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
+
+        service.saveBulkPrintLetterIdToClaim(
+            AUTHORISATION,
+            UUID.randomUUID(),
+            CaseEvent.UPDATE_BULK_PRINT_LETTER_ID,
+            claim.getId());
+
+        verify(coreCaseDataApi).startEventForCitizen(anyString(), anyString(), anyString(), anyString(),
+            anyString(), anyString(), eq(UPDATE_BULK_PRINT_LETTER_ID.getValue()));
         verify(coreCaseDataApi).submitEventForCitizen(anyString(), anyString(), anyString(), anyString(),
             anyString(), anyString(), eq(true), any(CaseDataContent.class));
     }
