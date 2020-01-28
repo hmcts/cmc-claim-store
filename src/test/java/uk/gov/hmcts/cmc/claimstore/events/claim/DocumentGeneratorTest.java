@@ -86,10 +86,12 @@ public class DocumentGeneratorTest {
 
         //then
         verify(publisher, never())
-            .publishEvent(new DocumentReadyToPrintEvent(claim, sealedClaimDocument, defendantLetterDocument));
+            .publishEvent(
+                new DocumentReadyToPrintEvent(claim, sealedClaimDocument, defendantLetterDocument, authorisation));
 
         verify(publisher)
-            .publishEvent(new DocumentReadyToPrintEvent(claim, defendantLetterDocument, sealedClaimDocument));
+            .publishEvent(
+                new DocumentReadyToPrintEvent(claim, defendantLetterDocument, sealedClaimDocument, authorisation));
     }
 
     @Test
@@ -101,7 +103,8 @@ public class DocumentGeneratorTest {
         CitizenClaimIssuedEvent event = new CitizenClaimIssuedEvent(claim, pin, submitterName, authorisation);
         documentGenerator.generateForNonRepresentedClaim(event);
         verify(publisher)
-            .publishEvent(new DocumentReadyToPrintEvent(claim, defendantLetterDocument, sealedClaimDocument));
+            .publishEvent(
+                new DocumentReadyToPrintEvent(claim, defendantLetterDocument, sealedClaimDocument, authorisation));
         verify(publisher).publishEvent(any(DocumentGeneratedEvent.class));
     }
 

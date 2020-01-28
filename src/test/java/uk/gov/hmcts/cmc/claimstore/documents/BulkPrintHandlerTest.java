@@ -23,6 +23,8 @@ public class BulkPrintHandlerTest {
     @Mock
     private BulkPrintService bulkPrintService;
 
+    private static final String AUTHORISATION = "Bearer: let me in";
+
     @Test
     public void notifyStaffForDefendantLetters() {
         //given
@@ -32,7 +34,7 @@ public class BulkPrintHandlerTest {
         Document sealedClaimDocument = new Document("sealedClaimTemplate", new HashMap<>());
 
         DocumentReadyToPrintEvent printEvent
-            = new DocumentReadyToPrintEvent(claim, defendantLetterDocument, sealedClaimDocument);
+            = new DocumentReadyToPrintEvent(claim, defendantLetterDocument, sealedClaimDocument, AUTHORISATION);
 
         //when
         bulkPrintHandler.print(printEvent);
@@ -47,7 +49,9 @@ public class BulkPrintHandlerTest {
                 new PrintableTemplate(
                     sealedClaimDocument,
                     claim.getReferenceNumber() + "-claim-form")
-            ));
+            ),
+            AUTHORISATION
+        );
     }
 
     @Test

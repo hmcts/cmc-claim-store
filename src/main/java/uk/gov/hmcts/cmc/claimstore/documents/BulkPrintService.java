@@ -95,8 +95,12 @@ public class BulkPrintService implements PrintService {
             )
         );
 
-        claimService.saveBulkPrintLetterId(authorisation, sendLetterResponse.letterId, CaseEvent.UPDATE_BULK_PRINT_LETTER_ID, claim);
-
+        claimService.saveBulkPrintLetterId(
+            authorisation,
+            sendLetterResponse.letterId,
+            CaseEvent.UPDATE_BULK_PRINT_LETTER_ID,
+            claim
+        );
 
         logger.info("Defendant first contact pack letter {} created for claim reference {}",
             sendLetterResponse.letterId,

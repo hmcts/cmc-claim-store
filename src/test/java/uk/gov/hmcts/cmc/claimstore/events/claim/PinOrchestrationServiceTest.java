@@ -26,6 +26,7 @@ import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
@@ -115,7 +116,8 @@ public class PinOrchestrationServiceTest {
                 new PrintableTemplate(
                     sealedClaimLetterDocument,
                     CLAIM.getReferenceNumber() + "-claim-form")
-            )));
+            )),
+            eq(AUTHORISATION));
 
         verify(claimIssuedStaffNotificationService)
             .notifyStaffOfClaimIssue(eq(CLAIM), eq(ImmutableList.of(sealedClaim, defendantPinLetter)));
@@ -146,7 +148,7 @@ public class PinOrchestrationServiceTest {
             .willReturn(generatedDocuments);
 
         doThrow(new RuntimeException("bulk print failed")).when(bulkPrintService).print(
-            any(), anyList());
+            any(), anyList(), anyString());
 
         //when
         try {
