@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface CaseRepository {
     List<Claim> getBySubmitterId(String submitterId, String authorisation);
@@ -96,6 +97,8 @@ public interface CaseRepository {
     Claim linkLetterHolder(Long claimId, String letterHolderId);
 
     Claim saveReviewOrder(Long caseId, ReviewOrder reviewOrder, String authorisation);
+
+    Claim updateBulkPrintLetterIdToClaim(String authorisation, UUID letterId, CaseEvent caseEvent, Claim claim);
 
 }
 

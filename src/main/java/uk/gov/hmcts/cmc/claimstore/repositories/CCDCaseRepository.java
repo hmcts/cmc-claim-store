@@ -25,6 +25,7 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_DEFENDANT;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
@@ -239,5 +240,10 @@ public class CCDCaseRepository implements CaseRepository {
         } else {
             throw new UnsupportedOperationException("State transition not allowed for " + state.name());
         }
+    }
+
+    @Override
+    public Claim updateBulkPrintLetterIdToClaim(String authorisation, UUID letterId, CaseEvent caseEvent, Claim claim) {
+        return coreCaseDataService.saveBulkPrintLetterIdToClaim(authorisation, letterId, caseEvent, claim.getId());
     }
 }

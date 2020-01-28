@@ -66,7 +66,8 @@ public enum CaseEvent {
     CREATE_CITIZEN_CLAIM("CreateCitizenClaim"),
     REVIEWED_PAPER_RESPONSE("ReviewedPaperResponse"),
     MEDIATION_FAILED("FailedMediation"),
-    MEDIATION_SUCCESSFUL("SuccessfulMediation");
+    MEDIATION_SUCCESSFUL("SuccessfulMediation"),
+    UPDATE_BULK_PRINT_LETTER_ID("UpdateBulkPrintLetterId");
 
     private String value;
 

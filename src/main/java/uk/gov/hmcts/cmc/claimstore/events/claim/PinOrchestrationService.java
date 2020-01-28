@@ -62,7 +62,8 @@ public class PinOrchestrationService {
                         buildDefendantLetterFileBaseName(claim.getReferenceNumber())),
                     new PrintableTemplate(
                         documents.getSealedClaimDoc(),
-                        buildSealedClaimFileBaseName(claim.getReferenceNumber())))
+                        buildSealedClaimFileBaseName(claim.getReferenceNumber()))),
+                authorisation
             );
             updatedOperationIndicator.bulkPrint(YesNoOption.YES);
 

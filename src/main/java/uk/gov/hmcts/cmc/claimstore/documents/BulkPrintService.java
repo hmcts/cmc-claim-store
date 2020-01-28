@@ -8,8 +8,10 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.Printable;
+import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.livesupport.BulkPrintNotificationService;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -52,6 +54,7 @@ public class BulkPrintService implements PrintService {
     private final AppInsights appInsights;
     private final BulkPrintNotificationService bulkPrintNotificationService;
     private final PDFServiceClient pdfServiceClient;
+    private final ClaimService claimService;
 
     @Autowired
     public BulkPrintService(
@@ -59,13 +62,15 @@ public class BulkPrintService implements PrintService {
         AuthTokenGenerator authTokenGenerator,
         BulkPrintNotificationService bulkPrintNotificationService,
         AppInsights appInsights,
-        PDFServiceClient pdfServiceClient
+        PDFServiceClient pdfServiceClient,
+        ClaimService claimService
     ) {
         this.sendLetterApi = sendLetterApi;
         this.authTokenGenerator = authTokenGenerator;
         this.appInsights = appInsights;
         this.bulkPrintNotificationService = bulkPrintNotificationService;
         this.pdfServiceClient = pdfServiceClient;
+        this.claimService = claimService;
     }
 
     @LogExecutionTime
@@ -74,7 +79,7 @@ public class BulkPrintService implements PrintService {
         backoff = @Backoff(delay = 200)
     )
     @Override
-    public void print(Claim claim, List<Printable> documents) {
+    public void print(Claim claim, List<Printable> documents, String authorisation) {
         requireNonNull(claim);
         List<Document> docs = documents.stream()
             .filter(Objects::nonNull)
@@ -89,6 +94,9 @@ public class BulkPrintService implements PrintService {
                 wrapInFirstContactDetailsInMap(claim)
             )
         );
+
+        claimService.saveBulkPrintLetterId(authorisation, sendLetterResponse.letterId, CaseEvent.UPDATE_BULK_PRINT_LETTER_ID, claim);
+
 
         logger.info("Defendant first contact pack letter {} created for claim reference {}",
             sendLetterResponse.letterId,

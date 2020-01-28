@@ -46,6 +46,7 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_REQUESTED;
@@ -1113,6 +1114,43 @@ public class CoreCaseDataService {
                 String.format(
                     CCD_UPDATE_FAILURE_MESSAGE,
                     claim.getId(),
+                    caseEvent
+                ), exception
+            );
+        }
+    }
+
+    public Claim saveBulkPrintLetterIdToClaim(String authorisation, UUID letterId, CaseEvent caseEvent, Long caseId) {
+        try {
+            UserDetails userDetails = userService.getUserDetails(authorisation);
+
+            EventRequestData eventRequestData = eventRequest(caseEvent, userDetails.getId());
+
+            StartEventResponse startEventResponse = startUpdate(
+                authorisation,
+                eventRequestData,
+                caseId,
+                isRepresented(userDetails)
+            );
+
+            Claim updatedClaim = toClaimBuilder(startEventResponse)
+                .bulkPrintLetterId(letterId)
+                .build();
+
+            CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);
+
+            CaseDetails caseDetails = submitUpdate(authorisation,
+                eventRequestData,
+                caseDataContent,
+                caseId,
+                isRepresented(userDetails)
+            );
+            return caseDetailsConverter.extractClaim(caseDetails);
+        } catch (Exception exception) {
+            throw new CoreCaseDataStoreException(
+                String.format(
+                    CCD_UPDATE_FAILURE_MESSAGE,
+                    caseId,
                     caseEvent
                 ), exception
             );

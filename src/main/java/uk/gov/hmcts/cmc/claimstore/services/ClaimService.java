@@ -3,6 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
@@ -36,6 +37,7 @@ import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
@@ -391,6 +393,20 @@ public class ClaimService {
         eventProducer.createReviewOrderEvent(authorisation, updatedClaim);
         appInsights.trackEvent(NUMBER_OF_RECONSIDERATION, REFERENCE_NUMBER, claim.getReferenceNumber());
         return updatedClaim;
+    }
+
+    public Claim saveBulkPrintLetterId(
+        String authorisation,
+        UUID letterId,
+        CaseEvent caseEvent,
+        Claim claim
+    ) {
+        return caseRepository.updateBulkPrintLetterIdToClaim(
+            authorisation,
+            letterId,
+            caseEvent,
+            claim
+        );
     }
 
     private Claim buildClaimFrom(

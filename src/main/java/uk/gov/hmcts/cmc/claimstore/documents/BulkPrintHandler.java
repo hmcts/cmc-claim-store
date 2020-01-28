@@ -41,7 +41,8 @@ public class BulkPrintHandler {
                 new PrintableTemplate(
                     event.getSealedClaimDocument(),
                     buildSealedClaimFileBaseName(claim.getReferenceNumber()))
-            )
+            ),
+            event.getAuthorisation()
         );
     }
 

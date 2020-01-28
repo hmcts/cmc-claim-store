@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
@@ -78,6 +79,7 @@ public class Claim {
     private final YesNoOption paperResponse;
     private final LocalDateTime dateReferredForDirections;
     private final String preferredDQCourt;
+    private final UUID bulkPrintLetterId;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -123,7 +125,8 @@ public class Claim {
         LocalDateTime mediationSettlementReachedAt,
         YesNoOption paperResponse,
         LocalDateTime dateReferredForDirections,
-        String preferredDQCourt
+        String preferredDQCourt,
+        UUID bulkPrintLetterId
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -167,6 +170,7 @@ public class Claim {
         this.paperResponse = paperResponse;
         this.dateReferredForDirections = dateReferredForDirections;
         this.preferredDQCourt = preferredDQCourt;
+        this.bulkPrintLetterId = bulkPrintLetterId;
     }
 
     public Optional<Response> getResponse() {
@@ -276,6 +280,10 @@ public class Claim {
 
     public Optional<String> getPreferredDQCourt() {
         return Optional.ofNullable(preferredDQCourt);
+    }
+
+    public Optional<UUID> getBulkPrintLetterId() {
+        return Optional.ofNullable(bulkPrintLetterId);
     }
 
     @Override
