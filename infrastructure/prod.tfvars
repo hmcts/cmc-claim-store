@@ -1,7 +1,7 @@
 idam_api_url = "https://idam-api.platform.hmcts.net"
 frontend_url = "https://www.moneyclaims.service.gov.uk"
 respond_to_claim_url = "https://www.gov.uk/respond-money-claim"
-db_host = "prod-data-lb.moneyclaim.reform.hmcts.net"
+db_host = "cmc-prod.postgres.database.azure.com"
 capacity = "2"
 dm_url = "http://dm-store-prod.service.core-compute-prod.internal"
 save_claim_state_enabled = "true"
