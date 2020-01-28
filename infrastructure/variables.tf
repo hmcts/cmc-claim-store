@@ -27,7 +27,7 @@ variable "respond_to_claim_url" {
 }
 
 variable "database-name" {
-  default = "claimstore"
+  default = "cmc"
 }
 
 variable "mail-host" {
