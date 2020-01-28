@@ -32,16 +32,10 @@ spring:
   jackson:
     default-property-inclusion: non_null
   datasource:
-    claimstore:
-      driverClassName: org.postgresql.Driver
-      username: ${CLAIM_STORE_DB_USERNAME:-}
-      password: ${CLAIM_STORE_DB_PASSWORD:-}
-      url: jdbc:postgresql://${CLAIM_STORE_DB_HOST:}:${CLAIM_STORE_DB_PORT:}/${CLAIM_STORE_DB_NAME:claimstore}${CLAIM_STORE_DB_CONNECTION_OPTIONS:}
-    cmc:
-      driverClassName: org.postgresql.Driver
-      username: ${CMC_DB_USERNAME:-}
-      password: ${CMC_DB_PASSWORD:-}
-      url: jdbc:postgresql://${CMC_DB_HOST:}:${CMC_DB_PORT:}/${CMC_DB_NAME:cmc}${CMC_DB_CONNECTION_OPTIONS:}
+    driverClassName: org.postgresql.Driver
+    username: ${CMC_DB_USERNAME:-}
+    password: ${CMC_DB_PASSWORD:-}
+    url: jdbc:postgresql://${CMC_DB_HOST:}:${CMC_DB_PORT:}/${CMC_DB_NAME:cmc}${CMC_DB_CONNECTION_OPTIONS:}
 
 quartzProperties:
   org.quartz:
@@ -51,7 +45,7 @@ quartzProperties:
       isClustered: true
       class: org.quartz.impl.jdbcjobstore.JobStoreTX
       driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
-      dataSource: cmcDataSource
+      dataSource: dataSource
       clusterCheckinInterval: 2000
     threadPool:
       class: org.quartz.simpl.SimpleThreadPool
@@ -103,6 +97,7 @@ bankHolidays:
 doc_assembly:
   url: ${DOC_ASSEMBLY_URL:false}
   templateId: "CV-CMC-GOR-ENG-0004.docx"
+  judgeTemplateId: "CV-CMC-GOR-ENG-00219.docx"
 
 nonworking-days:
   datafile: ${NONWORKINGDAYS_DATAFILE:/data/non-working_days.dat}
@@ -187,6 +182,10 @@ staff-notifications:
   sender:
   recipient:
 
+live-support:
+  sender:
+  recipient:
+
 feature_toggles:
   watermark_pdf: false
   reminderEmails: false
@@ -201,8 +200,8 @@ claim-store:
     enabled: true
 
 oauth2:
- client:
-  id: 'cmc_citizen'
+  client:
+    id: 'cmc_citizen'
 ---
 spring:
   profiles: 'aat'

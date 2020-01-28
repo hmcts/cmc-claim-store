@@ -7,8 +7,6 @@ java:
     DOCUMENT_MANAGEMENT_URL: http://dm-store-java.ccd
     PAY_URL: http://payment-api-java.ccpay
     FEES_URL: http://fees-register-api-java.ccpay
-    CLAIM_STORE_DB_HOST: preprod-data-lb.moneyclaim.reform.hmcts.net
-    CLAIM_STORE_DB_CONNECTION_OPTIONS: '?sslmode=require'
     CMC_DB_USERNAME: 'cmc@cmc-aat'
     CMC_DB_HOST: cmc-aat.postgres.database.azure.com
     CMC_DB_CONNECTION_OPTIONS: '?sslmode=require'
