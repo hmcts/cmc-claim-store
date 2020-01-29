@@ -120,7 +120,7 @@ public class Settlement {
     private void assertOfferCanBeRejected(MadeBy party) {
         assertOfferCanBeMadeBy(party);
 
-        if (!lastStatementIsOffer() && lastStatementIsNotAcceptationBy(party)) {
+        if (!lastStatementIsOffer() && !lastStatementIsAcceptationNotBy(party)) {
             throw new IllegalSettlementStatementException(
                 format("Last statement was: %s, offer or acceptation expected.",
                     getLastStatement().getType().name().toLowerCase())
@@ -137,7 +137,7 @@ public class Settlement {
     }
 
     private void assertOfferHasBeenAcceptedByOtherParty(MadeBy party) {
-        if (lastStatementIsNotAcceptationBy(party)) {
+        if (!lastStatementIsAcceptationNotBy(party)) {
             throw new IllegalSettlementStatementException(
                 format("Last statement was: %s , offer acceptation expected.",
                     getLastStatement().getType().name().toLowerCase())
@@ -153,10 +153,11 @@ public class Settlement {
         return getLastStatement().getType().equals(StatementType.OFFER);
     }
 
-    private boolean lastStatementIsNotAcceptationBy(MadeBy madeBy) {
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    private boolean lastStatementIsAcceptationNotBy(MadeBy madeBy) {
         PartyStatement lastStatement = getLastStatement();
-        return !lastStatement.getType().equals(StatementType.ACCEPTATION)
-            || lastStatement.getMadeBy().equals(madeBy);
+        return lastStatement.getType().equals(StatementType.ACCEPTATION)
+            && !lastStatement.getMadeBy().equals(madeBy);
     }
 
     @Override
