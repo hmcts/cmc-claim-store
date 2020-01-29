@@ -129,9 +129,11 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
     private AboutToStartOrSubmitCallbackResponse updateResponseDeadline(CallbackParams callbackParams) {
         CallbackRequest callbackRequest = callbackParams.getRequest();
         Claim claim = toClaimAfterEvent(callbackRequest);
+        AboutToStartOrSubmitCallbackResponse.AboutToStartOrSubmitCallbackResponseBuilder responseBuilder =
+            AboutToStartOrSubmitCallbackResponse.builder();
 
         if (verifyNoDuplicateMoreTimeRequested(callbackRequest)) {
-            return AboutToStartOrSubmitCallbackResponse.builder()
+            return responseBuilder
                 .errors(Collections.singletonList("Requesting More Time to respond can be done only once."))
                 .build();
         }
@@ -143,30 +145,17 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
             return isPaperResponseMoreTimeRequested.orElseThrow(IllegalArgumentException::new);
         }
 
-        try {
-            LocalDateTime responseTime = getReceivedTimeForStaffUploadedPaperResponseDoc(claim)
-                .map(ClaimDocument::getReceivedDateTime)
-                .orElseGet(() -> getScanedTimeForScannedPaperResponseDoc(claim)
-                    .map(ScannedDocument::getDeliveryDate)
-                    .orElseThrow(IllegalArgumentException::new)
-                );
+        Optional<LocalDateTime> paperResponseTime = getResponseTimeFromPaperResponse(claim);
 
-            Map<String, Object> data = caseDetailsConverter.convertToMap(
+        if (paperResponseTime.isPresent()) {
+            responseBuilder.data(caseDetailsConverter.convertToMap(
                 caseMapper.to(
-                    claim.toBuilder().respondedAt(responseTime).build()
-                ));
-
+                    claim.toBuilder().respondedAt(paperResponseTime.orElseThrow(IllegalArgumentException::new)).build()
+                )));
             notifyClaimant(claim);
-
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(data)
-                .build();
-
-        } catch (Exception gene) {
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .errors(Collections.singletonList("Unable to determine the response time."))
-                .build();
         }
+
+        return responseBuilder.build();
     }
 
     private AboutToStartOrSubmitCallbackResponse verifyResponsePossible(
@@ -287,5 +276,14 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
         return parameters;
+    }
+
+    private Optional<LocalDateTime> getResponseTimeFromPaperResponse(Claim claim) {
+        return Optional.ofNullable(getReceivedTimeForStaffUploadedPaperResponseDoc(claim)
+            .map(ClaimDocument::getReceivedDateTime)
+            .orElseGet(() -> getScanedTimeForScannedPaperResponseDoc(claim)
+                .map(ScannedDocument::getDeliveryDate)
+                .orElse(null)
+            ));
     }
 }
