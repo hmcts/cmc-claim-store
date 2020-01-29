@@ -31,7 +31,7 @@ public class Income extends CollectionId {
         PENSION("Pension"),
         OTHER("Other");
 
-        final String description;
+        private final String description;
 
         IncomeType(String description) {
             this.description = description;

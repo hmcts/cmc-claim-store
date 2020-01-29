@@ -28,7 +28,7 @@ import static org.quartz.TriggerKey.triggerKey;
 @Service
 public class JobService {
 
-    final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final Scheduler scheduler;
 

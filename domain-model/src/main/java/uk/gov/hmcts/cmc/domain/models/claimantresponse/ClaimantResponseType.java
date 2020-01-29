@@ -7,7 +7,7 @@ public enum ClaimantResponseType {
     ACCEPTATION("acceptation"),
     REJECTION("rejection");
 
-    final String description;
+    private final String description;
 
     ClaimantResponseType(String description) {
         this.description = description;
