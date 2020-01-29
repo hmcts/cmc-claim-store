@@ -8,15 +8,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
+@SuppressWarnings("rawtypes")
 @FeignClient(name = "idam-test-api", url = "${idam.api.url}/testing-support", decode404 = true)
 public interface IdamTestApi {
 
     @RequestMapping(method = RequestMethod.POST, value = "/accounts")
-    ResponseEntity<Void> createUser(CreateUserRequest createUserRequest);
+    ResponseEntity createUser(CreateUserRequest createUserRequest);
 
     @RequestMapping(method = GET, value = "/accounts/pin/{letterHolderId}")
     ResponseEntity<String> getPinByLetterHolderId(@PathVariable("letterHolderId") String letterHolderId);
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/accounts/{email}")
-    ResponseEntity<Void> deleteUser(@PathVariable("email") String email);
+    ResponseEntity deleteUser(@PathVariable("email") String email);
 }
