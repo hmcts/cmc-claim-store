@@ -79,7 +79,7 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             null,
             null,
             null,
-            UUID.randomUUID()
+            null
         );
     }
 
