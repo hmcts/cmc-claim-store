@@ -26,7 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssuedNotificationService.JSON_EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildJsonRequestForJudgementFileBaseName;
@@ -140,7 +140,7 @@ public class RequestForJudgementNotificationServiceTest extends BaseMockSpringTe
 
         service.notifyRobotics(event);
 
-        verifyZeroInteractions(emailService);
+        verifyNoInteractions(emailService);
     }
 
     @Test
@@ -155,6 +155,6 @@ public class RequestForJudgementNotificationServiceTest extends BaseMockSpringTe
 
         service.notifyRobotics(event);
 
-        verifyZeroInteractions(emailService);
+        verifyNoInteractions(emailService);
     }
 }
