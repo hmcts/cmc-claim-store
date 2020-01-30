@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.documents.bulkprint.PrintableTemplate;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
@@ -111,6 +112,38 @@ public class BulkPrintServiceTest {
 
         verify(sendLetterApi).sendLetter(eq(AUTH_VALUE),
             eq(new Letter(documents, XEROX_TYPE_PARAMETER, additionalData)));
+    }
+
+    @Test
+    public void shouldSaveBulkPrintLetterIdToClaim() {
+        //given
+        List<Document> documents = Collections.singletonList(sealedClaimDocument);
+        UUID bulkPrintLetterId = UUID.randomUUID();
+
+        when(sendLetterApi.sendLetter(eq(AUTH_VALUE), eq(new Letter(documents, XEROX_TYPE_PARAMETER, additionalData))))
+            .thenReturn(new SendLetterResponse(bulkPrintLetterId));
+
+        bulkPrintService = new BulkPrintService(
+            sendLetterApi,
+            authTokenGenerator,
+            bulkPrintNotificationService,
+            appInsights,
+            pdfServiceClient,
+            claimService
+        );
+
+        //when
+        bulkPrintService.print(CLAIM,
+            Collections.singletonList(new PrintableTemplate(sealedClaimDocument, "filename")),
+            AUTH_VALUE
+        );
+
+        verify(claimService).saveBulkPrintLetterId(
+            eq(AUTH_VALUE),
+            eq(bulkPrintLetterId),
+            eq(CaseEvent.UPDATE_BULK_PRINT_LETTER_ID),
+            eq(CLAIM));
+
     }
 
     @Test
