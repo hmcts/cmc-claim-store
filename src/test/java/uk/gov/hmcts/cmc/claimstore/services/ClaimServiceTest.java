@@ -7,6 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
@@ -436,6 +437,20 @@ public class ClaimServiceTest {
             eq(AUTHORISATION),
             eq(claim.getId()),
             eq(ClaimState.OPEN)
+        );
+    }
+
+    @Test
+    public void updateBulkPrintLetterIDToClaim() {
+        UUID letterId = UUID.randomUUID();
+        claimService.saveBulkPrintLetterId(
+            AUTHORISATION, letterId, CaseEvent.UPDATE_BULK_PRINT_LETTER_ID, claim);
+
+        verify(caseRepository).updateBulkPrintLetterIdToClaim(
+            eq(AUTHORISATION),
+            eq(letterId),
+            eq(CaseEvent.UPDATE_BULK_PRINT_LETTER_ID),
+            eq(claim)
         );
     }
 
