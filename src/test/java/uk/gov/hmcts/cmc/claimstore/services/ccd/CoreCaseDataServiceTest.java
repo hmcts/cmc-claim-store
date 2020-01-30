@@ -651,7 +651,6 @@ public class CoreCaseDataServiceTest {
         Claim claim = SampleClaim.getDefault();
 
         when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
-        when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
 
         service.saveBulkPrintLetterIdToClaim(
             AUTHORISATION,
