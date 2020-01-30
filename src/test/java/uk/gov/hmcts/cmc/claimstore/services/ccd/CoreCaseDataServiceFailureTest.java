@@ -628,7 +628,6 @@ public class CoreCaseDataServiceFailureTest {
 
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(CCDCase.builder().build());
         when(caseMapper.from(any(CCDCase.class))).thenReturn(claim);
-        when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
 
         service.saveBulkPrintLetterIdToClaim(
             AUTHORISATION,
