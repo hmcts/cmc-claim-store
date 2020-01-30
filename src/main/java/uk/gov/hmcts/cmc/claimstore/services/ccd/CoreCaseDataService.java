@@ -1128,7 +1128,12 @@ public class CoreCaseDataService {
         }
     }
 
-    public Claim saveBulkPrintLetterIdToClaim(String authorisation, UUID letterId, CaseEvent caseEvent, Long caseId) {
+    public Claim saveBulkPrintLetterIdToClaim(
+        String authorisation,
+        UUID bulkPrintLetterId,
+        CaseEvent caseEvent,
+        Long caseId
+    ) {
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
 
@@ -1142,7 +1147,7 @@ public class CoreCaseDataService {
             );
 
             Claim updatedClaim = toClaimBuilder(startEventResponse)
-                .bulkPrintLetterId(letterId)
+                .bulkPrintLetterId(bulkPrintLetterId)
                 .build();
 
             CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);

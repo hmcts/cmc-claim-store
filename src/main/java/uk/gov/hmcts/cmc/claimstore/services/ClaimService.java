@@ -397,13 +397,13 @@ public class ClaimService {
 
     public Claim saveBulkPrintLetterId(
         String authorisation,
-        UUID letterId,
+        UUID bulkPrintLetterId,
         CaseEvent caseEvent,
         Claim claim
     ) {
         return caseRepository.updateBulkPrintLetterIdToClaim(
             authorisation,
-            letterId,
+            bulkPrintLetterId,
             caseEvent,
             claim
         );

@@ -243,7 +243,17 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public Claim updateBulkPrintLetterIdToClaim(String authorisation, UUID letterId, CaseEvent caseEvent, Claim claim) {
-        return coreCaseDataService.saveBulkPrintLetterIdToClaim(authorisation, letterId, caseEvent, claim.getId());
+    public Claim updateBulkPrintLetterIdToClaim(
+        String authorisation,
+        UUID bulkPrintLetterId,
+        CaseEvent caseEvent,
+        Claim claim
+    ) {
+        return coreCaseDataService.saveBulkPrintLetterIdToClaim(
+            authorisation,
+            bulkPrintLetterId,
+            caseEvent,
+            claim.getId()
+        );
     }
 }
