@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.cmc.claimstore.controllers.dto.CaseEventDetails;
+import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.reform.ccd.client.model.CaseEventDetail;
@@ -33,13 +35,13 @@ public class CaseEventController {
         this.claimService = claimService;
     }
 
-    @GetMapping(path = "/{claimID}/{userID}")
+    @GetMapping("/{claimID}")
     @ApiOperation("Fetch case events for given reference number")
-    public List<CaseEventDetail> getClaimEventsByID(
-        @PathVariable("claimID") String claimID,
-        @PathVariable("userID") String userID) {
-//        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation)
-        return claimService.getClaimEventsByID(claimID, userID);
+    public CaseEventDetails getClaimEventsByID(
+            @PathVariable("claimID") String claimID,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation)
+         {
+        return claimService.getClaimEventsByID(claimID, authorisation);
     }
 
 }
