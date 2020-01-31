@@ -4,5 +4,5 @@ public enum CCDBankAccountType {
     CURRENT_ACCOUNT,
     SAVINGS_ACCOUNT,
     ISA,
-    OTHER;
+    OTHER
 }

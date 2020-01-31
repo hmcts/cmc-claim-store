@@ -12,7 +12,7 @@ import java.util.function.Predicate;
 @Component
 public class NonWorkingDaysCollection {
 
-    private String dataResource;
+    private final String dataResource;
 
     public NonWorkingDaysCollection(@Value("${nonworking-days.datafile}") String dataSource) {
         this.dataResource = dataSource;

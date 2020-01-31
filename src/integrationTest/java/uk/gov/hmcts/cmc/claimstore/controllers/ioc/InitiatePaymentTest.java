@@ -138,8 +138,8 @@ public class InitiatePaymentTest extends BaseMockSpringTest {
             .andExpect(status().isInternalServerError())
             .andReturn();
 
-        assertThat(result.getResolvedException().getMessage())
-            .isEqualTo("Failed creating a payment in CCD store for claim with "
+        assertThat(result.getResolvedException())
+            .hasMessage("Failed creating a payment in CCD store for claim with "
                 + "external id " + claimData.getExternalId() + " on event INITIATE_CLAIM_PAYMENT_CITIZEN");
     }
 
@@ -174,8 +174,8 @@ public class InitiatePaymentTest extends BaseMockSpringTest {
             .andExpect(status().isInternalServerError())
             .andReturn();
 
-        assertThat(result.getResolvedException().getMessage())
-            .isEqualTo("Failed creating a payment in CCD store for claim with "
+        assertThat(result.getResolvedException())
+            .hasMessage("Failed creating a payment in CCD store for claim with "
                 + "external id " + claimData.getExternalId() + " on event INITIATE_CLAIM_PAYMENT_CITIZEN");
     }
 

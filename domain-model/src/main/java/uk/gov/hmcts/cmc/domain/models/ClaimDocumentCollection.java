@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 @Getter
 public class ClaimDocumentCollection {
 
-    private final List<ClaimDocument> claimDocuments = new ArrayList<ClaimDocument>();
+    private final List<ClaimDocument> claimDocuments = new ArrayList<>();
 
     private final List<ScannedDocument> scannedDocuments = new ArrayList<>();
 
