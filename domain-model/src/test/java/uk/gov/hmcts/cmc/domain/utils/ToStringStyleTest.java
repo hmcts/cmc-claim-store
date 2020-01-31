@@ -11,12 +11,12 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 public class ToStringStyleTest {
 
-    private ToStringStyleExample toStringStyleExample = new ToStringStyleExample(
+    private final ToStringStyleExample toStringStyleExample = new ToStringStyleExample(
         "Example",
         Arrays.asList("Example1", "Example2")
     );
 
-    private String expectedOutput = "["
+    private final String expectedOutput = "["
         + System.lineSeparator()
         + "  field1=Example"
         + System.lineSeparator()
@@ -29,9 +29,9 @@ public class ToStringStyleTest {
         assertThat(toStringStyleExample.toString()).isEqualTo(expectedOutput);
     }
 
-    class ToStringStyleExample {
-        private String field1;
-        private List<String> fieldList;
+    static class ToStringStyleExample {
+        private final String field1;
+        private final List<String> fieldList;
 
         ToStringStyleExample(String field1, List<String> fieldList) {
             this.field1 = field1;

@@ -96,17 +96,17 @@ public final class SampleClaim {
     private LocalDate moneyReceivedOn;
     private LocalDateTime reDeterminationRequestedAt;
     private ReDetermination reDetermination = new ReDetermination("I feel defendant can pay", CLAIMANT);
-    private ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
+    private final ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
     private LocalDate claimantResponseDeadline;
     private ClaimState state = ClaimState.OPEN;
     private ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
         = ClaimSubmissionOperationIndicators.builder().build();
-    private Long ccdCaseId = 1023467890123456L;
+    private final Long ccdCaseId = 1023467890123456L;
     private ReviewOrder reviewOrder;
     private DirectionOrder directionOrder;
     private ChannelType channel;
-    private LocalDate intentionToProceedDeadline = NOW_IN_LOCAL_ZONE.toLocalDate().plusDays(33);
-    private YesNoOption offlineJourney = NO;
+    private final LocalDate intentionToProceedDeadline = NOW_IN_LOCAL_ZONE.toLocalDate().plusDays(33);
+    private final YesNoOption offlineJourney = NO;
     private MediationOutcome mediationOutcome;
 
     private SampleClaim() {

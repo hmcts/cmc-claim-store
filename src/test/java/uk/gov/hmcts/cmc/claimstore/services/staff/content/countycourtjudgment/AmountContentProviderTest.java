@@ -30,7 +30,7 @@ public class AmountContentProviderTest {
         );
     }
 
-    private Claim noInterest = SampleClaim.builder()
+    private final Claim noInterest = SampleClaim.builder()
         .withClaimData(SampleClaimData.noInterest())
         .withCountyCourtJudgment(SampleCountyCourtJudgment.builder().build())
         .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())

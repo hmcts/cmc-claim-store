@@ -68,7 +68,7 @@ public enum CaseEvent {
     MEDIATION_FAILED("FailedMediation"),
     MEDIATION_SUCCESSFUL("SuccessfulMediation");
 
-    private String value;
+    private final String value;
 
     CaseEvent(String value) {
         this.value = value;

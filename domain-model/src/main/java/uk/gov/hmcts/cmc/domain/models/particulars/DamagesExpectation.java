@@ -8,7 +8,7 @@ public enum DamagesExpectation {
     @JsonProperty("thousandPoundsOrLess")
     THOUSAND_POUNDS_OR_LESS("not more than");
 
-    private String displayValue;
+    private final String displayValue;
 
     DamagesExpectation(String displayValue) {
         this.displayValue = displayValue;
