@@ -88,6 +88,7 @@ public class DrawOrderCallbackHandlerTest extends BaseMockSpringTest {
         given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void shouldAddDraftDocumentToCaseDocumentsOnEventStart() throws Exception {
         MvcResult mvcResult = makeRequest(CallbackType.ABOUT_TO_SUBMIT.getValue())

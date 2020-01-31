@@ -16,7 +16,7 @@ public class DateNotInThePastValidatorTest {
     @Mock
     private ConstraintValidatorContext context;
 
-    private DateNotInThePastConstraintValidator validator = new DateNotInThePastConstraintValidator();
+    private final DateNotInThePastConstraintValidator validator = new DateNotInThePastConstraintValidator();
 
     @Test
     public void shouldReturnTrueForValidDateInTheFuture() {

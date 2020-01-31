@@ -289,7 +289,7 @@ public class DataFixService {
     private CCDCase patchResponseDeadline(CCDCase ccdCase) {
         if (isResponseDeadlineWithinDownTime(ccdCase) && !isResponded(ccdCase)) {
             Claim.ClaimBuilder claimBuilder = caseMapper.from(ccdCase).toBuilder();
-            claimBuilder.responseDeadline(LocalDate.of(2019, 06, 10));
+            claimBuilder.responseDeadline(LocalDate.of(2019, 6, 10));
             return caseMapper.to(claimBuilder.build());
         } else {
             return ccdCase;

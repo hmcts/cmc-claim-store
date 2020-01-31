@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AuthenticateUserResponse {
 
-    private String code;
+    private final String code;
 
     @JsonCreator
     public AuthenticateUserResponse(String code) {

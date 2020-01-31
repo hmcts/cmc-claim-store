@@ -11,7 +11,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleReviewOrder;
 @RunWith(MockitoJUnitRunner.class)
 public class ReviewOrderRuleTest {
 
-    private ReviewOrderRule reviewOrderRule = new ReviewOrderRule();
+    private final ReviewOrderRule reviewOrderRule = new ReviewOrderRule();
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowExceptionWhenClaimIsNull() {
@@ -24,7 +24,7 @@ public class ReviewOrderRuleTest {
         reviewOrderRule.assertReviewOrder(claim);
     }
 
-    @Test(expected = Test.None.class)
+    @Test()
     public void shouldAllowForValidReviewOrder() {
         Claim claim = SampleClaim.getDefault();
         reviewOrderRule.assertReviewOrder(claim);

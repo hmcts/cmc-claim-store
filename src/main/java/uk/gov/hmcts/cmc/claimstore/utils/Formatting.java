@@ -34,8 +34,8 @@ public class Formatting {
             .withZone(LocalDateTimeFactory.LOCAL_ZONE);
 
         if (temporal instanceof ChronoLocalDateTime) {
-            ChronoZonedDateTime chronoZonedDateTime =
-                ((ChronoLocalDateTime) temporal).atZone(LocalDateTimeFactory.UTC_ZONE);
+            ChronoZonedDateTime<?> chronoZonedDateTime =
+                ((ChronoLocalDateTime<?>) temporal).atZone(LocalDateTimeFactory.UTC_ZONE);
             return dateTimeFormatter.format(chronoZonedDateTime);
 
         } else {

@@ -116,7 +116,7 @@ public class CountersignSettlementAgreementActionsHandlerTest {
     }
 
     @Test
-    public void shouldSendNotificationsToStaffWhenOfferAccepted() throws NotificationClientException {
+    public void shouldSendNotificationsToStaffWhenOfferAccepted() {
         CountersignSettlementAgreementEvent event = new CountersignSettlementAgreementEvent(claim, AUTHORISATION);
 
         handler.sendNotificationToStaff(event);

@@ -21,7 +21,7 @@ public class MoreTimeRequestRule {
     public static final String ALREADY_RESPONDED_ERROR = "You can’t process this paper request for more time "
             + "because the defendant already responded to the claim digitally.";
 
-    private ClaimDeadlineService claimDeadlineService;
+    private final ClaimDeadlineService claimDeadlineService;
 
     @Autowired
     public MoreTimeRequestRule(ClaimDeadlineService claimDeadlineService) {

@@ -50,7 +50,7 @@ public class SettlementTest {
         settlement.makeOffer(offer, MadeBy.DEFENDANT, null);
         settlement.makeOffer(counterOffer, MadeBy.CLAIMANT, null);
 
-        assertThat(settlement.getLastStatement().getOffer().get()).isEqualTo(counterOffer);
+        assertThat(settlement.getLastStatement().getOffer().orElse(null)).isEqualTo(counterOffer);
     }
 
     @Test
