@@ -14,7 +14,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocumentType;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
@@ -99,15 +98,11 @@ public class DrawOrderCallbackHandlerTest {
 
     @Before
     public void setUp() {
-        drawOrderCallbackHandler = new DrawOrderCallbackHandler(
-            clock,
-            orderDrawnNotificationService,
-            caseDetailsConverter,
-            legalOrderService,
-            hearingCourtDetailsFinder,
-            docAssemblyService,
-            appInsights
-        );
+        OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
+            caseDetailsConverter, legalOrderService, hearingCourtDetailsFinder);
+
+        drawOrderCallbackHandler = new DrawOrderCallbackHandler(orderPostProcessor,
+            caseDetailsConverter, docAssemblyService, appInsights);
 
         when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);
@@ -123,7 +118,7 @@ public class DrawOrderCallbackHandlerTest {
     @Test
     public void shouldRegeneratesOrderOnBeforeEventStart() {
         CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
-        ccdCase.setDirectionOrderData(SampleData.getCCDOrderGenerationData());
+        ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
 
         CallbackRequest callbackRequest = CallbackRequest
@@ -175,7 +170,7 @@ public class DrawOrderCallbackHandlerTest {
             .build();
 
         CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList()).toBuilder()
-            .directionOrderData(CCDOrderGenerationData.builder().draftOrderDoc(DOCUMENT).build())
+            .draftOrderDoc(DOCUMENT)
             .directionOrder(CCDDirectionOrder.builder()
                 .hearingCourtName(SampleData.MANCHESTER_CIVIL_JUSTICE_CENTRE_CIVIL_AND_FAMILY_COURTS)
                 .hearingCourtAddress(SampleData.getHearingCourtAddress())
@@ -232,7 +227,7 @@ public class DrawOrderCallbackHandlerTest {
                 .build();
 
         CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList()).toBuilder()
-            .directionOrderData(CCDOrderGenerationData.builder().draftOrderDoc(DOCUMENT).build())
+            .draftOrderDoc(DOCUMENT)
             .directionOrder(CCDDirectionOrder.builder()
                 .hearingCourtName(SampleData.MANCHESTER_CIVIL_JUSTICE_CENTRE_CIVIL_AND_FAMILY_COURTS)
                 .hearingCourtAddress(SampleData.getHearingCourtAddress())
@@ -243,7 +238,6 @@ public class DrawOrderCallbackHandlerTest {
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
 
         Claim claim = SampleClaim.builder().build();
-        System.out.println(claim);
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
 
         drawOrderCallbackHandler.handle(callbackParams);

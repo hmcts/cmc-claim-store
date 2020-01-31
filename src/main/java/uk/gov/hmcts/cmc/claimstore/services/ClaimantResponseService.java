@@ -17,6 +17,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
+import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 import uk.gov.hmcts.cmc.domain.utils.ResponseUtils;
 
 import java.time.LocalDateTime;
@@ -102,7 +103,7 @@ public class ClaimantResponseService {
             caseRepository.saveCaseEvent(authorization, updatedClaim, CaseEvent.STAY_CLAIM);
         }
 
-        if (!DirectionsQuestionnaireUtils.isOnlineDQ(updatedClaim) && isRejectResponseNoMediation(claimantResponse)) {
+        if (!FeaturesUtils.isOnlineDQ(updatedClaim) && isRejectResponseNoMediation(claimantResponse)) {
             directionsQuestionnaireService.updateDirectionsQuestionnaireDeadline(
                 updatedClaim, LocalDateTime.now(), authorization);
             updatedClaim = claimService.getClaimByExternalId(externalId, authorization);
@@ -122,9 +123,6 @@ public class ClaimantResponseService {
                 updatedClaim
             );
             if (caseEvent.isPresent()) {
-                //raise app insights event based on event in separate method
-                //I don't think we need to do anything here
-
                 caseRepository.saveCaseEvent(authorization, updatedClaim, caseEvent.get());
             }
         }
@@ -177,7 +175,7 @@ public class ClaimantResponseService {
     }
 
     private void raiseAppInsightEventForLegalAdvisorPilot(Claim claim) {
-        AppInsightsEvent appInsightsEvent = DirectionsQuestionnaireUtils.isLegalAdvisorPilot(claim)
+        AppInsightsEvent appInsightsEvent = FeaturesUtils.isLegalAdvisorPilot(claim)
             ? AppInsightsEvent.BOTH_PARTIES_ONLINE_DQ
             : AppInsightsEvent.BOTH_PARTIES_OFFLINE_DQ;
 
