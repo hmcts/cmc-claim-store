@@ -49,6 +49,7 @@ public class BulkPrintNotificationServiceTest extends BaseMockSpringTest {
     private PrintableTemplate sealedClaimDocument;
 
     private Claim claim;
+    private static final String AUTHORISATION = "Bearer: let me in";
 
     @Before
     public void setUp() {
@@ -73,7 +74,8 @@ public class BulkPrintNotificationServiceTest extends BaseMockSpringTest {
     public void shouldThrowNullPointerWhenGivenNullClaim() {
         service.notifyFailedBulkPrint(
             ImmutableList.of(defendantLetterDocument, sealedClaimDocument),
-            null);
+            null,
+            AUTHORISATION);
     }
 
     @Test(expected = NullPointerException.class)
@@ -81,7 +83,8 @@ public class BulkPrintNotificationServiceTest extends BaseMockSpringTest {
         //noinspection ConstantConditions
         service.notifyFailedBulkPrint(
             ImmutableList.of(null, sealedClaimDocument),
-            claim);
+            claim,
+            AUTHORISATION);
     }
 
     @Test(expected = NullPointerException.class)
@@ -89,14 +92,16 @@ public class BulkPrintNotificationServiceTest extends BaseMockSpringTest {
         //noinspection ConstantConditions
         service.notifyFailedBulkPrint(
             ImmutableList.of(defendantLetterDocument, null),
-            claim);
+            claim,
+            AUTHORISATION);
     }
 
     @Test
     public void shouldSendEmailToExpectedRecipient() {
         service.notifyFailedBulkPrint(
             ImmutableList.of(defendantLetterDocument, sealedClaimDocument),
-            claim);
+            claim,
+            AUTHORISATION);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
@@ -107,7 +112,8 @@ public class BulkPrintNotificationServiceTest extends BaseMockSpringTest {
     public void shouldSendEmailWithExpectedContent() {
         service.notifyFailedBulkPrint(
             ImmutableList.of(defendantLetterDocument, sealedClaimDocument),
-            claim);
+            claim,
+            AUTHORISATION);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
@@ -123,7 +129,8 @@ public class BulkPrintNotificationServiceTest extends BaseMockSpringTest {
     public void shouldSendEmailWithExpectedPDFAttachments() {
         service.notifyFailedBulkPrint(
             ImmutableList.of(defendantLetterDocument, sealedClaimDocument),
-            claim);
+            claim,
+            AUTHORISATION);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());
 
