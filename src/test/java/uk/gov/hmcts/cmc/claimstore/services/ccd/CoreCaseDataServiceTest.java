@@ -654,7 +654,7 @@ public class CoreCaseDataServiceTest {
 
         service.saveBulkPrintLetterIdToClaim(
             AUTHORISATION,
-            UUID.randomUUID(),
+            UUID.randomUUID().toString(),
             CaseEvent.UPDATE_BULK_PRINT_LETTER_ID,
             claim.getId());
 

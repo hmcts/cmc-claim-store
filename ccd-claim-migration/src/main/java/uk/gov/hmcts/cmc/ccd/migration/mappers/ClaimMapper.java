@@ -20,7 +20,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
 import static uk.gov.hmcts.cmc.ccd.migration.mappers.MappingUtils.toLocalDateTimeFromUTC;
 import static uk.gov.hmcts.cmc.ccd.migration.mappers.MappingUtils.toNullableLocalDateFromUTC;

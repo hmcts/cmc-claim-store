@@ -140,7 +140,7 @@ public class BulkPrintServiceTest {
 
         verify(claimService).saveBulkPrintLetterId(
             eq(AUTH_VALUE),
-            eq(bulkPrintLetterId),
+            eq(bulkPrintLetterId.toString()),
             eq(CaseEvent.UPDATE_BULK_PRINT_LETTER_ID),
             eq(CLAIM));
 
@@ -230,14 +230,16 @@ public class BulkPrintServiceTest {
                     ImmutableList.of(
                         new PrintableTemplate(defendantLetterDocument, "filename"),
                         new PrintableTemplate(sealedClaimDocument, "filename")
-                    ));
+                    ),
+                    AUTHORISATION);
         } finally {
             //then
             verify(bulkPrintNotificationService).notifyFailedBulkPrint(
                 eq(ImmutableList.of(
                     new PrintableTemplate(defendantLetterDocument, "filename"),
                     new PrintableTemplate(sealedClaimDocument, "filename"))),
-                eq(CLAIM)
+                eq(CLAIM),
+                eq(AUTHORISATION)
             );
 
             verify(appInsights).trackEvent(eq(BULK_PRINT_FAILED), eq(REFERENCE_NUMBER), eq(CLAIM.getReferenceNumber()));

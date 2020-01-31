@@ -108,7 +108,7 @@ public final class SampleClaim {
     private LocalDate intentionToProceedDeadline = NOW_IN_LOCAL_ZONE.toLocalDate().plusDays(33);
     private YesNoOption offlineJourney = NO;
     private MediationOutcome mediationOutcome;
-    private UUID bulkPrintLetterId = UUID.randomUUID();
+    private String bulkPrintLetterId = UUID.randomUUID().toString();
 
     private SampleClaim() {
     }

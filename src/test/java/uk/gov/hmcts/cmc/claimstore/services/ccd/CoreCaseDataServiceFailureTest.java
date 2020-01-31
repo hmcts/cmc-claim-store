@@ -623,7 +623,7 @@ public class CoreCaseDataServiceFailureTest {
     }
 
     @Test(expected = CoreCaseDataStoreException.class)
-    public void saveBulkPrintLetterIdToClaimSEventFailure() {
+    public void saveBulkPrintLetterIdToClaimEventFailure() {
         Claim claim = SampleClaim.getDefault();
 
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(CCDCase.builder().build());
@@ -631,7 +631,7 @@ public class CoreCaseDataServiceFailureTest {
 
         service.saveBulkPrintLetterIdToClaim(
             AUTHORISATION,
-            UUID.randomUUID(),
+            UUID.randomUUID().toString(),
             CaseEvent.UPDATE_BULK_PRINT_LETTER_ID,
             claim.getId());
     }

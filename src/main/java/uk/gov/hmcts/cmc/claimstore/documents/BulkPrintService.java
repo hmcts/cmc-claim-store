@@ -97,7 +97,7 @@ public class BulkPrintService implements PrintService {
 
         claimService.saveBulkPrintLetterId(
             authorisation,
-            sendLetterResponse.letterId,
+            sendLetterResponse.letterId.toString(),
             CaseEvent.UPDATE_BULK_PRINT_LETTER_ID,
             claim
         );
@@ -112,11 +112,13 @@ public class BulkPrintService implements PrintService {
     public void notifyStaffForBulkPrintFailure(
         RuntimeException exception,
         Claim claim,
-        List<Printable> documents
+        List<Printable> documents,
+        String authorisation
     ) {
         bulkPrintNotificationService.notifyFailedBulkPrint(
             documents,
-            claim
+            claim,
+            authorisation
         );
         appInsights.trackEvent(BULK_PRINT_FAILED, REFERENCE_NUMBER, claim.getReferenceNumber());
         throw exception;

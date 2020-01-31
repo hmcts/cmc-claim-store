@@ -442,7 +442,7 @@ public class ClaimServiceTest {
 
     @Test
     public void updateBulkPrintLetterIDToClaimShouldCallCaseRepository() {
-        UUID letterId = UUID.randomUUID();
+        String letterId = UUID.randomUUID().toString();
         claimService.saveBulkPrintLetterId(
             AUTHORISATION, letterId, CaseEvent.UPDATE_BULK_PRINT_LETTER_ID, claim);
 

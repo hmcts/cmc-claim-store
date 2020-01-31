@@ -46,7 +46,6 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.CCJ_REQUESTED;
@@ -1130,7 +1129,7 @@ public class CoreCaseDataService {
 
     public Claim saveBulkPrintLetterIdToClaim(
         String authorisation,
-        UUID bulkPrintLetterId,
+        String bulkPrintLetterId,
         CaseEvent caseEvent,
         Long caseId
     ) {

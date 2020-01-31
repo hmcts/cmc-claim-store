@@ -37,7 +37,6 @@ import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
@@ -397,7 +396,7 @@ public class ClaimService {
 
     public Claim saveBulkPrintLetterId(
         String authorisation,
-        UUID bulkPrintLetterId,
+        String bulkPrintLetterId,
         CaseEvent caseEvent,
         Claim claim
     ) {

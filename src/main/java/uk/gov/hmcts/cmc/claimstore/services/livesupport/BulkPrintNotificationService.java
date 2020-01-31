@@ -40,7 +40,7 @@ public class BulkPrintNotificationService {
         this.pdfServiceClient = pdfServiceClient;
     }
 
-    public void notifyFailedBulkPrint(List<Printable> documents, Claim claim) {
+    public void notifyFailedBulkPrint(List<Printable> documents, Claim claim, String authorisation) {
         List<EmailAttachment> emailAttachments = documents.stream()
             .map(d -> pdf(d.getContent(pdfServiceClient), d.getFileName()))
             .collect(Collectors.toList());
