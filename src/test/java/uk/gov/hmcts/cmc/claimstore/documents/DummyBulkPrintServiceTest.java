@@ -26,7 +26,7 @@ import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DummyBulkPrintServiceTest {
-    private final String AUTHORISATION = "Bearer: let me in";
+    private static final String AUTHORISATION = "Bearer: let me in";
     private final Logger log = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
     @Mock
