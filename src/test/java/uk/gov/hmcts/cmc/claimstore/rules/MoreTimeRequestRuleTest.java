@@ -67,7 +67,7 @@ public class MoreTimeRequestRuleTest {
                 .build();
         List<String> errors = moreTimeRequestRule.validateMoreTimeCanBeRequested(claim, deadlineDay);
         assertThat(errors.size()).isEqualTo(1);
-        assertThat(errors).contains(moreTimeRequestRule.ALREADY_REQUESTED_MORE_TIME_ERROR);
+        assertThat(errors).contains(MoreTimeRequestRule.ALREADY_REQUESTED_MORE_TIME_ERROR);
     }
 
     @Test
@@ -80,7 +80,7 @@ public class MoreTimeRequestRuleTest {
                 .build();
         List<String> errors = moreTimeRequestRule.validateMoreTimeCanBeRequested(claim, deadlineDay);
         assertThat(errors.size()).isEqualTo(1);
-        assertThat(errors).contains(moreTimeRequestRule.ALREADY_RESPONDED_ERROR);
+        assertThat(errors).contains(MoreTimeRequestRule.ALREADY_RESPONDED_ERROR);
     }
 
     @Test
@@ -93,7 +93,7 @@ public class MoreTimeRequestRuleTest {
         when(claimDeadlineService.isPastDeadline(any(), eq(deadlineDay))).thenReturn(true);
         List<String> errors = moreTimeRequestRule.validateMoreTimeCanBeRequested(claim, deadlineDay);
         assertThat(errors.size()).isEqualTo(1);
-        assertThat(errors).contains(moreTimeRequestRule.PAST_DEADLINE_ERROR);
+        assertThat(errors).contains(MoreTimeRequestRule.PAST_DEADLINE_ERROR);
     }
 
 }

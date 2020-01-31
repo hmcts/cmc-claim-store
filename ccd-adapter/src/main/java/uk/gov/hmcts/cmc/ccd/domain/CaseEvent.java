@@ -69,7 +69,7 @@ public enum CaseEvent {
     MEDIATION_SUCCESSFUL("SuccessfulMediation"),
     RESET_PIN("ResetPin");
 
-    private String value;
+    private final String value;
 
     CaseEvent(String value) {
         this.value = value;

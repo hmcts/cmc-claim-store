@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
-import uk.gov.service.notify.NotificationClientException;
 
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
@@ -57,7 +56,7 @@ public class OfferRespondedCitizenActionsHandlerTest {
     }
 
     @Test
-    public void shouldSendNotificationsToClaimantWhenOfferAccepted() throws NotificationClientException {
+    public void shouldSendNotificationsToClaimantWhenOfferAccepted() {
 
         OfferAcceptedEvent event = new OfferAcceptedEvent(claimWithOffer, MadeBy.CLAIMANT);
 
@@ -72,7 +71,7 @@ public class OfferRespondedCitizenActionsHandlerTest {
     }
 
     @Test
-    public void shouldSendNotificationsToDefendantWhenOfferAccepted() throws NotificationClientException {
+    public void shouldSendNotificationsToDefendantWhenOfferAccepted() {
 
         OfferAcceptedEvent event = new OfferAcceptedEvent(claimWithOffer, MadeBy.CLAIMANT);
 
@@ -87,7 +86,7 @@ public class OfferRespondedCitizenActionsHandlerTest {
     }
 
     @Test
-    public void shouldSendNotificationsToClaimantWhenOfferRejected() throws NotificationClientException {
+    public void shouldSendNotificationsToClaimantWhenOfferRejected() {
 
         OfferRejectedEvent event = new OfferRejectedEvent(claimWithOffer, MadeBy.CLAIMANT);
 
@@ -102,7 +101,7 @@ public class OfferRespondedCitizenActionsHandlerTest {
     }
 
     @Test
-    public void shouldSendNotificationsToDefendantWhenOfferRejected() throws NotificationClientException {
+    public void shouldSendNotificationsToDefendantWhenOfferRejected() {
 
         OfferRejectedEvent event = new OfferRejectedEvent(claimWithOffer, MadeBy.CLAIMANT);
 

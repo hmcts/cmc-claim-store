@@ -19,14 +19,14 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
 public class InterestContentProviderTest {
 
-    private Claim claim = SampleClaim.getDefault();
+    private final Claim claim = SampleClaim.getDefault();
 
     private Interest interest;
     private InterestDate interestDate;
     private BigDecimal claimAmount;
     private LocalDate issuedOn;
 
-    private InterestContentProvider provider = new InterestContentProvider(
+    private final InterestContentProvider provider = new InterestContentProvider(
         new InterestCalculationService(Clock.systemDefaultZone())
     );
 

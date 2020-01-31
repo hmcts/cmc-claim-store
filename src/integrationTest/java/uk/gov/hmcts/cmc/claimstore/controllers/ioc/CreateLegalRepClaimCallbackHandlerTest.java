@@ -50,6 +50,7 @@ public class CreateLegalRepClaimCallbackHandlerTest extends BaseMockSpringTest {
         given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void shouldAddFieldsOnCaseWhenCallbackIsSuccessful() throws Exception {
         MvcResult mvcResult = makeRequest(CallbackType.ABOUT_TO_SUBMIT.getValue())

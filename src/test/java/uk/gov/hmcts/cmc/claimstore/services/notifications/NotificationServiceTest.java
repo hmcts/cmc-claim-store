@@ -29,7 +29,7 @@ public class NotificationServiceTest extends BaseNotificationServiceTest {
     private NotificationService service;
 
     @Rule
-    public ExpectedException expectedException = ExpectedException.none();
+    public final ExpectedException expectedException = ExpectedException.none();
 
     @Before
     public void beforeEachTest() {

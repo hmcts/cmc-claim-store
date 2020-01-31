@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 @RunWith(MockitoJUnitRunner.class)
 public class SettlementAgreementCopyServiceTest {
     @Rule
-    public ExpectedException exceptionRule = ExpectedException.none();
+    public final ExpectedException exceptionRule = ExpectedException.none();
     @Mock
     private SettlementAgreementPDFContentProvider contentProvider;
     @Mock
