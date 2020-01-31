@@ -35,11 +35,13 @@ public class DefendantPartyMapperTest {
 
     @Test(expected = NullPointerException.class)
     public void mapToShouldThrowExceptionWhenBuilderIsNull() {
+        //noinspection ConstantConditions
         mapper.to(null, SampleParty.builder().individual(), null);
     }
 
     @Test(expected = NullPointerException.class)
     public void mapToShouldThrowExceptionWhenPartyIsNull() {
+        //noinspection ConstantConditions
         mapper.to(CCDRespondent.builder(), null, null);
     }
 

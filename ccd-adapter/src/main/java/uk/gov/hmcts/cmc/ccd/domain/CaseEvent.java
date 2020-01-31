@@ -69,7 +69,7 @@ public enum CaseEvent {
     MEDIATION_SUCCESSFUL("SuccessfulMediation"),
     UPDATE_BULK_PRINT_LETTER_ID("UpdateBulkPrintLetterId");
 
-    private String value;
+    private final String value;
 
     CaseEvent(String value) {
         this.value = value;

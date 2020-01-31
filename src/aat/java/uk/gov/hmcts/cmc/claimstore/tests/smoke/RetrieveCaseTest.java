@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class RetrieveCaseTest extends BaseTest {
 
-    private static final Pattern jsonListPattern = Pattern.compile("^\\[.*\\]$");
+    private static final Pattern jsonListPattern = Pattern.compile("^\\[.*]$");
 
     @Test
     public void shouldBeAbleToRetrieveCasesBySubmitterId() {

@@ -10,7 +10,7 @@ public class DateUtilsTest {
 
     @Test
     public void startOfDay() {
-        LocalDate localDate = LocalDate.of(2019, 07, 8);
+        LocalDate localDate = LocalDate.of(2019, 7, 8);
         LocalDateTime dateTime = DateUtils.startOfDay(localDate);
         Assert.assertEquals(localDate, dateTime.toLocalDate());
         Assert.assertEquals(0, dateTime.getHour());
@@ -20,7 +20,7 @@ public class DateUtilsTest {
 
     @Test
     public void endOfDay() {
-        LocalDate localDate = LocalDate.of(2019, 07, 8);
+        LocalDate localDate = LocalDate.of(2019, 7, 8);
         LocalDateTime dateTime = DateUtils.endOfDay(localDate);
         Assert.assertEquals(localDate, dateTime.toLocalDate());
         Assert.assertEquals(23, dateTime.getHour());

@@ -16,19 +16,17 @@ public class ReDeterminationMapper {
         requireNonNull(builder, "builder must not be null");
         requireNonNull(claim, "claim must not be null");
 
-        claim.getReDetermination().ifPresent(reDetermination -> {
-            builder
-                .redeterminationExplanation(reDetermination.getExplanation())
-                .redeterminationMadeBy(CCDMadeBy.valueOf(reDetermination.getPartyType().name()));
-        });
+        claim.getReDetermination().ifPresent(reDetermination -> builder
+            .redeterminationExplanation(reDetermination.getExplanation())
+            .redeterminationMadeBy(CCDMadeBy.valueOf(reDetermination.getPartyType().name())));
 
         claim.getReDeterminationRequestedAt().ifPresent(builder::redeterminationRequestedDate);
     }
 
     public void from(Claim.ClaimBuilder builder, CCDRespondent respondent) {
         if (StringUtils.isBlank(respondent.getRedeterminationExplanation())
-            && respondent.getRedeterminationMadeBy() == null
-            && respondent.getRedeterminationRequestedDate() == null
+            || respondent.getRedeterminationMadeBy() == null
+            || respondent.getRedeterminationRequestedDate() == null
         ) {
             return;
         }

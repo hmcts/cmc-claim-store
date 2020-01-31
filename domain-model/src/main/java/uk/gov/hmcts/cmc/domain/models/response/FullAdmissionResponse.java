@@ -19,7 +19,7 @@ public class FullAdmissionResponse extends Response {
 
     @NotNull
     @Valid
-    private PaymentIntention paymentIntention;
+    private final PaymentIntention paymentIntention;
 
     @Valid
     private final StatementOfMeans statementOfMeans;

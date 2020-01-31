@@ -12,9 +12,9 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @EqualsAndHashCode(callSuper = true)
 public class PartyStatement extends CollectionId {
 
-    private StatementType type;
-    private MadeBy madeBy;
-    private Offer offer;
+    private final StatementType type;
+    private final MadeBy madeBy;
+    private final Offer offer;
 
     @Builder
     public PartyStatement(String id, StatementType type, MadeBy madeBy, Offer offer) {

@@ -37,13 +37,13 @@ public class DocumentOrchestrationServiceTest {
     public static final String PIN = "PIN";
     public static final String LETTER_HOLDER_ID = "LetterHolderId";
 
-    private Map<String, Object> claimContents = new HashMap<>();
-    private String claimTemplate = "claimTemplate";
-    private Document sealedClaimLetterDocument = new Document(claimTemplate, claimContents);
+    private final Map<String, Object> claimContents = new HashMap<>();
+    private final String claimTemplate = "claimTemplate";
+    private final Document sealedClaimLetterDocument = new Document(claimTemplate, claimContents);
 
-    private Map<String, Object> pinContents = new HashMap<>();
-    private String pinTemplate = "pinTemplate";
-    private Document defendantLetterDocument = new Document(pinTemplate, pinContents);
+    private final Map<String, Object> pinContents = new HashMap<>();
+    private final String pinTemplate = "pinTemplate";
+    private final Document defendantLetterDocument = new Document(pinTemplate, pinContents);
 
     @Mock
     private CitizenServiceDocumentsService citizenServiceDocumentsService;

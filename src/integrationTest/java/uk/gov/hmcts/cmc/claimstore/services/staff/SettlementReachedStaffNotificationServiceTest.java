@@ -18,7 +18,6 @@ import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
 import uk.gov.hmcts.cmc.email.EmailService;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -91,7 +90,7 @@ public class SettlementReachedStaffNotificationServiceTest extends BaseMockSprin
     }
 
     @Test
-    public void shouldSendEmailWithExpectedPDFAttachments() throws IOException {
+    public void shouldSendEmailWithExpectedPDFAttachments() {
         service.notifySettlementReached(claim);
 
         verify(emailService).sendEmail(senderArgument.capture(), emailDataArgument.capture());

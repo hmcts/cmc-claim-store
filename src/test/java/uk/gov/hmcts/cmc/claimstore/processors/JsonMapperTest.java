@@ -46,7 +46,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYE
 
 public class JsonMapperTest {
 
-    private JsonMapper processor = JsonMapperFactory.create();
+    private final JsonMapper processor = JsonMapperFactory.create();
 
     @Test
     public void shouldProcessClaimDataToJson() throws JSONException {

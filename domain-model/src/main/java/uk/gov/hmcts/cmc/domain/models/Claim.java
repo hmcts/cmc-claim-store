@@ -44,7 +44,7 @@ public class Claim {
     private final ClaimData claimData;
     private final LocalDateTime createdAt;
     private final LocalDate issuedOn;
-    private LocalDate serviceDate;
+    private final LocalDate serviceDate;
     private final LocalDate responseDeadline;
     private final boolean moreTimeRequested;
     private final String submitterEmail;
@@ -74,7 +74,7 @@ public class Claim {
     private final LocalDate intentionToProceedDeadline;
     private final MediationOutcome mediationOutcome;
     private final String failedMediationReason;
-    private LocalDateTime mediationSettlementReachedAt;
+    private final LocalDateTime mediationSettlementReachedAt;
     private final YesNoOption paperResponse;
     private final LocalDateTime dateReferredForDirections;
     private final String preferredDQCourt;

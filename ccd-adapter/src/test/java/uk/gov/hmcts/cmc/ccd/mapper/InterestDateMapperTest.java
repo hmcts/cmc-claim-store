@@ -12,7 +12,7 @@ import static uk.gov.hmcts.cmc.domain.models.InterestDate.InterestEndDateType.SU
 
 public class InterestDateMapperTest {
 
-    private InterestDateMapper mapper = new InterestDateMapper();
+    private final InterestDateMapper mapper = new InterestDateMapper();
 
     @Test
     public void shouldMapToCCDInterestDate() {
