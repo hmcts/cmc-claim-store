@@ -99,10 +99,10 @@ public class DrawOrderCallbackHandlerTest {
     @Before
     public void setUp() {
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
-            caseDetailsConverter, legalOrderService, hearingCourtDetailsFinder);
+            caseDetailsConverter, legalOrderService, hearingCourtDetailsFinder, appInsights);
 
         drawOrderCallbackHandler = new DrawOrderCallbackHandler(orderPostProcessor,
-            caseDetailsConverter, docAssemblyService, appInsights);
+            caseDetailsConverter, docAssemblyService);
 
         when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);

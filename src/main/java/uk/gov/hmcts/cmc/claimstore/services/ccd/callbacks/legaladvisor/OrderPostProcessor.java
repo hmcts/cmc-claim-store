@@ -8,6 +8,8 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
@@ -40,19 +42,22 @@ public class OrderPostProcessor {
     private final CaseDetailsConverter caseDetailsConverter;
     private final LegalOrderService legalOrderService;
     private final HearingCourtDetailsFinder hearingCourtDetailsFinder;
+    private AppInsights appInsights;
 
     public OrderPostProcessor(
         Clock clock,
         OrderDrawnNotificationService orderDrawnNotificationService,
         CaseDetailsConverter caseDetailsConverter,
         LegalOrderService legalOrderService,
-        HearingCourtDetailsFinder hearingCourtDetailsFinder
+        HearingCourtDetailsFinder hearingCourtDetailsFinder,
+        AppInsights appInsights
     ) {
         this.clock = clock;
         this.orderDrawnNotificationService = orderDrawnNotificationService;
         this.caseDetailsConverter = caseDetailsConverter;
         this.legalOrderService = legalOrderService;
         this.hearingCourtDetailsFinder = hearingCourtDetailsFinder;
+        this.appInsights = appInsights;
     }
 
     public CallbackResponse copyDraftToCaseDocument(CallbackParams callbackParams) {
@@ -86,6 +91,10 @@ public class OrderPostProcessor {
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         notifyParties(claim);
+        appInsights.trackEvent(
+                AppInsightsEvent.DRAW_ORDER,
+                AppInsights.REFERENCE_NUMBER,
+                ccdCase.getPreviousServiceCaseReference());
         String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
         return printOrder(authorisation, claim, ccdCase);
     }

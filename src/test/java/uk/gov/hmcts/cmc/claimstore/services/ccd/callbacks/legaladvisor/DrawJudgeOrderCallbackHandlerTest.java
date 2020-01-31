@@ -19,6 +19,8 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDExpertReport;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.services.LegalOrderGenerationDeadlinesCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
@@ -98,6 +100,8 @@ public class DrawJudgeOrderCallbackHandlerTest {
     private HearingCourtDetailsFinder hearingCourtDetailsFinder;
     @Mock
     private DocAssemblyService docAssemblyService;
+    @Mock
+    private AppInsights appInsights;
 
     @Mock
     private LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator;
@@ -110,13 +114,15 @@ public class DrawJudgeOrderCallbackHandlerTest {
 
     private DrawJudgeOrderCallbackHandler drawJudgeOrderCallbackHandler;
 
+
+
     @Before
     public void setUp() {
         OrderCreator orderCreator = new OrderCreator(legalOrderGenerationDeadlinesCalculator, caseDetailsConverter,
             docAssemblyService, generateOrderRule);
 
         OrderPostProcessor orderPostProcessor = new OrderPostProcessor(clock, orderDrawnNotificationService,
-            caseDetailsConverter, legalOrderService, hearingCourtDetailsFinder);
+            caseDetailsConverter, legalOrderService, hearingCourtDetailsFinder, appInsights);
 
         drawJudgeOrderCallbackHandler = new DrawJudgeOrderCallbackHandler(orderCreator, orderPostProcessor);
 
@@ -243,6 +249,8 @@ public class DrawJudgeOrderCallbackHandlerTest {
 
         drawJudgeOrderCallbackHandler.handle(callbackParams);
 
+        verify(appInsights).trackEvent(AppInsightsEvent.DRAW_ORDER, AppInsights.REFERENCE_NUMBER,
+                ccdCase.getPreviousServiceCaseReference());
         verify(orderDrawnNotificationService).notifyDefendant(claim);
         verify(orderDrawnNotificationService).notifyClaimant(claim);
         verify(legalOrderService).print(

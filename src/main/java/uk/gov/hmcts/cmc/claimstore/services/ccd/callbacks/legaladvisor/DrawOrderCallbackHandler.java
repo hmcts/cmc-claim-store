@@ -8,8 +8,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
-import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
@@ -39,19 +37,16 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
     private final CaseDetailsConverter caseDetailsConverter;
     private final DocAssemblyService docAssemblyService;
     private final OrderPostProcessor orderPostProcessor;
-    private final AppInsights appInsights;
 
     @Autowired
     public DrawOrderCallbackHandler(
         OrderPostProcessor orderPostProcessor,
         CaseDetailsConverter caseDetailsConverter,
-        DocAssemblyService docAssemblyService,
-        AppInsights appInsights
+        DocAssemblyService docAssemblyService
     ) {
         this.orderPostProcessor = orderPostProcessor;
         this.caseDetailsConverter = caseDetailsConverter;
         this.docAssemblyService = docAssemblyService;
-        this.appInsights = appInsights;
     }
 
     @Override
@@ -78,10 +73,6 @@ public class DrawOrderCallbackHandler extends CallbackHandler {
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         String authorisation = callbackParams.getParams().get(CallbackParams.Params.BEARER_TOKEN).toString();
         DocAssemblyResponse docAssemblyResponse = docAssemblyService.createOrder(ccdCase, authorisation);
-        appInsights.trackEvent(
-            AppInsightsEvent.DRAW_ORDER,
-            AppInsights.REFERENCE_NUMBER,
-            ccdCase.getPreviousServiceCaseReference());
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()
