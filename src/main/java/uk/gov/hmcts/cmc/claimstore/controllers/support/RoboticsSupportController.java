@@ -44,11 +44,14 @@ public class RoboticsSupportController {
     private final UserService userService;
 
     private final ClaimService claimService;
+    private final MoreTimeRequestedNotificationService moreTimeRequestedNotificationService;
     private final DefenceResponseNotificationService defenceResponseNotificationService;
     private final RequestForJudgementNotificationService ccjNotificationService;
     private final PaidInFullNotificationService paidInFullNotificationService;
+    private final ResponseDeadlineCalculator responseDeadlineCalculator;
 
     private final AppInsightsExceptionLogger appInsightsExceptionLogger;
+    private final DocumentGenerator documentGenerator;
 
     @Autowired
     public RoboticsSupportController(
@@ -64,10 +67,63 @@ public class RoboticsSupportController {
     ) {
         this.claimService = claimService;
         this.userService = userService;
+        this.moreTimeRequestedNotificationService = moreTimeRequestedNotificationService;
         this.defenceResponseNotificationService = defenceResponseNotificationService;
         this.ccjNotificationService = ccjNotificationService;
         this.paidInFullNotificationService = paidInFullNotificationService;
+        this.responseDeadlineCalculator = responseDeadlineCalculator;
         this.appInsightsExceptionLogger = appInsightsExceptionLogger;
+        this.documentGenerator = documentGenerator;
+    }
+
+    @PutMapping("/claim")
+    @ApiOperation("Send RPA notifications for multiple claims")
+    public Map<String, String> rpaClaimNotifications(@RequestBody List<String> referenceNumbers) {
+        if (referenceNumbers == null || referenceNumbers.isEmpty()) {
+            throw new IllegalArgumentException("Reference numbers not supplied");
+        }
+        User user = userService.authenticateAnonymousCaseWorker();
+        String authorisation = user.getAuthorisation();
+        return referenceNumbers.stream()
+            .collect(toMap(Function.identity(), ref -> resendRPA(
+                ref,
+                user.getAuthorisation(),
+                reference -> true,
+                claim -> {
+                    GeneratePinResponse pinResponse = userService
+                        .generatePin(claim.getClaimData().getDefendant().getName(), authorisation);
+
+                    String fullName = userService.getUserDetails(authorisation).getFullName();
+
+                    String userId = pinResponse.getUserId();
+                    claimService.linkLetterHolder(claim, userId, authorisation);
+
+                    documentGenerator.generateForCitizenRPA(
+                        new CitizenClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation)
+                    );
+                },
+                "Failed to send claim to RPA"
+            )));
+    }
+
+    @PutMapping("/more-time")
+    @ApiOperation("Send RPA notifications for multiple more-time requests")
+    public Map<String, String> rpaMoreTimeNotifications(@RequestBody List<String> referenceNumbers) {
+        if (referenceNumbers == null || referenceNumbers.isEmpty()) {
+            throw new IllegalArgumentException("Reference numbers not supplied");
+        }
+        User user = userService.authenticateAnonymousCaseWorker();
+        return referenceNumbers.stream()
+            .collect(toMap(Function.identity(), ref -> resendRPA(
+                ref,
+                user.getAuthorisation(),
+                Claim::isMoreTimeRequested,
+                claim -> moreTimeRequestedNotificationService.notifyRobotics(new MoreTimeRequestedEvent(
+                    claim,
+                    responseDeadlineCalculator.calculatePostponedResponseDeadline(claim.getIssuedOn()),
+                    claim.getDefendantEmail())),
+                "Failed to send more time request to RPA"
+            )));
     }
 
     @PutMapping("/response")
