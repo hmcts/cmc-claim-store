@@ -40,6 +40,7 @@ public class MediationRow implements Iterable<String> {
         );
     }
 
+    @SuppressWarnings("NullableProblems")
     @Override
     public Iterator<String> iterator() {
         return toList().iterator();

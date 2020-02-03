@@ -70,7 +70,7 @@ public class DrawJudgeOrderCallbackHandlerTest {
     private static final String DOCUMENT_FILE_NAME = "sealed_claim.pdf";
     private static final LocalDate DEADLINE = LocalDate.parse("2018-11-16");
 
-    private CaseDetails caseDetails = CaseDetails.builder().id(3L).data(Collections.emptyMap()).build();
+    private final CaseDetails caseDetails = CaseDetails.builder().id(3L).data(Collections.emptyMap()).build();
 
     private static final CCDDocument DOCUMENT = CCDDocument
         .builder()

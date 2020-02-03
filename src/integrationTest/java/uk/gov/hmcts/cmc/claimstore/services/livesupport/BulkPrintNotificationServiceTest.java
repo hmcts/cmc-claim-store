@@ -78,6 +78,7 @@ public class BulkPrintNotificationServiceTest extends BaseMockSpringTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullDefendantLetterDocument() {
+        //noinspection ConstantConditions
         service.notifyFailedBulkPrint(
             ImmutableList.of(null, sealedClaimDocument),
             claim);
@@ -85,6 +86,7 @@ public class BulkPrintNotificationServiceTest extends BaseMockSpringTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullSealedClaimDocument() {
+        //noinspection ConstantConditions
         service.notifyFailedBulkPrint(
             ImmutableList.of(defendantLetterDocument, null),
             claim);

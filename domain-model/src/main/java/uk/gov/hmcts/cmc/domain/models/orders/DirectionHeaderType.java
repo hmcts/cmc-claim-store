@@ -4,7 +4,7 @@ public enum DirectionHeaderType {
     UPLOAD("Upload"),
     CONFIRM("Confirm");
 
-    private String value;
+    private final String value;
 
     DirectionHeaderType(String value) {
         this.value = value;

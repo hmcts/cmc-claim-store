@@ -11,5 +11,5 @@ public enum CCDIncomeType {
     CHILD_BENEFIT,
     COUNCIL_TAX_SUPPORT,
     PENSION,
-    OTHER;
+    OTHER
 }

@@ -29,7 +29,7 @@ import static uk.gov.hmcts.cmc.ccd.sample.data.SampleData.getCCDApplicantSoleTra
 @ContextConfiguration(classes = CCDAdapterConfig.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 public class ClaimantMapperTest {
-    private Claim claim = SampleClaim.getDefault();
+    private final Claim claim = SampleClaim.getDefault();
 
     @Autowired
     private ClaimantMapper claimantMapper;

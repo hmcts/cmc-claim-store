@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class Oauth2 {
 
-    private String clientId;
-    private String redirectUrl;
-    private String clientSecret;
+    private final String clientId;
+    private final String redirectUrl;
+    private final String clientSecret;
 
     @Autowired
     public Oauth2(

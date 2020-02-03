@@ -63,7 +63,7 @@ public enum AppInsightsEvent {
     NON_LA_PILOT_ELIGIBLE("Non LA pilot eligible"),
     DRAW_ORDER("Judge draws LA order");
 
-    private String displayName;
+    private final String displayName;
 
     AppInsightsEvent(String displayName) {
         this.displayName = displayName;

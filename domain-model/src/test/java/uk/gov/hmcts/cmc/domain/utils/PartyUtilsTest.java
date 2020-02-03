@@ -140,6 +140,7 @@ public class PartyUtilsTest {
 
     @Test
     public void shouldReturnFalseForPartyIsNull() {
+        //noinspection ConstantConditions
         assertThat(PartyUtils.isCompanyOrOrganisation(null)).isFalse();
     }
 

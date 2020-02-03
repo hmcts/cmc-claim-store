@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class TokenExchangeResponse {
 
     @JsonProperty("access_token")
-    private String accessToken;
+    private final String accessToken;
 
     @JsonCreator
     public TokenExchangeResponse(String accessToken) {

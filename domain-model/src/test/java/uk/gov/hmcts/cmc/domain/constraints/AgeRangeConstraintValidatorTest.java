@@ -21,7 +21,7 @@ public class AgeRangeConstraintValidatorTest {
     @Mock
     private ConstraintValidatorContext context;
 
-    private AgeRangeConstraintValidator validator = new AgeRangeConstraintValidator();
+    private final AgeRangeConstraintValidator validator = new AgeRangeConstraintValidator();
 
     @Before
     public void beforeEachTest() {
