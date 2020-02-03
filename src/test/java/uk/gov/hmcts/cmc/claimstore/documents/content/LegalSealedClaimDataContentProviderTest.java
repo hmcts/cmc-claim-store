@@ -19,7 +19,7 @@ public class LegalSealedClaimDataContentProviderTest {
     private StatementOfValueProvider statementOfValueProvider;
 
     @Test
-    public void shouldCreateContent() throws Exception {
+    public void shouldCreateContent() {
         //given
         Claim claim = SampleClaim.builder().withClaimData(
             SampleClaimData.builder().withFeeAmount(BigInteger.valueOf(50001)).build()
@@ -36,7 +36,7 @@ public class LegalSealedClaimDataContentProviderTest {
     }
 
     @Test
-    public void contentShouldIncludeWaterMarkFlag() throws Exception {
+    public void contentShouldIncludeWaterMarkFlag() {
         //given
         Claim claim = SampleClaim.getDefaultForLegal();
 

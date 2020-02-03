@@ -6,7 +6,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 import uk.gov.hmcts.cmc.scheduler.config.CronJobConfiguration;
 import uk.gov.hmcts.cmc.scheduler.model.CronJob;
 
@@ -34,7 +33,7 @@ public class CronJobConfigurationTest {
             }
 
             @Override
-            public void execute(JobExecutionContext context) throws JobExecutionException {
+            public void execute(JobExecutionContext context) {
 
             }
         };

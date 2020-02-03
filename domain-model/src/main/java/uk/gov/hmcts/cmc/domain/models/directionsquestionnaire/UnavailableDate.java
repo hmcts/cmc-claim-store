@@ -13,7 +13,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 @Getter
 @EqualsAndHashCode(callSuper = true)
 public class UnavailableDate extends CollectionId {
-    private LocalDate unavailableDate;
+    private final LocalDate unavailableDate;
 
     @Builder
     public UnavailableDate(String id, LocalDate unavailableDate) {

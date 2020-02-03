@@ -3,7 +3,7 @@ package uk.gov.hmcts.cmc.claimstore.services.staff.models;
 import org.springframework.util.StringUtils;
 
 public class RepaymentPlanContent {
-    private String repaymentOption;
+    private final String repaymentOption;
     private String instalmentAmount;
     private String firstPaymentDate;
     private String paymentSchedule;

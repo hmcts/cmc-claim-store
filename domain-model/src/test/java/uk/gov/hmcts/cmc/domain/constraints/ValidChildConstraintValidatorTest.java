@@ -21,7 +21,7 @@ public class ValidChildConstraintValidatorTest {
     @Mock
     private ConstraintValidatorContext validatorContext;
 
-    private ValidChildConstraintValidator validator = new ValidChildConstraintValidator();
+    private final ValidChildConstraintValidator validator = new ValidChildConstraintValidator();
 
     @Before
     public void setUp() {

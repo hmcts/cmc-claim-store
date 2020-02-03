@@ -34,7 +34,7 @@ public class Expense extends CollectionId {
         MAINTENANCE_PAYMENTS("Maintenance payments"),
         OTHER("Other");
 
-        String description;
+        private final String description;
 
         ExpenseType(String description) {
             this.description = description;

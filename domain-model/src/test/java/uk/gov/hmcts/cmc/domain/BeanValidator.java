@@ -14,7 +14,7 @@ public class BeanValidator {
         // Utility class
     }
 
-    private static ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+    private static final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 
     public static <T> Set<String> validate(T bean) {
         return getMessages(factory.getValidator().validate(bean));
@@ -26,7 +26,7 @@ public class BeanValidator {
             .collect(Collectors.toSet());
     }
 
-    private static String prepareMessage(ConstraintViolation property) {
+    private static String prepareMessage(ConstraintViolation<?> property) {
         if (!StringUtils.isEmpty(property.getPropertyPath().toString())) {
             return property.getPropertyPath() + " : " + property.getMessage();
         }
