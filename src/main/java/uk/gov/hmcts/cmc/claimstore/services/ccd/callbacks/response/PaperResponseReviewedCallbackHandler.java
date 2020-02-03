@@ -141,7 +141,8 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
             if (paperResponseTime.isPresent()) {
                 responseBuilder.data(caseDetailsConverter.convertToMap(
                     caseMapper.to(
-                        claim.toBuilder().respondedAt(paperResponseTime.orElseThrow(IllegalArgumentException::new)).build()
+                        claim.toBuilder()
+                            .respondedAt(paperResponseTime.orElseThrow(IllegalArgumentException::new)).build()
                     )));
             }
 

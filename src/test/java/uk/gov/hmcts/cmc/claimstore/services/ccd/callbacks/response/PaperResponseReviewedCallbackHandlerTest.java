@@ -52,6 +52,9 @@ public class PaperResponseReviewedCallbackHandlerTest {
 
     private PaperResponseReviewedCallbackHandler handlerToTest;
 
+    private static final String ALREADY_RESPONDED_ERROR = "You can’t process this paper request "
+        + "because the defendant already responded to the claim";
+
     @Captor
     private ArgumentCaptor<Claim> claimArgumentCaptor;
 
@@ -65,12 +68,12 @@ public class PaperResponseReviewedCallbackHandlerTest {
             responseDeadlineCalculator,
             moreTimeRequestRule);
         callbackRequest = CallbackRequest.builder().eventId(CaseEvent.MORE_TIME_REQUESTED_PAPER.getValue())
-                .caseDetails(CaseDetails
-                    .builder()
-                    .id(10L)
-                    .data(Collections.emptyMap())
-                    .build())
-                .build();
+            .caseDetails(CaseDetails
+                .builder()
+                .id(10L)
+                .data(Collections.emptyMap())
+                .build())
+            .build();
     }
 
     @Test
@@ -86,7 +89,7 @@ public class PaperResponseReviewedCallbackHandlerTest {
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
             handlerToTest.handle(callbackParams);
 
-        assertThat(response.getErrors()).contains(MoreTimeRequestRule.ALREADY_RESPONDED_ERROR);
+        assertThat(response.getErrors()).contains(ALREADY_RESPONDED_ERROR);
     }
 
     @Test
@@ -105,7 +108,7 @@ public class PaperResponseReviewedCallbackHandlerTest {
         AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
             handlerToTest.handle(callbackParams);
 
-        assertThat(response.getErrors()).contains(MoreTimeRequestRule.ALREADY_RESPONDED_ERROR);
+        assertThat(response.getErrors()).contains(ALREADY_RESPONDED_ERROR);
     }
 
     @Test
