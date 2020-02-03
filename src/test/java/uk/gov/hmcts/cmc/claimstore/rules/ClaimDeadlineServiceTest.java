@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ClaimDeadlineServiceTest {
 
-    private ClaimDeadlineService service = new ClaimDeadlineService();
+    private final ClaimDeadlineService service = new ClaimDeadlineService();
 
     @Test
     public void isPastDeadlineShouldReturnFalseWhenTimeIsBefore4PMOnDeadlineDay() {

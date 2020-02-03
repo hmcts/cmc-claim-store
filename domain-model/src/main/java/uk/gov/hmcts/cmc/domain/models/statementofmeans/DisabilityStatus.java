@@ -5,7 +5,7 @@ public enum DisabilityStatus {
     YES("Yes"),
     SEVERE("Severe");
 
-    String description;
+    private final String description;
 
     DisabilityStatus(String description) {
         this.description = description;

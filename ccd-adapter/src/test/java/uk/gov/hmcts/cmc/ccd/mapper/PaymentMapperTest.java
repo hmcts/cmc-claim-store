@@ -95,7 +95,7 @@ public class PaymentMapperTest {
             .paymentId("PaymentId")
             .paymentNextUrl("http://nexturl.test")
             .paymentStatus("success")
-            .paymentDateCreated(LocalDate.of(2019, 01, 01))
+            .paymentDateCreated(LocalDate.of(2019, 1, 1))
             .build();
 
         //when
@@ -120,7 +120,7 @@ public class PaymentMapperTest {
             .paymentId("PaymentId")
             .paymentNextUrl("http://nexturl.test")
             .paymentStatus(null)
-            .paymentDateCreated(LocalDate.of(2019, 01, 01))
+            .paymentDateCreated(LocalDate.of(2019, 1, 1))
             .build();
 
         //when

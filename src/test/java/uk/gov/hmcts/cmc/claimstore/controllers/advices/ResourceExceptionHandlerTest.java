@@ -177,7 +177,7 @@ public class ResourceExceptionHandlerTest {
     public void testUnableToExecuteStatementWithNoRootCause() {
         testTemplate(
             "Internal server error",
-            UnableToExecuteStatementException::new,
+            m -> new UnableToExecuteStatementException((Exception) null, null),
             handler::unableToExecuteStatement,
             HttpStatus.INTERNAL_SERVER_ERROR,
             AppInsightsExceptionLogger::error
@@ -188,7 +188,7 @@ public class ResourceExceptionHandlerTest {
     public void testUnableToExecuteStatementWithAUniqueConstraintRootCause() {
         testTemplate(
             "expected exception: duplicate key value violates unique constraint",
-            m -> new UnableToExecuteStatementException(new PSQLException(m, PSQLState.UNKNOWN_STATE)),
+            m -> new UnableToExecuteStatementException(new PSQLException(m, PSQLState.UNKNOWN_STATE), null),
             handler::unableToExecuteStatement,
             HttpStatus.CONFLICT,
             AppInsightsExceptionLogger::error

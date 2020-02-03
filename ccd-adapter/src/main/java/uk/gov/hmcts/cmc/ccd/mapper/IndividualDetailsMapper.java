@@ -12,7 +12,7 @@ import uk.gov.hmcts.cmc.domain.models.otherparty.IndividualDetails;
 public class IndividualDetailsMapper {
 
     private final AddressMapper addressMapper;
-    private DefendantRepresentativeMapper representativeMapper;
+    private final DefendantRepresentativeMapper representativeMapper;
     private final TelephoneMapper telephoneMapper;
 
     @Autowired

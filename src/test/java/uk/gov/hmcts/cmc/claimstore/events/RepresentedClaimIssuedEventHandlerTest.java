@@ -11,7 +11,6 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.Notifications
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentativeConfirmationHandler;
 import uk.gov.hmcts.cmc.claimstore.events.solicitor.RepresentedClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
-import uk.gov.service.notify.NotificationClientException;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -48,7 +47,7 @@ public class RepresentedClaimIssuedEventHandlerTest {
     }
 
     @Test
-    public void sendNotificationsSendsNotificationsToRepresentative() throws NotificationClientException {
+    public void sendNotificationsSendsNotificationsToRepresentative() {
 
         RepresentedClaimIssuedEvent representedClaimIssuedEvent
             = new RepresentedClaimIssuedEvent(CLAIM, SUBMITTER_NAME, AUTHORISATION);
