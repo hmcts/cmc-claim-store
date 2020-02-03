@@ -124,7 +124,7 @@ public class OrderCreator {
         CCDRespondent respondent = ccdCase.getRespondents().get(0).getValue();
 
         CCDResponseRejection claimantResponse = Optional.ofNullable(respondent.getClaimantResponse())
-            .map(r -> (CCDResponseRejection) r)
+            .map(CCDResponseRejection.class::cast)
             .orElseThrow(() -> new IllegalStateException("Claimant Response not present"));
 
         CCDDirectionsQuestionnaire claimantDQ = claimantResponse.getDirectionsQuestionnaire();
@@ -138,8 +138,8 @@ public class OrderCreator {
             newRequestedCourt = claimantDQ.getHearingLocation();
             preferredCourtObjectingParty = CCDResponseSubjectType.RES_CLAIMANT.getValue();
             preferredCourtObjectingReason = claimantDQ.getExceptionalCircumstancesReason();
-        } else if (defendantDQ != null && StringUtils.isNotBlank(
-            defendantDQ.getExceptionalCircumstancesReason())) {
+
+        } else if (defendantDQ != null && StringUtils.isNotBlank(defendantDQ.getExceptionalCircumstancesReason())) {
             newRequestedCourt = defendantDQ.getHearingLocation();
             preferredCourtObjectingParty = CCDResponseSubjectType.RES_DEFENDANT.getValue();
             preferredCourtObjectingReason = defendantDQ.getExceptionalCircumstancesReason();

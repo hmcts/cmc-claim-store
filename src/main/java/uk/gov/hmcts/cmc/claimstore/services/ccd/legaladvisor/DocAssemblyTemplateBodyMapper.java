@@ -89,16 +89,13 @@ public class DocAssemblyTemplateBodyMapper {
                 .collect(Collectors.toList()))
             .directionDeadline(workingDayIndicator.getNextWorkingDay(
                 currentDate.plusDays(DIRECTION_DEADLINE_NO_OF_DAYS)))
-            .expertReportInstructionClaimant(ccdCase.getExpertReportInstructionClaimant())
-            .expertReportInstructionDefendant(ccdCase.getExpertReportInstructionDefendant())
+            .expertReportInstruction(ccdCase.getExpertReportInstruction())
             .expertReportPermissionPartyAskedByClaimant(fromEnum(ccdCase
                 .getExpertReportPermissionPartyAskedByClaimant()))
             .expertReportPermissionPartyAskedByDefendant(fromEnum(ccdCase
                 .getExpertReportPermissionPartyAskedByDefendant()))
-            .expertReportPermissionPartyGivenToClaimant(fromEnum(ccdCase
-                .getExpertReportPermissionPartyGivenToClaimant()))
-            .expertReportPermissionPartyGivenToDefendant(fromEnum(ccdCase
-                .getExpertReportPermissionPartyGivenToDefendant()))
+            .grantExpertReportPermission(fromEnum(ccdCase
+                .getGrantExpertReportPermission()))
             .build();
     }
 

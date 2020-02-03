@@ -48,13 +48,9 @@ public class DirectionOrderMapper {
         Optional.ofNullable(ccdCase.getPaperDetermination()).ifPresent(paperDetermination ->
             builder.paperDetermination(YesNoOption.valueOf(paperDetermination.name())));
 
-        Optional.ofNullable(ccdCase.getExpertReportPermissionPartyGivenToClaimant())
+        Optional.ofNullable(ccdCase.getGrantExpertReportPermission())
             .ifPresent(permission -> builder
-                .expertReportPermissionGivenToClaimant(YesNoOption.valueOf(permission.name())));
-
-        Optional.ofNullable(ccdCase.getExpertReportPermissionPartyGivenToDefendant())
-            .ifPresent(permission -> builder
-                .expertReportPermissionGivenToDefendant(YesNoOption.valueOf(permission.name())));
+                .grantExpertReportPermission(YesNoOption.valueOf(permission.name())));
 
         Optional.ofNullable(ccdCase.getExpertReportPermissionPartyAskedByClaimant())
             .ifPresent(permission -> builder
@@ -74,9 +70,7 @@ public class DirectionOrderMapper {
             .extraDocUploadList(ccdCase.getExtraDocUploadList().stream()
                 .map(CCDCollectionElement::getValue)
                 .collect(Collectors.toList()))
-            .expertReportInstructionsForClaimant(ccdCase.getExpertReportInstructionClaimant()
-                .stream().map(CCDCollectionElement::getValue).collect(Collectors.toList()))
-            .expertReportInstructionsForDefendant(ccdCase.getExpertReportInstructionDefendant()
+            .expertReportInstruction(ccdCase.getExpertReportInstruction()
                 .stream().map(CCDCollectionElement::getValue).collect(Collectors.toList()))
             .build();
 

@@ -48,11 +48,8 @@ public class DirectionOrderMapperTest {
         assertThat(directionOrder).isEqualTo(ccdDirectionOrder);
         assertThat(directionOrder.getDirections()).hasSize(4);
 
-        assertEnumNames(directionOrder.getExpertReportPermissionGivenToClaimant(),
-            ccdCase.getExpertReportPermissionPartyGivenToClaimant());
-
-        assertEnumNames(directionOrder.getExpertReportPermissionGivenToDefendant(),
-            ccdCase.getExpertReportPermissionPartyGivenToDefendant());
+        assertEnumNames(directionOrder.getGrantExpertReportPermission(),
+            ccdCase.getGrantExpertReportPermission());
 
         assertEnumNames(directionOrder.getExpertReportPermissionAskedByClaimant(),
             ccdCase.getExpertReportPermissionPartyAskedByClaimant());
@@ -60,19 +57,16 @@ public class DirectionOrderMapperTest {
         assertEnumNames(directionOrder.getExpertReportPermissionAskedByDefendant(),
             ccdCase.getExpertReportPermissionPartyAskedByDefendant());
 
-        directionOrder.getExpertReportInstructionsForClaimant()
-            .forEach(assertInstructions(ccdCase.getExpertReportInstructionClaimant()));
-
-        directionOrder.getExpertReportInstructionsForDefendant()
-            .forEach(assertInstructions(ccdCase.getExpertReportInstructionDefendant()));
+        directionOrder.getExpertReportInstruction()
+            .forEach(assertInstructions(ccdCase.getExpertReportInstruction()));
     }
 
     private void assertEnumNames(YesNoOption input, CCDYesNoOption expected) {
         assertThat(input.name()).isEqualTo(expected.name());
     }
 
-    private Consumer<String> assertInstructions(List<CCDCollectionElement<String>> expertReportInstructions) {
-        return instruction -> assertThat(expertReportInstructions
+    private Consumer<String> assertInstructions(List<CCDCollectionElement<String>> expertReportInstruction) {
+        return instruction -> assertThat(expertReportInstruction
             .stream()
             .map(CCDCollectionElement::getValue)
             .anyMatch(value -> value.equals(instruction))

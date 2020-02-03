@@ -23,13 +23,13 @@ public class GenerateOrderRule {
         List<String> validationErrors = new ArrayList<>();
 
         if (isPresentAndIsYes(ccdCase.getExpertReportPermissionPartyAskedByClaimant())
-            && !isPresent(ccdCase.getExpertReportPermissionPartyGivenToClaimant())
+            && !isPresent(ccdCase.getGrantExpertReportPermission())
         ) {
             validationErrors.add(CLAIMANT_REQUESTED_FOR_EXPORT_REPORT);
         }
 
         if (isPresentAndIsYes(ccdCase.getExpertReportPermissionPartyAskedByDefendant())
-            && !isPresent(ccdCase.getExpertReportPermissionPartyGivenToDefendant())
+            && !isPresent(ccdCase.getGrantExpertReportPermission())
         ) {
             validationErrors.add(DEFENDANT_REQUESTED_FOR_EXPORT_REPORT);
         }

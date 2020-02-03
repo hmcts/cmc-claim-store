@@ -154,11 +154,8 @@ public class DocAssemblyTemplateBodyMapperTest {
             ))
             .expertReportPermissionPartyAskedByClaimant(true)
             .expertReportPermissionPartyAskedByDefendant(true)
-            .expertReportPermissionPartyGivenToClaimant(true)
-            .expertReportPermissionPartyGivenToDefendant(true)
-            .expertReportInstructionClaimant(ImmutableList.of(CCDCollectionElement.<String>builder()
-                .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()))
-            .expertReportInstructionDefendant(ImmutableList.of(CCDCollectionElement.<String>builder()
+            .grantExpertReportPermission(true)
+            .expertReportInstruction(ImmutableList.of(CCDCollectionElement.<String>builder()
                 .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()));
 
         //when
@@ -241,11 +238,8 @@ public class DocAssemblyTemplateBodyMapperTest {
             ))
             .expertReportPermissionPartyAskedByClaimant(true)
             .expertReportPermissionPartyAskedByDefendant(true)
-            .expertReportPermissionPartyGivenToClaimant(true)
-            .expertReportPermissionPartyGivenToDefendant(true)
-            .expertReportInstructionClaimant(ImmutableList.of(CCDCollectionElement.<String>builder()
-                .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()))
-            .expertReportInstructionDefendant(ImmutableList.of(CCDCollectionElement.<String>builder()
+            .grantExpertReportPermission(true)
+            .expertReportInstruction(ImmutableList.of(CCDCollectionElement.<String>builder()
                 .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()))
             .build();
 

@@ -87,18 +87,11 @@
   "paperDetermination": false,
   "expertReportPermissionPartyAskedByClaimant": true,
   "expertReportPermissionPartyAskedByDefendant": true,
-  "expertReportPermissionPartyGivenToClaimant": true,
-  "expertReportPermissionPartyGivenToDefendant": true,
-  "expertReportInstructionClaimant": [
+  "grantExpertReportPermission": true,
+  "expertReportInstruction": [
     {
       "id": null,
       "value": "submit more docs"
     }
   ],
-  "expertReportInstructionDefendant": [
-    {
-      "id": null,
-      "value": "submit more docs"
-    }
-  ]
 }

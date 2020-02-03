@@ -629,11 +629,8 @@ public class SampleData {
             .estimatedHearingDuration(CCDHearingDurationType.FOUR_HOURS)
             .expertReportPermissionPartyAskedByClaimant(YES)
             .expertReportPermissionPartyAskedByDefendant(YES)
-            .expertReportPermissionPartyGivenToClaimant(YES)
-            .expertReportPermissionPartyGivenToDefendant(YES)
-            .expertReportInstructionClaimant(ImmutableList.of(CCDCollectionElement.<String>builder()
-                .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()))
-            .expertReportInstructionDefendant(ImmutableList.of(CCDCollectionElement.<String>builder()
+            .grantExpertReportPermission(YES)
+            .expertReportInstruction(ImmutableList.of(CCDCollectionElement.<String>builder()
                 .value(SUBMIT_MORE_DOCS_INSTRUCTION).build()))
             .build();
     }

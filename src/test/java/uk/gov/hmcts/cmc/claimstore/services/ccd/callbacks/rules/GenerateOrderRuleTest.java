@@ -16,8 +16,7 @@ public class GenerateOrderRuleTest {
         CCDCase ccdCase = CCDCase.builder()
             .expertReportPermissionPartyAskedByClaimant(CCDYesNoOption.YES)
             .expertReportPermissionPartyAskedByDefendant(CCDYesNoOption.YES)
-            .expertReportPermissionPartyGivenToClaimant(null)
-            .expertReportPermissionPartyGivenToDefendant(null)
+            .grantExpertReportPermission(null)
             .build();
 
         List<String> validations = generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase);
@@ -33,8 +32,7 @@ public class GenerateOrderRuleTest {
         CCDCase ccdCase = CCDCase.builder()
             .expertReportPermissionPartyAskedByClaimant(CCDYesNoOption.YES)
             .expertReportPermissionPartyAskedByDefendant(CCDYesNoOption.YES)
-            .expertReportPermissionPartyGivenToClaimant(CCDYesNoOption.YES)
-            .expertReportPermissionPartyGivenToDefendant(CCDYesNoOption.NO)
+            .grantExpertReportPermission(CCDYesNoOption.YES)
             .build();
 
         List<String> validations = generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase);
@@ -47,8 +45,7 @@ public class GenerateOrderRuleTest {
         CCDCase ccdCase = CCDCase.builder()
             .expertReportPermissionPartyAskedByClaimant(CCDYesNoOption.NO)
             .expertReportPermissionPartyAskedByDefendant(CCDYesNoOption.NO)
-            .expertReportPermissionPartyGivenToClaimant(null)
-            .expertReportPermissionPartyGivenToDefendant(null)
+            .grantExpertReportPermission(null)
             .build();
         List<String> validations = generateOrderRule.validateExpectedFieldsAreSelectedByLegalAdvisor(ccdCase);
 
