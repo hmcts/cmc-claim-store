@@ -68,7 +68,7 @@ public class CCDElasticSearchRepository implements CaseSearchApi {
 
         Query mediationQuery = new Query(
             QueryBuilders.boolQuery()
-                .must(QueryBuilders.termQuery(
+                .must(QueryBuilders.matchQuery(
                     "data.respondents.value.countyCourtJudgmentRequest.type",
                     CountyCourtJudgmentType.DEFAULT.name()))
                 .must(QueryBuilders.rangeQuery("data.respondents.value.countyCourtJudgmentRequest.requestedDate")
