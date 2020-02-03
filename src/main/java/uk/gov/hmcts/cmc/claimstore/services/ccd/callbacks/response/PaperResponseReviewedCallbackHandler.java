@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -59,13 +58,13 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
 
     private static Function<Claim, List<ClaimDocument>> getStaffUploadedDocs = claim ->
         claim.getClaimDocumentCollection()
-        .map(ClaimDocumentCollection::getStaffUploadedDocuments)
-        .orElse(Collections.emptyList());
+            .map(ClaimDocumentCollection::getStaffUploadedDocuments)
+            .orElse(Collections.emptyList());
 
     private static Function<Claim, List<ScannedDocument>> getBulkScannedDocs = claim ->
         claim.getClaimDocumentCollection()
-        .map(ClaimDocumentCollection::getScannedDocuments)
-        .orElse(Collections.emptyList());
+            .map(ClaimDocumentCollection::getScannedDocuments)
+            .orElse(Collections.emptyList());
 
     private static Predicate<ClaimDocument> filterClaimDocumentPaperResponseDoc = doc ->
         paperResponseStaffUploadedType.stream()
@@ -79,6 +78,9 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
 
     private static Predicate<ScannedDocument> isScannedDocumentMoreTimeRequested = doc ->
         doc.getSubtype().equalsIgnoreCase("N9");
+
+    private static final String ALREADY_RESPONDED_ERROR = "You can’t process this paper request "
+        + "because the defendant already responded to the claim";
 
     private final ResponseDeadlineCalculator responseDeadlineCalculator;
     private final MoreTimeRequestRule moreTimeRequestRule;
@@ -117,8 +119,11 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
         CallbackRequest callbackRequest = callbackParams.getRequest();
         Claim claim = toClaimAfterEvent(callbackRequest);
 
+        AboutToStartOrSubmitCallbackResponse.AboutToStartOrSubmitCallbackResponseBuilder responseBuilder =
+            AboutToStartOrSubmitCallbackResponse.builder();
+
         if (verifyNoDuplicateMoreTimeRequested(callbackRequest)) {
-            return AboutToStartOrSubmitCallbackResponse.builder()
+            return responseBuilder
                 .errors(Collections.singletonList("Requesting More Time to respond can be done only once."))
                 .build();
         }
@@ -131,24 +136,19 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
         }
 
         try {
-            LocalDateTime responseTime = getReceivedTimeForStaffUploadedPaperResponseDoc(claim)
-                .map(ClaimDocument::getReceivedDateTime)
-                .orElseGet(() -> getScanedTimeForScannedPaperResponseDoc(claim)
-                    .map(ScannedDocument::getDeliveryDate)
-                    .orElseThrow(IllegalArgumentException::new)
-                );
+            Optional<LocalDateTime> paperResponseTime = getResponseTimeFromPaperResponse(claim);
 
-            Map<String, Object> data = caseDetailsConverter.convertToMap(
-                caseMapper.to(
-                    claim.toBuilder().respondedAt(responseTime).build()
-                ));
+            if (paperResponseTime.isPresent()) {
+                responseBuilder.data(caseDetailsConverter.convertToMap(
+                    caseMapper.to(
+                        claim.toBuilder().respondedAt(paperResponseTime.orElseThrow(IllegalArgumentException::new)).build()
+                    )));
+            }
 
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(data)
-                .build();
+            return responseBuilder.build();
 
         } catch (Exception gene) {
-            return AboutToStartOrSubmitCallbackResponse.builder()
+            return responseBuilder
                 .errors(Collections.singletonList("Unable to determine the response time."))
                 .build();
         }
@@ -157,16 +157,15 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
     private AboutToStartOrSubmitCallbackResponse verifyResponsePossible(
         CallbackParams callbackParams) {
         Claim claim = toClaimAfterEvent(callbackParams.getRequest());
-        List<String> validationErrors = new ArrayList<>();
+
+        AboutToStartOrSubmitCallbackResponse.AboutToStartOrSubmitCallbackResponseBuilder responseBuilder =
+            AboutToStartOrSubmitCallbackResponse.builder();
 
         if (claim.getResponse().isPresent() || claim.getRespondedAt() != null) {
-            validationErrors.add(MoreTimeRequestRule.ALREADY_RESPONDED_ERROR);
+            responseBuilder.errors(Collections.singletonList(ALREADY_RESPONDED_ERROR));
         }
 
-        return AboutToStartOrSubmitCallbackResponse
-            .builder()
-            .errors(validationErrors)
-            .build();
+        return responseBuilder.build();
     }
 
     private Claim toClaimAfterEvent(CallbackRequest callbackRequest) {
@@ -212,11 +211,20 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
             .findFirst();
     }
 
-    private Optional<ScannedDocument> getScanedTimeForScannedPaperResponseDoc(Claim claim) {
+    private Optional<ScannedDocument> getScannedTimeForScannedPaperResponseDoc(Claim claim) {
         return getBulkScannedDocs.apply(claim)
             .stream()
             .filter(filterScannedDocumentPaperResponseDoc)
             .findFirst();
+    }
+
+    private Optional<LocalDateTime> getResponseTimeFromPaperResponse(Claim claim) {
+        return Optional.ofNullable(getReceivedTimeForStaffUploadedPaperResponseDoc(claim)
+            .map(ClaimDocument::getReceivedDateTime)
+            .orElseGet(() -> getScannedTimeForScannedPaperResponseDoc(claim)
+                .map(ScannedDocument::getDeliveryDate)
+                .orElse(null)
+            ));
     }
 
     private boolean verifyNoDuplicateMoreTimeRequested(CallbackRequest request) {
