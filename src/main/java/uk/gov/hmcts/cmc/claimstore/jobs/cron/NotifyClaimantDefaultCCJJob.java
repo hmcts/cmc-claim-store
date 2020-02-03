@@ -38,15 +38,6 @@ public class NotifyClaimantDefaultCCJJob implements CronJob {
     @Value("${ccjClaimantNotify.schedule:0 0 0 1 1 ? 2099}")
     private String cronExpression;
 
-    @Autowired
-    public NotifyClaimantDefaultCCJJob(CaseSearchApi caseSearchApi,
-                                       UserService userService,
-                                       CCJNotificationService ccjNotificationService) {
-        this.caseSearchApi = caseSearchApi;
-        this.userService = userService;
-        this.ccjNotificationService = ccjNotificationService;
-    }
-
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         try {
@@ -57,5 +48,20 @@ public class NotifyClaimantDefaultCCJJob implements CronJob {
         } catch (Exception e) {
             throw new JobExecutionException(e);
         }
+    }
+
+    @Autowired
+    public void setCaseSearchApi(CaseSearchApi caseSearchApi) {
+        this.caseSearchApi = caseSearchApi;
+    }
+
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+
+    @Autowired
+    public void setCcjNotificationService(CCJNotificationService ccjNotificationService) {
+        this.ccjNotificationService = ccjNotificationService;
     }
 }

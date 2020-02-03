@@ -41,9 +41,10 @@ public class NotifyClaimantDefaultCCJJobTest {
 
     @Before
     public void setup() {
-        notifyClaimantDefaultCCJJob = new NotifyClaimantDefaultCCJJob(caseSearchApi,
-            userService,
-            ccjNotificationService);
+        notifyClaimantDefaultCCJJob = new NotifyClaimantDefaultCCJJob();
+        notifyClaimantDefaultCCJJob.setCaseSearchApi(caseSearchApi);
+        notifyClaimantDefaultCCJJob.setUserService(userService);
+        notifyClaimantDefaultCCJJob.setCcjNotificationService(ccjNotificationService);
 
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
     }
