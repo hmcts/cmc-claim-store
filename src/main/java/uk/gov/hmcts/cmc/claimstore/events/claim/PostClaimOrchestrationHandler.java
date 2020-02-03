@@ -116,7 +116,7 @@ public class PostClaimOrchestrationHandler {
                 .andThen(c -> notifyClaimantOperation.perform(c, event))
                 .apply(claim);
 
-            if (Objects.equals(ClaimState.CREATE, updatedClaim.getState())) {
+            if (updatedClaim.getState() == ClaimState.CREATE) {
                 claimService.updateClaimState(authorisation, updatedClaim, ClaimState.OPEN);
                 appInsights.trackEvent(
                     AppInsightsEvent.CLAIM_ISSUED_CITIZEN,
@@ -148,7 +148,7 @@ public class PostClaimOrchestrationHandler {
                 .andThen(c -> notifyRepresentativeOperation.perform(c, event))
                 .apply(claim);
 
-            if (Objects.equals(ClaimState.CREATE, updatedClaim.getState())) {
+            if (updatedClaim.getState() == ClaimState.CREATE) {
                 claimService.updateClaimState(authorisation, updatedClaim, ClaimState.OPEN);
                 appInsights.trackEvent(
                     AppInsightsEvent.CLAIM_ISSUED_LEGAL,
