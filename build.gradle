@@ -31,7 +31,7 @@ def versions = [
   logback           : '1.2.3',
   springBoot        : springBootVersion,
   springfoxSwagger  : '2.9.2',
-  reformJavaLogging : '5.0.1',
+  reformJavaLogging : '5.1.1',
   restAssuredVersion: '4.0.0',
   jackson           : '2.10.0',
   junit             : '5.5.2',
