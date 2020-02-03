@@ -161,7 +161,7 @@ public class AdmissionResponseJsonMapperTest extends BaseResponseJsonMapper {
 
     @Test
     public void shouldMapIndividualFullAdmissionPayingBySetDateToRPA() throws JSONException {
-        LocalDate specifiedDate = LocalDate.of(2018, Month.JANUARY, 01);
+        LocalDate specifiedDate = LocalDate.of(2018, Month.JANUARY, 1);
         PaymentIntention paymentIntention = SamplePaymentIntention.bySetDateWithDateSpecified(specifiedDate);
         Party party = SampleParty.builder().withCorrespondenceAddress(null).individual();
         FullAdmissionResponse fullAdmissionResponse = SampleResponse

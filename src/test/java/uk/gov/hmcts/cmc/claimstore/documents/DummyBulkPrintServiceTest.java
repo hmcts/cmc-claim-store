@@ -26,7 +26,7 @@ import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DummyBulkPrintServiceTest {
-    private Logger log = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    private final Logger log = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
     @Mock
     private Appender<ILoggingEvent> mockAppender;

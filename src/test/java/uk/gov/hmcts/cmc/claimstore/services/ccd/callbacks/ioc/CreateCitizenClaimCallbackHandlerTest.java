@@ -82,7 +82,7 @@ public class CreateCitizenClaimCallbackHandlerTest {
     private CallbackRequest callbackRequest;
     private CreateCitizenClaimCallbackHandler createCitizenClaimCallbackHandler;
 
-    private CaseDetails caseDetails = CaseDetails.builder().id(3L).data(Collections.emptyMap()).build();
+    private final CaseDetails caseDetails = CaseDetails.builder().id(3L).data(Collections.emptyMap()).build();
 
     private Payment.PaymentBuilder paymentBuilder;
 

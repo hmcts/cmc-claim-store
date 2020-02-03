@@ -31,12 +31,12 @@ public class HearingContentProvider {
     private static final String YES = "Yes";
     private static final String NO = "No";
 
-    private Function<ExpertReport, ExpertReportContent> mapExpertReport = report ->
+    private final Function<ExpertReport, ExpertReportContent> mapExpertReport = report ->
         ExpertReportContent.builder().expertName(report.getExpertName())
             .expertReportDate(Formatting.formatDate(report.getExpertReportDate()))
             .build();
 
-    private Function<UnavailableDate, String> mapToISOFullStyle = unavailableDate ->
+    private final Function<UnavailableDate, String> mapToISOFullStyle = unavailableDate ->
         Optional.ofNullable(unavailableDate)
             .map(UnavailableDate::getUnavailableDate)
             .map(DateUtils::toISOFullStyle).orElse("");

@@ -14,7 +14,7 @@ public class ClaimantContentProviderTest {
 
     private final Individual claimant = SampleParty.builder().individual();
 
-    private ClaimantContentProvider provider = new ClaimantContentProvider(
+    private final ClaimantContentProvider provider = new ClaimantContentProvider(
         new PersonContentProvider()
     );
 

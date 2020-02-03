@@ -55,8 +55,9 @@ public class CCDCaseApi {
     private static final int MINIMUM_SIZE_TO_CHECK_FOR_MORE_PAGES = 10;
     private static final int MAX_NUM_OF_PAGES_TO_CHECK = 10;
 
-    private Predicate<CaseDetails> isCreatedState = caseDetails -> CREATE.getValue().equals(caseDetails.getState());
-    private Predicate<CaseDetails> isAwaitingCitizenState = caseDetails ->
+    private final Predicate<CaseDetails> isCreatedState = caseDetails ->
+        CREATE.getValue().equals(caseDetails.getState());
+    private final Predicate<CaseDetails> isAwaitingCitizenState = caseDetails ->
         AWAITING_CITIZEN_PAYMENT.getValue().equals(caseDetails.getState());
 
     @SuppressWarnings("squid:S00107") // All parameters are required here

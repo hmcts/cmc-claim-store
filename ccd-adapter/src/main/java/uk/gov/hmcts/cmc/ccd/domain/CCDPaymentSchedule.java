@@ -5,7 +5,7 @@ public enum CCDPaymentSchedule {
     EVERY_TWO_WEEKS("Every two weeks"),
     EVERY_MONTH("Every month");
 
-    private String description;
+    private final String description;
 
     CCDPaymentSchedule(String description) {
         this.description = description;

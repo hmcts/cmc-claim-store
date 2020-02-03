@@ -6,7 +6,7 @@ public enum CCDResponseSubjectType {
     RES_CLAIMANT("Res_CLAIMANT"),
     RES_DEFENDANT("Res_DEFENDANT");
 
-    private String value;
+    private final String value;
 
     CCDResponseSubjectType(String value) {
         this.value = value;

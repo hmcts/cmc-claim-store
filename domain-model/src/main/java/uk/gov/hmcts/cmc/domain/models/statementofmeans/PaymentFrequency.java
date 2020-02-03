@@ -6,7 +6,7 @@ public enum PaymentFrequency {
     FOUR_WEEKS("4 Weeks"),
     MONTH("Month");
 
-    String description;
+    private final String description;
 
     PaymentFrequency(String description) {
         this.description = description;
