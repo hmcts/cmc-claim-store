@@ -69,11 +69,10 @@ public class IntentionToProceedServiceTest {
 
     private final int intentionToProceedAdjustment = 33;
 
-    private IntentionToProceedDeadlineCalculator intentionToProceedDeadlineCalculator;
-
     @Before
     public void setUp() {
-        intentionToProceedDeadlineCalculator = new IntentionToProceedDeadlineCalculator(
+        IntentionToProceedDeadlineCalculator intentionToProceedDeadlineCalculator =
+            new IntentionToProceedDeadlineCalculator(
             workingDayIndicator,
             intentionToProceedAdjustment
         );
@@ -93,7 +92,7 @@ public class IntentionToProceedServiceTest {
 
     @Test
     public void checkClaimsPastIntentionToProceedDeadlineOnAWorkdayAfter4pm() {
-        LocalDateTime tuesdayAfter4pm = LocalDateTime.of(2019, Month.OCTOBER, 15, 16, 00, 00);
+        LocalDateTime tuesdayAfter4pm = LocalDateTime.of(2019, Month.OCTOBER, 15, 16, 0, 0);
         when(workingDayIndicator.getPreviousWorkingDay(any())).then(returnsFirstArg());
 
         intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(tuesdayAfter4pm, new User(null, null));
@@ -115,7 +114,7 @@ public class IntentionToProceedServiceTest {
 
     @Test
     public void checkClaimsPastIntentionToProceedDeadlineONonWorkdayAfter4pm() {
-        LocalDateTime saturday = LocalDateTime.of(2019, Month.OCTOBER, 12, 16, 00, 00);
+        LocalDateTime saturday = LocalDateTime.of(2019, Month.OCTOBER, 12, 16, 0, 0);
 
         int workdayAdjustment = 1;
         when(workingDayIndicator.getPreviousWorkingDay(any()))

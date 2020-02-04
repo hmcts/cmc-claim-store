@@ -54,7 +54,7 @@ public class DrawOrderCallbackHandlerTest {
     private static final String DOCUMENT_BINARY_URL = "http://bla.binary.test";
     private static final String DOCUMENT_FILE_NAME = "sealed_claim.pdf";
 
-    private CaseDetails caseDetails = CaseDetails.builder().id(3L).data(Collections.emptyMap()).build();
+    private final CaseDetails caseDetails = CaseDetails.builder().id(3L).data(Collections.emptyMap()).build();
 
     private static final CCDDocument DOCUMENT = CCDDocument
         .builder()

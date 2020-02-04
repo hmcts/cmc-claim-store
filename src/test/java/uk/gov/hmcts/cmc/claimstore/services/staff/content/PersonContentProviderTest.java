@@ -18,7 +18,7 @@ public class PersonContentProviderTest {
     private String phoneNumber;
     private String dateOfBirth;
 
-    private PersonContentProvider provider = new PersonContentProvider();
+    private final PersonContentProvider provider = new PersonContentProvider();
 
     @Before
     public void beforeEachTest() {

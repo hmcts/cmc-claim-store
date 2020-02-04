@@ -140,7 +140,7 @@ public class DataFixHandler {
             && !isResponded(ccdCase)
         ) {
             Claim.ClaimBuilder claimBuilder = caseMapper.from(ccdCase).toBuilder();
-            claimBuilder.responseDeadline(LocalDate.of(2019, 06, 10));
+            claimBuilder.responseDeadline(LocalDate.of(2019, 6, 10));
             CCDCase updatedCase = caseMapper.to(claimBuilder.build());
             updateCase(user, updatedClaims, failedOnUpdateMigrations, updatedCase);
         }
@@ -174,35 +174,24 @@ public class DataFixHandler {
         CaseDetails details,
         CaseEventDetails lastEventDetails
     ) {
-        logger.info(new StringBuilder("CSV")
-            .append(",")
-            .append(bucketType)
-            .append(",")
-            .append(ccdCase.getPreviousServiceCaseReference())
-            .append(",")
-            .append(ccdCase.getId())
-            .append(",")
-            .append(details.getLastModified())
-            .append(",")
-            .append(lastEventDetails.getEventName())
-            .append(",")
-            .append(lastEventDetails.getCreatedDate())
-            .append(",")
-            .append(lastEventDetails.getUserFirstName())
-            .append(" ")
-            .append(lastEventDetails.getUserLastName())
-            .append(",")
-            .append(hasProgressed)
-            .toString()
+        logger.info("CSV,"
+            + bucketType + ","
+            + ccdCase.getPreviousServiceCaseReference() + ","
+            + ccdCase.getId() + ","
+            + details.getLastModified() + ","
+            + lastEventDetails.getEventName() + ","
+            + lastEventDetails.getCreatedDate() + ","
+            + lastEventDetails.getUserFirstName() + " " + lastEventDetails.getUserLastName() + ","
+            + hasProgressed
         );
     }
 
     private List<CaseEventDetails> listEventsCreatedBetweenMigrationAndDataPatch(List<CaseEventDetails> events) {
         return events.stream()
             .filter(event -> event.getCreatedDate()
-                .isBefore(LocalDateTime.of(2019, 06, 03, 19, 03, 00)))
+                .isBefore(LocalDateTime.of(2019, 6, 3, 19, 3, 0)))
             .filter(event -> event.getCreatedDate()
-                .isAfter(LocalDateTime.of(2019, 05, 29, 23, 00, 00)))
+                .isAfter(LocalDateTime.of(2019, 5, 29, 23, 0, 0)))
             .collect(Collectors.toList());
     }
 
@@ -288,10 +277,8 @@ public class DataFixHandler {
         return ccdCase.getRespondents()
             .stream()
             .map(CCDCollectionElement::getValue)
-            .filter(respondent -> respondent.getResponseDeadline().isBefore(LocalDate.of(2019, 06, 05)))
-            .filter(respondent -> respondent.getResponseDeadline().isAfter(LocalDate.of(2019, 05, 29)))
-            .findAny()
-            .isPresent();
+            .filter(respondent -> respondent.getResponseDeadline().isBefore(LocalDate.of(2019, 6, 5)))
+            .anyMatch(respondent -> respondent.getResponseDeadline().isAfter(LocalDate.of(2019, 5, 29)));
 
     }
 }

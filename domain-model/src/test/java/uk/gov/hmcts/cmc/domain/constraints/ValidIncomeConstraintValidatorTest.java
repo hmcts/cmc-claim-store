@@ -15,7 +15,7 @@ public class ValidIncomeConstraintValidatorTest {
     @Mock
     private ConstraintValidatorContext validatorContext;
 
-    private ValidIncomeConstraintValidator validator = new ValidIncomeConstraintValidator();
+    private final ValidIncomeConstraintValidator validator = new ValidIncomeConstraintValidator();
 
     @Test
     public void shouldBeValidWhenNull() {

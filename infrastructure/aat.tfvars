@@ -1,5 +1,5 @@
 idam_api_url = "https://idam-api.aat.platform.hmcts.net"
-db_host = "cmc-aat.postgres.database.azure.com"
+db_host = "preprod-data-lb.moneyclaim.reform.hmcts.net"
 frontend_url = "https://cmc-citizen-frontend-aat-staging.service.core-compute-aat.internal"
 capacity = "2"
 respond_to_claim_url = "https://moneyclaims.aat.platform.hmcts.net/first-contact/start"
