@@ -104,7 +104,12 @@ public class ClaimantResponseService {
 
         if (!FeaturesUtils.isOnlineDQ(updatedClaim) && isRejectResponseNoMediation(claimantResponse)) {
             directionsQuestionnaireService.updateDirectionsQuestionnaireDeadline(
-                updatedClaim, LocalDateTime.now(), authorization);
+                    updatedClaim, LocalDateTime.now(), authorization);
+            updatedClaim = claimService.getClaimByExternalId(externalId, authorization);
+        }
+
+        if (FeaturesUtils.isOnlineDQ(updatedClaim)) {
+            appInsights.trackEvent(AppInsightsEvent.BOTH_PARTIES_ONLINE_DQ, REFERENCE_NUMBER, updatedClaim.getReferenceNumber());
             updatedClaim = claimService.getClaimByExternalId(externalId, authorization);
         }
 
