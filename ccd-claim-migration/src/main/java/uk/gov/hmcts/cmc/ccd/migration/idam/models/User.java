@@ -1,8 +1,8 @@
 package uk.gov.hmcts.cmc.ccd.migration.idam.models;
 
 public class User {
-    private String authorisation;
-    private UserDetails userDetails;
+    private final String authorisation;
+    private final UserDetails userDetails;
 
     public User(String authorisation, UserDetails userDetails) {
         this.authorisation = authorisation;

@@ -26,7 +26,7 @@ public class PriorityDebt extends CollectionId {
         WATER("Water"),
         MAINTENANCE_PAYMENTS("Maintenance Payments");
 
-        String description;
+        private final String description;
 
         PriorityDebtType(String description) {
             this.description = description;

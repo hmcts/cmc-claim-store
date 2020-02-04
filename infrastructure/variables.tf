@@ -27,7 +27,7 @@ variable "respond_to_claim_url" {
 }
 
 variable "database-name" {
-  default = "claimstore"
+  default = "cmc"
 }
 
 variable "mail-host" {
@@ -102,11 +102,4 @@ variable schedule_state-transition_stay-claim  {
 
 variable schedule_state-transition_waiting-transfer  {
   default = "0 0 16 ? * MON-FRI *"
-}
-
-variable "staging_slot_app_settings" {
-  type = "map"
-  default = {
-    SLOT = "STAGING"
-  }
 }

@@ -23,6 +23,7 @@ import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
+import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
@@ -495,9 +496,12 @@ public class CoreCaseDataService {
                 isRepresented(userDetails)
             );
 
-            Claim updatedClaim = toClaimBuilder(startEventResponse)
+            Claim existingClaim = toClaim(startEventResponse);
+            Claim updatedClaim = existingClaim.toBuilder()
                 .claimantResponse(response)
                 .claimantRespondedAt(nowInUTC())
+                .dateReferredForDirections(nowInUTC())
+                .preferredDQCourt(getPreferredCourt(existingClaim))
                 .build();
 
             CaseDataContent caseDataContent = caseDataContent(startEventResponse, updatedClaim);
@@ -517,6 +521,14 @@ public class CoreCaseDataService {
                     caseEvent
                 ), exception
             );
+        }
+    }
+
+    private String getPreferredCourt(Claim existingClaim) {
+        try {
+            return DirectionsQuestionnaireUtils.getPreferredCourt(existingClaim);
+        } catch (Exception e) {
+            return null;
         }
     }
 

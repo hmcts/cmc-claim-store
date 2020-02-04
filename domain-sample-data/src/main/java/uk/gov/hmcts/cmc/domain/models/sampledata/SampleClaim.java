@@ -41,6 +41,7 @@ import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEI
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
 import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.DEFAULT;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.CLAIMANT;
@@ -88,24 +89,24 @@ public final class SampleClaim {
     private String defendantEmail;
     private Settlement settlement = null;
     private LocalDateTime settlementReachedAt = null;
-    private List<String> features = Collections.singletonList("admissions");
+    private List<String> features = Collections.singletonList(ADMISSIONS.getValue());
     private LocalDateTime claimantRespondedAt;
     private ClaimantResponse claimantResponse;
     private LocalDate directionsQuestionnaireDeadline;
     private LocalDate moneyReceivedOn;
     private LocalDateTime reDeterminationRequestedAt;
     private ReDetermination reDetermination = new ReDetermination("I feel defendant can pay", CLAIMANT);
-    private ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
+    private final ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
     private LocalDate claimantResponseDeadline;
     private ClaimState state = ClaimState.OPEN;
     private ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
         = ClaimSubmissionOperationIndicators.builder().build();
-    private Long ccdCaseId = 1023467890123456L;
+    private final Long ccdCaseId = 1023467890123456L;
     private ReviewOrder reviewOrder;
     private DirectionOrder directionOrder;
     private ChannelType channel;
-    private LocalDate intentionToProceedDeadline = NOW_IN_LOCAL_ZONE.toLocalDate().plusDays(33);
-    private YesNoOption offlineJourney = NO;
+    private final LocalDate intentionToProceedDeadline = NOW_IN_LOCAL_ZONE.toLocalDate().plusDays(33);
+    private final YesNoOption offlineJourney = NO;
     private MediationOutcome mediationOutcome;
 
     private SampleClaim() {
@@ -562,7 +563,9 @@ public final class SampleClaim {
             mediationOutcome,
             null,
             null,
-            offlineJourney
+            offlineJourney,
+            null,
+            null
             );
     }
 

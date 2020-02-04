@@ -37,9 +37,10 @@ public class CountyCourtJudgmentMapperTest {
     @Autowired
     private CountyCourtJudgmentMapper countyCourtJudgmentMapper;
 
-    private Function<CountyCourtJudgment, Claim> createClaimWithCCJ = ccj -> Claim.builder().countyCourtJudgment(ccj)
-        .countyCourtJudgmentRequestedAt(LocalDateTime.now())
-        .build();
+    private final Function<CountyCourtJudgment, Claim> createClaimWithCCJ = ccj ->
+        Claim.builder().countyCourtJudgment(ccj)
+            .countyCourtJudgmentRequestedAt(LocalDateTime.now())
+            .build();
 
     @Test
     public void mapEmptyCCJWillReturnNull() {

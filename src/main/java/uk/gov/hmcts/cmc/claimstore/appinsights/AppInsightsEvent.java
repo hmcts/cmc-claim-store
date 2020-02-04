@@ -61,7 +61,7 @@ public enum AppInsightsEvent {
     NON_MEDIATION_PILOT_FAILED("Non-mediation pilot - Failed"),
     NON_MEDIATION_PILOT_SUCCESS("Non-mediation pilot - Success");
 
-    private String displayName;
+    private final String displayName;
 
     AppInsightsEvent(String displayName) {
         this.displayName = displayName;

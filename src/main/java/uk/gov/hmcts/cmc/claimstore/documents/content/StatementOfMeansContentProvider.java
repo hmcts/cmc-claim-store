@@ -186,9 +186,8 @@ public class StatementOfMeansContentProvider {
                 .map(this::createChild)
                 .collect(toList())
             );
-            dependant.getOtherDependants().ifPresent(otherDependants -> {
-                contentBuilder.put("otherDependants", otherDependants);
-            });
+            dependant.getOtherDependants()
+                .ifPresent(otherDependants -> contentBuilder.put("otherDependants", otherDependants));
             dependant.getNumberOfMaintainedChildren().ifPresent(
                 maintainedChildren -> contentBuilder.put("maintainedChildren", maintainedChildren)
             );

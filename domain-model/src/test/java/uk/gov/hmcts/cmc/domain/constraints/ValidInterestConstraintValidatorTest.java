@@ -17,7 +17,7 @@ public class ValidInterestConstraintValidatorTest {
     @Mock
     private ConstraintValidatorContext validatorContext;
 
-    private ValidInterestConstraintValidator validator = new ValidInterestConstraintValidator();
+    private final ValidInterestConstraintValidator validator = new ValidInterestConstraintValidator();
 
     @Test
     public void shouldBeValidForNullInterest() {

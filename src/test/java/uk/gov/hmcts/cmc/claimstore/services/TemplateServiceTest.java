@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class TemplateServiceTest {
 
-    private PebbleEngine pebble = new PebbleConfiguration().pebbleEngine();
+    private final PebbleEngine pebble = new PebbleConfiguration().pebbleEngine();
 
     private TemplateService service;
 
@@ -37,7 +37,7 @@ public class TemplateServiceTest {
     }
 
     @Test(expected = TemplateException.class)
-    public void shouldThrowTemplateExceptionWhenPebbleExceptionIsThrown() throws Exception {
+    public void shouldThrowTemplateExceptionWhenPebbleExceptionIsThrown() {
         service = new TemplateService(pebble);
 
         service.evaluate("block {{", emptyMap());

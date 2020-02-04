@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.domain.config.JacksonConfiguration;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
+import uk.gov.hmcts.cmc.domain.models.offers.Offer;
 import uk.gov.hmcts.cmc.domain.models.offers.PartyStatement;
 import uk.gov.hmcts.cmc.domain.models.offers.StatementType;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
@@ -24,7 +25,7 @@ public class PartyStatementSerializationTest {
         //then
         assertThat(other.getType()).isEqualTo(StatementType.OFFER);
         assertThat(other.getMadeBy()).isEqualTo(MadeBy.DEFENDANT);
-        assertThat(other.getOffer().get().getContent()).isEqualTo("I will fix the leaking roof");
+        assertThat(other.getOffer().map(Offer::getContent).orElse(null)).isEqualTo("I will fix the leaking roof");
     }
 
     @Test

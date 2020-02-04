@@ -44,13 +44,13 @@ public class PinOrchestrationServiceTest {
     private static final PDF sealedClaim = new PDF("0000-sealed-claim", "test".getBytes(), SEALED_CLAIM);
     private static final String DEFENDANT_EMAIL_TEMPLATE = "Defendant Email PrintableTemplate";
 
-    private Map<String, Object> pinContents = new HashMap<>();
-    private String pinTemplate = "pinTemplate";
-    private Document defendantPinLetterDocument = new Document(pinTemplate, pinContents);
+    private final Map<String, Object> pinContents = new HashMap<>();
+    private final String pinTemplate = "pinTemplate";
+    private final Document defendantPinLetterDocument = new Document(pinTemplate, pinContents);
 
-    private Map<String, Object> claimContents = new HashMap<>();
-    private String claimTemplate = "claimTemplate";
-    private Document sealedClaimLetterDocument = new Document(claimTemplate, claimContents);
+    private final Map<String, Object> claimContents = new HashMap<>();
+    private final String claimTemplate = "claimTemplate";
+    private final Document sealedClaimLetterDocument = new Document(claimTemplate, claimContents);
 
     private PinOrchestrationService pinOrchestrationService;
 
@@ -71,7 +71,7 @@ public class PinOrchestrationServiceTest {
     @Mock
     private DocumentOrchestrationService documentOrchestrationService;
 
-    private GeneratedDocuments generatedDocuments = GeneratedDocuments.builder()
+    private final GeneratedDocuments generatedDocuments = GeneratedDocuments.builder()
         .defendantPinLetterDoc(defendantPinLetterDocument)
         .defendantPinLetter(defendantPinLetter)
         .sealedClaimDoc(sealedClaimLetterDocument)
