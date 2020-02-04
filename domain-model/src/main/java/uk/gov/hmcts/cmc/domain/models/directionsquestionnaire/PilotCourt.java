@@ -10,7 +10,8 @@ public enum PilotCourt {
     MANCHESTER("manchester"),
     BIRMINGHAM("birmingham"),
     CLERKENWELL("clerkenwell"),
-    SHOREDITCH("shoreditch");
+    SHOREDITCH("shoreditch"),
+    OTHER("");
 
     private String name;
 
@@ -23,6 +24,7 @@ public enum PilotCourt {
             return false;
         }
         return Arrays.stream(PilotCourt.values())
+            .filter(pilotCourt -> pilotCourt != PilotCourt.OTHER)
             .anyMatch(pilotCourt -> courtName.toLowerCase().contains(pilotCourt.name));
     }
 }

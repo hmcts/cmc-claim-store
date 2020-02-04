@@ -21,10 +21,10 @@ import java.util.Map;
 @Service
 public class MediationReportService {
 
-    private EmailService emailService;
-    private CaseSearchApi caseSearchApi;
-    private UserService userService;
-    private AppInsights appInsights;
+    private final EmailService emailService;
+    private final CaseSearchApi caseSearchApi;
+    private final UserService userService;
+    private final AppInsights appInsights;
 
     private final String emailToAddress;
     private final String emailFromAddress;

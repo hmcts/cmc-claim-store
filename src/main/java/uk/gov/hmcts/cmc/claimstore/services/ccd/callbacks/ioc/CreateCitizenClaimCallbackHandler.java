@@ -120,6 +120,7 @@ public class CreateCitizenClaimCallbackHandler extends CallbackHandler {
                 .build())
             .referenceNumber(referenceNumberRepository.getReferenceNumberForCitizen())
             .issuedOn(issuedOn)
+            .serviceDate(issuedOn.plusDays(5))
             .responseDeadline(responseDeadlineCalculator.calculateResponseDeadline(issuedOn))
             .build();
 

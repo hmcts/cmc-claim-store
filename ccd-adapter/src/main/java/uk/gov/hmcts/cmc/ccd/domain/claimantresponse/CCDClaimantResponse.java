@@ -18,10 +18,10 @@ import java.time.LocalDateTime;
 @Getter
 @EqualsAndHashCode
 public abstract class CCDClaimantResponse {
-    private String amountPaid;
-    private LocalDateTime submittedOn;
-    private CCDYesNoOption paymentReceived;
-    private CCDYesNoOption settleForAmount;
+    private final String amountPaid;
+    private final LocalDateTime submittedOn;
+    private final CCDYesNoOption paymentReceived;
+    private final CCDYesNoOption settleForAmount;
 
     public CCDClaimantResponse(
         String amountPaid,

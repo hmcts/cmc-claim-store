@@ -25,6 +25,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.DocAssemblyService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules.GenerateOrderRule;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourtDetailsFinder;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.legaladvisor.OrderDrawnNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.legaladvisor.LegalOrderService;
@@ -68,7 +69,7 @@ public class DrawJudgeOrderCallbackHandlerTest {
     private static final String DOCUMENT_FILE_NAME = "sealed_claim.pdf";
     private static final LocalDate DEADLINE = LocalDate.parse("2018-11-16");
 
-    private CaseDetails caseDetails = CaseDetails.builder().id(3L).data(Collections.emptyMap()).build();
+    private final CaseDetails caseDetails = CaseDetails.builder().id(3L).data(Collections.emptyMap()).build();
 
     private static final CCDDocument DOCUMENT = CCDDocument
         .builder()
@@ -136,6 +137,8 @@ public class DrawJudgeOrderCallbackHandlerTest {
 
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         when(legalOrderGenerationDeadlinesCalculator.calculateOrderGenerationDeadlines()).thenReturn(DEADLINE);
+
+        when(hearingCourtDetailsFinder.getHearingCourt(any())).thenReturn(HearingCourt.builder().build());
 
         when(clock.instant()).thenReturn(DATE.toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(ZoneOffset.UTC);

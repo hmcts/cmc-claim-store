@@ -20,9 +20,9 @@ import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
 
 public class ClaimDataContentProviderTest {
 
-    private Claim claim = SampleClaim.getDefault();
+    private final Claim claim = SampleClaim.getDefault();
 
-    private ClaimDataContentProvider provider = new ClaimDataContentProvider(
+    private final ClaimDataContentProvider provider = new ClaimDataContentProvider(
         new InterestContentProvider(
             new InterestCalculationService(Clock.systemDefaultZone())
         )

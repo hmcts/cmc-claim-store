@@ -63,7 +63,7 @@ public class CCDElasticSearchRepositoryTest {
     @Test
     public void mediationSearchQueriesElastic() {
         ccdElasticSearchRepository.getMediationClaims(AUTHORISATION,
-            LocalDate.of(2019, 07, 07));
+            LocalDate.of(2019, 7, 7));
         verify(userService, times(1)).getUser(anyString());
         verify(coreCaseDataApi).searchCases(
             eq(AUTHORISATION),
@@ -77,7 +77,7 @@ public class CCDElasticSearchRepositoryTest {
     public void casesPastIntentionToProceedQueriesElastic() {
         User user = new User(AUTHORISATION, null);
         ccdElasticSearchRepository.getClaimsPastIntentionToProceed(user,
-            LocalDate.of(2019, 07, 07));
+            LocalDate.of(2019, 7, 7));
         verify(coreCaseDataApi).searchCases(
             eq(AUTHORISATION),
             eq(SERVICE_AUTH),

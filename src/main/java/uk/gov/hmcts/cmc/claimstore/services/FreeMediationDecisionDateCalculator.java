@@ -8,7 +8,7 @@ import java.time.LocalDate;
 @Component
 public class FreeMediationDecisionDateCalculator {
 
-    private int freeMediationTimeForDecisionInDays;
+    private final int freeMediationTimeForDecisionInDays;
 
     public FreeMediationDecisionDateCalculator(
         @Value("${dateCalculations.freeMediationTimeForDecisionInDays}") int freeMediationTimeForDecisionInDays) {

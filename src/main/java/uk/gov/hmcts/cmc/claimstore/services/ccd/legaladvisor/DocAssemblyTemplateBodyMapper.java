@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -20,7 +21,7 @@ import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 public class DocAssemblyTemplateBodyMapper {
 
     public static final long DIRECTION_DEADLINE_NO_OF_DAYS = 19L;
-    private Clock clock;
+    private final Clock clock;
     private final HearingCourtDetailsFinder hearingCourtDetailsFinder;
     private final WorkingDayIndicator workingDayIndicator;
 
@@ -36,9 +37,7 @@ public class DocAssemblyTemplateBodyMapper {
     }
 
     public DocAssemblyTemplateBody from(CCDCase ccdCase, UserDetails userDetails) {
-        HearingCourt hearingCourt = Optional.ofNullable(ccdCase.getHearingCourt())
-            .map(hearingCourtDetailsFinder::findHearingCourtAddress)
-            .orElseGet(() -> HearingCourt.builder().build());
+        HearingCourt hearingCourt = hearingCourtDetailsFinder.getHearingCourt(ccdCase);
 
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
         return DocAssemblyTemplateBody.builder()
@@ -67,9 +66,7 @@ public class DocAssemblyTemplateBodyMapper {
             .docUploadForParty(ccdCase.getDocUploadForParty())
             .extraDocUploadList(ccdCase.getExtraDocUploadList())
             .eyewitnessUploadForParty(ccdCase.getEyewitnessUploadForParty())
-            .paperDetermination(ccdCase.getPaperDetermination() != null
-                ? ccdCase.getPaperDetermination().toBoolean()
-                : null)
+            .paperDetermination(Objects.equals(ccdCase.getPaperDetermination(), CCDYesNoOption.YES))
             .hearingCourtName(hearingCourt.getName())
             .hearingCourtAddress(hearingCourt.getAddress())
             .estimatedHearingDuration(ccdCase.getEstimatedHearingDuration())

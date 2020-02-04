@@ -22,9 +22,9 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.standardI
 
 public class TotalAmountCalculatorTest {
 
-    private static BigDecimal ZERO = format(BigDecimal.ZERO);
-    private static LocalDate TODAY = LocalDate.now();
-    private static BigInteger TWENTY_POUNDS_IN_PENNIES = BigInteger.valueOf(2000);
+    private static final BigDecimal ZERO = format(BigDecimal.ZERO);
+    private static final LocalDate TODAY = LocalDate.now();
+    private static final BigInteger TWENTY_POUNDS_IN_PENNIES = BigInteger.valueOf(2000);
 
     @Test
     public void calculateInterestShouldReturn0WhenAmountIs0() {

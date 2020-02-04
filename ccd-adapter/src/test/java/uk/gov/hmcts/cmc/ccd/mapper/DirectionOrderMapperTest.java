@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.mapper;
 
+import junit.framework.AssertionFailedError;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,7 @@ public class DirectionOrderMapperTest {
         CCDCase ccdCase = addCCDOrderGenerationData(CCDCase.builder().directionOrder(ccdDirectionOrder).build());
         mapper.from(ccdCase, claimBuilder);
 
-        DirectionOrder directionOrder = claimBuilder.build().getDirectionOrder().get();
+        DirectionOrder directionOrder = claimBuilder.build().getDirectionOrder().orElseThrow(AssertionFailedError::new);
         assertThat(directionOrder).isEqualTo(ccdDirectionOrder);
         assertThat(directionOrder.getDirections()).hasSize(4);
 

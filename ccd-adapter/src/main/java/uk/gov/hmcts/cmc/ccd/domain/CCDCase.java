@@ -109,6 +109,10 @@ public class CCDCase {
 
     private CCDHearingCourtType hearingCourt;
 
+    private String hearingCourtName;
+
+    private CCDAddress hearingCourtAddress;
+
     private CCDHearingDurationType estimatedHearingDuration;
 
     private CCDDocument draftOrderDoc;

@@ -7,13 +7,13 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
 
 public class AmountContent {
 
-    private String totalAmount;
-    private String subTotalAmount;
-    private InterestContent interest;
-    private String feeAmount;
-    private String paidAmount;
-    private String remainingAmount;
-    private String admittedAmount;
+    private final String totalAmount;
+    private final String subTotalAmount;
+    private final InterestContent interest;
+    private final String feeAmount;
+    private final String paidAmount;
+    private final String remainingAmount;
+    private final String admittedAmount;
 
     public AmountContent(
         String totalAmount,

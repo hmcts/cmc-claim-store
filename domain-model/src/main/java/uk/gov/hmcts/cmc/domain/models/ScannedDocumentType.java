@@ -9,7 +9,7 @@ public enum ScannedDocumentType {
     FORM,
     COVERSHEET;
 
-    private List<String> values;
+    private final List<String> values;
 
     ScannedDocumentType(String... values) {
         this.values = Arrays.asList(values);

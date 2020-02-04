@@ -9,7 +9,7 @@ import java.util.List;
 
 public class GenerateOrderRuleTest {
 
-    private GenerateOrderRule generateOrderRule = new GenerateOrderRule();
+    private final GenerateOrderRule generateOrderRule = new GenerateOrderRule();
 
     @Test
     public void shouldReturnValidationMessageWhenExpertPermissionIsNotProvided() {
