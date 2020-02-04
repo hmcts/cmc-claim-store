@@ -24,7 +24,8 @@ import java.time.LocalDate;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils.DQ_FLAG;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
@@ -106,7 +107,7 @@ public class ClaimantResponseActionsHandlerTest {
         Claim claim = SampleClaim.builder()
             .withResponse(response)
             .withClaimantResponse(claimantResponse)
-            .withFeatures(ImmutableList.of(DQ_FLAG, "admissions"))
+            .withFeatures(ImmutableList.of(DQ_FLAG.getValue(), ADMISSIONS.getValue()))
             .build();
 
         ClaimantResponseEvent event = new ClaimantResponseEvent(claim, authorisation);

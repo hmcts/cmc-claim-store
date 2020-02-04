@@ -5,9 +5,9 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
-import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
 import uk.gov.hmcts.cmc.claimstore.utils.Formatting;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +34,7 @@ public class MediationFailedNotificationService {
     }
 
     protected void notifyParties(Claim claim) {
-        if (DirectionsQuestionnaireUtils.isOnlineDQ(claim)) {
+        if (FeaturesUtils.isOnlineDQ(claim)) {
             notifyClaimant(claim);
             notifyDefendant(claim);
         } else {
@@ -89,7 +89,7 @@ public class MediationFailedNotificationService {
         parameters.put(DEFENDANT_NAME, claim.getClaimData().getDefendant().getName());
         parameters.put(FRONTEND_BASE_URL, notificationsProperties.getFrontendBaseUrl());
         parameters.put(CLAIM_REFERENCE_NUMBER, claim.getReferenceNumber());
-        if (!DirectionsQuestionnaireUtils.isOnlineDQ(claim)) {
+        if (!FeaturesUtils.isOnlineDQ(claim)) {
             parameters.put(DQ_DEADLINE, Formatting.formatDate(claim.getDirectionsQuestionnaireDeadline()));
         }
         return parameters;
