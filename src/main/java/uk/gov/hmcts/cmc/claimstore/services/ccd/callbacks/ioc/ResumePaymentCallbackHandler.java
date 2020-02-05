@@ -116,6 +116,7 @@ public class ResumePaymentCallbackHandler extends CallbackHandler {
 
         Claim updatedClaim = claim.toBuilder()
             .issuedOn(issuedOn)
+            .serviceDate(issuedOn.plusDays(5))
             .responseDeadline(responseDeadline)
             .build();
 
