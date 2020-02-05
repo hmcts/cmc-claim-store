@@ -29,7 +29,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-import static java.time.LocalDate.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
@@ -57,8 +56,6 @@ public class ResumePaymentCallbackHandlerTest extends BaseMockSpringTest {
     private static final String AUTHORISATION_TOKEN = "Bearer let me in";
     private static final String NEXT_URL = "http://nexturl.test";
     private static final long CASE_ID = 42L;
-    private static final LocalDate ISSUE_DATE = now();
-    private static final LocalDate RESPONSE_DEADLINE = ISSUE_DATE.plusDays(14);
 
     @MockBean
     private ResponseDeadlineCalculator responseDeadlineCalculator;
@@ -128,8 +125,8 @@ public class ResumePaymentCallbackHandlerTest extends BaseMockSpringTest {
         List<Map<String, Object>> respondents = (List<Map<String, Object>>) responseData.get("respondents");
         Map<String, Object> defendant = (Map<String, Object>) respondents.get(0).get("value");
 
-        assertThat(defendant).contains(entry("servedDate", ISSUE_DATE.plusDays(5).toString()));
-        assertThat(defendant).contains(entry("responseDeadline", RESPONSE_DEADLINE.toString()));
+        assertThat(defendant).contains(entry("servedDate", date.plusDays(5).toString()));
+        assertThat(defendant).contains(entry("responseDeadline", date.toString()));
     }
 
     @Test

@@ -11,6 +11,8 @@ import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
+import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -54,6 +56,10 @@ public class InitiatePaymentCallbackHandlerTest extends BaseMockSpringTest {
 
     @MockBean
     protected EmailService emailService;
+    @MockBean
+    private ResponseDeadlineCalculator responseDeadlineCalculator;
+    @MockBean
+    private IssueDateCalculator issueDateCalculator;
 
     private Payment payment;
 
@@ -74,6 +80,8 @@ public class InitiatePaymentCallbackHandlerTest extends BaseMockSpringTest {
 
         UserDetails userDetails = SampleUserDetails.builder().withRoles("citizen").build();
         given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
+        given(responseDeadlineCalculator.calculateResponseDeadline(any())).willReturn(RESPONSE_DEADLINE);
+        given(issueDateCalculator.calculateIssueDay(any())).willReturn(ISSUE_DATE);
     }
 
     @Test
