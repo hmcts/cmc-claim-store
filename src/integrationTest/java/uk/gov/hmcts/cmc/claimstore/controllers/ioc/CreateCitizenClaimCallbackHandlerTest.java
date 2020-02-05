@@ -103,15 +103,16 @@ public class CreateCitizenClaimCallbackHandlerTest extends BaseMockSpringTest {
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
 
-        List<Map<String, Object>> respondents = (List<Map<String, Object>>) responseData.get("respondents");
-        Map<String, Object> defendant = (Map<String, Object>) respondents.get(0).get("value");
-
         assertThat(responseData).contains(
             entry("paymentStatus", SUCCESS.toString()),
             entry("issuedOn", ISSUE_DATE.toString()),
             entry("previousServiceCaseReference", REFERENCE_NO)
         );
 
+        List<Map<String, Object>> respondents = (List<Map<String, Object>>) responseData.get("respondents");
+        Map<String, Object> defendant = (Map<String, Object>) respondents.get(0).get("value");
+
+        assertThat(defendant).contains(entry("servedDate", ISSUE_DATE.plusDays(5).toString()));
         assertThat(defendant).contains(entry("responseDeadline", RESPONSE_DEADLINE.toString()));
     }
 
