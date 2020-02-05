@@ -8,6 +8,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
@@ -50,6 +51,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BOTH_PART
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_NON_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BOTH_PARTIES_OFFLINE_DQ;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NON_LA_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.LA_PILOT_FLAG;
@@ -115,9 +117,10 @@ public class ClaimantResponseServiceTest {
         claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
 
         inOrder.verify(caseRepository, once()).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
-        inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class), anyString());
         inOrder.verify(appInsights, once()).trackEvent(eq(BOTH_PARTIES_OFFLINE_DQ),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+        inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class), anyString());
+        inOrder.verify(appInsights, once()).trackEvent(eq(NON_LA_PILOT_ELIGIBLE), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
         verify(formaliseResponseAcceptanceService, times(0))
             .formalise(any(), any(), anyString());
         verify(caseRepository, never()).saveCaseEvent(AUTHORISATION, claim, ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS);
@@ -304,6 +307,7 @@ public class ClaimantResponseServiceTest {
             .updateDirectionsQuestionnaireDeadline(any(Claim.class), any(LocalDateTime.class), eq(AUTHORISATION));
         verify(eventProducer).createClaimantResponseEvent(any(Claim.class), anyString());
         verify(appInsights).trackEvent(eq(BOTH_PARTIES_OFFLINE_DQ), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+        verify(appInsights).trackEvent(eq(NON_LA_PILOT_ELIGIBLE), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 
     @Test
@@ -366,6 +370,7 @@ public class ClaimantResponseServiceTest {
         verify(eventProducer).createClaimantResponseEvent(any(Claim.class), eq(AUTHORISATION));
         verify(appInsights).trackEvent(eq(BOTH_PARTIES_OFFLINE_DQ),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+        verify(appInsights).trackEvent(eq(NON_LA_PILOT_ELIGIBLE), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
         verify(appInsights).trackEvent(eq(CLAIMANT_OPTED_OUT_FOR_MEDIATION_PILOT),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }

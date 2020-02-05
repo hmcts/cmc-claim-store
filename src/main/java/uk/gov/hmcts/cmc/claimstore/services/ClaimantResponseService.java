@@ -113,6 +113,9 @@ public class ClaimantResponseService {
         if (FeaturesUtils.isOnlineDQ(updatedClaim)) {
             appInsights.trackEvent(AppInsightsEvent.BOTH_PARTIES_ONLINE_DQ, REFERENCE_NUMBER, updatedClaim.getReferenceNumber());
             updatedClaim = claimService.getClaimByExternalId(externalId, authorization);
+        } else {
+            appInsights.trackEvent(AppInsightsEvent.BOTH_PARTIES_OFFLINE_DQ, REFERENCE_NUMBER, updatedClaim.getReferenceNumber());
+            updatedClaim = claimService.getClaimByExternalId(externalId, authorization);
         }
 
         if (!isSettlementAgreement(response, claimantResponse)) {
@@ -172,7 +175,6 @@ public class ClaimantResponseService {
             appInsights.trackEvent(CLAIMANT_RESPONSE_ACCEPTED, REFERENCE_NUMBER, claim.getReferenceNumber());
         } else if (claimantResponse instanceof ResponseRejection) {
             if (isPartAdmissionOrIsStatePaidOrIsFullDefence(response)) {
-                raiseAppInsightEventForOnlineOrOfflineDQ(claim);
                 raiseAppInsightEventForMediation(claim, response, (ResponseRejection) claimantResponse);
                 if(caseEvent.equals(Optional.of(ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS))) {
                     appInsights.trackEvent(AppInsightsEvent.LA_PILOT_ELIGIBLE, REFERENCE_NUMBER, claim.getReferenceNumber());
@@ -183,14 +185,6 @@ public class ClaimantResponseService {
         } else {
             throw new IllegalStateException("Unknown response type");
         }
-    }
-
-    private void raiseAppInsightEventForOnlineOrOfflineDQ(Claim claim) {
-        AppInsightsEvent appInsightsEvent = FeaturesUtils.isLegalAdvisorPilot(claim)
-            ? AppInsightsEvent.BOTH_PARTIES_ONLINE_DQ
-            : AppInsightsEvent.BOTH_PARTIES_OFFLINE_DQ;
-
-        appInsights.trackEvent(appInsightsEvent, REFERENCE_NUMBER, claim.getReferenceNumber());
     }
 
     private void raiseAppInsightEventForMediation(Claim claim, Response response, ResponseRejection responseRejection) {
