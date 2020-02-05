@@ -7,7 +7,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
@@ -30,6 +29,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -219,12 +219,16 @@ public class PaperResponseReviewedCallbackHandlerTest {
             .request(callbackRequest)
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = (AboutToStartOrSubmitCallbackResponse)
-            handlerToTest
+        handlerToTest
                 .handle(callbackParams);
 
-        assertThat(response.getData()).containsEntry("moreTimeRequested", CCDYesNoOption.YES);
-        assertThat(response.getData()).containsEntry("responseDeadline", newResponseDeadline);
+        verify(caseMapper).to(claimArgumentCaptor.capture());
+        assertTrue(claimArgumentCaptor.getValue()
+            .isMoreTimeRequested());
+        assertThat(claimArgumentCaptor.getValue()
+            .getResponseDeadline()
+            .equals(newResponseDeadline));
+
     }
 
     @Test

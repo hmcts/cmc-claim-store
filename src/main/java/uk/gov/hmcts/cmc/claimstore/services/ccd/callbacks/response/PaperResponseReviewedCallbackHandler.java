@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.response;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.rules.MoreTimeRequestRule;
@@ -247,6 +246,10 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
 
         List<String> validationResult = moreTimeRequestRule.validateMoreTimeCanBeRequested(claimByEvent, newDeadline);
         AboutToStartOrSubmitCallbackResponseBuilder builder = AboutToStartOrSubmitCallbackResponse.builder();
+        claimByEvent = claimByEvent.toBuilder()
+            .responseDeadline(newDeadline)
+            .moreTimeRequested(true)
+            .build();
 
         if (!validationResult.isEmpty()) {
             return Optional.of(AboutToStartOrSubmitCallbackResponse
@@ -256,8 +259,6 @@ public class PaperResponseReviewedCallbackHandler extends CallbackHandler {
         }
 
         Map<String, Object> data = caseDetailsConverter.convertToMap(caseMapper.to(claimByEvent));
-        data.put("moreTimeRequested", CCDYesNoOption.YES);
-        data.put("responseDeadline", newDeadline);
 
         return Optional.of(builder
             .data(data)
