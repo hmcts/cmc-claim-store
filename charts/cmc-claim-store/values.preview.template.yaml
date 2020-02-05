@@ -38,7 +38,7 @@ java:
     DOCUMENT_MANAGEMENT_URL: http://dm-store-aat.service.core-compute-aat.internal
     PAY_URL: http://payment-api-aat.service.core-compute-aat.internal
     FEES_URL: http://fees-register-api-aat.service.core-compute-aat.internal
-    DOC_ASSEMBLY_URL: http://dg-docassembly-aat.service.core-compute-aat.internal
+    DOC_ASSEMBLY_URL: false
     FRONTEND_BASE_URL: https://www-${SERVICE_FQDN}
     RESPOND_TO_CLAIM_URL: https://www-${SERVICE_FQDN}/first-contact/start
     CMC_DB_HOST: ${SERVICE_NAME}-postgres
