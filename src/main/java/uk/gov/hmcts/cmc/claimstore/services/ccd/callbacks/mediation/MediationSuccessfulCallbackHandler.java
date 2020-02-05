@@ -75,7 +75,7 @@ public class MediationSuccessfulCallbackHandler extends CallbackHandler {
     @Override
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
-            CallbackType.ABOUT_TO_START, this::checkForMediationAgreement,
+            CallbackType.MID, this::checkForMediationAgreement,
             CallbackType.SUBMITTED, this::notifyParties
         );
     }
@@ -94,6 +94,7 @@ public class MediationSuccessfulCallbackHandler extends CallbackHandler {
         logger.info("Checking for Mediation Agreement");
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
+//        filenameutils.getextension
 
         List<String> validations = mediationSuccessfulRule.validateMediationAgreementUploadedByCaseworker(ccdCase);
         if (!validations.isEmpty()) {
@@ -101,10 +102,6 @@ public class MediationSuccessfulCallbackHandler extends CallbackHandler {
         }
         return AboutToStartOrSubmitCallbackResponse
                 .builder()
-                .data(ImmutableMap.of(
-                        DRAFT_ORDER_DOC,
-                        CCDDocument.builder().documentUrl(docAssemblyResponse.getRenditionOutputLocation()).build()
-                ))
                 .build();
     }
 
