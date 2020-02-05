@@ -49,7 +49,7 @@ public abstract class BaseNotificationServiceTest {
 
     protected final Claim claim = SampleClaim.getDefault().toBuilder().respondedAt(LocalDateTime.now()).build();
 
-    protected Logger log = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    protected final Logger log = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
     @Mock
     protected NotificationClient notificationClient;

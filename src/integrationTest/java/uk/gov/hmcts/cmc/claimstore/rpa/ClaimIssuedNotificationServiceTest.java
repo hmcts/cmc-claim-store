@@ -5,14 +5,16 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
+import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.rpa.config.EmailProperties;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
+import uk.gov.hmcts.cmc.email.EmailService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +29,7 @@ import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildSealedCla
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_PIN_LETTER;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 
-public class ClaimIssuedNotificationServiceTest extends MockSpringTest {
+public class ClaimIssuedNotificationServiceTest extends BaseMockSpringTest {
 
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 
@@ -36,13 +38,16 @@ public class ClaimIssuedNotificationServiceTest extends MockSpringTest {
     @Autowired
     private EmailProperties emailProperties;
 
+    @MockBean
+    protected EmailService emailService;
+
     @Captor
     private ArgumentCaptor<String> senderArgument;
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
 
     private Claim claim;
-    private List<PDF> documents = new ArrayList<>();
+    private final List<PDF> documents = new ArrayList<>();
 
     @Before
     public void setUp() {

@@ -56,6 +56,7 @@ public class SoleTraderDetailsMapper {
             .representative(representativeMapper.from(respondent))
             .title(claimantProvidedPartyDetails.getTitle())
             .businessName(claimantProvidedPartyDetails.getBusinessName())
+            .serviceAddress(addressMapper.from(claimantProvidedPartyDetails.getCorrespondenceAddress()))
             .build();
     }
 }

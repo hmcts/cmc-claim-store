@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.MediationOutcome;
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
@@ -18,11 +19,13 @@ import java.util.Arrays;
 
 import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.cmc.ccd.sample.data.SampleCCDClaimSubmissionOperationIndicators.CCDClaimSubmissionOperationIndicatorsWithPinSuccess;
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.getMediationOutcome;
+import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.hasPaperResponse;
 import static uk.gov.hmcts.cmc.ccd.util.MapperUtil.toCaseName;
 
 public class MapperUtilTest {
@@ -82,11 +85,14 @@ public class MapperUtilTest {
     }
 
     @Test
-    public void caseNameWhenClaimantIsNotIndividual() {
+    public void caseNameWhenClaimantIsSoleTrader() {
 
-        Claim claimWithMultiDefendant = Claim.builder().claimData(
+        Claim claimWithClaimantSoleTrader = Claim.builder().claimData(
             SampleClaimData.builder(
-                singletonList(SampleParty.builder().withName("Euro Star").soleTrader()),
+                singletonList(SampleParty.builder()
+                        .withName("Georgina Hammersmith")
+                        .withBusinessName("EuroStar")
+                        .soleTrader()),
                 singletonList(SampleTheirDetails.builder()
                     .withTitle("Mr.")
                     .withFirstName("Boris")
@@ -95,24 +101,57 @@ public class MapperUtilTest {
             ).build()
         ).build();
 
-        String caseName = toCaseName.apply(claimWithMultiDefendant);
+        String caseName = toCaseName.apply(claimWithClaimantSoleTrader);
         assertNotNull(caseName);
-        assertThat(caseName, is("Euro Star Vs Mr. Boris Johnson"));
+        assertThat(caseName, is("Georgina Hammersmith T/A EuroStar Vs Mr. Boris Johnson"));
 
     }
 
     @Test
-    public void caseNameWhenDefendantIsNotIndividual() {
-        Claim claimWithMultiDefendant = Claim.builder().claimData(
-            SampleClaimData.builder(
-                singletonList(SampleParty.builder().withName("Euro Star").soleTrader()),
-                singletonList(SampleTheirDetails.builder().withName("Boris Johnson").companyDetails())
-            ).build()
+    public void caseNameWhenDefendantIsSoleTrader() {
+        Claim claimWithDefendantSoleTrader = Claim.builder().claimData(
+                SampleClaimData.builder(
+                        singletonList(SampleParty.builder()
+                                .withTitle("Mrs.")
+                                .withName("Boi May")
+                                .individual()),
+                        singletonList(SampleTheirDetails.builder()
+                                .withTitle("Mr.")
+                                .withFirstName("Boris")
+                                .withLastName("Johnson")
+                                .withBusinessName("Uberflip")
+                                .soleTraderDetails()
+                        )
+                ).build()
         ).build();
 
-        String caseName = toCaseName.apply(claimWithMultiDefendant);
+        String caseName = toCaseName.apply(claimWithDefendantSoleTrader);
         assertNotNull(caseName);
-        assertThat(caseName, is("Euro Star Vs Boris Johnson"));
+        assertThat(caseName, is("Boi May Vs Mr. Boris Johnson T/A Uberflip"));
+
+    }
+
+    @Test
+    public void caseNameWhenBothAreSoleTrader() {
+
+        Claim claimWithBothAsSoleTrader = Claim.builder().claimData(
+                SampleClaimData.builder(
+                        singletonList(SampleParty.builder()
+                                .withName("Georgina Hammersmith")
+                                .withBusinessName("EuroStar")
+                                .soleTrader()),
+                        singletonList(SampleTheirDetails.builder()
+                                .withTitle("Mr.")
+                                .withFirstName("Boris")
+                                .withLastName("Johnson")
+                                .withBusinessName("Haberdashery")
+                                .soleTraderDetails())
+                ).build()
+        ).build();
+
+        String caseName = toCaseName.apply(claimWithBothAsSoleTrader);
+        assertNotNull(caseName);
+        assertThat(caseName, is("Georgina Hammersmith T/A EuroStar Vs Mr. Boris Johnson T/A Haberdashery"));
 
     }
 
@@ -120,7 +159,7 @@ public class MapperUtilTest {
     public void caseNameWithClaimantProvidedName() {
         Claim claimWithResponse = Claim.builder().claimData(
             SampleClaimData.builder(
-                singletonList(SampleParty.builder().withName("Versace").soleTrader()),
+                singletonList(SampleParty.builder().withName("Versace").withBusinessName("Versace").soleTrader()),
                 singletonList(SampleTheirDetails.builder().withName("FCUK").companyDetails())
             ).build()
         ).response(PartAdmissionResponse
@@ -133,7 +172,7 @@ public class MapperUtilTest {
 
         String caseName = MapperUtil.toCaseName.apply(claimWithResponse);
         assertNotNull(caseName);
-        assertThat(caseName, is("Versace Vs French Connection UK"));
+        assertThat(caseName, is("Versace T/A Versace Vs French Connection UK"));
     }
 
     @Test
@@ -161,6 +200,36 @@ public class MapperUtilTest {
             SampleData.getCCDCitizenCaseWithOperationIndicators(CCDClaimSubmissionOperationIndicatorsWithPinSuccess);
 
         assertNull(getMediationOutcome(ccdCase));
+    }
+
+    @Test
+    public void canContinueOnlineIfNoPaperResponse() {
+        CCDCase ccdCase =
+            SampleData.getCCDCitizenCaseWithOperationIndicators(CCDClaimSubmissionOperationIndicatorsWithPinSuccess);
+
+        YesNoOption result = hasPaperResponse.apply(ccdCase);
+        assertEquals(YesNoOption.NO, result);
+
+    }
+
+    @Test
+    public void cantContinueOnlineIfStaffUploadedDocumentPresent() {
+        CCDCase ccdCase =
+            SampleData.withPaperResponseFromStaffUploadedDoc();
+
+        YesNoOption result = hasPaperResponse.apply(ccdCase);
+        assertEquals(YesNoOption.YES, result);
+
+    }
+
+    @Test
+    public void cantContinueOnlineIfScannedDocumentHasResponse() {
+        CCDCase ccdCase =
+            SampleData.withPaperResponseFromScannedDoc();
+
+        YesNoOption result = hasPaperResponse.apply(ccdCase);
+        assertEquals(YesNoOption.YES, result);
+
     }
 
 }

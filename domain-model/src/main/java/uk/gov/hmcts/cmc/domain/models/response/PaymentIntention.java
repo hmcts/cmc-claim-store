@@ -24,7 +24,7 @@ public class PaymentIntention {
     @NotNull
     private final PaymentOption paymentOption;
 
-    @DateNotInThePast
+    @DateNotInThePast(groups = PaymentIntention.Proposing.class)
     private final LocalDate paymentDate;
 
     @Valid
@@ -52,5 +52,11 @@ public class PaymentIntention {
     @Override
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ourStyle());
+    }
+
+    public interface Proposing {
+    }
+
+    public interface Responding {
     }
 }

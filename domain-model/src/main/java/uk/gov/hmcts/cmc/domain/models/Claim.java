@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
 import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -43,7 +44,7 @@ public class Claim {
     private final ClaimData claimData;
     private final LocalDateTime createdAt;
     private final LocalDate issuedOn;
-    private LocalDate serviceDate;
+    private final LocalDate serviceDate;
     private final LocalDate responseDeadline;
     private final boolean moreTimeRequested;
     private final String submitterEmail;
@@ -73,7 +74,10 @@ public class Claim {
     private final LocalDate intentionToProceedDeadline;
     private final MediationOutcome mediationOutcome;
     private final String failedMediationReason;
-    private LocalDateTime mediationSettlementReachedAt;
+    private final LocalDateTime mediationSettlementReachedAt;
+    private final YesNoOption paperResponse;
+    private final LocalDateTime dateReferredForDirections;
+    private final String preferredDQCourt;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot fo be done about removing parameters here
     @Builder(toBuilder = true)
@@ -116,7 +120,10 @@ public class Claim {
         LocalDate intentionToProceedDeadline,
         MediationOutcome mediationOutcome,
         String failedMediationReason,
-        LocalDateTime mediationSettlementReachedAt
+        LocalDateTime mediationSettlementReachedAt,
+        YesNoOption paperResponse,
+        LocalDateTime dateReferredForDirections,
+        String preferredDQCourt
     ) {
         this.id = id;
         this.submitterId = submitterId;
@@ -157,6 +164,9 @@ public class Claim {
         this.mediationOutcome = mediationOutcome;
         this.failedMediationReason = failedMediationReason;
         this.mediationSettlementReachedAt = mediationSettlementReachedAt;
+        this.paperResponse = paperResponse;
+        this.dateReferredForDirections = dateReferredForDirections;
+        this.preferredDQCourt = preferredDQCourt;
     }
 
     public Optional<Response> getResponse() {
@@ -258,6 +268,14 @@ public class Claim {
 
     public Optional<LocalDateTime> getMediationSettlementReachedAt() {
         return Optional.ofNullable(mediationSettlementReachedAt);
+    }
+
+    public Optional<LocalDateTime> getDateReferredForDirections() {
+        return Optional.ofNullable(dateReferredForDirections);
+    }
+
+    public Optional<String> getPreferredDQCourt() {
+        return Optional.ofNullable(preferredDQCourt);
     }
 
     @Override

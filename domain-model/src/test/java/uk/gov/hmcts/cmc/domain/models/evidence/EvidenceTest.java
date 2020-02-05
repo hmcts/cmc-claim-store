@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.domain.models.evidence;
 
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
@@ -13,7 +14,8 @@ public class EvidenceTest {
 
     @Test
     public void shouldPassValidationForValidEvidence() {
-        Evidence evidence = new Evidence(asList(EvidenceRow.builder().type(PHOTO).description("description").build()));
+        Evidence evidence = new Evidence(Collections.singletonList(EvidenceRow.builder().type(PHOTO).description(
+            "description").build()));
 
         Set<String> response = validate(evidence);
 

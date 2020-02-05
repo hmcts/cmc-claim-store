@@ -6,7 +6,8 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
-import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
@@ -19,6 +20,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention
 import uk.gov.hmcts.cmc.domain.models.sampledata.statementofmeans.SampleStatementOfMeans;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
+import uk.gov.hmcts.cmc.email.EmailService;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -32,11 +34,14 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 
-public class DefendantResponseStaffNotificationServiceTest extends MockSpringTest {
+public class DefendantResponseStaffNotificationServiceTest extends BaseMockSpringTest {
 
     private static final String DEFENDANT_EMAIL = "defendant@mail.com";
 
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
+
+    @MockBean
+    protected EmailService emailService;
 
     @Captor
     private ArgumentCaptor<String> senderArgument;
@@ -308,5 +313,5 @@ public class DefendantResponseStaffNotificationServiceTest extends MockSpringTes
             .getInputStream());
         assertThat(pdfContent).isEqualTo(PDF_CONTENT);
     }
-    
+
 }

@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.pdf.service.client.PDFServiceClient;
 public class DefendantResponseReceiptServiceTest {
 
     @Rule
-    public ExpectedException exceptionRule = ExpectedException.none();
+    public final ExpectedException exceptionRule = ExpectedException.none();
     @Mock
     private DefendantResponseContentProvider contentProvider;
     @Mock

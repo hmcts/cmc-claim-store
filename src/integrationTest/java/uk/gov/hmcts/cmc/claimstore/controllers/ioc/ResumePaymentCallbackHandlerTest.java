@@ -2,26 +2,23 @@ package uk.gov.hmcts.cmc.claimstore.controllers.ioc;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
-import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
-import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
+import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.IssueDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
-import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ioc.PaymentsService;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
-import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.Payment;
+import uk.gov.hmcts.cmc.email.EmailService;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -53,22 +50,18 @@ import static uk.gov.hmcts.cmc.domain.models.PaymentStatus.SUCCESS;
         "payments.api.url=http://payments-api"
     }
 )
-public class ResumePaymentCallbackHandlerTest extends MockSpringTest {
+public class ResumePaymentCallbackHandlerTest extends BaseMockSpringTest {
 
     private static final String AUTHORISATION_TOKEN = "Bearer let me in";
     private static final String NEXT_URL = "http://nexturl.test";
     private static final long CASE_ID = 42L;
 
     @MockBean
-    private PaymentsService paymentsService;
+    private ResponseDeadlineCalculator responseDeadlineCalculator;
     @MockBean
     private IssueDateCalculator issueDateCalculator;
     @MockBean
-    private ResponseDeadlineCalculator responseDeadlineCalculator;
-    @Autowired
-    private CaseDetailsConverter caseDetailsConverter;
-    @Autowired
-    private CaseMapper caseMapper;
+    protected EmailService emailService;
 
     @Before
     public void setup() {
@@ -77,7 +70,7 @@ public class ResumePaymentCallbackHandlerTest extends MockSpringTest {
     }
 
     @Test
-    public void shouldCreatePaymentIfPaymentIsNotInitiatedOrSuccesful()
+    public void shouldCreatePaymentIfPaymentIsFailed()
         throws Exception {
         Payment payment = Payment.builder()
             .amount(BigDecimal.TEN)
@@ -86,6 +79,7 @@ public class ResumePaymentCallbackHandlerTest extends MockSpringTest {
             .dateCreated("2017-12-03+01:00")
             .nextUrl(NEXT_URL)
             .build();
+
         given(paymentsService
             .retrievePayment(
                 eq(AUTHORISATION_TOKEN),
@@ -112,7 +106,7 @@ public class ResumePaymentCallbackHandlerTest extends MockSpringTest {
         MvcResult mvcResult = makeRequest(CallbackType.ABOUT_TO_SUBMIT.getValue())
             .andExpect(status().isOk())
             .andReturn();
-        Map<String, Object> responseData = deserializeObjectFrom(
+        Map<String, Object> responseData = jsonMappingHelper.deserializeObjectFrom(
             mvcResult,
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
@@ -147,7 +141,7 @@ public class ResumePaymentCallbackHandlerTest extends MockSpringTest {
         MvcResult mvcResult = makeRequest(CallbackType.ABOUT_TO_SUBMIT.getValue())
             .andExpect(status().isOk())
             .andReturn();
-        Map<String, Object> responseData = deserializeObjectFrom(
+        Map<String, Object> responseData = jsonMappingHelper.deserializeObjectFrom(
             mvcResult,
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
@@ -165,7 +159,7 @@ public class ResumePaymentCallbackHandlerTest extends MockSpringTest {
     }
 
     @Test
-    public void shouldReturnPaymentDetailsIfPaymentIsInitiated() throws Exception {
+    public void shouldCreatePaymentDetailsIfPaymentIsInitiated() throws Exception {
         Payment payment = Payment.builder()
             .amount(BigDecimal.TEN)
             .reference("reference")
@@ -179,21 +173,34 @@ public class ResumePaymentCallbackHandlerTest extends MockSpringTest {
                 any(Claim.class)))
             .willReturn(payment);
 
+        Payment newPayment = Payment.builder()
+            .amount(BigDecimal.valueOf(25))
+            .reference("reference2")
+            .status(SUCCESS)
+            .dateCreated("2017-12-03+01:00")
+            .nextUrl(NEXT_URL)
+            .build();
+
+        given(paymentsService.createPayment(eq(AUTHORISATION_TOKEN), any(Claim.class))).willReturn(newPayment);
+
+        LocalDate date = LocalDate.now();
+        when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(date);
+        when(responseDeadlineCalculator.calculateResponseDeadline(any(LocalDate.class))).thenReturn(date);
+
         MvcResult mvcResult = makeRequest(CallbackType.ABOUT_TO_SUBMIT.getValue())
             .andExpect(status().isOk())
             .andReturn();
-        Map<String, Object> responseData = deserializeObjectFrom(
+        Map<String, Object> responseData = jsonMappingHelper.deserializeObjectFrom(
             mvcResult,
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
 
-        verify(paymentsService, never())
-            .createPayment(eq(AUTHORISATION_TOKEN), any(Claim.class));
+        verify(paymentsService).createPayment(eq(AUTHORISATION_TOKEN), any(Claim.class));
 
         assertThat(responseData).contains(
-            entry("paymentAmount", "1000"),
-            entry("paymentReference", payment.getReference()),
-            entry("paymentStatus", payment.getStatus().toString()),
+            entry("paymentAmount", "2500"),
+            entry("paymentReference", newPayment.getReference()),
+            entry("paymentStatus", newPayment.getStatus().toString()),
             entry("paymentDateCreated", "2017-12-03"),
             entry("paymentNextUrl", NEXT_URL)
         );
@@ -214,7 +221,7 @@ public class ResumePaymentCallbackHandlerTest extends MockSpringTest {
             .perform(post("/cases/callbacks/" + callbackType)
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .header(HttpHeaders.AUTHORIZATION, AUTHORISATION_TOKEN)
-                .content(jsonMapper.toJson(callbackRequest))
+                .content(jsonMappingHelper.toJson(callbackRequest))
             );
     }
 

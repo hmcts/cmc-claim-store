@@ -6,12 +6,12 @@ import uk.gov.hmcts.cmc.claimstore.events.ccj.InterlocutoryJudgmentEvent;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationToDefendantService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimantRejectOrgPaymentPlanStaffNotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper;
-import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponseType;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
+import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.ClaimantResponseHelper.isOptedForMediation;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper.isOptedForMediation;
@@ -38,6 +38,8 @@ public class ClaimantResponseActionsHandler {
     public void sendNotificationToDefendant(ClaimantResponseEvent event) {
         if (isFreeMediationConfirmed(event.getClaim())) {
             this.notificationService.notifyDefendantOfFreeMediationConfirmationByClaimant(event.getClaim());
+        } else if (hasClaimantSettledForFullDefense(event.getClaim())) {
+            this.notificationService.notifyDefendantOfClaimantSettling(event.getClaim());
         } else if (isRejectedStatesPaidOrPartAdmission(event.getClaim())) {
             this.notificationService.notifyDefendantOfClaimantResponse(event.getClaim());
         } else if (hasIntentionToProceedAndIsPaperDq(event.getClaim())) {
@@ -53,14 +55,14 @@ public class ClaimantResponseActionsHandler {
         ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
 
         return ClaimantResponseHelper.isIntentToProceed(claimantResponse)
-            && DirectionsQuestionnaireUtils.isOnlineDQ(claim);
+            && FeaturesUtils.isOnlineDQ(claim);
     }
 
     private boolean hasIntentionToProceedAndIsPaperDq(Claim claim) {
         ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
 
         return claimantResponse.getType() == REJECTION
-            && !DirectionsQuestionnaireUtils.isOnlineDQ(claim);
+            && !FeaturesUtils.isOnlineDQ(claim);
     }
 
     private boolean isFreeMediationConfirmed(Claim claim) {
@@ -69,6 +71,13 @@ public class ClaimantResponseActionsHandler {
         return claimantResponse.getType() == ClaimantResponseType.REJECTION
             && isOptedForMediation(claimantResponse)
             && isOptedForMediation(response);
+    }
+
+    private boolean hasClaimantSettledForFullDefense(Claim claim) {
+        ClaimantResponse claimantResponse = claim.getClaimantResponse().orElseThrow(IllegalStateException::new);
+        Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
+        return claimantResponse.getType() == ClaimantResponseType.ACCEPTATION
+            && response.getResponseType() == ResponseType.FULL_DEFENCE;
     }
 
     @EventListener

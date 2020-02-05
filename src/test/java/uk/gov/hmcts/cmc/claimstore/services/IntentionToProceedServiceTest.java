@@ -69,11 +69,10 @@ public class IntentionToProceedServiceTest {
 
     private final int intentionToProceedAdjustment = 33;
 
-    private IntentionToProceedDeadlineCalculator intentionToProceedDeadlineCalculator;
-
     @Before
     public void setUp() {
-        intentionToProceedDeadlineCalculator = new IntentionToProceedDeadlineCalculator(
+        IntentionToProceedDeadlineCalculator intentionToProceedDeadlineCalculator =
+            new IntentionToProceedDeadlineCalculator(
             workingDayIndicator,
             intentionToProceedAdjustment
         );
@@ -93,7 +92,7 @@ public class IntentionToProceedServiceTest {
 
     @Test
     public void checkClaimsPastIntentionToProceedDeadlineOnAWorkdayAfter4pm() {
-        LocalDateTime tuesdayAfter4pm = LocalDateTime.of(2019, Month.OCTOBER, 15, 16, 00, 00);
+        LocalDateTime tuesdayAfter4pm = LocalDateTime.of(2019, Month.OCTOBER, 15, 16, 0, 0);
         when(workingDayIndicator.getPreviousWorkingDay(any())).then(returnsFirstArg());
 
         intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(tuesdayAfter4pm, new User(null, null));
@@ -115,7 +114,7 @@ public class IntentionToProceedServiceTest {
 
     @Test
     public void checkClaimsPastIntentionToProceedDeadlineONonWorkdayAfter4pm() {
-        LocalDateTime saturday = LocalDateTime.of(2019, Month.OCTOBER, 12, 16, 00, 00);
+        LocalDateTime saturday = LocalDateTime.of(2019, Month.OCTOBER, 12, 16, 0, 0);
 
         int workdayAdjustment = 1;
         when(workingDayIndicator.getPreviousWorkingDay(any()))
@@ -176,7 +175,7 @@ public class IntentionToProceedServiceTest {
                 .collect(Collectors.joining("\n"))
         );
 
-        when(emailContentProvider.createParameters(claims)).thenReturn(input);
+        when(emailContentProvider.createParameters(any())).thenReturn(input);
 
         intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(LocalDateTime.now(), new User("", null));
 
@@ -210,9 +209,10 @@ public class IntentionToProceedServiceTest {
     public void saveCaseEventShouldBeTriggeredForFoundCases() {
         when(workingDayIndicator.getPreviousWorkingDay(any())).then(returnsFirstArg());
 
-        Claim sampleClaim = SampleClaim.builder().build();
+        Claim sampleClaim1 = SampleClaim.builder().withClaimId(1L).build();
+        Claim sampleClaim2 = SampleClaim.builder().withClaimId(12L).build();
         when(caseSearchApi.getClaimsPastIntentionToProceed(any(), any()))
-            .thenReturn(ImmutableList.of(sampleClaim, sampleClaim));
+            .thenReturn(ImmutableList.of(sampleClaim1, sampleClaim2));
 
         intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(LocalDateTime.now(), new User(null, null));
 
@@ -223,9 +223,10 @@ public class IntentionToProceedServiceTest {
     public void appInsightsEventShouldBeRaisedForFoundCases() {
         when(workingDayIndicator.getPreviousWorkingDay(any())).then(returnsFirstArg());
 
-        Claim sampleClaim = SampleClaim.builder().build();
+        Claim sampleClaim1 = SampleClaim.builder().withClaimId(1L).build();
+        Claim sampleClaim2 = SampleClaim.builder().withClaimId(12L).build();
         when(caseSearchApi.getClaimsPastIntentionToProceed(any(), any()))
-            .thenReturn(ImmutableList.of(sampleClaim, sampleClaim));
+            .thenReturn(ImmutableList.of(sampleClaim1, sampleClaim2));
 
         intentionToProceedService.checkClaimsPastIntentionToProceedDeadline(LocalDateTime.now(), new User(null, null));
 

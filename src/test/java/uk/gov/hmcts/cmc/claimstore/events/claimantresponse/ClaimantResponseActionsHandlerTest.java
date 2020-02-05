@@ -24,7 +24,8 @@ import java.time.LocalDate;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils.DQ_FLAG;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
@@ -57,6 +58,19 @@ public class ClaimantResponseActionsHandlerTest {
         handler.sendNotificationToDefendant(event);
         //then
         verify(notificationService).notifyDefendantOfFreeMediationConfirmationByClaimant(eq(claim));
+    }
+
+    @Test
+    public void sendNotificationToDefendantWhenClaimantHasSettledForFullDefense() {
+        //given
+        ClaimantResponse claimantResponse = ClaimantResponseRejection.validDefaultAcceptation();
+        Response response = SampleResponse.FullDefence.builder().withMediation(YES).build();
+        Claim claim = SampleClaim.builder().withResponse(response).withClaimantResponse(claimantResponse).build();
+        ClaimantResponseEvent event = new ClaimantResponseEvent(claim, authorisation);
+        //when
+        handler.sendNotificationToDefendant(event);
+        //then
+        verify(notificationService).notifyDefendantOfClaimantSettling(eq(claim));
     }
 
     @Test
@@ -93,7 +107,7 @@ public class ClaimantResponseActionsHandlerTest {
         Claim claim = SampleClaim.builder()
             .withResponse(response)
             .withClaimantResponse(claimantResponse)
-            .withFeatures(ImmutableList.of(DQ_FLAG, "admissions"))
+            .withFeatures(ImmutableList.of(DQ_FLAG.getValue(), ADMISSIONS.getValue()))
             .build();
 
         ClaimantResponseEvent event = new ClaimantResponseEvent(claim, authorisation);

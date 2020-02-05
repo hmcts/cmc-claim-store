@@ -24,7 +24,7 @@ public class ValidPaymentIntentionConstraintValidatorTest {
     @Mock
     private ConstraintValidatorContext validatorContext;
 
-    private ValidPaymentIntentionConstraintValidator validator = new ValidPaymentIntentionConstraintValidator();
+    private final ValidPaymentIntentionConstraintValidator validator = new ValidPaymentIntentionConstraintValidator();
 
     @Before
     public void setUp() {

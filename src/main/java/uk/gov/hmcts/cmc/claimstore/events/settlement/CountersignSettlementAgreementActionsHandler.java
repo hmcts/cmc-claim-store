@@ -81,7 +81,7 @@ public class CountersignSettlementAgreementActionsHandler {
         this.emailService.sendEmail(
             staffEmailProperties.getSender(),
             new EmailData(staffEmailProperties.getRecipient(), emailcontent.getSubject(), emailcontent.getBody(),
-                Collections.EMPTY_LIST));
+                Collections.emptyList()));
     }
 
     private Map<String, Object> aggregateParameters(Claim claim) {

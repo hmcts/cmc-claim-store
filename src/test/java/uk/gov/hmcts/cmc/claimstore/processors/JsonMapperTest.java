@@ -46,7 +46,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYE
 
 public class JsonMapperTest {
 
-    private JsonMapper processor = JsonMapperFactory.create();
+    private final JsonMapper processor = JsonMapperFactory.create();
 
     @Test
     public void shouldProcessClaimDataToJson() throws JSONException {
@@ -227,7 +227,6 @@ public class JsonMapperTest {
             .submitterId("2")
             .submittedOn(timestamp)
             .externalId(uuid)
-            .directionOrderData(CCDOrderGenerationData.builder().build())
             .build();
 
         assertThat(ccdCase).isEqualTo(expected);
