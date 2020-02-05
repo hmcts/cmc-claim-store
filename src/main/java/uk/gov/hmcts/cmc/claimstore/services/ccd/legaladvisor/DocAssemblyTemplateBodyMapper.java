@@ -37,9 +37,7 @@ public class DocAssemblyTemplateBodyMapper {
     }
 
     public DocAssemblyTemplateBody from(CCDCase ccdCase, UserDetails userDetails) {
-        HearingCourt hearingCourt = Optional.ofNullable(ccdCase.getHearingCourt())
-            .map(hearingCourtDetailsFinder::findHearingCourtAddress)
-            .orElseGet(() -> HearingCourt.builder().build());
+        HearingCourt hearingCourt = hearingCourtDetailsFinder.findHearingCourtAddress(ccdCase);
 
         LocalDate currentDate = LocalDate.now(clock.withZone(UTC_ZONE));
         return DocAssemblyTemplateBody.builder()

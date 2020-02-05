@@ -10,7 +10,8 @@ public enum PilotCourt {
     MANCHESTER("manchester"),
     BIRMINGHAM("birmingham"),
     CLERKENWELL("clerkenwell"),
-    SHOREDITCH("shoreditch");
+    SHOREDITCH("shoreditch"),
+    OTHER("");
 
     private String name;
 

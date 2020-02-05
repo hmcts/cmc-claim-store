@@ -62,9 +62,7 @@ public class OrderPostProcessor {
         CCDDocument draftOrderDoc = Optional.ofNullable(ccdCase.getDraftOrderDoc())
             .orElseThrow(() -> new CallbackException("Draft order not present"));
 
-        HearingCourt hearingCourt = Optional.ofNullable(ccdCase.getHearingCourt())
-            .map(hearingCourtDetailsFinder::findHearingCourtAddress)
-            .orElseGet(() -> HearingCourt.builder().build());
+        HearingCourt hearingCourt = hearingCourtDetailsFinder.findHearingCourtAddress(ccdCase);
 
         CCDCase updatedCase = ccdCase.toBuilder()
             .caseDocuments(updateCaseDocumentsWithOrder(ccdCase, draftOrderDoc))
