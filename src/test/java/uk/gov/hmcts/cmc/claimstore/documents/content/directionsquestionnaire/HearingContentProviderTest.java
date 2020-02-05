@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestion
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.ExpertReport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.RequireSupport;
 import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.UnavailableDate;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleDirectionsQuestionnaire;
 
 import java.util.List;
@@ -22,7 +23,7 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleHearingLocation.de
 
 public class HearingContentProviderTest {
 
-    private HearingContentProvider hearingContentProvider = new HearingContentProvider();
+    private final HearingContentProvider hearingContentProvider = new HearingContentProvider();
     private final String disabledAccess = "Disabled Access";
     private final String hearingLoop = "Hearing Loop";
     private final String yes = "Yes";
@@ -44,6 +45,12 @@ public class HearingContentProviderTest {
 
         dq.getRequireSupport()
             .ifPresent(reqSupport -> compareSupportRequired(reqSupport, hearingContent.getSupportRequired()));
+
+        dq.getExpertRequired()
+            .ifPresent(expertRequired -> assertEquals(yes, hearingContent.getExpertRequired()));
+
+        dq.getPermissionForExpert()
+            .ifPresent(permission -> assertEquals(yes, hearingContent.getCourtPermissionForExpertReport()));
 
         dq.getExpertRequest()
             .ifPresent(request -> {
@@ -72,6 +79,7 @@ public class HearingContentProviderTest {
     public void mapDirectionsQuestionnaireDontFailWhenOptionalIsEmpty() {
         DirectionsQuestionnaire dq = DirectionsQuestionnaire.builder()
             .hearingLocation(defaultHearingLocation)
+            .expertRequired(YesNoOption.YES)
             .build();
         HearingContent hearingContent = hearingContentProvider.mapDirectionQuestionnaire(dq);
 
@@ -109,3 +117,4 @@ public class HearingContentProviderTest {
             .toArray(), reportContents.toArray());
     }
 }
+

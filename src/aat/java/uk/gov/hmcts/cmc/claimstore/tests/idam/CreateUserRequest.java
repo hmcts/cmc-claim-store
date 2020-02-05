@@ -1,23 +1,25 @@
 package uk.gov.hmcts.cmc.claimstore.tests.idam;
 
+import java.util.List;
+
 public class CreateUserRequest {
 
     private final String email;
     private final String forename = "John";
     private final String surname = "Smith";
     private final Integer levelOfAccess = 0;
-    private final UserGroup userGroup;
+    private final List<UserRole> roles;
     private final String activationDate = "";
     private final String lastAccess = "";
     private final String password;
 
     public CreateUserRequest(
         String email,
-        UserGroup userGroup,
+        List<UserRole> roles,
         String password
     ) {
         this.email = email;
-        this.userGroup = userGroup;
+        this.roles = roles;
         this.password = password;
     }
 
@@ -37,8 +39,8 @@ public class CreateUserRequest {
         return levelOfAccess;
     }
 
-    public UserGroup getUserGroup() {
-        return userGroup;
+    public List<UserRole> getRoles() {
+        return roles;
     }
 
     public String getActivationDate() {

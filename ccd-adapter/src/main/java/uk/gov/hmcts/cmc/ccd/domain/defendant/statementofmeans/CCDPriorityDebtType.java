@@ -7,5 +7,5 @@ public enum CCDPriorityDebtType {
     GAS,
     ELECTRICITY,
     WATER,
-    MAINTENANCE_PAYMENTS;
+    MAINTENANCE_PAYMENTS
 }

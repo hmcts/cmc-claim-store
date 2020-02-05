@@ -48,19 +48,27 @@ public enum CaseEvent {
     COMPLEX_CASE("ComplexCase"),
     REVIEW_COMPLEX_CASE("ReviewComplexCase"),
     ACTION_REVIEW_COMMENTS("ActionReviewComments"),
-    ASSIGNING_FOR_DIRECTIONS("AssigningForDirections"),
+    ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS("AssigningForDirections"),
+    ASSIGNING_FOR_JUDGE_DIRECTIONS("AssigningForJudgeDirections"),
     REFERRED_TO_MEDIATION("ReferredToMediation"),
     DRAW_ORDER("DrawOrder"),
+    DRAW_JUDGES_ORDER("DrawJudgesOrder"),
     RESET_CLAIM_SUBMISSION_OPERATION_INDICATORS("ResetClaimSubmissionOperationIndicators"),
     CLAIMANT_DIRECTIONS_QUESTIONNAIRE_UPLOAD("ClaimantDirectionsQuestionnaireUpload"),
     ORDER_REVIEW_REQUESTED("OrderReviewRequested"),
     WAITING_TRANSFER("WaitingTransfer"),
+    LIFT_STAY("LiftStay"),
     //inversion of control
     INITIATE_CLAIM_PAYMENT_CITIZEN("InitiateClaimPaymentCitizen"),
     RESUME_CLAIM_PAYMENT_CITIZEN("ResumeClaimPaymentCitizen"),
-    CREATE_LEGAL_REP_CLAIM("CreateLegalRepClaim");
+    CREATE_LEGAL_REP_CLAIM("CreateLegalRepClaim"),
+    STAY_CLAIM("StayClaim"),
+    CREATE_CITIZEN_CLAIM("CreateCitizenClaim"),
+    REVIEWED_PAPER_RESPONSE("ReviewedPaperResponse"),
+    MEDIATION_FAILED("FailedMediation"),
+    MEDIATION_SUCCESSFUL("SuccessfulMediation");
 
-    private String value;
+    private final String value;
 
     CaseEvent(String value) {
         this.value = value;

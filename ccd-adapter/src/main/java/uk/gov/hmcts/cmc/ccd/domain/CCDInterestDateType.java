@@ -4,7 +4,7 @@ public enum CCDInterestDateType {
     CUSTOM("custom"),
     SUBMISSION("submission");
 
-    private String value;
+    private final String value;
 
     CCDInterestDateType(String value) {
         this.value = value;

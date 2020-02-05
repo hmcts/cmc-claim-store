@@ -23,11 +23,11 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
 public class DefendantResponseContentProviderTest {
 
-    private Claim claim = SampleClaim.getWithDefaultResponse();
-    private HearingContentProvider hearingContentProvider =
+    private final Claim claim = SampleClaim.getWithDefaultResponse();
+    private final HearingContentProvider hearingContentProvider =
         new HearingContentProvider();
 
-    private DefendantResponseContentProvider provider = new DefendantResponseContentProvider(
+    private final DefendantResponseContentProvider provider = new DefendantResponseContentProvider(
         new PartyDetailsContentProvider(),
         new ClaimDataContentProvider(
             new InterestContentProvider(
@@ -73,7 +73,7 @@ public class DefendantResponseContentProviderTest {
     public void shouldProvideClaimantFullName() {
         Map<String, Object> content = provider.createContent(claim);
 
-        assertThat(((ClaimContent) content.get("claim")).getSignerName())
+        assertThat(((ClaimContent) content.get("claim")).getStatementOfTruth().getSignerName())
             .isEqualTo(claim.getClaimData().getClaimant().getName());
     }
 

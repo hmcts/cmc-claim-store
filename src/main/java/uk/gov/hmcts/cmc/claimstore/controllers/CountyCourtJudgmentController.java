@@ -28,7 +28,7 @@ import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class CountyCourtJudgmentController {
 
-    private CountyCourtJudgmentService countyCourtJudgmentService;
+    private final CountyCourtJudgmentService countyCourtJudgmentService;
 
     @Autowired
     public CountyCourtJudgmentController(CountyCourtJudgmentService countyCourtJudgmentService) {

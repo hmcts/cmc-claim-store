@@ -3,10 +3,10 @@ import java.util.stream.Collectors
 plugins {
   id 'checkstyle'
   id 'io.spring.dependency-management' version '1.0.8.RELEASE'
-  id 'org.springframework.boot' version '2.1.7.RELEASE'
-  id 'org.owasp.dependencycheck' version '5.2.1'
-  id 'org.sonarqube' version '2.7.1'
-  id 'com.github.ben-manes.versions' version '0.21.0'
+  id 'org.springframework.boot' version '2.2.4.RELEASE'
+  id 'org.owasp.dependencycheck' version '5.2.4'
+  id 'org.sonarqube' version '2.8'
+  id 'com.github.ben-manes.versions' version '0.22.0'
   id 'jacoco'
   id 'net.ltgt.apt' version '0.21'
 }
@@ -24,8 +24,19 @@ dependencyUpdates.resolutionStrategy = {
   }
 }
 
-def springBootVersion = '2.1.7.RELEASE'
+def springBootVersion = '2.2.4.RELEASE'
 def springCloudVersion = 'Greenwich.SR2'
+
+def versions = [
+  logback           : '1.2.3',
+  springBoot        : springBootVersion,
+  springfoxSwagger  : '2.9.2',
+  reformJavaLogging : '5.1.1',
+  restAssuredVersion: '4.0.0',
+  jackson           : '2.10.0',
+  junit             : '5.5.2',
+  junitPlatform     : '1.5.2',
+]
 
 allprojects {
   apply plugin: 'java'
@@ -36,6 +47,11 @@ allprojects {
 
   group 'uk.gov.hmcts.cmc'
   version '1.1.0'
+
+  jacoco {
+    toolVersion = '0.8.5' // jacocoMavenPluginVersion
+    reportsDir = file("$buildDir/reports/jacoco")
+  }
 
   checkstyle {
     maxWarnings = 0
@@ -84,8 +100,8 @@ allprojects {
       mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
     dependencies {
-      // CVE-2019-0232 - command line injections on windows - fixed on spring boot master but not released
-      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.22') {
+      // CVE-2019-17563
+      dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.30') {
         entry 'tomcat-embed-core'
         entry 'tomcat-embed-el'
         entry 'tomcat-embed-websocket'
@@ -99,40 +115,39 @@ allprojects {
       // remove once spring manager incorporates this changes
       dependencySet(
         group: 'com.fasterxml.jackson.core',
-        version: dependencyManagement.importedProperties['jackson.version']
+        version: versions.jackson
       ) {
         entry 'jackson-core'
       }
       dependencySet(
         group: 'com.fasterxml.jackson.core',
-        version: '2.9.9.3'
+        version: versions.jackson
       ) {
         entry 'jackson-databind'
       }
       dependencySet(
         group: 'com.fasterxml.jackson.datatype',
-        version: dependencyManagement.importedProperties['jackson.version']
+        version: versions.jackson
       ) {
         entry 'jackson-datatype-jdk8'
         entry 'jackson-datatype-jsr310'
       }
       dependencySet(
         group: 'com.fasterxml.jackson.module',
-        version: dependencyManagement.importedProperties['jackson.version']
+        version: versions.jackson
       ) {
         entry 'jackson-module-parameter-names'
+      }
+      // solves CVE-2019-13990
+      dependencySet(
+        group: 'org.quartz-scheduler',
+        version: '2.3.2'
+      ) {
+        entry 'quartz'
       }
     }
   }
 }
-
-def versions = [
-  logback           : '1.2.3',
-  springBoot        : springBootVersion,
-  springfoxSwagger  : '2.9.2',
-  reformJavaLogging : '5.0.1',
-  restAssuredVersion: '4.0.0'
-]
 
 configurations {
   aatCompile.extendsFrom(testCompile)
@@ -155,6 +170,7 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-json'
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
 
   compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
 
@@ -168,27 +184,27 @@ dependencies {
   compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
 
-  compile group: 'org.elasticsearch', name: 'elasticsearch', version: '7.2.1'
+  compile group: 'org.elasticsearch', name: 'elasticsearch', version: '7.4.2'
   compile group: 'org.postgresql', name: 'postgresql', version: '42.2.6'
 
-  compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.14.2-RELEASE'
+  compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.15.0-RELEASE'
 
-  compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformJavaLogging
-  compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: versions.reformJavaLogging
+  compile group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformJavaLogging
+  compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformJavaLogging
   compile group: 'uk.gov.hmcts.reform', name: 'http-proxy-spring-boot-autoconfigure', version: '2.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'pdf-service-client', version: '7.0.0'
-  compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.6.2'
   compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '6.0.0'
+  compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.0'
   compile group: 'uk.gov.hmcts.reform', name: 'doc-assembly-client', version: '1.0.4'
   compile group: 'uk.gov.hmcts.reform', name: 'fees-java-client', version: '0.0.5'
   compile group: 'uk.gov.hmcts.reform', name: 'payments-client', version: '0.0.4'
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: '2.3.0'
-  compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.4'
+  compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.5'
   compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version:'0.0.4'
 
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
-  compile group: 'org.apache.commons', name: 'commons-csv', version: '1.4'
+  compile group: 'org.apache.commons', name: 'commons-csv', version: '1.7'
 
   compile group: 'org.jdbi', name: 'jdbi', version: '2.78'
 
@@ -198,8 +214,8 @@ dependencies {
 
   compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '10.2.3'
 
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.8'
-  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.6'
+  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
+  compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
 
   testCompile project(':domain-sample-data')
   testCompile project(path: ":ccd-adapter", configuration: 'testArtifacts')
@@ -211,13 +227,20 @@ dependencies {
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
   testCompile group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock'
 
-  testCompile group: 'org.assertj', name: 'assertj-core', version: '3.13.2'
-  testCompile group: 'org.mockito', name: 'mockito-core', version: '3.0.0'
-  testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.12.0'
+  testCompile group: 'org.junit.jupiter', name:'junit-jupiter-api', version: versions.junit
+  testCompile group: 'org.junit.jupiter', name:'junit-jupiter-engine', version: versions.junit
+  testCompile group: 'org.junit.vintage', name:'junit-vintage-engine', version: versions.junit
+  testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: versions.junit
+  testCompile group: 'org.junit.platform', name: 'junit-platform-commons', version: versions.junitPlatform
+  testCompile group: 'org.junit.platform', name: 'junit-platform-engine', version: versions.junitPlatform
+  testCompile group: 'org.assertj', name: 'assertj-core', version: '3.14.0'
+  testCompile group: 'org.mockito', name: 'mockito-core', version: '3.2.0'
+  testCompile group: 'org.mockito', name: 'mockito-junit-jupiter', version: '3.2.4'
+  testCompile group: 'org.testcontainers', name: 'postgresql', version: '1.12.3'
 
   testCompile group: 'org.pdfbox', name: 'com.springsource.org.pdfbox', version: '0.7.3'
   testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.4.0'
-  testCompile group: 'net.jodah', name: 'failsafe', version: '2.1.1'
+  testCompile group: 'net.jodah', name: 'failsafe', version: '2.3.1'
 
 }
 
@@ -236,7 +259,7 @@ sourceSets {
   aat {
     java {
       compileClasspath += main.output
-      runtimeClasspath += main.output + integrationTest.output
+      runtimeClasspath += main.output
       srcDir('src/aat/java')
     }
     resources {
@@ -248,6 +271,10 @@ sourceSets {
 dependencies {
   integrationTestCompile(sourceSets.test.output)
   integrationTestCompile(project(':email-client').sourceSets.main.output)
+}
+
+test {
+  useJUnitPlatform()
 }
 
 task apiTest(type: Test) {
@@ -298,24 +325,18 @@ compileIntegrationTestJava {
 
 jacocoTestReport {
   executionData(test, apiTest)
-
   reports {
-    xml {
-      enabled true
-    }
-
-    html {
-      enabled true
-    }
+    xml.enabled = true
+    csv.enabled = false
+    xml.destination = file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
   }
 }
 
-project.tasks['sonarqube'].dependsOn test, apiTest
+project.tasks['sonarqube'].dependsOn jacocoTestReport
 check.dependsOn apiTest
 checkstyleMain.shouldRunAfter(compileJava)
-test.shouldRunAfter(checkstyleTest)
-apiTest.shouldRunAfter(checkstyleIntegrationTest)
-apiTest.shouldRunAfter(test)
+test.shouldRunAfter(checkstyleMain, checkstyleAat, checkstyleTest, checkstyleIntegrationTest)
+apiTest.shouldRunAfter(test, checkstyleMain, checkstyleAat, checkstyleTest, checkstyleIntegrationTest)
 
 def listFiles(String pattern) {
   return new FileNameFinder()
@@ -327,8 +348,7 @@ def listFiles(String pattern) {
 sonarqube {
   properties {
     property "sonar.projectName", "CMC :: Claim Store"
-    property "sonar.jacoco.reportPath", "${listFiles('**/test.exec')}"
-    property "sonar.jacoco.itReportPath", "${listFiles('**/apiTest.exec')}"
+    property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
     property "sonar.exclusions", "**/ccd/domain/**," +
       "**/cmc/domain/models/**," +
       "**/cmc/ccd/sample/data/**," +
@@ -352,6 +372,7 @@ sonarqube {
       "**/CCDEventProducer.java," +
       "**/GeneratedDocuments.java," +
       "**/DBCaseRepository.java," +
+      "**/MapperUtil.java," +
       "**/CCDCaseApi.java"
   }
 }

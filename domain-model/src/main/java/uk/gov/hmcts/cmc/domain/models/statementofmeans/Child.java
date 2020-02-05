@@ -19,7 +19,7 @@ public class Child extends CollectionId {
         BETWEEN_11_AND_15("Between 11 and 15"),
         BETWEEN_16_AND_19("Between 16 and 19");
 
-        String description;
+        private final String description;
 
         AgeGroupType(String description) {
             this.description = description;

@@ -1,43 +1,35 @@
 package uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans;
 
-import org.assertj.core.api.AbstractAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.CustomAssert;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDDebt;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.Debt;
 
-import java.util.Objects;
+import java.util.Optional;
 
-import static java.lang.String.format;
 import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;
 
-public class DebtAssert extends AbstractAssert<DebtAssert, Debt> {
+public class DebtAssert extends CustomAssert<DebtAssert, Debt> {
 
     public DebtAssert(Debt actual) {
-        super(actual, DebtAssert.class);
+        super("Debt", actual, DebtAssert.class);
     }
 
-    public DebtAssert isEqualTo(CCDDebt ccdDebt) {
+    public DebtAssert isEqualTo(CCDDebt expected) {
         isNotNull();
 
-        if (!Objects.equals(actual.getDescription(), ccdDebt.getDescription())) {
-            failWithMessage("Expected Debt.description to be <%s> but was <%s>",
-                ccdDebt.getDescription(), actual.getDescription());
-        }
+        compare("description",
+            expected.getDescription(),
+            Optional.ofNullable(actual.getDescription()));
 
-        assertMoney(actual.getTotalOwed())
-            .isEqualTo(
-                ccdDebt.getTotalOwed(),
-                format("Expected Debt.totalOwed to be <%s> but was <%s>",
-                    ccdDebt.getTotalOwed(), actual.getTotalOwed()
-                )
-            );
+        compare("totalOwed",
+            expected.getTotalOwed(),
+            Optional.ofNullable(actual.getTotalOwed()),
+            (e, a) -> assertMoney(a).isEqualTo(e));
 
-        assertMoney(actual.getMonthlyPayments())
-            .isEqualTo(
-                ccdDebt.getMonthlyPayments(),
-                format("Expected Debt.monthlyPayments to be <%s> but was <%s>",
-                    ccdDebt.getMonthlyPayments(), actual.getMonthlyPayments()
-                )
-            );
+        compare("monthlyPayments",
+            expected.getMonthlyPayments(),
+            Optional.ofNullable(actual.getMonthlyPayments()),
+            (e, a) -> assertMoney(a).isEqualTo(e));
 
         return this;
     }

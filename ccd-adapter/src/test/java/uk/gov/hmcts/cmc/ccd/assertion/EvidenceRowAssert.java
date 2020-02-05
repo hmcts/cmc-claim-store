@@ -1,29 +1,26 @@
 package uk.gov.hmcts.cmc.ccd.assertion;
 
-import org.assertj.core.api.AbstractAssert;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
 
-import java.util.Objects;
+import java.util.Optional;
 
-public class EvidenceRowAssert extends AbstractAssert<EvidenceRowAssert, EvidenceRow> {
+public class EvidenceRowAssert extends CustomAssert<EvidenceRowAssert, EvidenceRow> {
 
     public EvidenceRowAssert(EvidenceRow actual) {
-        super(actual, EvidenceRowAssert.class);
+        super("EvidenceRow", actual, EvidenceRowAssert.class);
     }
 
-    public EvidenceRowAssert isEqualTo(CCDEvidenceRow ccdEvidenceRow) {
+    public EvidenceRowAssert isEqualTo(CCDEvidenceRow expected) {
         isNotNull();
 
-        if (!Objects.equals(actual.getType().name(), ccdEvidenceRow.getType().name())) {
-            failWithMessage("Expected EvidenceRow.type to be <%s> but was <%s>",
-                ccdEvidenceRow.getType().name(), actual.getType().name());
-        }
+        compare("type",
+            expected.getType(), Enum::name,
+            Optional.ofNullable(actual.getType()).map(Enum::name));
 
-        if (!Objects.equals(actual.getDescription().orElse(null), ccdEvidenceRow.getDescription())) {
-            failWithMessage("Expected EvidenceRow.description to be <%s> but was <%s>",
-                ccdEvidenceRow.getDescription(), actual.getDescription());
-        }
+        compare("description",
+            expected.getDescription(),
+            actual.getDescription());
 
         return this;
     }

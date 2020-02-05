@@ -38,11 +38,13 @@ public class LegalOrderCoverSheetContentProviderTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaimForClaimant() {
+        //noinspection ConstantConditions
         provider.createContentForClaimant(null);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaimForDefendant() {
+        //noinspection ConstantConditions
         provider.createContentForDefendant(null);
     }
 
