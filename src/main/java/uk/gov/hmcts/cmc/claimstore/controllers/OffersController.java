@@ -33,8 +33,8 @@ import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class OffersController {
 
-    private ClaimService claimService;
-    private OffersService offersService;
+    private final ClaimService claimService;
+    private final OffersService offersService;
 
     @Autowired
     public OffersController(

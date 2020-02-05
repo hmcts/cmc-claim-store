@@ -29,9 +29,9 @@ public class ClaimDocumentMapperTest {
 
     private ClaimDocument claimDocument;
 
-    private LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
+    private final LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
 
-    private LocalDateTime now = LocalDateTime.now();
+    private final LocalDateTime now = LocalDateTime.now();
 
     private CCDCollectionElement<CCDClaimDocument> ccdCollectionElement;
 

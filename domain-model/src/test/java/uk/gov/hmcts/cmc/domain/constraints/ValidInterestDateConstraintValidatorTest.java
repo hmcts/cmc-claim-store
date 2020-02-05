@@ -15,7 +15,7 @@ public class ValidInterestDateConstraintValidatorTest {
     @Mock
     private ConstraintValidatorContext validatorContext;
 
-    private ValidInterestDateConstraintValidator validator = new ValidInterestDateConstraintValidator();
+    private final ValidInterestDateConstraintValidator validator = new ValidInterestDateConstraintValidator();
 
     @Test
     public void shouldBeValidForNullInterestDate() {

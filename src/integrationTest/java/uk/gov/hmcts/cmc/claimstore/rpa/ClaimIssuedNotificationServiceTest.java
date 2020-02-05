@@ -47,7 +47,7 @@ public class ClaimIssuedNotificationServiceTest extends BaseMockSpringTest {
     private ArgumentCaptor<EmailData> emailDataArgument;
 
     private Claim claim;
-    private List<PDF> documents = new ArrayList<>();
+    private final List<PDF> documents = new ArrayList<>();
 
     @Before
     public void setUp() {

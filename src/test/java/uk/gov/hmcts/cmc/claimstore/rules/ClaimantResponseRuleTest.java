@@ -27,7 +27,7 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim.USER_ID;
 @RunWith(MockitoJUnitRunner.class)
 public class ClaimantResponseRuleTest {
 
-    private ClaimantResponseRule claimantResponseRule = new ClaimantResponseRule();
+    private final ClaimantResponseRule claimantResponseRule = new ClaimantResponseRule();
 
     @Test
     public void shouldNotThrowExceptionWhenClaimantResponseCanBeRequested() {

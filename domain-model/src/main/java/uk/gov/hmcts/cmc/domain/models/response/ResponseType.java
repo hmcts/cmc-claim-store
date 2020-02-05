@@ -5,7 +5,7 @@ public enum ResponseType {
     FULL_ADMISSION("I admit all of the claim"),
     PART_ADMISSION("I admit part of the claim");
 
-    String description;
+    private final String description;
 
     ResponseType(String description) {
         this.description = description;

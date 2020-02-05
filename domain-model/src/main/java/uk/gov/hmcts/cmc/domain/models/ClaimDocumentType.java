@@ -23,7 +23,7 @@ public enum ClaimDocumentType {
     PAPER_RESPONSE_MORE_TIME,
     PAPER_RESPONSE_DISPUTES_ALL;
 
-    private List<String> values;
+    private final List<String> values;
 
     ClaimDocumentType(String... values) {
         this.values = Arrays.asList(values);
