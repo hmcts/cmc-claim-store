@@ -15,6 +15,7 @@ postgresql:
   initdbScripts:
     init.sql: |-
       CREATE DATABASE cmc WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
+      CREATE DATABASE "claimstore" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE DATABASE features WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE DATABASE "data-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
       CREATE DATABASE "definition-store" WITH OWNER = hmcts ENCODING = 'UTF-8' CONNECTION LIMIT = -1;
@@ -43,6 +44,9 @@ java:
     CMC_DB_HOST: ${SERVICE_NAME}-postgres
     CMC_DB_USERNAME: hmcts
     CMC_DB_PASSWORD: hmcts
+    CLAIM_STORE_DB_HOST: ${SERVICE_NAME}-postgres
+    CLAIM_STORE_DB_USERNAME: hmcts
+    CLAIM_STORE_DB_PASSWORD: hmcts
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
 
 cmc-citizen-frontend:
