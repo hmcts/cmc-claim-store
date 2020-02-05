@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.roboticssupport;
 
-import java.util.Map;
-
 public interface RoboticsNotificationService {
 
     String rpaClaimNotification(String referenceNumber);
@@ -9,5 +7,4 @@ public interface RoboticsNotificationService {
     String rpaResponseNotifications(String referenceNumber);
     String rpaCCJNotifications(String referenceNumber);
     String rpaPIFNotifications(String referenceNumber);
-
 }

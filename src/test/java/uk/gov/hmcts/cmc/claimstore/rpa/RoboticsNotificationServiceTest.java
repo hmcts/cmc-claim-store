@@ -180,8 +180,7 @@ public class RoboticsNotificationServiceTest {
     public void shouldThrowExceptionWhenInvalidEventTypePassed() {
         when(claimService.getClaimByReference(anyString(), anyString()))
             .thenReturn(Optional.of(SampleClaim.builder()
-                .withReferenceNumber(REFERENCE_NUMBER)
-            .build()));
+                .withReferenceNumber(REFERENCE_NUMBER).build()));
         doNothing()
             .when(ccjNotificationService).notifyRobotics(any(CountyCourtJudgmentEvent.class));
         roboticsNotificationService.rpaCCJNotifications(REFERENCE_NUMBER);

@@ -166,6 +166,4 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
             return rpaState + ": " + ex.getMessage();
         }
     }
-
-
 }
