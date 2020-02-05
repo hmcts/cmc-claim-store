@@ -60,7 +60,7 @@ public class PaymentsServiceTest {
         .build();
 
     private Claim claim;
-    private FeeLookupResponseDto feeOutcome = FeeLookupResponseDto.builder()
+    private final FeeLookupResponseDto feeOutcome = FeeLookupResponseDto.builder()
         .feeAmount(BigDecimal.TEN)
         .build();
 

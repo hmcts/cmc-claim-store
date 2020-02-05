@@ -14,7 +14,7 @@ public class TimelineTest {
     @Test
     public void shouldPassValidationForValidTimeline() {
         TimelineEvent timelineEvent = TimelineEvent.builder().eventDate("Last Year").description("description").build();
-        Timeline timeline = new Timeline(asList(timelineEvent));
+        Timeline timeline = new Timeline(Collections.singletonList(timelineEvent));
 
         Set<String> response = validate(timeline);
 

@@ -19,8 +19,8 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
-import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.PilotCourt;
 import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
@@ -46,9 +46,6 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
     private static final List<CaseEvent> EVENTS = ImmutableList.of(CaseEvent.MEDIATION_FAILED);
 
     private static final String STATE = "state";
-    private static final String OPEN_STATE = "open";
-    private static final String READY_FOR_DIRECTIONS_STATE = "readyForDirections";
-    private static final String READY_FOR_TRANSFER_STATE = "readyForTransfer";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -109,7 +106,7 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
 
         Claim claim = caseDetailsConverter.extractClaim(callbackRequest.getCaseDetails());
 
-        if (!DirectionsQuestionnaireUtils.isOnlineDQ(claim)) {
+        if (!FeaturesUtils.isOnlineDQ(claim)) {
             LocalDate deadline = deadlineCalculator
                 .calculateDirectionsQuestionnaireDeadline(LocalDateTime.now());
             claim = claim.toBuilder().directionsQuestionnaireDeadline(deadline).build();
@@ -138,15 +135,11 @@ public class MediationFailedCallbackHandler extends CallbackHandler {
             throw new IllegalStateException("Claimant response is not an Rejection");
         }
 
-        if (!DirectionsQuestionnaireUtils.isOnlineDQ(claim)) {
-            return OPEN_STATE;
+        if (!FeaturesUtils.isOnlineDQ(claim)) {
+            return ClaimState.OPEN.getValue();
         }
 
-        if (PilotCourt.isPilotCourt(DirectionsQuestionnaireUtils.getPreferredCourt(claim))) {
-            return READY_FOR_DIRECTIONS_STATE;
-        } else {
-            return READY_FOR_TRANSFER_STATE;
-        }
+        return DirectionsQuestionnaireUtils.getDirectionsCaseState(claim);
     }
 
     private AppInsightsEvent getAppInsightEventBasedOnMediationPilot(Claim claim) {

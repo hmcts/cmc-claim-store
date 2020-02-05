@@ -7,7 +7,7 @@ import java.util.List;
 public class GeneratePinRequest {
 
     public final String firstName;
-    @JsonInclude(JsonInclude.Include.ALWAYS)
+    @JsonInclude()
     public final String lastName;
     public final List<String> roles;
 

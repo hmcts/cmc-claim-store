@@ -21,7 +21,7 @@ public class ValidResidenceConstraintValidatorTest {
     @Mock
     private ConstraintValidatorContext validatorContext;
 
-    private ValidResidenceConstraintValidator validator = new ValidResidenceConstraintValidator();
+    private final ValidResidenceConstraintValidator validator = new ValidResidenceConstraintValidator();
 
     @Before
     public void setUp() {

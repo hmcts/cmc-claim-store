@@ -5,7 +5,7 @@ public enum CCDPaymentOption {
     BY_SPECIFIED_DATE("on or before specified date"),
     INSTALMENTS("by instalments");
 
-    String description;
+    final String description;
 
     CCDPaymentOption(String description) {
         this.description = description;

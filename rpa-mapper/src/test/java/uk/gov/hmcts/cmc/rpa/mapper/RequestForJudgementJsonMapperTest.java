@@ -35,7 +35,7 @@ public class RequestForJudgementJsonMapperTest {
     private static final LocalDateTime CCJ_REQUESTED_AT = LocalDate.of(2018, 4, 26).atStartOfDay();
     private static final LocalDate PAY_BY_SET_DATE = LocalDate.of(2200, 3, 12);
     private static final BigDecimal PAID_ALREADY = new BigDecimal(10);
-    private static final LocalDate FIRST_PAYMENT_DATE = LocalDate.of(2200, 3, 02);
+    private static final LocalDate FIRST_PAYMENT_DATE = LocalDate.of(2200, 3, 2);
 
     @Autowired
     private RequestForJudgementJsonMapper mapper;

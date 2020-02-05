@@ -32,8 +32,8 @@ public class SealedClaimJsonMapperTest {
     @Autowired
     private SealedClaimJsonMapper mapper;
 
-    private LocalDate issueDate = LocalDate.of(2018, 4, 26);
-    private Interest interest = SampleInterest.builder()
+    private final LocalDate issueDate = LocalDate.of(2018, 4, 26);
+    private final Interest interest = SampleInterest.builder()
         .withInterestDate(
             new InterestDate(InterestDate.InterestDateType.CUSTOM,
                 issueDate.minusDays(101),

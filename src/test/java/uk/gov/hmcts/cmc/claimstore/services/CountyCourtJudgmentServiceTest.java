@@ -61,12 +61,12 @@ public class CountyCourtJudgmentServiceTest {
     @Mock
     private CaseRepository caseRepository;
 
-    private ReDetermination reDetermination = ReDetermination.builder()
+    private final ReDetermination reDetermination = ReDetermination.builder()
         .explanation("I feel defendant can pay")
         .partyType(MadeBy.CLAIMANT)
         .build();
 
-    private UserDetails userDetails = SampleUserDetails.builder().withUserId(USER_ID).build();
+    private final UserDetails userDetails = SampleUserDetails.builder().withUserId(USER_ID).build();
 
     @Before
     public void setup() {

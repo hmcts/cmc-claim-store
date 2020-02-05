@@ -5,5 +5,5 @@ public enum CCDResidenceType {
     JOINT_OWN_HOME,
     PRIVATE_RENTAL,
     COUNCIL_OR_HOUSING_ASSN_HOME,
-    OTHER;
+    OTHER
 }
