@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class StatementOfMeansContentProviderTest {
 
-    private StatementOfMeansContentProvider provider = new StatementOfMeansContentProvider();
+    private final StatementOfMeansContentProvider provider = new StatementOfMeansContentProvider();
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaim() {

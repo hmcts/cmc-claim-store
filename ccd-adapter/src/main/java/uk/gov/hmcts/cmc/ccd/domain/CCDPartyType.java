@@ -6,7 +6,7 @@ public enum CCDPartyType {
     SOLE_TRADER("SoleTrader"),
     COMPANY("Company");
 
-    private String value;
+    private final String value;
 
     CCDPartyType(String value) {
         this.value = value;

@@ -11,7 +11,6 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationT
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleMoreTimeRequestedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.MoreTimeRequestedNotificationService;
-import uk.gov.service.notify.NotificationClientException;
 
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
@@ -55,7 +54,7 @@ public class MoreTimeRequestedStaffNotificationHandlerTest {
     }
 
     @Test
-    public void sendNotificationsSendsNotificationsToStaff() throws NotificationClientException {
+    public void sendNotificationsSendsNotificationsToStaff() {
 
         MoreTimeRequestedEvent event = SampleMoreTimeRequestedEvent.getDefault();
 

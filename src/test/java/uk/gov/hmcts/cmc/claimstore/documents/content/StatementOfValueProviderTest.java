@@ -26,10 +26,10 @@ import static uk.gov.hmcts.cmc.domain.models.particulars.DamagesExpectation.MORE
 @RunWith(MockitoJUnitRunner.class)
 public class StatementOfValueProviderTest {
 
-    private StatementOfValueProvider statementOfValueProvider = new StatementOfValueProvider();
+    private final StatementOfValueProvider statementOfValueProvider = new StatementOfValueProvider();
 
     @Test
-    public void shouldCreateContentWithAmountRange() throws Exception {
+    public void shouldCreateContentWithAmountRange() {
         //given
         Claim claim = buildClaimModel(
             SampleClaimData.builder()
@@ -49,7 +49,7 @@ public class StatementOfValueProviderTest {
     }
 
     @Test
-    public void shouldCreateContentWithAmountRangeWithoutLowerValue() throws Exception {
+    public void shouldCreateContentWithAmountRangeWithoutLowerValue() {
         //given
         Claim claim = buildClaimModel(
             SampleClaimData.builder()
@@ -70,7 +70,7 @@ public class StatementOfValueProviderTest {
     }
 
     @Test
-    public void shouldCreateContentWithAmountNotKnown() throws Exception {
+    public void shouldCreateContentWithAmountNotKnown() {
         //given
         Claim claim = buildClaimModel(SampleClaimData.builder().withAmount(new NotKnown()).build());
 
@@ -82,7 +82,7 @@ public class StatementOfValueProviderTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowErrorForInvalidAmountType() throws Exception {
+    public void shouldThrowErrorForInvalidAmountType() {
         //given
         Claim claim = SampleClaim.builder().build();
 
@@ -92,7 +92,7 @@ public class StatementOfValueProviderTest {
     }
 
     @Test
-    public void shouldCreateContentWithPersonalInjury() throws Exception {
+    public void shouldCreateContentWithPersonalInjury() {
         //given
         Claim claim = buildClaimModel(
             SampleClaimData.builder()
@@ -117,7 +117,7 @@ public class StatementOfValueProviderTest {
     }
 
     @Test
-    public void shouldCreateContentWithHousingDisrepair() throws Exception {
+    public void shouldCreateContentWithHousingDisrepair() {
         //given
         Claim claim = buildClaimModel(
             SampleClaimData.builder()
@@ -136,7 +136,7 @@ public class StatementOfValueProviderTest {
     }
 
     @Test
-    public void shouldCreateContentWithHousingDisrepairAndPersonalInjury() throws Exception {
+    public void shouldCreateContentWithHousingDisrepairAndPersonalInjury() {
         //given
         Claim claim = buildClaimModel(
             SampleClaimData.builder()
