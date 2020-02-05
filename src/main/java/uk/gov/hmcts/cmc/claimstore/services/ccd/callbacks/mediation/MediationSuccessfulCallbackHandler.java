@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
+import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
@@ -15,14 +17,17 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules.MediationSuccessfulRule;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationReferenceBuilder.MediationSuccessful;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.reform.docassembly.domain.DocAssemblyResponse;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,23 +55,27 @@ public class MediationSuccessfulCallbackHandler extends CallbackHandler {
     private final NotificationService notificationService;
     private final NotificationsProperties notificationsProperties;
     private final AppInsights appInsights;
+    private final MediationSuccessfulRule mediationSuccessfulRule;
 
     @Autowired
     public MediationSuccessfulCallbackHandler(
         CaseDetailsConverter caseDetailsConverter,
         NotificationService notificationService,
         NotificationsProperties notificationsProperties,
-        AppInsights appInsights
+        AppInsights appInsights,
+        MediationSuccessfulRule mediationSuccessfulRule
     ) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.notificationService = notificationService;
         this.notificationsProperties = notificationsProperties;
         this.appInsights = appInsights;
+        this.mediationSuccessfulRule = mediationSuccessfulRule;
     }
 
     @Override
     protected Map<CallbackType, Callback> callbacks() {
         return ImmutableMap.of(
+            CallbackType.ABOUT_TO_START, this::checkForMediationAgreement,
             CallbackType.SUBMITTED, this::notifyParties
         );
     }
@@ -79,6 +88,24 @@ public class MediationSuccessfulCallbackHandler extends CallbackHandler {
     @Override
     public List<Role> getSupportedRoles() {
         return ROLES;
+    }
+
+    public CallbackResponse checkForMediationAgreement(CallbackParams callbackParams) {
+        logger.info("Checking for Mediation Agreement");
+        CallbackRequest callbackRequest = callbackParams.getRequest();
+        CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
+
+        List<String> validations = mediationSuccessfulRule.validateMediationAgreementUploadedByCaseworker(ccdCase);
+        if (!validations.isEmpty()) {
+            return AboutToStartOrSubmitCallbackResponse.builder().errors(validations).build();
+        }
+        return AboutToStartOrSubmitCallbackResponse
+                .builder()
+                .data(ImmutableMap.of(
+                        DRAFT_ORDER_DOC,
+                        CCDDocument.builder().documentUrl(docAssemblyResponse.getRenditionOutputLocation()).build()
+                ))
+                .build();
     }
 
     public CallbackResponse notifyParties(CallbackParams callbackParams) {
