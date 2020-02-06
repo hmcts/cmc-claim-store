@@ -147,23 +147,20 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
         Consumer<Claim> consumer,
         String errorMessage
     ) {
-        String rpaState = RPA_STATE_FAILED;
         Optional<Claim> claimOptional = claimService.getClaimByReference(reference, authorisation);
         if (!claimOptional.isPresent()) {
-            rpaState = RPA_STATE_MISSING;
-            throw new BadRequestException(rpaState);
+            throw new BadRequestException(RPA_STATE_MISSING);
         }
         Claim claim = claimOptional.get();
         if (!precondition.test(claim)) {
-            rpaState = RPA_STATE_INVALID;
-            throw new BadRequestException(rpaState);
+            throw new BadRequestException(RPA_STATE_INVALID);
         }
         try {
             consumer.accept(claim);
             return RPA_STATE_SUCCEEDED;
         } catch (Exception ex) {
             appInsightsExceptionLogger.warn(errorMessage, ex);
-            return rpaState + ": " + ex.getMessage();
+            return RPA_STATE_FAILED + ": " + ex.getMessage();
         }
     }
 }
