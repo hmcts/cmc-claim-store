@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 
 import java.util.Optional;
 
@@ -20,11 +19,11 @@ public class HearingCourtDetailsFinder {
         this.hearingCourtMapper = hearingCourtMapper;
     }
 
-    public HearingCourt findHearingCourtAddress(CCDCase ccdCase) {
+    public HearingCourt getHearingCourt(CCDCase ccdCase) {
         return Optional.ofNullable(ccdCase.getHearingCourt())
             .filter(c -> c != OTHER)
             .map(this::mapHearingCourt)
-            .orElseGet(() ->
+            .orElse(
                 HearingCourt.builder()
                 .name(ccdCase.getHearingCourtName())
                 .address(ccdCase.getHearingCourtAddress())
