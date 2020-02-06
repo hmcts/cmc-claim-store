@@ -16,7 +16,8 @@ import static uk.gov.hmcts.cmc.domain.models.InterestDate.InterestEndDateType.SU
 
 public class InterestMapperTest {
 
-    InterestMapper interestMapper = new InterestMapper(new InterestBreakdownMapper(new MoneyMapper()),
+    private final InterestMapper interestMapper = new InterestMapper(
+        new InterestBreakdownMapper(new MoneyMapper()),
         new InterestDateMapper(),
         new MoneyMapper()
     );

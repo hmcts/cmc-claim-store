@@ -13,9 +13,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class ReferenceNumberServiceTest {
 
-    private static String CITIZEN_REFERENCE = "000MC001";
-    private static String LEGAL_REFERENCE = "000LR001";
-
     private ReferenceNumberService referenceNumberService;
 
     @Mock
@@ -28,23 +25,21 @@ public class ReferenceNumberServiceTest {
 
     @Test
     public void shouldGetReferenceNumberForCitizen() {
+        String citizenReference = "000MC001";
+        when(referenceNumberRepository.getReferenceNumberForCitizen()).thenReturn(citizenReference);
 
-        when(referenceNumberRepository.getReferenceNumberForCitizen()).thenReturn(CITIZEN_REFERENCE);
+        String referenceNumber = referenceNumberService.getReferenceNumber(false);
 
-        Boolean claimRepresented = false;
-        String referenceNumber = referenceNumberService.getReferenceNumber(claimRepresented);
-
-        assertThat(referenceNumber).isNotNull().isEqualTo(CITIZEN_REFERENCE);
+        assertThat(referenceNumber).isNotNull().isEqualTo(citizenReference);
     }
 
     @Test
     public void shouldGetReferenceNumberForLegalRepresentative() {
+        String legalReference = "000LR001";
+        when(referenceNumberRepository.getReferenceNumberForLegal()).thenReturn(legalReference);
 
-        when(referenceNumberRepository.getReferenceNumberForLegal()).thenReturn(LEGAL_REFERENCE);
+        String referenceNumber = referenceNumberService.getReferenceNumber(true);
 
-        Boolean claimRepresented = true;
-        String referenceNumber = referenceNumberService.getReferenceNumber(claimRepresented);
-
-        assertThat(referenceNumber).isNotNull().isEqualTo(LEGAL_REFERENCE);
+        assertThat(referenceNumber).isNotNull().isEqualTo(legalReference);
     }
 }

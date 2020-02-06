@@ -153,6 +153,7 @@ public class Settlement {
         return getLastStatement().getType().equals(StatementType.OFFER);
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean lastStatementIsAcceptationNotBy(MadeBy madeBy) {
         PartyStatement lastStatement = getLastStatement();
         return lastStatement.getType().equals(StatementType.ACCEPTATION)

@@ -23,11 +23,11 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 
 public class SettlementCountersignedEmailContentProviderTest {
 
-    private TemplateService templateService = new TemplateService(
+    private final TemplateService templateService = new TemplateService(
         new PebbleConfiguration().pebbleEngine()
     );
 
-    private StaffEmailTemplates templates = new StaffEmailTemplates();
+    private final StaffEmailTemplates templates = new StaffEmailTemplates();
 
     private Claim claimWithSettlement;
 

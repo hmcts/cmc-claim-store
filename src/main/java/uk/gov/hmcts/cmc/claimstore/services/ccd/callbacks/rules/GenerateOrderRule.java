@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,18 +19,17 @@ public class GenerateOrderRule {
 
     public List<String> validateExpectedFieldsAreSelectedByLegalAdvisor(CCDCase ccdCase) {
         Objects.requireNonNull(ccdCase, "ccd case object can not be null");
-        CCDOrderGenerationData directionOrderData = ccdCase.getDirectionOrderData();
 
         List<String> validationErrors = new ArrayList<>();
 
-        if (isPresentAndIsYes(directionOrderData.getExpertReportPermissionPartyAskedByClaimant())
-            && !isPresent(directionOrderData.getExpertReportPermissionPartyGivenToClaimant())
+        if (isPresentAndIsYes(ccdCase.getExpertReportPermissionPartyAskedByClaimant())
+            && !isPresent(ccdCase.getExpertReportPermissionPartyGivenToClaimant())
         ) {
             validationErrors.add(CLAIMANT_REQUESTED_FOR_EXPORT_REPORT);
         }
 
-        if (isPresentAndIsYes(directionOrderData.getExpertReportPermissionPartyAskedByDefendant())
-            && !isPresent(directionOrderData.getExpertReportPermissionPartyGivenToDefendant())
+        if (isPresentAndIsYes(ccdCase.getExpertReportPermissionPartyAskedByDefendant())
+            && !isPresent(ccdCase.getExpertReportPermissionPartyGivenToDefendant())
         ) {
             validationErrors.add(DEFENDANT_REQUESTED_FOR_EXPORT_REPORT);
         }

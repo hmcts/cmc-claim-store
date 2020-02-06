@@ -115,7 +115,7 @@ public class WorkingDayIndicatorTest {
     @Test
     public void shouldReturnFollowingTuesdayForNextWorkingDayGivenABankHolidayFridayAndMonday() {
         when(publicHolidaysApiClient.getPublicHolidays()).thenReturn(
-            new HashSet<>(Arrays.asList(BANK_HOLIDAY))
+            new HashSet<>(Collections.singletonList(BANK_HOLIDAY))
         );
 
         LocalDate nextWorkingDay = service.getNextWorkingDay(BANK_HOLIDAY);
@@ -140,7 +140,7 @@ public class WorkingDayIndicatorTest {
     @Test
     public void shouldReturnPreviousThursdayForNextWorkingDayGivenABankHolidayFridayAndMonday() {
         when(publicHolidaysApiClient.getPublicHolidays()).thenReturn(
-            new HashSet<>(Arrays.asList(BANK_HOLIDAY))
+            new HashSet<>(Collections.singletonList(BANK_HOLIDAY))
         );
 
         LocalDate previousWorkingDay = service.getPreviousWorkingDay(BANK_HOLIDAY);
