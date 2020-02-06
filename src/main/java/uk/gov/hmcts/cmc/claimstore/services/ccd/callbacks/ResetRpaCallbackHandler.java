@@ -53,7 +53,7 @@ public class ResetRpaCallbackHandler extends CallbackHandler {
 
     @Override
     public List<CaseEvent> handledEvents() {
-        return Collections.singletonList(CaseEvent.RESET_RPA);
+        return Collections.singletonList(CaseEvent.RESEND_RPA);
     }
 
     @Override
