@@ -27,8 +27,8 @@ import javax.validation.constraints.NotNull;
 @RestController
 @RequestMapping(
     path = "/cases/callbacks",
-    produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
-    consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
+    produces = MediaType.APPLICATION_JSON_VALUE,
+    consumes = MediaType.APPLICATION_JSON_VALUE
 )
 public class CallbackController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
