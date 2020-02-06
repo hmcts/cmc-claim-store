@@ -33,7 +33,7 @@ import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
 @RestController
 @RequestMapping(
     path = "/claims",
-    produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    produces = MediaType.APPLICATION_JSON_VALUE)
 public class ClaimController {
 
     private final ClaimService claimService;
@@ -93,7 +93,7 @@ public class ClaimController {
         return claimService.getClaimByDefendantId(defendantId, authorisation);
     }
 
-    @PostMapping(value = "/{submitterId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/{submitterId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Creates a new claim")
     public Claim save(
         @Valid @NotNull @RequestBody ClaimData claimData,
@@ -104,7 +104,7 @@ public class ClaimController {
         return claimService.saveClaim(submitterId, claimData, authorisation, features);
     }
 
-    @PostMapping(value = "/{submitterId}/create-legal-rep-claim", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/{submitterId}/create-legal-rep-claim", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Creates a new legal rep claim")
     public Claim saveLegalRepresentedClaim(
         @Valid @NotNull @RequestBody ClaimData claimData,
@@ -114,7 +114,7 @@ public class ClaimController {
         return claimService.saveRepresentedClaim(submitterId, claimData, authorisation);
     }
 
-    @PostMapping(value = "/initiate-citizen-payment", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/initiate-citizen-payment", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Initiates a citizen payment")
     public CreatePaymentResponse initiatePayment(
         @Valid @NotNull @RequestBody ClaimData claimData,
@@ -123,7 +123,7 @@ public class ClaimController {
         return claimService.initiatePayment(authorisation, claimData);
     }
 
-    @PutMapping(value = "/resume-citizen-payment", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PutMapping(value = "/resume-citizen-payment", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Resumes a citizen payment")
     public CreatePaymentResponse resumePayment(
         @Valid @NotNull @RequestBody ClaimData claimData,
@@ -132,7 +132,7 @@ public class ClaimController {
         return claimService.resumePayment(authorisation, claimData);
     }
 
-    @PutMapping(value = "/create-citizen-claim", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PutMapping(value = "/create-citizen-claim", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Creates a citizen claim")
     public Claim createClaim(
         @Valid @NotNull @RequestBody ClaimData claimData,
