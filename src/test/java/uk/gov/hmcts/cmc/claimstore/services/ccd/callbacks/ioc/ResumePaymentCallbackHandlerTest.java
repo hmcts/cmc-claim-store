@@ -145,6 +145,10 @@ public class ResumePaymentCallbackHandlerTest {
             .nextUrl(NEXT_URL)
             .build();
 
+        LocalDate date = LocalDate.now();
+        when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(date);
+        when(responseDeadlineCalculator.calculateResponseDeadline(any(LocalDate.class))).thenReturn(date);
+
         when(paymentsService.createPayment(
             eq(BEARER_TOKEN),
             any(Claim.class)))
@@ -210,6 +214,7 @@ public class ResumePaymentCallbackHandlerTest {
 
         Claim toBeSaved = claimArgumentCaptor.getValue();
         assertThat(toBeSaved.getIssuedOn()).isEqualTo(date);
+        assertThat(toBeSaved.getServiceDate()).isEqualTo(date.plusDays(5));
         assertThat(toBeSaved.getResponseDeadline()).isEqualTo(date);
 
         Payment payment = toBeSaved.getClaimData().getPayment().orElse(null);
