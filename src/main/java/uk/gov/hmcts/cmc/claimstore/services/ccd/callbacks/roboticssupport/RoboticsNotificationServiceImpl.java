@@ -47,14 +47,16 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
     private final DocumentGenerator documentGenerator;
 
     @Autowired
-    public RoboticsNotificationServiceImpl(ClaimService claimService, UserService userService,
-                                           MoreTimeRequestedNotificationService moreTimeRequestedNotificationService,
-                                           DefenceResponseNotificationService defenceResponseNotificationService,
-                                           RequestForJudgementNotificationService ccjNotificationService,
-                                           PaidInFullNotificationService paidInFullNotificationService,
-                                           ResponseDeadlineCalculator responseDeadlineCalculator,
-                                           AppInsightsExceptionLogger appInsightsExceptionLogger,
-                                           DocumentGenerator documentGenerator) {
+    public RoboticsNotificationServiceImpl(
+        ClaimService claimService, UserService userService,
+        MoreTimeRequestedNotificationService moreTimeRequestedNotificationService,
+        DefenceResponseNotificationService defenceResponseNotificationService,
+        RequestForJudgementNotificationService ccjNotificationService,
+        PaidInFullNotificationService paidInFullNotificationService,
+        ResponseDeadlineCalculator responseDeadlineCalculator,
+        AppInsightsExceptionLogger appInsightsExceptionLogger,
+        DocumentGenerator documentGenerator
+    ) {
         this.claimService = claimService;
         this.userService = userService;
         this.moreTimeRequestedNotificationService = moreTimeRequestedNotificationService;
