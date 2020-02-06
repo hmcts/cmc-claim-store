@@ -7,6 +7,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.roboticssupport.RoboticsNotificationService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.roboticssupport.RpaEventType;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -22,11 +23,6 @@ import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 @Service
 public class ResetRpaCallbackHandler extends CallbackHandler {
     private static final String RPA_EVENT_TYPE = "RPAEventType";
-    private static final String CLAIM = "CLAIM";
-    private static final String MORE_TIME = "MORE_TIME";
-    private static final String CCJ = "CCJ";
-    private static final String DEFENDANT_RESPONSE = "DEFENDANT_RESPONSE";
-    private static final String PAID_IN_FULL = "PAID_IN_FULL";
     private static final String RPA_STATE_INVALID = "invalid";
 
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
@@ -80,7 +76,8 @@ public class ResetRpaCallbackHandler extends CallbackHandler {
     }
 
     private String handleRoboticsNotification(CallbackRequest callbackRequest, String referenceNumber) {
-        switch (String.valueOf(callbackRequest.getCaseDetails().getData().get(RPA_EVENT_TYPE))) {
+        switch (RpaEventType.fromValue(String.valueOf(callbackRequest.getCaseDetails()
+            .getData().get(RPA_EVENT_TYPE)))) {
             case CLAIM:
                 return roboticsNotificationService.rpaClaimNotification(referenceNumber);
             case MORE_TIME:
