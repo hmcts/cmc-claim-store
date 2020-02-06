@@ -16,14 +16,12 @@ public class MediationSuccessfulRule {
     public static final String STAFF_UPLOAD_MEDIATION_AGREEMENT =
         "Upload Mediation Agreement";
     public static final String STAFF_UPLOAD_TYPE_MEDIATION_AGREEMENT =
-            "Document type has to be Mediation Agreement";
+            "Document needs to be a Mediation Agreement";
     public static final String STAFF_UPLOAD_PDF_MEDIATION_AGREEMENT =
             "Document needs to be of type PDF";
 
     public CCDClaimDocument ccdClaimDocument;
-    public CCDClaimDocumentType ccdClaimDocumentType;
     public CCDDocument ccdDocument;
-    public FilenameUtils filenameUtils;
 
     public List<String> validateMediationAgreementUploadedByCaseworker(CCDCase ccdCase) {
         Objects.requireNonNull(ccdCase, "CCD case object can not be null");
@@ -34,15 +32,15 @@ public class MediationSuccessfulRule {
         ) {
             validationErrors.add(STAFF_UPLOAD_MEDIATION_AGREEMENT);
         }
-        if ((ccdClaimDocument.getDocumentType() != ccdClaimDocumentType.MEDIATION_AGREEMENT)
+        if ((ccdClaimDocument.getDocumentType() != CCDClaimDocumentType.MEDIATION_AGREEMENT)
         ) {
             validationErrors.add(STAFF_UPLOAD_TYPE_MEDIATION_AGREEMENT);
         }
-        if ((filenameUtils.getExtension(ccdDocument.getDocumentFileName()).contains("pdf"))
+        if ((FilenameUtils.getExtension(ccdDocument.getDocumentFileName()).contains("pdf"))
         ) {
             validationErrors.add(STAFF_UPLOAD_PDF_MEDIATION_AGREEMENT);
         } else {
-            System.out.println(filenameUtils.getExtension(ccdDocument.getDocumentFileName()));
+            System.out.println(FilenameUtils.getExtension(ccdDocument.getDocumentFileName()));
         }
         return validationErrors;
     }
