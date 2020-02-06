@@ -11,7 +11,7 @@ public enum RpaEventType {
 
     public static RpaEventType fromValue(String value) {
         return Arrays.stream(values())
-            .filter(event -> event.equals(value))
+            .filter(event -> String.valueOf(event).equals(value))
             .findFirst()
             .orElseThrow(() -> new IllegalArgumentException("Unknown event name: " + value));
     }

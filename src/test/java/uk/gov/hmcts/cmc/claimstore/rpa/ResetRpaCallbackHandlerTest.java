@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.ResetRpaCallbackHandler;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.roboticssupport.RoboticsNotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
-import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
@@ -120,7 +119,7 @@ public class ResetRpaCallbackHandlerTest {
         verify(roboticsNotificationService).rpaPIFNotifications(eq(REFERENCE));
     }
 
-    @Test(expected = BadRequestException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void shouldThrowBadRequestExceptionWhenInvalidEventSent() {
         when(roboticsNotificationService.rpaClaimNotification(anyString())).thenReturn(REFERENCE);
         callbackRequest = getCallbackRequest(INVALID);
