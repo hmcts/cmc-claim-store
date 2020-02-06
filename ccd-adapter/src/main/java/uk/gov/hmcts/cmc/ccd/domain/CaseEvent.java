@@ -67,7 +67,7 @@ public enum CaseEvent {
     REVIEWED_PAPER_RESPONSE("ReviewedPaperResponse"),
     MEDIATION_FAILED("FailedMediation"),
     MEDIATION_SUCCESSFUL("SuccessfulMediation"),
-    RESEND_RPA("ResendRpa");;
+    RESEND_RPA("ResendRpa");
 
     private final String value;
 
