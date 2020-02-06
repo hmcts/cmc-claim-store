@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @RestController
 @RequestMapping(
     path = "/deadline",
-    produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    produces = MediaType.APPLICATION_JSON_VALUE)
 public class ResponseDeadlineController {
     private final ResponseDeadlineCalculator calculator;
 

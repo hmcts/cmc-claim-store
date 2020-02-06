@@ -172,7 +172,7 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-json'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
 
-  compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
+  compile group: 'org.flywaydb', name: 'flyway-core', version: '6.2.1'
 
   compile group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
   compile group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
@@ -212,7 +212,7 @@ dependencies {
   compile group: 'org.springframework.retry', name: 'spring-retry'
   compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
 
-  compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '10.2.3'
+  compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '10.3.0'
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
