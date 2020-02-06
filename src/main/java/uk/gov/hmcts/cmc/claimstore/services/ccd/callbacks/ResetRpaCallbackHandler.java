@@ -29,7 +29,6 @@ public class ResetRpaCallbackHandler extends CallbackHandler {
     private static final String PAID_IN_FULL = "PAID_IN_FULL";
     private static final String RPA_STATE_INVALID = "invalid";
 
-
     private static final List<Role> ROLES = Collections.singletonList(CASEWORKER);
 
     private CaseDetailsConverter caseDetailsConverter;
@@ -93,7 +92,7 @@ public class ResetRpaCallbackHandler extends CallbackHandler {
             case PAID_IN_FULL:
                 return roboticsNotificationService.rpaPIFNotifications(referenceNumber);
             default:
-                 throw new BadRequestException(RPA_STATE_INVALID);
+                throw new BadRequestException(RPA_STATE_INVALID);
         }
     }
 }

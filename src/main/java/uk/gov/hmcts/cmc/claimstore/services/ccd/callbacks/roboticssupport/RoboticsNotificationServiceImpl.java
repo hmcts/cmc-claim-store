@@ -21,6 +21,7 @@ import uk.gov.hmcts.cmc.claimstore.services.ResponseDeadlineCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.domain.exceptions.BadRequestException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -47,13 +48,13 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
 
     @Autowired
     public RoboticsNotificationServiceImpl(ClaimService claimService, UserService userService,
-        MoreTimeRequestedNotificationService moreTimeRequestedNotificationService,
-        DefenceResponseNotificationService defenceResponseNotificationService,
-        RequestForJudgementNotificationService ccjNotificationService,
-        PaidInFullNotificationService paidInFullNotificationService,
-        ResponseDeadlineCalculator responseDeadlineCalculator,
-        AppInsightsExceptionLogger appInsightsExceptionLogger,
-        DocumentGenerator documentGenerator) {
+                                           MoreTimeRequestedNotificationService moreTimeRequestedNotificationService,
+                                           DefenceResponseNotificationService defenceResponseNotificationService,
+                                           RequestForJudgementNotificationService ccjNotificationService,
+                                           PaidInFullNotificationService paidInFullNotificationService,
+                                           ResponseDeadlineCalculator responseDeadlineCalculator,
+                                           AppInsightsExceptionLogger appInsightsExceptionLogger,
+                                           DocumentGenerator documentGenerator) {
         this.claimService = claimService;
         this.userService = userService;
         this.moreTimeRequestedNotificationService = moreTimeRequestedNotificationService;
@@ -66,7 +67,6 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
 
     }
 
-
     @Override
     public String rpaClaimNotification(String referenceNumber) {
         if (StringUtils.isEmpty(referenceNumber)) {
@@ -75,14 +75,14 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
         User user = userService.authenticateAnonymousCaseWorker();
         String authorisation = user.getAuthorisation();
         return resendRPA(referenceNumber, user.getAuthorisation(), reference -> true, claim -> {
-                GeneratePinResponse pinResponse = userService
+            GeneratePinResponse pinResponse = userService
                     .generatePin(claim.getClaimData().getDefendant().getName(), authorisation);
 
-                String fullName = userService.getUserDetails(authorisation).getFullName();
-                documentGenerator.generateForCitizenRPA(
+            String fullName = userService.getUserDetails(authorisation).getFullName();
+            documentGenerator.generateForCitizenRPA(
                     new CitizenClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation)
-                );
-            },
+            );
+        },
             "Failed to send claim to RPA");
     }
 
@@ -150,12 +150,12 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
         String rpaState = RPA_STATE_FAILED;
         Optional<Claim> claimOptional = claimService.getClaimByReference(reference, authorisation);
         if (!claimOptional.isPresent()) {
-            rpaState =  RPA_STATE_MISSING;
+            rpaState = RPA_STATE_MISSING;
             throw new BadRequestException(rpaState);
         }
         Claim claim = claimOptional.get();
         if (!precondition.test(claim)) {
-            rpaState =  RPA_STATE_INVALID;
+            rpaState = RPA_STATE_INVALID;
             throw new BadRequestException(rpaState);
         }
         try {

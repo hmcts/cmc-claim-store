@@ -23,12 +23,19 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleCountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+
 import java.time.LocalDate;
 import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class RoboticsNotificationServiceTest {
 
@@ -74,9 +81,10 @@ public class RoboticsNotificationServiceTest {
         documentGenerator = mock(DocumentGenerator.class);
         defenceResponseNotificationService = mock(DefenceResponseNotificationService.class);
         paidInFullNotificationService = mock(PaidInFullNotificationService.class);
-        roboticsNotificationService = new RoboticsNotificationServiceImpl(claimService
-            , userService, moreTimeRequestedNotificationService, defenceResponseNotificationService
-            , ccjNotificationService, paidInFullNotificationService, responseDeadlineCalculator, appInsightsExceptionLogger, documentGenerator);
+        roboticsNotificationService = new RoboticsNotificationServiceImpl(claimService,
+            userService, moreTimeRequestedNotificationService, defenceResponseNotificationService,
+            ccjNotificationService, paidInFullNotificationService,
+            responseDeadlineCalculator, appInsightsExceptionLogger, documentGenerator);
 
         when(userService.authenticateAnonymousCaseWorker()).thenReturn(SampleUser.getDefault());
     }

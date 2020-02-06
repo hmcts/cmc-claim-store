@@ -21,9 +21,12 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import java.util.HashMap;
 import java.util.Map;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class ResetRpaCallbackHandlerTest {
     private static final String AUTHORISATION = "Bearer: aaa";
@@ -59,8 +62,8 @@ public class ResetRpaCallbackHandlerTest {
         caseMapper = mock(CaseMapper.class);
         caseDetailsConverter = mock(CaseDetailsConverter.class);
         roboticsNotificationService = mock(RoboticsNotificationService.class);
-        resetRpaCallbackHandler = new ResetRpaCallbackHandler(caseDetailsConverter
-            , caseMapper, roboticsNotificationService);
+        resetRpaCallbackHandler = new ResetRpaCallbackHandler(caseDetailsConverter,
+            caseMapper, roboticsNotificationService);
 
         when(caseMapper.to(any(Claim.class))).thenReturn(getCcdCase());
         when(caseDetailsConverter.convertToMap(any(CCDCase.class))).thenReturn(getCcdCaseMap());
