@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.scheduler.services;
 
-import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 import org.quartz.JobDataMap;
