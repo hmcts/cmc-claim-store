@@ -24,7 +24,7 @@ public class HearingCourtDetailsFinder {
         return Optional.ofNullable(ccdCase.getHearingCourt())
             .filter(c -> c != OTHER)
             .map(this::mapHearingCourt)
-            .orElse(
+            .orElseGet(() ->
                 HearingCourt.builder()
                 .name(ccdCase.getHearingCourtName())
                 .address(ccdCase.getHearingCourtAddress())
