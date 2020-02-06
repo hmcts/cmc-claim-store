@@ -1,3 +1,10 @@
+cmc-citizen-frontend:
+  enabled: false
+postgresql:
+  enabled: false
+ccd:
+  enabled: false
+
 java:
   image: hmctspublic.azurecr.io/cmc/claim-store:latest
   applicationPort: 4400
