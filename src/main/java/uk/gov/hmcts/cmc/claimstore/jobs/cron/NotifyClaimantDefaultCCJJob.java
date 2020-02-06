@@ -35,7 +35,7 @@ public class NotifyClaimantDefaultCCJJob implements CronJob {
 
     private CCJNotificationService ccjNotificationService;
 
-    @Value("${ccjClaimantNotify.schedule:0 0 0 1 1 ? 2099}")
+    @Value("${ccjClaimantNotify.schedule:0 0 8 ? * * *}")
     private String cronExpression;
 
     @Override
