@@ -117,9 +117,9 @@ public class ClaimantResponseServiceTest {
         claimantResponseService.save(EXTERNAL_ID, claim.getSubmitterId(), claimantResponse, AUTHORISATION);
 
         inOrder.verify(caseRepository, once()).saveClaimantResponse(any(Claim.class), eq(claimantResponse), any());
-        inOrder.verify(appInsights, once()).trackEvent(eq(BOTH_PARTIES_OFFLINE_DQ),
-            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
         inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class), anyString());
+        inOrder.verify(appInsights, once()).trackEvent(eq(BOTH_PARTIES_OFFLINE_DQ),
+                eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
         inOrder.verify(appInsights, once()).trackEvent(eq(NON_LA_PILOT_ELIGIBLE), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
         verify(formaliseResponseAcceptanceService, times(0))
             .formalise(any(), any(), anyString());
