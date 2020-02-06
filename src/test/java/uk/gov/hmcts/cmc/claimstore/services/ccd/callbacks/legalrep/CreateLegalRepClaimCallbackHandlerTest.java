@@ -47,11 +47,10 @@ public class CreateLegalRepClaimCallbackHandlerTest {
     @Mock
     private CaseMapper caseMapper;
 
-    private CallbackParams callbackParams;
     private CallbackRequest callbackRequest;
     private CreateLegalRepClaimCallbackHandler createLegalRepClaimCallbackHandler;
 
-    private CaseDetails caseDetails = CaseDetails.builder().id(3L).data(Collections.emptyMap()).build();
+    private final CaseDetails caseDetails = CaseDetails.builder().id(3L).data(Collections.emptyMap()).build();
 
     @Before
     public void setUp() {
@@ -78,7 +77,7 @@ public class CreateLegalRepClaimCallbackHandlerTest {
     @Test
     public void shouldSuccessfullyReturnCallBackResponse() {
 
-        callbackParams = CallbackParams.builder()
+        CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_SUBMIT)
             .request(callbackRequest)
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))

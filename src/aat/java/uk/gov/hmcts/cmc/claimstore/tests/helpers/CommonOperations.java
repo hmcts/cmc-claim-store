@@ -23,8 +23,9 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
 
 import java.util.UUID;
 
-import static uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils.DQ_FLAG;
-import static uk.gov.hmcts.cmc.claimstore.utils.DirectionsQuestionnaireUtils.LA_PILOT_FLAG;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.LA_PILOT_FLAG;
 
 @Service
 public class CommonOperations {
@@ -75,7 +76,8 @@ public class CommonOperations {
             .given()
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .header(HttpHeaders.AUTHORIZATION, userAuthentication)
-            .header("Features", ImmutableList.of("admissions", "issuedOn", LA_PILOT_FLAG, DQ_FLAG))
+            .header("Features",
+                ImmutableList.of(ADMISSIONS.getValue(), "issuedOn", LA_PILOT_FLAG.getValue(), DQ_FLAG.getValue()))
             .body(jsonMapper.toJson(claimData))
             .when()
             .post("/claims/" + userId);
@@ -134,7 +136,7 @@ public class CommonOperations {
     ) {
         return RestAssured
             .given()
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_UTF8_VALUE)
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .header(HttpHeaders.AUTHORIZATION, defendant.getAuthorisation())
             .body(jsonMapper.toJson(response))
             .when()
@@ -207,7 +209,7 @@ public class CommonOperations {
     ) {
         return RestAssured
             .given()
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_UTF8_VALUE)
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .header(HttpHeaders.AUTHORIZATION, claimant.getAuthorisation())
             .body(jsonMapper.toJson(response))
             .when()
@@ -233,7 +235,7 @@ public class CommonOperations {
     ) {
         return RestAssured
             .given()
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_UTF8_VALUE)
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .header(HttpHeaders.AUTHORIZATION, claimant.getAuthorisation())
             .body(jsonMapper.toJson(reDetermination))
             .when()
@@ -246,7 +248,7 @@ public class CommonOperations {
 
         return RestAssured
             .given()
-            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_UTF8_VALUE)
+            .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .header(HttpHeaders.AUTHORIZATION, user.getAuthorisation())
             .body(jsonMapper.toJson(paidInFull))
             .when()

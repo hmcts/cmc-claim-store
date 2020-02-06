@@ -18,6 +18,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
 
 import java.util.Optional;
 
+import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.MEDIATION_AGREEMENT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_DIRECTIONS;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.ORDER_SANCTIONS;
 
@@ -84,7 +85,8 @@ public class DocumentManagementBackedDocumentsService implements DocumentsServic
 
     private byte[] processRequest(Claim claim, String authorisation, ClaimDocumentType claimDocumentType) {
 
-        if (claimDocumentType == ORDER_DIRECTIONS || claimDocumentType == ORDER_SANCTIONS) {
+        if (claimDocumentType == ORDER_DIRECTIONS || claimDocumentType == ORDER_SANCTIONS
+            || claimDocumentType == MEDIATION_AGREEMENT) {
             return getOrderDocuments(claim, authorisation, claimDocumentType);
         } else {
             return getClaimJourneyDocuments(claim, authorisation, claimDocumentType);

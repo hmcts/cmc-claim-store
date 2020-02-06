@@ -17,7 +17,7 @@ import static org.junit.Assert.assertTrue;
 
 public class SettlementAgreementPDFContentProviderTest {
 
-    private Claim claimWithDefaultResponse = SampleClaim.getWithDefaultResponse();
+    private final Claim claimWithDefaultResponse = SampleClaim.getWithDefaultResponse();
 
     private Claim claimWithSettlement;
 

@@ -22,7 +22,7 @@ public class ValidUnemploymentConstraintValidatorTest {
     @Mock
     private ConstraintValidatorContext validatorContext;
 
-    private ValidUnemploymentConstraintValidator validator = new ValidUnemploymentConstraintValidator();
+    private final ValidUnemploymentConstraintValidator validator = new ValidUnemploymentConstraintValidator();
 
     @Before
     public void setUp() {

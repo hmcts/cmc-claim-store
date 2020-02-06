@@ -51,7 +51,7 @@ public class PaidInFullCitizenNotificationHandlerTest extends BaseNotificationSe
 
         handler.notifyDefendantForPaidInFull(event);
         verify(notificationService, once()).sendMail(
-            eq(event.getClaim().getClaimData().getDefendant().getEmail().get()),
+            eq(event.getClaim().getClaimData().getDefendant().getEmail().orElse(null)),
             eq(CLAIMANT_SAYS_DEFENDANT_PAID_IN_FULL_TEMPLATE),
             anyMap(),
             eq(referenceForDefendant(event.getClaim().getReferenceNumber()))

@@ -14,11 +14,11 @@ import static uk.gov.hmcts.cmc.claimstore.services.staff.ClaimantRejectionStaffN
 
 public class ClaimantRejectPartAdmissionContentProviderTest {
 
-    private TemplateService templateService = new TemplateService(
+    private final TemplateService templateService = new TemplateService(
         new PebbleConfiguration().pebbleEngine()
     );
 
-    private StaffEmailTemplates templates = new StaffEmailTemplates();
+    private final StaffEmailTemplates templates = new StaffEmailTemplates();
 
     private ClaimantRejectPartAdmissionContentProvider service;
 

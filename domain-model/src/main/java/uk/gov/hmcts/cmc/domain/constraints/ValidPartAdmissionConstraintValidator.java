@@ -24,10 +24,10 @@ public class ValidPartAdmissionConstraintValidator
     private static final String SOM_NOT_PROVIDED_ERROR = mayNotBeNullError(PAYMENT_OPTION, "not " + IMMEDIATELY.name());
 
     static class Fields {
-        static String PAYMENT_DECLARATION = "paymentDeclaration";
-        static String PAYMENT_INTENTION = "paymentIntention";
-        static String PAYMENT_OPTION = "paymentOption";
-        static String STATEMENT_OF_MEANS = "statementOfMeans";
+        static final String PAYMENT_DECLARATION = "paymentDeclaration";
+        static final String PAYMENT_INTENTION = "paymentIntention";
+        static final String PAYMENT_OPTION = "paymentOption";
+        static final String STATEMENT_OF_MEANS = "statementOfMeans";
 
         private Fields() {
             // NO-OP

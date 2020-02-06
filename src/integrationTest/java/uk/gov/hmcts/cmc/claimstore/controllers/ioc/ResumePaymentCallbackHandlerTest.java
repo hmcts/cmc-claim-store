@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -121,6 +122,11 @@ public class ResumePaymentCallbackHandlerTest extends BaseMockSpringTest {
             entry("paymentDateCreated", "2017-12-03"),
             entry("paymentNextUrl", NEXT_URL)
         );
+        List<Map<String, Object>> respondents = (List<Map<String, Object>>) responseData.get("respondents");
+        Map<String, Object> defendant = (Map<String, Object>) respondents.get(0).get("value");
+
+        assertThat(defendant).contains(entry("servedDate", date.plusDays(5).toString()));
+        assertThat(defendant).contains(entry("responseDeadline", date.toString()));
     }
 
     @Test

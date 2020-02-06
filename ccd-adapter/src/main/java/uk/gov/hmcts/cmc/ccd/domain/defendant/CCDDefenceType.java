@@ -4,7 +4,7 @@ public enum CCDDefenceType {
     DISPUTE("dispute"),
     ALREADY_PAID("already paid");
 
-    private String value;
+    private final String value;
 
     CCDDefenceType(String value) {
         this.value = value;
