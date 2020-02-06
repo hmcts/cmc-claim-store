@@ -94,7 +94,6 @@ public class MediationSuccessfulCallbackHandler extends CallbackHandler {
         logger.info("Checking for Mediation Agreement");
         CallbackRequest callbackRequest = callbackParams.getRequest();
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(callbackRequest.getCaseDetails());
-//        filenameutils.getextension
 
         List<String> validations = mediationSuccessfulRule.validateMediationAgreementUploadedByCaseworker(ccdCase);
         if (!validations.isEmpty()) {
