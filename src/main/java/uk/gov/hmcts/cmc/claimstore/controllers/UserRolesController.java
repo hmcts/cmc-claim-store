@@ -23,7 +23,7 @@ import javax.validation.constraints.NotNull;
 @RestController
 @RequestMapping(
     path = "/user/roles",
-    produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserRolesController {
 
     private final UserRolesService userRolesService;
@@ -38,7 +38,7 @@ public class UserRolesController {
         return userRolesService.retrieveUserRoles(authorisation);
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Creates a new User Role")
     @ResponseStatus(value = HttpStatus.CREATED)
     public void save(
