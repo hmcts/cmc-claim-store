@@ -25,7 +25,7 @@ dependencies {
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
 
-  compile group: 'org.postgresql', name: 'postgresql', version: '42.2.6'
+  compile group: 'org.postgresql', name: 'postgresql', version: '42.2.10'
 }
 
 sourceCompatibility = 1.8

@@ -1,7 +1,5 @@
 package uk.gov.hmcts.cmc.claimstore.services.notifications;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
@@ -18,7 +16,6 @@ import static uk.gov.hmcts.cmc.claimstore.services.notifications.content.Notific
 
 @Service
 public class CCJNotificationService {
-    private final Logger logger = LoggerFactory.getLogger(CCJNotificationService.class);
 
     private final NotificationsProperties notificationsProperties;
     private final NotificationService notificationService;
@@ -30,6 +27,16 @@ public class CCJNotificationService {
     ) {
         this.notificationService = notificationService;
         this.notificationsProperties = notificationsProperties;
+    }
+
+    public void notifyClaimantAboutCCJReminder(Claim claim) {
+        Map<String, String> parameters = aggregateParams(claim);
+        notificationService.sendMail(
+            claim.getSubmitterEmail(),
+            notificationsProperties.getTemplates().getEmail().getClaimantCCJReminder(),
+            parameters,
+            NotificationReferenceBuilder.CCJRequested.reminderForClaimant(claim.getReferenceNumber())
+        );
     }
 
     public void notifyClaimantForCCJRequest(Claim claim) {
