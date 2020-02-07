@@ -1,7 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.rpa;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.events.paidinfull.PaidInFullEvent;
@@ -19,7 +18,6 @@ import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.JSON_EXTENSION;
 
 @Service("rpa/paid-in-full-notification-service")
-@ConditionalOnProperty(prefix = "feature_toggles", name = "emailToStaff")
 public class PaidInFullNotificationService {
 
     private final EmailService emailService;

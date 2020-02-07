@@ -1,6 +1,7 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.response.SamplePaymentIntention
 import uk.gov.hmcts.cmc.domain.models.sampledata.statementofmeans.SampleStatementOfMeans;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 public abstract class SampleResponse<T extends SampleResponse<T>> {
 
@@ -26,6 +28,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
 
     protected YesNoOption freeMediationOption = YesNoOption.YES;
     protected YesNoOption moreTimeNeededOption = YesNoOption.YES;
+    protected YesNoOption paperResponse = YesNoOption.NO;
     protected StatementOfTruth statementOfTruth;
     protected Party defendantDetails = SampleParty.builder()
         .withCollectionId(COLLECTION_ID)
@@ -100,7 +103,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
             return PartAdmissionResponse.builder()
                 .defendant(SampleParty.builder().individual())
                 .moreTimeNeeded(YesNoOption.NO)
-                .amount(BigDecimal.valueOf(120))
+                .amount(BigDecimal.valueOf(120.99))
                 .paymentDeclaration(SamplePaymentDeclaration.builder().build())
                 .defence(USER_DEFENCE)
                 .timeline(SampleDefendantTimeline.validDefaults())
@@ -112,7 +115,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
             return PartAdmissionResponse.builder()
                 .defendant(SampleParty.builder().individual())
                 .moreTimeNeeded(YesNoOption.NO)
-                .amount(BigDecimal.valueOf(120))
+                .amount(BigDecimal.valueOf(120.99))
                 .paymentIntention(SamplePaymentIntention.immediately())
                 .defence(USER_DEFENCE)
                 .timeline(SampleDefendantTimeline.validDefaults())
@@ -125,7 +128,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
             return PartAdmissionResponse.builder()
                 .defendant(party)
                 .moreTimeNeeded(YesNoOption.NO)
-                .amount(BigDecimal.valueOf(120))
+                .amount(BigDecimal.valueOf(120.99))
                 .paymentIntention(paymentIntention)
                 .defence(USER_DEFENCE)
                 .timeline(SampleDefendantTimeline.validDefaults())
@@ -138,12 +141,13 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
             return PartAdmissionResponse.builder()
                 .defendant(SampleParty.builder().individual())
                 .moreTimeNeeded(YesNoOption.NO)
-                .amount(BigDecimal.valueOf(120))
+                .amount(BigDecimal.valueOf(120.99))
                 .paymentIntention(SamplePaymentIntention.bySetDate())
                 .defence(USER_DEFENCE)
                 .timeline(SampleDefendantTimeline.validDefaults())
                 .evidence(SampleDefendantEvidence.validDefaults())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder().build())
                 .build();
         }
 
@@ -151,7 +155,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
             return PartAdmissionResponse.builder()
                 .defendant(SampleParty.builder().withTitle(null).individual())
                 .moreTimeNeeded(YesNoOption.NO)
-                .amount(BigDecimal.valueOf(120))
+                .amount(BigDecimal.valueOf(120.99))
                 .paymentIntention(SamplePaymentIntention.instalments())
                 .defence(USER_DEFENCE)
                 .timeline(SampleDefendantTimeline.validDefaults())
@@ -164,7 +168,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
             return PartAdmissionResponse.builder()
                 .defendant(party)
                 .moreTimeNeeded(YesNoOption.NO)
-                .amount(BigDecimal.valueOf(120))
+                .amount(BigDecimal.valueOf(120.99))
                 .paymentIntention(SamplePaymentIntention.instalments())
                 .defence(USER_DEFENCE)
                 .timeline(SampleDefendantTimeline.validDefaults())
@@ -177,7 +181,7 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
             return PartAdmissionResponse.builder()
                 .defendant(party)
                 .moreTimeNeeded(YesNoOption.NO)
-                .amount(BigDecimal.valueOf(120))
+                .amount(BigDecimal.valueOf(120.99))
                 .paymentDeclaration(SamplePaymentDeclaration.builder().build())
                 .build();
         }
@@ -190,9 +194,39 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
                 .mediationPhoneNumber(MEDIATION_PHONE_NUMBER)
                 .mediationContactPerson(MEDIATION_CONTACT_PERSON)
                 .moreTimeNeeded(YesNoOption.NO)
+                .amount(BigDecimal.valueOf(120.99))
+                .paymentIntention(SamplePaymentIntention.instalments())
+                .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .build();
+        }
+
+        public PartAdmissionResponse buildWithDirectionsQuestionnaire() {
+            return PartAdmissionResponse.builder()
+                .defendant(SampleParty.builder().individual())
+                .defence(USER_DEFENCE)
+                .freeMediation(YesNoOption.YES)
+                .mediationPhoneNumber(MEDIATION_PHONE_NUMBER)
+                .mediationContactPerson(MEDIATION_CONTACT_PERSON)
+                .moreTimeNeeded(YesNoOption.NO)
                 .amount(BigDecimal.valueOf(120))
                 .paymentIntention(SamplePaymentIntention.instalments())
                 .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder().build())
+                .build();
+        }
+
+        public PartAdmissionResponse buildWithDirectionsQuestionnaireWitNoMediation() {
+            return PartAdmissionResponse.builder()
+                .defendant(SampleParty.builder().individual())
+                .defence(USER_DEFENCE)
+                .freeMediation(YesNoOption.NO)
+                .mediationPhoneNumber(MEDIATION_PHONE_NUMBER)
+                .mediationContactPerson(MEDIATION_CONTACT_PERSON)
+                .moreTimeNeeded(YesNoOption.NO)
+                .amount(BigDecimal.valueOf(120))
+                .paymentIntention(SamplePaymentIntention.instalments())
+                .statementOfMeans(SampleStatementOfMeans.builder().build())
+                .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder().build())
                 .build();
         }
     }
@@ -204,7 +238,9 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         private DefendantTimeline timeline = SampleDefendantTimeline.validDefaults();
         private DefendantEvidence evidence = SampleDefendantEvidence.validDefaults();
         private String mediationPhoneNumber = MEDIATION_PHONE_NUMBER;
-        private String mediationContectPerson = MEDIATION_CONTACT_PERSON;
+        private String mediationContactPerson = MEDIATION_CONTACT_PERSON;
+        private DirectionsQuestionnaire directionsQuestionnaire = SampleDirectionsQuestionnaire.builder().build();
+        private LocalDate intentionToProceedDeadline = LocalDate.now().plusDays(10);
 
         public static FullDefence builder() {
             return new FullDefence();
@@ -241,15 +277,20 @@ public abstract class SampleResponse<T extends SampleResponse<T>> {
         }
 
         public FullDefence withMediationContactPerson(String mediationContactPerson) {
-            this.mediationContectPerson = mediationContactPerson;
+            this.mediationContactPerson = mediationContactPerson;
+            return this;
+        }
+
+        public FullDefence withDirectionsQuestionnaire(DirectionsQuestionnaire directionsQuestionnaire) {
+            this.directionsQuestionnaire = directionsQuestionnaire;
             return this;
         }
 
         public FullDefenceResponse build() {
             return new FullDefenceResponse(
-                freeMediationOption, mediationPhoneNumber, mediationContectPerson,
+                freeMediationOption, mediationPhoneNumber, mediationContactPerson,
                 moreTimeNeededOption, defendantDetails, statementOfTruth,
-                defenceType, defence, paymentDeclaration, timeline, evidence
+                defenceType, defence, paymentDeclaration, timeline, evidence, directionsQuestionnaire
             );
         }
     }

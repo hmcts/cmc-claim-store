@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.ClaimDataContentProvider;
+import uk.gov.hmcts.cmc.claimstore.documents.content.directionsquestionnaire.HearingContentProvider;
 import uk.gov.hmcts.cmc.claimstore.documents.content.models.PartyDetailsContent;
 import uk.gov.hmcts.cmc.claimstore.services.interest.InterestCalculationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.InterestContentProvider;
@@ -22,9 +23,11 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
 public class DefendantResponseContentProviderTest {
 
-    private Claim claim = SampleClaim.getWithDefaultResponse();
+    private final Claim claim = SampleClaim.getWithDefaultResponse();
+    private final HearingContentProvider hearingContentProvider =
+        new HearingContentProvider();
 
-    private DefendantResponseContentProvider provider = new DefendantResponseContentProvider(
+    private final DefendantResponseContentProvider provider = new DefendantResponseContentProvider(
         new PartyDetailsContentProvider(),
         new ClaimDataContentProvider(
             new InterestContentProvider(
@@ -32,14 +35,15 @@ public class DefendantResponseContentProviderTest {
             )
         ),
         new NotificationsProperties(),
-        new FullDefenceResponseContentProvider(),
+        new FullDefenceResponseContentProvider(hearingContentProvider),
         new FullAdmissionResponseContentProvider(
             new PaymentIntentionContentProvider(),
             new StatementOfMeansContentProvider()
         ),
         new PartAdmissionResponseContentProvider(
             new PaymentIntentionContentProvider(),
-            new StatementOfMeansContentProvider()
+            new StatementOfMeansContentProvider(),
+            hearingContentProvider
         )
     );
 
@@ -69,7 +73,7 @@ public class DefendantResponseContentProviderTest {
     public void shouldProvideClaimantFullName() {
         Map<String, Object> content = provider.createContent(claim);
 
-        assertThat(((ClaimContent) content.get("claim")).getSignerName())
+        assertThat(((ClaimContent) content.get("claim")).getStatementOfTruth().getSignerName())
             .isEqualTo(claim.getClaimData().getClaimant().getName());
     }
 
@@ -95,8 +99,8 @@ public class DefendantResponseContentProviderTest {
     @Test
     public void shouldProvideCorrectFormNumber() {
         Map<String, Object> content = provider.createContent(claim);
-        assertThat(content).containsKey("formNumber");
-        assertThat(content).containsValue("OCON9B");
+        assertThat(content)
+            .containsEntry("formNumber", "OCON9B");
     }
 
     @Test
@@ -105,9 +109,11 @@ public class DefendantResponseContentProviderTest {
         Map<String, Object> content = provider.createContent(claim);
 
         assertThat(content).containsKey("paymentDeclaration");
+        assertThat(content.get("paymentDeclaration")).isInstanceOf(Map.class);
         assertThat((Map<String, String>) content.get("paymentDeclaration"))
             .containsOnlyKeys("paidDate", "explanation")
-            .containsValues("2 January 2016", "Paid cash");
+            .containsEntry("paidDate", "2 January 2016")
+            .containsEntry("explanation", "Paid cash");
     }
 
     @Test
@@ -116,5 +122,23 @@ public class DefendantResponseContentProviderTest {
 
         assertThat(content)
             .containsKeys("timelineComment", "events");
+    }
+
+    @Test
+    public void shouldProvideAmountPaid() {
+        Claim statesPaidClaim = SampleClaim.getClaimWithFullDefenceAlreadyPaid();
+        Map<String, Object> content = provider.createContent(statesPaidClaim);
+
+        assertThat(content)
+            .containsEntry("paidAmount", "£100.99")
+            .containsEntry("hasDefendantAlreadyPaid", true);
+    }
+
+    @Test
+    public void shouldProvideMediation() {
+        Map<String, Object> content = provider.createContent(claim);
+
+        assertThat(content)
+            .containsEntry("mediation", true);
     }
 }

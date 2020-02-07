@@ -5,7 +5,7 @@
     "case_type_id": "MoneyClaimCase",
     "created_date": null,
     "last_modified": null,
-    "state": null,
+    "state": "open",
     "locked_by_user_id": null,
     "security_level": null,
     "case_data": {
@@ -96,9 +96,10 @@
           }
         }
       ],
-      "referenceNumber": "000MC023",
+      "previousServiceCaseReference": "000MC023",
       "paymentReference": "RC-1546-4419-9390-7385",
-      "feeAmountInPennies": 2500
+      "feeAmountInPennies": "2500",
+      "claimSubmissionOperationIndicators": {"rpa": "YES", "bulkPrint": "YES", "sealedClaimUpload": "YES", "staffNotification": "YES", "claimantNotification": "YES", "defendantNotification": "YES", "claimIssueReceiptUpload": "YES"}
     },
     "security_classification": null
   },

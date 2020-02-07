@@ -1,14 +1,19 @@
 dependencies:
   - name: java
-    version: ~2.0.4
-    repository: '@hmcts'
+    version: ~2.13.1
+    repository: '@hmctspublic'
+
   - name: postgresql
     version: ~2.6.5
     repository: '@stable'
-    tags:
-      - cmc-claim-store-postgresql-pod
+    condition: postgresql.enabled
+
   - name: cmc-citizen-frontend
-    version: ~1.0.0
-    repository: '@hmcts'
-    tags:
-      - cmc-citizen-frontend-pod
+    version: ~1.1.0
+    repository: '@hmctspublic'
+    condition: cmc-citizen-frontend.enabled
+
+  - name: ccd
+    version: ~3.3.1
+    repository: '@hmctspublic'
+    condition: ccd.enabled

@@ -1,0 +1,104 @@
+{
+  "rowNum": 0,
+  "displayComments": false,
+  "hmctsURL": "https://www.gov.uk/make-money-claim",
+  "referenceNumber": "ref no",
+  "claimant": {
+    "partyName": "Individual"
+  },
+  "defendant": {
+    "partyName": "Mary Richards"
+  },
+  "judicial": {
+    "firstName": "Judge",
+    "lastName": "McJudge"
+  },
+  "currentDate": "24-04-2019",
+  "docUploadDeadline": "11-10-2020",
+  "eyewitnessUploadDeadline": "11-10-2020",
+  "docUploadForParty": "CLAIMANT",
+  "extraDocUploadList": [
+    {
+      "id": null,
+      "value": "first document"
+    },
+    {
+      "id": null,
+      "value": "second document"
+    }
+  ],
+  "eyewitnessUploadForParty": "DEFENDANT",
+  "hearingCourtName": "Birmingham Court",
+  "hearingCourtAddress": {
+    "AddressLine1": "line1",
+    "AddressLine2": "line2",
+    "AddressLine3": "line3",
+    "Country": null,
+    "PostCode": "SW1P4BB",
+    "PostTown": "Birmingham"
+  },
+  "estimatedHearingDuration": "FOUR_HOURS",
+  "otherDirections": [
+    {
+      "OtherDirection": {
+        "extraOrderDirection": "OTHER",
+        "directionComment": "a direction",
+        "otherDirectionHeaders": "UPLOAD",
+        "sendBy": "11-10-2020",
+        "forParty": "BOTH"
+      }
+    },
+    {
+      "OtherDirection": {
+        "extraOrderDirection": "EXPERT_REPORT_PERMISSION",
+        "expertReports": [
+          {
+            "id": null,
+            "value": "first"
+          },
+          {
+            "id": null,
+            "value": "second"
+          },
+          {
+            "id": null,
+            "value": "third"
+          }
+        ],
+        "extraDocUploadList": [
+          {
+            "id": null,
+            "value": "first document"
+          },
+          {
+            "id": null,
+            "value": "second document"
+          }
+        ],
+        "sendBy": "11-10-2020",
+        "forParty": "BOTH"
+      }
+    }
+  ],
+  "courtseal": "[userImage:courtseal.PNG]",
+  "displaycode": 0,
+  "hasFirstOrderDirections": true,
+  "hasSecondOrderDirections": true,
+  "paperDetermination": false,
+  "expertReportPermissionPartyAskedByClaimant": true,
+  "expertReportPermissionPartyAskedByDefendant": true,
+  "expertReportPermissionPartyGivenToClaimant": true,
+  "expertReportPermissionPartyGivenToDefendant": true,
+  "expertReportInstructionClaimant": [
+    {
+      "id": null,
+      "value": "submit more docs"
+    }
+  ],
+  "expertReportInstructionDefendant": [
+    {
+      "id": null,
+      "value": "submit more docs"
+    }
+  ]
+}

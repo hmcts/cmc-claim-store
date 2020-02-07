@@ -7,11 +7,14 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.services.staff.ClaimantRejectionStaffNotificationService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.StatesPaidStaffNotificationService;
+import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
+import uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -25,6 +28,8 @@ public class ClaimantResponseStaffNotificationHandlerTest {
     @Mock
     private ClaimantRejectionStaffNotificationService claimantRejectionStaffNotificationService;
 
+    private final String authorisation = "Bearer authorisation";
+
     @Before
     public void setUp() {
         handler = new ClaimantResponseStaffNotificationHandler(
@@ -36,7 +41,7 @@ public class ClaimantResponseStaffNotificationHandlerTest {
     @Test
     public void notifyStaffClaimantResponseStatesPaidSubmittedFor() {
         ClaimantResponseEvent event = new ClaimantResponseEvent(
-            SampleClaim.getClaimFullDefenceStatesPaidWithAcceptation());
+            SampleClaim.getClaimFullDefenceStatesPaidWithAcceptation(), authorisation);
         handler.onClaimantResponse(event);
 
         verify(statesPaidStaffNotificationService, once())
@@ -46,7 +51,7 @@ public class ClaimantResponseStaffNotificationHandlerTest {
     @Test
     public void notifyStaffClaimantResponseRejectedPartAdmission() {
         ClaimantResponseEvent event = new ClaimantResponseEvent(
-            SampleClaim.getWithClaimantResponseRejectionForPartAdmissionAndMediation()
+            SampleClaim.getWithClaimantResponseRejectionForPartAdmissionAndMediation(), authorisation
         );
         handler.onClaimantResponse(event);
 
@@ -54,13 +59,36 @@ public class ClaimantResponseStaffNotificationHandlerTest {
             .notifyStaffClaimantRejectPartAdmission(eq(event.getClaim()));
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void throwExceptionWhenResponseNotPresent() {
-        ClaimantResponseEvent event = new ClaimantResponseEvent(
-            SampleClaim.builder().build()
-        );
+        ClaimantResponseEvent event = new ClaimantResponseEvent(SampleClaim.builder().build(), authorisation);
         handler.onClaimantResponse(event);
 
-        verifyZeroInteractions(statesPaidStaffNotificationService, claimantRejectionStaffNotificationService);
+        verifyNoInteractions(statesPaidStaffNotificationService, claimantRejectionStaffNotificationService);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowExceptionWhenClaimantResponseNotPresent() {
+        ClaimantResponseEvent event = new ClaimantResponseEvent(SampleClaim.builder().build(), authorisation);
+
+        handler.notifyStaffWithClaimantsIntentionToProceed(event);
+
+        verifyNoInteractions(statesPaidStaffNotificationService, claimantRejectionStaffNotificationService);
+    }
+
+    public void shouldNotifyStaffWhenClaimantIntendsToProceed() {
+        Claim claim = Claim.builder()
+            .claimantRespondedAt(LocalDateTimeFactory.nowInLocalZone())
+            .claimantResponse(
+                SampleClaimantResponse.ClaimantResponseRejection.builder()
+                    .buildRejectionWithDirectionsQuestionnaire()
+            )
+            .build();
+        ClaimantResponseEvent event = new ClaimantResponseEvent(claim, authorisation);
+
+        handler.notifyStaffWithClaimantsIntentionToProceed(event);
+
+        verify(claimantRejectionStaffNotificationService, once())
+            .notifyStaffClaimantRejectPartAdmission(eq(event.getClaim()));
     }
 }

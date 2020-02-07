@@ -8,7 +8,9 @@ import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDDefenceType;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDResponseType;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
+import uk.gov.hmcts.cmc.ccd.mapper.DirectionsQuestionnaireMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.EvidenceRowMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.MoneyMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.PaymentIntentionMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.TelephoneMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.TimelineEventMapper;
@@ -43,6 +45,8 @@ public class ResponseMapper {
     private final PaymentIntentionMapper paymentIntentionMapper;
     private final StatementOfMeansMapper statementOfMeansMapper;
     private final TelephoneMapper telephoneMapper;
+    private final MoneyMapper moneyMapper;
+    private final DirectionsQuestionnaireMapper directionsQuestionnaireMapper;
 
     public ResponseMapper(
         EvidenceRowMapper evidenceRowMapper,
@@ -50,7 +54,9 @@ public class ResponseMapper {
         DefendantPartyMapper defendantPartyMapper,
         PaymentIntentionMapper paymentIntentionMapper,
         StatementOfMeansMapper statementOfMeansMapper,
-        TelephoneMapper telephoneMapper
+        TelephoneMapper telephoneMapper,
+        MoneyMapper moneyMapper,
+        DirectionsQuestionnaireMapper directionsQuestionnaireMapper
     ) {
         this.evidenceRowMapper = evidenceRowMapper;
         this.timelineEventMapper = timelineEventMapper;
@@ -58,6 +64,8 @@ public class ResponseMapper {
         this.paymentIntentionMapper = paymentIntentionMapper;
         this.statementOfMeansMapper = statementOfMeansMapper;
         this.telephoneMapper = telephoneMapper;
+        this.moneyMapper = moneyMapper;
+        this.directionsQuestionnaireMapper = directionsQuestionnaireMapper;
     }
 
     public void to(
@@ -131,20 +139,25 @@ public class ResponseMapper {
 
     private void toPartAdmissionResponse(CCDRespondent.CCDRespondentBuilder builder, PartAdmissionResponse response) {
 
-        builder.responseAmount(response.getAmount());
+        builder.responseAmount(moneyMapper.to(response.getAmount()));
         response.getPaymentDeclaration().ifPresent(
             mapPaymentDeclaration(builder)
         );
         builder.responseDefence(response.getDefence());
         response.getEvidence().ifPresent(mapDefendantEvidence(builder));
         response.getTimeline().ifPresent(mapDefendantTimeline(builder));
-        response.getPaymentIntention().ifPresent(
-            paymentIntention -> builder.defendantPaymentIntention(paymentIntentionMapper.to(paymentIntention))
-        );
 
-        response.getStatementOfMeans().ifPresent(
-            statementOfMeans -> builder.statementOfMeans(statementOfMeansMapper.to(statementOfMeans))
-        );
+        response.getPaymentIntention()
+            .map(paymentIntentionMapper::to)
+            .ifPresent(builder::defendantPaymentIntention);
+
+        response.getStatementOfMeans()
+            .map(statementOfMeansMapper::to)
+            .ifPresent(builder::statementOfMeans);
+
+        response.getDirectionsQuestionnaire()
+            .map(directionsQuestionnaireMapper::to)
+            .ifPresent(builder::directionsQuestionnaire);
     }
 
     private void toFullAdmissionResponse(CCDRespondent.CCDRespondentBuilder builder, FullAdmissionResponse response) {
@@ -165,6 +178,10 @@ public class ResponseMapper {
         fullDefenceResponse.getPaymentDeclaration().ifPresent(mapPaymentDeclaration(builder));
         fullDefenceResponse.getEvidence().ifPresent(mapDefendantEvidence(builder));
         fullDefenceResponse.getTimeline().ifPresent(mapDefendantTimeline(builder));
+
+        fullDefenceResponse.getDirectionsQuestionnaire()
+            .map(directionsQuestionnaireMapper::to)
+            .ifPresent(builder::directionsQuestionnaire);
     }
 
     private Consumer<DefendantTimeline> mapDefendantTimeline(CCDRespondent.CCDRespondentBuilder builder) {
@@ -191,10 +208,10 @@ public class ResponseMapper {
 
     private Consumer<PaymentDeclaration> mapPaymentDeclaration(CCDRespondent.CCDRespondentBuilder builder) {
         return paymentDeclaration -> {
-            builder.paymentDeclarationPaidAmount(paymentDeclaration.getPaidAmount().orElse(null));
-            builder.paymentDeclarationExplanation(paymentDeclaration.getExplanation());
             builder.paymentDeclarationPaidDate(paymentDeclaration.getPaidDate());
-            paymentDeclaration.getPaidAmount().ifPresent(builder::paymentDeclarationPaidAmount);
+            builder.paymentDeclarationExplanation(paymentDeclaration.getExplanation());
+            builder.paymentDeclarationPaidAmount(paymentDeclaration.getPaidAmount().map(moneyMapper::to)
+                .orElse(null));
         };
     }
 
@@ -214,6 +231,7 @@ public class ResponseMapper {
             .evidence(extractDefendantEvidence(respondent))
             .timeline(extractDefendantTimeline(respondent))
             .paymentDeclaration(extractPaymentDeclaration(respondent))
+            .directionsQuestionnaire(directionsQuestionnaireMapper.from(respondent.getDirectionsQuestionnaire()))
             .build();
     }
 
@@ -230,7 +248,7 @@ public class ResponseMapper {
     private PaymentDeclaration extractPaymentDeclaration(CCDRespondent respondent) {
         LocalDate paidDate = respondent.getPaymentDeclarationPaidDate();
         String explanation = respondent.getPaymentDeclarationExplanation();
-        BigDecimal paidAmount = respondent.getPaymentDeclarationPaidAmount();
+        BigDecimal paidAmount = moneyMapper.from(respondent.getPaymentDeclarationPaidAmount());
 
         if (paidDate == null && paidAmount == null && explanation == null) {
             return null;
@@ -261,7 +279,7 @@ public class ResponseMapper {
 
         return PartAdmissionResponse.builder()
             .defendant(defendantPartyMapper.from(respondentElement))
-            .amount(respondent.getResponseAmount())
+            .amount(moneyMapper.from(respondent.getResponseAmount()))
             .defendant(defendantPartyMapper.from(respondentElement))
             .statementOfTruth(extractStatementOfTruth(respondent))
             .moreTimeNeeded(getMoreTimeNeeded(respondent))
@@ -269,13 +287,13 @@ public class ResponseMapper {
             .mediationPhoneNumber(telephoneMapper.from(
                 respondent.getResponseMediationPhoneNumber()))
             .mediationContactPerson(respondent.getResponseMediationContactPerson())
-            .amount(respondent.getResponseAmount())
             .paymentDeclaration(extractPaymentDeclaration(respondent))
             .paymentIntention(paymentIntentionMapper.from(respondent.getDefendantPaymentIntention()))
             .defence(respondent.getResponseDefence())
             .evidence(extractDefendantEvidence(respondent))
             .timeline(extractDefendantTimeline(respondent))
             .statementOfMeans(statementOfMeansMapper.from(respondent.getStatementOfMeans()))
+            .directionsQuestionnaire(directionsQuestionnaireMapper.from(respondent.getDirectionsQuestionnaire()))
             .build();
     }
 

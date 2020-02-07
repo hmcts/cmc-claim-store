@@ -7,15 +7,17 @@ import uk.gov.hmcts.cmc.claimstore.services.bankholidays.PublicHolidaysCollectio
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * Tells if given day is a working day.
  */
 @Component
 public class WorkingDayIndicator {
 
-    private PublicHolidaysCollection publicHolidaysCollection;
+    private final PublicHolidaysCollection publicHolidaysCollection;
 
-    private NonWorkingDaysCollection nonWorkingDaysCollection;
+    private final NonWorkingDaysCollection nonWorkingDaysCollection;
 
     public WorkingDayIndicator(
         PublicHolidaysCollection publicHolidaysApiClient,
@@ -45,5 +47,17 @@ public class WorkingDayIndicator {
 
     public boolean isCustomNonWorkingDay(LocalDate date) {
         return nonWorkingDaysCollection.contains(date);
+    }
+
+    public LocalDate getNextWorkingDay(LocalDate date) {
+        requireNonNull(date);
+
+        return isWorkingDay(date) ? date : getNextWorkingDay(date.plusDays(1));
+    }
+
+    public LocalDate getPreviousWorkingDay(LocalDate date) {
+        requireNonNull(date);
+
+        return isWorkingDay(date) ? date : getPreviousWorkingDay(date.minusDays(1));
     }
 }

@@ -6,7 +6,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
@@ -19,13 +18,13 @@ import java.time.LocalDateTime;
 @Getter
 @EqualsAndHashCode
 public abstract class CCDClaimantResponse {
-    private BigDecimal amountPaid;
-    private LocalDateTime submittedOn;
-    private CCDYesNoOption paymentReceived;
-    private CCDYesNoOption settleForAmount;
+    private final String amountPaid;
+    private final LocalDateTime submittedOn;
+    private final CCDYesNoOption paymentReceived;
+    private final CCDYesNoOption settleForAmount;
 
     public CCDClaimantResponse(
-        BigDecimal amountPaid,
+        String amountPaid,
         LocalDateTime submittedOn,
         CCDYesNoOption paymentReceived,
         CCDYesNoOption settleForAmount

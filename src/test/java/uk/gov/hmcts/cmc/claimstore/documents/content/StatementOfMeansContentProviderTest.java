@@ -12,12 +12,12 @@ import uk.gov.hmcts.cmc.domain.models.statementofmeans.Unemployment;
 import java.util.Map;
 
 import static java.math.BigDecimal.TEN;
-import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class StatementOfMeansContentProviderTest {
 
-    private StatementOfMeansContentProvider provider = new StatementOfMeansContentProvider();
+    private final StatementOfMeansContentProvider provider = new StatementOfMeansContentProvider();
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullClaim() {
@@ -37,12 +37,12 @@ public class StatementOfMeansContentProviderTest {
     }
 
     @Test
-    public void shouldProvideJobTypeEmployedAndSelfmployed() {
+    public void shouldProvideJobTypeEmployedAndSelfEmployed() {
         StatementOfMeansContentProvider.JobTypeContentProvider jobTypeContentProvider =
             new StatementOfMeansContentProvider.JobTypeContentProvider();
 
         Employment employment = Employment.builder()
-            .employers(asList(Employer.builder().name("CMC").jobTitle("My sweet job").build()))
+            .employers(singletonList(Employer.builder().name("CMC").jobTitle("My sweet job").build()))
             .selfEmployment(SelfEmployment.builder()
                 .jobTitle("Director")
                 .annualTurnover(TEN)
@@ -75,7 +75,7 @@ public class StatementOfMeansContentProviderTest {
         StatementOfMeansContentProvider.JobTypeContentProvider jobTypeContentProvider =
             new StatementOfMeansContentProvider.JobTypeContentProvider();
         Employment employment = Employment.builder()
-            .employers(asList(Employer.builder().name("CMC").jobTitle("My sweet job").build()))
+            .employers(singletonList(Employer.builder().name("CMC").jobTitle("My sweet job").build()))
             .build();
         String jobType = jobTypeContentProvider.createJobType(employment);
         assertThat(jobType)
@@ -83,11 +83,23 @@ public class StatementOfMeansContentProviderTest {
     }
 
     @Test
-    public void shouldProvideJobTypeUnEmployed() {
+    public void shouldProvideJobTypeRetired() {
         StatementOfMeansContentProvider.JobTypeContentProvider jobTypeContentProvider =
             new StatementOfMeansContentProvider.JobTypeContentProvider();
         Employment employment = Employment.builder()
             .unemployment(Unemployment.builder().retired(true).build())
+            .build();
+        String jobType = jobTypeContentProvider.createJobType(employment);
+        assertThat(jobType)
+            .isEqualTo("Retired");
+    }
+
+    @Test
+    public void shouldProvideJobTypeUnEmployed() {
+        StatementOfMeansContentProvider.JobTypeContentProvider jobTypeContentProvider =
+            new StatementOfMeansContentProvider.JobTypeContentProvider();
+        Employment employment = Employment.builder()
+            .unemployment(Unemployment.builder().retired(false).build())
             .build();
         String jobType = jobTypeContentProvider.createJobType(employment);
         assertThat(jobType)

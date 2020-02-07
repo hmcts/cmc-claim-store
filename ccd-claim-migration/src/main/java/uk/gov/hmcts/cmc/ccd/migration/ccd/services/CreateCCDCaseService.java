@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.ccd.migration.ccd.services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
@@ -19,7 +18,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 
 @Service
-@ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class CreateCCDCaseService {
     public static final String JURISDICTION_ID = "CMC";
     public static final String CASE_TYPE_ID = "MoneyClaimCase";
@@ -57,8 +55,11 @@ public class CreateCCDCaseService {
             return migrateCoreCaseDataService.save(user.getAuthorisation(), eventRequestData, claim);
         } catch (Exception exception) {
             throw new CreateCaseException(
-                String.format("Failed storing claim in CCD store for claim on %s on event %s",
-                    claim.getReferenceNumber(), event.getValue()),
+                String.format("Failed storing claim in CCD store for claim on %s on event %s due to %s",
+                    claim.getReferenceNumber(),
+                    event.getValue(),
+                    exception.getMessage()
+                ),
                 exception
             );
         }
@@ -71,12 +72,7 @@ public class CreateCCDCaseService {
         Claim claim,
         CaseEvent event
     ) {
-        String errorMessage = String.format(
-            "Failure: failed save for reference number ( %s for event %s) due to %s",
-            claim.getReferenceNumber(), event.getValue(), exception.getMessage()
-        );
-
-        logger.info(errorMessage, exception);
+        logger.info(exception.getMessage(), exception);
         throw exception;
     }
 }

@@ -2,12 +2,15 @@ package uk.gov.hmcts.cmc.claimstore.services.document;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
@@ -26,13 +29,14 @@ import uk.gov.hmcts.reform.document.domain.UploadResponse;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 
 import java.net.URI;
-import java.util.stream.Collectors;
+import java.util.List;
 
 import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.DOCUMENT_NAME;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DOCUMENT_MANAGEMENT_DOWNLOAD_FAILURE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DOCUMENT_MANAGEMENT_UPLOAD_FAILURE;
 
+@Service
 public class DocumentManagementService {
 
     private final Logger logger = LoggerFactory.getLogger(DocumentManagementService.class);
@@ -45,14 +49,17 @@ public class DocumentManagementService {
     private final AuthTokenGenerator authTokenGenerator;
     private final UserService userService;
     private final AppInsights appInsights;
+    private final List<String> userRoles;
 
+    @Autowired
     public DocumentManagementService(
         DocumentMetadataDownloadClientApi documentMetadataDownloadApi,
         DocumentDownloadClientApi documentDownloadClientApi,
         DocumentUploadClientApi documentUploadClientApi,
         AuthTokenGenerator authTokenGenerator,
         UserService userService,
-        AppInsights appInsights
+        AppInsights appInsights,
+        @Value("${document_management.userRoles}") List<String> userRoles
     ) {
         this.documentMetadataDownloadClient = documentMetadataDownloadApi;
         this.documentDownloadClient = documentDownloadClientApi;
@@ -60,6 +67,7 @@ public class DocumentManagementService {
         this.authTokenGenerator = authTokenGenerator;
         this.userService = userService;
         this.appInsights = appInsights;
+        this.userRoles = userRoles;
     }
 
     @Retryable(value = {DocumentManagementException.class}, backoff = @Backoff(delay = 200))
@@ -74,7 +82,7 @@ public class DocumentManagementService {
                 authorisation,
                 authTokenGenerator.generate(),
                 userDetails.getId(),
-                userDetails.getRoles(),
+                userRoles,
                 Classification.RESTRICTED,
                 singletonList(file)
             );
@@ -86,6 +94,7 @@ public class DocumentManagementService {
 
             return ClaimDocument.builder()
                 .documentManagementUrl(URI.create(document.links.self.href))
+                .documentManagementBinaryUrl(URI.create(document.links.binary.href))
                 .documentName(originalFileName)
                 .documentType(pdf.getClaimDocumentType())
                 .createdDatetime(LocalDateTimeFactory.nowInUTC())
@@ -93,7 +102,7 @@ public class DocumentManagementService {
                 .createdBy(OCMC)
                 .build();
         } catch (Exception ex) {
-            throw new DocumentManagementException(String.format("Unable to upload document %s to document management",
+            throw new DocumentManagementException(String.format("Unable to upload document %s to document management.",
                 originalFileName), ex);
         }
     }
@@ -105,42 +114,39 @@ public class DocumentManagementService {
         PDF pdf
     ) {
         String filename = pdf.getFilename();
-        String errorMessage = String.format(
-            "After retry : unable to upload document %s into document management due to %s",
-            filename, exception.getMessage()
-        );
-
-        logger.info(errorMessage, exception);
+        logger.info(exception.getMessage() + " " + exception.getCause(), exception);
         appInsights.trackEvent(DOCUMENT_MANAGEMENT_UPLOAD_FAILURE, DOCUMENT_NAME, filename);
         throw exception;
     }
 
     @Retryable(value = DocumentManagementException.class, backoff = @Backoff(delay = 200))
-    public byte[] downloadDocument(String authorisation, URI documentSelf, String baseFileName) {
+    public byte[] downloadDocument(String authorisation, ClaimDocument claimDocument) {
         try {
             UserDetails userDetails = userService.getUserDetails(authorisation);
-            String roles = userDetails.getRoles().stream().collect(Collectors.joining(","));
+            String userRoles = String.join(",", this.userRoles);
             Document documentMetadata = documentMetadataDownloadClient.getDocumentMetadata(
                 authorisation,
                 authTokenGenerator.generate(),
-                roles,
+                userRoles,
                 userDetails.getId(),
-                documentSelf.getPath()
+                claimDocument.getDocumentManagementUrl().getPath()
             );
 
             ResponseEntity<Resource> responseEntity = documentDownloadClient.downloadBinary(
                 authorisation,
                 authTokenGenerator.generate(),
-                roles,
+                userRoles,
                 userDetails.getId(),
                 URI.create(documentMetadata.links.binary.href).getPath()
             );
 
             ByteArrayResource resource = (ByteArrayResource) responseEntity.getBody();
+            //noinspection ConstantConditions let the NPE be thrown
             return resource.getByteArray();
         } catch (Exception ex) {
             throw new DocumentManagementException(
-                String.format("Unable to download document %s from document management", baseFileName), ex);
+                String.format("Unable to download document %s from document management.",
+                    claimDocument.getDocumentName()), ex);
         }
     }
 
@@ -148,17 +154,10 @@ public class DocumentManagementService {
     public byte[] logDownloadDocumentFailure(
         DocumentManagementException exception,
         String authorisation,
-        URI documentSelf,
-        String baseFileName
+        ClaimDocument claimDocument
     ) {
-        String filename = baseFileName + ".pdf";
-
-        String errorMessage = String.format(
-            "Failure: unable to download document %s from document management due to %s",
-            filename, exception.getMessage()
-        );
-
-        logger.info(errorMessage, exception);
+        String filename = claimDocument.getDocumentName() + ".pdf";
+        logger.warn(exception.getMessage() + " " + exception.getCause(), exception);
         appInsights.trackEvent(DOCUMENT_MANAGEMENT_DOWNLOAD_FAILURE, DOCUMENT_NAME, filename);
         throw exception;
     }

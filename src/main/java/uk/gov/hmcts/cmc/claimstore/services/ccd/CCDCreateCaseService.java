@@ -19,7 +19,7 @@ import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.CASE_TYPE_ID;
 import static uk.gov.hmcts.cmc.claimstore.repositories.CCDCaseApi.JURISDICTION_ID;
 
 @Component
-@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
+@ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class CCDCreateCaseService {
 
     private final CoreCaseDataApi coreCaseDataApi;
@@ -112,6 +112,7 @@ public class CCDCreateCaseService {
     @LogExecutionTime
     public void removeAccessToCase(String caseId, String letterHolderId) {
         User anonymousCaseWorker = userService.authenticateAnonymousCaseWorker();
+
         caseAccessApi.revokeAccessToCase(anonymousCaseWorker.getAuthorisation(),
             authTokenGenerator.generate(),
             anonymousCaseWorker.getUserDetails().getId(),

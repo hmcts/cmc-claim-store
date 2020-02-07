@@ -8,6 +8,8 @@ import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDFormaliseOption;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseAcceptation;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.exception.MappingException;
+import uk.gov.hmcts.cmc.ccd.mapper.DirectionsQuestionnaireMapper;
+import uk.gov.hmcts.cmc.ccd.mapper.MoneyMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.PaymentIntentionMapper;
 import uk.gov.hmcts.cmc.ccd.mapper.TelephoneMapper;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -27,16 +29,22 @@ public class ClaimantResponseMapper {
     private final PaymentIntentionMapper paymentIntentionMapper;
     private final CourtDeterminationMapper courtDeterminationMapper;
     private final TelephoneMapper telephoneMapper;
+    private final MoneyMapper moneyMapper;
+    private final DirectionsQuestionnaireMapper directionsQuestionnaireMapper;
 
     @Autowired
     public ClaimantResponseMapper(
         PaymentIntentionMapper paymentIntentionMapper,
         CourtDeterminationMapper courtDeterminationMapper,
-        TelephoneMapper telephoneMapper
+        TelephoneMapper telephoneMapper,
+        MoneyMapper moneyMapper,
+        DirectionsQuestionnaireMapper directionsQuestionnaireMapper
     ) {
         this.paymentIntentionMapper = paymentIntentionMapper;
         this.courtDeterminationMapper = courtDeterminationMapper;
         this.telephoneMapper = telephoneMapper;
+        this.moneyMapper = moneyMapper;
+        this.directionsQuestionnaireMapper = directionsQuestionnaireMapper;
     }
 
     public CCDClaimantResponse to(Claim claim) {
@@ -67,7 +75,9 @@ public class ClaimantResponseMapper {
         responseRejection.getMediationContactPerson().ifPresent(rejection::mediationContactPerson);
         responseRejection.getMediationPhoneNumber()
             .ifPresent(phoneNo -> rejection.mediationPhoneNumber(telephoneMapper.to(phoneNo)));
-        responseRejection.getAmountPaid().ifPresent(rejection::amountPaid);
+
+        responseRejection.getAmountPaid().map(moneyMapper::to).ifPresent(rejection::amountPaid);
+
         responseRejection.getReason().ifPresent(rejection::reason);
         responseRejection.getPaymentReceived()
             .map(YesNoOption::name)
@@ -77,13 +87,17 @@ public class ClaimantResponseMapper {
             .map(YesNoOption::name)
             .map(CCDYesNoOption::valueOf)
             .ifPresent(rejection::settleForAmount);
+        responseRejection.getDirectionsQuestionnaire()
+            .map(directionsQuestionnaireMapper::to)
+            .ifPresent(rejection::directionsQuestionnaire);
         claim.getClaimantRespondedAt().ifPresent(rejection::submittedOn);
         return rejection.build();
     }
 
     private CCDClaimantResponse toAcceptation(Claim claim, ResponseAcceptation responseAcceptation) {
         CCDResponseAcceptation.CCDResponseAcceptationBuilder builder = CCDResponseAcceptation.builder();
-        responseAcceptation.getAmountPaid().ifPresent(builder::amountPaid);
+        responseAcceptation.getAmountPaid().map(moneyMapper::to).ifPresent(builder::amountPaid);
+
         responseAcceptation.getFormaliseOption()
             .map(FormaliseOption::name)
             .map(CCDFormaliseOption::valueOf)
@@ -127,7 +141,7 @@ public class ClaimantResponseMapper {
     private void fromRejection(CCDClaimantResponse ccdClaimantResponse, Claim.ClaimBuilder claimBuilder) {
         CCDResponseRejection ccdResponseRejection = (CCDResponseRejection) ccdClaimantResponse;
         ResponseRejection.ResponseRejectionBuilder builder = ResponseRejection.builder()
-            .amountPaid(ccdResponseRejection.getAmountPaid())
+            .amountPaid(moneyMapper.from(ccdResponseRejection.getAmountPaid()))
             .reason(ccdResponseRejection.getReason());
         if (ccdResponseRejection.getFreeMediationOption() != null) {
             builder.freeMediation(YesNoOption.valueOf(ccdResponseRejection.getFreeMediationOption().name()));
@@ -143,6 +157,9 @@ public class ClaimantResponseMapper {
             builder.settleForAmount(YesNoOption.valueOf(ccdResponseRejection.getSettleForAmount().name()));
         }
 
+        builder.directionsQuestionnaire(
+            directionsQuestionnaireMapper.from(ccdResponseRejection.getDirectionsQuestionnaire()));
+
         claimBuilder.claimantResponse(builder.build())
             .claimantRespondedAt(ccdClaimantResponse.getSubmittedOn());
     }
@@ -152,7 +169,7 @@ public class ClaimantResponseMapper {
         ResponseAcceptation.ResponseAcceptationBuilder responseAcceptationBuilder = ResponseAcceptation.builder();
 
         responseAcceptationBuilder
-            .amountPaid(ccdResponseAcceptation.getAmountPaid())
+            .amountPaid(moneyMapper.from(ccdResponseAcceptation.getAmountPaid()))
             .claimantPaymentIntention(paymentIntentionMapper.from(ccdResponseAcceptation.getClaimantPaymentIntention()))
             .courtDetermination(courtDeterminationMapper.from(ccdResponseAcceptation.getCourtDetermination()));
 

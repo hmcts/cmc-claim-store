@@ -13,7 +13,6 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimData;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleTheirDetails;
-import uk.gov.service.notify.NotificationClientException;
 
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -47,12 +46,12 @@ public class PaidInFullCitizenNotificationHandlerTest extends BaseNotificationSe
     }
 
     @Test
-    public void sendNotificationsSendsNotificationsToDefendantEmailNotLinked() throws NotificationClientException {
+    public void sendNotificationsSendsNotificationsToDefendantEmailNotLinked() {
         PaidInFullEvent event = new PaidInFullEvent(SampleClaim.getDefault());
 
         handler.notifyDefendantForPaidInFull(event);
         verify(notificationService, once()).sendMail(
-            eq(event.getClaim().getClaimData().getDefendant().getEmail().get()),
+            eq(event.getClaim().getClaimData().getDefendant().getEmail().orElse(null)),
             eq(CLAIMANT_SAYS_DEFENDANT_PAID_IN_FULL_TEMPLATE),
             anyMap(),
             eq(referenceForDefendant(event.getClaim().getReferenceNumber()))
@@ -60,7 +59,7 @@ public class PaidInFullCitizenNotificationHandlerTest extends BaseNotificationSe
     }
 
     @Test
-    public void sendNotificationsSendsNotificationsToDefendantEmailLinked() throws NotificationClientException {
+    public void sendNotificationsSendsNotificationsToDefendantEmailLinked() {
         Response fullDefenceResponse = SampleResponse.FullDefence.builder().build();
         PaidInFullEvent event =
             new PaidInFullEvent(SampleClaim.getWithResponseDefendantEmailVerified(fullDefenceResponse));
@@ -75,8 +74,7 @@ public class PaidInFullCitizenNotificationHandlerTest extends BaseNotificationSe
     }
 
     @Test
-    public void sendNotificationsDoesNotSendNotificationToDefendantWhenNoEmailAddress()
-        throws NotificationClientException {
+    public void sendNotificationsDoesNotSendNotificationToDefendantWhenNoEmailAddress() {
         Claim claim = SampleClaim.builder().withClaimData(SampleClaimData.builder()
             .withDefendant(SampleTheirDetails.builder().withEmail(null).individualDetails())
             .build()).build();

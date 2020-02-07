@@ -3,12 +3,12 @@ package uk.gov.hmcts.cmc.scheduler.config;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -19,6 +19,7 @@ import java.util.Properties;
 
 @Configuration
 @ConfigurationProperties
+@EnableScheduling
 public class QuartzConfiguration {
 
     @Autowired
@@ -40,9 +41,8 @@ public class QuartzConfiguration {
 
     @Bean
     public SchedulerFactoryBean schedulerFactoryBean(
-        @Qualifier("cmcTransactionAwareDataSourceProxy")
-            TransactionAwareDataSourceProxy transactionAwareDataSourceProxy,
-        @Qualifier("cmcTransactionManager") PlatformTransactionManager transactionManager
+        TransactionAwareDataSourceProxy transactionAwareDataSourceProxy,
+        PlatformTransactionManager transactionManager
     ) {
         Properties properties = new Properties();
         properties.putAll(quartzProperties);

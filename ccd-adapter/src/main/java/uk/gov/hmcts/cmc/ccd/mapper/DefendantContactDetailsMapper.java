@@ -13,7 +13,7 @@ public class DefendantContactDetailsMapper
     @Override
     public void to(ContactDetails contactDetails, CCDRespondent.CCDRespondentBuilder builder) {
 
-        contactDetails.getEmail().ifPresent(builder::claimantProvidedRepresentativeOrganisationPhone);
+        contactDetails.getEmail().ifPresent(builder::claimantProvidedRepresentativeOrganisationEmail);
         contactDetails.getPhone().ifPresent(builder::claimantProvidedRepresentativeOrganisationPhone);
         contactDetails.getDxAddress().ifPresent(builder::claimantProvidedRepresentativeOrganisationDxAddress);
     }

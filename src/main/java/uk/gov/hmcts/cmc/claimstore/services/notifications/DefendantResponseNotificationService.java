@@ -1,32 +1,28 @@
 package uk.gov.hmcts.cmc.claimstore.services.notifications;
 
 import com.google.common.collect.ImmutableMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Recover;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.EmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationTemplates;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.services.FreeMediationDecisionDateCalculator;
-import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
+import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 import uk.gov.hmcts.cmc.domain.utils.PartyUtils;
-import uk.gov.service.notify.NotificationClient;
-import uk.gov.service.notify.NotificationClientException;
+
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.Objects;
 
 import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 import static uk.gov.hmcts.cmc.claimstore.utils.ResponseHelper.admissionResponse;
-import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isFullDefenceAndNoMediation;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.hasDefendantOptedForMediation;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isFullDefence;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isFullDefenceDisputeAndNoMediation;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isPartAdmission;
 
 @Service
 public class DefendantResponseNotificationService {
@@ -41,18 +37,19 @@ public class DefendantResponseNotificationService {
     private static final String CLAIMANT_TYPE = "claimantType";
     private static final String ISSUED_ON = "issuedOn";
     private static final String RESPONSE_DEADLINE = "responseDeadline";
-    private static final Logger logger = LoggerFactory.getLogger(DefendantResponseNotificationService.class);
-    private final NotificationClient notificationClient;
+    private static final String INTENTION_TO_PROCEED_DEADLINE = "intentionToProceedDeadline";
+    private static final int INTENTION_TO_PROCEED_LIMIT = 33;
+    private final NotificationService notificationService;
     private final FreeMediationDecisionDateCalculator freeMediationDecisionDateCalculator;
     private final NotificationsProperties notificationsProperties;
 
     @Autowired
     public DefendantResponseNotificationService(
-        NotificationClient notificationClient,
+        NotificationService notificationService,
         FreeMediationDecisionDateCalculator freeMediationDecisionDateCalculator,
         NotificationsProperties notificationsProperties
     ) {
-        this.notificationClient = notificationClient;
+        this.notificationService = notificationService;
         this.freeMediationDecisionDateCalculator = freeMediationDecisionDateCalculator;
         this.notificationsProperties = notificationsProperties;
     }
@@ -61,17 +58,27 @@ public class DefendantResponseNotificationService {
         Map<String, String> parameters = aggregateParams(claim);
 
         String template = getDefendantResponseIssuedEmailTemplate(claim);
-        notify(defendantEmail, template, parameters, reference);
+        notificationService.sendMail(defendantEmail, template, parameters, reference);
     }
 
     private String getDefendantResponseIssuedEmailTemplate(Claim claim) {
         Response response = claim.getResponse().orElseThrow(() -> new IllegalStateException("Response expected"));
+
+        if (isOnlineDqWithNoMediationAndHasEitherFullDefenceOrPartAdmission(claim, response)) {
+            return getEmailTemplates().getDefendantResponseForDqPilotWithNoMediationIssued();
+        }
 
         if (isFullDefenceDisputeAndNoMediation(response)) {
             return getEmailTemplates().getDefendantResponseWithNoMediationIssued();
         } else {
             return getEmailTemplates().getDefendantResponseIssued();
         }
+    }
+
+    private boolean isOnlineDqWithNoMediationAndHasEitherFullDefenceOrPartAdmission(Claim claim, Response response) {
+        return FeaturesUtils.isOnlineDQ(claim)
+            && !hasDefendantOptedForMediation(response)
+            && (isFullDefence(response) || isPartAdmission(response));
     }
 
     public void notifyClaimant(
@@ -81,54 +88,28 @@ public class DefendantResponseNotificationService {
         Response response = claim.getResponse().orElseThrow(IllegalArgumentException::new);
         Map<String, String> parameters = aggregateParams(claim, response);
 
-        String emailTemplate = getClaimantEmailTemplate(response);
+        String emailTemplate = getClaimantEmailTemplate(claim, response);
 
-        notify(claim.getSubmitterEmail(), emailTemplate, parameters, reference);
+        notificationService.sendMail(claim.getSubmitterEmail(), emailTemplate, parameters, reference);
     }
 
-    private String getClaimantEmailTemplate(Response response) {
-        YesNoOption mediation = response.getFreeMediation().orElse(YesNoOption.YES);
+    private String getClaimantEmailTemplate(Claim claim, Response response) {
+
+        if (isOnlineDqWithNoMediationAndHasEitherFullDefenceOrPartAdmission(claim, response)) {
+            return getEmailTemplates().getClaimantResponseForDqPilotWithNoMediationIssued();
+        }
+
         if (admissionResponse(response)) {
             return getEmailTemplates().getDefendantAdmissionResponseToClaimant();
         }
+
+        YesNoOption mediation = response.getFreeMediation().orElse(YesNoOption.YES);
         if (mediation == YesNoOption.YES) {
             return getEmailTemplates().getClaimantResponseWithMediationIssued();
-        } else {
-            if (isFullDefenceAndNoMediation(response)) {
-                return getEmailTemplates().getClaimantResponseWithNoMediationIssued();
-            }
-            return getEmailTemplates().getClaimantResponseIssued();
         }
-    }
 
-    @Retryable(value = NotificationException.class, backoff = @Backoff(delay = 200))
-    public void notify(
-        String targetEmail,
-        String emailTemplate,
-        Map<String, String> parameters,
-        String reference
-    ) {
-        try {
-            notificationClient.sendEmail(emailTemplate, targetEmail, parameters, reference);
-        } catch (NotificationClientException e) {
-            throw new NotificationException(e);
-        }
-    }
+        return getEmailTemplates().getClaimantResponseIssued();
 
-    @Recover
-    public void logNotificationFailure(
-        NotificationException exception,
-        Claim claim,
-        String targetEmail,
-        String emailTemplate,
-        String reference
-    ) {
-        String errorMessage = String.format(
-            "Failure: failed to send notification (%s) due to %s",
-            reference, exception.getMessage()
-        );
-
-        logger.info(errorMessage, exception);
     }
 
     private Map<String, String> aggregateParams(Claim claim) {
@@ -143,9 +124,9 @@ public class DefendantResponseNotificationService {
         Response response = claim.getResponse().orElse(null);
         Objects.requireNonNull(response);
 
-        if (isFullDefenceAndNoMediation(response)) {
-            parameters.put(DQS_DEADLINE, formatDate(claim.getDirectionsQuestionnaireDeadline()));
-        }
+        parameters.put(INTENTION_TO_PROCEED_DEADLINE, formatDate(claim.getRespondedAt()
+            .plusDays(INTENTION_TO_PROCEED_LIMIT)
+            .toLocalDate()));
 
         return parameters.build();
     }
@@ -170,10 +151,9 @@ public class DefendantResponseNotificationService {
         );
         parameters.put(ISSUED_ON, formatDate(claim.getIssuedOn()));
         parameters.put(RESPONSE_DEADLINE, formatDate(claim.getResponseDeadline()));
-
-        if (isFullDefenceAndNoMediation(response)) {
-            parameters.put(DQS_DEADLINE, formatDate(claim.getDirectionsQuestionnaireDeadline()));
-        }
+        parameters.put(INTENTION_TO_PROCEED_DEADLINE, formatDate(claim.getRespondedAt()
+            .plusDays(INTENTION_TO_PROCEED_LIMIT)
+            .toLocalDate()));
 
         return parameters.build();
     }

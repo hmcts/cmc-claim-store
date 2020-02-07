@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.citizen;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
@@ -14,11 +15,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class FeatureTogglesTest extends BaseTest {
     private static final String CONSENT_GIVEN_ROLE = "cmc-new-features-consent-given";
 
-    private User user;
+    private User user; //needs a new user with each test for guaranteed behaviour
 
     @Before
     public void before() {
         user = idamTestService.createCitizen();
+    }
+
+    @After
+    public void after() {
+        idamTestService.deleteUser(user.getUserDetails().getEmail());
     }
 
     @Test
@@ -39,13 +45,14 @@ public class FeatureTogglesTest extends BaseTest {
             .statusCode(HttpStatus.CONFLICT.value());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void shouldSuccessfullyFetchRole() {
         commonOperations.saveUserRoles(new UserRoleRequest(CONSENT_GIVEN_ROLE), user.getAuthorisation())
             .then()
             .statusCode(HttpStatus.CREATED.value());
 
-        List roles = commonOperations.getUserRole(user.getAuthorisation())
+        List<String> roles = commonOperations.getUserRole(user.getAuthorisation())
             .then()
             .statusCode(HttpStatus.OK.value())
             .and()

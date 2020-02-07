@@ -19,14 +19,14 @@ import static uk.gov.hmcts.cmc.claimstore.utils.Formatting.formatDate;
 
 public class InterestContentProviderTest {
 
-    private Claim claim = SampleClaim.getDefault();
+    private final Claim claim = SampleClaim.getDefault();
 
     private Interest interest;
     private InterestDate interestDate;
     private BigDecimal claimAmount;
     private LocalDate issuedOn;
 
-    private InterestContentProvider provider = new InterestContentProvider(
+    private final InterestContentProvider provider = new InterestContentProvider(
         new InterestCalculationService(Clock.systemDefaultZone())
     );
 
@@ -113,7 +113,7 @@ public class InterestContentProviderTest {
         InterestContent content = provider.createContent(interest, hundredOneDaysAgo(), claimAmount,
             issuedOn, issuedOn);
 
-        assertThat(content.getAmount()).isEqualTo("£0.89");
+        assertThat(content.getAmount()).isEqualTo("£0.92");
     }
 
     private InterestDate hundredOneDaysAgo() {
@@ -129,7 +129,7 @@ public class InterestContentProviderTest {
         InterestContent content = provider.createContent(interest, hundredOneDaysAgo(), claimAmount,
             issuedOn, issuedOn);
 
-        assertThat(content.getAmountRealValue()).isEqualByComparingTo("0.89");
+        assertThat(content.getAmountRealValue()).isEqualByComparingTo("0.92");
     }
 
     @Test

@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
@@ -23,6 +24,10 @@ import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.toDate;
 public class WorkingDayIndicatorTest {
 
     private static final LocalDate BANK_HOLIDAY = toDate("2017-05-29");
+    private static final LocalDate NEXT_WORKING_DAY_AFTER_BANK_HOLIDAY = toDate("2017-05-30");
+    private static final LocalDate PREVIOUS_WORKING_DAY_BEFORE_BANK_HOLIDAY = toDate("2017-05-26");
+    private static final LocalDate SATURDAY_WEEK_BEFORE = toDate("2017-06-03");
+    private static final LocalDate SUNDAY_WEEK_BEFORE = toDate("2017-06-04");
     private static final LocalDate MONDAY = toDate("2017-06-05");
     private static final LocalDate TUESDAY = toDate("2017-06-06");
     private static final LocalDate WEDNESDAY = toDate("2017-06-07");
@@ -91,5 +96,55 @@ public class WorkingDayIndicatorTest {
         when(nonWorkingDaysCollection.contains(MONDAY)).thenReturn(true);
 
         assertFalse(service.isWorkingDay(MONDAY));
+    }
+
+    @Test
+    public void shouldReturnFollowingMondayForNextWorkingDayGivenASunday() {
+        LocalDate nextWorkingDay = service.getNextWorkingDay(SUNDAY_WEEK_BEFORE);
+
+        assertEquals(nextWorkingDay, MONDAY);
+    }
+
+    @Test
+    public void shouldReturnFollowingMondayForNextWorkingDayGivenASaturday() {
+        LocalDate nextWorkingDay = service.getNextWorkingDay(SATURDAY_WEEK_BEFORE);
+
+        assertEquals(nextWorkingDay, MONDAY);
+    }
+
+    @Test
+    public void shouldReturnFollowingTuesdayForNextWorkingDayGivenABankHolidayFridayAndMonday() {
+        when(publicHolidaysApiClient.getPublicHolidays()).thenReturn(
+            new HashSet<>(Collections.singletonList(BANK_HOLIDAY))
+        );
+
+        LocalDate nextWorkingDay = service.getNextWorkingDay(BANK_HOLIDAY);
+
+        assertEquals(nextWorkingDay, NEXT_WORKING_DAY_AFTER_BANK_HOLIDAY);
+    }
+
+    @Test
+    public void shouldReturnPreviousFridayForNextWorkingDayGivenASunday() {
+        LocalDate previousWorkingDay = service.getPreviousWorkingDay(SUNDAY);
+
+        assertEquals(FRIDAY, previousWorkingDay);
+    }
+
+    @Test
+    public void shouldReturnPreviousFridayForNextWorkingDayGivenASaturday() {
+        LocalDate previousWorkingDay = service.getPreviousWorkingDay(SATURDAY);
+
+        assertEquals(FRIDAY, previousWorkingDay);
+    }
+
+    @Test
+    public void shouldReturnPreviousThursdayForNextWorkingDayGivenABankHolidayFridayAndMonday() {
+        when(publicHolidaysApiClient.getPublicHolidays()).thenReturn(
+            new HashSet<>(Collections.singletonList(BANK_HOLIDAY))
+        );
+
+        LocalDate previousWorkingDay = service.getPreviousWorkingDay(BANK_HOLIDAY);
+
+        assertEquals(PREVIOUS_WORKING_DAY_BEFORE_BANK_HOLIDAY, previousWorkingDay);
     }
 }

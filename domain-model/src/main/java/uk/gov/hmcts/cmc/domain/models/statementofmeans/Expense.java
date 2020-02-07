@@ -34,7 +34,7 @@ public class Expense extends CollectionId {
         MAINTENANCE_PAYMENTS("Maintenance payments"),
         OTHER("Other");
 
-        String description;
+        private final String description;
 
         ExpenseType(String description) {
             this.description = description;
@@ -55,7 +55,7 @@ public class Expense extends CollectionId {
 
     @NotNull
     @Money
-    @DecimalMin(value = "0.01")
+    @DecimalMin(value = "0.00")
     private final BigDecimal amount;
 
     @Builder

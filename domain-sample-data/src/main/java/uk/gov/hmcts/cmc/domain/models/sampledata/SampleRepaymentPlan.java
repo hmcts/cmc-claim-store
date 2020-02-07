@@ -15,10 +15,10 @@ public class SampleRepaymentPlan {
 
     public static RepaymentPlanBuilder builder() {
         return RepaymentPlan.builder()
-            .instalmentAmount(BigDecimal.valueOf(100))
+            .instalmentAmount(new BigDecimal("100.99"))
             .paymentSchedule(PaymentSchedule.EACH_WEEK)
             .firstPaymentDate(LocalDate.of(2100, 10, 10))
-            .completionDate(LocalDate.of(2101, 06, 10))
+            .completionDate(LocalDate.of(2101, 6, 10))
             .paymentLength("8 months")
             ;
     }

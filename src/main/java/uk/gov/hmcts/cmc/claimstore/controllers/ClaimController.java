@@ -18,7 +18,8 @@ import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
-import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
+import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
+import uk.gov.hmcts.cmc.domain.models.ioc.CreatePaymentResponse;
 import uk.gov.hmcts.cmc.domain.models.response.DefendantLinkStatus;
 
 import java.util.List;
@@ -32,7 +33,7 @@ import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
 @RestController
 @RequestMapping(
     path = "/claims",
-    produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    produces = MediaType.APPLICATION_JSON_VALUE)
 public class ClaimController {
 
     private final ClaimService claimService;
@@ -92,7 +93,7 @@ public class ClaimController {
         return claimService.getClaimByDefendantId(defendantId, authorisation);
     }
 
-    @PostMapping(value = "/{submitterId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/{submitterId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Creates a new claim")
     public Claim save(
         @Valid @NotNull @RequestBody ClaimData claimData,
@@ -101,6 +102,47 @@ public class ClaimController {
         @RequestHeader(value = "Features", required = false) List<String> features
     ) {
         return claimService.saveClaim(submitterId, claimData, authorisation, features);
+    }
+
+    @PostMapping(value = "/{submitterId}/create-legal-rep-claim", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Creates a new legal rep claim")
+    public Claim saveLegalRepresentedClaim(
+        @Valid @NotNull @RequestBody ClaimData claimData,
+        @PathVariable("submitterId") String submitterId,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        return claimService.saveRepresentedClaim(submitterId, claimData, authorisation);
+    }
+
+    @PostMapping(value = "/initiate-citizen-payment", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Initiates a citizen payment")
+    public CreatePaymentResponse initiatePayment(
+        @Valid @NotNull @RequestBody ClaimData claimData,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        return claimService.initiatePayment(authorisation, claimData);
+    }
+
+    @PutMapping(value = "/resume-citizen-payment", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Resumes a citizen payment")
+    public CreatePaymentResponse resumePayment(
+        @Valid @NotNull @RequestBody ClaimData claimData,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation
+    ) {
+        return claimService.resumePayment(authorisation, claimData);
+    }
+
+    @PutMapping(value = "/create-citizen-claim", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation("Creates a citizen claim")
+    public Claim createClaim(
+        @Valid @NotNull @RequestBody ClaimData claimData,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
+        @RequestHeader(value = "Features", required = false) List<String> features
+    ) {
+        return claimService.createCitizenClaim(
+            authorisation,
+            claimData,
+            features);
     }
 
     @PutMapping("/defendant/link")
@@ -119,17 +161,10 @@ public class ClaimController {
     @GetMapping("/{caseReference}/defendant-link-status")
     @ApiOperation("Check whether a claim is linked to a defendant")
     public DefendantLinkStatus isDefendantLinked(@PathVariable("caseReference") String caseReference) {
-        Boolean linked = claimService.getClaimByReferenceAnonymous(caseReference)
+        boolean linked = claimService.getClaimByReferenceAnonymous(caseReference)
             .filter(claim -> claim.getDefendantId() != null)
             .isPresent();
         return new DefendantLinkStatus(linked);
-    }
-
-    @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/pre-payment")
-    @ApiOperation("Submit Pre Payment claim")
-    public CaseReference preSubmit(@PathVariable("externalId") String externalId,
-                                   @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation) {
-        return claimService.savePrePayment(externalId, authorisation);
     }
 
     @PutMapping(value = "/{externalId:" + UUID_PATTERN + "}/paid-in-full")
@@ -138,5 +173,13 @@ public class ClaimController {
         @Valid @NotNull @RequestBody PaidInFull paidInFull,
         @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation) {
         return claimService.paidInFull(externalId, paidInFull, authorisation);
+    }
+
+    @PutMapping(value = "/{externalId:" + UUID_PATTERN + "}/review-order")
+    public Claim saveReviewOrder(
+        @PathVariable("externalId") String externalId,
+        @Valid @NotNull @RequestBody ReviewOrder reviewOrder,
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION) String authorisation) {
+        return claimService.saveReviewOrder(externalId, reviewOrder, authorisation);
     }
 }

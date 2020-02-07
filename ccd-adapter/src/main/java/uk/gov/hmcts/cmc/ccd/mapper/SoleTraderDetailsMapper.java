@@ -13,11 +13,15 @@ public class SoleTraderDetailsMapper {
 
     private final AddressMapper addressMapper;
     private final DefendantRepresentativeMapper representativeMapper;
+    private final TelephoneMapper telephoneMapper;
 
     @Autowired
-    public SoleTraderDetailsMapper(AddressMapper addressMapper, DefendantRepresentativeMapper representativeMapper) {
+    public SoleTraderDetailsMapper(AddressMapper addressMapper,
+                                   DefendantRepresentativeMapper representativeMapper,
+                                   TelephoneMapper telephoneMapper) {
         this.addressMapper = addressMapper;
         this.representativeMapper = representativeMapper;
+        this.telephoneMapper = telephoneMapper;
     }
 
     public void to(SoleTraderDetails soleTrader,
@@ -29,6 +33,8 @@ public class SoleTraderDetailsMapper {
         soleTrader.getRepresentative()
             .ifPresent(representative -> representativeMapper.to(representative, builder));
         soleTrader.getEmail().ifPresent(claimantProvidedPartyDetail::emailAddress);
+        soleTrader.getPhone()
+            .ifPresent(phoneNo -> claimantProvidedPartyDetail.telephoneNumber(telephoneMapper.to(phoneNo)));
 
         claimantProvidedPartyDetail.primaryAddress(addressMapper.to(soleTrader.getAddress()));
 
@@ -45,10 +51,12 @@ public class SoleTraderDetailsMapper {
             .id(ccdSoleTrader.getId())
             .name(respondent.getClaimantProvidedPartyName())
             .email(claimantProvidedPartyDetails.getEmailAddress())
+            .phoneNumber(telephoneMapper.from(claimantProvidedPartyDetails.getTelephoneNumber()))
             .address(addressMapper.from(claimantProvidedPartyDetails.getPrimaryAddress()))
             .representative(representativeMapper.from(respondent))
             .title(claimantProvidedPartyDetails.getTitle())
             .businessName(claimantProvidedPartyDetails.getBusinessName())
+            .serviceAddress(addressMapper.from(claimantProvidedPartyDetails.getCorrespondenceAddress()))
             .build();
     }
 }

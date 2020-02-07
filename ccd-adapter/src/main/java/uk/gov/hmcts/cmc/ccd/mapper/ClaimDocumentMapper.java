@@ -14,15 +14,17 @@ import java.net.URI;
 public class ClaimDocumentMapper {
 
     public CCDCollectionElement<CCDClaimDocument> to(ClaimDocument claimDocument) {
-        CCDClaimDocument.CCDClaimDocumentBuilder builder =  CCDClaimDocument.builder();
+        CCDClaimDocument.CCDClaimDocumentBuilder builder = CCDClaimDocument.builder();
+        final String documentUrl = claimDocument.getDocumentManagementUrl().toString();
+        final String documentBinaryUrl = claimDocument.getDocumentManagementBinaryUrl().toString();
 
         builder.documentName(claimDocument.getDocumentName())
-            .documentLink(new CCDDocument(claimDocument.getDocumentManagementUrl().toString()))
+            .documentLink(new CCDDocument(documentUrl, documentBinaryUrl, claimDocument.getDocumentName()))
             .documentType(CCDClaimDocumentType.valueOf(claimDocument.getDocumentType().name()))
             .authoredDatetime(claimDocument.getAuthoredDatetime())
             .createdDatetime(claimDocument.getCreatedDatetime())
             .createdBy(claimDocument.getCreatedBy())
-            .build();
+            .size(claimDocument.getSize());
 
         return CCDCollectionElement.<CCDClaimDocument>builder()
             .value(builder.build())
@@ -38,14 +40,20 @@ public class ClaimDocumentMapper {
 
         CCDClaimDocument ccdClaimDocument = collectionElement.getValue();
 
-        return ClaimDocument.builder()
+        ClaimDocument.ClaimDocumentBuilder builder = ClaimDocument.builder()
             .id(collectionElement.getId())
             .documentName(ccdClaimDocument.getDocumentName())
-            .documentManagementUrl(URI.create(ccdClaimDocument.getDocumentLink().getDocumentUrl()))
             .documentType(ClaimDocumentType.valueOf(ccdClaimDocument.getDocumentType().name()))
             .authoredDatetime(ccdClaimDocument.getAuthoredDatetime())
             .createdDatetime(ccdClaimDocument.getCreatedDatetime())
             .createdBy(ccdClaimDocument.getCreatedBy())
-            .build();
+            .size(ccdClaimDocument.getSize());
+
+        if (ccdClaimDocument.getDocumentLink() != null) {
+            builder.documentManagementUrl(URI.create(ccdClaimDocument.getDocumentLink().getDocumentUrl()));
+            builder.documentManagementBinaryUrl(URI.create(ccdClaimDocument.getDocumentLink().getDocumentBinaryUrl()));
+        }
+
+        return builder.build();
     }
 }

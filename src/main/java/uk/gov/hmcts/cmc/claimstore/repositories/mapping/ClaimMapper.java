@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
 import static uk.gov.hmcts.cmc.claimstore.repositories.mapping.MappingUtils.toLocalDateTimeFromUTC;
@@ -27,7 +29,7 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
 
     @Override
     public Claim map(int index, ResultSet result, StatementContext ctx) throws SQLException {
-
+        LocalDate issuedOn = result.getTimestamp("issued_on").toLocalDateTime().toLocalDate();
         return new Claim(
             result.getLong("id"),
             result.getString("submitter_id"),
@@ -37,7 +39,8 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             result.getString("reference_number"),
             toClaimData(result.getString("claim")),
             toLocalDateTimeFromUTC(result.getTimestamp("created_at")),
-            result.getTimestamp("issued_on").toLocalDateTime().toLocalDate(),
+            issuedOn,
+            issuedOn.plusDays(5),
             result.getTimestamp("response_deadline").toLocalDateTime().toLocalDate(),
             result.getBoolean("more_time_requested"),
             result.getString("submitter_email"),
@@ -57,7 +60,20 @@ public class ClaimMapper implements ResultSetMapper<Claim> {
             toNullableLocalDateTimeFromUTC(result.getTimestamp("re_determination_requested_at")),
             toNullableEntity(result.getString("claim_documents"), ClaimDocumentCollection.class),
             toNullableLocalDateFromUTC(result.getTimestamp("claimant_response_deadline")),
-            toNullableClaimState(result.getString("state"))
+            toNullableClaimState(result.getString("state")),
+            toNullableEntity(result.getString("submission_operation_indicators"),
+                ClaimSubmissionOperationIndicators.class),
+            null,
+            null, // Not implemented to save review order in claim store database,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
         );
     }
 

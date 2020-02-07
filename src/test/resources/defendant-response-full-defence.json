@@ -3,7 +3,7 @@
   "defenceType": "DISPUTE",
   "paymentDeclaration": {
     "paidDate": "2016-01-02",
-    "paidAmount": "100",
+    "paidAmount": "100.99",
     "explanation": "Paid cash"
   },
   "defence": "defence string",
@@ -31,7 +31,7 @@
       "postcode": "DF1 3LJ"
     },
     "dateOfBirth": "1968-01-02",
-    "mobilePhone": "07873727165",
+    "phone": "07873727165",
     "email": "test@example.com"
   },
   "timeline": {
@@ -53,5 +53,48 @@
       }
     ],
     "comment": "More information"
+  },
+  "directionsQuestionnaire": {
+    "requireSupport": {
+      "languageInterpreter": "English",
+      "signLanguageInterpreter": "Need Sign Language",
+      "hearingLoop": "yes",
+      "disabledAccess": "yes"
+    },
+    "hearingLocation": {
+      "courtName": "A Court",
+      "hearingLocationSlug": "a-court",
+      "courtAddress": {
+        "line1": "52",
+        "line2": "Down Street",
+        "line3": "Salford",
+        "city": "Manchester",
+        "postcode": "DF1 3LJ"
+      },
+      "locationOption": "ALTERNATE_COURT"
+    },
+    "witness": {
+      "selfWitness": "yes",
+      "noOfOtherWitness": 1
+    },
+    "expertReports": [
+      {
+        "id": "1",
+        "expertName": "expert1",
+        "expertReportDate": "2040-01-01"
+      }
+    ],
+    "unavailableDates": [
+      {
+        "id": "1",
+        "unavailableDate": "2050-01-01"
+      }
+    ],
+    "expertRequired": "yes",
+    "permissionForExpert": "yes",
+    "expertRequest": {
+      "expertEvidenceToExamine": "Evidence to examine",
+      "reasonForExpertAdvice": "A valid reason"
+    }
   }
 }

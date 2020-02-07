@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import uk.gov.hmcts.cmc.domain.constraints.Money;
 import uk.gov.hmcts.cmc.domain.constraints.ValidAdmission;
 import uk.gov.hmcts.cmc.domain.models.PaymentDeclaration;
+import uk.gov.hmcts.cmc.domain.models.directionsquestionnaire.DirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.legalrep.StatementOfTruth;
 import uk.gov.hmcts.cmc.domain.models.party.Party;
@@ -38,7 +39,7 @@ public class PartAdmissionResponse extends Response {
 
     @NotNull
     @Size(min = 1, max = 99000)
-    private String defence;
+    private final String defence;
 
     @Valid
     private final DefendantTimeline timeline;
@@ -48,6 +49,9 @@ public class PartAdmissionResponse extends Response {
 
     @Valid
     private final StatementOfMeans statementOfMeans;
+
+    @Valid
+    private final DirectionsQuestionnaire directionsQuestionnaire;
 
     @SuppressWarnings("squid:S00107") // Not sure there's a lot of be done about removing parameters here
     @Builder
@@ -64,7 +68,8 @@ public class PartAdmissionResponse extends Response {
         String defence,
         DefendantTimeline timeline,
         DefendantEvidence evidence,
-        StatementOfMeans statementOfMeans
+        StatementOfMeans statementOfMeans,
+        DirectionsQuestionnaire directionsQuestionnaire
     ) {
         super(
             PART_ADMISSION,
@@ -82,6 +87,7 @@ public class PartAdmissionResponse extends Response {
         this.timeline = timeline;
         this.evidence = evidence;
         this.statementOfMeans = statementOfMeans;
+        this.directionsQuestionnaire = directionsQuestionnaire;
     }
 
     public BigDecimal getAmount() {
@@ -115,5 +121,9 @@ public class PartAdmissionResponse extends Response {
     @Override
     public String toString() {
         return ReflectionToStringBuilder.toString(this, ourStyle());
+    }
+
+    public Optional<DirectionsQuestionnaire> getDirectionsQuestionnaire() {
+        return Optional.ofNullable(directionsQuestionnaire);
     }
 }

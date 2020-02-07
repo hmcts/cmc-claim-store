@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
 import uk.gov.hmcts.cmc.claimstore.services.FreeMediationDecisionDateCalculator;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
@@ -12,14 +13,20 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.service.notify.NotificationClientException;
 
+import java.time.LocalDateTime;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NOTIFICATION_FAILURE;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefendantResponseNotificationServiceTest extends BaseNotificationServiceTest {
@@ -30,7 +37,9 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
     @Before
     public void beforeEachTest() {
         service = new DefendantResponseNotificationService(
-            notificationClient, new FreeMediationDecisionDateCalculator(28), properties
+            new NotificationService(notificationClient, appInsights),
+            new FreeMediationDecisionDateCalculator(28),
+            properties
         );
 
         when(properties.getFrontendBaseUrl()).thenReturn(FRONTEND_BASE_URL);
@@ -39,6 +48,12 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
         when(emailTemplates.getDefendantResponseIssued()).thenReturn(DEFENDANT_RESPONSE_TEMPLATE);
         when(emailTemplates.getDefendantResponseWithNoMediationIssued())
             .thenReturn(DEFENDANT_RESPONSE_NO_MEDIATION_TEMPLATE);
+
+        when(emailTemplates.getDefendantResponseForDqPilotWithNoMediationIssued())
+            .thenReturn(ONLINE_DQ_WITH_NO_MEDIATION_DEFENDANT_RESPONSE_TEMPLATE);
+
+        when(emailTemplates.getClaimantResponseForDqPilotWithNoMediationIssued())
+            .thenReturn(ONLINE_DQ_WITH_NO_MEDIATION_CLAIMANT_RESPONSE_TEMPLATE);
     }
 
     @Test(expected = NotificationException.class)
@@ -47,6 +62,7 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
             .thenThrow(mock(NotificationClientException.class));
 
         service.notifyDefendant(claim, USER_EMAIL, reference);
+        verify(appInsights).trackEvent(eq(NOTIFICATION_FAILURE), eq(REFERENCE_NUMBER), eq(reference));
     }
 
     @Test
@@ -83,9 +99,74 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
     }
 
     @Test
+    public void shouldNotifyDefendantForFullDefenceWithOnlineDqAndNoMediation() throws Exception {
+        Claim claim = SampleClaim.getClaimWithFullDefenceNoMediation().toBuilder()
+            .features(ImmutableList.of(DQ_FLAG.getValue(), ADMISSIONS.getValue()))
+            .build();
+
+        service.notifyDefendant(claim, USER_EMAIL, reference);
+
+        verify(notificationClient).sendEmail(
+            eq(ONLINE_DQ_WITH_NO_MEDIATION_DEFENDANT_RESPONSE_TEMPLATE),
+            eq(USER_EMAIL),
+            anyMap(),
+            eq(reference)
+        );
+    }
+
+    @Test
+    public void shouldNotifyClaimantForFullDefenceWithOnlineDqAndNoMediation() throws Exception {
+        Claim claim = SampleClaim.getClaimWithFullDefenceNoMediation().toBuilder()
+            .features(ImmutableList.of(DQ_FLAG.getValue(), ADMISSIONS.getValue()))
+            .build();
+
+        service.notifyClaimant(claim, reference);
+
+        verify(notificationClient).sendEmail(
+            eq(ONLINE_DQ_WITH_NO_MEDIATION_CLAIMANT_RESPONSE_TEMPLATE),
+            eq(claim.getSubmitterEmail()),
+            anyMap(),
+            eq(reference)
+        );
+    }
+
+    @Test
+    public void shouldNotifyDefendantForPartAdmissionWithOnlineDqAndNoMediation() throws Exception {
+        Claim claim = SampleClaim.getClaimWithPartAdmissionAndNoMediation().toBuilder()
+            .features(ImmutableList.of(DQ_FLAG.getValue(), ADMISSIONS.getValue()))
+            .build();
+
+        service.notifyDefendant(claim, USER_EMAIL, reference);
+
+        verify(notificationClient).sendEmail(
+            eq(ONLINE_DQ_WITH_NO_MEDIATION_DEFENDANT_RESPONSE_TEMPLATE),
+            eq(USER_EMAIL),
+            anyMap(),
+            eq(reference)
+        );
+    }
+
+    @Test
+    public void shouldNotifyClaimantForPartAdmissionWithOnlineDqAndNoMediation() throws Exception {
+        Claim claim = SampleClaim.getClaimWithPartAdmissionAndNoMediation().toBuilder()
+            .features(ImmutableList.of(DQ_FLAG.getValue(), ADMISSIONS.getValue()))
+            .build();
+
+        service.notifyClaimant(claim, reference);
+
+        verify(notificationClient).sendEmail(
+            eq(ONLINE_DQ_WITH_NO_MEDIATION_CLAIMANT_RESPONSE_TEMPLATE),
+            eq(claim.getSubmitterEmail()),
+            anyMap(),
+            eq(reference)
+        );
+    }
+
+    @Test
     public void notifyDefendantShouldUseDefendantResponseEmailTemplateFullDefenceDisputeYesMediation()
         throws Exception {
-        service.notifyDefendant(SampleClaim.getDefault(), USER_EMAIL, reference);
+        Claim claim = SampleClaim.getDefault().toBuilder().respondedAt(LocalDateTime.now()).build();
+        service.notifyDefendant(claim, USER_EMAIL, reference);
 
         verify(notificationClient)
             .sendEmail(eq(DEFENDANT_RESPONSE_TEMPLATE), eq(USER_EMAIL), anyMap(), eq(reference));
@@ -128,7 +209,7 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
             .sendEmail(eq(DEFENDANT_RESPOND_BY_ADMISSION), eq(claim.getSubmitterEmail()), anyMap(), eq(reference));
     }
 
-    @Test (expected = IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void throwExceptionWhenResponseNotPresent() {
         Claim claimWithNoResponse = SampleClaim.builder().build();
 
@@ -136,21 +217,6 @@ public class DefendantResponseNotificationServiceTest extends BaseNotificationSe
 
         service.notifyClaimant(claimWithNoResponse, reference);
 
-        verifyZeroInteractions(emailTemplates, notificationClient);
+        verifyNoInteractions(emailTemplates, notificationClient);
     }
-
-    @Test
-    public void recoveryShouldNotLogPII() {
-        service.logNotificationFailure(
-            new NotificationException("expected exception"),
-            null,
-            "hidden@email.com",
-            null,
-            "reference"
-        );
-
-        assertWasLogged("Failure: failed to send notification (reference) due to expected exception");
-        assertWasNotLogged("hidden@email.com");
-    }
-
 }

@@ -8,8 +8,10 @@ import uk.gov.hmcts.cmc.claimstore.services.TemplateService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
+import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaimantResponse.ClaimantResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleParty;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 
@@ -18,21 +20,15 @@ import static uk.gov.hmcts.cmc.claimstore.services.staff.StatesPaidStaffNotifica
 
 public class StatesPaidEmailContentProviderTest {
     private static final String DEFENDANT_EMAIL = "defendant@mail.com";
-    private static final String DEFENDANT_MOBILE = "07980111222";
-
-    private TemplateService templateService = new TemplateService(
-        new PebbleConfiguration().pebbleEngine()
-    );
-
-    private StaffEmailTemplates templates = new StaffEmailTemplates();
+    private static final String DEFENDANT_PHONE = "07980111222";
 
     private StatesPaidEmailContentProvider service;
 
     @Before
     public void beforeEachTest() {
         service = new StatesPaidEmailContentProvider(
-            templateService,
-            templates
+            new TemplateService(new PebbleConfiguration().pebbleEngine()),
+            new StaffEmailTemplates()
         );
     }
 
@@ -43,43 +39,37 @@ public class StatesPaidEmailContentProviderTest {
             .withResponse(
                 SampleResponse.FullDefence
                     .builder()
-                    .withDefendantDetails(SampleParty.builder().withMobilePhone(DEFENDANT_MOBILE).individual())
+                    .withDefendantDetails(SampleParty.builder().withPhone(DEFENDANT_PHONE).individual())
                     .build())
             .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
             .build();
+
         EmailContent content = service.createContent(wrapInMap(claim));
         assertThat(content.getBody())
             .contains("Email: " + DEFENDANT_EMAIL)
-            .contains("Mobile number: " + claim.getResponse().orElseThrow(IllegalStateException::new).getDefendant()
-                .getMobilePhone().orElseThrow(IllegalStateException::new));
+            .contains("Phone number: " + DEFENDANT_PHONE);
     }
 
     @Test
-    public void shouldDisplayAppropriateMessageWhenMobileNumberIsNotGiven() {
+    public void shouldDisplayAppropriateMessageWhenPhoneNumberIsNotGiven() {
         Claim claim = SampleClaim.builder()
             .withResponse(
                 SampleResponse.FullDefence.builder()
-                    .withDefendantDetails(SampleParty.builder().withMobilePhone("").individual())
+                    .withDefendantDetails(SampleParty.builder().withPhone("").individual())
                     .build())
             .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
             .build();
 
         EmailContent content = service.createContent(wrapInMap(claim));
         assertThat(content.getBody())
-            .contains("Mobile number: not given");
+            .contains("Phone number: not given");
     }
 
     @Test
     public void shouldUsePaidAllDefenceTextIfPaidAllDefenceSelected() {
         Claim claim = SampleClaim.builder()
             .withDefendantEmail(DEFENDANT_EMAIL)
-            .withResponse(
-                SampleResponse.FullDefence
-                    .builder()
-                    .withDefenceType(DefenceType.ALREADY_PAID)
-                    .withMediation(null)
-                    .withDefendantDetails(SampleParty.builder().withMobilePhone(DEFENDANT_MOBILE).individual())
-                    .build())
+            .withResponse(SampleResponse.FullDefence.builder().withDefenceType(DefenceType.ALREADY_PAID).build())
             .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
             .build();
 
@@ -97,15 +87,15 @@ public class StatesPaidEmailContentProviderTest {
                     .builder()
                     .withDefenceType(DefenceType.ALREADY_PAID)
                     .withMediation(null)
-                    .withDefendantDetails(SampleParty.builder().withMobilePhone(DEFENDANT_MOBILE).individual())
+                    .withDefendantDetails(SampleParty.builder().withPhone(DEFENDANT_PHONE).individual())
                     .build())
             .withClaimantResponse(SampleClaimantResponse.validDefaultAcceptation())
             .build();
 
         EmailContent content = service.createContent(wrapInMap(claim));
         assertThat(content.getBody())
-            .contains("The claimant has stated that the claim is: ACCEPTATION")
-            .contains("Claimant has accepted the states paid defence. Please enter a code 73");
+            .contains("Claimant has accepted the states paid defence.")
+            .contains("Please enter a code 73");
     }
 
     @Test
@@ -117,17 +107,34 @@ public class StatesPaidEmailContentProviderTest {
                     .builder()
                     .withDefenceType(DefenceType.ALREADY_PAID)
                     .withMediation(null)
-                    .withDefendantDetails(SampleParty.builder().withMobilePhone(DEFENDANT_MOBILE).individual())
+                    .withDefendantDetails(SampleParty.builder().withPhone(DEFENDANT_PHONE).individual())
                     .build()
             )
             .withClaimantResponse(SampleClaimantResponse.validDefaultRejection())
             .build();
 
         EmailContent content = service.createContent(wrapInMap(claim));
-
         assertThat(content.getBody())
-            .contains("The claimant has stated that the claim is: REJECTION")
-            .contains("Claimant has rejected the states paid defence. Please enter a code 67 & 196");
+            .contains("Claimant has rejected the states paid defence.")
+            .contains("Please enter a code 67");
+    }
+
+    @Test
+    public void shouldDisplayMediationAgreed() {
+        Claim claim = SampleClaim.builder()
+            .withResponse(
+                SampleResponse.FullDefence
+                    .builder()
+                    .withDefenceType(DefenceType.ALREADY_PAID)
+                    .withMediation(YesNoOption.YES)
+                    .build()
+            )
+            .withClaimantResponse(new ClaimantResponseRejection().buildRejectionWithFreeMediation())
+            .build();
+
+        EmailContent content = service.createContent(wrapInMap(claim));
+        assertThat(content.getBody())
+            .contains("Both parties have agreed to mediation.");
     }
 
 }

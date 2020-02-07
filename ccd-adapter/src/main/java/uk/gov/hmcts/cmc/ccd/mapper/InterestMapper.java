@@ -6,21 +6,26 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDInterestType;
 import uk.gov.hmcts.cmc.domain.models.Interest;
 
+import java.util.Optional;
+
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Component
 public class InterestMapper implements BuilderMapper<CCDCase, Interest, CCDCase.CCDCaseBuilder> {
 
-    private InterestBreakdownMapper interestBreakdownMapper;
-    private InterestDateMapper interestDateMapper;
+    private final InterestBreakdownMapper interestBreakdownMapper;
+    private final InterestDateMapper interestDateMapper;
+    private final MoneyMapper moneyMapper;
 
     @Autowired
     public InterestMapper(
         InterestBreakdownMapper interestBreakdownMapper,
-        InterestDateMapper interestDateMapper
+        InterestDateMapper interestDateMapper,
+        MoneyMapper moneyMapper
     ) {
         this.interestBreakdownMapper = interestBreakdownMapper;
         this.interestDateMapper = interestDateMapper;
+        this.moneyMapper = moneyMapper;
     }
 
     @Override
@@ -29,12 +34,15 @@ public class InterestMapper implements BuilderMapper<CCDCase, Interest, CCDCase.
             return;
         }
 
-        interest.getSpecificDailyAmount().ifPresent(builder::interestSpecificDailyAmount);
+        interest.getSpecificDailyAmount().map(moneyMapper::to).ifPresent(builder::interestSpecificDailyAmount);
+
         interestBreakdownMapper.to(interest.getInterestBreakdown(), builder);
         interestDateMapper.to(interest.getInterestDate(), builder);
 
+        Optional.ofNullable(interest.getType())
+            .ifPresent(type -> builder.interestType(CCDInterestType.valueOf(type.name())));
+
         builder
-            .interestType(CCDInterestType.valueOf(interest.getType().name()))
             .interestRate(interest.getRate())
             .interestReason(interest.getReason());
     }
@@ -48,16 +56,19 @@ public class InterestMapper implements BuilderMapper<CCDCase, Interest, CCDCase.
             && ccdCase.getInterestBreakDownAmount() == null
             && isBlank(ccdCase.getInterestBreakDownExplanation())
             && ccdCase.getInterestDateType() == null
+            && ccdCase.getInterestEndDateType() == null
+            && ccdCase.getInterestClaimStartDate() == null
+            && isBlank(ccdCase.getInterestStartDateReason())
         ) {
             return null;
         }
 
         return new Interest(
-            Interest.InterestType.valueOf(ccdCase.getInterestType().name()),
+            ccdCase.getInterestType() != null ? Interest.InterestType.valueOf(ccdCase.getInterestType().name()) : null,
             interestBreakdownMapper.from(ccdCase),
             ccdCase.getInterestRate(),
             ccdCase.getInterestReason(),
-            ccdCase.getInterestSpecificDailyAmount(),
+            moneyMapper.from(ccdCase.getInterestSpecificDailyAmount()),
             interestDateMapper.from(ccdCase)
         );
     }

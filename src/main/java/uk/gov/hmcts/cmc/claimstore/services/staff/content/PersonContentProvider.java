@@ -17,23 +17,23 @@ public class PersonContentProvider {
         String email,
         String contactPerson,
         String businessName,
-        String mobileNumber,
+        String phoneNumber,
         String dateOfBirth
     ) {
         requireNonNull(name);
         requireNonNull(address);
 
-        return new PersonContent(
-            partyType,
-            name,
-            address,
-            correspondenceAddress,
-            email,
-            contactPerson,
-            businessName,
-            mobileNumber,
-            dateOfBirth
-        );
+        return PersonContent.builder()
+            .partyType(partyType)
+            .fullName(name)
+            .address(address)
+            .correspondenceAddress(correspondenceAddress)
+            .email(email)
+            .contactPerson(contactPerson)
+            .businessName(businessName)
+            .phoneNumber(phoneNumber)
+            .dateOfBirth(dateOfBirth)
+            .build();
     }
 
 }

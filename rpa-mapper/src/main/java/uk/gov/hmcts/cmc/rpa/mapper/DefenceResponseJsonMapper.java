@@ -47,6 +47,7 @@ public class DefenceResponseJsonMapper {
             .add("mediation", isMediationSelected(response))
             .add("amountAdmitted", getAmountAdmitted(response))
             .add("payment", mapPayment(response))
+            .add("hearingRequirements", areHearingRequirementsRequested(claim, response))
             .build();
     }
 
@@ -113,14 +114,25 @@ public class DefenceResponseJsonMapper {
     }
 
     private boolean isMediationSelected(Response response) {
-        if (FullDefenceResponse.class.isInstance(response)
-            && ((FullDefenceResponse) response).getDefenceType().equals(DefenceType.DISPUTE)) {
-            YesNoOption yesNoOption = response.getFreeMediation().orElse(YesNoOption.NO);
-            if (yesNoOption.equals(YesNoOption.YES)) {
-                return true;
-            }
+        return response.getFreeMediation().orElse(YesNoOption.NO) == YesNoOption.YES;
+    }
+
+    private boolean areHearingRequirementsRequested(Claim claim, Response response) {
+        if (claim.getFeatures() == null || !claim.getFeatures().contains("directionsQuestionnaire")) {
+            return false;
         }
-        return false;
+
+        switch (response.getResponseType()) {
+            case FULL_DEFENCE:
+                FullDefenceResponse fullDefenceResponse = (FullDefenceResponse)response;
+                return fullDefenceResponse.getDirectionsQuestionnaire().isPresent();
+            case PART_ADMISSION:
+                PartAdmissionResponse partAdmissionResponse = (PartAdmissionResponse)response;
+                return partAdmissionResponse.getDirectionsQuestionnaire().isPresent();
+            case FULL_ADMISSION:
+            default:
+                return false;
+        }
     }
 
 }

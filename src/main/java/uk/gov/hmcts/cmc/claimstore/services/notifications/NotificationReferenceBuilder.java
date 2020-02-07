@@ -85,6 +85,10 @@ public class NotificationReferenceBuilder {
         public static String referenceForClaimant(String claimReferenceNumber) {
             return reference("%s-ccj-requested-notification-%s", CLAIMANT, claimReferenceNumber);
         }
+
+        public static String reminderForClaimant(String claimReferenceNumber) {
+            return reference("%s-ccj-reminder-notification-%s", CLAIMANT, claimReferenceNumber);
+        }
     }
 
     public static class CCJIssued {
@@ -198,6 +202,56 @@ public class NotificationReferenceBuilder {
 
         public static String referenceForDefendant(String claimReferenceNumber) {
             return reference("settlement-rejected-%s", DEFENDANT, claimReferenceNumber);
+        }
+    }
+
+    public static class LegalOrderDrawn {
+        private LegalOrderDrawn() {
+            // do not instantiate
+        }
+
+        private static String referenceForClaim(String claimReferenceNumber, String party) {
+            return reference("to-%s-legal-order-drawn-notification-%s", party, claimReferenceNumber);
+        }
+
+        public static String referenceForDefendant(String claimReferenceNumber) {
+            return referenceForClaim(claimReferenceNumber, DEFENDANT);
+        }
+
+        public static String referenceForClaimant(String claimReferenceNumber) {
+            return referenceForClaim(claimReferenceNumber, CLAIMANT);
+        }
+    }
+
+    public static class MediationSuccessful {
+
+        public static final String TEMPLATE = "to-%s-mediation-successful";
+
+        private MediationSuccessful() {
+            // do not instantiate
+        }
+
+        public static String referenceForClaimant(String claimReferenceNumber, String otherParty) {
+            return reference(TEMPLATE, CLAIMANT, otherParty.toLowerCase(), claimReferenceNumber);
+        }
+
+        public static String referenceForDefendant(String claimReferenceNumber, String otherParty) {
+            return reference(TEMPLATE, DEFENDANT, otherParty.toLowerCase(), claimReferenceNumber);
+        }
+    }
+
+    public static class MediationUnsuccessful {
+        private MediationUnsuccessful() {
+            // do not instantiate
+        }
+
+        public static String referenceForTransfer(String claimReferenceNumber, String party) {
+            return reference("transfer-%s-mediation-unsuccessful-%s", party, claimReferenceNumber);
+
+        }
+
+        public static String forMediationUnsuccessfulOfflineDQ(String claimReferenceNumber, String party) {
+            return reference("offlineDQ-%s-mediation-unsuccessful-%s", party, claimReferenceNumber);
         }
     }
 }

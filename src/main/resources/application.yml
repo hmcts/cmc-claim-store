@@ -32,26 +32,21 @@ spring:
   jackson:
     default-property-inclusion: non_null
   datasource:
-    claimstore:
-      driverClassName: org.postgresql.Driver
-      username: ${CLAIM_STORE_DB_USERNAME:-}
-      password: ${CLAIM_STORE_DB_PASSWORD:-}
-      url: jdbc:postgresql://${CLAIM_STORE_DB_HOST:}:${CLAIM_STORE_DB_PORT:}/${CLAIM_STORE_DB_NAME:claimstore}${CLAIM_STORE_DB_CONNECTION_OPTIONS:}
-    cmc:
-      driverClassName: org.postgresql.Driver
-      username: ${CMC_DB_USERNAME:-}
-      password: ${CMC_DB_PASSWORD:-}
-      url: jdbc:postgresql://${CMC_DB_HOST:}:${CMC_DB_PORT:}/${CMC_DB_NAME:cmc}${CMC_DB_CONNECTION_OPTIONS:}
+    driverClassName: org.postgresql.Driver
+    username: ${CMC_DB_USERNAME:-}
+    password: ${CMC_DB_PASSWORD:-}
+    url: jdbc:postgresql://${CMC_DB_HOST:}:${CMC_DB_PORT:}/${CMC_DB_NAME:cmc}${CMC_DB_CONNECTION_OPTIONS:}
 
 quartzProperties:
   org.quartz:
     scheduler:
       instanceId: AUTO
     jobStore:
-      isClustered: false
+      isClustered: true
       class: org.quartz.impl.jdbcjobstore.JobStoreTX
       driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
-      dataSource: cmcDataSource
+      dataSource: dataSource
+      clusterCheckinInterval: 2000
     threadPool:
       class: org.quartz.simpl.SimpleThreadPool
       threadCount: 8
@@ -64,18 +59,56 @@ idam:
     totp_secret: "AAAAAAAAAAAAAAAA"
     microservice: "cmc_claim_store"
 
+courtfinder:
+  api:
+    url: "https://courttribunalfinder.service.gov.uk"
+
+fees:
+  api:
+    url: ${FEES_URL:}
+    service: "civil money claims"
+    jurisdiction1: "civil"
+    jurisdiction2: "county court"
+
+payments:
+  returnUrlPattern: "${FRONTEND_BASE_URL:}/claim/%s/finish-payment"
+  api:
+    url: ${PAY_URL:}
+    service: "CMC"
+    siteId: "AA00"
+    currency: "GBP"
+    description: "Money Claims fees"
+
 pdf-service:
   url: "${PDF_SERVICE_URL:}"
 
 document_management:
   url: ${DOCUMENT_MANAGEMENT_URL}
+  userRoles: ${DOCUMENT_MANAGEMENT_USERROLES}
+
+core_case_data:
+  api:
+    url: "http://localhost:4452"
 
 bankHolidays:
   api:
     url: "https://www.gov.uk"
 
+doc_assembly:
+  url: ${DOC_ASSEMBLY_URL:false}
+  templateId: "CV-CMC-GOR-ENG-0004.docx"
+  judgeTemplateId: "CV-CMC-GOR-ENG-00219.docx"
+
 nonworking-days:
   datafile: ${NONWORKINGDAYS_DATAFILE:/data/non-working_days.dat}
+
+milo:
+  schedule: "${MILO_CSV_SCHEDULE:-}"
+  recipient: ${MILO_CSV_RECIPIENT:}
+  sender: ${MILO_CSV_SENDER:}
+
+claim_stayed:
+  schedule: ""
 
 dateCalculations:
   endOfBusinessDayHour: 16
@@ -87,6 +120,8 @@ dateCalculations:
   offerMadeTimeForResponseInDays: 14
   lastResponseReminderDay: 1
   firstResponseReminderDay: 5
+  intentionToProceedDeadlineInDays: 33
+  claimantCcjReminderDays: 10
 
 notifications:
   govNotifyApiKey: ${GOV_NOTIFY_API_KEY:}
@@ -104,6 +139,7 @@ notifications:
       defendantMoreTimeRequested: "07ffde84-b1d7-4ec0-b2db-406b73cd9080"
       representativeClaimIssued: "f2b21b9c-fc4a-4589-807b-3156dbf5bf01"
       claimantCCJRequested: "5f4d1c44-1e56-48fd-afe1-f1bd2e575819"
+      claimantCCJReminder: "3b0090ec-c94d-4a54-a04a-2d8999da258d"
       defendantOfferMade: "c65b9a5a-6e18-4f74-ba5e-4e49a3683153"
       claimantOfferMade: "b5e007a9-1f8b-48f5-bb5b-00b3a099d416"
       offerAcceptedByClaimantEmailToClaimant: "f1e66067-0ccf-441d-bad4-69fe8d5c4121"
@@ -114,7 +150,9 @@ notifications:
       offerCounterSignedEmailToOtherParty: "cfde3889-e202-4d70-bc64-f54048616be3"
       claimantResponseWithMediationIssued: "287bb764-075f-4c7a-8049-ec9f7cd83812"
       claimantResponseWithNoMediationIssued: "9c740162-7516-4954-a023-6c1e48ba02f6"
+      claimantResponseForDqPilotWithNoMediationIssued: "9a2576b1-ce16-4b0c-9763-dd28aaf2e9d2"
       defendantResponseWithNoMediationIssued: "613ca230-ab62-4370-bacd-ecc65b92132a"
+      defendantResponseForDqPilotWithNoMediationIssued: "be214a10-d10b-4d18-9047-d8d064820171"
       responseByClaimantEmailToDefendant: "7997b719-cfc3-44ac-8fb6-b70ec409c68f"
       claimantSaysDefendantHasPaidInFull: "221e3923-1321-413a-a02e-ee8c94816cbf"
       claimantRequestedInterlocutoryJudgement: "dda355a4-204c-4172-826a-86c6f4e91e74"
@@ -127,17 +165,32 @@ notifications:
       defendantSignedSettlementAgreementToClaimant: "59f982a7-264e-4ce1-93bf-25a9fb354dc9"
       defendantAdmissionResponseToClaimant: "fce1eaa7-baa9-4b82-b1bb-119f9a2ffae3"
       claimantRejectedPartAdmitOrStatesPaidEmailToDefendant: "e6966b30-8c2f-4107-b3fa-1ae00594a672"
+      claimantLegalOrderDrawn: "4fbb9120-65ae-417e-97c4-158189be910a"
+      defendantLegalOrderDrawn: "4bc101c9-1cbd-45f6-849f-b8bafc2ca535"
+      defendantFreeMediationConfirmation: "7dd5cf7c-c548-4a75-9e0a-aa3ec04d3151"
+      reviewOrderEmailToClaimant: "3bea01fb-bfc5-4354-841c-432d80489362"
+      reviewOrderEmailToDefendant: "d568fc1e-f1fc-441a-94da-6506df12cae6"
+      claimantIntentionToProceedForPaperDq: "ecd5ccc3-9630-4c70-b225-c6132f02efe1"
+      claimantIntentionToProceedForOnlineDq: "200830e5-3bbf-4a43-864a-58ff4c2e1ff2"
+      claimantSettledAfterFullDefence: "e486e5b8-73a3-4585-ae0e-74b3f1bced77"
+      claimantMediationSuccess: "64fa3dbe-1a56-4166-9f70-9291dbf9af00"
+      defendantMediationSuccess: "f1a542ca-7758-4e08-bc5e-b9a040bf6460"
+      claimantReadyForTransfer: "50c8bdd3-f68d-44cc-b46f-72e9ed1f55a6"
+      defendantReadyForTransfer: "487fdd65-131e-4547-a3ed-f632872fe957"
+      claimantMediationFailureOfflineDQ: "55d06073-0b81-4daf-a3b4-1698c7810189"
+      defendantMediationFailureOfflineDQ: "15a38762-2141-4a70-8cc9-22a27db985bc"
 
 staff-notifications:
   sender:
   recipient:
 
+live-support:
+  sender:
+  recipient:
+
 feature_toggles:
   watermark_pdf: false
-  emailToStaff: true
   reminderEmails: false
-  ccd_async_enabled: false
-  ccd_enabled: false
   save_claim_state_enabled: false
 
 feign:
@@ -149,8 +202,8 @@ claim-store:
     enabled: true
 
 oauth2:
- client:
-  id: 'cmc_citizen'
+  client:
+    id: 'cmc_citizen'
 ---
 spring:
   profiles: 'aat'

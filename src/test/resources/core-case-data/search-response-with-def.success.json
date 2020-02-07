@@ -1,7 +1,7 @@
 {
   "id": 1516189555935242,
   "jurisdiction": "CMC",
-  "state": "claimIssued",
+  "state": "open",
   "case_type_id": "MoneyClaimCase",
   "created_date": "2018-01-17T11:45:55.944",
   "last_modified": "2018-01-17T11:45:55.989",
@@ -116,8 +116,9 @@
         }
       }
     ],
-    "referenceNumber": "000MC023",
+    "previousServiceCaseReference": "000MC023",
     "paymentReference": "RC-1546-4419-9390-7385",
-    "feeAmountInPennies": 2500
+    "feeAmountInPennies": "2500",
+    "claimSubmissionOperationIndicators": {"rpa": "YES", "bulkPrint": "YES", "sealedClaimUpload": "YES", "staffNotification": "YES", "claimantNotification": "YES", "defendantNotification": "YES", "claimIssueReceiptUpload": "YES"}
   }
 }

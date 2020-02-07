@@ -7,7 +7,7 @@
   "last_modified": "2018-01-17T11:45:55.989",
   "security_classification": "PUBLIC",
   "case_data": {
-    "referenceNumber": "000MC023",
+    "previousServiceCaseReference": "000MC023",
     "submitterId": "20",
     "submittedOn": "2018-01-17T11:45:46.872525",
     "responseDeadline": "2018-01-18",
@@ -92,7 +92,7 @@
         }
       ],
       "externalId": "9c9a87c3-1ec1-4d9d-aa7c-a500558b667b",
-      "feeAmountInPennies": 4000
+      "feeAmountInPennies": "4000"
     },
     "externalId": "9c9a87c3-1ec1-4d9d-aa7c-a500558b667b",
     "id": 26,
@@ -110,6 +110,8 @@
       "payBySetDate": "2100-10-10"
     },
     "countyCourtJudgmentRequestedAt": "2018-02-17T11:45:55.944",
-    "features": "admissions"
+    "features": "admissions",
+    "claimSubmissionOperationIndicators": {"rpa": "YES", "bulkPrint": "YES", "sealedClaimUpload": "YES", "staffNotification": "YES", "claimantNotification": "YES", "defendantNotification": "YES", "claimIssueReceiptUpload": "YES"}
+
   }
 }

@@ -1,7 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.services.notifications;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.content.NotificationTemplateParameters;
@@ -19,6 +21,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NOTIFICATION_FAILURE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceTest {
@@ -26,9 +30,12 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
     private final String reference = "claimant-issue-notification-" + claim.getReferenceNumber();
     private ClaimIssuedNotificationService service;
 
+    @Rule
+    public final ExpectedException expectedException = ExpectedException.none();
+
     @Before
     public void beforeEachTest() {
-        service = new ClaimIssuedNotificationService(notificationClient, properties);
+        service = new ClaimIssuedNotificationService(notificationClient, properties, appInsights);
         when(properties.getFrontendBaseUrl()).thenReturn(FRONTEND_BASE_URL);
         when(properties.getRespondToClaimUrl()).thenReturn(RESPOND_TO_CLAIM_URL);
     }
@@ -39,6 +46,7 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
             .thenThrow(mock(NotificationClientException.class));
 
         service.sendMail(claim, USER_EMAIL, null, CLAIMANT_CLAIM_ISSUED_TEMPLATE, reference, USER_FULLNAME);
+        verify(appInsights).trackEvent(eq(NOTIFICATION_FAILURE), eq(REFERENCE_NUMBER), eq(reference));
     }
 
     @Test
@@ -134,6 +142,7 @@ public class ClaimIssuedNotificationServiceTest extends BaseNotificationServiceT
 
     @Test
     public void recoveryShouldNotLogPII() {
+        expectedException.expect(NotificationException.class);
         service.logNotificationFailure(
             new NotificationException("expected exception"),
             null,

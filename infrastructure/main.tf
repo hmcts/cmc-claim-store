@@ -1,7 +1,3 @@
-provider "azurerm" {
-  version = "1.19.0"
-}
-
 locals {
   aseName = "core-compute-${var.env}"
 
@@ -44,6 +40,16 @@ data "azurerm_key_vault_secret" "db_password" {
 
 data "azurerm_key_vault_secret" "staff_email" {
   name = "staff-email"
+  vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
+}
+
+data "azurerm_key_vault_secret" "live_support_email" {
+  name = "live-support-email"
+  vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
+}
+
+data "azurerm_key_vault_secret" "milo_recipient" {
+  name = "milo-recipient"
   vault_uri = "${data.azurerm_key_vault.cmc_key_vault.vault_uri}"
 }
 
@@ -104,7 +110,7 @@ resource "azurerm_key_vault_secret" "cmc-db-password" {
 }
 
 module "database" {
-  source = "git@github.com:hmcts/moj-module-postgres?ref=master"
+  source = "git@github.com:hmcts/cnp-module-postgres?ref=master"
   product = "${var.product}"
   location = "${var.location}"
   env = "${var.env}"
@@ -115,10 +121,11 @@ module "database" {
   sku_tier = "GeneralPurpose"
   storage_mb = "51200"
   common_tags = "${var.common_tags}"
+  subscription = "${var.subscription}"
 }
 
 module "claim-store-api" {
-  source = "git@github.com:hmcts/moj-module-webapp.git?ref=master"
+  source = "git@github.com:hmcts/cnp-module-webapp?ref=master"
   product = "${var.product}-${var.microservice}"
   location = "${var.location}"
   env = "${var.env}"
@@ -137,14 +144,6 @@ module "claim-store-api" {
     REFORM_TEAM = "${var.product}"
     REFORM_SERVICE_NAME = "${var.microservice}"
     REFORM_ENVIRONMENT = "${var.env}"
-
-    // db vars
-    CLAIM_STORE_DB_HOST = "${var.db_host}"
-    CLAIM_STORE_DB_PORT = "5432"
-    CLAIM_STORE_DB_USERNAME = "claimstore"
-    CLAIM_STORE_DB_PASSWORD = "${data.azurerm_key_vault_secret.db_password.value}"
-    CLAIM_STORE_DB_NAME = "${var.database-name}"
-    CLAIM_STORE_DB_CONNECTION_OPTIONS = "?ssl=true&sslmode=require"
 
     CMC_DB_HOST = "${module.database.host_name}"
     CMC_DB_PORT = "${module.database.postgresql_listen_port}"
@@ -172,8 +171,11 @@ module "claim-store-api" {
     RESPOND_TO_CLAIM_URL = "${var.respond_to_claim_url}"
     PDF_SERVICE_URL = "${local.pdfserviceUrl}"
     DOCUMENT_MANAGEMENT_URL = "${var.dm_url}"
+    DOC_ASSEMBLY_URL = "${var.doc_assembly_api_url}"
     CORE_CASE_DATA_API_URL = "${local.ccdCnpUrl}"
     SEND_LETTER_URL = "${var.env == "saat" || var.env == "sprod" ? "false" : local.sendLetterUrl}"
+    FEES_URL = "${var.fees_url}"
+    PAY_URL = "${var.payments_url}"
 
     // mail
     SPRING_MAIL_HOST = "${var.mail-host}"
@@ -186,6 +188,18 @@ module "claim-store-api" {
     STAFF_NOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"
     STAFF_NOTIFICATIONS_RECIPIENT = "${data.azurerm_key_vault_secret.staff_email.value}"
 
+    // live support notifications
+    LIVE_SUPPORT_SENDER = "noreply@reform.hmcts.net"
+    LIVE_SUPPORT_RECIPIENT = "${data.azurerm_key_vault_secret.live_support_email.value}"
+
+    // MILO
+    MILO_CSV_SENDER = "noreply@reform.hmcts.net"
+    MILO_CSV_RECIPIENT = "${data.azurerm_key_vault_secret.milo_recipient.value}"
+    MILO_CSV_SCHEDULE = "${var.milo_csv_schedule}"
+
+    // Intention to proceed
+    CLAIM_STAYED_SCHEDULE = "${var.claim_stayed_schedule}"
+
     // robot notifications
     RPA_NOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"
     RPA_NOTIFICATIONS_SEALEDCLAIMRECIPIENT = "${data.azurerm_key_vault_secret.rpa_email_sealed_claim.value}"
@@ -196,14 +210,12 @@ module "claim-store-api" {
 
     // feature toggles
     CLAIM_STORE_TEST_SUPPORT_ENABLED = "${var.env == "prod" ? "false" : "true"}"
-    FEATURE_TOGGLES_EMAILTOSTAFF = "${var.enable_staff_email}"
-    FEATURE_TOGGLES_CCD_ENABLED = "${var.ccd_enabled}"
-    FEATURE_TOGGLES_CCD_ASYNC_ENABLED = "${var.ccd_async_enabled}"
     FEATURE_TOGGLES_SAVE_CLAIM_STATE_ENABLED = "${var.save_claim_state_enabled}"
-
     //thread pool configs
     ASYNC_MAX_THREADPOOL_SIZE = 50
 
     ROOT_APPENDER = "CMC"
+
+    DOCUMENT_MANAGEMENT_USERROLES = "caseworker-cmc,citizen"
   }
 }

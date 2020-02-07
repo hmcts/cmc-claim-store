@@ -13,20 +13,21 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.cmc.claimstore.exceptions.NotFoundException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
-import uk.gov.hmcts.cmc.domain.models.CaseMetadata;
+import uk.gov.hmcts.cmc.domain.models.metadata.CaseMetadata;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.CLAIM_REFERENCE_PATTERN;
 import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
-import static uk.gov.hmcts.cmc.domain.models.CaseMetadata.fromClaim;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
+import static uk.gov.hmcts.cmc.domain.models.metadata.CaseMetadata.fromClaim;
 
 @Api
 @RestController
 @RequestMapping(
     path = "/claims",
-    produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    produces = MediaType.APPLICATION_JSON_VALUE)
 public class CaseMetadataController {
 
     private final ClaimService claimService;
@@ -116,6 +117,14 @@ public class CaseMetadataController {
             payReference,
             userService.authenticateAnonymousCaseWorker().getAuthorisation()
         )
+            .stream()
+            .map(CaseMetadata::fromClaim)
+            .collect(Collectors.toList());
+    }
+
+    @GetMapping("/filters/created")
+    public List<CaseMetadata> getCreatedCases() {
+        return claimService.getClaimsByState(CREATE, userService.authenticateAnonymousCaseWorker())
             .stream()
             .map(CaseMetadata::fromClaim)
             .collect(Collectors.toList());

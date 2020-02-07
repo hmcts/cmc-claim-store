@@ -32,7 +32,6 @@ public abstract class BaseSubmitClaimTest extends BaseTest {
     @Test
     public void shouldSuccessfullySubmitClaimDataAndReturnCreatedCase() {
         ClaimData claimData = getSampleClaimDataBuilder().get().build();
-        commonOperations.submitPrePaymentClaim(claimData.getExternalId().toString(), user.getAuthorisation());
 
         Claim createdCase = submitClaim(claimData)
             .then()
@@ -42,14 +41,6 @@ public abstract class BaseSubmitClaimTest extends BaseTest {
 
         assertThat(claimData).isEqualTo(createdCase.getClaimData());
         assertThat(createdCase.getCreatedAt()).isNotNull();
-    }
-
-    @Test
-    public void shouldReturnUnprocessableEntityWhenInvalidClaimIsSubmitted() {
-        ClaimData claimData = getSampleClaimDataBuilder().get().withAmount(null).build();
-        submitClaim(claimData)
-            .then()
-            .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
 
     protected abstract Supplier<SampleClaimData> getSampleClaimDataBuilder();

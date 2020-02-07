@@ -1,7 +1,9 @@
 package uk.gov.hmcts.cmc.claimstore.services.notifications;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.domain.exceptions.NotificationException;
@@ -26,9 +28,12 @@ public class NotificationServiceTest extends BaseNotificationServiceTest {
 
     private NotificationService service;
 
+    @Rule
+    public final ExpectedException expectedException = ExpectedException.none();
+
     @Before
     public void beforeEachTest() {
-        service = new NotificationService(notificationClient);
+        service = new NotificationService(notificationClient, appInsights);
     }
 
     @Test(expected = NotificationException.class)
@@ -36,7 +41,11 @@ public class NotificationServiceTest extends BaseNotificationServiceTest {
         when(notificationClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
             .thenThrow(mock(NotificationClientException.class));
 
-        service.sendMail(USER_EMAIL, TEMPLATE_ID, PARAMETERS, REFERENCE);
+        try {
+            service.sendMail(USER_EMAIL, TEMPLATE_ID, PARAMETERS, REFERENCE);
+        } finally {
+            verify(notificationClient).sendEmail(anyString(), anyString(), anyMap(), anyString());
+        }
     }
 
     @Test
@@ -48,6 +57,8 @@ public class NotificationServiceTest extends BaseNotificationServiceTest {
 
     @Test
     public void recoveryShouldNotLogPII() {
+        expectedException.expect(NotificationException.class);
+
         service.logNotificationFailure(
             new NotificationException("expected exception"),
             null,

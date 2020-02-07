@@ -37,9 +37,10 @@ public class CountyCourtJudgmentMapperTest {
     @Autowired
     private CountyCourtJudgmentMapper countyCourtJudgmentMapper;
 
-    private Function<CountyCourtJudgment, Claim> createClaimWithCCJ = ccj -> Claim.builder().countyCourtJudgment(ccj)
-        .countyCourtJudgmentRequestedAt(LocalDateTime.now())
-        .build();
+    private final Function<CountyCourtJudgment, Claim> createClaimWithCCJ = ccj ->
+        Claim.builder().countyCourtJudgment(ccj)
+            .countyCourtJudgmentRequestedAt(LocalDateTime.now())
+            .build();
 
     @Test
     public void mapEmptyCCJWillReturnNull() {
@@ -136,10 +137,9 @@ public class CountyCourtJudgmentMapperTest {
         //given
         CCDCountyCourtJudgment ccdCountyCourtJudgment = CCDCountyCourtJudgment.builder()
             .paymentOption(CCDPaymentOption.IMMEDIATELY)
-            .paidAmount(BigDecimal.TEN)
+            .paidAmount("1000")
             .statementOfTruthSignerRole("PM")
             .statementOfTruthSignerName("Mrs May")
-            .repaymentPlanPaymentSchedule(CCDPaymentSchedule.EVERY_MONTH)
             .type(CCDCountyCourtJudgmentType.ADMISSIONS)
             .build();
         Claim.ClaimBuilder claimBuilder = Claim.builder();
@@ -163,9 +163,9 @@ public class CountyCourtJudgmentMapperTest {
             .repaymentPlanCompletionDate(now().plusMonths(5))
             .repaymentPlanFirstPaymentDate(now())
             .repaymentPlanPaymentLength("1 light years")
-            .repaymentPlanInstalmentAmount(BigDecimal.TEN)
+            .repaymentPlanInstalmentAmount("1000")
             .repaymentPlanPaymentSchedule(CCDPaymentSchedule.EACH_WEEK)
-            .paidAmount(BigDecimal.TEN)
+            .paidAmount("1000")
             .statementOfTruthSignerName("Mrs May")
             .statementOfTruthSignerRole("PM")
             .type(CCDCountyCourtJudgmentType.ADMISSIONS)
@@ -189,7 +189,7 @@ public class CountyCourtJudgmentMapperTest {
             .defendantDateOfBirth(now().minusYears(20))
             .paymentOption(CCDPaymentOption.BY_SPECIFIED_DATE)
             .payBySetDate(now())
-            .paidAmount(BigDecimal.TEN)
+            .paidAmount("1000")
             .statementOfTruthSignerRole("PM")
             .statementOfTruthSignerName("Mrs May")
             .type(CCDCountyCourtJudgmentType.DETERMINATION)

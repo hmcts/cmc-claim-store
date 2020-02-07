@@ -5,8 +5,9 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import uk.gov.hmcts.cmc.claimstore.MockSpringTest;
+import uk.gov.hmcts.cmc.claimstore.BaseMockSpringTest;
 import uk.gov.hmcts.cmc.claimstore.events.response.DefendantResponseEvent;
 import uk.gov.hmcts.cmc.claimstore.rpa.config.EmailProperties;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
 import uk.gov.hmcts.cmc.email.EmailAttachment;
 import uk.gov.hmcts.cmc.email.EmailData;
+import uk.gov.hmcts.cmc.email.EmailService;
 
 import java.time.LocalDateTime;
 
@@ -27,7 +29,7 @@ import static uk.gov.hmcts.cmc.claimstore.rpa.ClaimIssuedNotificationService.JSO
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildJsonResponseFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 
-public class DefenceResponseNotificationServiceTest extends MockSpringTest {
+public class DefenceResponseNotificationServiceTest extends BaseMockSpringTest {
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 
     @Autowired
@@ -40,6 +42,9 @@ public class DefenceResponseNotificationServiceTest extends MockSpringTest {
 
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgument;
+
+    @MockBean
+    protected EmailService emailService;
 
     private Claim claim;
 

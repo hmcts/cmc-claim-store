@@ -1,34 +1,35 @@
 package uk.gov.hmcts.cmc.ccd.assertion.defendant.statementofmeans;
 
-import org.assertj.core.api.AbstractAssert;
+import uk.gov.hmcts.cmc.ccd.assertion.CustomAssert;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDCourtOrder;
 import uk.gov.hmcts.cmc.domain.models.statementofmeans.CourtOrder;
 
-import java.util.Objects;
+import java.util.Optional;
 
-public class CourtOrderAssert extends AbstractAssert<CourtOrderAssert, CourtOrder> {
+import static uk.gov.hmcts.cmc.ccd.assertion.Assertions.assertMoney;
+
+public class CourtOrderAssert extends CustomAssert<CourtOrderAssert, CourtOrder> {
 
     public CourtOrderAssert(CourtOrder actual) {
-        super(actual, CourtOrderAssert.class);
+        super("CourtOrder", actual, CourtOrderAssert.class);
     }
 
-    public CourtOrderAssert isEqualTo(CCDCourtOrder ccdCourtOrder) {
+    public CourtOrderAssert isEqualTo(CCDCourtOrder expected) {
         isNotNull();
 
-        if (!Objects.equals(actual.getClaimNumber(), ccdCourtOrder.getClaimNumber())) {
-            failWithMessage("Expected CourtOrder.claimNumber to be <%s> but was <%s>",
-                ccdCourtOrder.getClaimNumber(), actual.getClaimNumber());
-        }
+        compare("claimNumber",
+            expected.getClaimNumber(),
+            Optional.ofNullable(actual.getClaimNumber()));
 
-        if (!Objects.equals(actual.getAmountOwed(), ccdCourtOrder.getAmountOwed())) {
-            failWithMessage("Expected CourtOrder.amountOwed to be <%s> but was <%s>",
-                ccdCourtOrder.getAmountOwed(), actual.getAmountOwed());
-        }
+        compare("amountOwed",
+            expected.getAmountOwed(),
+            Optional.ofNullable(actual.getAmountOwed()),
+            (e, a) -> assertMoney(a).isEqualTo(e));
 
-        if (!Objects.equals(actual.getMonthlyInstalmentAmount(), ccdCourtOrder.getMonthlyInstalmentAmount())) {
-            failWithMessage("Expected CourtOrder.monthlyInstalmentAmount to be <%s> but was <%s>",
-                ccdCourtOrder.getMonthlyInstalmentAmount(), actual.getMonthlyInstalmentAmount());
-        }
+        compare("monthlyInstalmentAmount",
+            expected.getMonthlyInstalmentAmount(),
+            Optional.ofNullable(actual.getMonthlyInstalmentAmount()),
+            (e, a) -> assertMoney(a).isEqualTo(e));
 
         return this;
     }

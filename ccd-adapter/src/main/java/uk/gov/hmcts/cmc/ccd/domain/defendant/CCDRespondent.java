@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.ccd.domain.defendant;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDAddress;
@@ -12,10 +13,10 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.ccj.CCDCountyCourtJudgment;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDClaimantResponse;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.statementofmeans.CCDStatementOfMeans;
+import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.domain.evidence.CCDEvidenceRow;
 import uk.gov.hmcts.cmc.ccd.domain.offers.CCDMadeBy;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,6 +28,7 @@ public class CCDRespondent {
     private String letterHolderId;
     private String defendantId;
     private LocalDate responseDeadline;
+    private LocalDate servedDate;
 
     private CCDParty claimantProvidedDetail;
     private String claimantProvidedPartyName;
@@ -46,8 +48,8 @@ public class CCDRespondent {
     private CCDParty partyDetail;
     private LocalDateTime responseSubmittedOn;
     private CCDResponseType responseType;
-    private BigDecimal responseAmount;
-    private BigDecimal paymentDeclarationPaidAmount;
+    private String responseAmount;
+    private String paymentDeclarationPaidAmount;
     private LocalDate paymentDeclarationPaidDate;
     private String paymentDeclarationExplanation;
     private List<CCDCollectionElement<CCDTimelineEvent>> defendantTimeLineEvents;
@@ -80,5 +82,34 @@ public class CCDRespondent {
     private String redeterminationExplanation;
     private LocalDateTime redeterminationRequestedDate;
     private CCDMadeBy redeterminationMadeBy;
+    private CCDDirectionsQuestionnaire directionsQuestionnaire;
 
+    private String preferredCourtName;
+    private CCDAddress preferredCourtAddress;
+    private String preferredCourtReason;
+
+    private String mediationFailedReason;
+    private LocalDateTime mediationSettlementReachedAt;
+
+    @JsonIgnore
+    public boolean hasRepresentative() {
+        return representativeOrganisationName != null
+            || representativeOrganisationAddress != null
+            || representativeOrganisationPhone != null
+            || representativeOrganisationEmail != null
+            || representativeOrganisationDxAddress != null;
+    }
+
+    @JsonIgnore
+    public boolean hasPaymentDeclaration() {
+        return paymentDeclarationExplanation != null
+            || paymentDeclarationPaidAmount != null
+            || paymentDeclarationPaidDate != null;
+    }
+
+    @JsonIgnore
+    public boolean hasStatementOfTruth() {
+        return responseDefendantSOTSignerName != null
+            || responseDefendantSOTSignerRole != null;
+    }
 }

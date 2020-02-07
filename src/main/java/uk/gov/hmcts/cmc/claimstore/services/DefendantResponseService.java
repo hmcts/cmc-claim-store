@@ -1,10 +1,8 @@
 package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
-import uk.gov.hmcts.cmc.claimstore.events.CCDEventProducer;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CountyCourtJudgmentAlreadyRequestedException;
 import uk.gov.hmcts.cmc.claimstore.exceptions.DefendantLinkingException;
@@ -12,13 +10,15 @@ import uk.gov.hmcts.cmc.claimstore.exceptions.ResponseAlreadySubmittedException;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.PaymentOption;
 import uk.gov.hmcts.cmc.domain.models.response.FullAdmissionResponse;
-
 import uk.gov.hmcts.cmc.domain.models.response.PartAdmissionResponse;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.ResponseType;
+import uk.gov.hmcts.cmc.domain.utils.FeaturesUtils;
 
 import static java.util.Objects.requireNonNull;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DEFENDANT_OPTED_OUT_FOR_MEDIATION_PILOT;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DEFENDANT_OPTED_OUT_FOR_NON_MEDIATION_PILOT;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED_IMMEDIATELY;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED_INSTALMENTS;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_FULL_ADMISSION_SUBMITTED_SET_DATE;
@@ -28,6 +28,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_INSTALMENTS;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_SET_DATE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.RESPONSE_PART_ADMISSION_SUBMITTED_STATES_PAID;
+import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.hasDefendantOptedForMediation;
 import static uk.gov.hmcts.cmc.domain.utils.ResponseUtils.isResponseStatesPaid;
 
 @Service
@@ -37,23 +38,19 @@ public class DefendantResponseService {
     private final ClaimService claimService;
     private final UserService userService;
     private final AppInsights appInsights;
-    private CCDEventProducer ccdEventProducer;
 
     public DefendantResponseService(
         EventProducer eventProducer,
         ClaimService claimService,
         UserService userService,
-        AppInsights appInsights,
-        CCDEventProducer ccdEventProducer
+        AppInsights appInsights
     ) {
         this.eventProducer = eventProducer;
         this.claimService = claimService;
         this.userService = userService;
         this.appInsights = appInsights;
-        this.ccdEventProducer = ccdEventProducer;
     }
 
-    @Transactional(transactionManager = "transactionManager")
     public Claim save(
         String externalId,
         String defendantId,
@@ -62,9 +59,10 @@ public class DefendantResponseService {
     ) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorization);
 
+        String referenceNumber = claim.getReferenceNumber();
         if (!isClaimLinkedWithDefendant(claim, defendantId)) {
             throw new DefendantLinkingException(
-                String.format("Claim %s is not linked with defendant %s", claim.getReferenceNumber(), defendantId)
+                String.format("Claim %s is not linked with defendant %s", referenceNumber, defendantId)
             );
         }
 
@@ -82,9 +80,12 @@ public class DefendantResponseService {
         Claim claimAfterSavingResponse = claimService.getClaimByExternalId(externalId, authorization);
 
         eventProducer.createDefendantResponseEvent(claimAfterSavingResponse, authorization);
-        ccdEventProducer.createCCDDefendantResponseEvent(claimAfterSavingResponse, authorization);
 
-        appInsights.trackEvent(getAppInsightsEventName(response), REFERENCE_NUMBER, claim.getReferenceNumber());
+        appInsights.trackEvent(getAppInsightsEventName(response), REFERENCE_NUMBER, referenceNumber);
+
+        if (!hasDefendantOptedForMediation(response)) {
+            appInsights.trackEvent(getAppInsightEventForMediation(claim), REFERENCE_NUMBER, referenceNumber);
+        }
 
         return claimAfterSavingResponse;
     }
@@ -135,6 +136,12 @@ public class DefendantResponseService {
             default:
                 throw new IllegalArgumentException("Invalid response type " + responseType);
         }
+    }
+
+    private AppInsightsEvent getAppInsightEventForMediation(Claim claim) {
+        return FeaturesUtils.hasMediationPilotFeature(claim)
+            ? DEFENDANT_OPTED_OUT_FOR_MEDIATION_PILOT
+            : DEFENDANT_OPTED_OUT_FOR_NON_MEDIATION_PILOT;
     }
 
     private boolean isClaimLinkedWithDefendant(Claim claim, String defendantId) {

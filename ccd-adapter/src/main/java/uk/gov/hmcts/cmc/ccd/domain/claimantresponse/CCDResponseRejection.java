@@ -5,8 +5,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Value;
 import uk.gov.hmcts.cmc.ccd.domain.CCDTelephone;
 import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
+import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Value
@@ -17,23 +17,26 @@ public class CCDResponseRejection extends CCDClaimantResponse {
     private CCDTelephone mediationPhoneNumber;
     private String mediationContactPerson;
     private String reason;
+    private CCDDirectionsQuestionnaire directionsQuestionnaire;
 
     @Builder
     public CCDResponseRejection(
-        BigDecimal amountPaid,
+        String amountPaid,
         LocalDateTime submittedOn,
         CCDYesNoOption freeMediationOption,
         CCDTelephone mediationPhoneNumber,
         String mediationContactPerson,
         String reason,
         CCDYesNoOption paymentReceived,
-        CCDYesNoOption settleForAmount
+        CCDYesNoOption settleForAmount,
+        CCDDirectionsQuestionnaire directionsQuestionnaire
     ) {
         super(amountPaid, submittedOn, paymentReceived, settleForAmount);
         this.freeMediationOption = freeMediationOption;
         this.mediationPhoneNumber = mediationPhoneNumber;
         this.mediationContactPerson = mediationContactPerson;
         this.reason = reason;
+        this.directionsQuestionnaire = directionsQuestionnaire;
     }
 
     @Override

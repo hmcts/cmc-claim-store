@@ -1,17 +1,24 @@
 package uk.gov.hmcts.cmc.domain.models.sampledata;
 
+import uk.gov.hmcts.cmc.domain.models.ChannelType;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimData;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocument;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimState;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType;
 import uk.gov.hmcts.cmc.domain.models.Interest;
+import uk.gov.hmcts.cmc.domain.models.MediationOutcome;
+import uk.gov.hmcts.cmc.domain.models.PaymentStatus;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
+import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
+import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseRejection;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
+import uk.gov.hmcts.cmc.domain.models.orders.DirectionOrder;
 import uk.gov.hmcts.cmc.domain.models.response.DefenceType;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
@@ -28,15 +35,19 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static java.math.BigDecimal.TEN;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CCJ_REQUEST;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.CLAIM_ISSUE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SEALED_CLAIM;
 import static uk.gov.hmcts.cmc.domain.models.ClaimDocumentType.SETTLEMENT_AGREEMENT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.ADMISSIONS;
 import static uk.gov.hmcts.cmc.domain.models.CountyCourtJudgmentType.DEFAULT;
 import static uk.gov.hmcts.cmc.domain.models.PaymentOption.IMMEDIATELY;
 import static uk.gov.hmcts.cmc.domain.models.offers.MadeBy.CLAIMANT;
 import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.NO;
+import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
+import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleHearingLocation.pilotHearingLocation;
 import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleInterest.standardInterestBuilder;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.ISSUE_DATE;
 import static uk.gov.hmcts.cmc.domain.utils.DatesProvider.NOW_IN_LOCAL_ZONE;
@@ -78,16 +89,25 @@ public final class SampleClaim {
     private String defendantEmail;
     private Settlement settlement = null;
     private LocalDateTime settlementReachedAt = null;
-    private List<String> features = Collections.singletonList("admissions");
+    private List<String> features = Collections.singletonList(ADMISSIONS.getValue());
     private LocalDateTime claimantRespondedAt;
     private ClaimantResponse claimantResponse;
     private LocalDate directionsQuestionnaireDeadline;
     private LocalDate moneyReceivedOn;
     private LocalDateTime reDeterminationRequestedAt;
     private ReDetermination reDetermination = new ReDetermination("I feel defendant can pay", CLAIMANT);
-    private ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
+    private final ClaimDocumentCollection claimDocumentCollection = new ClaimDocumentCollection();
     private LocalDate claimantResponseDeadline;
-    private ClaimState state = null;
+    private ClaimState state = ClaimState.OPEN;
+    private ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
+        = ClaimSubmissionOperationIndicators.builder().build();
+    private final Long ccdCaseId = 1023467890123456L;
+    private ReviewOrder reviewOrder;
+    private DirectionOrder directionOrder;
+    private ChannelType channel;
+    private final LocalDate intentionToProceedDeadline = NOW_IN_LOCAL_ZONE.toLocalDate().plusDays(33);
+    private final YesNoOption offlineJourney = NO;
+    private MediationOutcome mediationOutcome;
 
     private SampleClaim() {
     }
@@ -103,9 +123,38 @@ public final class SampleClaim {
             ).withResponse(SampleResponse.FullDefence
                 .builder()
                 .withDefenceType(DefenceType.DISPUTE)
-                .withMediation(YesNoOption.YES)
+                .withMediation(YES)
                 .build()
-            ).build();
+            ).withState(ClaimState.OPEN)
+            .build();
+    }
+
+    public static Claim getWithClaimSubmissionOperationIndicators() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimantBuilder().withExternalId(RAND_UUID).build())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .ccjType(CountyCourtJudgmentType.ADMISSIONS)
+                    .paymentOption(IMMEDIATELY)
+                    .build()
+            ).withResponse(SampleResponse.FullDefence
+                .builder()
+                .withDefenceType(DefenceType.DISPUTE)
+                .withMediation(YES)
+                .build()
+            )
+            .withClaimSubmissionOperationIndicators(
+                ClaimSubmissionOperationIndicators.builder()
+                    .bulkPrint(YES)
+                    .claimantNotification(YES)
+                    .claimIssueReceiptUpload(YES)
+                    .defendantNotification(YES)
+                    .rpa(YES)
+                    .sealedClaimUpload(YES)
+                    .staffNotification(YES)
+                    .build()
+            )
+            .build();
     }
 
     public static Claim withFullClaimData() {
@@ -119,6 +168,25 @@ public final class SampleClaim {
                     .withReason("Need flat rate").build())
                 .withPayment(SamplePayment.builder().build())
                 .build())
+            .build();
+    }
+
+    public static Claim withFullClaimDataAndFailedPayment() {
+        return builder()
+            .withClaimData(SampleClaimData.builder()
+                .withExternalId(RAND_UUID)
+                .withInterest(new SampleInterest()
+                    .withType(Interest.InterestType.BREAKDOWN)
+                    .withInterestBreakdown(SampleInterestBreakdown.validDefaults())
+                    .withRate(BigDecimal.valueOf(8))
+                    .withReason("Need flat rate")
+                    .build())
+                .withPayment(SamplePayment.builder()
+                    .status(PaymentStatus.FAILED)
+                    .build())
+                .build())
+            .withReferenceNumber(null)
+            .withResponseDeadline(null)
             .build();
     }
 
@@ -141,6 +209,32 @@ public final class SampleClaim {
             .build();
     }
 
+    public static Claim getClaimWithPartAdmissionAndNoMediation() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withCountyCourtJudgment(
+                SampleCountyCourtJudgment.builder()
+                    .paymentOption(IMMEDIATELY)
+                    .build()
+            ).withResponse(SampleResponse.PartAdmission.builder()
+                .buildWithDirectionsQuestionnaireWitNoMediation()
+            )
+            .withRespondedAt(LocalDateTime.now())
+            .withDirectionsQuestionnaireDeadline(LocalDate.now())
+            .build();
+    }
+
+    public static Claim getClaimWithFullAdmission() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimant())
+            .withResponse(SampleResponse.FullAdmission.builder()
+                .buildWithFreeMediation()
+            )
+            .withRespondedAt(LocalDateTime.now())
+            .withDirectionsQuestionnaireDeadline(LocalDate.now())
+            .build();
+    }
+
     public static Claim getClaimWithFullDefenceAlreadyPaid() {
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
@@ -152,7 +246,7 @@ public final class SampleClaim {
                 .builder()
                 .withDefenceType(DefenceType.ALREADY_PAID)
                 .build()
-            )
+            ).withRespondedAt(LocalDateTime.now())
             .build();
     }
 
@@ -219,20 +313,28 @@ public final class SampleClaim {
     }
 
     public static Claim getWithClaimantResponseRejectionForPartAdmissionAndMediation() {
+        SampleClaimantResponse.ClaimantResponseRejection
+            .builder();
         return builder()
             .withClaimData(SampleClaimData.submittedByClaimant())
             .withResponse(
                 SampleResponse
                     .PartAdmission
                     .builder()
-                    .buildWithFreeMediation())
+                    .buildWithDirectionsQuestionnaire()
+            )
             .withRespondedAt(LocalDateTime.now())
             .withDefendantEmail(DEFENDANT_EMAIL)
             .withClaimantRespondedAt(LocalDateTime.now())
-            .withClaimantResponse(SampleClaimantResponse
-                .ClaimantResponseRejection
-                .builder()
-                .buildRejectionWithFreeMediation())
+            .withClaimantResponse(ResponseRejection.builder()
+                .amountPaid(TEN)
+                .freeMediation(YES)
+                .mediationPhoneNumber("07999999999")
+                .mediationContactPerson("Mediation Contact Person")
+                .reason("Some valid reason")
+                .directionsQuestionnaire(SampleDirectionsQuestionnaire.builder()
+                    .withHearingLocation(pilotHearingLocation).build())
+                .build())
             .build();
     }
 
@@ -255,6 +357,12 @@ public final class SampleClaim {
         return builder()
             .withReferenceNumber("012LR345")
             .withClaimData(SampleClaimData.builder().withPayment(null).build())
+            .build();
+    }
+
+    public static Claim getCitizenClaim() {
+        return builder()
+            .withClaimData(SampleClaimData.submittedByClaimantBuilder().withExternalId(RAND_UUID).build())
             .build();
     }
 
@@ -322,7 +430,7 @@ public final class SampleClaim {
         return SampleClaim.builder()
             .withClaimData(
                 SampleClaimData.builder()
-                    .withDefendant(SampleTheirDetails.builder().withEmail(null).individualDetails())
+                    .withDefendant(SampleTheirDetails.builder().withPhone(null).withEmail(null).individualDetails())
                     .build()
             ).build();
     }
@@ -425,6 +533,7 @@ public final class SampleClaim {
             claimData,
             createdAt,
             issuedOn,
+            issuedOn.plusDays(5),
             responseDeadline,
             isMoreTimeRequested,
             submitterEmail,
@@ -444,8 +553,20 @@ public final class SampleClaim {
             reDeterminationRequestedAt,
             claimDocumentCollection,
             claimantResponseDeadline,
-            state
-        );
+            state,
+            claimSubmissionOperationIndicators,
+            ccdCaseId,
+            reviewOrder,
+            directionOrder,
+            channel,
+            intentionToProceedDeadline,
+            mediationOutcome,
+            null,
+            null,
+            offlineJourney,
+            null,
+            null
+            );
     }
 
     public SampleClaim withSubmitterId(String userId) {
@@ -553,6 +674,11 @@ public final class SampleClaim {
         return this;
     }
 
+    public SampleClaim withState(ClaimState claimState) {
+        this.state = claimState;
+        return this;
+    }
+
     public SampleClaim withSealedClaimDocument(URI sealedClaimDocument) {
         ClaimDocument claimDocument = ClaimDocument.builder()
             .documentManagementUrl(sealedClaimDocument)
@@ -640,6 +766,28 @@ public final class SampleClaim {
 
     public SampleClaim withFeatures(List<String> features) {
         this.features = features;
+        return this;
+    }
+
+    public SampleClaim withReviewOrder(ReviewOrder reviewOrder) {
+        this.reviewOrder = reviewOrder;
+        return this;
+    }
+
+    public SampleClaim withDirectionOrder(DirectionOrder directionOrder) {
+        this.directionOrder = directionOrder;
+        return this;
+    }
+
+    public SampleClaim withClaimSubmissionOperationIndicators(
+        ClaimSubmissionOperationIndicators claimSubmissionOperationIndicators
+    ) {
+        this.claimSubmissionOperationIndicators = claimSubmissionOperationIndicators;
+        return this;
+    }
+
+    public SampleClaim withMediationOutcome(MediationOutcome mediationOutcome) {
+        this.mediationOutcome = mediationOutcome;
         return this;
     }
 }

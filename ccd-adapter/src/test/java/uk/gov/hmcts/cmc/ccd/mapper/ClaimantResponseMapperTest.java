@@ -11,7 +11,7 @@ import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDClaimantResponse;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseAcceptation;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.mapper.claimantresponse.ClaimantResponseMapper;
-import uk.gov.hmcts.cmc.ccd.util.SampleData;
+import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ResponseAcceptation;
@@ -110,6 +110,18 @@ public class ClaimantResponseMapperTest {
     }
 
     @Test
+    public void shouldMapClaimantRejectionDQtoCCDDirectionsQuestionnaire() {
+        ClaimantResponse response = SampleClaimantResponse.ClaimantResponseRejection.builder()
+            .buildRejectionWithDirectionsQuestionnaire();
+        Claim claim = Claim.builder().claimantResponse(response)
+            .claimantRespondedAt(LocalDateTimeFactory.nowInLocalZone())
+            .build();
+        CCDClaimantResponse ccdResponse = mapper.to(claim);
+        assertThat((ResponseRejection) response).isEqualTo((CCDResponseRejection) ccdResponse);
+        assertNotNull(ccdResponse.getSubmittedOn());
+    }
+
+    @Test
     public void shouldMapCCDResponseAcceptationWithCCJFormalisationToResponseAcceptation() {
         CCDResponseAcceptation ccdResponse = SampleData.getResponseAcceptation(CCJ);
         Claim.ClaimBuilder claimBuilder = Claim.builder();
@@ -118,8 +130,8 @@ public class ClaimantResponseMapperTest {
         Claim claim = claimBuilder.build();
 
         assertThat(claim.getClaimantResponse()).isPresent();
-        assertThat((ResponseAcceptation) claim.getClaimantResponse().orElseThrow(AssertionError::new))
-            .isEqualTo(ccdResponse);
+        ResponseAcceptation claimantResponse = (ResponseAcceptation) claim.getClaimantResponse().get();
+        assertThat(claimantResponse).isEqualTo(ccdResponse);
         assertThat(claim.getClaimantRespondedAt()).isPresent();
     }
 

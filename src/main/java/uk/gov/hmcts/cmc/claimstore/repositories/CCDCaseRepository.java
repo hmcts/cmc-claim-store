@@ -11,13 +11,15 @@ import uk.gov.hmcts.cmc.claimstore.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentCollection;
 import uk.gov.hmcts.cmc.domain.models.ClaimDocumentType;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
+import uk.gov.hmcts.cmc.domain.models.ClaimSubmissionOperationIndicators;
 import uk.gov.hmcts.cmc.domain.models.CountyCourtJudgment;
 import uk.gov.hmcts.cmc.domain.models.PaidInFull;
 import uk.gov.hmcts.cmc.domain.models.ReDetermination;
+import uk.gov.hmcts.cmc.domain.models.ReviewOrder;
 import uk.gov.hmcts.cmc.domain.models.claimantresponse.ClaimantResponse;
 import uk.gov.hmcts.cmc.domain.models.offers.MadeBy;
 import uk.gov.hmcts.cmc.domain.models.offers.Settlement;
-import uk.gov.hmcts.cmc.domain.models.response.CaseReference;
 import uk.gov.hmcts.cmc.domain.models.response.Response;
 
 import java.time.LocalDate;
@@ -28,7 +30,7 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.REFER_TO_JUDGE_BY_DEFENDANT;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.nowInUTC;
 
 @Service("caseRepository")
-@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
+@ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class CCDCaseRepository implements CaseRepository {
     private final CCDCaseApi ccdCaseApi;
     private final CoreCaseDataService coreCaseDataService;
@@ -92,6 +94,11 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
+    public List<Claim> getClaimsByState(ClaimState claimState, User user) {
+        return ccdCaseApi.getClaimsByState(claimState, user);
+    }
+
+    @Override
     public Optional<Claim> getByLetterHolderId(String id, String authorisation) {
         return ccdCaseApi.getByLetterHolderId(id, authorisation);
     }
@@ -137,6 +144,16 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
+    public Claim initiatePayment(User user, Claim claim) {
+        return coreCaseDataService.initiatePaymentForCitizenCase(user, claim);
+    }
+
+    @Override
+    public Claim saveCaseEventIOC(User user, Claim claim, CaseEvent caseEvent) {
+        return coreCaseDataService.saveCaseEventIOC(user, claim, caseEvent);
+    }
+
+    @Override
     public void updateSettlement(
         Claim claim,
         Settlement settlement,
@@ -158,13 +175,14 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public CaseReference savePrePaymentClaim(String externalId, String authorisation) {
-        return new CaseReference(externalId);
+    public Claim saveClaim(User user, Claim claim) {
+        return coreCaseDataService.createNewCase(user, claim);
     }
 
     @Override
-    public Claim saveClaim(User user, Claim claim) {
-        return coreCaseDataService.createNewCase(user, claim);
+    @LogExecutionTime
+    public Claim saveRepresentedClaim(User user, Claim claim) {
+        return coreCaseDataService.createRepresentedClaim(user, claim);
     }
 
     @Override
@@ -184,6 +202,19 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
+    public Claim saveReviewOrder(Long caseId, ReviewOrder reviewOrder, String authorisation) {
+        return coreCaseDataService.saveReviewOrder(caseId, reviewOrder, authorisation);
+    }
+
+    @Override
+    public Claim updateClaimSubmissionOperationStatus(String authorisation, Long claimId,
+                                                      ClaimSubmissionOperationIndicators indicators,
+                                                      CaseEvent caseEvent) {
+        return
+            coreCaseDataService.saveClaimSubmissionOperationIndicators(claimId, indicators, authorisation, caseEvent);
+    }
+
+    @Override
     public void saveReDetermination(
         String authorisation,
         Claim claim,
@@ -197,8 +228,16 @@ public class CCDCaseRepository implements CaseRepository {
     }
 
     @Override
-    public void saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent) {
-        coreCaseDataService.saveCaseEvent(authorisation, claim.getId(), caseEvent);
+    public Claim saveCaseEvent(String authorisation, Claim claim, CaseEvent caseEvent) {
+        return coreCaseDataService.saveCaseEvent(authorisation, claim.getId(), caseEvent);
     }
 
+    @Override
+    public void updateClaimState(String authorisation, Long claimId, ClaimState state) {
+        if (state == ClaimState.OPEN) {
+            coreCaseDataService.saveCaseEvent(authorisation, claimId, CaseEvent.ISSUE_CASE);
+        } else {
+            throw new UnsupportedOperationException("State transition not allowed for " + state.name());
+        }
+    }
 }

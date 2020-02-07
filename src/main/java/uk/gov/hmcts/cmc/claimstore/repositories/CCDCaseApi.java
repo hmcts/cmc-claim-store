@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
@@ -14,8 +13,9 @@ import uk.gov.hmcts.cmc.claimstore.idam.models.User;
 import uk.gov.hmcts.cmc.claimstore.services.JobSchedulerService;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.CoreCaseDataService;
-import uk.gov.hmcts.cmc.claimstore.utils.CCDCaseDataToClaim;
+import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
+import uk.gov.hmcts.cmc.domain.models.ClaimState;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
@@ -28,28 +28,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.cmc.ccd.util.StreamUtil.asStream;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.AWAITING_CITIZEN_PAYMENT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimState.CREATE;
 
 @Service
-@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
+@ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class CCDCaseApi {
-
-    public static enum CaseState {
-        ONHOLD("onhold"),
-        OPEN("open");
-
-        private final String state;
-
-        CaseState(String state) {
-            this.state = state;
-        }
-
-        public String getValue() {
-            return state;
-        }
-    }
 
     public static final String JURISDICTION_ID = "CMC";
     public static final String CASE_TYPE_ID = "MoneyClaimCase";
@@ -59,14 +47,18 @@ public class CCDCaseApi {
     private final UserService userService;
     private final CaseAccessApi caseAccessApi;
     private final CoreCaseDataService coreCaseDataService;
-    private final CCDCaseDataToClaim ccdCaseDataToClaim;
+    private final CaseDetailsConverter ccdCaseDataToClaim;
     private final JobSchedulerService jobSchedulerService;
-    private final boolean ccdAsyncEnabled;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CCDCaseApi.class);
     // CCD has a page size of 25 currently, it is configurable so assume it'll never be less than 10
     private static final int MINIMUM_SIZE_TO_CHECK_FOR_MORE_PAGES = 10;
     private static final int MAX_NUM_OF_PAGES_TO_CHECK = 10;
+
+    private final Predicate<CaseDetails> isCreatedState = caseDetails ->
+        CREATE.getValue().equals(caseDetails.getState());
+    private final Predicate<CaseDetails> isAwaitingCitizenState = caseDetails ->
+        AWAITING_CITIZEN_PAYMENT.getValue().equals(caseDetails.getState());
 
     @SuppressWarnings("squid:S00107") // All parameters are required here
     public CCDCaseApi(
@@ -75,9 +67,8 @@ public class CCDCaseApi {
         UserService userService,
         CaseAccessApi caseAccessApi,
         CoreCaseDataService coreCaseDataService,
-        CCDCaseDataToClaim ccdCaseDataToClaim,
-        JobSchedulerService jobSchedulerService,
-        @Value("${feature_toggles.ccd_async_enabled}") boolean ccdAsyncEnabled
+        CaseDetailsConverter ccdCaseDataToClaim,
+        JobSchedulerService jobSchedulerService
     ) {
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;
@@ -86,16 +77,18 @@ public class CCDCaseApi {
         this.coreCaseDataService = coreCaseDataService;
         this.ccdCaseDataToClaim = ccdCaseDataToClaim;
         this.jobSchedulerService = jobSchedulerService;
-        this.ccdAsyncEnabled = ccdAsyncEnabled;
     }
 
     public List<Claim> getBySubmitterId(String submitterId, String authorisation) {
         User user = userService.getUser(authorisation);
-        return getAllCasesBy(user, ImmutableMap.of("case.submitterId", submitterId));
+
+        return asStream(getAllCasesBy(user, ImmutableMap.of()))
+            .filter(claim -> submitterId.equals(claim.getSubmitterId()))
+            .collect(Collectors.toList());
     }
 
     public Optional<Claim> getByReferenceNumber(String referenceNumber, String authorisation) {
-        return getCaseBy(authorisation, ImmutableMap.of("case.referenceNumber", referenceNumber));
+        return getCaseBy(authorisation, ImmutableMap.of("case.previousServiceCaseReference", referenceNumber));
     }
 
     public Optional<Claim> getByExternalId(String externalId, User user) {
@@ -109,7 +102,7 @@ public class CCDCaseApi {
     public List<Claim> getByDefendantId(String id, String authorisation) {
         User user = userService.getUser(authorisation);
 
-        return asStream(getAllCasesBy(user, ImmutableMap.of()))
+        return asStream(getAllIssuedCasesBy(user, ImmutableMap.of()))
             .filter(claim -> id.equals(claim.getDefendantId()))
             .collect(Collectors.toList());
     }
@@ -122,7 +115,7 @@ public class CCDCaseApi {
     public List<Claim> getByDefendantEmail(String defendantEmail, String authorisation) {
         User user = userService.getUser(authorisation);
 
-        return asStream(getAllCasesBy(user, ImmutableMap.of()))
+        return asStream(getAllIssuedCasesBy(user, ImmutableMap.of()))
             .filter(claim -> defendantEmail.equals(claim.getDefendantEmail()))
             .collect(Collectors.toList());
     }
@@ -130,6 +123,10 @@ public class CCDCaseApi {
     public List<Claim> getByPaymentReference(String payReference, String authorisation) {
         User user = userService.getUser(authorisation);
         return getAllCasesBy(user, ImmutableMap.of("case.paymentReference", payReference));
+    }
+
+    public List<Claim> getClaimsByState(ClaimState claimState, User user) {
+        return extractClaims(searchAll(user, claimState));
     }
 
     /**
@@ -178,12 +175,16 @@ public class CCDCaseApi {
     }
 
     private List<Claim> getAllCasesBy(User user, ImmutableMap<String, String> searchString) {
-        List<CaseDetails> validCases = searchAll(user, searchString)
-            .stream()
-            .filter(c -> !isCaseOnHold(c))
-            .collect(Collectors.toList());
+        return extractClaims(asStream(searchAll(user, searchString))
+            .filter(isAwaitingCitizenState.negate())
+            .collect(Collectors.toList()));
+    }
 
-        return extractClaims(validCases);
+    private List<Claim> getAllIssuedCasesBy(User user, ImmutableMap<String, String> searchString) {
+        return extractClaims(asStream(searchAll(user, searchString))
+            .filter(isCreatedState.negate())
+            .filter(isAwaitingCitizenState.negate())
+            .collect(Collectors.toList()));
     }
 
     private Optional<Claim> getCaseBy(String authorisation, Map<String, String> searchString) {
@@ -193,10 +194,6 @@ public class CCDCaseApi {
 
     private Optional<Claim> getCaseBy(User user, Map<String, String> searchString) {
         List<CaseDetails> result = searchAll(user, searchString);
-
-        if (result.size() == 1 && isCaseOnHold(result.get(0))) {
-            return Optional.empty();
-        }
 
         List<Claim> claims = extractClaims(result);
 
@@ -219,10 +216,8 @@ public class CCDCaseApi {
         String defendantEmail = defendantUser.getUserDetails().getEmail();
         CaseDetails caseDetails = this.updateDefendantIdAndEmail(defendantUser, caseId, defendantId, defendantEmail);
 
-        if (!ccdAsyncEnabled) {
-            Claim claim = ccdCaseDataToClaim.to(caseDetails.getId(), caseDetails.getData());
-            jobSchedulerService.scheduleEmailNotificationsForDefendantResponse(claim);
-        }
+        Claim claim = ccdCaseDataToClaim.extractClaim(caseDetails);
+        jobSchedulerService.scheduleEmailNotificationsForDefendantResponse(claim);
     }
 
     private void grantAccessToCase(User anonymousCaseWorker, String caseId, String defendantId) {
@@ -290,15 +285,20 @@ public class CCDCaseApi {
         }
 
         User letterHolder = userService.getUser(authorisation);
-        return Optional.of(readCase(letterHolder, letterHolderCases.get(0)));
+        CaseDetails caseDetails = readCase(letterHolder, letterHolderCases.get(0));
+        ClaimState claimState = ClaimState.fromValue(caseDetails.getState());
+        if (CREATE == claimState || AWAITING_CITIZEN_PAYMENT == claimState) {
+            throw new DefendantLinkingException("Claim is not in issued yet, can not link defendant");
+        }
+        return Optional.of(ccdCaseDataToClaim.extractClaim(caseDetails));
     }
 
     private String extractLetterHolderId(String role) {
         return StringUtils.remove(role, "letter-");
     }
 
-    private Claim readCase(User user, String caseId) {
-        CaseDetails caseDetails = coreCaseDataApi.readForCitizen(
+    private CaseDetails readCase(User user, String caseId) {
+        return coreCaseDataApi.readForCitizen(
             user.getAuthorisation(),
             authTokenGenerator.generate(),
             user.getUserDetails().getId(),
@@ -306,7 +306,10 @@ public class CCDCaseApi {
             CASE_TYPE_ID,
             caseId
         );
-        return ccdCaseDataToClaim.to(caseDetails.getId(), caseDetails.getData());
+    }
+
+    private List<CaseDetails> searchAll(User user, ClaimState state) {
+        return search(user, ImmutableMap.of(), 1, new ArrayList<>(), null, state);
     }
 
     private List<CaseDetails> searchAll(User user, Map<String, String> searchString) {
@@ -320,7 +323,7 @@ public class CCDCaseApi {
         Integer page,
         List<CaseDetails> results,
         Integer numOfPages,
-        CaseState state
+        ClaimState state
     ) {
         Map<String, String> searchCriteria = new HashMap<>(searchString);
         searchCriteria.put("page", page.toString());
@@ -400,13 +403,8 @@ public class CCDCaseApi {
     }
 
     private List<Claim> extractClaims(List<CaseDetails> result) {
-        return result
-            .stream()
-            .map(entry -> ccdCaseDataToClaim.to(entry.getId(), entry.getData()))
+        return asStream(result)
+            .map(ccdCaseDataToClaim::extractClaim)
             .collect(Collectors.toList());
-    }
-
-    private boolean isCaseOnHold(CaseDetails caseDetails) {
-        return caseDetails.getState().equals(CaseState.ONHOLD.getValue());
     }
 }

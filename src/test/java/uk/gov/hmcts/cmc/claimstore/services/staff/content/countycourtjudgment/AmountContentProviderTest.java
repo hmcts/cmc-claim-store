@@ -30,7 +30,7 @@ public class AmountContentProviderTest {
         );
     }
 
-    private Claim noInterest = SampleClaim.builder()
+    private final Claim noInterest = SampleClaim.builder()
         .withClaimData(SampleClaimData.noInterest())
         .withCountyCourtJudgment(SampleCountyCourtJudgment.builder().build())
         .withCountyCourtJudgmentRequestedAt(LocalDateTime.now())
@@ -46,7 +46,7 @@ public class AmountContentProviderTest {
             .build();
 
         assertThat(amountContentProvider.create(claim).getRemainingAmount())
-            .isEqualTo("£80.89");
+            .isEqualTo("£81.90");
     }
 
     @Test
@@ -61,9 +61,9 @@ public class AmountContentProviderTest {
             .build();
 
         AmountContent amountContent = amountContentProvider.create(claim);
-        assertThat(amountContent.getAdmittedAmount()).isEqualTo("£120");
-        assertThat(amountContent.getSubTotalAmount()).isEqualTo("£160");
-        assertThat(amountContent.getRemainingAmount()).isEqualTo("£160");
+        assertThat(amountContent.getAdmittedAmount()).isEqualTo("£80.99");
+        assertThat(amountContent.getSubTotalAmount()).isEqualTo("£80.99");
+        assertThat(amountContent.getRemainingAmount()).isEqualTo("£80.99");
     }
 
     @Test
@@ -78,15 +78,15 @@ public class AmountContentProviderTest {
             .build();
 
         AmountContent amountContent = amountContentProvider.create(claim);
-        assertThat(amountContent.getAdmittedAmount()).isEqualTo("£120");
-        assertThat(amountContent.getSubTotalAmount()).isEqualTo("£160");
-        assertThat(amountContent.getRemainingAmount()).isEqualTo("£150");
+        assertThat(amountContent.getAdmittedAmount()).isEqualTo("£80.99");
+        assertThat(amountContent.getSubTotalAmount()).isEqualTo("£80.99");
+        assertThat(amountContent.getRemainingAmount()).isEqualTo("£70.99");
     }
 
     @Test
     public void calculateWithNoInterest() {
         assertThat(amountContentProvider.create(noInterest).getRemainingAmount())
-            .isEqualTo("£80");
+            .isEqualTo("£80.99");
     }
 
     @Test
@@ -99,7 +99,7 @@ public class AmountContentProviderTest {
             .build();
 
         assertThat(amountContentProvider.create(claim).getRemainingAmount())
-            .isEqualTo("£70.89");
+            .isEqualTo("£71.90");
     }
 
     @Test(expected = NullPointerException.class)

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailProperties;
 import uk.gov.hmcts.cmc.claimstore.documents.DefendantResponseReceiptService;
+import uk.gov.hmcts.cmc.claimstore.documents.output.PDF;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.DefendantAdmissionStaffEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.content.FullDefenceStaffEmailContentProvider;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
@@ -23,8 +24,6 @@ import java.util.Optional;
 
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
-import static uk.gov.hmcts.cmc.claimstore.documents.output.PDF.EXTENSION;
-import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildResponseFileBaseName;
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.FULL_ADMISSION;
 import static uk.gov.hmcts.cmc.domain.models.response.ResponseType.PART_ADMISSION;
 import static uk.gov.hmcts.cmc.domain.utils.PartyUtils.isCompanyOrOrganisation;
@@ -45,7 +44,8 @@ public class DefendantResponseStaffNotificationService {
         StaffEmailProperties emailProperties,
         FullDefenceStaffEmailContentProvider fullDefenceStaffEmailContentProvider,
         DefendantAdmissionStaffEmailContentProvider defendantAdmissionStaffEmailContentProvider,
-        DefendantResponseReceiptService defendantResponseReceiptService) {
+        DefendantResponseReceiptService defendantResponseReceiptService
+    ) {
         this.emailService = emailService;
         this.emailProperties = emailProperties;
         this.fullDefenceStaffEmailContentProvider = fullDefenceStaffEmailContentProvider;
@@ -93,9 +93,9 @@ public class DefendantResponseStaffNotificationService {
         map.put("claim", claim);
         map.put("response", response);
         map.put("defendantEmail", defendantEmail);
-        map.put("defendantMobilePhone", response
+        map.put("defendantPhone", response
             .getDefendant()
-            .getMobilePhone()
+            .getPhone()
             .orElse(null));
         map.put("isCompanyOrOrganisation", isCompanyOrOrganisation(response.getDefendant()));
 
@@ -122,9 +122,11 @@ public class DefendantResponseStaffNotificationService {
     }
 
     private EmailAttachment createResponsePdfAttachment(Claim claim) {
-        byte[] defendantResponse = defendantResponseReceiptService.createPdf(claim);
+        PDF defendantResponse = defendantResponseReceiptService.createPdf(claim);
         requireNonNull(defendantResponse);
 
-        return pdf(defendantResponse, buildResponseFileBaseName(claim.getReferenceNumber()) + EXTENSION);
+        return pdf(
+            defendantResponse.getBytes(),
+            defendantResponse.getFilename());
     }
 }

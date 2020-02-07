@@ -17,17 +17,17 @@ public class ClaimPdfTest extends BasePdfTest {
 
     @Before
     public void before() {
-        user = idamTestService.createCitizen();
+        user = bootstrap.getClaimant();
     }
 
     @Test
     public void shouldBeAbleToFindTestClaimDataInClaimIssueReceiptPdf() throws IOException {
-        shouldBeAbleToFindTestClaimDataInPdf("claimIssueReceipt");
+        shouldBeAbleToFindTestClaimDataInPdf("claimIssueReceipt", createCase());
     }
 
     @Test
     public void shouldBeAbleToFindTestClaimDataInSealedClaimPdf() throws IOException {
-        shouldBeAbleToFindTestClaimDataInPdf("sealedClaim");
+        shouldBeAbleToFindTestClaimDataInPdf("sealedClaim", createCase());
     }
 
     @Override

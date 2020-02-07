@@ -51,6 +51,7 @@ public class DefendantMapper {
         requireNonNull(claim, "claim must not be null");
 
         CCDRespondent.CCDRespondentBuilder respondentBuilder = CCDRespondent.builder();
+        respondentBuilder.servedDate(claim.getServiceDate());
         respondentBuilder.responseDeadline(claim.getResponseDeadline());
         respondentBuilder.letterHolderId(claim.getLetterHolderId());
         respondentBuilder.defendantId(claim.getDefendantId());
@@ -62,6 +63,8 @@ public class DefendantMapper {
         respondentBuilder.responseMoreTimeNeededOption(CCDYesNoOption.valueOf(claim.isMoreTimeRequested()));
         respondentBuilder.directionsQuestionnaireDeadline(claim.getDirectionsQuestionnaireDeadline());
         respondentBuilder.countyCourtJudgmentRequest(countyCourtJudgmentMapper.to(claim));
+        claim.getFailedMediationReason().ifPresent(respondentBuilder::mediationFailedReason);
+        claim.getMediationSettlementReachedAt().ifPresent(respondentBuilder::mediationSettlementReachedAt);
 
         claim.getSettlement().ifPresent(settlement ->
             respondentBuilder.settlementPartyStatements(
@@ -92,13 +95,13 @@ public class DefendantMapper {
         CCDParty partyDetail = ccdRespondent.getPartyDetail();
 
         builder
+            .serviceDate(ccdRespondent.getServedDate())
             .letterHolderId(ccdRespondent.getLetterHolderId())
             .responseDeadline(ccdRespondent.getResponseDeadline())
             .defendantEmail(Optional.ofNullable(partyDetail)
                 .map(CCDParty::getEmailAddress).orElse(null))
             .directionsQuestionnaireDeadline(ccdRespondent.getDirectionsQuestionnaireDeadline())
             .defendantId(ccdRespondent.getDefendantId());
-
         countyCourtJudgmentMapper.from(ccdRespondent.getCountyCourtJudgmentRequest(), builder);
         builder.settlement(settlementMapper.fromCCDDefendant(ccdRespondent));
         builder.settlementReachedAt(ccdRespondent.getSettlementReachedAt());
@@ -108,6 +111,10 @@ public class DefendantMapper {
         );
 
         builder.respondedAt(ccdRespondent.getResponseSubmittedOn());
+        Optional.ofNullable(ccdRespondent.getMediationFailedReason()).ifPresent(builder::failedMediationReason);
+        Optional.ofNullable(ccdRespondent.getMediationSettlementReachedAt())
+            .ifPresent(builder::mediationSettlementReachedAt);
+
         responseMapper.from(builder, respondentElement);
 
         claimantResponseMapper.from(ccdRespondent.getClaimantResponse(), builder);

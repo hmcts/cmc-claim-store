@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 @Service("supportRepository")
-@ConditionalOnProperty(prefix = "feature_toggles", name = "ccd_enabled")
+@ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class CCDTestingSupportRepository implements SupportRepository {
 
     private final UserService userService;
@@ -45,9 +45,8 @@ public class CCDTestingSupportRepository implements SupportRepository {
         return this.ccdCaseApi.getByReferenceNumber(claimReferenceNumber, authorisation);
     }
 
-    //using default defendant@example.com as defendant email address just for performance testing
     @Override
-    public void linkDefendantToClaim(Claim claim, String defendantId) {
-        this.ccdCaseApi.linkDefendant(claim.getId().toString(), defendantId, "defendant@example.com");
+    public void linkDefendantToClaim(Claim claim, String defendantId, String defendantEmail) {
+        this.ccdCaseApi.linkDefendant(claim.getId().toString(), defendantId, defendantEmail);
     }
 }

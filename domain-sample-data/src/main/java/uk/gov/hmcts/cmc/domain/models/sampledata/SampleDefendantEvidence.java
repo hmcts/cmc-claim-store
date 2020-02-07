@@ -3,13 +3,12 @@ package uk.gov.hmcts.cmc.domain.models.sampledata;
 import uk.gov.hmcts.cmc.domain.models.evidence.DefendantEvidence;
 import uk.gov.hmcts.cmc.domain.models.evidence.EvidenceRow;
 
+import java.util.Collections;
 import java.util.List;
-
-import static java.util.Arrays.asList;
 
 public class SampleDefendantEvidence {
 
-    private List<EvidenceRow> rows = asList(SampleEvidenceRow.builder().build());
+    private List<EvidenceRow> rows = Collections.singletonList(SampleEvidenceRow.builder().build());
 
     private String comment = "More information";
 

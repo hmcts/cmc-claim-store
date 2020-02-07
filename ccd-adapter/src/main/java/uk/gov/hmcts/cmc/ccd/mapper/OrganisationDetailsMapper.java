@@ -13,11 +13,16 @@ public class OrganisationDetailsMapper {
 
     private final AddressMapper addressMapper;
     private final DefendantRepresentativeMapper representativeMapper;
+    private final TelephoneMapper telephoneMapper;
 
     @Autowired
-    public OrganisationDetailsMapper(AddressMapper addressMapper, DefendantRepresentativeMapper representativeMapper) {
+    public OrganisationDetailsMapper(AddressMapper addressMapper,
+                                     DefendantRepresentativeMapper representativeMapper,
+                                     TelephoneMapper telephoneMapper
+    ) {
         this.addressMapper = addressMapper;
         this.representativeMapper = representativeMapper;
+        this.telephoneMapper = telephoneMapper;
     }
 
     public void to(OrganisationDetails organisation,
@@ -31,6 +36,8 @@ public class OrganisationDetailsMapper {
         organisation.getContactPerson().ifPresent(claimantProvidedPartyDetail::contactPerson);
         organisation.getCompaniesHouseNumber().ifPresent(claimantProvidedPartyDetail::companiesHouseNumber);
         organisation.getEmail().ifPresent(claimantProvidedPartyDetail::emailAddress);
+        organisation.getPhone()
+            .ifPresent(phoneNo -> claimantProvidedPartyDetail.telephoneNumber(telephoneMapper.to(phoneNo)));
         claimantProvidedPartyDetail.primaryAddress(addressMapper.to(organisation.getAddress()));
         builder
             .claimantProvidedPartyName(organisation.getName())
@@ -45,6 +52,7 @@ public class OrganisationDetailsMapper {
             .name(respondent.getClaimantProvidedPartyName())
             .address(addressMapper.from(claimantProvidedDetails.getPrimaryAddress()))
             .email(claimantProvidedDetails.getEmailAddress())
+            .phoneNumber(telephoneMapper.from(claimantProvidedDetails.getTelephoneNumber()))
             .representative(representativeMapper.from(respondent))
             .serviceAddress(addressMapper.from(claimantProvidedDetails.getCorrespondenceAddress()))
             .contactPerson(claimantProvidedDetails.getContactPerson())

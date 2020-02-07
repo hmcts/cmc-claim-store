@@ -3,7 +3,6 @@ package uk.gov.hmcts.cmc.ccd.migration.ccd.services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
@@ -15,10 +14,10 @@ import uk.gov.hmcts.cmc.ccd.migration.stereotypes.LogExecutionTime;
 import uk.gov.hmcts.cmc.domain.models.Claim;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.EventRequestData;
 
 @Service
-@ConditionalOnProperty(prefix = "core_case_data", name = "api.url")
 public class UpdateCCDCaseService {
     public static final String JURISDICTION_ID = "CMC";
     public static final String CASE_TYPE_ID = "MoneyClaimCase";
@@ -40,9 +39,9 @@ public class UpdateCCDCaseService {
         this.authTokenGenerator = authTokenGenerator;
     }
 
-    @Retryable(value = {OverwriteCaseException.class}, maxAttempts = 5, backoff = @Backoff(delay = 400, maxDelay = 800))
+    @Retryable(value = {OverwriteCaseException.class}, maxAttempts = 1, backoff = @Backoff(delay = 400, maxDelay = 800))
     @LogExecutionTime
-    public void updateCase(User user, Long caseId, Claim claim, CaseEvent event) {
+    public CaseDetails updateCase(User user, Long caseId, Claim claim, CaseEvent event) {
 
         try {
             EventRequestData eventRequestData = EventRequestData.builder()
@@ -53,31 +52,30 @@ public class UpdateCCDCaseService {
                 .ignoreWarning(true)
                 .build();
 
-            migrateCoreCaseDataService.update(user.getAuthorisation(), eventRequestData, caseId, claim);
+            return migrateCoreCaseDataService.update(user.getAuthorisation(), eventRequestData, caseId, claim);
         } catch (Exception exception) {
             throw new OverwriteCaseException(
                 String.format(
-                    "Failed updating claim in CCD store for claim %s on event %s",
+                    "Failed updating claim in CCD store for claim %s on event %s due to %s",
                     claim.getReferenceNumber(),
-                    event), exception
+                    event,
+                    exception.getMessage()
+                ),
+                exception
             );
         }
     }
 
     @Recover
-    public void recoverUpdateFailure(
+    public CaseDetails recoverUpdateFailure(
         OverwriteCaseException exception,
         User user,
         Long caseId,
         Claim claim,
         CaseEvent event
     ) {
-        String errorMessage = String.format(
-            "Failure: failed update for reference number ( %s for event %s) due to %s",
-            claim.getReferenceNumber(), event.getValue(), exception.getMessage()
-        );
-
-        logger.info(errorMessage, exception);
+        logger.info(exception.getMessage(), exception);
+        throw exception;
     }
 
 }

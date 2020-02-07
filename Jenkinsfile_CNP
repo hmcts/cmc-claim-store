@@ -6,14 +6,26 @@ def product = "cmc"
 def component = "claim-store"
 
 def secrets = [
-  'cmc-${env}':
-    [
-      secret('citizen-oauth-client-secret', 'OAUTH2_CLIENT_SECRET'),
-      secret('smoke-test-citizen-username', 'SMOKE_TEST_CITIZEN_USERNAME'),
-      secret('smoke-test-solicitor-username', 'SMOKE_TEST_SOLICITOR_USERNAME'),
-      secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
-      secret('generated-user-email-pattern', 'GENERATED_USER_EMAIL_PATTERN')
-    ]
+  // these are required for our integration tests container (initialised in Jenkins)
+  'cmc-${env}': [
+    secret('citizen-oauth-client-secret', 'OAUTH2_CLIENT_SECRET'),
+    secret('smoke-test-citizen-username', 'SMOKE_TEST_CITIZEN_USERNAME'),
+    secret('smoke-test-solicitor-username', 'SMOKE_TEST_SOLICITOR_USERNAME'),
+    secret('smoke-test-user-password', 'SMOKE_TEST_USER_PASSWORD'),
+    secret('generated-user-email-pattern', 'GENERATED_USER_EMAIL_PATTERN')
+  ],
+  // below is just for CCD in AKS - to be cleaned up when CCD Helm chart is updated to use flexvolume for secrets
+  's2s-${env}': [
+    secret('microservicekey-ccd-data', 'DATA_STORE_S2S_KEY'),
+    secret('microservicekey-ccd-definition', 'DEFINITION_STORE_S2S_KEY'),
+    secret('microservicekey-ccd-gw', 'API_GATEWAY_S2S_KEY'),
+    secret('microservicekey-ccd-admin', 'ADMIN_S2S_KEY'),
+    secret('microservicekey-ccd-ps', 'PRINT_S2S_KEY')
+  ],
+  'ccd-${env}': [
+    secret('ccd-api-gateway-oauth2-client-secret', 'API_GATEWAY_IDAM_SECRET'),
+    secret('ccd-admin-web-oauth2-client-secret', 'ADMIN_WEB_IDAM_SECRET')
+  ]
 ]
 
 static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
@@ -29,27 +41,27 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 env.FRONTEND_BASE_URL = 'https://moneyclaims.aat.platform.hmcts.net'
 env.IDAM_API_URL = 'https://idam-api.aat.platform.hmcts.net'
 env.S2S_URL = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
+env.PDF_SERVICE_URL = 'http://cmc-pdf-service-aat.service.core-compute-aat.internal'
 
 String notificationsChannel = '#cmc-tech-notification'
 
 withPipeline("java", product, component) {
-  after('checkout') {
-    onMaster {
-      withCredentials([usernamePassword(credentialsId: 'jenkins-github-hmcts-api-token', passwordVariable: 'BEARER_TOKEN', usernameVariable: 'USERNAME')]) {
-        try {
-          def url = sh(returnStdout: true, script: 'git config remote.origin.url').replace('github.com', '${BEARER_TOKEN}@github.com')
-          sh('git remote set-url origin ' + url)
-          sh('git fetch origin demo:demo')
-          sh('git push --force origin HEAD:demo')
-        } catch (err) {
-          notifyBuildEvent channel: notificationsChannel, color: 'warning', message: 'Failed to update demo branch'
-        }
-      }
-    }
-  }
+//  after('checkout') {
+//    onMaster {
+//      withCredentials([usernamePassword(credentialsId: 'jenkins-github-hmcts-api-token', passwordVariable: 'BEARER_TOKEN', usernameVariable: 'USERNAME')]) {
+//        try {
+//          def url = sh(returnStdout: true, script: 'git config remote.origin.url').replace('github.com', '${BEARER_TOKEN}@github.com')
+//          sh('git remote set-url origin ' + url)
+//          sh('git fetch origin demo:demo')
+//          sh('git push --force origin HEAD:demo')
+//        } catch (err) {
+//          notifyBuildEvent channel: notificationsChannel, color: 'warning', message: 'Failed to update demo branch'
+//        }
+//      }
+//    }
+//  }
 
   loadVaultSecrets(secrets)
   enableSlackNotifications(notificationsChannel)
-  enableDockerBuild()
   installCharts()
 }

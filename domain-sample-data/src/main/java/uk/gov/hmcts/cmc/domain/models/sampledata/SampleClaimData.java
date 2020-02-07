@@ -30,7 +30,7 @@ public class SampleClaimData {
     private Amount amount = SampleAmountBreakdown.builder().build();
     private Interest interest = SampleInterest.standard();
     private String reason = "reason";
-    private BigInteger feeAmount = new BigInteger("4000");
+    private BigInteger feeAmount = BigInteger.valueOf(4000);
     private String feeAccountNumber = "PBA1234567";
     private StatementOfTruth statementOfTruth;
     private PersonalInjury personalInjury = new PersonalInjury(DamagesExpectation.MORE_THAN_THOUSAND_POUNDS);
@@ -58,7 +58,7 @@ public class SampleClaimData {
     public static SampleClaimData builder() {
         return new SampleClaimData(
             singletonList(SampleParty.builder().individual()),
-            singletonList(SampleTheirDetails.builder().individualDetails()));
+            singletonList(SampleTheirDetails.builder().withPhone("0776655443322").individualDetails()));
     }
 
     public SampleClaimData withExternalId(UUID externalId) {
@@ -211,6 +211,12 @@ public class SampleClaimData {
         return builder().build();
     }
 
+    public static ClaimData submittedWithAmountMoreThanThousand() {
+        return submittedByClaimantBuilder()
+            .withAmount(SampleAmountBreakdown.withThousandAsAmount().build())
+            .build();
+    }
+
     public static ClaimData submittedByClaimant() {
         return submittedByClaimantBuilder().build();
     }
@@ -228,6 +234,7 @@ public class SampleClaimData {
                 .individual())
             .withDefendant(SampleTheirDetails.builder()
                 .withRepresentative(null)
+                .withPhone("0776655443322")
                 .individualDetails())
             .withTimeline(SampleTimeline.validDefaults())
             .withEvidence(SampleEvidence.validDefaults());

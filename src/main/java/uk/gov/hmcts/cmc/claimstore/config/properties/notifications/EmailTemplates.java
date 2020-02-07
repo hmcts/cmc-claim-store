@@ -35,7 +35,13 @@ public class EmailTemplates {
     private String claimantResponseWithNoMediationIssued;
 
     @NotEmpty
+    private String claimantResponseForDqPilotWithNoMediationIssued;
+
+    @NotEmpty
     private String defendantResponseWithNoMediationIssued;
+
+    @NotEmpty
+    private String defendantResponseForDqPilotWithNoMediationIssued;
 
     @NotEmpty
     private String staffMoreTimeRequested;
@@ -51,6 +57,9 @@ public class EmailTemplates {
 
     @NotEmpty
     private String claimantCCJRequested;
+
+    @NotEmpty
+    private String claimantCCJReminder;
 
     @NotEmpty
     private String defendantOfferMade;
@@ -111,4 +120,47 @@ public class EmailTemplates {
 
     @NotEmpty
     private String claimantRejectedPartAdmitOrStatesPaidEmailToDefendant;
+
+    @NotEmpty
+    private String claimantLegalOrderDrawn;
+
+    @NotEmpty
+    private String defendantLegalOrderDrawn;
+
+    @NotEmpty
+    private String defendantFreeMediationConfirmation;
+
+    @NotEmpty
+    private String reviewOrderEmailToClaimant;
+
+    @NotEmpty
+    private String reviewOrderEmailToDefendant;
+
+    @NotEmpty
+    private String claimantIntentionToProceedForPaperDq;
+
+    @NotEmpty
+    private String claimantIntentionToProceedForOnlineDq;
+
+    @NotEmpty
+    private  String claimantSettledAfterFullDefence;
+
+    @NotEmpty
+    private  String claimantMediationSuccess;
+
+    @NotEmpty
+    private  String defendantMediationSuccess;
+
+    @NotEmpty
+    private String claimantReadyForTransfer;
+
+    @NotEmpty
+    private String defendantReadyForTransfer;
+
+    @NotEmpty
+    private String claimantMediationFailureOfflineDQ;
+
+    @NotEmpty
+    private String defendantMediationFailureOfflineDQ;
+
 }
