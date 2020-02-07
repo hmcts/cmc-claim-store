@@ -10,4 +10,6 @@ public interface CaseSearchApi {
     List<Claim> getMediationClaims(String authorisation, LocalDate mediationAgreementDate);
 
     List<Claim> getClaimsPastIntentionToProceed(User user, LocalDate responseDate);
+
+    List<Claim> getClaimsWithDefaultCCJ(User user, LocalDate ccjRequestedDate);
 }
