@@ -31,7 +31,7 @@ def versions = [
   logback           : '1.2.3',
   springBoot        : springBootVersion,
   springfoxSwagger  : '2.9.2',
-  reformJavaLogging : '5.0.1',
+  reformJavaLogging : '5.1.1',
   restAssuredVersion: '4.0.0',
   jackson           : '2.10.0',
   junit             : '5.5.2',
@@ -172,7 +172,7 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-json'
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
 
-  compile group: 'org.flywaydb', name: 'flyway-core', version: '5.2.4'
+  compile group: 'org.flywaydb', name: 'flyway-core', version: '6.2.1'
 
   compile group: 'ch.qos.logback', name: 'logback-classic', version: versions.logback
   compile group: 'ch.qos.logback', name: 'logback-core', version: versions.logback
@@ -189,8 +189,8 @@ dependencies {
 
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.15.0-RELEASE'
 
-  compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformJavaLogging
-  compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: versions.reformJavaLogging
+  compile group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformJavaLogging
+  compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformJavaLogging
   compile group: 'uk.gov.hmcts.reform', name: 'http-proxy-spring-boot-autoconfigure', version: '2.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'pdf-service-client', version: '7.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.7.0'
@@ -212,7 +212,7 @@ dependencies {
   compile group: 'org.springframework.retry', name: 'spring-retry'
   compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign'
 
-  compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '10.2.3'
+  compile group: 'io.github.openfeign', name: 'feign-httpclient', version: '10.3.0'
 
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
