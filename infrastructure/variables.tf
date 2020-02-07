@@ -101,5 +101,5 @@ variable claim_stayed_schedule  {
  }
 
 variable claim_reissue_schedule  {
-  default = "0 0 8,16 ? * * *"
+  default = ""
 }

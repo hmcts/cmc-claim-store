@@ -1,6 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.jobs.cron;
 
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimReissueService;
 import uk.gov.hmcts.cmc.scheduler.model.CronJob;
 
-@DisallowConcurrentExecution
-@NoArgsConstructor
 @Component
+@Getter
+@DisallowConcurrentExecution
 public class ClaimReissueJob implements CronJob {
 
     private ClaimReissueService claimReissueService;
@@ -20,14 +20,8 @@ public class ClaimReissueJob implements CronJob {
     private String cronExpression;
 
     @Override
-    public String getCronExpression() {
-        return cronExpression;
-    }
-
-    @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         try {
-            System.out.println("hi akriti I am executing");
             claimReissueService.getCreatedClaimsAndReIssue();
         } catch (Exception e) {
             throw new JobExecutionException(e);
