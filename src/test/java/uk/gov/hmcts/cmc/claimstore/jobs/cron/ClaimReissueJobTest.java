@@ -6,9 +6,9 @@ import org.mockito.Mock;
 import org.quartz.JobExecutionException;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimReissueService;
 
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.doThrow;
 
 public class ClaimReissueJobTest {
 

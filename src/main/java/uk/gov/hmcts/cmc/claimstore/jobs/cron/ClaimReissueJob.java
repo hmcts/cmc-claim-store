@@ -4,13 +4,11 @@ import lombok.NoArgsConstructor;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.claimstore.services.ClaimReissueService;
 import uk.gov.hmcts.cmc.scheduler.model.CronJob;
-import org.springframework.stereotype.Component;
 
 @DisallowConcurrentExecution
 @NoArgsConstructor
