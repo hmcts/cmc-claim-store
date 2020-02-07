@@ -110,6 +110,9 @@ milo:
 claim_stayed:
   schedule: ""
 
+claim_reissue:
+  schedule: ""
+
 dateCalculations:
   endOfBusinessDayHour: 16
   serviceDays: 5
