@@ -130,7 +130,7 @@ public class BulkPrintService implements PrintService {
         backoff = @Backoff(delay = 200)
     )
     @Override
-    public void printPdf(Claim claim, List<Printable> documents) {
+    public void printPdf(Claim claim, List<Printable> documents, String authorisation) {
         requireNonNull(claim);
 
         List<String> docs = documents.stream()
@@ -146,6 +146,13 @@ public class BulkPrintService implements PrintService {
                 XEROX_TYPE_PARAMETER,
                 wrapInOrderDetailsInMap(claim)
             )
+        );
+
+        claimService.saveBulkPrintLetterId(
+            authorisation,
+            sendLetterResponse.letterId.toString(),
+            CaseEvent.UPDATE_BULK_PRINT_LETTER_ID,
+            claim
         );
 
         logger.info("Direction order pack letter {} created for claim reference {}",

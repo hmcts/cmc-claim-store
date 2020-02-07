@@ -9,4 +9,5 @@ public class DirectionsOrderReadyToPrintEvent {
     private final Claim claim;
     private final Document coverSheet;
     private final Document directionsOrder;
+    private final String authorisation;
 }

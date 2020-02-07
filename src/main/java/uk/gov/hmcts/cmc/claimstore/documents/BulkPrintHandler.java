@@ -59,7 +59,8 @@ public class BulkPrintHandler {
                 new PrintablePdf(
                     event.getDirectionsOrder(),
                     buildDirectionsOrderFileBaseName(claim.getReferenceNumber()))
-            )
+            ),
+            event.getAuthorisation()
         );
     }
 }
