@@ -34,7 +34,7 @@ public class ClaimReissueService {
         try {
             User user = userService.authenticateAnonymousCaseWorker();
             String authorisation = user.getAuthorisation();
-            claimService.getClaimsByState(CREATE, userService.authenticateAnonymousCaseWorker()).forEach(claim -> {
+            claimService.getClaimsByState(CREATE, user).forEach(claim -> {
                 triggerAsyncOperation(authorisation, claim);
             });
         } catch (Exception ex) {
