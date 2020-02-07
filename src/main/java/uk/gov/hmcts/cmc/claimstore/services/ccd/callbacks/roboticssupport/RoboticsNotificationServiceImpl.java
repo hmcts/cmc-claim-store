@@ -153,7 +153,8 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
         if (!claimOptional.isPresent()) {
             throw new BadRequestException(RPA_STATE_MISSING);
         }
-        Claim claim = claimOptional.get();
+        Claim claim = claimOptional.filter(precondition)
+        .orElseThrow(() -> new BadRequestException(RPA_STATE_INVALID));
         if (!precondition.test(claim)) {
             throw new BadRequestException(RPA_STATE_INVALID);
         }
