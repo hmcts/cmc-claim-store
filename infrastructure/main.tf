@@ -200,6 +200,9 @@ module "claim-store-api" {
     // Intention to proceed
     CLAIM_STAYED_SCHEDULE = "${var.claim_stayed_schedule}"
 
+    // reissue claim
+    CLAIM_REISSUE_SCHEDULE = "${var.claim_reissue_schedule}"
+
     // robot notifications
     RPA_NOTIFICATIONS_SENDER = "noreply@reform.hmcts.net"
     RPA_NOTIFICATIONS_SEALEDCLAIMRECIPIENT = "${data.azurerm_key_vault_secret.rpa_email_sealed_claim.value}"

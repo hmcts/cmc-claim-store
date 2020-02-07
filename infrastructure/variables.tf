@@ -97,5 +97,9 @@ variable "common_tags" {
 }
 
 variable claim_stayed_schedule  {
-  default = ""
+   default = ""
+ }
+
+variable claim_reissue_schedule  {
+  default = "0 0 8,16 ? * * *"
 }

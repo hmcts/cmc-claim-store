@@ -16,17 +16,12 @@ import uk.gov.hmcts.cmc.scheduler.model.CronJob;
 public class ClaimReissueJob implements CronJob {
 
     private ClaimReissueService claimReissueService;
-
+    @Value("${claim_reissue.schedule}")
     private String cronExpression;
 
     @Override
     public String getCronExpression() {
         return cronExpression;
-    }
-
-    @Autowired
-    public void setCronExpression(@Value("0 0/2 0 ? * * *") String cronExpression) {
-        this.cronExpression = cronExpression;
     }
 
     @Override

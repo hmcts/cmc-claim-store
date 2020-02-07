@@ -50,5 +50,6 @@ java:
     MILO_CSV_SCHEDULE: '-'
     MILO_CSV_SENDER: noreply@reform.hmcts.net
     CLAIM_STAYED_SCHEDULE: ''
+    CLAIM_REISSUE_SCHEDULE: ''
     PAY_URL: false
     FEES_URL: false
