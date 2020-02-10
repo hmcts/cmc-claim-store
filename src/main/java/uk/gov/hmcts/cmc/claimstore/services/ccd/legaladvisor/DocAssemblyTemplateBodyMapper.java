@@ -4,17 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
-import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 
 import java.time.Clock;
 import java.time.LocalDate;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.domain.utils.LocalDateTimeFactory.UTC_ZONE;
 
 @Component
@@ -66,7 +65,7 @@ public class DocAssemblyTemplateBodyMapper {
             .docUploadForParty(ccdCase.getDocUploadForParty())
             .extraDocUploadList(ccdCase.getExtraDocUploadList())
             .eyewitnessUploadForParty(ccdCase.getEyewitnessUploadForParty())
-            .paperDetermination(Objects.equals(ccdCase.getPaperDetermination(), CCDYesNoOption.YES))
+            .paperDetermination(ccdCase.getPaperDetermination() == YES)
             .hearingCourtName(hearingCourt.getName())
             .hearingCourtAddress(hearingCourt.getAddress())
             .estimatedHearingDuration(ccdCase.getEstimatedHearingDuration())
@@ -87,16 +86,10 @@ public class DocAssemblyTemplateBodyMapper {
             .directionDeadline(workingDayIndicator.getNextWorkingDay(
                 currentDate.plusDays(DIRECTION_DEADLINE_NO_OF_DAYS)))
             .expertReportInstruction(ccdCase.getExpertReportInstruction())
-            .expertReportPermissionPartyAskedByClaimant(fromEnum(ccdCase
-                .getExpertReportPermissionPartyAskedByClaimant()))
-            .expertReportPermissionPartyAskedByDefendant(fromEnum(ccdCase
-                .getExpertReportPermissionPartyAskedByDefendant()))
-            .grantExpertReportPermission(fromEnum(ccdCase
-                .getGrantExpertReportPermission()))
+            .expertReportPermissionPartyAskedByClaimant(ccdCase.getExpertReportPermissionPartyAskedByClaimant() == YES)
+            .expertReportPermissionPartyAskedByDefendant(ccdCase
+                .getExpertReportPermissionPartyAskedByDefendant() == YES)
+            .grantExpertReportPermission(ccdCase.getGrantExpertReportPermission() == YES)
             .build();
-    }
-
-    private boolean fromEnum(CCDYesNoOption input) {
-        return Optional.ofNullable(input).map(CCDYesNoOption::toBoolean).orElse(false);
     }
 }

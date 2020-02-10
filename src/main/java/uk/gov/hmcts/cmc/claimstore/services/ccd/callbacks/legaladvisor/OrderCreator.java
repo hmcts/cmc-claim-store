@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption;
 import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
@@ -32,6 +33,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
+import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOTH;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.DOCUMENTS;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EYEWITNESS;
@@ -51,7 +53,8 @@ public class OrderCreator {
     private static final String PREFERRED_COURT_OBJECTING_REASON = "preferredCourtObjectingReason";
     private static final String DIRECTION_LIST = "directionList";
     private static final String PREFERRED_DQ_COURT = "preferredDQCourt";
-    private static final String EXPERT_PERMISSION = "grantExpertReportPermission";
+    private static final String EXPERT_PERMISSION_BY_CLAIMANT = "expertReportPermissionPartyAskedByClaimant";
+    private static final String EXPERT_PERMISSION_BY_DEFENDANT = "expertReportPermissionPartyAskedByDefendant";
 
     private final LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator;
     private final CaseDetailsConverter caseDetailsConverter;
@@ -147,7 +150,32 @@ public class OrderCreator {
         data.put(PREFERRED_COURT_OBJECTING_REASON, preferredCourtObjectingReason);
         data.put(PREFERRED_DQ_COURT, DirectionsQuestionnaireUtils.getPreferredCourt(claim));
 
-        data.put(EXPERT_PERMISSION, ccdCase.getGrantExpertReportPermission());
+        if (Optional.ofNullable(claimantDQ).isPresent()) {
+            data.put(EXPERT_PERMISSION_BY_CLAIMANT, hasRequestedExpertPermission(claimantDQ));
+        }
+
+        if (Optional.ofNullable(defendantDQ).isPresent()) {
+            data.put(EXPERT_PERMISSION_BY_DEFENDANT, hasRequestedExpertPermission(defendantDQ));
+        }
     }
 
+    private CCDYesNoOption hasRequestedExpertPermission(CCDDirectionsQuestionnaire directionsQuestionnaire) {
+        return directionsQuestionnaire.getExpertRequired() != null
+            && directionsQuestionnaire.getExpertRequired().toBoolean()
+            && (hasRequestedForPermissionWithProvidedEvidence(directionsQuestionnaire)
+            || hasProvidedExpertReports(directionsQuestionnaire))
+            ? YES
+            : NO;
+    }
+
+    private boolean hasProvidedExpertReports(CCDDirectionsQuestionnaire directionsQuestionnaire) {
+        return directionsQuestionnaire.getExpertReports() != null
+            && !directionsQuestionnaire.getExpertReports().isEmpty();
+    }
+
+    private boolean hasRequestedForPermissionWithProvidedEvidence(CCDDirectionsQuestionnaire directionsQuestionnaire) {
+        return directionsQuestionnaire.getPermissionForExpert() != null
+            && directionsQuestionnaire.getPermissionForExpert().toBoolean()
+            && StringUtils.isNotBlank(directionsQuestionnaire.getExpertEvidenceToExamine());
+    }
 }
