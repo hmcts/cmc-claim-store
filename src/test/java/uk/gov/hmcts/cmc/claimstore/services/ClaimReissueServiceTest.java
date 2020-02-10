@@ -29,7 +29,7 @@ public class ClaimReissueServiceTest {
     private UserService userService;
 
     @Mock
-    ClaimService claimService;
+    private ClaimService claimService;
 
     @Mock
     PostClaimOrchestrationHandler postClaimOrchestrationHandler;
