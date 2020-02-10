@@ -26,7 +26,7 @@ public class ClaimReissueServiceTest {
     private ClaimReissueService claimReissueService;
 
     @Mock
-    UserService userService;
+    private UserService userService;
 
     @Mock
     ClaimService claimService;
