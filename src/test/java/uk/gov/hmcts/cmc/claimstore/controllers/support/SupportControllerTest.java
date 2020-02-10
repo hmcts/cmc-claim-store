@@ -386,7 +386,7 @@ class SupportControllerTest {
             }
 
             @Test
-            void shouldNotResendClaimantResponseNotificationsIfReferToJudge() {
+            void shouldResendClaimantResponseNotificationsIfReferToJudge() {
                 sampleClaim = SampleClaim.builder()
                     .withResponse(PartAdmission.builder().buildWithPaymentOptionImmediately())
                     .withClaimantResponse(
@@ -399,7 +399,7 @@ class SupportControllerTest {
 
                 controller.resendStaffNotifications(sampleClaim.getReferenceNumber(), "claimant-response");
 
-                verify(claimantResponseStaffNotificationHandler, never()).onClaimantResponse(any());
+                verify(claimantResponseStaffNotificationHandler).onClaimantResponse(any());
             }
 
             @Test
