@@ -23,7 +23,7 @@ public class UserRolesService {
 
     public List<String> retrieveUserRoles(String authorisation) {
         User user = userService.getUser(authorisation);
-        String userId = user.getUserDetails().getId().toString();
+        String userId = user.getUserDetails().getId();
 
         return userRolesRepository.getByUserId(userId)
             .stream()
@@ -33,7 +33,7 @@ public class UserRolesService {
 
     public void saveRole(String userRolesName, String authorisation) {
         User user = userService.getUser(authorisation);
-        String userId = user.getUserDetails().getId().toString();
+        String userId = user.getUserDetails().getId();
         userRolesRepository.saveUserRole(userId, userRolesName);
     }
 }

@@ -19,7 +19,7 @@ public class Residence {
         COUNCIL_OR_HOUSING_ASSN_HOME("Council or housing association home"),
         OTHER("Other");
 
-        String description;
+        private final String description;
 
         ResidenceType(String description) {
             this.description = description;

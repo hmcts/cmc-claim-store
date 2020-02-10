@@ -50,6 +50,7 @@ public class CreateLegalRepClaimCallbackHandlerTest extends BaseMockSpringTest {
         given(userService.getUserDetails(AUTHORISATION_TOKEN)).willReturn(userDetails);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void shouldAddFieldsOnCaseWhenCallbackIsSuccessful() throws Exception {
         MvcResult mvcResult = makeRequest(CallbackType.ABOUT_TO_SUBMIT.getValue())
@@ -64,7 +65,9 @@ public class CreateLegalRepClaimCallbackHandlerTest extends BaseMockSpringTest {
         Map<String, Object> defendant = (Map<String, Object>) respondents.get(0).get("value");
 
         assertThat(defendant)
-            .containsEntry("responseDeadline", defendant.get("responseDeadline"));
+            .containsEntry("responseDeadline", defendant.get("responseDeadline"))
+            .containsEntry("servedDate", defendant.get("servedDate"));
+
         assertThat(responseData)
             .contains(entry("channel", LEGAL_REP.name()))
             .contains(entry("previousServiceCaseReference", REFERENCE_NO))

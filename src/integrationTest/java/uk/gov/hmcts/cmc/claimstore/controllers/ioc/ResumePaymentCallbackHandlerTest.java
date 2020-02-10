@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -70,7 +71,7 @@ public class ResumePaymentCallbackHandlerTest extends BaseMockSpringTest {
     }
 
     @Test
-    public void shouldCreatePaymentIfPaymentIsNotInitiatedOrSuccesful()
+    public void shouldCreatePaymentIfPaymentIsFailed()
         throws Exception {
         Payment payment = Payment.builder()
             .amount(BigDecimal.TEN)
@@ -79,6 +80,7 @@ public class ResumePaymentCallbackHandlerTest extends BaseMockSpringTest {
             .dateCreated("2017-12-03+01:00")
             .nextUrl(NEXT_URL)
             .build();
+
         given(paymentsService
             .retrievePayment(
                 eq(AUTHORISATION_TOKEN),
@@ -120,6 +122,11 @@ public class ResumePaymentCallbackHandlerTest extends BaseMockSpringTest {
             entry("paymentDateCreated", "2017-12-03"),
             entry("paymentNextUrl", NEXT_URL)
         );
+        List<Map<String, Object>> respondents = (List<Map<String, Object>>) responseData.get("respondents");
+        Map<String, Object> defendant = (Map<String, Object>) respondents.get(0).get("value");
+
+        assertThat(defendant).contains(entry("servedDate", date.plusDays(5).toString()));
+        assertThat(defendant).contains(entry("responseDeadline", date.toString()));
     }
 
     @Test
@@ -158,7 +165,7 @@ public class ResumePaymentCallbackHandlerTest extends BaseMockSpringTest {
     }
 
     @Test
-    public void shouldReturnPaymentDetailsIfPaymentIsInitiated() throws Exception {
+    public void shouldCreatePaymentDetailsIfPaymentIsInitiated() throws Exception {
         Payment payment = Payment.builder()
             .amount(BigDecimal.TEN)
             .reference("reference")
@@ -172,6 +179,20 @@ public class ResumePaymentCallbackHandlerTest extends BaseMockSpringTest {
                 any(Claim.class)))
             .willReturn(payment);
 
+        Payment newPayment = Payment.builder()
+            .amount(BigDecimal.valueOf(25))
+            .reference("reference2")
+            .status(SUCCESS)
+            .dateCreated("2017-12-03+01:00")
+            .nextUrl(NEXT_URL)
+            .build();
+
+        given(paymentsService.createPayment(eq(AUTHORISATION_TOKEN), any(Claim.class))).willReturn(newPayment);
+
+        LocalDate date = LocalDate.now();
+        when(issueDateCalculator.calculateIssueDay(any(LocalDateTime.class))).thenReturn(date);
+        when(responseDeadlineCalculator.calculateResponseDeadline(any(LocalDate.class))).thenReturn(date);
+
         MvcResult mvcResult = makeRequest(CallbackType.ABOUT_TO_SUBMIT.getValue())
             .andExpect(status().isOk())
             .andReturn();
@@ -180,13 +201,12 @@ public class ResumePaymentCallbackHandlerTest extends BaseMockSpringTest {
             AboutToStartOrSubmitCallbackResponse.class
         ).getData();
 
-        verify(paymentsService, never())
-            .createPayment(eq(AUTHORISATION_TOKEN), any(Claim.class));
+        verify(paymentsService).createPayment(eq(AUTHORISATION_TOKEN), any(Claim.class));
 
         assertThat(responseData).contains(
-            entry("paymentAmount", "1000"),
-            entry("paymentReference", payment.getReference()),
-            entry("paymentStatus", payment.getStatus().toString()),
+            entry("paymentAmount", "2500"),
+            entry("paymentReference", newPayment.getReference()),
+            entry("paymentStatus", newPayment.getStatus().toString()),
             entry("paymentDateCreated", "2017-12-03"),
             entry("paymentNextUrl", NEXT_URL)
         );

@@ -78,17 +78,16 @@ public class AmountContentProvider {
             interestRealValue = interestContent.getAmountRealValue();
         }
 
+        BigDecimal subtotalAmount = ccjAmount
+            .add(feeAmount)
+            .add(interestRealValue);
         return new AmountContent(
             formatMoney(claimAmount),
-            formatMoney(ccjAmount
-                .add(feeAmount)
-                .add(interestRealValue)),
+            formatMoney(subtotalAmount),
             interestContent,
             formatMoney(feeAmount),
             formatMoney(paidAmount),
-            formatMoney(ccjAmount
-                .add(feeAmount)
-                .add(interestRealValue)
+            formatMoney(subtotalAmount
                 .subtract(paidAmount)),
             formatMoney(admittedAmount)
         );

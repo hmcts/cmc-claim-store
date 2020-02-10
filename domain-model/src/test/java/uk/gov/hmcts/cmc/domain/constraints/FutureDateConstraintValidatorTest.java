@@ -16,7 +16,7 @@ public class FutureDateConstraintValidatorTest {
     @Mock
     private ConstraintValidatorContext context;
 
-    private FutureDateConstraintValidator validator = new FutureDateConstraintValidator();
+    private final FutureDateConstraintValidator validator = new FutureDateConstraintValidator();
 
     @Test
     public void shouldReturnTrueForNullArgument() {

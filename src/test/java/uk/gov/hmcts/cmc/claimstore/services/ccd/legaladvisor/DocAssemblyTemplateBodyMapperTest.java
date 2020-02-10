@@ -14,7 +14,6 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCase;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Address;
@@ -79,7 +78,7 @@ public class DocAssemblyTemplateBodyMapperTest {
                 .town("Birmingham").build()).build()));
 
         ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
-        ccdCase.setDirectionOrderData(SampleData.getCCDOrderGenerationData());
+        ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
         ccdCase.setRespondents(
             ImmutableList.of(
                 CCDCollectionElement.<CCDRespondent>builder()
@@ -171,11 +170,7 @@ public class DocAssemblyTemplateBodyMapperTest {
 
     @Test
     public void shouldMapAddressFromCourtFinder() {
-        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData().toBuilder()
-            .hearingCourt(BIRMINGHAM)
-            .build();
-
-        ccdCase.setDirectionOrderData(ccdOrderGenerationData);
+        ccdCase = SampleData.addCCDOrderGenerationData(ccdCase).toBuilder().hearingCourt(BIRMINGHAM).build();
         DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
             ccdCase,
             userDetails
@@ -287,11 +282,10 @@ public class DocAssemblyTemplateBodyMapperTest {
 
     @Test
     public void shouldMapTemplateBodyWhenOtherDirectionIsNull() {
-        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData().toBuilder()
+        ccdCase = SampleData.addCCDOrderGenerationData(ccdCase).toBuilder()
             .otherDirections(ImmutableList.of(CCDCollectionElement.<CCDOrderDirection>builder().value(null).build()))
             .build();
 
-        ccdCase.setDirectionOrderData(ccdOrderGenerationData);
         DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
             ccdCase,
             userDetails
