@@ -32,7 +32,7 @@ public class ClaimReissueServiceTest {
     private ClaimService claimService;
 
     @Mock
-    PostClaimOrchestrationHandler postClaimOrchestrationHandler;
+    private PostClaimOrchestrationHandler postClaimOrchestrationHandler;
     private static final String AUTHORISATION = "Bearer: aaa";
     private static final UserDetails USER_DETAILS = SampleUserDetails.builder().build();
     private static final User USER = new User(AUTHORISATION, USER_DETAILS);
