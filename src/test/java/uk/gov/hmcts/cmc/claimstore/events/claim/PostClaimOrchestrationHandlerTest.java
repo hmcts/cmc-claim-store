@@ -46,9 +46,9 @@ public class PostClaimOrchestrationHandlerTest {
     public static final String AUTHORISATION = "AUTHORISATION";
     private static final byte[] PDF_BYTES = new byte[]{1, 2, 3, 4};
 
-    private Map<String, Object> claimContents = new HashMap<>();
-    private String claimTemplate = "claimTemplate";
-    private Document sealedClaimLetterDocument = new Document(claimTemplate, claimContents);
+    private final Map<String, Object> claimContents = new HashMap<>();
+    private final String claimTemplate = "claimTemplate";
+    private final Document sealedClaimLetterDocument = new Document(claimTemplate, claimContents);
 
     private PostClaimOrchestrationHandler postClaimOrchestrationHandler;
     @Mock

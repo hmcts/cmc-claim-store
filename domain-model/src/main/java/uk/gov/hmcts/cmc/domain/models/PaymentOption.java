@@ -5,7 +5,7 @@ public enum PaymentOption {
     BY_SPECIFIED_DATE("By a set date"),
     INSTALMENTS("By instalments");
 
-    String description;
+    final String description;
 
     PaymentOption(String description) {
         this.description = description;

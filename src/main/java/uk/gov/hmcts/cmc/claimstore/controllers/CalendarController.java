@@ -19,7 +19,7 @@ import java.time.LocalDate;
 @RestController
 @RequestMapping(
     path = "/calendar",
-    produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    produces = MediaType.APPLICATION_JSON_VALUE
 )
 public class CalendarController {
 

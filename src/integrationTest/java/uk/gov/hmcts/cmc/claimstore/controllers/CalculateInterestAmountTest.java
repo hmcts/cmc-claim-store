@@ -70,8 +70,8 @@ public class CalculateInterestAmountTest extends BaseMockSpringTest {
                         "/interest/calculate?from_date=%s&to_date=%s&rate=%s&amount=%s",
                         fromDate,
                         toDate,
-                        String.valueOf(rate),
-                        String.valueOf(amount)
+                        rate,
+                        amount
                     )
                 ).header(HttpHeaders.CONTENT_TYPE, "application/json")
             );

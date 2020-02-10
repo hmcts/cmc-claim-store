@@ -21,7 +21,7 @@ import static uk.gov.hmcts.cmc.domain.utils.ToStringStyle.ourStyle;
  * This class and its subtypes represent the data that a person provides about themselves.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes(
     {
         @JsonSubTypes.Type(value = Individual.class, name = "individual"),

@@ -253,7 +253,7 @@ public class SupportController {
         }
     }
 
-    @PostMapping(value = "/sendMediation", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/sendMediation", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("Generate and Send Mediation Report for Telephone Mediation Service")
     public void sendMediation(
             @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorisation,

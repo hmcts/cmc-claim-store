@@ -15,7 +15,7 @@ import static uk.gov.hmcts.cmc.domain.models.response.YesNoOption.YES;
 
 public class ClaimSubmissionOperationIndicatorRuleTest {
     @Rule
-    public ExpectedException exceptionRule = ExpectedException.none();
+    public final ExpectedException exceptionRule = ExpectedException.none();
 
     @Test
     public void shouldAssertOperationIndicatorUpdateIsInvalid() {

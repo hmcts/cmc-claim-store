@@ -14,5 +14,5 @@ public enum CCDExpenseType {
     HIRE_PURCHASES,
     MOBILE_PHONE,
     MAINTENANCE_PAYMENTS,
-    OTHER;
+    OTHER
 }

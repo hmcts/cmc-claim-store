@@ -15,9 +15,9 @@ import static java.util.Objects.requireNonNull;
 @Component
 public class WorkingDayIndicator {
 
-    private PublicHolidaysCollection publicHolidaysCollection;
+    private final PublicHolidaysCollection publicHolidaysCollection;
 
-    private NonWorkingDaysCollection nonWorkingDaysCollection;
+    private final NonWorkingDaysCollection nonWorkingDaysCollection;
 
     public WorkingDayIndicator(
         PublicHolidaysCollection publicHolidaysApiClient,

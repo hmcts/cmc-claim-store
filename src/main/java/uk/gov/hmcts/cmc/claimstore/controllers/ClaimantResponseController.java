@@ -24,8 +24,8 @@ import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
 @RestController
 @RequestMapping(
     path = "/responses",
-    consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
-    produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    consumes = MediaType.APPLICATION_JSON_VALUE,
+    produces = MediaType.APPLICATION_JSON_VALUE
 )
 public class ClaimantResponseController {
 

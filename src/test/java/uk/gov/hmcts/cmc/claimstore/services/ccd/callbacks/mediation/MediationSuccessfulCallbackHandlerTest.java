@@ -59,7 +59,7 @@ public class MediationSuccessfulCallbackHandlerTest {
     private CallbackParams callbackParams;
     private static final String AUTHORISATION = "Bearer: aaaa";
 
-    private Claim claimSetForMediation =
+    private final Claim claimSetForMediation =
         SampleClaim.getWithClaimantResponseRejectionForPartAdmissionAndMediation();
 
     private CallbackRequest callbackRequest;
