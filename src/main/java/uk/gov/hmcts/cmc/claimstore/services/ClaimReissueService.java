@@ -46,7 +46,7 @@ public class ClaimReissueService {
     private void triggerAsyncOperation(String authorisation, Claim claim) {
         if (claim.getClaimData().isClaimantRepresented()) {
             String submitterName = claim.getClaimData().getClaimant()
-                .getRepresentative().orElseThrow(IllegalArgumentException::new)
+                .getRepresentative().orElseThrow(IllegalStateException::new)
                 .getOrganisationName();
 
             this.postClaimOrchestrationHandler.representativeIssueHandler(

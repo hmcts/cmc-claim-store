@@ -44,11 +44,12 @@ public class ClaimReissueServiceTest {
             userService,
             postClaimOrchestrationHandler
         );
+        when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
     }
 
     @Test
     public void shouldCreateAndReissueCitizenClaim() {
-        when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
+
         when(claimService.getClaimsByState(eq(CREATE), any()))
             .thenReturn(singletonList(SampleClaim.getDefault()));
         claimReissueService.getCreatedClaimsAndReIssue();
@@ -59,7 +60,6 @@ public class ClaimReissueServiceTest {
     @Test
     public void shouldCreateAndReissueRepresentativeClaim() {
 
-        when(userService.authenticateAnonymousCaseWorker()).thenReturn(USER);
         when(claimService.getClaimsByState(eq(CREATE), any()))
             .thenReturn(singletonList(SampleClaim.getDefaultForLegal()));
         claimReissueService.getCreatedClaimsAndReIssue();
