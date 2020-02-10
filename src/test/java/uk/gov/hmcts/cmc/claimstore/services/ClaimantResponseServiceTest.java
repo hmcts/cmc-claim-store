@@ -8,7 +8,6 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
-import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.events.EventProducer;
 import uk.gov.hmcts.cmc.claimstore.repositories.CaseRepository;
 import uk.gov.hmcts.cmc.claimstore.rules.ClaimantResponseRule;
@@ -43,14 +42,14 @@ import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.STAY_CLAIM;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BOTH_OPTED_IN_FOR_MEDIATION_PILOT;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BOTH_OPTED_IN_FOR_NON_MEDIATION_PILOT;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BOTH_PARTIES_OFFLINE_DQ;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BOTH_PARTIES_ONLINE_DQ;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_OPTED_OUT_FOR_MEDIATION_PILOT;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_OPTED_OUT_FOR_NON_MEDIATION_PILOT;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_RESPONSE_ACCEPTED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_STAYED;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BOTH_PARTIES_ONLINE_DQ;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_NON_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_PILOT_ELIGIBLE;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.BOTH_PARTIES_OFFLINE_DQ;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NON_LA_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
@@ -120,7 +119,8 @@ public class ClaimantResponseServiceTest {
         inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class), anyString());
         inOrder.verify(appInsights, once()).trackEvent(eq(BOTH_PARTIES_OFFLINE_DQ),
                 eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
-        inOrder.verify(appInsights, once()).trackEvent(eq(NON_LA_PILOT_ELIGIBLE), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+        inOrder.verify(appInsights, once()).trackEvent(eq(NON_LA_PILOT_ELIGIBLE), eq(REFERENCE_NUMBER),
+            eq(claim.getReferenceNumber()));
         verify(formaliseResponseAcceptanceService, times(0))
             .formalise(any(), any(), anyString());
         verify(caseRepository, never()).saveCaseEvent(AUTHORISATION, claim, ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS);
@@ -306,7 +306,8 @@ public class ClaimantResponseServiceTest {
         verify(directionsQuestionnaireService)
             .updateDirectionsQuestionnaireDeadline(any(Claim.class), any(LocalDateTime.class), eq(AUTHORISATION));
         verify(eventProducer).createClaimantResponseEvent(any(Claim.class), anyString());
-        verify(appInsights).trackEvent(eq(BOTH_PARTIES_OFFLINE_DQ), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+        verify(appInsights).trackEvent(eq(BOTH_PARTIES_OFFLINE_DQ), eq(REFERENCE_NUMBER),
+            eq(claim.getReferenceNumber()));
         verify(appInsights).trackEvent(eq(NON_LA_PILOT_ELIGIBLE), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 
@@ -337,7 +338,8 @@ public class ClaimantResponseServiceTest {
         verify(caseRepository, never())
             .updateDirectionsQuestionnaireDeadline(any(Claim.class), any(LocalDate.class), anyString());
         verify(eventProducer).createClaimantResponseEvent(any(Claim.class), eq(AUTHORISATION));
-        verify(appInsights).trackEvent(eq(BOTH_PARTIES_ONLINE_DQ), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+        verify(appInsights).trackEvent(eq(BOTH_PARTIES_ONLINE_DQ), eq(REFERENCE_NUMBER),
+            eq(claim.getReferenceNumber()));
     }
 
     @Test

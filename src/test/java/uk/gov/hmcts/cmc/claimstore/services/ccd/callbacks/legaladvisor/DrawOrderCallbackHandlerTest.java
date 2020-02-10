@@ -242,7 +242,8 @@ public class DrawOrderCallbackHandlerTest {
 
         drawOrderCallbackHandler.handle(callbackParams);
 
-        verify(appInsights).trackEvent(AppInsightsEvent.DRAW_ORDER, REFERENCE_NUMBER, ccdCase.getPreviousServiceCaseReference());
+        verify(appInsights).trackEvent(AppInsightsEvent.DRAW_ORDER, REFERENCE_NUMBER,
+            ccdCase.getPreviousServiceCaseReference());
         verify(orderDrawnNotificationService).notifyDefendant(claim);
         verify(orderDrawnNotificationService).notifyClaimant(claim);
         verify(legalOrderService).print(

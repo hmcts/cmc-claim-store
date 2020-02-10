@@ -114,8 +114,6 @@ public class DrawJudgeOrderCallbackHandlerTest {
 
     private DrawJudgeOrderCallbackHandler drawJudgeOrderCallbackHandler;
 
-
-
     @Before
     public void setUp() {
         OrderCreator orderCreator = new OrderCreator(legalOrderGenerationDeadlinesCalculator, caseDetailsConverter,
