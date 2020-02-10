@@ -5,6 +5,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.core.read.ListAppender;
+import com.google.common.collect.ImmutableMap;
 import com.microsoft.applicationinsights.TelemetryClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -89,7 +90,7 @@ class AppInsightsTest {
         }
 
         @Test
-        void testTrackEvent() {
+        void testTrackEventSingleReference() {
             appInsights.trackEvent(AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE, "reference", "value");
             verify(telemetryClient).trackEvent(
                 eq(AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE.toString()),
@@ -104,7 +105,32 @@ class AppInsightsTest {
                 () -> assertThat(log.getLevel())
                     .isEqualTo(Level.INFO),
                 () -> assertThat(log.getFormattedMessage())
-                    .isEqualTo("AppInsights event: Claim attempt - Duplicate: reference=value")
+                    .isEqualTo("AppInsights event: Claim attempt - Duplicate: {reference=value}")
+            );
+        }
+
+        @Test
+        void testTrackEventMultipleReferences() {
+            ImmutableMap<String, String> properties = ImmutableMap.of(
+                "reference1", "value1",
+                "reference2", "value2"
+            );
+            appInsights.trackEvent(AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE, properties);
+            verify(telemetryClient).trackEvent(
+                eq(AppInsightsEvent.CLAIM_ATTEMPT_DUPLICATE.toString()),
+                eq(properties),
+                isNull()
+            );
+
+            List<ILoggingEvent> logsList = listAppender.list;
+            assertThat(logsList).hasSize(1);
+            ILoggingEvent log = logsList.get(0);
+            assertAll(
+                () -> assertThat(log.getLevel())
+                    .isEqualTo(Level.INFO),
+                () -> assertThat(log.getFormattedMessage())
+                    .isEqualTo("AppInsights event: Claim attempt - Duplicate: "
+                        + "{reference1=value1, reference2=value2}")
             );
         }
 
