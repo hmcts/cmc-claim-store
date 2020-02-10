@@ -85,6 +85,10 @@ public class NotificationReferenceBuilder {
         public static String referenceForClaimant(String claimReferenceNumber) {
             return reference("%s-ccj-requested-notification-%s", CLAIMANT, claimReferenceNumber);
         }
+
+        public static String reminderForClaimant(String claimReferenceNumber) {
+            return reference("%s-ccj-reminder-notification-%s", CLAIMANT, claimReferenceNumber);
+        }
     }
 
     public static class CCJIssued {
