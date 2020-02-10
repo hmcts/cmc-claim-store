@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDClaimDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDirectionOrder;
 import uk.gov.hmcts.cmc.ccd.domain.CCDDocument;
+import uk.gov.hmcts.cmc.ccd.domain.CaseEvent;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
@@ -91,12 +92,25 @@ public class OrderPostProcessor {
         Claim claim = caseDetailsConverter.extractClaim(caseDetails);
         CCDCase ccdCase = caseDetailsConverter.extractCCDCase(caseDetails);
         notifyParties(claim);
-        appInsights.trackEvent(
-                AppInsightsEvent.DRAW_ORDER,
-                AppInsights.REFERENCE_NUMBER,
-                ccdCase.getPreviousServiceCaseReference());
+        raiseAppInsightEvents(CaseEvent.fromValue(callbackParams.getRequest().getEventId()), ccdCase);
         String authorisation = callbackParams.getParams().get(BEARER_TOKEN).toString();
         return printOrder(authorisation, claim, ccdCase);
+    }
+
+    private void raiseAppInsightEvents(CaseEvent caseEvent, CCDCase ccdCase) {
+        switch (caseEvent) {
+            case DRAW_ORDER:
+                appInsights.trackEvent(AppInsightsEvent.DRAW_ORDER, AppInsights.REFERENCE_NUMBER,
+                    ccdCase.getPreviousServiceCaseReference());
+                break;
+            case DRAW_JUDGES_ORDER:
+                appInsights.trackEvent(AppInsightsEvent.DRAW_JUDGES_ORDER, AppInsights.REFERENCE_NUMBER,
+                    ccdCase.getPreviousServiceCaseReference());
+                break;
+            default:
+                //Empty
+                break;
+        }
     }
 
     private void notifyParties(Claim claim) {

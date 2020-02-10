@@ -61,7 +61,9 @@ public enum AppInsightsEvent {
     NON_MEDIATION_PILOT_SUCCESS("Non-mediation pilot - Success"),
     LA_PILOT_ELIGIBLE("LA pilot eligible"),
     READY_FOR_TRANSFER("Ready for transfer"),
-    DRAW_ORDER("Judge draws LA order");
+    DRAW_ORDER("Judge draws LA order"),
+    DRAW_JUDGES_ORDER("Directions drawn - Judge"),
+    JDDO_PILOT_ELIGIBLE("Ready for directions - Judge");
 
     private final String displayName;
 

@@ -24,7 +24,6 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static java.util.function.Predicate.isEqual;
-import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.LIFT_STAY;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.SETTLED_PRE_JUDGMENT;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
@@ -86,7 +85,6 @@ public class ClaimantResponseService {
     ) {
         Claim claim = claimService.getClaimByExternalId(externalId, authorization);
         claimantResponseRule.assertCanBeRequested(claim, claimantId);
-        Optional<CaseEvent> caseEvent = Optional.empty();
 
         Response response = claim.getResponse().orElseThrow(IllegalStateException::new);
         if (claim.getState().equals(ClaimState.STAYED) && ResponseUtils.isAdmissionResponse(response)) {
@@ -118,6 +116,7 @@ public class ClaimantResponseService {
             caseRepository.saveCaseEvent(authorization, updatedClaim, SETTLED_PRE_JUDGMENT);
         }
 
+        Optional<CaseEvent> caseEvent = Optional.empty();
         if (claimantResponse.getType() == REJECTION) {
             caseEvent = DirectionsQuestionnaireUtils.prepareCaseEvent(
                 (ResponseRejection) claimantResponse,
@@ -162,24 +161,44 @@ public class ClaimantResponseService {
         }
     }
 
-    private void raiseAppInsightEvents(Claim claim, Response response, ClaimantResponse claimantResponse,
-                                       Optional<CaseEvent> caseEvent) {
+    private void raiseAppInsightEvents(Claim claim,
+                                        Response response,
+                                        ClaimantResponse claimantResponse,
+                                        Optional<CaseEvent> caseEvent) {
+
         if (claimantResponse instanceof ResponseAcceptation) {
             appInsights.trackEvent(CLAIMANT_RESPONSE_ACCEPTED, REFERENCE_NUMBER, claim.getReferenceNumber());
+
         } else if (claimantResponse instanceof ResponseRejection) {
             if (isPartAdmissionOrIsStatePaidOrIsFullDefence(response)) {
                 raiseAppInsightEventForOnlineOrOfflineDQ(claim);
                 raiseAppInsightEventForMediation(claim, response, (ResponseRejection) claimantResponse);
-                if (caseEvent.equals(Optional.of(ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS))) {
-                    appInsights.trackEvent(AppInsightsEvent.LA_PILOT_ELIGIBLE, REFERENCE_NUMBER,
-                            claim.getReferenceNumber());
-                } else {
-                    appInsights.trackEvent(AppInsightsEvent.READY_FOR_TRANSFER, REFERENCE_NUMBER,
-                            claim.getReferenceNumber());
-                }
+                raiseAppInsightsEventForPilot(claim, caseEvent);
             }
         } else {
             throw new IllegalStateException("Unknown response type");
+        }
+    }
+
+    private void raiseAppInsightsEventForPilot(Claim claim, Optional<CaseEvent> caseEvent) {
+        if (caseEvent.isPresent()) {
+            switch (caseEvent.get()) {
+                case ASSIGNING_FOR_LEGAL_ADVISOR_DIRECTIONS:
+                    appInsights.trackEvent(AppInsightsEvent.LA_PILOT_ELIGIBLE, REFERENCE_NUMBER,
+                        claim.getReferenceNumber());
+                    break;
+                case ASSIGNING_FOR_JUDGE_DIRECTIONS:
+                    appInsights.trackEvent(AppInsightsEvent.JDDO_PILOT_ELIGIBLE, REFERENCE_NUMBER,
+                        claim.getReferenceNumber());
+                    break;
+                case WAITING_TRANSFER:
+                    appInsights.trackEvent(AppInsightsEvent.READY_FOR_TRANSFER, REFERENCE_NUMBER,
+                            claim.getReferenceNumber());
+                    break;
+                default:
+                    //Empty
+                    break;
+            }
         }
     }
 
