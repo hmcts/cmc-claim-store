@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.ccd.mapper.CaseMapper;
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.CCDCreateCaseService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.Role;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.Callback;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackHandler;
@@ -25,6 +26,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackResponse;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.cmc.claimstore.services.ccd.Role.CASEWORKER;
 
@@ -46,19 +48,23 @@ public class ResetAndSendNewPinCallbackHandler extends CallbackHandler {
 
     private NotificationsProperties notificationsProperties;
 
+    private CCDCreateCaseService ccdCreateCaseService;
+
     @Autowired
     public ResetAndSendNewPinCallbackHandler(
         CaseDetailsConverter caseDetailsConverter,
         UserService userService,
         CaseMapper caseMapper,
         ClaimIssuedNotificationService claimIssuedNotificationService,
-        NotificationsProperties notificationsProperties
+        NotificationsProperties notificationsProperties,
+        CCDCreateCaseService ccdCreateCaseService
     ) {
         this.caseDetailsConverter = caseDetailsConverter;
         this.userService = userService;
         this.caseMapper = caseMapper;
         this.claimIssuedNotificationService = claimIssuedNotificationService;
         this.notificationsProperties = notificationsProperties;
+        this.ccdCreateCaseService = ccdCreateCaseService;
     }
 
     @Override
@@ -102,6 +108,7 @@ public class ResetAndSendNewPinCallbackHandler extends CallbackHandler {
 
         GeneratePinResponse pinResponse =
             userService.generatePin(claim.getClaimData().getDefendant().getName(), authorisation);
+        String letterHolderId = pinResponse.getUserId();
 
         claim.getClaimData().getDefendant().getEmail().ifPresent(defendantEmail ->
             claimIssuedNotificationService.sendMail(
@@ -113,8 +120,14 @@ public class ResetAndSendNewPinCallbackHandler extends CallbackHandler {
                 claim.getClaimData().getDefendant().getName()
             ));
 
+        ccdCreateCaseService.grantAccessToCase(claim.getId().toString(), letterHolderId);
+        Optional.ofNullable(claim.getLetterHolderId()).ifPresent(
+            previousLetterHolderId ->
+                ccdCreateCaseService.removeAccessToCase(claim.getId().toString(), previousLetterHolderId)
+        );
+
         Claim updatedClaim = claim.toBuilder()
-            .letterHolderId(pinResponse.getUserId())
+            .letterHolderId(letterHolderId)
             .build();
 
         return AboutToStartOrSubmitCallbackResponse.builder()

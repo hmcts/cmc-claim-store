@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationT
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.idam.models.GeneratePinResponse;
 import uk.gov.hmcts.cmc.claimstore.services.UserService;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.CCDCreateCaseService;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
@@ -51,6 +52,9 @@ public class ResetAndSendNewPinCallbackHandlerTest {
     private NotificationsProperties notificationsProperties;
 
     @Mock
+    private CCDCreateCaseService ccdCreateCaseService;
+
+    @Mock
     private NotificationTemplates templates;
 
     @Mock
@@ -76,7 +80,8 @@ public class ResetAndSendNewPinCallbackHandlerTest {
             userService,
             caseMapper,
             claimIssuedNotificationService,
-            notificationsProperties
+            notificationsProperties,
+            ccdCreateCaseService
         );
 
         callbackRequest = CallbackRequest
