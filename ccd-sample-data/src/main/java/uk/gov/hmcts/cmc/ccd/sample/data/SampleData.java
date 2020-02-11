@@ -797,7 +797,8 @@ public class SampleData {
 
     public static CCDCase withMediationAgreementPdf() {
         List<CCDCollectionElement<CCDApplicant>> applicants
-                = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
+                = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual())
+                .build());
 
         return ccdBuilderWithDefault()
                 .amountBreakDown(getAmountBreakDown())
@@ -808,8 +809,8 @@ public class SampleData {
     }
 
     public static CCDCase withMediationAgreementNotPdf() {
-        List<CCDCollectionElement<CCDApplicant>> applicants
-                = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
+        List<CCDCollectionElement<CCDApplicant>> applicants = singletonList(CCDCollectionElement.<CCDApplicant>builder()
+                .value(getCCDApplicantIndividual()).build());
 
         return ccdBuilderWithDefault()
                 .amountBreakDown(getAmountBreakDown())
@@ -820,8 +821,8 @@ public class SampleData {
     }
 
     public static CCDCase withPdfDocument() {
-        List<CCDCollectionElement<CCDApplicant>> applicants
-                = singletonList(CCDCollectionElement.<CCDApplicant>builder().value(getCCDApplicantIndividual()).build());
+        List<CCDCollectionElement<CCDApplicant>> applicants = singletonList(CCDCollectionElement.<CCDApplicant>builder()
+                .value(getCCDApplicantIndividual()).build());
 
         return ccdBuilderWithDefault()
                 .amountBreakDown(getAmountBreakDown())

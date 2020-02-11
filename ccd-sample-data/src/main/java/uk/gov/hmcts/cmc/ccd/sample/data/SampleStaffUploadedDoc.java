@@ -30,7 +30,8 @@ class SampleStaffUploadedDoc {
                 .documentType(CCDClaimDocumentType.PAPER_RESPONSE_DISPUTES_ALL).build())
             .build());
 
-    static final List<CCDCollectionElement<CCDClaimDocument>> staffUploadedDocsMediationAgreementPDF = Collections.singletonList(
+    static final List<CCDCollectionElement<CCDClaimDocument>> staffUploadedDocsMediationAgreementPDF =
+            Collections.singletonList(
             CCDCollectionElement.<CCDClaimDocument>builder()
                     .id("2323-2342-34-2-341")
                     .value(CCDClaimDocument.builder()
@@ -43,7 +44,8 @@ class SampleStaffUploadedDoc {
                             .documentType(CCDClaimDocumentType.MEDIATION_AGREEMENT).build())
                     .build());
 
-    static final List<CCDCollectionElement<CCDClaimDocument>> staffUploadedDocsMediationAgreementNotPDF = Collections.singletonList(
+    static final List<CCDCollectionElement<CCDClaimDocument>> staffUploadedDocsMediationAgreementNotPDF =
+            Collections.singletonList(
             CCDCollectionElement.<CCDClaimDocument>builder()
                     .id("2323-2342-34-2-352")
                     .value(CCDClaimDocument.builder()
