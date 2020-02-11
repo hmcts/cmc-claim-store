@@ -47,8 +47,8 @@ public class MediationSuccessfulRule {
                 }
                 if ((document.getValue().getDocumentType() != CCDClaimDocumentType.MEDIATION_AGREEMENT)
                 ) {
-                    if (!validationErrors.contains(STAFF_UPLOAD_MEDIATION_AGREEMENT)){
-                        validationErrors.add(STAFF_UPLOAD_MEDIATION_AGREEMENT);
+                    if (!validationErrors.contains(STAFF_UPLOAD_TYPE_MEDIATION_AGREEMENT)){
+                        validationErrors.add(STAFF_UPLOAD_TYPE_MEDIATION_AGREEMENT);
                     }
                 }
             }
