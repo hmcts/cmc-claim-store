@@ -17,7 +17,7 @@ public class MediationSuccessfulRule {
     public static final String STAFF_UPLOAD_MEDIATION_AGREEMENT =
         "Upload Mediation Agreement";
     public static final String STAFF_UPLOAD_TYPE_MEDIATION_AGREEMENT =
-            "Document needs to be a Mediation Agreement";
+            "You need to upload a document of type Mediation agreement";
     public static final String STAFF_UPLOAD_PDF_MEDIATION_AGREEMENT =
             "Mediation agreement needs to be of type PDF";
 
@@ -49,6 +49,10 @@ public class MediationSuccessfulRule {
                 ) {
                     if (!validationErrors.contains(STAFF_UPLOAD_TYPE_MEDIATION_AGREEMENT)){
                         validationErrors.add(STAFF_UPLOAD_TYPE_MEDIATION_AGREEMENT);
+                    }
+                } else {
+                    if (validationErrors.contains(STAFF_UPLOAD_TYPE_MEDIATION_AGREEMENT)){
+                        validationErrors.remove(STAFF_UPLOAD_TYPE_MEDIATION_AGREEMENT);
                     }
                 }
             }
