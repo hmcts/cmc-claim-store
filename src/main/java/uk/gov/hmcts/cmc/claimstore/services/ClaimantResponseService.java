@@ -174,7 +174,7 @@ public class ClaimantResponseService {
                     appInsights.trackEvent(AppInsightsEvent.LA_PILOT_ELIGIBLE, REFERENCE_NUMBER,
                             claim.getReferenceNumber());
                 } else {
-                    appInsights.trackEvent(AppInsightsEvent.NON_LA_PILOT_ELIGIBLE, REFERENCE_NUMBER,
+                    appInsights.trackEvent(AppInsightsEvent.READY_FOR_TRANSFER, REFERENCE_NUMBER,
                             claim.getReferenceNumber());
                 }
             }

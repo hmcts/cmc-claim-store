@@ -60,7 +60,7 @@ public enum AppInsightsEvent {
     NON_MEDIATION_PILOT_FAILED("Non-mediation pilot - Failed"),
     NON_MEDIATION_PILOT_SUCCESS("Non-mediation pilot - Success"),
     LA_PILOT_ELIGIBLE("LA pilot eligible"),
-    NON_LA_PILOT_ELIGIBLE("Non LA pilot eligible"),
+    READY_FOR_TRANSFER("Ready for transfer"),
     DRAW_ORDER("Judge draws LA order");
 
     private final String displayName;

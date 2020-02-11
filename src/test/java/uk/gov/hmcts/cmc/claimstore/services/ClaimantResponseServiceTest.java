@@ -50,7 +50,7 @@ import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIMANT_
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.CLAIM_STAYED;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_NON_PILOT_ELIGIBLE;
 import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.MEDIATION_PILOT_ELIGIBLE;
-import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.NON_LA_PILOT_ELIGIBLE;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.READY_FOR_TRANSFER;
 import static uk.gov.hmcts.cmc.claimstore.utils.VerificationModeUtils.once;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
 import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.LA_PILOT_FLAG;
@@ -119,7 +119,7 @@ public class ClaimantResponseServiceTest {
         inOrder.verify(eventProducer, once()).createClaimantResponseEvent(any(Claim.class), anyString());
         inOrder.verify(appInsights, once()).trackEvent(eq(BOTH_PARTIES_OFFLINE_DQ),
                 eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
-        inOrder.verify(appInsights, once()).trackEvent(eq(NON_LA_PILOT_ELIGIBLE), eq(REFERENCE_NUMBER),
+        inOrder.verify(appInsights, once()).trackEvent(eq(READY_FOR_TRANSFER), eq(REFERENCE_NUMBER),
             eq(claim.getReferenceNumber()));
         verify(formaliseResponseAcceptanceService, times(0))
             .formalise(any(), any(), anyString());
@@ -308,7 +308,7 @@ public class ClaimantResponseServiceTest {
         verify(eventProducer).createClaimantResponseEvent(any(Claim.class), anyString());
         verify(appInsights).trackEvent(eq(BOTH_PARTIES_OFFLINE_DQ), eq(REFERENCE_NUMBER),
             eq(claim.getReferenceNumber()));
-        verify(appInsights).trackEvent(eq(NON_LA_PILOT_ELIGIBLE), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+        verify(appInsights).trackEvent(eq(READY_FOR_TRANSFER), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 
     @Test
@@ -372,7 +372,7 @@ public class ClaimantResponseServiceTest {
         verify(eventProducer).createClaimantResponseEvent(any(Claim.class), eq(AUTHORISATION));
         verify(appInsights).trackEvent(eq(BOTH_PARTIES_OFFLINE_DQ),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
-        verify(appInsights).trackEvent(eq(NON_LA_PILOT_ELIGIBLE), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+        verify(appInsights).trackEvent(eq(READY_FOR_TRANSFER), eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
         verify(appInsights).trackEvent(eq(CLAIMANT_OPTED_OUT_FOR_MEDIATION_PILOT),
             eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
