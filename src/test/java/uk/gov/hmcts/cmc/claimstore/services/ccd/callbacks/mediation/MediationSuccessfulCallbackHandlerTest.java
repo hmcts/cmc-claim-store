@@ -13,6 +13,7 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationT
 import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.NotificationsProperties;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackParams;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.CallbackType;
+import uk.gov.hmcts.cmc.claimstore.services.ccd.callbacks.rules.MediationSuccessfulRule;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.NotificationService;
 import uk.gov.hmcts.cmc.claimstore.utils.CaseDetailsConverter;
 import uk.gov.hmcts.cmc.domain.models.Claim;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.cmc.domain.models.ClaimFeatures;
 import uk.gov.hmcts.cmc.domain.models.response.YesNoOption;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleClaim;
 import uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
@@ -55,6 +57,8 @@ public class MediationSuccessfulCallbackHandlerTest {
     private NotificationTemplates notificationTemplates;
     @Mock
     private AppInsights appInsights;
+    @Mock
+    private MediationSuccessfulRule mediationSuccessfulRule;
 
     private CallbackParams callbackParams;
     private static final String AUTHORISATION = "Bearer: aaaa";
@@ -76,7 +80,8 @@ public class MediationSuccessfulCallbackHandlerTest {
             caseDetailsConverter,
             notificationService,
             notificationsProperties,
-            appInsights
+            appInsights,
+            mediationSuccessfulRule
         );
         when(notificationsProperties.getTemplates()).thenReturn(notificationTemplates);
 
@@ -161,13 +166,13 @@ public class MediationSuccessfulCallbackHandlerTest {
     public void shouldRaiseAppInsightWhenFeatureIsNotMediationPilot() {
 
         Claim claim = claimSetForMediation.toBuilder()
-            .features(Collections.singletonList(ClaimFeatures.DQ_FLAG.getValue()))
-            .build();
+                .features(Collections.singletonList(ClaimFeatures.DQ_FLAG.getValue()))
+                .build();
 
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         mediationSuccessfulCallbackHandler.handle(callbackParams);
 
         verify(appInsights, once()).trackEvent(eq(AppInsightsEvent.NON_MEDIATION_PILOT_SUCCESS),
-            eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
+                eq(REFERENCE_NUMBER), eq(claim.getReferenceNumber()));
     }
 }
