@@ -819,16 +819,4 @@ public class SampleData {
                 .state(OPEN.getValue())
                 .build();
     }
-
-    public static CCDCase withPdfDocument() {
-        List<CCDCollectionElement<CCDApplicant>> applicants = singletonList(CCDCollectionElement.<CCDApplicant>builder()
-                .value(getCCDApplicantIndividual()).build());
-
-        return ccdBuilderWithDefault()
-                .amountBreakDown(getAmountBreakDown())
-                .applicants(applicants)
-                .staffUploadedDocuments(SampleStaffUploadedDoc.staffUploadedDocsPDF)
-                .state(OPEN.getValue())
-                .build();
-    }
 }
