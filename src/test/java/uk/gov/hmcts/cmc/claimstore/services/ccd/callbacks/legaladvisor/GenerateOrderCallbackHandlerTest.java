@@ -162,7 +162,8 @@ public class GenerateOrderCallbackHandlerTest {
             entry("preferredCourtObjectingParty", null),
             entry("preferredCourtObjectingReason", null),
             entry("expertReportPermissionPartyAskedByClaimant", YES),
-            entry("expertReportPermissionPartyAskedByDefendant", YES)
+            entry("expertReportPermissionPartyAskedByDefendant", YES),
+            entry("grantExpertReportPermission", NO)
         );
     }
 
@@ -211,7 +212,8 @@ public class GenerateOrderCallbackHandlerTest {
             entry("preferredCourtObjectingParty", null),
             entry("preferredCourtObjectingReason", null),
             entry("expertReportPermissionPartyAskedByClaimant", YES),
-            entry("expertReportPermissionPartyAskedByDefendant", YES)
+            entry("expertReportPermissionPartyAskedByDefendant", YES),
+            entry("grantExpertReportPermission", NO)
         );
     }
 
@@ -252,7 +254,8 @@ public class GenerateOrderCallbackHandlerTest {
             entry("preferredCourtObjectingParty", null),
             entry("preferredCourtObjectingReason", null),
             entry("expertReportPermissionPartyAskedByClaimant", NO),
-            entry("expertReportPermissionPartyAskedByDefendant", NO)
+            entry("expertReportPermissionPartyAskedByDefendant", NO),
+            entry("grantExpertReportPermission", NO)
         ).doesNotContain(
             entry("hearingCourt", null)
         );
@@ -287,7 +290,8 @@ public class GenerateOrderCallbackHandlerTest {
             entry("preferredCourtObjectingParty", "Res_CLAIMANT"),
             entry("preferredCourtObjectingReason", "As a claimant I like this court more"),
             entry("expertReportPermissionPartyAskedByClaimant", YES),
-            entry("expertReportPermissionPartyAskedByDefendant", NO)
+            entry("expertReportPermissionPartyAskedByDefendant", NO),
+            entry("grantExpertReportPermission", NO)
         ).doesNotContain(
             entry("otherDirectionHeaders", "HEADER_UPLOAD")
         );
@@ -324,7 +328,8 @@ public class GenerateOrderCallbackHandlerTest {
             entry("preferredCourtObjectingParty", "Res_DEFENDANT"),
             entry("preferredCourtObjectingReason", "As a defendant I like this court more"),
             entry("expertReportPermissionPartyAskedByDefendant", NO),
-            entry("expertReportPermissionPartyAskedByClaimant", NO)
+            entry("expertReportPermissionPartyAskedByClaimant", NO),
+            entry("grantExpertReportPermission", NO)
         );
     }
 

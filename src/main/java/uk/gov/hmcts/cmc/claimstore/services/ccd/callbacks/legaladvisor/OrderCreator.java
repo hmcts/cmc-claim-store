@@ -55,6 +55,7 @@ public class OrderCreator {
     private static final String PREFERRED_DQ_COURT = "preferredDQCourt";
     private static final String EXPERT_PERMISSION_BY_CLAIMANT = "expertReportPermissionPartyAskedByClaimant";
     private static final String EXPERT_PERMISSION_BY_DEFENDANT = "expertReportPermissionPartyAskedByDefendant";
+    private static final String GRANT_EXPERT_REPORT_PERMISSION = "grantExpertReportPermission";
 
     private final LegalOrderGenerationDeadlinesCalculator legalOrderGenerationDeadlinesCalculator;
     private final CaseDetailsConverter caseDetailsConverter;
@@ -90,6 +91,7 @@ public class OrderCreator {
         data.put(DOC_UPLOAD_FOR_PARTY, BOTH.name());
         data.put(EYEWITNESS_UPLOAD_FOR_PARTY, BOTH.name());
         data.put(PAPER_DETERMINATION, NO.name());
+        data.put(GRANT_EXPERT_REPORT_PERMISSION, NO);
 
         return AboutToStartOrSubmitCallbackResponse
             .builder()
