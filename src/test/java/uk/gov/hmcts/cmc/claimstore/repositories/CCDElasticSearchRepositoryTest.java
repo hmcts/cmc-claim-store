@@ -78,4 +78,16 @@ public class CCDElasticSearchRepositoryTest {
             SampleQueryConstants.stayableCaseQuery);
     }
 
+    @Test
+    public void ccjCasesWithDefaultCcjTenDaysPriorQueriesElastic() {
+        User user = new User(AUTHORISATION, null);
+        ccdElasticSearchRepository.getClaimsWithDefaultCCJ(user,
+            LocalDate.of(2020, 1, 10));
+        verify(coreCaseDataApi).searchCases(
+            AUTHORISATION,
+            SERVICE_AUTH,
+            CASE_TYPE_ID,
+            SampleQueryConstants.defaultCCJCases10DaysBefore);
+    }
+
 }

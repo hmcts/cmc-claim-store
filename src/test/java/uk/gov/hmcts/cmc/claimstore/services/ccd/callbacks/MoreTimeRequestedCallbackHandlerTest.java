@@ -146,7 +146,7 @@ public class MoreTimeRequestedCallbackHandlerTest {
         verify(eventProducer).createMoreTimeForResponseRequestedEvent(
             claim,
             claim.getResponseDeadline(),
-            claim.getClaimData().getDefendant().getEmail().get()
+            claim.getClaimData().getDefendant().getEmail().orElse(null)
         );
         verify(appInsights)
             .trackEvent(

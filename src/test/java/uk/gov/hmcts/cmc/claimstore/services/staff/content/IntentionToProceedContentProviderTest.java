@@ -20,11 +20,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class IntentionToProceedContentProviderTest {
 
-    private TemplateService templateService = new TemplateService(
+    private final TemplateService templateService = new TemplateService(
         new PebbleConfiguration().pebbleEngine()
     );
 
-    private StaffEmailTemplates templates = new StaffEmailTemplates();
+    private final StaffEmailTemplates templates = new StaffEmailTemplates();
 
     private IntentionToProceedContentProvider contentProvider;
 

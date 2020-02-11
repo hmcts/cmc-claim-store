@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.documents.content.bulkprint;
 
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.cmc.claimstore.config.properties.emails.StaffEmailTemplates;
+import uk.gov.hmcts.cmc.claimstore.config.properties.emails.LiveSupportEmailTemplates;
 import uk.gov.hmcts.cmc.claimstore.services.TemplateService;
 import uk.gov.hmcts.cmc.claimstore.services.staff.models.EmailContent;
 import uk.gov.hmcts.cmc.claimstore.stereotypes.EmailContentProvider;
@@ -14,14 +14,14 @@ import static org.apache.commons.lang3.Validate.notEmpty;
 public class BulkPrintEmailContentProvider implements EmailContentProvider<Map<String, Object>> {
 
     private final TemplateService templateService;
-    private final StaffEmailTemplates staffEmailTemplates;
+    private final LiveSupportEmailTemplates liveSupportEmailTemplates;
 
     public BulkPrintEmailContentProvider(
         TemplateService templateService,
-        StaffEmailTemplates staffEmailTemplates
+        LiveSupportEmailTemplates liveSupportEmailTemplates
     ) {
         this.templateService = templateService;
-        this.staffEmailTemplates = staffEmailTemplates;
+        this.liveSupportEmailTemplates = liveSupportEmailTemplates;
     }
 
     @Override
@@ -29,8 +29,8 @@ public class BulkPrintEmailContentProvider implements EmailContentProvider<Map<S
         notEmpty(input);
 
         return new EmailContent(
-            evaluateTemplate(staffEmailTemplates.getBulkPrintEmailSubject(), input),
-            evaluateTemplate(staffEmailTemplates.getBulkPrintEmailBody(), input)
+            evaluateTemplate(liveSupportEmailTemplates.getBulkPrintEmailSubject(), input),
+            evaluateTemplate(liveSupportEmailTemplates.getBulkPrintEmailBody(), input)
         );
     }
 

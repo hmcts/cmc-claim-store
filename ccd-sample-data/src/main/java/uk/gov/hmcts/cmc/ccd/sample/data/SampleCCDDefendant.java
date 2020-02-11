@@ -11,6 +11,7 @@ import uk.gov.hmcts.cmc.ccd.domain.offers.CCDMadeBy;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 import static java.time.LocalDate.now;
@@ -120,7 +121,7 @@ public class SampleCCDDefendant {
             .paymentDeclarationPaidDate(now())
             .paymentDeclarationExplanation("Payment declaration explanation")
             .defendantTimeLineComment("Time line comments")
-            .defendantTimeLineEvents(asList(
+            .defendantTimeLineEvents(Collections.singletonList(
                 CCDCollectionElement.<CCDTimelineEvent>builder().value(CCDTimelineEvent.builder()
                     .date("Time of event")
                     .description("Description of the event")
@@ -129,7 +130,7 @@ public class SampleCCDDefendant {
             ))
             .responseEvidenceComment("Evidence comments")
             .responseEvidenceRows(
-                asList(
+                Collections.singletonList(
                     CCDCollectionElement.<CCDEvidenceRow>builder().value(CCDEvidenceRow.builder()
                         .type(OTHER)
                         .description("My description")
@@ -169,7 +170,7 @@ public class SampleCCDDefendant {
             .responseDefence("This is my defence")
             .statementOfMeans(getCCDStatementOfMeans())
             .defendantTimeLineComment("Time line comments")
-            .defendantTimeLineEvents(asList(
+            .defendantTimeLineEvents(Collections.singletonList(
                 CCDCollectionElement.<CCDTimelineEvent>builder().value(CCDTimelineEvent.builder()
                     .date("Time of event")
                     .description("Description of the event")
@@ -178,7 +179,7 @@ public class SampleCCDDefendant {
             ))
             .responseEvidenceComment("Evidence comments")
             .responseEvidenceRows(
-                asList(
+                Collections.singletonList(
                     CCDCollectionElement.<CCDEvidenceRow>builder().value(CCDEvidenceRow.builder()
                         .type(OTHER)
                         .description("My description")

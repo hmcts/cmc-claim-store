@@ -45,13 +45,14 @@ public class FeatureTogglesTest extends BaseTest {
             .statusCode(HttpStatus.CONFLICT.value());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void shouldSuccessfullyFetchRole() {
         commonOperations.saveUserRoles(new UserRoleRequest(CONSENT_GIVEN_ROLE), user.getAuthorisation())
             .then()
             .statusCode(HttpStatus.CREATED.value());
 
-        List roles = commonOperations.getUserRole(user.getAuthorisation())
+        List<String> roles = commonOperations.getUserRole(user.getAuthorisation())
             .then()
             .statusCode(HttpStatus.OK.value())
             .and()

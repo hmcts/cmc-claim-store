@@ -84,6 +84,7 @@ public class ReviewOrderContentProviderTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenGivenNullClaim() {
+        //noinspection ConstantConditions
         provider.createContent(null);
     }
 }

@@ -23,6 +23,7 @@ import java.util.Collections;
 
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
 
 @SpringBootTest
 @ContextConfiguration(classes = ModuleConfiguration.class)
@@ -145,7 +146,7 @@ public class DefenceResponseJsonMapperTest extends BaseResponseJsonMapper {
             .withClaimData(SampleClaimData.builder()
                 .withDefendant(SampleTheirDetails.builder().individualDetails())
                 .build())
-            .withFeatures(Collections.singletonList("directionsQuestionnaire"))
+            .withFeatures(Collections.singletonList(DQ_FLAG.getValue()))
             .build();
 
         String expected = new ResourceReader().read(HEARING_REQUIREMENTS).trim();
@@ -163,7 +164,7 @@ public class DefenceResponseJsonMapperTest extends BaseResponseJsonMapper {
             .withClaimData(SampleClaimData.builder()
                 .withDefendant(SampleTheirDetails.builder().individualDetails())
                 .build())
-            .withFeatures(Collections.singletonList("directionsQuestionnaire"))
+            .withFeatures(Collections.singletonList(DQ_FLAG.getValue()))
             .build();
 
         String expected = new ResourceReader().read(INDIVIDUAL).trim();

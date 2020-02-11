@@ -1,5 +1,6 @@
 package uk.gov.hmcts.cmc.claimstore.tests.functional.solicitor;
 
+import junit.framework.AssertionFailedError;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -34,12 +35,13 @@ public class SolicitorPdfTest extends BasePdfTest {
         ClaimData claimData = createdCase.getClaimData();
         Party claimant = claimData.getClaimant();
         assertThat(pdfAsText).contains("Claim number: " + createdCase.getReferenceNumber());
-        assertThat(pdfAsText).contains("Fee account: " + claimData.getFeeAccountNumber().get());
+        assertThat(pdfAsText)
+            .contains("Fee account: " + claimData.getFeeAccountNumber().orElseThrow(AssertionFailedError::new));
         assertThat(pdfAsText).contains("Claim issued: " + Formatting.formatDate(createdCase.getIssuedOn()));
         assertThat(pdfAsText).contains("Claimant " + claimant.getName() + " \n"
             + getFullAddressString(claimant.getAddress()));
         assertThat(pdfAsText).contains("Service address " + claimData.getDefendant().getName() + " \n"
-            + getFullAddressString(claimant.getCorrespondenceAddress().get()));
+            + getFullAddressString(claimant.getCorrespondenceAddress().orElseThrow(AssertionFailedError::new)));
         assertThat(pdfAsText).contains("The claimant expects to recover up to "
             + Formatting.formatMoney(((AmountRange) claimData.getAmount()).getHigherValue()));
     }

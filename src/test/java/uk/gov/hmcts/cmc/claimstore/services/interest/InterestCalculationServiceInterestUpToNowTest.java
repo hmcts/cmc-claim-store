@@ -23,7 +23,7 @@ public class InterestCalculationServiceInterestUpToNowTest {
     private static final BigDecimal EIGHT_PERCENT = valueOf(8);
     private static final LocalDate TEN_K_DAYS_AGO = LocalDate.now().minusDays(10000);
 
-    private InterestCalculationService service = new InterestCalculationService(Clock.systemDefaultZone());
+    private final InterestCalculationService service = new InterestCalculationService(Clock.systemDefaultZone());
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerWhenGivenNullAmount() {

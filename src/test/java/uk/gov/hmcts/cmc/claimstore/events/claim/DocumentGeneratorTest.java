@@ -33,14 +33,14 @@ public class DocumentGeneratorTest {
 
     private DocumentGenerator documentGenerator;
 
-    private String authorisation = "AuthValue";
-    private String submitterName = "Dr. John Smith";
-    private String pin = "123456";
-    private Map<String, Object> pinContents = new HashMap<>();
-    private String pinTemplate = "pinTemplate";
-    private Document defendantLetterDocument = new Document(pinTemplate, pinContents);
-    private Map<String, Object> claimContents = new HashMap<>();
-    private String sealedClaimTemplate = "sealedClaimTemplate";
+    private final String authorisation = "AuthValue";
+    private final String submitterName = "Dr. John Smith";
+    private final String pin = "123456";
+    private final Map<String, Object> pinContents = new HashMap<>();
+    private final String pinTemplate = "pinTemplate";
+    private final Document defendantLetterDocument = new Document(pinTemplate, pinContents);
+    private final Map<String, Object> claimContents = new HashMap<>();
+    private final String sealedClaimTemplate = "sealedClaimTemplate";
 
     @Mock
     private CitizenServiceDocumentsService citizenDocumentService;

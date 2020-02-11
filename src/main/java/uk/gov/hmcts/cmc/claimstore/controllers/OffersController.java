@@ -30,11 +30,11 @@ import static uk.gov.hmcts.cmc.claimstore.controllers.PathPatterns.UUID_PATTERN;
 @RestController
 @RequestMapping(
     path = "/claims",
-    produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    produces = MediaType.APPLICATION_JSON_VALUE)
 public class OffersController {
 
-    private ClaimService claimService;
-    private OffersService offersService;
+    private final ClaimService claimService;
+    private final OffersService offersService;
 
     @Autowired
     public OffersController(
@@ -51,7 +51,7 @@ public class OffersController {
     }
 
     @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/offers/{party}",
-        consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation("Makes an offer as a party")
     public Claim makeOffer(
@@ -65,7 +65,7 @@ public class OffersController {
     }
 
     @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/offers/{party}/accept",
-        consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation("Accepts an offer as a party")
     public Claim accept(
@@ -78,7 +78,7 @@ public class OffersController {
     }
 
     @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/offers/{party}/reject",
-        consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation("Rejects an offer as a party")
     public Claim reject(
@@ -91,7 +91,7 @@ public class OffersController {
     }
 
     @PostMapping(value = "/{externalId:" + UUID_PATTERN + "}/offers/{party}/countersign",
-        consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation("Counter sign an offer as a party")
     public Claim countersign(
