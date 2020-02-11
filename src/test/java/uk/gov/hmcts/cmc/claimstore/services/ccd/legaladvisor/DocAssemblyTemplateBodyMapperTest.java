@@ -15,12 +15,10 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDCollectionElement;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirection;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Address;
-import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.idam.models.UserDetails;
 import uk.gov.hmcts.cmc.claimstore.services.WorkingDayIndicator;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.fixtures.SampleUserDetails;
+import uk.gov.hmcts.cmc.claimstore.services.pilotcourt.PilotCourtService;
 import uk.gov.hmcts.cmc.domain.utils.ResourceReader;
 
 import java.time.Clock;
@@ -36,7 +34,6 @@ import static org.skyscreamer.jsonassert.JSONCompareMode.STRICT;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.BOTH;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.CLAIMANT;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDDirectionPartyType.DEFENDANT;
-import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingCourtType.BIRMINGHAM;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDHearingDurationType.FOUR_HOURS;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.EXPERT_REPORT_PERMISSION;
 import static uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderDirectionType.OTHER;
@@ -52,7 +49,7 @@ public class DocAssemblyTemplateBodyMapperTest {
     @Mock
     private Clock clock;
     @Mock
-    private CourtFinderApi courtFinderApi;
+    private PilotCourtService pilotCourtService;
     @Mock
     private WorkingDayIndicator workingDayIndicator;
 
@@ -63,19 +60,21 @@ public class DocAssemblyTemplateBodyMapperTest {
 
     @Before
     public void setUp() {
-        HearingCourtDetailsFinder hearingCourtDetailsFinder
-            = new HearingCourtDetailsFinder(courtFinderApi, new HearingCourtMapper());
-
         docAssemblyTemplateBodyMapper
-            = new DocAssemblyTemplateBodyMapper(clock, hearingCourtDetailsFinder, workingDayIndicator);
+            = new DocAssemblyTemplateBodyMapper(clock, pilotCourtService, workingDayIndicator);
 
-        when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString())).thenReturn(ImmutableList.of(Court.builder()
-            .name("Birmingham Court")
-            .slug("birmingham-court")
-            .address(Address.builder()
-                .addressLines(ImmutableList.of("line1", "line2", "line3"))
-                .postcode("SW1P4BB")
-                .town("Birmingham").build()).build()));
+        when(pilotCourtService.getHearingCourt(anyString()))
+            .thenReturn(HearingCourt.builder()
+                .name("Birmingham Court")
+                .address(CCDAddress.builder()
+                    .addressLine1("line1")
+                    .addressLine2("line2")
+                    .addressLine3("line3")
+                    .postCode("SW1P4BB")
+                    .postTown("Birmingham")
+                    .build()
+                )
+                .build());
 
         ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
@@ -168,7 +167,7 @@ public class DocAssemblyTemplateBodyMapperTest {
 
     @Test
     public void shouldMapAddressFromCourtFinder() {
-        ccdCase = SampleData.addCCDOrderGenerationData(ccdCase).toBuilder().hearingCourt(BIRMINGHAM).build();
+        ccdCase = SampleData.addCCDOrderGenerationData(ccdCase).toBuilder().hearingCourt("BIRMINGHAM").build();
         DocAssemblyTemplateBody requestBody = docAssemblyTemplateBodyMapper.from(
             ccdCase,
             userDetails
@@ -250,7 +249,7 @@ public class DocAssemblyTemplateBodyMapperTest {
             .build();
 
         assertThat(requestBody).isEqualTo(expectedBody);
-        verify(courtFinderApi).findMoneyClaimCourtByPostcode(anyString());
+        verify(pilotCourtService).getHearingCourt(anyString());
     }
 
     @Test
@@ -264,7 +263,7 @@ public class DocAssemblyTemplateBodyMapperTest {
         assertThat(output).isNotNull();
         String expected = new ResourceReader().read("/doc-assembly-template.json");
         JSONAssert.assertEquals(expected, output, STRICT);
-        verify(courtFinderApi).findMoneyClaimCourtByPostcode(anyString());
+        verify(pilotCourtService).getHearingCourt(anyString());
     }
 
     @Test
@@ -277,7 +276,7 @@ public class DocAssemblyTemplateBodyMapperTest {
         DocAssemblyTemplateBody expectedBody = docAssemblyTemplateBodyBuilder.build();
 
         assertThat(requestBody).isEqualTo(expectedBody);
-        verify(courtFinderApi).findMoneyClaimCourtByPostcode(anyString());
+        verify(pilotCourtService).getHearingCourt(anyString());
     }
 
     @Test
@@ -295,6 +294,6 @@ public class DocAssemblyTemplateBodyMapperTest {
         DocAssemblyTemplateBody expectedBody = docAssemblyTemplateBodyBuilder.build();
 
         assertThat(requestBody).isEqualTo(expectedBody);
-        verify(courtFinderApi).findMoneyClaimCourtByPostcode(anyString());
+        verify(pilotCourtService).getHearingCourt(anyString());
     }
 }
