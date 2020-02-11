@@ -81,6 +81,8 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
                     .generatePin(claim.getClaimData().getDefendant().getName(), authorisation);
 
             String fullName = userService.getUserDetails(authorisation).getFullName();
+            String userId = pinResponse.getUserId();
+            claimService.linkLetterHolder(claim, userId, authorisation);
             documentGenerator.generateForCitizenRPA(
                     new CitizenClaimIssuedEvent(claim, pinResponse.getPin(), fullName, authorisation)
             );

@@ -31,6 +31,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -69,6 +70,7 @@ public class RoboticsNotificationServiceTest {
     private static final String REFERENCE_NUMBER = "000MC001";
     private static final GeneratePinResponse PIN_RESPONSE = new GeneratePinResponse("pin", "userid");
     private static final String RPA_STATE_SUCCEEDED = "succeeded";
+    private static final String RPA_STATE_FAILED = "failed: reason";
 
     @Before
     public void setup() {
@@ -98,6 +100,19 @@ public class RoboticsNotificationServiceTest {
             .thenReturn(Optional.of(claim2));
         String response = roboticsNotificationService.rpaClaimNotification(REFERENCE_NUMBER);
         assertThat(response, is(RPA_STATE_SUCCEEDED));
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenLinkLetterHolderCallFails() {
+        when(userService.generatePin(anyString(), anyString())).thenReturn(PIN_RESPONSE);
+        when(userService.getUserDetails(anyString())).thenReturn(USER_DETAILS);
+        Claim claim2 = SampleClaim.builder().withReferenceNumber(REFERENCE_NUMBER).build();
+        when(claimService.getClaimByReference(anyString(), anyString()))
+            .thenReturn(Optional.of(claim2));
+        when(claimService.linkLetterHolder(eq(claim2), anyString(), anyString())).thenThrow(new RuntimeException(
+            "reason"));
+        String response = roboticsNotificationService.rpaClaimNotification(REFERENCE_NUMBER);
+        assertThat(response, is(RPA_STATE_FAILED));
     }
 
     @Test
