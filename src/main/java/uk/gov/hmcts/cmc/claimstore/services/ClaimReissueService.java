@@ -2,6 +2,7 @@ package uk.gov.hmcts.cmc.claimstore.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.cmc.claimstore.events.claim.CitizenClaimCreatedEvent;
 import uk.gov.hmcts.cmc.claimstore.events.claim.PostClaimOrchestrationHandler;
@@ -20,6 +21,7 @@ public class ClaimReissueService {
     private final UserService userService;
     private final PostClaimOrchestrationHandler postClaimOrchestrationHandler;
 
+    @Autowired
     public ClaimReissueService(
         ClaimService claimService,
         UserService userService,
