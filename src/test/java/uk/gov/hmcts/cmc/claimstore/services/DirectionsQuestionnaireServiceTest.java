@@ -45,21 +45,17 @@ public class DirectionsQuestionnaireServiceTest {
     private static final String NON_PILOT_COURT_NAME = "Non pilot court name";
     private static final String PILOT_COURT_NAME = "birmingham";
 
-    private static final ResponseRejection CLAIMANT_REJECTION_PILOT;
-
-    static {
-        CLAIMANT_REJECTION_PILOT = ResponseRejection.builder()
-                .freeMediation(NO)
-                .directionsQuestionnaire(
-                    DirectionsQuestionnaire.builder()
-                        .hearingLocation(HearingLocation.builder()
-                            .courtName(PILOT_COURT_NAME)
-                            .build()
-                        )
-                        .build()
+    private static final ResponseRejection CLAIMANT_REJECTION_PILOT = ResponseRejection.builder()
+        .freeMediation(NO)
+        .directionsQuestionnaire(
+            DirectionsQuestionnaire.builder()
+                .hearingLocation(HearingLocation.builder()
+                    .courtName(PILOT_COURT_NAME)
+                    .build()
                 )
-                .build();
-    }
+                .build()
+        )
+        .build();
 
     private static final ResponseRejection CLAIMANT_REJECTION_NON_PILOT = ResponseRejection.builder()
         .freeMediation(NO)

@@ -15,7 +15,7 @@ public class PilotCourt {
     private String postcode;
     private HearingCourt hearingCourt;
 
-    Optional<HearingCourt> getHearingCourt() {
+    public Optional<HearingCourt> getHearingCourt() {
         return Optional.ofNullable(hearingCourt);
     }
 }

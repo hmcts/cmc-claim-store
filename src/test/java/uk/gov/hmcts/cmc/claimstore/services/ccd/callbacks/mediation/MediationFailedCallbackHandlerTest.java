@@ -75,8 +75,6 @@ public class MediationFailedCallbackHandlerTest {
         SampleClaim.getWithClaimantResponseRejectionForPartAdmissionAndMediation();
     private CallbackRequest callbackRequest;
 
-    //TODO Clean up these tests
-
     @Before
     public void setUp() {
         mediationFailedCallbackHandler = new MediationFailedCallbackHandler(

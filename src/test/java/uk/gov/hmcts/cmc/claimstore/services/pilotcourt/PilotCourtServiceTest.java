@@ -48,14 +48,14 @@ class PilotCourtServiceTest {
 
         @Test
         void shouldThrowIllegalStateExceptionOnInvalidCSVPath() {
-            Assertions.assertThrows(IllegalStateException.class, () -> {
+            Assertions.assertThrows(IllegalStateException.class, () ->
                 new PilotCourtService(
                     "InvalidPath",
                     courtFinderApi,
                     hearingCourtMapper,
                     appInsights
-                ).init();
-            });
+                ).init()
+            );
         }
 
         @Test
@@ -81,14 +81,15 @@ class PilotCourtServiceTest {
 
     @Test
     void shouldThrowRIllegalArgumentExceptionOnUnknownCourtId() {
+        PilotCourtService pilotCourtService = new PilotCourtService(
+            csvPathSingle,
+            courtFinderApi,
+            hearingCourtMapper,
+            appInsights
+        );
+        pilotCourtService.init();
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            PilotCourtService pilotCourtService = new PilotCourtService(
-                csvPathSingle,
-                courtFinderApi,
-                hearingCourtMapper,
-                appInsights
-            );
-            pilotCourtService.init();
+
             pilotCourtService.getHearingCourt("UNKNOWN_ID");
         });
     }
