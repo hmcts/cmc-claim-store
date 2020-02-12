@@ -88,10 +88,7 @@ class PilotCourtServiceTest {
             appInsights
         );
         pilotCourtService.init();
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-
-            pilotCourtService.getHearingCourt("UNKNOWN_ID");
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> pilotCourtService.getHearingCourt("UNKNOWN_ID"));
     }
 
     @Test
