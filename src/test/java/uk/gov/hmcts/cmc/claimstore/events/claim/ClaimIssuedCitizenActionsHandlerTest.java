@@ -11,7 +11,6 @@ import uk.gov.hmcts.cmc.claimstore.config.properties.notifications.Notifications
 import uk.gov.hmcts.cmc.claimstore.events.utils.sampledata.SampleClaimIssuedEvent;
 import uk.gov.hmcts.cmc.claimstore.services.notifications.ClaimIssuedNotificationService;
 import uk.gov.hmcts.cmc.domain.models.Claim;
-import uk.gov.service.notify.NotificationClientException;
 
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -53,7 +52,7 @@ public class ClaimIssuedCitizenActionsHandlerTest {
     }
 
     @Test
-    public void sendNotificationsSendsNotificationsToClaimantAndDefendant() throws NotificationClientException {
+    public void sendNotificationsSendsNotificationsToClaimantAndDefendant() {
 
         CitizenClaimIssuedEvent claimIssuedEvent
             = new CitizenClaimIssuedEvent(CLAIM, PIN, SUBMITTER_NAME, AUTHORISATION);
@@ -80,7 +79,7 @@ public class ClaimIssuedCitizenActionsHandlerTest {
     }
 
     @Test
-    public void sendNotificationsSendsNotificationToClaimantOnly() throws NotificationClientException {
+    public void sendNotificationsSendsNotificationToClaimantOnly() {
 
         Claim claimNoDefendantEmail = getClaimWithNoDefendantEmail();
 

@@ -12,13 +12,13 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public class Direction extends CollectionId {
 
-    private DirectionParty directionParty;
-    private DirectionType directionType;
-    private DirectionHeaderType directionHeaderType;
-    private LocalDate directionActionedDate;
-    private String directionComment;
-    private List<String> extraDocuments;
-    private List<String> expertReports;
+    private final DirectionParty directionParty;
+    private final DirectionType directionType;
+    private final DirectionHeaderType directionHeaderType;
+    private final LocalDate directionActionedDate;
+    private final String directionComment;
+    private final List<String> extraDocuments;
+    private final List<String> expertReports;
 
     @Builder
     public Direction(

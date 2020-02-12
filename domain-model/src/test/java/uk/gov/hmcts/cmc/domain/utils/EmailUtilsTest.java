@@ -18,7 +18,7 @@ public class EmailUtilsTest {
     public void shouldGetTheDefendantEmailIfPopulated() {
         Claim claim = SampleClaim.builder().withDefendantEmail(DEFENDANT_EMAIL).build();
         Optional<String> defendantEmail = EmailUtils.getDefendantEmail(claim);
-        assertThat(defendantEmail.get()).isEqualTo(DEFENDANT_EMAIL);
+        assertThat(defendantEmail).contains(DEFENDANT_EMAIL);
     }
 
     @Test
@@ -34,7 +34,7 @@ public class EmailUtilsTest {
                     .build()
             ).build();
         Optional<String> defendantEmail = EmailUtils.getDefendantEmail(claim);
-        assertThat(defendantEmail.get()).isEqualTo(DEFENDANT_EMAIL);
+        assertThat(defendantEmail).contains(DEFENDANT_EMAIL);
     }
 
     @Test

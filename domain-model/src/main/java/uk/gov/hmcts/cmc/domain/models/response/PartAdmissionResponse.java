@@ -39,7 +39,7 @@ public class PartAdmissionResponse extends Response {
 
     @NotNull
     @Size(min = 1, max = 99000)
-    private String defence;
+    private final String defence;
 
     @Valid
     private final DefendantTimeline timeline;

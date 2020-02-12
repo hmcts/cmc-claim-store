@@ -23,7 +23,7 @@ public class LegalOrderGenerationDeadlinesCalculator {
     }
 
     public LocalDate calculateOrderGenerationDeadlines() {
-        long totalDays = (long) DAYS_FOR_RESPONSE;
+        long totalDays = DAYS_FOR_RESPONSE;
         LocalDate result = LocalDate.now(clock).plusDays(totalDays);
 
         while (!workingDayIndicator.isWorkingDay(result)) {

@@ -28,7 +28,7 @@ import static java.time.temporal.ChronoUnit.YEARS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -80,7 +80,7 @@ public class DeadlineSupportControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
         assertThat(response.getBody()).isEqualTo("Unrecognised deadline type: unknown");
-        verifyZeroInteractions(dqService);
+        verifyNoInteractions(dqService);
     }
 
     @Test
@@ -98,7 +98,7 @@ public class DeadlineSupportControllerTest {
         assertThat(response.getBody())
             .isEqualTo("Claim %s already has a directions questionnaire deadline of %s.",
                 reference, deadline);
-        verifyZeroInteractions(dqService);
+        verifyNoInteractions(dqService);
     }
 
     @Test
@@ -115,7 +115,7 @@ public class DeadlineSupportControllerTest {
         assertThat(response.getBody())
             .isEqualTo("Claim %s has online DQs enabled; "
                 + "cannot define a directions questionnaire deadline", reference);
-        verifyZeroInteractions(dqService);
+        verifyNoInteractions(dqService);
     }
 
     @Test
@@ -132,7 +132,7 @@ public class DeadlineSupportControllerTest {
         assertThat(response.getBody())
             .isEqualTo("Claim %s does not have a response; "
                 + "cannot define a directions questionnaire deadline", reference);
-        verifyZeroInteractions(dqService);
+        verifyNoInteractions(dqService);
     }
 
     @Test
@@ -152,7 +152,7 @@ public class DeadlineSupportControllerTest {
         assertThat(response.getBody())
             .isEqualTo("Claim %s is from before 5.0.0 and its defendant agreed to mediation; "
                 + "cannot define a directions questionnaire deadline.", reference);
-        verifyZeroInteractions(dqService);
+        verifyNoInteractions(dqService);
     }
 
     @Test
@@ -172,7 +172,7 @@ public class DeadlineSupportControllerTest {
         assertThat(response.getBody())
             .isEqualTo("Claim %s is from before 5.0.0 and its defendant fully admitted; "
                 + "cannot define a directions questionnaire deadline.", reference);
-        verifyZeroInteractions(dqService);
+        verifyNoInteractions(dqService);
     }
 
     @Test
@@ -215,7 +215,7 @@ public class DeadlineSupportControllerTest {
         assertThat(response.getBody())
             .isEqualTo("Claim %s does not have a claimant response; "
                 + "cannot define a directions questionnaire deadline", reference);
-        verifyZeroInteractions(dqService);
+        verifyNoInteractions(dqService);
     }
 
     @Test
@@ -235,7 +235,7 @@ public class DeadlineSupportControllerTest {
         assertThat(response.getBody())
             .isEqualTo("Claim %s has an acceptation claimant response; "
                 + "cannot define a directions questionnaire deadline.", reference);
-        verifyZeroInteractions(dqService);
+        verifyNoInteractions(dqService);
     }
 
     @Test
@@ -255,7 +255,7 @@ public class DeadlineSupportControllerTest {
         assertThat(response.getBody())
             .isEqualTo("Claim %s has a mediation agreement; "
                 + "cannot define a directions questionnaire deadline.", reference);
-        verifyZeroInteractions(dqService);
+        verifyNoInteractions(dqService);
     }
 
     @Test

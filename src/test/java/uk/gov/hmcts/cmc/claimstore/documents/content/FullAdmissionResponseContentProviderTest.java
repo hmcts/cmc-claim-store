@@ -11,7 +11,7 @@ import static uk.gov.hmcts.cmc.domain.models.sampledata.SampleResponse.FullAdmis
 
 public class FullAdmissionResponseContentProviderTest {
 
-    private FullAdmissionResponseContentProvider provider =
+    private final FullAdmissionResponseContentProvider provider =
         new FullAdmissionResponseContentProvider(
             new PaymentIntentionContentProvider(),
             new StatementOfMeansContentProvider()

@@ -38,13 +38,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildClaimIssueReceiptFileBaseName;
 import static uk.gov.hmcts.cmc.claimstore.utils.DocumentNameUtils.buildDefendantLetterFileBaseName;
@@ -67,7 +68,7 @@ public class DocumentUploadHandlerTest {
     private static final byte[] PDF_CONTENT = {1, 2, 3, 4};
 
     @Rule
-    public ExpectedException exceptionRule = ExpectedException.none();
+    public final ExpectedException exceptionRule = ExpectedException.none();
     @Mock
     private DefendantResponseReceiptService defendantResponseReceiptService;
     @Mock
@@ -267,7 +268,7 @@ public class DocumentUploadHandlerTest {
                 SampleClaim.getWithClaimantResponse(
                     SampleClaimantResponse.validDefaultAcceptation()), AUTHORISATION));
 
-        verifyZeroInteractions(claimantDirectionsQuestionnairePdfService);
+        verifyNoInteractions(claimantDirectionsQuestionnairePdfService);
     }
 
     @Test
@@ -277,7 +278,7 @@ public class DocumentUploadHandlerTest {
                 SampleClaim.getWithClaimantResponse(
                     SampleClaimantResponse.validDefaultRejection()), AUTHORISATION));
 
-        verifyZeroInteractions(claimantDirectionsQuestionnairePdfService);
+        verifyNoInteractions(claimantDirectionsQuestionnairePdfService);
     }
 
     @Test
@@ -300,7 +301,7 @@ public class DocumentUploadHandlerTest {
     private void assertCommon(ClaimDocumentType claimDocumentType) {
         verify(documentService, times(1))
             .uploadToDocumentManagement(argumentCaptor.capture(), anyString(), any(Claim.class));
-        assertTrue(argumentCaptor.getValue().getClaimDocumentType() == claimDocumentType);
+        assertSame(argumentCaptor.getValue().getClaimDocumentType(), claimDocumentType);
     }
 
     @Test

@@ -21,11 +21,8 @@ public class ResponseHelper {
             || response.getResponseType() == FULL_DEFENCE;
 
     public static boolean admissionResponse(Response response) {
-        if (response != null && (response.getResponseType().equals(ResponseType.PART_ADMISSION)
-            || response.getResponseType().equals(ResponseType.FULL_ADMISSION))) {
-            return true;
-        }
-        return false;
+        return response != null && (response.getResponseType().equals(ResponseType.PART_ADMISSION)
+            || response.getResponseType().equals(ResponseType.FULL_ADMISSION));
     }
 
     public static String getResponseType(Claim claim) {

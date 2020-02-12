@@ -62,10 +62,10 @@ public class DocumentManagementServiceTest {
     private DocumentManagementService documentManagementService;
 
     @Rule
-    public ExpectedException expectedException = ExpectedException.none();
+    public final ExpectedException expectedException = ExpectedException.none();
     @Mock
     private ResponseEntity<Resource> responseEntity;
-    private PDF document = new PDF("0000-claim", "test".getBytes(), SEALED_CLAIM);
+    private final PDF document = new PDF("0000-claim", "test".getBytes(), SEALED_CLAIM);
 
     @Before
     public void setUp() {

@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 public class InterestContent {
 
-    private String type;
+    private final String type;
     private String rate;
     private Boolean customRate;
     private String customRateReason;
@@ -13,7 +13,7 @@ public class InterestContent {
     private String fromDate;
     private String amount;
     private BigDecimal amountRealValue;
-    private String dailyAmount;
+    private final String dailyAmount;
     private String startDateReason;
     private Boolean submissionEndDate;
     private String interestEndDateType;

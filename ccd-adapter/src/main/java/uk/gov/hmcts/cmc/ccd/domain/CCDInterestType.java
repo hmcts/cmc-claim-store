@@ -6,7 +6,7 @@ public enum CCDInterestType {
     DIFFERENT("different"),
     NO_INTEREST("no interest");
 
-    private String value;
+    private final String value;
 
     CCDInterestType(String value) {
         this.value = value;

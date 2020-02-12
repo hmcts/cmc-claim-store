@@ -108,7 +108,7 @@ public class MediationCSVGenerator {
     private String csvData;
 
     @Getter
-    private Map<String, String> problematicRecords = new HashMap<>();
+    private final Map<String, String> problematicRecords = new HashMap<>();
 
     public void createMediationCSV() {
         problematicRecords.clear();

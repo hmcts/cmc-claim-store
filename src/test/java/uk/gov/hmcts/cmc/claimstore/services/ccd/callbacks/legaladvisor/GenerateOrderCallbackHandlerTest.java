@@ -16,7 +16,6 @@ import uk.gov.hmcts.cmc.ccd.domain.claimantresponse.CCDResponseRejection;
 import uk.gov.hmcts.cmc.ccd.domain.defendant.CCDRespondent;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDDirectionsQuestionnaire;
 import uk.gov.hmcts.cmc.ccd.domain.directionsquestionnaire.CCDExpertReport;
-import uk.gov.hmcts.cmc.ccd.domain.legaladvisor.CCDOrderGenerationData;
 import uk.gov.hmcts.cmc.ccd.sample.data.SampleData;
 import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.exceptions.CallbackException;
@@ -44,10 +43,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.data.MapEntry.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.NO;
 import static uk.gov.hmcts.cmc.ccd.domain.CCDYesNoOption.YES;
 import static uk.gov.hmcts.cmc.ccd.domain.CaseEvent.GENERATE_ORDER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights.REFERENCE_NUMBER;
+import static uk.gov.hmcts.cmc.claimstore.appinsights.AppInsightsEvent.DRAFTED_BY_LEGAL_ADVISOR;
+import static uk.gov.hmcts.cmc.domain.models.ClaimFeatures.DQ_FLAG;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GenerateOrderCallbackHandlerTest {
@@ -76,17 +79,17 @@ public class GenerateOrderCallbackHandlerTest {
 
     @Before
     public void setUp() {
-        generateOrderCallbackHandler = new GenerateOrderCallbackHandler(
-            legalOrderGenerationDeadlinesCalculator,
-            caseDetailsConverter,
-            docAssemblyService,
-            appInsights,
-            new GenerateOrderRule());
+        OrderCreator orderCreator = new OrderCreator(legalOrderGenerationDeadlinesCalculator, caseDetailsConverter,
+            docAssemblyService, new GenerateOrderRule());
+
+        generateOrderCallbackHandler = new GenerateOrderCallbackHandler(orderCreator,
+            caseDetailsConverter, appInsights);
 
         ReflectionTestUtils.setField(generateOrderCallbackHandler, "templateId", "testTemplateId");
         ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
         Claim claim =
             SampleClaim.builder()
+                .withFeatures(ImmutableList.of(DQ_FLAG.getValue()))
                 .withResponse(
                     FullDefenceResponse.builder()
                         .directionsQuestionnaire(DirectionsQuestionnaire.builder()
@@ -99,9 +102,7 @@ public class GenerateOrderCallbackHandlerTest {
                 ).build();
         when(caseDetailsConverter.extractClaim(any(CaseDetails.class))).thenReturn(claim);
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
-
-        when(legalOrderGenerationDeadlinesCalculator.calculateOrderGenerationDeadlines())
-            .thenReturn(DEADLINE);
+        when(legalOrderGenerationDeadlinesCalculator.calculateOrderGenerationDeadlines()).thenReturn(DEADLINE);
 
         callbackRequest = CallbackRequest
             .builder()
@@ -137,7 +138,8 @@ public class GenerateOrderCallbackHandlerTest {
                         .build())
                     .build()
             ));
-        ccdCase.setDirectionOrderData(SampleData.getCCDOrderGenerationData());
+
+        ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
 
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_START)
@@ -185,7 +187,8 @@ public class GenerateOrderCallbackHandlerTest {
                         .build())
                     .build()
             ));
-        ccdCase.setDirectionOrderData(SampleData.getCCDOrderGenerationData());
+
+        ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
 
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_START)
@@ -214,10 +217,6 @@ public class GenerateOrderCallbackHandlerTest {
 
     @Test
     public void shouldPrepopulateFieldsOnAboutToStartEventIfOtherDirectionHeaderIsNull() {
-        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData().toBuilder()
-            .hearingCourt(null)
-            .build();
-
         ccdCase.setRespondents(
             ImmutableList.of(
                 CCDCollectionElement.<CCDRespondent>builder()
@@ -229,7 +228,8 @@ public class GenerateOrderCallbackHandlerTest {
                         .build())
                     .build()
             ));
-        ccdCase.setDirectionOrderData(ccdOrderGenerationData);
+
+        ccdCase = SampleData.addCCDOrderGenerationData(ccdCase).toBuilder().hearingCourt(null).build();
 
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_START)
@@ -331,7 +331,7 @@ public class GenerateOrderCallbackHandlerTest {
     @Test
     public void shouldGenerateDocumentOnMidEvent() {
         CCDCase ccdCase = SampleData.getCCDCitizenCase(Collections.emptyList());
-        ccdCase.setDirectionOrderData(SampleData.getCCDOrderGenerationData());
+        ccdCase = SampleData.addCCDOrderGenerationData(ccdCase);
         when(caseDetailsConverter.extractCCDCase(any(CaseDetails.class))).thenReturn(ccdCase);
 
         CallbackRequest callbackRequest = CallbackRequest
@@ -362,11 +362,9 @@ public class GenerateOrderCallbackHandlerTest {
 
     @Test(expected = IllegalStateException.class)
     public void shouldThrowIfClaimantResponseIsNotPresent() {
-        CCDOrderGenerationData ccdOrderGenerationData = SampleData.getCCDOrderGenerationData().toBuilder()
+        ccdCase = SampleData.addCCDOrderGenerationData(ccdCase).toBuilder()
             .otherDirections(null)
             .build();
-
-        ccdCase.setDirectionOrderData(ccdOrderGenerationData);
 
         CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.ABOUT_TO_START)
@@ -381,12 +379,25 @@ public class GenerateOrderCallbackHandlerTest {
     @Test(expected = CallbackException.class)
     public void shouldThrowIfUnimplementedCallbackForValidEvent() {
         CallbackParams callbackParams = CallbackParams.builder()
+            .type(CallbackType.ABOUT_TO_SUBMIT)
+            .request(callbackRequest)
+            .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
+            .build();
+
+        generateOrderCallbackHandler.handle(callbackParams);
+    }
+
+    @Test
+    public void shouldRaiseAppInsight() {
+        CallbackParams callbackParams = CallbackParams.builder()
             .type(CallbackType.SUBMITTED)
             .request(callbackRequest)
             .params(ImmutableMap.of(CallbackParams.Params.BEARER_TOKEN, BEARER_TOKEN))
             .build();
 
-        generateOrderCallbackHandler
-            .handle(callbackParams);
+        generateOrderCallbackHandler.handle(callbackParams);
+
+        verify(appInsights)
+            .trackEvent(DRAFTED_BY_LEGAL_ADVISOR, REFERENCE_NUMBER, ccdCase.getPreviousServiceCaseReference());
     }
 }
