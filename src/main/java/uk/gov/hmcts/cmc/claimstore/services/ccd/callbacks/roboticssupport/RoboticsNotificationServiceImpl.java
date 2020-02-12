@@ -29,11 +29,6 @@ import java.util.function.Predicate;
 @Service
 public class RoboticsNotificationServiceImpl implements RoboticsNotificationService {
 
-    private static final String RPA_STATE_MISSING = "missing";
-    private static final String RPA_STATE_INVALID = "invalid";
-    private static final String RPA_STATE_FAILED = "failed";
-    private static final String RPA_STATE_SUCCEEDED = "succeeded";
-
     private final UserService userService;
 
     private final ClaimService claimService;
@@ -153,15 +148,15 @@ public class RoboticsNotificationServiceImpl implements RoboticsNotificationServ
     ) {
         Optional<Claim> claimOptional = Optional.ofNullable(claimService
             .getClaimByReference(reference, authorisation)
-            .orElseThrow(() -> new BadRequestException(RPA_STATE_MISSING)));
+            .orElseThrow(() -> new BadRequestException(RpaStateType.RPA_STATE_MISSING.getValue())));
         Claim claim = claimOptional.filter(precondition)
-            .orElseThrow(() -> new BadRequestException(RPA_STATE_INVALID));
+            .orElseThrow(() -> new BadRequestException(RpaStateType.RPA_STATE_INVALID.getValue()));
         try {
             consumer.accept(claim);
-            return RPA_STATE_SUCCEEDED;
+            return RpaStateType.RPA_STATE_SUCCEEDED.getValue();
         } catch (Exception ex) {
             appInsightsExceptionLogger.warn(errorMessage, ex);
-            return RPA_STATE_FAILED + ": " + ex.getMessage();
+            return RpaStateType.RPA_STATE_FAILED.getValue() + ": " + ex.getMessage();
         }
     }
 }
