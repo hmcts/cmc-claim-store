@@ -17,8 +17,7 @@ public class MediationSuccessfulRuleTest {
 
         List<String> validations = mediationSuccessfulRule.validateMediationAgreementUploadedByCaseworker(ccdCase);
 
-        Assertions.assertThat(validations).isNotEmpty()
-                .hasSize(1)
+        Assertions.assertThat(validations).hasSize(1)
                 .contains(MediationSuccessfulRule.STAFF_UPLOAD_MEDIATION_AGREEMENT);
     }
 
@@ -28,9 +27,8 @@ public class MediationSuccessfulRuleTest {
 
         List<String> validations = mediationSuccessfulRule.validateMediationAgreementUploadedByCaseworker(ccdCase);
 
-        Assertions.assertThat(validations).isNotEmpty()
-                .hasSize(1)
-                .contains(MediationSuccessfulRule.STAFF_UPLOAD_TYPE_MEDIATION_AGREEMENT);
+        Assertions.assertThat(validations).hasSize(1)
+                .contains(MediationSuccessfulRule.STAFF_UPLOAD_MEDIATION_AGREEMENT);
     }
 
     @Test
@@ -38,14 +36,38 @@ public class MediationSuccessfulRuleTest {
         CCDCase ccdCase = SampleData.withMediationAgreementNotPdf();
         List<String> validations = mediationSuccessfulRule.validateMediationAgreementUploadedByCaseworker(ccdCase);
 
-        Assertions.assertThat(validations).isNotEmpty()
-                .hasSize(1)
+        Assertions.assertThat(validations).hasSize(1)
                 .contains(MediationSuccessfulRule.STAFF_UPLOAD_PDF_MEDIATION_AGREEMENT);
     }
 
     @Test
     public void shouldNotReturnValidationMessageWhenMediationAgreementIsTypePDF() {
         CCDCase ccdCase = SampleData.withMediationAgreementPdf();
+        List<String> validations = mediationSuccessfulRule.validateMediationAgreementUploadedByCaseworker(ccdCase);
+
+        Assertions.assertThat(validations).isEmpty();
+    }
+
+    @Test
+    public void shouldNotReturnValidationMessageWhenFirstDocumentIsOtherDocumentAndSecondIsMediationAgreementPDF() {
+        CCDCase ccdCase = SampleData.withOtherDocumentAndMediationAgreementPdf();
+        List<String> validations = mediationSuccessfulRule.validateMediationAgreementUploadedByCaseworker(ccdCase);
+
+        Assertions.assertThat(validations).isEmpty();
+    }
+
+    @Test
+    public void shouldReturnValidationMessageWhenFirstDocumentIsOtherDocumentPDFAndSecondIsMediationAgreement() {
+        CCDCase ccdCase = SampleData.withOtherDocumentPDFAndMediationAgreementNotPDF();
+        List<String> validations = mediationSuccessfulRule.validateMediationAgreementUploadedByCaseworker(ccdCase);
+
+        Assertions.assertThat(validations).hasSize(1)
+                .contains(MediationSuccessfulRule.STAFF_UPLOAD_PDF_MEDIATION_AGREEMENT);
+    }
+
+    @Test
+    public void shouldNotReturnValidationMessageWhenFirstDocumentIsMediationAgreementPDFAndSecondIsOtherDocument() {
+        CCDCase ccdCase = SampleData.withMediationAgreementAndOtherDocumentPDF();
         List<String> validations = mediationSuccessfulRule.validateMediationAgreementUploadedByCaseworker(ccdCase);
 
         Assertions.assertThat(validations).isEmpty();

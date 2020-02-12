@@ -819,4 +819,40 @@ public class SampleData {
                 .state(OPEN.getValue())
                 .build();
     }
+
+    public static CCDCase withOtherDocumentAndMediationAgreementPdf() {
+        List<CCDCollectionElement<CCDApplicant>> applicants = singletonList(CCDCollectionElement.<CCDApplicant>builder()
+                .value(getCCDApplicantIndividual()).build());
+
+        return ccdBuilderWithDefault()
+                .amountBreakDown(getAmountBreakDown())
+                .applicants(applicants)
+                .staffUploadedDocuments(SampleStaffUploadedDoc.StaffDocsMediationPDFSecond)
+                .state(OPEN.getValue())
+                .build();
+    }
+
+    public static CCDCase withOtherDocumentPDFAndMediationAgreementNotPDF() {
+        List<CCDCollectionElement<CCDApplicant>> applicants = singletonList(CCDCollectionElement.<CCDApplicant>builder()
+                .value(getCCDApplicantIndividual()).build());
+
+        return ccdBuilderWithDefault()
+                .amountBreakDown(getAmountBreakDown())
+                .applicants(applicants)
+                .staffUploadedDocuments(SampleStaffUploadedDoc.StaffDocPDFMediationSecond)
+                .state(OPEN.getValue())
+                .build();
+    }
+
+    public static CCDCase withMediationAgreementAndOtherDocumentPDF() {
+        List<CCDCollectionElement<CCDApplicant>> applicants = singletonList(CCDCollectionElement.<CCDApplicant>builder()
+                .value(getCCDApplicantIndividual()).build());
+
+        return ccdBuilderWithDefault()
+                .amountBreakDown(getAmountBreakDown())
+                .applicants(applicants)
+                .staffUploadedDocuments(SampleStaffUploadedDoc.MediationPDFFirstStaffDocPDFSecond)
+                .state(OPEN.getValue())
+                .build();
+    }
 }

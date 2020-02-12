@@ -8,6 +8,7 @@ import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocument;
 import uk.gov.hmcts.cmc.ccd.domain.CCDScannedDocumentType;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -58,7 +59,32 @@ class SampleStaffUploadedDoc {
                             .documentType(CCDClaimDocumentType.MEDIATION_AGREEMENT).build())
                     .build());
 
-    static final List<CCDCollectionElement<CCDClaimDocument>> staffUploadedDocsPDF = Collections.singletonList(
+    static final List<CCDCollectionElement<CCDClaimDocument>> StaffDocsMediationPDFSecond = Arrays.asList(
+            CCDCollectionElement.<CCDClaimDocument>builder()
+                    .id("2323-2342-34-2-352")
+                    .value(CCDClaimDocument.builder()
+                            .documentName("name")
+                            .documentLink(CCDDocument.builder()
+                                    .documentUrl("http://www.cnn.com")
+                                    .documentBinaryUrl("http://www.cnn.com")
+                                    .documentFileName("documentFileName").build()
+                            )
+                            .documentType(CCDClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT).build())
+                    .build(),
+            CCDCollectionElement.<CCDClaimDocument>builder()
+                    .id("2323-2342-34-2-353")
+                    .value(CCDClaimDocument.builder()
+                            .documentName("name")
+                            .documentLink(CCDDocument.builder()
+                                    .documentUrl("http://www.cnn.com")
+                                    .documentBinaryUrl("http://www.cnn.com")
+                                    .documentFileName("documentFileName.pdf").build()
+                            )
+                            .documentType(CCDClaimDocumentType.MEDIATION_AGREEMENT).build())
+                    .build());
+
+
+    static final List<CCDCollectionElement<CCDClaimDocument>> StaffDocPDFMediationSecond = Arrays.asList(
             CCDCollectionElement.<CCDClaimDocument>builder()
                     .id("2323-2342-34-2-352")
                     .value(CCDClaimDocument.builder()
@@ -69,7 +95,43 @@ class SampleStaffUploadedDoc {
                                     .documentFileName("documentFileName.pdf").build()
                             )
                             .documentType(CCDClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT).build())
+                    .build(),
+            CCDCollectionElement.<CCDClaimDocument>builder()
+                    .id("2323-2342-34-2-353")
+                    .value(CCDClaimDocument.builder()
+                            .documentName("name")
+                            .documentLink(CCDDocument.builder()
+                                    .documentUrl("http://www.cnn.com")
+                                    .documentBinaryUrl("http://www.cnn.com")
+                                    .documentFileName("documentFileName").build()
+                            )
+                            .documentType(CCDClaimDocumentType.MEDIATION_AGREEMENT).build())
                     .build());
+
+    static final List<CCDCollectionElement<CCDClaimDocument>> MediationPDFFirstStaffDocPDFSecond = Arrays.asList(
+            CCDCollectionElement.<CCDClaimDocument>builder()
+                    .id("2323-2342-34-2-352")
+                    .value(CCDClaimDocument.builder()
+                            .documentName("name")
+                            .documentLink(CCDDocument.builder()
+                                    .documentUrl("http://www.cnn.com")
+                                    .documentBinaryUrl("http://www.cnn.com")
+                                    .documentFileName("documentFileName.pdf").build()
+                            )
+                            .documentType(CCDClaimDocumentType.MEDIATION_AGREEMENT).build())
+                    .build(),
+            CCDCollectionElement.<CCDClaimDocument>builder()
+                    .id("2323-2342-34-2-353")
+                    .value(CCDClaimDocument.builder()
+                            .documentName("name")
+                            .documentLink(CCDDocument.builder()
+                                    .documentUrl("http://www.cnn.com")
+                                    .documentBinaryUrl("http://www.cnn.com")
+                                    .documentFileName("documentFileName.pdf").build()
+                            )
+                            .documentType(CCDClaimDocumentType.DEFENDANT_RESPONSE_RECEIPT).build())
+                    .build());
+
 
     static final List<CCDCollectionElement<CCDScannedDocument>> scannedDocsPaperResponse = Collections.singletonList(
         CCDCollectionElement.<CCDScannedDocument>builder()
