@@ -66,15 +66,14 @@ public class PilotCourtService {
         }
 
         PilotCourt pilotCourt = pilotCourts.get(pilotCourtId);
-        if (pilotCourt.getHearingCourt().isPresent()) {
-            return pilotCourt.getHearingCourt().get();
-        }
 
-        Optional<HearingCourt> court = getCourt(pilotCourt.getPostcode());
-        pilotCourt.setHearingCourt(court);
+        return pilotCourt.getHearingCourt().orElseGet(() -> {
+                Optional<HearingCourt> court = getCourt(pilotCourt.getPostcode());
+                pilotCourt.setHearingCourt(court);
 
-        return court
-            .orElseGet(() -> HearingCourt.builder().build());
+                return court.orElseGet(() -> HearingCourt.builder().build());
+            }
+        );
     }
 
     public boolean isPilotCourt(String courtName) {
