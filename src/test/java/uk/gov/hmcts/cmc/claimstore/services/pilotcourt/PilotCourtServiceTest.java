@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.cmc.claimstore.appinsights.AppInsights;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.CourtFinderApi;
 import uk.gov.hmcts.cmc.claimstore.courtfinder.models.Court;
 import uk.gov.hmcts.cmc.claimstore.services.ccd.legaladvisor.HearingCourt;
@@ -26,7 +27,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class PilotCourtServiceTest {
+class PilotCourtServiceTest {
+
+    @Mock
+    private AppInsights appInsights;
 
     @Mock
     private CourtFinderApi courtFinderApi;
@@ -48,7 +52,8 @@ public class PilotCourtServiceTest {
                 new PilotCourtService(
                     "InvalidPath",
                     courtFinderApi,
-                    hearingCourtMapper
+                    hearingCourtMapper,
+                    appInsights
                 ).init();
             });
         }
@@ -58,7 +63,8 @@ public class PilotCourtServiceTest {
             PilotCourtService pilotCourtService = new PilotCourtService(
                 csvPath,
                 courtFinderApi,
-                hearingCourtMapper
+                hearingCourtMapper,
+                appInsights
             );
 
             pilotCourtService.init();
@@ -79,7 +85,8 @@ public class PilotCourtServiceTest {
             PilotCourtService pilotCourtService = new PilotCourtService(
                 csvPathSingle,
                 courtFinderApi,
-                hearingCourtMapper
+                hearingCourtMapper,
+                appInsights
             );
             pilotCourtService.init();
             pilotCourtService.getHearingCourt("UNKNOWN_ID");
@@ -91,7 +98,8 @@ public class PilotCourtServiceTest {
         PilotCourtService pilotCourtService = new PilotCourtService(
             csvPathSingle,
             courtFinderApi,
-            hearingCourtMapper
+            hearingCourtMapper,
+            appInsights
         );
 
         Court court = Court.builder().build();
@@ -113,7 +121,8 @@ public class PilotCourtServiceTest {
         PilotCourtService pilotCourtService = new PilotCourtService(
             csvPathSingle,
             courtFinderApi,
-            hearingCourtMapper
+            hearingCourtMapper,
+            appInsights
         );
 
         //Simulate courtfinder being down on init
@@ -139,7 +148,8 @@ public class PilotCourtServiceTest {
         PilotCourtService pilotCourtService = new PilotCourtService(
             csvPathSingle,
             courtFinderApi,
-            hearingCourtMapper
+            hearingCourtMapper,
+            appInsights
         );
 
         when(courtFinderApi.findMoneyClaimCourtByPostcode(anyString())).thenReturn(ImmutableList.of());

@@ -13,5 +13,9 @@ import java.util.Optional;
 public class PilotCourt {
     private String id;
     private String postcode;
-    private Optional<HearingCourt> hearingCourt;
+    private HearingCourt hearingCourt;
+
+    Optional<HearingCourt> getHearingCourt() {
+        return Optional.ofNullable(hearingCourt);
+    }
 }

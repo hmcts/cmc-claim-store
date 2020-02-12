@@ -1,7 +1,7 @@
 package uk.gov.hmcts.cmc.claimstore.services.pilotcourt;
 
 public enum PilotCourtCSVHeader {
-    //TODO Comment on Order is important
+    //Order of enum elements relate to the order of the csv headers
     ID,
     POSTCODE
 }
